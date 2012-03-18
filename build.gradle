@@ -1,0 +1,48 @@
+// Establish version and status
+ext.releaseVersion = '1.1.3' // TEMPLATE: Set to latest release
+ext.githubProjectName = rootProject.name // TEMPLATE: change to match github project, if it doesn't match project name
+
+apply from: file('gradle/convention.gradle')
+apply from: file('gradle/maven.gradle')
+apply from: file('gradle/check.gradle')
+
+subprojects
+{
+    group = 'com.netflix'
+
+    repositories
+    {
+        mavenCentral()
+    }
+
+    dependencies
+    {
+        compile     'javax.ws.rs:jsr311-api:1.1.1'
+        compile     'com.sun.jersey:jersey-core:1.11'
+        testCompile 'org.testng:testng:6.1.1'
+        testCompile 'org.mockito:mockito-core:1.8.5'
+    }
+}
+
+project(':template-client')
+{
+    dependencies
+    {
+        compile 'org.slf4j:slf4j-api:1.6.3'
+        compile 'com.sun.jersey:jersey-client:1.11'
+    }
+}
+
+project(':template-server')
+{
+    apply plugin: 'war'
+    apply plugin: 'jetty'
+    dependencies
+    {
+        compile 'com.sun.jersey:jersey-server:1.11'
+        compile 'com.sun.jersey:jersey-servlet:1.11'
+        compile project(':template-client')
+        testCompile 'org.mockito:mockito-core:1.8.5'
+    }
+}
+

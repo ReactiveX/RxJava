@@ -1,0 +1,45 @@
+
+ext.performingRelease = project.hasProperty('release') && Boolean.parseBoolean(project.release)
+def versionPostfix = performingRelease?'':'-SNAPSHOT'
+version = "${releaseVersion}${versionPostfix}"
+status = performingRelease?'release':'snapshot'
+
+subprojects
+{
+    apply plugin: 'java' // Plugin as major conventions
+
+    version = rootProject.version
+
+    sourceCompatibility = 1.6
+
+    // GRADLE-2087 workaround, perform after java plugin
+    status = rootProject.status
+
+    task sourcesJar(type: Jar, dependsOn:classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn:javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives jar
+        archives sourcesJar
+        archives javadocJar
+    }
+}
+
+task aggregateJavadoc(type: Javadoc) {
+    description = 'Aggregate all subproject docs into a single docs directory'
+    source subprojects.collect {project -> project.sourceSets.main.allJava }
+    classpath = files(subprojects.collect {project -> project.sourceSets.main.compileClasspath})
+    destinationDir = new File(projectDir, 'doc')
+}
+
+// Generate wrapper, which is distributed as part of source to alleviate the need of installing gradle
+task createWrapper(type: Wrapper) {
+    gradleVersion = '1.0-milestone-9'
+}
