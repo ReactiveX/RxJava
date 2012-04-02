@@ -9,8 +9,10 @@ subprojects {
 
     // FindBugs
     apply plugin: 'findbugs'
+    //tasks.withType(Findbugs) { reports.html.enabled true }
 
     // PMD
     apply plugin: 'pmd'
+    //tasks.withType(Pmd) { reports.html.enabled true }
 
 }

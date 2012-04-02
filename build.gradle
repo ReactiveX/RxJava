@@ -5,18 +5,16 @@ ext.githubProjectName = rootProject.name // TEMPLATE: change to match github pro
 apply from: file('gradle/convention.gradle')
 apply from: file('gradle/maven.gradle')
 apply from: file('gradle/check.gradle')
+apply from: file('gradle/license.gradle')
 
-subprojects
-{
-    group = 'com.netflix'
+subprojects {
+    group = 'com.netflix.osstemplate' // TEMPLATE: Set to organization of project
 
-    repositories
-    {
+    repositories {
         mavenCentral()
     }
 
-    dependencies
-    {
+    dependencies {
         compile     'javax.ws.rs:jsr311-api:1.1.1'
         compile     'com.sun.jersey:jersey-core:1.11'
         testCompile 'org.testng:testng:6.1.1'
@@ -24,21 +22,17 @@ subprojects
     }
 }
 
-project(':template-client')
-{
-    dependencies
-    {
+project(':template-client') {
+    dependencies {
         compile 'org.slf4j:slf4j-api:1.6.3'
         compile 'com.sun.jersey:jersey-client:1.11'
     }
 }
 
-project(':template-server')
-{
+project(':template-server') {
     apply plugin: 'war'
     apply plugin: 'jetty'
-    dependencies
-    {
+    dependencies {
         compile 'com.sun.jersey:jersey-server:1.11'
         compile 'com.sun.jersey:jersey-servlet:1.11'
         compile project(':template-client')

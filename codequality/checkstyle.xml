@@ -50,6 +50,7 @@
           <property name="allowMissingReturnTag" value="true"/>
           <property name="allowThrowsTagsForSubclasses" value="true"/>
           <property name="allowUndeclaredRTE" value="true"/>
+          <property name="allowMissingPropertyJavadoc" value="true"/>
         </module>
         <module name="JavadocType">
           <property name="scope" value="package"/>

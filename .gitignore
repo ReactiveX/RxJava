@@ -38,3 +38,26 @@ Thumbs.db
 # Gradle Files #
 ################
 .gradle
+
+# Build output directies
+/target
+*/target
+/build
+*/build
+#
+# # IntelliJ specific files/directories
+out
+.idea
+*.ipr
+*.iws
+*.iml
+atlassian-ide-plugin.xml
+
+# Eclipse specific files/directories
+.classpath
+.project
+.settings
+.metadata
+
+# NetBeans specific files/directories
+.nbattrs

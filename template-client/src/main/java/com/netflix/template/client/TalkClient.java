@@ -8,26 +8,42 @@ import com.sun.jersey.api.client.filter.LoggingFilter;
 
 import javax.ws.rs.core.MediaType;
 
+/**
+ * Delegates to remote TalkServer over REST.
+ * @author jryan
+ *
+ */
 public class TalkClient implements Conversation {
 
-    WebResource webResource;
+    private WebResource webResource;
 
-    TalkClient(String location) {
+    /**
+     * Instantiate client.
+     *
+     * @param location URL to the base of resources, e.g. http://localhost:8080/template-server/rest
+     */
+    public TalkClient(String location) {
         Client client = Client.create();
         client.addFilter(new LoggingFilter(System.out));
         webResource = client.resource(location + "/talk");
     }
 
+    @Override
     public Sentence greeting() {
         Sentence s = webResource.accept(MediaType.APPLICATION_XML).get(Sentence.class);
         return s;
     }
 
+    @Override
     public Sentence farewell() {
         Sentence s = webResource.accept(MediaType.APPLICATION_XML).delete(Sentence.class);
         return s;
     }
 
+    /**
+     * Tests out client.
+     * @param args Not applicable
+     */
     public static void main(String[] args) {
         TalkClient remote = new TalkClient("http://localhost:8080/template-server/rest");
         System.out.println(remote.greeting().getWhole());

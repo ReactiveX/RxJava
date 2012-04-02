@@ -1,0 +1,5 @@
+buildscript {
+    dependencies { classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.4' }
+}
+
+apply plugin: 'license'
