@@ -20,16 +20,16 @@ subprojects {
     // Closure to configure all the POM with extra info, common to all projects
     pom {
         project {
-        url "https://github.com/Netflix/${rootProject.githubProjectName}"
-        scm {
-            connection "scm:git:git@github.com:Netflix/${rootProject.githubProjectName}.git"
-            url "scm:git:git@github.com:Netflix/${rootProject.githubProjectName}.git"
-            developerConnection "scm:git:git@github.com:Netflix/${rootProject.githubProjectName}.git"
-        }
-        issueManagement {
-            system 'github'
-            url 'https://github.com/Netflix/${rootProject.githubProjectName}/issues'
-        }
+            url "https://github.com/Netflix/${rootProject.githubProjectName}"
+            scm {
+                connection "scm:git:git@github.com:Netflix/${rootProject.githubProjectName}.git"
+                url "scm:git:git@github.com:Netflix/${rootProject.githubProjectName}.git"
+                developerConnection "scm:git:git@github.com:Netflix/${rootProject.githubProjectName}.git"
+            }
+            issueManagement {
+                system 'github'
+                url 'https://github.com/Netflix/${rootProject.githubProjectName}/issues'
+            }
         }
     }
 
@@ -57,7 +57,6 @@ project(':template-server') {
         compile 'com.sun.jersey:jersey-server:1.11'
         compile 'com.sun.jersey:jersey-servlet:1.11'
         compile project(':template-client')
-        testCompile 'org.mockito:mockito-core:1.8.5'
     }
 }
 
