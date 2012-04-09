@@ -9,6 +9,10 @@ subprojects {
                 required true
                 sign configurations.archives
             }
+        } else {
+            task signArchives {
+                // do nothing
+            }
         }
     }
 
@@ -17,7 +21,7 @@ subprojects {
      */
     task uploadMavenCentral(type:Upload) {
         configuration = configurations.archives
-        dependsOn 'signArchives'
+        dependsOn { 'signArchives' }
         doFirst {
             repositories.mavenDeployer {
                 beforeDeployment { org.gradle.api.artifacts.maven.MavenDeployment deployment -> signing.signPom(deployment) }
