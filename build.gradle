@@ -28,7 +28,7 @@ subprojects {
             }
             issueManagement {
                 system 'github'
-                url 'https://github.com/Netflix/${rootProject.githubProjectName}/issues'
+                url "https://github.com/Netflix/${rootProject.githubProjectName}/issues"
             }
         }
     }
