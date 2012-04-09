@@ -1,5 +1,5 @@
 buildscript {
-    dependencies { classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.4' }
+    dependencies { classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.5' }
 }
 
-apply plugin: 'license'
+apply plugin: nl.javadude.gradle.plugins.license.LicensePlugin

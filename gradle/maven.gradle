@@ -4,14 +4,14 @@ subprojects {
     apply plugin: 'signing'
 
     signing {
-        required { performingRelease && gradle.taskGraph.hasTask("uploadMavenCentral")}
+        required { performingRelease && gradle.taskGraph.hasTask("uploadArchives")}
         sign configurations.archives
     }
 
     /**
      * Publishing to Maven Central example provided from http://jedicoder.blogspot.com/2011/11/automated-gradle-project-deployment-to.html
      */
-    task uploadMavenCentral(type:Upload) {
+    task uploadArchives(type:Upload) {
         configuration = configurations.archives
         dependsOn signArchives
         doFirst {
@@ -35,22 +35,12 @@ subprojects {
                         artifactId 'oss-parent'
                         version '7'
                     }
-                    url "https://github.com/Netflix/${rootProject.ext.githubProjectName}"
                     licenses {
                         license {
                             name 'The Apache Software License, Version 2.0'
                             url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                             distribution 'repo'
                         }
-                    }
-                    scm {
-                        connection "scm:git:git@github.com:Netflix/${rootProject.ext.githubProjectName}.git"
-                        url "scm:git:git@github.com:Netflix/${rootProject.ext.githubProjectName}.git"
-                        developerConnection "scm:git:git@github.com:Netflix/${rootProject.ext.githubProjectName}.git"
-                    }
-                    issueManagement {
-                        system 'github'
-                        url 'https://github.com/Netflix/${rootProject.ext.githubProjectName}/issues'
                     }
                 }
             }

@@ -2,17 +2,38 @@
 ext.releaseVersion = '1.1.3' // TEMPLATE: Set to latest release
 ext.githubProjectName = rootProject.name // TEMPLATE: change to match github project, if it doesn't match project name
 
+buildscript {
+    repositories { mavenCentral() }
+}
+
+allprojects {
+    repositories { mavenCentral() }
+}
+
+//apply from: file('gradle/release.gradle') // Not fully tested
 apply from: file('gradle/convention.gradle')
 apply from: file('gradle/maven.gradle')
 apply from: file('gradle/check.gradle')
-apply from: file('gradle/license.gradle')
+//apply from: file('gradle/license.gradle') // Waiting for re-release
 
 subprojects {
-    group = 'com.netflix.osstemplate' // TEMPLATE: Set to organization of project
-
-    repositories {
-        mavenCentral()
+    // Closure to configure all the POM with extra info, common to all projects
+    pom {
+        project {
+        url "https://github.com/Netflix/${rootProject.githubProjectName}"
+        scm {
+            connection "scm:git:git@github.com:Netflix/${rootProject.githubProjectName}.git"
+            url "scm:git:git@github.com:Netflix/${rootProject.githubProjectName}.git"
+            developerConnection "scm:git:git@github.com:Netflix/${rootProject.githubProjectName}.git"
+        }
+        issueManagement {
+            system 'github'
+            url 'https://github.com/Netflix/${rootProject.githubProjectName}/issues'
+        }
+        }
     }
+
+    group = 'com.netflix.osstemplate' // TEMPLATE: Set to organization of project
 
     dependencies {
         compile     'javax.ws.rs:jsr311-api:1.1.1'

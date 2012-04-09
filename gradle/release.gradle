@@ -1,0 +1,6 @@
+buildscript {
+    dependencies { classpath group: 'no.entitas.gradle', name: 'gradle-release-plugin', version: '1.11' }
+}
+
+apply plugin: no.entitas.gradle.git.GitReleasePlugin // 'gitrelease'
+
