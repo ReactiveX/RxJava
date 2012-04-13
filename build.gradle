@@ -33,7 +33,7 @@ subprojects {
         }
     }
 
-    group = 'com.netflix.osstemplate' // TEMPLATE: Set to organization of project
+    group = "com.netflix.${githubProjectName}" // TEMPLATE: Set to organization of project
 
     dependencies {
         compile     'javax.ws.rs:jsr311-api:1.1.1'
