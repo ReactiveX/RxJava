@@ -27,7 +27,7 @@ subprojects {
                 // To test deployment locally, use the following instead of oss.sonatype.org
                 //repository(url: "file://localhost/${rootProject.rootDir}/repo")
 
-                repository(url: 'http://oss.sonatype.org/services/local/staging/deply/maven2/') {
+                repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
                     authentication(userName: rootProject.sonatypeUsername, password: rootProject.sonatypePassword)
                 }
 
