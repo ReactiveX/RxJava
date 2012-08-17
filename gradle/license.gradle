@@ -1,5 +1,9 @@
-buildscript {
-    dependencies { classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.5' }
-}
+// Dependency for plugin was set in buildscript.gradle
 
-apply plugin: nl.javadude.gradle.plugins.license.LicensePlugin
+subprojects {
+apply plugin: 'license' //nl.javadude.gradle.plugins.license.LicensePlugin
+license {
+    header rootProject.file('codequality/HEADER')
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+}
+}
