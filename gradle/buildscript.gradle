@@ -1,3 +1,5 @@
 // Executed in context of buildscript
-dependencies { classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.6.0' }
-
+dependencies {
+    classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.6.0'
+    classpath 'com.mapvine:gradle-cobertura-plugin:0.1'
+}

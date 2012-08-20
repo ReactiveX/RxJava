@@ -15,4 +15,11 @@ subprojects {
     apply plugin: 'pmd'
     //tasks.withType(Pmd) { reports.html.enabled true }
 
+    apply plugin: 'cobertura'
+    cobertura {
+        sourceDirs = sourceSets.main.java.srcDirs
+        format = 'html'
+        includes = ['**/*.java', '**/*.groovy']
+        excludes = []
+    }
 }
