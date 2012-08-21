@@ -1,6 +1,5 @@
 // Establish version and status
-ext.releaseVersion = '1.1.3' // TEMPLATE: Set to latest release
-ext.githubProjectName = rootProject.name // TEMPLATE: change to match github project, if it doesn't match project name
+ext.githubProjectName = rootProject.name // Change if github project name is not the same as the root project's name
 
 buildscript {
     repositories { mavenCentral() }
@@ -11,11 +10,11 @@ allprojects {
     repositories { mavenCentral() }
 }
 
-//apply from: file('gradle/release.gradle') // Not fully tested
 apply from: file('gradle/convention.gradle')
 apply from: file('gradle/maven.gradle')
 apply from: file('gradle/check.gradle')
 apply from: file('gradle/license.gradle')
+apply from: file('gradle/release.gradle')
 
 subprojects {
     // Closure to configure all the POM with extra info, common to all projects

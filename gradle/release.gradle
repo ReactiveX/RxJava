@@ -1,6 +1,64 @@
-buildscript {
-    dependencies { classpath group: 'no.entitas.gradle', name: 'gradle-release-plugin', version: '1.11' }
+
+apply plugin: 'release'
+
+// Ignore release plugin's task because it calls out via GradleBuild. This is a good place to put an email to send out
+task release(overwrite: true, dependsOn: commitNewVersion) << {
+    // This is a good place to put an email to send out
+}
+commitNewVersion.dependsOn updateVersion
+updateVersion.dependsOn createReleaseTag
+createReleaseTag.dependsOn preTagCommit
+def buildTasks = tasks.matching { it.name =~ /:build/ }
+preTagCommit.dependsOn buildTasks
+preTagCommit.dependsOn checkSnapshotDependencies
+//checkSnapshotDependencies.dependsOn confirmReleaseVersion // Introduced in 1.0, forces readLine
+//confirmReleaseVersion.dependsOn unSnapshotVersion
+checkSnapshotDependencies.dependsOn unSnapshotVersion // Remove once above is fixed
+unSnapshotVersion.dependsOn checkUpdateNeeded
+checkUpdateNeeded.dependsOn checkCommitNeeded
+checkCommitNeeded.dependsOn initScmPlugin
+
+// Call out to compile against internal repository
+task uploadArtifactory(type: GradleBuild) {
+    startParameter = project.gradle.startParameter.newInstance()
+    startParameter.addInitScript( file('gradle/netflix-oss.gradle') )
+    startParameter.getExcludedTaskNames().add('check')
+    tasks = [ 'build', 'artifactoryPublish' ]
 }
 
-apply plugin: no.entitas.gradle.git.GitReleasePlugin // 'gitrelease'
+task buildWithArtifactory(type: GradleBuild) {
+    startParameter = project.gradle.startParameter.newInstance()
+    startParameter.addInitScript( file('gradle/netflix-oss.gradle') )
+    startParameter.getExcludedTaskNames().add('check')
+    tasks = [ 'build' ]
+}
 
+// Ensure upload happens before taggging but after all pre-checks
+uploadArtifactory.dependsOn checkSnapshotDependencies
+createReleaseTag.dependsOn uploadArtifactory
+gradle.taskGraph.whenReady { taskGraph ->
+    if ( taskGraph.hasTask(uploadArtifactory) && !taskGraph.hasTask(':release') ) {
+        throw new GradleException('"release" task has to be run before uploading to Artifactory')
+    }
+}
+subprojects.each { project ->
+    project.uploadMavenCentral.dependsOn rootProject.checkSnapshotDependencies
+    rootProject.createReleaseTag.dependsOn project.uploadMavenCentral
+
+    gradle.taskGraph.whenReady { taskGraph ->
+        if ( taskGraph.hasTask(project.uploadMavenCentral) && !taskGraph.hasTask(':release') ) {
+            throw new GradleException('"release" task has to be run before uploading to Maven Central')
+        }
+    }
+}
+
+// Prevent plugin from asking for a version number interactively
+ext.'gradle.release.useAutomaticVersion' = "true"
+
+release {
+    // http://tellurianring.com/wiki/gradle/release
+    failOnCommitNeeded=false
+    failOnPublishNeeded=false
+    failOnUnversionedFiles=false
+    failOnUpdateNeeded=false
+}

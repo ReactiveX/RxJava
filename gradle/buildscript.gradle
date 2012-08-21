@@ -1,5 +1,12 @@
 // Executed in context of buildscript
+repositories {
+    ivy {
+        name = 'gradle_release'
+        artifactPattern 'http://launchpad.net/[organization]/trunk/[revision]/+download/[artifact]-[revision].jar'
+    }
+}
 dependencies {
     classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.6.0'
     classpath 'com.mapvine:gradle-cobertura-plugin:0.1'
+    classpath 'gradle-release:gradle-release:1.0pre'
 }

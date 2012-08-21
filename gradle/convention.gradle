@@ -1,11 +1,8 @@
 
-ext.performingRelease = project.hasProperty('release') && Boolean.parseBoolean(project.release)
-def versionPostfix = performingRelease?'':'-SNAPSHOT'
-version = "${releaseVersion}${versionPostfix}"
-status = performingRelease?'release':'snapshot'
+// For Artifactory
+rootProject.status = version.contains('-SNAPSHOT')?'snapshot':'release'
 
-subprojects
-{
+subprojects { project ->
     apply plugin: 'java' // Plugin as major conventions
 
     version = rootProject.version
@@ -13,7 +10,7 @@ subprojects
     sourceCompatibility = 1.6
 
     // GRADLE-2087 workaround, perform after java plugin
-    status = rootProject.status
+    status = version.contains('-SNAPSHOT')?'snapshot':'release'
 
     task sourcesJar(type: Jar, dependsOn:classes) {
         classifier = 'sources'
