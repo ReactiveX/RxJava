@@ -1,8 +1,8 @@
 // Executed in context of buildscript
 repositories {
-    ivy {
-        name = 'gradle_release'
-        artifactPattern 'http://launchpad.net/[organization]/trunk/[revision]/+download/[artifact]-[revision].jar'
+    maven {
+        name 'build-repo'
+        url 'https://github.com/Netflix-Skunkworks/build-repo/raw/master/releases/'
     }
 }
 dependencies {
