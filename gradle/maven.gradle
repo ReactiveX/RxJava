@@ -29,11 +29,6 @@ subprojects {
 
                 // Closure to configure all the POM with extra info, common to all projects
                 pom.project {
-                    parent {
-                        groupId 'org.sonatype.oss'
-                        artifactId 'oss-parent'
-                        version '7'
-                    }
                     licenses {
                         license {
                             name 'The Apache Software License, Version 2.0'

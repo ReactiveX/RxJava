@@ -10,7 +10,7 @@ subprojects { project ->
     sourceCompatibility = 1.6
 
     // GRADLE-2087 workaround, perform after java plugin
-    status = version.contains('-SNAPSHOT')?'snapshot':'release'
+    status = rootProject.status
 
     task sourcesJar(type: Jar, dependsOn:classes) {
         classifier = 'sources'
@@ -21,6 +21,10 @@ subprojects { project ->
         classifier = 'javadoc'
         from javadoc.destinationDir
     }
+
+    // Ensure output is on a new line
+    javadoc.doFirst { println "" }
+
 
     artifacts {
         archives sourcesJar

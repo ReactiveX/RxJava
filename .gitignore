@@ -44,8 +44,8 @@ Thumbs.db
 */target
 /build
 */build
-#
-# # IntelliJ specific files/directories
+
+# IntelliJ specific files/directories
 out
 .idea
 *.ipr
