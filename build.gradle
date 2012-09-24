@@ -17,22 +17,6 @@ apply from: file('gradle/license.gradle')
 apply from: file('gradle/release.gradle')
 
 subprojects {
-    // Closure to configure all the POM with extra info, common to all projects
-    pom {
-        project {
-            url "https://github.com/Netflix/${rootProject.githubProjectName}"
-            scm {
-                connection "scm:git:git@github.com:Netflix/${rootProject.githubProjectName}.git"
-                url "scm:git:git@github.com:Netflix/${rootProject.githubProjectName}.git"
-                developerConnection "scm:git:git@github.com:Netflix/${rootProject.githubProjectName}.git"
-            }
-            issueManagement {
-                system 'github'
-                url "https://github.com/Netflix/${rootProject.githubProjectName}/issues"
-            }
-        }
-    }
-
     group = "com.netflix.${githubProjectName}" // TEMPLATE: Set to organization of project
 
     dependencies {
