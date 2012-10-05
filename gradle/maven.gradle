@@ -29,6 +29,15 @@ subprojects {
 
                 // Closure to configure all the POM with extra info, common to all projects
                 pom.project {
+                    name "${project.name}"
+                    description "${project.name} developed by Netflix"
+                    developers {
+                        developer {
+                            id 'netflixgithub'
+                            name 'Netflix Open Source Development'
+                            email 'talent@netflix.com'
+                        }
+                    }
                     licenses {
                         license {
                             name 'The Apache Software License, Version 2.0'
