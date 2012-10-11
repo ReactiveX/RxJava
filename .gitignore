@@ -34,6 +34,7 @@ Thumbs.db
 # Editor Files #
 ################
 *~
+*.swp
 
 # Gradle Files #
 ################

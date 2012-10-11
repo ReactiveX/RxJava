@@ -17,22 +17,20 @@ unSnapshotVersion.dependsOn checkUpdateNeeded
 checkUpdateNeeded.dependsOn checkCommitNeeded
 checkCommitNeeded.dependsOn initScmPlugin
 
-// Call out to compile against internal repository
-task uploadArtifactory(type: GradleBuild) {
-    startParameter = project.gradle.startParameter.newInstance()
-    startParameter.addInitScript( file('gradle/netflix-oss.gradle') )
-    startParameter.getExcludedTaskNames().add('check')
-    tasks = [ 'build', 'artifactoryPublish' ]
+[
+    uploadIvyLocal: 'uploadLocal', 
+    uploadArtifactory: 'artifactoryPublish', // Call out to compile against internal repository
+    buildWithArtifactory: 'build' // Build against internal repository
+].each { key, value ->
+    // Call out to compile against internal repository
+    task "${key}"(type: GradleBuild) {
+        startParameter = project.gradle.startParameter.newInstance()
+        startParameter.addInitScript( file('gradle/netflix-oss.gradle') )
+        startParameter.getExcludedTaskNames().add('check')
+        tasks = [ 'build', value ]
+    }
 }
 task releaseArtifactory(dependsOn: [checkSnapshotDependencies, uploadArtifactory])
-
-
-task buildWithArtifactory(type: GradleBuild) {
-    startParameter = project.gradle.startParameter.newInstance()
-    startParameter.addInitScript( file('gradle/netflix-oss.gradle') )
-    startParameter.getExcludedTaskNames().add('check')
-    tasks = [ 'build' ]
-}
 
 // Ensure upload happens before taggging but after all pre-checks
 releaseArtifactory.dependsOn checkSnapshotDependencies
