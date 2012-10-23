@@ -14,23 +14,40 @@ subprojects { project ->
 
     task sourcesJar(type: Jar, dependsOn:classes) {
         from sourceSets.main.allSource
+        classifier 'sources'
+        extension 'jar'
     }
 
     task javadocJar(type: Jar, dependsOn:javadoc) {
         from javadoc.destinationDir
+        classifier 'javadoc'
+        extension 'jar'
     }
 
     configurations.add('sources')
     configurations.add('javadoc')
+    configurations.archives {
+        extendsFrom configurations.sources
+        extendsFrom configurations.javadoc
+    }
+
+    // When outputing to an Ivy repo, we want to use the proper type field
+    gradle.taskGraph.whenReady {
+        def isNotMaven = !it.hasTask(project.uploadMavenCentral)
+        if (isNotMaven) {
+            def artifacts = project.configurations.sources.artifacts
+            def sourceArtifact = artifacts.iterator().next()
+            sourceArtifact.type = 'sources'
+        }
+    }
 
     artifacts {
         sources(sourcesJar) {
-            type 'source'
-            classifier 'sources'
+            // Weird Gradle quirk where type will be used for the extension, but only for sources
+            type 'jar'
         }
         javadoc(javadocJar) {
             type 'javadoc'
-            classifier 'javadoc'
         }
     }
 
