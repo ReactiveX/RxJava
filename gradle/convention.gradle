@@ -54,6 +54,20 @@ subprojects { project ->
     // Ensure output is on a new line
     javadoc.doFirst { println "" }
 
+    configurations {
+        provided {
+            description = 'much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive.'
+            transitive = false
+            visible = false
+        }
+    }
+
+    project.sourceSets {
+        main.compileClasspath += project.configurations.provided
+        main.runtimeClasspath -= project.configurations.provided
+        test.compileClasspath += project.configurations.provided
+        test.runtimeClasspath += project.configurations.provided
+    }
 }
 
 task aggregateJavadoc(type: Javadoc) {
