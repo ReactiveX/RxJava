@@ -57,8 +57,8 @@ subprojects { project ->
     configurations {
         provided {
             description = 'much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive.'
-            transitive = false
-            visible = false
+            transitive = true
+            visible = true
         }
     }
 
