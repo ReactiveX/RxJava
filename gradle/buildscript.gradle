@@ -1,0 +1,13 @@
+// Executed in context of buildscript
+repositories {
+    // Repo in addition to maven central
+    maven {
+        name 'build-repo'
+        url 'https://raw.github.com/Netflix-Skunkworks/build-repo/master/releases/' // gradle-release/gradle-release/1.0-SNAPSHOT/gradle-release-1.0-SNAPSHOT.jar
+    }
+}
+dependencies {
+    classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.6.0'
+    classpath 'com.mapvine:gradle-cobertura-plugin:0.1'
+    classpath 'gradle-release:gradle-release:1.0-SNAPSHOT'
+}

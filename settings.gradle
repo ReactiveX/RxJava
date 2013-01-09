@@ -1,0 +1,2 @@
+rootProject.name='gradle-template-multi' // TEMPLATE: Change this
+include 'template-client','template-server'

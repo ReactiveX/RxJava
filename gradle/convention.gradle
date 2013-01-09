@@ -1,0 +1,83 @@
+
+// For Artifactory
+rootProject.status = version.contains('-SNAPSHOT')?'snapshot':'release'
+
+subprojects { project ->
+    apply plugin: 'java' // Plugin as major conventions
+
+    version = rootProject.version
+
+    sourceCompatibility = 1.6
+
+    // GRADLE-2087 workaround, perform after java plugin
+    status = rootProject.status
+
+    task sourcesJar(type: Jar, dependsOn:classes) {
+        from sourceSets.main.allSource
+        classifier 'sources'
+        extension 'jar'
+    }
+
+    task javadocJar(type: Jar, dependsOn:javadoc) {
+        from javadoc.destinationDir
+        classifier 'javadoc'
+        extension 'jar'
+    }
+
+    configurations.add('sources')
+    configurations.add('javadoc')
+    configurations.archives {
+        extendsFrom configurations.sources
+        extendsFrom configurations.javadoc
+    }
+
+    // When outputing to an Ivy repo, we want to use the proper type field
+    gradle.taskGraph.whenReady {
+        def isNotMaven = !it.hasTask(project.uploadMavenCentral)
+        if (isNotMaven) {
+            def artifacts = project.configurations.sources.artifacts
+            def sourceArtifact = artifacts.iterator().next()
+            sourceArtifact.type = 'sources'
+        }
+    }
+
+    artifacts {
+        sources(sourcesJar) {
+            // Weird Gradle quirk where type will be used for the extension, but only for sources
+            type 'jar'
+        }
+        javadoc(javadocJar) {
+            type 'javadoc'
+        }
+    }
+
+    // Ensure output is on a new line
+    javadoc.doFirst { println "" }
+
+    configurations {
+        provided {
+            description = 'much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive.'
+            transitive = true
+            visible = true
+        }
+    }
+
+    project.sourceSets {
+        main.compileClasspath += project.configurations.provided
+        main.runtimeClasspath -= project.configurations.provided
+        test.compileClasspath += project.configurations.provided
+        test.runtimeClasspath += project.configurations.provided
+    }
+}
+
+task aggregateJavadoc(type: Javadoc) {
+    description = 'Aggregate all subproject docs into a single docs directory'
+    source subprojects.collect {project -> project.sourceSets.main.allJava }
+    classpath = files(subprojects.collect {project -> project.sourceSets.main.compileClasspath})
+    destinationDir = new File(projectDir, 'doc')
+}
+
+// Generate wrapper, which is distributed as part of source to alleviate the need of installing gradle
+task createWrapper(type: Wrapper) {
+    gradleVersion = '1.1'
+}

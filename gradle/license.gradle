@@ -1,0 +1,9 @@
+// Dependency for plugin was set in buildscript.gradle
+
+subprojects {
+apply plugin: 'license' //nl.javadude.gradle.plugins.license.LicensePlugin
+license {
+    header rootProject.file('codequality/HEADER')
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+}
+}
