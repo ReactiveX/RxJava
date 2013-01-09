@@ -1,0 +1,27 @@
+<body>
+	<p>A library that enables subscribing to and composing asynchronous events and
+		callbacks.</p>
+	<p>The Watchable/Watcher interfaces and associated operators (in
+		the .operations package) are inspired by and attempt to conform to the
+		Reactive Rx library in Microsoft .Net.</p>
+	<p>
+		More information can be found at <a
+			href="http://msdn.microsoft.com/en-us/data/gg577609">http://msdn.microsoft.com/en-us/data/gg577609</a>.
+	</p>
+
+
+	<p>Compared with the Microsoft implementation:
+	<ul>
+		<li>Watchable == IObservable</li>
+		<li>Watcher == IObserver</li>
+		<li>WatchableSubscription == IDisposable</li>
+		<li>WatchableExtensions == Observable</li>
+	</ul>
+	</p>
+	<p>Services which intend on exposing data asynchronously and wish
+		to allow reactive processing and composition can implement the
+		Watchable interface which then allows Watchers to subscribe to them
+		and receive events.</p>
+	<p>Usage examples can be found on the Watchable and Watcher
+		classes.</p>
+</body>
