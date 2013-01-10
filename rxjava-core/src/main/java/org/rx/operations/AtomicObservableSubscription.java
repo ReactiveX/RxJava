@@ -5,23 +5,22 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.rx.reactive.IDisposable;
-
+import org.rx.reactive.Subscription;
 
 /**
- * Thread-safe wrapper around WatchableSubscription that ensures unsubscribe can be called only once.
+ * Thread-safe wrapper around ObservableSubscription that ensures unsubscribe can be called only once.
  */
 @ThreadSafe
-/* package */class AtomicWatchableSubscription implements IDisposable {
+/* package */final class AtomicObservableSubscription implements Subscription {
 
-    private AtomicReference<IDisposable> actualSubscription = new AtomicReference<IDisposable>();
+    private AtomicReference<Subscription> actualSubscription = new AtomicReference<Subscription>();
     private AtomicBoolean unsubscribed = new AtomicBoolean(false);
 
-    public AtomicWatchableSubscription() {
+    public AtomicObservableSubscription() {
 
     }
 
-    public AtomicWatchableSubscription(IDisposable actualSubscription) {
+    public AtomicObservableSubscription(Subscription actualSubscription) {
         this.actualSubscription.set(actualSubscription);
     }
 
@@ -32,7 +31,7 @@ import org.rx.reactive.IDisposable;
      * @throws IllegalStateException
      *             if trying to set more than once (or use this method after setting via constructor)
      */
-    public AtomicWatchableSubscription setActual(IDisposable actualSubscription) {
+    public AtomicObservableSubscription setActual(Subscription actualSubscription) {
         if (!this.actualSubscription.compareAndSet(null, actualSubscription)) {
             throw new IllegalStateException("Can not set subscription more than once.");
         }
@@ -42,7 +41,7 @@ import org.rx.reactive.IDisposable;
     @Override
     public void unsubscribe() {
         // get the real thing and set to null in an atomic operation so we will only ever call unsubscribe once
-        IDisposable actual = actualSubscription.getAndSet(null);
+        Subscription actual = actualSubscription.getAndSet(null);
         // if it's not null we will unsubscribe
         if (actual != null) {
             actual.unsubscribe();

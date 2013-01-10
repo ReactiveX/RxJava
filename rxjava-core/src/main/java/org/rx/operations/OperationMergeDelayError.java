@@ -14,51 +14,51 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.rx.reactive.AbstractIObservable;
 import org.rx.reactive.CompositeException;
-import org.rx.reactive.IObservable;
-import org.rx.reactive.IDisposable;
-import org.rx.reactive.IObserver;
-
+import org.rx.reactive.Observable;
+import org.rx.reactive.Observer;
+import org.rx.reactive.Subscription;
 
 /**
- * Same functionality as OperationMerge except that onError events will be skipped so that all onNext calls are passed on until all sequences finish with onComplete or onError, and then the first onError received (if any) will be passed on.
+ * Same functionality as OperationMerge except that onError events will be skipped so that all onNext calls are passed on until all sequences finish with onComplete or onError, and then the first
+ * onError received (if any) will be passed on.
  * <p>
  * This allows retrieving all successful onNext calls without being blocked by an onError early in a sequence.
  * <p>
  * NOTE: If this is used on an infinite stream it will never call onError and effectively will swallow errors.
  */
-/* package */class OperationMergeDelayError {
+public final class OperationMergeDelayError {
 
     /**
-     * Flattens the observable sequences from the list of IObservables into one observable sequence without any transformation and delays any onError calls until after all sequences have called onError or onComplete so as to allow all successful
+     * Flattens the observable sequences from the list of Observables into one observable sequence without any transformation and delays any onError calls until after all sequences have called
+     * onError or onComplete so as to allow all successful
      * onNext calls to be received.
      * 
      * @param source
      *            An observable sequence of elements to project.
-     * @return An observable sequence whose elements are the result of flattening the output from the list of IObservables.
+     * @return An observable sequence whose elements are the result of flattening the output from the list of Observables.
      * @see http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx
      */
-    public static <T> IObservable<T> mergeDelayError(final IObservable<IObservable<T>> sequences) {
-        // wrap in a Watchable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new AbstractIObservable<T>() {
+    public static <T> Observable<T> mergeDelayError(final Observable<Observable<T>> sequences) {
+        // wrap in a Observable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
+        return new Observable<T>() {
 
             @Override
-            public IDisposable subscribe(IObserver<T> watcher) {
-                AtomicWatchableSubscription s = new AtomicWatchableSubscription();
-                s.setActual(new MergeDelayErrorObservable<T>(sequences).subscribe(new AtomicWatcher<T>(watcher, s)));
+            public Subscription subscribe(Observer<T> Observer) {
+                AtomicObservableSubscription s = new AtomicObservableSubscription();
+                s.setActual(new MergeDelayErrorObservable<T>(sequences).subscribe(new AtomicObserver<T>(Observer, s)));
                 return s;
             }
         };
     }
 
-    public static <T> IObservable<T> mergeDelayError(final IObservable<T>... sequences) {
-        return mergeDelayError(new AbstractIObservable<IObservable<T>>() {
+    public static <T> Observable<T> mergeDelayError(final Observable<T>... sequences) {
+        return mergeDelayError(new Observable<Observable<T>>() {
             private volatile boolean unsubscribed = false;
 
             @Override
-            public IDisposable subscribe(IObserver<IObservable<T>> observer) {
-                for (IObservable<T> o : sequences) {
+            public Subscription subscribe(Observer<Observable<T>> observer) {
+                for (Observable<T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
                     } else {
@@ -69,7 +69,7 @@ import org.rx.reactive.IObserver;
                 if (!unsubscribed) {
                     observer.onCompleted();
                 }
-                return new IDisposable() {
+                return new Subscription() {
 
                     @Override
                     public void unsubscribe() {
@@ -81,14 +81,14 @@ import org.rx.reactive.IObserver;
         });
     }
 
-    public static <T> IObservable<T> mergeDelayError(final List<IObservable<T>> sequences) {
-        return mergeDelayError(new AbstractIObservable<IObservable<T>>() {
+    public static <T> Observable<T> mergeDelayError(final List<Observable<T>> sequences) {
+        return mergeDelayError(new Observable<Observable<T>>() {
 
             private volatile boolean unsubscribed = false;
 
             @Override
-            public IDisposable subscribe(IObserver<IObservable<T>> observer) {
-                for (IObservable<T> o : sequences) {
+            public Subscription subscribe(Observer<Observable<T>> observer) {
+                for (Observable<T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
                     } else {
@@ -100,7 +100,7 @@ import org.rx.reactive.IObserver;
                     observer.onCompleted();
                 }
 
-                return new IDisposable() {
+                return new Subscription() {
 
                     @Override
                     public void unsubscribe() {
@@ -119,29 +119,29 @@ import org.rx.reactive.IObserver;
      * <p>
      * This should all be fine as long as it's kept as a private class and a new instance created from static factory method above.
      * <p>
-     * Note how the take() factory method above protects us from a single instance being exposed with the Watchable wrapper handling the subscribe flow.
+     * Note how the take() factory method above protects us from a single instance being exposed with the Observable wrapper handling the subscribe flow.
      * 
      * @param <T>
      */
-    private static final class MergeDelayErrorObservable<T> extends AbstractIObservable<T> {
-        private final IObservable<IObservable<T>> sequences;
-        private final Subscription ourSubscription = new Subscription();
+    private static final class MergeDelayErrorObservable<T> extends Observable<T> {
+        private final Observable<Observable<T>> sequences;
+        private final MergeSubscription ourSubscription = new MergeSubscription();
         private AtomicBoolean stopped = new AtomicBoolean(false);
         private volatile boolean parentCompleted = false;
-        private final ConcurrentHashMap<ChildWatcher, ChildWatcher> childWatchers = new ConcurrentHashMap<ChildWatcher, ChildWatcher>();
-        private final ConcurrentHashMap<ChildWatcher, IDisposable> childSubscriptions = new ConcurrentHashMap<ChildWatcher, IDisposable>();
+        private final ConcurrentHashMap<ChildObserver, ChildObserver> childObservers = new ConcurrentHashMap<ChildObserver, ChildObserver>();
+        private final ConcurrentHashMap<ChildObserver, Subscription> childSubscriptions = new ConcurrentHashMap<ChildObserver, Subscription>();
         // onErrors we received that will be delayed until everything is completed and then sent
         private ConcurrentLinkedQueue<Exception> onErrorReceived = new ConcurrentLinkedQueue<Exception>();
 
-        private MergeDelayErrorObservable(IObservable<IObservable<T>> sequences) {
+        private MergeDelayErrorObservable(Observable<Observable<T>> sequences) {
             this.sequences = sequences;
         }
 
-        public IDisposable subscribe(IObserver<T> actualWatcher) {
+        public Subscription subscribe(Observer<T> actualObserver) {
             /**
-             * Subscribe to the parent Watchable to get to the children Watchables
+             * Subscribe to the parent Observable to get to the children Observables
              */
-            sequences.subscribe(new ParentWatcher(actualWatcher));
+            sequences.subscribe(new ParentObserver(actualObserver));
 
             /* return our subscription to allow unsubscribing */
             return ourSubscription;
@@ -152,7 +152,7 @@ import org.rx.reactive.IObserver;
          * <p>
          * Also has the stop() method returning a boolean so callers know if their thread "won" and should perform further actions.
          */
-        private class Subscription implements IDisposable {
+        private class MergeSubscription implements Subscription {
 
             @Override
             public void unsubscribe() {
@@ -164,7 +164,7 @@ import org.rx.reactive.IObserver;
                 boolean didSet = stopped.compareAndSet(false, true);
                 if (didSet) {
                     // this thread won the race to stop, so unsubscribe from the actualSubscription
-                    for (IDisposable _s : childSubscriptions.values()) {
+                    for (Subscription _s : childSubscriptions.values()) {
                         _s.unsubscribe();
                     }
                     return true;
@@ -176,15 +176,15 @@ import org.rx.reactive.IObserver;
         }
 
         /**
-         * Subscribe to the top level Watchable to receive the sequence of Watchable<T> children.
+         * Subscribe to the top level Observable to receive the sequence of Observable<T> children.
          * 
          * @param <T>
          */
-        private class ParentWatcher implements IObserver<IObservable<T>> {
-            private final IObserver<T> actualWatcher;
+        private class ParentObserver implements Observer<Observable<T>> {
+            private final Observer<T> actualObserver;
 
-            public ParentWatcher(IObserver<T> actualWatcher) {
-                this.actualWatcher = actualWatcher;
+            public ParentObserver(Observer<T> actualObserver) {
+                this.actualObserver = actualObserver;
             }
 
             @Override
@@ -194,18 +194,18 @@ import org.rx.reactive.IObserver;
                 // but will let the child worry about it
                 // if however this completes and there are no children processing, then we will send onCompleted
 
-                if (childWatchers.size() == 0) {
+                if (childObservers.size() == 0) {
                     if (!stopped.get()) {
                         if (ourSubscription.stop()) {
                             if (onErrorReceived.size() == 1) {
-                                // an onError was received from 1 ChildWatcher so we now send it as a delayed error
-                                actualWatcher.onError(onErrorReceived.peek());
+                                // an onError was received from 1 ChildObserver so we now send it as a delayed error
+                                actualObserver.onError(onErrorReceived.peek());
                             } else if (onErrorReceived.size() > 1) {
-                                // an onError was received from more than 1 ChildWatcher so we now send it as a delayed error
-                                actualWatcher.onError(new CompositeException(onErrorReceived));
+                                // an onError was received from more than 1 ChildObserver so we now send it as a delayed error
+                                actualObserver.onError(new CompositeException(onErrorReceived));
                             } else {
                                 // no delayed error so send onCompleted
-                                actualWatcher.onCompleted();
+                                actualObserver.onCompleted();
                             }
                         }
                     }
@@ -214,55 +214,55 @@ import org.rx.reactive.IObserver;
 
             @Override
             public void onError(Exception e) {
-                actualWatcher.onError(e);
+                actualObserver.onError(e);
             }
 
             @Override
-            public void onNext(IObservable<T> childWatchable) {
+            public void onNext(Observable<T> childObservable) {
                 if (stopped.get()) {
                     // we won't act on any further items
                     return;
                 }
 
-                if (childWatchable == null) {
-                    throw new IllegalArgumentException("Watchable<T> can not be null.");
+                if (childObservable == null) {
+                    throw new IllegalArgumentException("Observable<T> can not be null.");
                 }
 
                 /**
-                 * For each child Watchable we receive we'll subscribe with a separate Watcher
-                 * that will each then forward their sequences to the actualWatcher.
+                 * For each child Observable we receive we'll subscribe with a separate Observer
+                 * that will each then forward their sequences to the actualObserver.
                  * <p>
-                 * We use separate child watchers for each sequence to simplify the onComplete/onError handling so each sequence has its own lifecycle.
+                 * We use separate child Observers for each sequence to simplify the onComplete/onError handling so each sequence has its own lifecycle.
                  */
-                ChildWatcher _w = new ChildWatcher(actualWatcher);
-                childWatchers.put(_w, _w);
-                IDisposable _subscription = childWatchable.subscribe(_w);
-                // remember this watcher and the subscription from it
+                ChildObserver _w = new ChildObserver(actualObserver);
+                childObservers.put(_w, _w);
+                Subscription _subscription = childObservable.subscribe(_w);
+                // remember this Observer and the subscription from it
                 childSubscriptions.put(_w, _subscription);
             }
         }
 
         /**
-         * Subscribe to each child Watchable<T> and forward their sequence of data to the actualWatcher
+         * Subscribe to each child Observable<T> and forward their sequence of data to the actualObserver
          * 
          */
-        private class ChildWatcher implements IObserver<T> {
+        private class ChildObserver implements Observer<T> {
 
-            private final IObserver<T> actualWatcher;
+            private final Observer<T> actualObserver;
             private volatile boolean finished = false;
 
-            public ChildWatcher(IObserver<T> actualWatcher) {
-                this.actualWatcher = actualWatcher;
+            public ChildObserver(Observer<T> actualObserver) {
+                this.actualObserver = actualObserver;
             }
 
             @Override
             public void onCompleted() {
-                // remove self from map of watchers
-                childWatchers.remove(this);
-                // if there are now 0 watchers left, so if the parent is also completed we send the onComplete to the actualWatcher
-                // if the parent is not complete that means there is another sequence (and child watcher) to come
+                // remove self from map of Observers
+                childObservers.remove(this);
+                // if there are now 0 Observers left, so if the parent is also completed we send the onComplete to the actualObserver
+                // if the parent is not complete that means there is another sequence (and child Observer) to come
                 if (!stopped.get()) {
-                    finishWatcher();
+                    finishObserver();
                 }
             }
 
@@ -270,39 +270,39 @@ import org.rx.reactive.IObserver;
             public void onError(Exception e) {
                 if (!stopped.get()) {
                     onErrorReceived.add(e);
-                    // mark this ChildWatcher as done
-                    childWatchers.remove(this);
-                    // but do NOT forward to actualWatcher as we want other ChildWatchers to continue until completion
+                    // mark this ChildObserver as done
+                    childObservers.remove(this);
+                    // but do NOT forward to actualObserver as we want other ChildObservers to continue until completion
                     // and we'll delay the sending of onError until all others are done
 
                     // we mark finished==true as a safety to ensure that if further calls to onNext occur we ignore them
                     finished = true;
 
                     // check for whether the parent is completed and if so then perform the 'finishing' actions
-                    finishWatcher();
+                    finishObserver();
                 }
             }
 
             /**
-             * onComplete and onError when called need to check for the parent being complete and if so send the onCompleted or onError to the actualWatcher.
+             * onComplete and onError when called need to check for the parent being complete and if so send the onCompleted or onError to the actualObserver.
              * <p>
              * This does NOT get invoked if synchronous execution occurs, but will when asynchronously executing.
              * <p>
              * TestCase testErrorDelayed4WithThreading specifically tests this use case.
              */
-            private void finishWatcher() {
-                if (childWatchers.size() == 0 && parentCompleted) {
+            private void finishObserver() {
+                if (childObservers.size() == 0 && parentCompleted) {
                     if (ourSubscription.stop()) {
                         // this thread 'won' the race to unsubscribe/stop so let's send onError or onCompleted
                         if (onErrorReceived.size() == 1) {
-                            // an onError was received from 1 ChildWatcher so we now send it as a delayed error
-                            actualWatcher.onError(onErrorReceived.peek());
+                            // an onError was received from 1 ChildObserver so we now send it as a delayed error
+                            actualObserver.onError(onErrorReceived.peek());
                         } else if (onErrorReceived.size() > 1) {
-                            // an onError was received from more than 1 ChildWatcher so we now send it as a delayed error
-                            actualWatcher.onError(new CompositeException(onErrorReceived));
+                            // an onError was received from more than 1 ChildObserver so we now send it as a delayed error
+                            actualObserver.onError(new CompositeException(onErrorReceived));
                         } else {
                             // no delayed error so send onCompleted
-                            actualWatcher.onCompleted();
+                            actualObserver.onCompleted();
                         }
                     }
                 }
@@ -310,10 +310,10 @@ import org.rx.reactive.IObserver;
 
             @Override
             public void onNext(T args) {
-                // in case the Watchable is poorly behaved and doesn't listen to the unsubscribe request
+                // in case the Observable is poorly behaved and doesn't listen to the unsubscribe request
                 // we'll ignore anything that comes in after we've unsubscribed or an onError has been received and delayed
                 if (!stopped.get() && !finished) {
-                    actualWatcher.onNext(args);
+                    actualObserver.onNext(args);
                 }
             }
 
@@ -322,7 +322,7 @@ import org.rx.reactive.IObserver;
 
     public static class UnitTest {
         @Mock
-        IObserver<String> stringObserver;
+        Observer<String> stringObserver;
 
         @Before
         public void before() {
@@ -331,11 +331,11 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testErrorDelayed1() {
-            final IObservable<String> o1 = new TestErrorWatchable("four", null, "six"); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
-            final IObservable<String> o2 = new TestErrorWatchable("one", "two", "three");
+            final Observable<String> o1 = new TestErrorObservable("four", null, "six"); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+            final Observable<String> o2 = new TestErrorObservable("one", "two", "three");
 
             @SuppressWarnings("unchecked")
-            IObservable<String> m = mergeDelayError(o1, o2);
+            Observable<String> m = mergeDelayError(o1, o2);
             m.subscribe(stringObserver);
 
             verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -350,13 +350,13 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testErrorDelayed2() {
-            final IObservable<String> o1 = new TestErrorWatchable("one", "two", "three");
-            final IObservable<String> o2 = new TestErrorWatchable("four", null, "six"); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
-            final IObservable<String> o3 = new TestErrorWatchable("seven", "eight", null);
-            final IObservable<String> o4 = new TestErrorWatchable("nine");
+            final Observable<String> o1 = new TestErrorObservable("one", "two", "three");
+            final Observable<String> o2 = new TestErrorObservable("four", null, "six"); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+            final Observable<String> o3 = new TestErrorObservable("seven", "eight", null);
+            final Observable<String> o4 = new TestErrorObservable("nine");
 
             @SuppressWarnings("unchecked")
-            IObservable<String> m = mergeDelayError(o1, o2, o3, o4);
+            Observable<String> m = mergeDelayError(o1, o2, o3, o4);
             m.subscribe(stringObserver);
 
             verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -374,13 +374,13 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testErrorDelayed3() {
-            final IObservable<String> o1 = new TestErrorWatchable("one", "two", "three");
-            final IObservable<String> o2 = new TestErrorWatchable("four", "five", "six");
-            final IObservable<String> o3 = new TestErrorWatchable("seven", "eight", null);
-            final IObservable<String> o4 = new TestErrorWatchable("nine");
+            final Observable<String> o1 = new TestErrorObservable("one", "two", "three");
+            final Observable<String> o2 = new TestErrorObservable("four", "five", "six");
+            final Observable<String> o3 = new TestErrorObservable("seven", "eight", null);
+            final Observable<String> o4 = new TestErrorObservable("nine");
 
             @SuppressWarnings("unchecked")
-            IObservable<String> m = mergeDelayError(o1, o2, o3, o4);
+            Observable<String> m = mergeDelayError(o1, o2, o3, o4);
             m.subscribe(stringObserver);
 
             verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -398,13 +398,13 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testErrorDelayed4() {
-            final IObservable<String> o1 = new TestErrorWatchable("one", "two", "three");
-            final IObservable<String> o2 = new TestErrorWatchable("four", "five", "six");
-            final IObservable<String> o3 = new TestErrorWatchable("seven", "eight");
-            final IObservable<String> o4 = new TestErrorWatchable("nine", null);
+            final Observable<String> o1 = new TestErrorObservable("one", "two", "three");
+            final Observable<String> o2 = new TestErrorObservable("four", "five", "six");
+            final Observable<String> o3 = new TestErrorObservable("seven", "eight");
+            final Observable<String> o4 = new TestErrorObservable("nine", null);
 
             @SuppressWarnings("unchecked")
-            IObservable<String> m = mergeDelayError(o1, o2, o3, o4);
+            Observable<String> m = mergeDelayError(o1, o2, o3, o4);
             m.subscribe(stringObserver);
 
             verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -422,14 +422,14 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testErrorDelayed4WithThreading() {
-            final TestAsyncErrorWatchable o1 = new TestAsyncErrorWatchable("one", "two", "three");
-            final TestAsyncErrorWatchable o2 = new TestAsyncErrorWatchable("four", "five", "six");
-            final TestAsyncErrorWatchable o3 = new TestAsyncErrorWatchable("seven", "eight");
+            final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
+            final TestAsyncErrorObservable o2 = new TestAsyncErrorObservable("four", "five", "six");
+            final TestAsyncErrorObservable o3 = new TestAsyncErrorObservable("seven", "eight");
             // throw the error at the very end so no onComplete will be called after it
-            final TestAsyncErrorWatchable o4 = new TestAsyncErrorWatchable("nine", null);
+            final TestAsyncErrorObservable o4 = new TestAsyncErrorObservable("nine", null);
 
             @SuppressWarnings("unchecked")
-            IObservable<String> m = mergeDelayError(o1, o2, o3, o4);
+            Observable<String> m = mergeDelayError(o1, o2, o3, o4);
             m.subscribe(stringObserver);
 
             try {
@@ -456,11 +456,11 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testCompositeErrorDelayed1() {
-            final IObservable<String> o1 = new TestErrorWatchable("four", null, "six"); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
-            final IObservable<String> o2 = new TestErrorWatchable("one", "two", null);
+            final Observable<String> o1 = new TestErrorObservable("four", null, "six"); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+            final Observable<String> o2 = new TestErrorObservable("one", "two", null);
 
             @SuppressWarnings("unchecked")
-            IObservable<String> m = mergeDelayError(o1, o2);
+            Observable<String> m = mergeDelayError(o1, o2);
             m.subscribe(stringObserver);
 
             verify(stringObserver, times(1)).onError(any(CompositeException.class));
@@ -475,12 +475,12 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testCompositeErrorDelayed2() {
-            final IObservable<String> o1 = new TestErrorWatchable("four", null, "six"); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
-            final IObservable<String> o2 = new TestErrorWatchable("one", "two", null);
+            final Observable<String> o1 = new TestErrorObservable("four", null, "six"); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+            final Observable<String> o2 = new TestErrorObservable("one", "two", null);
 
             @SuppressWarnings("unchecked")
-            IObservable<String> m = mergeDelayError(o1, o2);
-            CaptureWatcher w = new CaptureWatcher();
+            Observable<String> m = mergeDelayError(o1, o2);
+            CaptureObserver w = new CaptureObserver();
             m.subscribe(w);
 
             assertNotNull(w.e);
@@ -499,19 +499,19 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testMergeObservableOfObservables() {
-            final IObservable<String> o1 = new TestSynchronousWatchable();
-            final IObservable<String> o2 = new TestSynchronousWatchable();
+            final Observable<String> o1 = new TestSynchronousObservable();
+            final Observable<String> o2 = new TestSynchronousObservable();
 
-            IObservable<IObservable<String>> observableOfObservables = new AbstractIObservable<IObservable<String>>() {
+            Observable<Observable<String>> observableOfObservables = new Observable<Observable<String>>() {
 
                 @Override
-                public IDisposable subscribe(IObserver<IObservable<String>> observer) {
+                public Subscription subscribe(Observer<Observable<String>> observer) {
                     // simulate what would happen in an observable
                     observer.onNext(o1);
                     observer.onNext(o2);
                     observer.onCompleted();
 
-                    return new IDisposable() {
+                    return new Subscription() {
 
                         @Override
                         public void unsubscribe() {
@@ -522,7 +522,7 @@ import org.rx.reactive.IObserver;
                 }
 
             };
-            IObservable<String> m = mergeDelayError(observableOfObservables);
+            Observable<String> m = mergeDelayError(observableOfObservables);
             m.subscribe(stringObserver);
 
             verify(stringObserver, never()).onError(any(Exception.class));
@@ -532,11 +532,11 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testMergeArray() {
-            final IObservable<String> o1 = new TestSynchronousWatchable();
-            final IObservable<String> o2 = new TestSynchronousWatchable();
+            final Observable<String> o1 = new TestSynchronousObservable();
+            final Observable<String> o2 = new TestSynchronousObservable();
 
             @SuppressWarnings("unchecked")
-            IObservable<String> m = mergeDelayError(o1, o2);
+            Observable<String> m = mergeDelayError(o1, o2);
             m.subscribe(stringObserver);
 
             verify(stringObserver, never()).onError(any(Exception.class));
@@ -546,13 +546,13 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testMergeList() {
-            final IObservable<String> o1 = new TestSynchronousWatchable();
-            final IObservable<String> o2 = new TestSynchronousWatchable();
-            List<IObservable<String>> listOfObservables = new ArrayList<IObservable<String>>();
+            final Observable<String> o1 = new TestSynchronousObservable();
+            final Observable<String> o2 = new TestSynchronousObservable();
+            List<Observable<String>> listOfObservables = new ArrayList<Observable<String>>();
             listOfObservables.add(o1);
             listOfObservables.add(o2);
 
-            IObservable<String> m = mergeDelayError(listOfObservables);
+            Observable<String> m = mergeDelayError(listOfObservables);
             m.subscribe(stringObserver);
 
             verify(stringObserver, never()).onError(any(Exception.class));
@@ -562,12 +562,12 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testUnSubscribe() {
-            TestWatchable tA = new TestWatchable();
-            TestWatchable tB = new TestWatchable();
+            TestObservable tA = new TestObservable();
+            TestObservable tB = new TestObservable();
 
             @SuppressWarnings("unchecked")
-            IObservable<String> m = mergeDelayError(tA, tB);
-            IDisposable s = m.subscribe(stringObserver);
+            Observable<String> m = mergeDelayError(tA, tB);
+            Subscription s = m.subscribe(stringObserver);
 
             tA.sendOnNext("Aone");
             tB.sendOnNext("Bone");
@@ -589,11 +589,11 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testMergeArrayWithThreading() {
-            final TestASynchronousWatchable o1 = new TestASynchronousWatchable();
-            final TestASynchronousWatchable o2 = new TestASynchronousWatchable();
+            final TestASynchronousObservable o1 = new TestASynchronousObservable();
+            final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
             @SuppressWarnings("unchecked")
-            IObservable<String> m = mergeDelayError(o1, o2);
+            Observable<String> m = mergeDelayError(o1, o2);
             m.subscribe(stringObserver);
 
             try {
@@ -608,15 +608,15 @@ import org.rx.reactive.IObserver;
             verify(stringObserver, times(1)).onCompleted();
         }
 
-        private static class TestSynchronousWatchable extends AbstractIObservable<String> {
+        private static class TestSynchronousObservable extends Observable<String> {
 
             @Override
-            public IDisposable subscribe(IObserver<String> observer) {
+            public Subscription subscribe(Observer<String> observer) {
 
                 observer.onNext("hello");
                 observer.onCompleted();
 
-                return new IDisposable() {
+                return new Subscription() {
 
                     @Override
                     public void unsubscribe() {
@@ -627,11 +627,11 @@ import org.rx.reactive.IObserver;
             }
         }
 
-        private static class TestASynchronousWatchable extends AbstractIObservable<String> {
+        private static class TestASynchronousObservable extends Observable<String> {
             Thread t;
 
             @Override
-            public IDisposable subscribe(final IObserver<String> observer) {
+            public Subscription subscribe(final Observer<String> observer) {
                 t = new Thread(new Runnable() {
 
                     @Override
@@ -643,7 +643,7 @@ import org.rx.reactive.IObserver;
                 });
                 t.start();
 
-                return new IDisposable() {
+                return new Subscription() {
 
                     @Override
                     public void unsubscribe() {
@@ -655,13 +655,13 @@ import org.rx.reactive.IObserver;
         }
 
         /**
-         * A Watchable that doesn't do the right thing on UnSubscribe/Error/etc in that it will keep sending events down the pipe regardless of what happens.
+         * A Observable that doesn't do the right thing on UnSubscribe/Error/etc in that it will keep sending events down the pipe regardless of what happens.
          */
-        private static class TestWatchable extends AbstractIObservable<String> {
+        private static class TestObservable extends Observable<String> {
 
-            IObserver<String> observer = null;
+            Observer<String> observer = null;
             volatile boolean unsubscribed = false;
-            IDisposable s = new IDisposable() {
+            Subscription s = new Subscription() {
 
                 @Override
                 public void unsubscribe() {
@@ -671,7 +671,7 @@ import org.rx.reactive.IObserver;
 
             };
 
-            public TestWatchable() {
+            public TestObservable() {
             }
 
             /* used to simulate subscription */
@@ -691,22 +691,22 @@ import org.rx.reactive.IObserver;
             }
 
             @Override
-            public IDisposable subscribe(final IObserver<String> observer) {
+            public Subscription subscribe(final Observer<String> observer) {
                 this.observer = observer;
                 return s;
             }
         }
 
-        private static class TestErrorWatchable extends AbstractIObservable<String> {
+        private static class TestErrorObservable extends Observable<String> {
 
             String[] valuesToReturn;
 
-            TestErrorWatchable(String... values) {
+            TestErrorObservable(String... values) {
                 valuesToReturn = values;
             }
 
             @Override
-            public IDisposable subscribe(IObserver<String> observer) {
+            public Subscription subscribe(Observer<String> observer) {
                 boolean errorThrown = false;
                 for (String s : valuesToReturn) {
                     if (s == null) {
@@ -723,7 +723,7 @@ import org.rx.reactive.IObserver;
                     observer.onCompleted();
                 }
 
-                return new IDisposable() {
+                return new Subscription() {
 
                     @Override
                     public void unsubscribe() {
@@ -734,18 +734,18 @@ import org.rx.reactive.IObserver;
             }
         }
 
-        private static class TestAsyncErrorWatchable extends AbstractIObservable<String> {
+        private static class TestAsyncErrorObservable extends Observable<String> {
 
             String[] valuesToReturn;
 
-            TestAsyncErrorWatchable(String... values) {
+            TestAsyncErrorObservable(String... values) {
                 valuesToReturn = values;
             }
 
             Thread t;
 
             @Override
-            public IDisposable subscribe(final IObserver<String> observer) {
+            public Subscription subscribe(final Observer<String> observer) {
                 t = new Thread(new Runnable() {
 
                     @Override
@@ -771,7 +771,7 @@ import org.rx.reactive.IObserver;
                 });
                 t.start();
 
-                return new IDisposable() {
+                return new Subscription() {
 
                     @Override
                     public void unsubscribe() {
@@ -782,7 +782,7 @@ import org.rx.reactive.IObserver;
             }
         }
 
-        private static class CaptureWatcher implements IObserver<String> {
+        private static class CaptureObserver implements Observer<String> {
             volatile Exception e;
 
             @Override

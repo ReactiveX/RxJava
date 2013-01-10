@@ -6,21 +6,19 @@ import java.util.List;
 import java.util.Vector;
 
 import org.junit.Test;
-import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IObservable;
 import org.rx.reactive.Notification;
-import org.rx.reactive.IDisposable;
-import org.rx.reactive.IObserver;
-
+import org.rx.reactive.Observable;
+import org.rx.reactive.Observer;
+import org.rx.reactive.Subscription;
 
 /**
  * Materializes the implicit notifications of an observable sequence as explicit notification values.
  * <p>
- * In other words, converts a sequence of OnNext, OnError and OnCompleted events into a sequence of WatchableNotifications containing the OnNext, OnError and OnCompleted values.
+ * In other words, converts a sequence of OnNext, OnError and OnCompleted events into a sequence of ObservableNotifications containing the OnNext, OnError and OnCompleted values.
  * <p>
  * See http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx for the Microsoft Rx equivalent.
  */
-public class OperationMaterialize {
+public final class OperationMaterialize {
 
     /**
      * Materializes the implicit notifications of an observable sequence as explicit notification values.
@@ -30,40 +28,40 @@ public class OperationMaterialize {
      * @return An observable sequence whose elements are the result of materializing the notifications of the given sequence.
      * @see http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx
      */
-    public static <T> IObservable<Notification<T>> materialize(final IObservable<T> sequence) {
-        return new MaterializeWatchable<T>(sequence);
+    public static <T> Observable<Notification<T>> materialize(final Observable<T> sequence) {
+        return new MaterializeObservable<T>(sequence);
     }
 
-    private static class MaterializeWatchable<T> extends AbstractIObservable<Notification<T>> {
+    private static class MaterializeObservable<T> extends Observable<Notification<T>> {
 
-        private final IObservable<T> sequence;
+        private final Observable<T> sequence;
 
-        public MaterializeWatchable(IObservable<T> sequence) {
+        public MaterializeObservable(Observable<T> sequence) {
             this.sequence = sequence;
         }
 
         @Override
-        public IDisposable subscribe(IObserver<Notification<T>> watcher) {
-            final AtomicWatchableSubscription subscription = new AtomicWatchableSubscription();
-            final IObserver<Notification<T>> atomicWatcher = new AtomicWatcher<Notification<T>>(watcher, subscription);
+        public Subscription subscribe(Observer<Notification<T>> Observer) {
+            final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+            final Observer<Notification<T>> atomicObserver = new AtomicObserver<Notification<T>>(Observer, subscription);
 
-            subscription.setActual(sequence.subscribe(new IObserver<T>() {
+            subscription.setActual(sequence.subscribe(new Observer<T>() {
 
                 @Override
                 public void onCompleted() {
-                    atomicWatcher.onNext(new Notification<T>());
-                    atomicWatcher.onCompleted();
+                    atomicObserver.onNext(new Notification<T>());
+                    atomicObserver.onCompleted();
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    atomicWatcher.onNext(new Notification<T>(e));
-                    atomicWatcher.onCompleted();
+                    atomicObserver.onNext(new Notification<T>(e));
+                    atomicObserver.onCompleted();
                 }
 
                 @Override
                 public void onNext(T value) {
-                    atomicWatcher.onNext(new Notification<T>(value));
+                    atomicObserver.onNext(new Notification<T>(value));
                 }
 
             }));
@@ -77,11 +75,11 @@ public class OperationMaterialize {
         @Test
         public void testMaterialize1() {
             // null will cause onError to be triggered before "three" can be returned
-            final TestAsyncErrorWatchable o1 = new TestAsyncErrorWatchable("one", "two", null, "three");
+            final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", null, "three");
 
-            TestWatcher watcher = new TestWatcher();
-            IObservable<Notification<String>> m = materialize(o1);
-            m.subscribe(watcher);
+            TestObserver Observer = new TestObserver();
+            Observable<Notification<String>> m = materialize(o1);
+            m.subscribe(Observer);
 
             try {
                 o1.t.join();
@@ -89,24 +87,24 @@ public class OperationMaterialize {
                 throw new RuntimeException(e);
             }
 
-            assertFalse(watcher.onError);
-            assertTrue(watcher.onCompleted);
-            assertEquals(3, watcher.notifications.size());
-            assertEquals("one", watcher.notifications.get(0).getValue());
-            assertTrue(watcher.notifications.get(0).isOnNext());
-            assertEquals("two", watcher.notifications.get(1).getValue());
-            assertTrue(watcher.notifications.get(1).isOnNext());
-            assertEquals(NullPointerException.class, watcher.notifications.get(2).getException().getClass());
-            assertTrue(watcher.notifications.get(2).isOnError());
+            assertFalse(Observer.onError);
+            assertTrue(Observer.onCompleted);
+            assertEquals(3, Observer.notifications.size());
+            assertEquals("one", Observer.notifications.get(0).getValue());
+            assertTrue(Observer.notifications.get(0).isOnNext());
+            assertEquals("two", Observer.notifications.get(1).getValue());
+            assertTrue(Observer.notifications.get(1).isOnNext());
+            assertEquals(NullPointerException.class, Observer.notifications.get(2).getException().getClass());
+            assertTrue(Observer.notifications.get(2).isOnError());
         }
 
         @Test
         public void testMaterialize2() {
-            final TestAsyncErrorWatchable o1 = new TestAsyncErrorWatchable("one", "two", "three");
+            final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
 
-            TestWatcher watcher = new TestWatcher();
-            IObservable<Notification<String>> m = materialize(o1);
-            m.subscribe(watcher);
+            TestObserver Observer = new TestObserver();
+            Observable<Notification<String>> m = materialize(o1);
+            m.subscribe(Observer);
 
             try {
                 o1.t.join();
@@ -114,29 +112,29 @@ public class OperationMaterialize {
                 throw new RuntimeException(e);
             }
 
-            assertFalse(watcher.onError);
-            assertTrue(watcher.onCompleted);
-            assertEquals(4, watcher.notifications.size());
-            assertEquals("one", watcher.notifications.get(0).getValue());
-            assertTrue(watcher.notifications.get(0).isOnNext());
-            assertEquals("two", watcher.notifications.get(1).getValue());
-            assertTrue(watcher.notifications.get(1).isOnNext());
-            assertEquals("three", watcher.notifications.get(2).getValue());
-            assertTrue(watcher.notifications.get(2).isOnNext());
-            assertTrue(watcher.notifications.get(3).isOnCompleted());
+            assertFalse(Observer.onError);
+            assertTrue(Observer.onCompleted);
+            assertEquals(4, Observer.notifications.size());
+            assertEquals("one", Observer.notifications.get(0).getValue());
+            assertTrue(Observer.notifications.get(0).isOnNext());
+            assertEquals("two", Observer.notifications.get(1).getValue());
+            assertTrue(Observer.notifications.get(1).isOnNext());
+            assertEquals("three", Observer.notifications.get(2).getValue());
+            assertTrue(Observer.notifications.get(2).isOnNext());
+            assertTrue(Observer.notifications.get(3).isOnCompleted());
         }
 
         @Test
         public void testMultipleSubscribes() {
-            final TestAsyncErrorWatchable o1 = new TestAsyncErrorWatchable("one", "two", null, "three");
+            final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", null, "three");
 
-            IObservable<Notification<String>> m = materialize(o1);
+            Observable<Notification<String>> m = materialize(o1);
 
-            TestWatcher watcher1 = new TestWatcher();
-            m.subscribe(watcher1);
+            TestObserver Observer1 = new TestObserver();
+            m.subscribe(Observer1);
 
-            TestWatcher watcher2 = new TestWatcher();
-            m.subscribe(watcher2);
+            TestObserver Observer2 = new TestObserver();
+            m.subscribe(Observer2);
 
             try {
                 o1.t.join();
@@ -144,13 +142,13 @@ public class OperationMaterialize {
                 throw new RuntimeException(e);
             }
 
-            assertEquals(3, watcher1.notifications.size());
-            assertEquals(3, watcher2.notifications.size());
+            assertEquals(3, Observer1.notifications.size());
+            assertEquals(3, Observer2.notifications.size());
         }
 
     }
 
-    private static class TestWatcher implements IObserver<Notification<String>> {
+    private static class TestObserver implements Observer<Notification<String>> {
 
         boolean onCompleted = false;
         boolean onError = false;
@@ -173,18 +171,18 @@ public class OperationMaterialize {
 
     }
 
-    private static class TestAsyncErrorWatchable extends AbstractIObservable<String> {
+    private static class TestAsyncErrorObservable extends Observable<String> {
 
         String[] valuesToReturn;
 
-        TestAsyncErrorWatchable(String... values) {
+        TestAsyncErrorObservable(String... values) {
             valuesToReturn = values;
         }
 
         Thread t;
 
         @Override
-        public IDisposable subscribe(final IObserver<String> observer) {
+        public Subscription subscribe(final Observer<String> observer) {
             t = new Thread(new Runnable() {
 
                 @Override
@@ -210,7 +208,7 @@ public class OperationMaterialize {
             });
             t.start();
 
-            return new IDisposable() {
+            return new Subscription() {
 
                 @Override
                 public void unsubscribe() {

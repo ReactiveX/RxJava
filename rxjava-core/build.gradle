@@ -1,6 +1,10 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
+// we want to target Java 1.5 so this can be used on Android
+sourceCompatibility = JavaVersion.VERSION_1_5
+targetCompatibility = JavaVersion.VERSION_1_5
+
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.0'
     compile 'com.google.code.findbugs:jsr305:2.0.0'
