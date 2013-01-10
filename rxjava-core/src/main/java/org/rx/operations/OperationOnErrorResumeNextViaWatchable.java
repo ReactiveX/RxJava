@@ -8,10 +8,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IObservable;
 import org.rx.reactive.IDisposable;
+import org.rx.reactive.IObservable;
 import org.rx.reactive.IObserver;
-
 
 final class OperationOnErrorResumeNextViaWatchable<T> extends AbstractIObservable<T> {
     private final IObservable<T> resumeSequence;

@@ -19,10 +19,9 @@ import org.rx.functions.Func4;
 import org.rx.functions.FuncN;
 import org.rx.functions.Functions;
 import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IObservable;
 import org.rx.reactive.IDisposable;
+import org.rx.reactive.IObservable;
 import org.rx.reactive.IObserver;
-
 
 class OperationCombineLatest {
 

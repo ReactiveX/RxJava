@@ -16,13 +16,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.rx.reactive.AbstractIObservable;
 import org.rx.reactive.CompositeException;
-import org.rx.reactive.IObservable;
 import org.rx.reactive.IDisposable;
+import org.rx.reactive.IObservable;
 import org.rx.reactive.IObserver;
 
-
 /**
- * Same functionality as OperationMerge except that onError events will be skipped so that all onNext calls are passed on until all sequences finish with onComplete or onError, and then the first onError received (if any) will be passed on.
+ * Same functionality as OperationMerge except that onError events will be skipped so that all onNext calls are passed on until all sequences finish with onComplete or onError, and then the first
+ * onError received (if any) will be passed on.
  * <p>
  * This allows retrieving all successful onNext calls without being blocked by an onError early in a sequence.
  * <p>
@@ -31,7 +31,8 @@ import org.rx.reactive.IObserver;
 /* package */class OperationMergeDelayError {
 
     /**
-     * Flattens the observable sequences from the list of IObservables into one observable sequence without any transformation and delays any onError calls until after all sequences have called onError or onComplete so as to allow all successful
+     * Flattens the observable sequences from the list of IObservables into one observable sequence without any transformation and delays any onError calls until after all sequences have called
+     * onError or onComplete so as to allow all successful
      * onNext calls to be received.
      * 
      * @param source

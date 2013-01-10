@@ -6,13 +6,13 @@ import java.util.Map;
 import org.rx.functions.Func1;
 import org.rx.functions.Func2;
 
-
 /**
  * The Watchable interface that implements the Reactive Pattern.
  * The documentation for this interface makes use of marble diagrams. The following legend explains
  * these diagrams:
  * <p>
- * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.legend&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.legend.png"></a>
+ * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.legend&ceoid=27321465&key=API&pageId=27321465"><img
+ * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.legend.png"></a>
  */
 
 public interface IObservable<T> {
@@ -40,18 +40,19 @@ public interface IObservable<T> {
      * 
      * @param watcher
      * @return a <code>WatchableSubscription</code> reference to an interface that allows observers
-     * to stop receiving notifications before the provider has finished sending them
+     *         to stop receiving notifications before the provider has finished sending them
      */
     public IDisposable subscribe(IObserver<T> watcher);
 
     /**
      * Filters a Watchable by discarding any of its emissions that do not meet some test.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.filter&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.filter.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.filter&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.filter.png"></a>
+     * 
      * @param callback
-     *        a closure that evaluates the items emitted by the source watchable, returning
-     *        <code>true</code> if they pass the filter
+     *            a closure that evaluates the items emitted by the source watchable, returning
+     *            <code>true</code> if they pass the filter
      * @return a watchable that emits only those items in the original watchable that the filter
      *         evaluates as "true"
      */
@@ -60,11 +61,12 @@ public interface IObservable<T> {
     /**
      * Filters a Watchable by discarding any of its emissions that do not meet some test.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.filter&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.filter.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.filter&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.filter.png"></a>
      * 
      * @param predicate
-     *        a closure that evaluates the items emitted by the source watchable, returning
-     *        <code>true</code> if they pass the filter
+     *            a closure that evaluates the items emitted by the source watchable, returning
+     *            <code>true</code> if they pass the filter
      * @return a watchable that emits only those items in the original watchable that the filter
      *         evaluates as <code>true</code>
      */
@@ -74,7 +76,8 @@ public interface IObservable<T> {
      * Converts a Watchable that emits a sequence of objects into one that only emits the last
      * object in this sequence before completing.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.last&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.last.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.last&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.last.png"></a>
      * 
      * @return a Watchable that emits only the last item emitted by the original watchable
      */
@@ -84,8 +87,9 @@ public interface IObservable<T> {
      * Applies a closure of your choosing to every item emitted by a Watchable, and returns this
      * transformation as a new Watchable sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.map&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.map.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.map&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.map.png"></a>
+     * 
      * @param callback
      *            a closure to apply to each item in the sequence.
      * @return a Watchable that emits a sequence that is the result of applying the transformation
@@ -97,8 +101,9 @@ public interface IObservable<T> {
      * Applies a closure of your choosing to every item emitted by a Watchable, and returns this
      * transformation as a new Watchable sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.map&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.map.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.map&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.map.png"></a>
+     * 
      * @param func
      *            a closure to apply to each item in the sequence.
      * @return a Watchable that emits a sequence that is the result of applying the transformation
@@ -112,8 +117,9 @@ public interface IObservable<T> {
      * then merges the results of that closure applied to every item emitted by the original
      * Watchable, emitting these merged results as its own sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mapmany&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mapMany.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mapmany&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mapMany.png"></a>
+     * 
      * @param callback
      *            a closure to apply to each item in the sequence that returns a Watchable.
      * @return a Watchable that emits a sequence that is the result of applying the transformation'
@@ -128,8 +134,9 @@ public interface IObservable<T> {
      * then merges the results of that closure applied to every item emitted by the original
      * Watchable, emitting these merged results as its own sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mapmany&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mapMany.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mapmany&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mapMany.png"></a>
+     * 
      * @param func
      *            a closure to apply to each item in the sequence, that returns a Watchable.
      * @return a Watchable that emits a sequence that is the result of applying the transformation
@@ -137,21 +144,22 @@ public interface IObservable<T> {
      *         Watchables obtained from this transformation.
      */
     public <R> IObservable<R> mapMany(Func1<IObservable<R>, T> func);
-    
-     /**
-      * Materializes the implicit notifications of this observable sequence as explicit notification values.
-      * <p>
-      * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.materialize&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.materialize.png"></a>
-      *
-      * @return An observable sequence whose elements are the result of materializing the notifications of the given sequence.
-      * @see http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx
-      */
-     public IObservable<Notification<T>> materialize();
+
+    /**
+     * Materializes the implicit notifications of this observable sequence as explicit notification values.
+     * <p>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.materialize&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.materialize.png"></a>
+     * 
+     * @return An observable sequence whose elements are the result of materializing the notifications of the given sequence.
+     * @see http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx
+     */
+    public IObservable<Notification<T>> materialize();
 
     /**
      * Instruct a Watchable to pass control to another Watchable rather than calling
      * <code>onError</code> if it encounters an error.
-     *
+     * 
      * By default, when a Watchable encounters an error that prevents it from emitting the expected
      * item to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and
      * then quits without calling any more of its Watcher's closures. The
@@ -162,11 +170,13 @@ public interface IObservable<T> {
      * <code>resumeSequence</code> which will call the Watcher's <code>onNext</code> method if it
      * is able to do so. In such a case, because no Watchable necessarily invokes
      * <code>onError</code>, the Watcher may never know that an error happened.
-     *
+     * 
      * You can use this to prevent errors from propagating or to supply fallback data should errors
      * be encountered.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.onerrorresumenext&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.onerrorresumenext.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.onerrorresumenext&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.onerrorresumenext.png"></a>
+     * 
      * @param resumeSequence
      * @return the original watchable, with appropriately modified behavior
      */
@@ -174,7 +184,7 @@ public interface IObservable<T> {
 
     /**
      * Instruct a Watchable to pass control to another Watchable rather than calling <code>onError</code> if it encounters an error.
-     *
+     * 
      * By default, when a Watchable encounters an error that prevents it from emitting the expected
      * item to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and
      * then quits without calling any more of its Watcher's closures. The
@@ -189,7 +199,9 @@ public interface IObservable<T> {
      * You can use this to prevent errors from propagating or to supply fallback data should errors
      * be encountered.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.onerrorresumenext&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.onerrorresumenext.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.onerrorresumenext&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.onerrorresumenext.png"></a>
+     * 
      * @param resumeFunction
      * @return the original watchable, with appropriately modified behavior
      */
@@ -198,7 +210,7 @@ public interface IObservable<T> {
     /**
      * Instruct a Watchable to emit a particular item rather than calling <code>onError</code> if
      * it encounters an error.
-     *
+     * 
      * By default, when a Watchable encounters an error that prevents it from emitting the expected
      * item to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and
      * then quits without calling any more of its Watcher's closures. The
@@ -213,7 +225,9 @@ public interface IObservable<T> {
      * You can use this to prevent errors from propagating or to supply fallback data should errors
      * be encountered.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.onerrorresumenext&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.onerrorresumenext.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.onerrorresumenext&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.onerrorresumenext.png"></a>
+     * 
      * @param resumeFunction
      * @return the original watchable with appropriately modified behavior
      */
@@ -222,30 +236,7 @@ public interface IObservable<T> {
     /**
      * Instruct a Watchable to emit a particular item rather than calling <code>onError</code> if
      * it encounters an error.
-     *
-     * By default, when a Watchable encounters an error that prevents it from emitting the expected
-     * object to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and
-     * then quits without calling any more of its Watcher's closures. The
-     * <code>onErrorReturn</code> method changes this behavior. If you pass a closure
-     * (<code>resumeFunction</code>) to a Watchable's <code>onErrorReturn</code> method, if the
-     * original Watchable encounters an error, instead of calling its Watcher's
-     * <code>onError</code> closure, it will instead call pass the return value of
-     * <code>resumeFunction</code> to the Watcher's <code>onNext</code> method.
-     *
-     * You can use this to prevent errors from propagating or to supply fallback data should errors
-     * be encountered.
-     * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.onerrorreturn&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.onerrorreturn.png"></a>
-     *
-     * @param resumeFunction
-     * @return the original watchable with appropriately modified behavior
-     */
-    public IObservable<T> onErrorReturn(Func1<T, Exception> resumeFunction);
-
-    /**
-     * Instruct a Watchable to emit a particular item rather than calling <code>onError</code> if
-     * it encounters an error.
-     *
+     * 
      * By default, when a Watchable encounters an error that prevents it from emitting the expected
      * object to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and
      * then quits without calling any more of its Watcher's closures. The
@@ -258,8 +249,33 @@ public interface IObservable<T> {
      * You can use this to prevent errors from propagating or to supply fallback data should errors
      * be encountered.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.onerrorreturn&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.onerrorreturn.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.onerrorreturn&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.onerrorreturn.png"></a>
+     * 
+     * @param resumeFunction
+     * @return the original watchable with appropriately modified behavior
+     */
+    public IObservable<T> onErrorReturn(Func1<T, Exception> resumeFunction);
+
+    /**
+     * Instruct a Watchable to emit a particular item rather than calling <code>onError</code> if
+     * it encounters an error.
+     * 
+     * By default, when a Watchable encounters an error that prevents it from emitting the expected
+     * object to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and
+     * then quits without calling any more of its Watcher's closures. The
+     * <code>onErrorReturn</code> method changes this behavior. If you pass a closure
+     * (<code>resumeFunction</code>) to a Watchable's <code>onErrorReturn</code> method, if the
+     * original Watchable encounters an error, instead of calling its Watcher's
+     * <code>onError</code> closure, it will instead call pass the return value of
+     * <code>resumeFunction</code> to the Watcher's <code>onNext</code> method.
+     * 
+     * You can use this to prevent errors from propagating or to supply fallback data should errors
+     * be encountered.
+     * <p>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.onerrorreturn&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.onerrorreturn.png"></a>
+     * 
      * @param that
      * @param resumeFunction
      * @return the original watchable with appropriately modified behavior
@@ -272,23 +288,22 @@ public interface IObservable<T> {
      * by a Watchable into the same closure, and so on until all items have been emitted by the
      * source Watchable, emitting the final result from the final call to your closure as its sole
      * output.
-     *<p>
+     * <p>
      * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an
      * <code>inject</code> method that does a similar operation on lists.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.png"></a>
+     * 
      * @param accumulator
-     *         An accumulator closure to be invoked on each element from the sequence, whose result
-     *         will be used in the next accumulator call (if applicable).
+     *            An accumulator closure to be invoked on each element from the sequence, whose result
+     *            will be used in the next accumulator call (if applicable).
      * 
      * @return An observable sequence with a single element from the result of accumulating the
      *         output from the list of Watchables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN:
-     *      Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold
-     *      (higher-order function)</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
+     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public IObservable<T> reduce(Func2<T, T, T> accumulator);
 
@@ -298,16 +313,17 @@ public interface IObservable<T> {
      * by a Watchable into the same closure, and so on until all items have been emitted by the
      * source Watchable, emitting the final result from the final call to your closure as its sole
      * output.
-     *<p>
+     * <p>
      * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an
      * <code>inject</code> method that does a similar operation on lists.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.png"></a>
+     * 
      * @param accumulator
-     *         An accumulator closure to be invoked on each element from the sequence, whose result
-     *         will be used in the next accumulator call (if applicable).
+     *            An accumulator closure to be invoked on each element from the sequence, whose result
+     *            will be used in the next accumulator call (if applicable).
      * 
      * @return A Watchable that emits a single element from the result of accumulating the output
      *         from the list of Watchables.
@@ -320,15 +336,16 @@ public interface IObservable<T> {
      * Returns a Watchable that applies a closure of your choosing to the first item emitted by a
      * source Watchable, then feeds the result of that closure along with the second item emitted
      * by a Watchable into the same closure, and so on until all items have been emitted by the
-     * source Watchable, emitting the final result from the final call to your closure as its sole 
+     * source Watchable, emitting the final result from the final call to your closure as its sole
      * output.
      * <p>
      * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an
      * <code>inject</code> method that does a similar operation on lists.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.png"></a>
+     * 
      * @param initialValue
      *            The initial (seed) accumulator value.
      * @param accumulator
@@ -337,10 +354,8 @@ public interface IObservable<T> {
      * 
      * @return A Watchable that emits a single element from the result of accumulating the output
      *         from the list of Watchables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN:
-     *      Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold
-     *      (higher-order function)</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
+     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public IObservable<T> reduce(T initialValue, Func2<T, T, T> accumulator);
 
@@ -355,8 +370,9 @@ public interface IObservable<T> {
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an
      * <code>inject</code> method that does a similar operation on lists.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.png"></a>
+     * 
      * @param initialValue
      *            The initial (seed) accumulator value.
      * @param accumulator
@@ -364,10 +380,8 @@ public interface IObservable<T> {
      *            result will be used in the next accumulator call (if applicable).
      * @return A Watchable that emits a single element from the result of accumulating the output
      *         from the list of Watchables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN:
-     *      Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold
-     *      (higher-order function)</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
+     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public IObservable<T> reduce(T initialValue, Object accumulator);
 
@@ -379,16 +393,16 @@ public interface IObservable<T> {
      * each of these iterations as a sequence from the returned Watchable. This sort of closure is
      * sometimes called an accumulator.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/showgliffyeditor.action?name=marble.scan.noseed&ceoid=27321465&key=API&pageId=27321465&t=marble.scan.noseed"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.noseed.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/showgliffyeditor.action?name=marble.scan.noseed&ceoid=27321465&key=API&pageId=27321465&t=marble.scan.noseed"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.noseed.png"></a>
+     * 
      * @param accumulator
      *            An accumulator closure to be invoked on each element from the sequence whose
      *            result will be sent via <code>onNext</code> and used in the next accumulator call
      *            (if applicable).
      * @return A Watchable sequence whose elements are the result of accumulating the output from
      *         the list of Watchables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN:
-     *      Observable.Scan</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
     public IObservable<T> scan(Func2<T, T, T> accumulator);
 
@@ -400,8 +414,9 @@ public interface IObservable<T> {
      * each of these iterations as a sequence from the returned Watchable. This sort of closure is
      * sometimes called an accumulator.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/showgliffyeditor.action?name=marble.scan.noseed&ceoid=27321465&key=API&pageId=27321465&t=marble.scan.noseed"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.noseed.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/showgliffyeditor.action?name=marble.scan.noseed&ceoid=27321465&key=API&pageId=27321465&t=marble.scan.noseed"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.noseed.png"></a>
+     * 
      * @param accumulator
      *            An accumulator closure to be invoked on each element from the sequence whose
      *            result will be sent via <code>onNext</code> and used in the next accumulator call
@@ -409,8 +424,7 @@ public interface IObservable<T> {
      * 
      * @return A Watchable sequence whose elements are the result of accumulating the output from
      *         the list of Watchables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN:
-     *      Observable.Scan</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
     public IObservable<T> scan(Object accumulator);
 
@@ -421,18 +435,18 @@ public interface IObservable<T> {
      * source Watchable, emitting the result of each of these iterations. This sort of closure is
      * sometimes called an accumulator.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.scan&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.scan&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.png"></a>
+     * 
      * @param initialValue
-     *        The initial (seed) accumulator value.
+     *            The initial (seed) accumulator value.
      * @param accumulator
-     *        An accumulator closure to be invoked on each element from the sequence whose
-     *        result will be sent via <code>onNext</code> and used in the next accumulator call
-     *        (if applicable).
+     *            An accumulator closure to be invoked on each element from the sequence whose
+     *            result will be sent via <code>onNext</code> and used in the next accumulator call
+     *            (if applicable).
      * @return A Watchable sequence whose elements are the result of accumulating the output from
      *         the list of Watchables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN:
-     *      Observable.Scan</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
     public IObservable<T> scan(T initialValue, Func2<T, T, T> accumulator);
 
@@ -443,14 +457,15 @@ public interface IObservable<T> {
      * third item into the same closure, and so on, emitting the result of each of these
      * iterations. This sort of closure is sometimes called an accumulator.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.scan&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.scan&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.png"></a>
+     * 
      * @param initialValue
-     *        The initial (seed) accumulator value.
+     *            The initial (seed) accumulator value.
      * @param accumulator
-     *        An accumulator closure to be invoked on each element from the sequence whose result
-     *        will be sent via <code>onNext</code> and used in the next accumulator call (if
-     *        applicable).
+     *            An accumulator closure to be invoked on each element from the sequence whose result
+     *            will be sent via <code>onNext</code> and used in the next accumulator call (if
+     *            applicable).
      * @return A Watchable sequence whose elements are the result of accumulating the output from
      *         the list of Watchables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
@@ -463,10 +478,11 @@ public interface IObservable<T> {
      * You can ignore the first <code>num</code> items emitted by a watchable and attend only to
      * those items that come after, by modifying the watchable with the <code>skip</code> method.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.skip&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.skip.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.skip&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.skip.png"></a>
+     * 
      * @param num
-     *        The number of items to skip
+     *            The number of items to skip
      * @return A Watchable sequence that is identical to the source Watchable except that it does
      *         not emit the first <code>num</code> items from that sequence.
      */
@@ -490,14 +506,15 @@ public interface IObservable<T> {
     /**
      * Returns a Watchable that emits the first <code>num</code> items emitted by the source
      * Watchable.
-     *
+     * 
      * You can choose to pay attention only to the first <code>num</code> values emitted by a
      * Watchable by calling its <code>take</code> method. This method returns a Watchable that will
      * call a subscribing Watcher's <code>onNext</code> closure a maximum of <code>num</code> times
      * before calling <code>onCompleted</code>.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.take&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.take.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.take&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.take.png"></a>
+     * 
      * @param num
      * @return a Watchable that emits only the first <code>num</code> items from the source
      *         watchable, or all of the items from the source Watchable if that Watchable emits
@@ -508,7 +525,7 @@ public interface IObservable<T> {
     /**
      * Returns a Watchable that emits a single item, a list composed of all the items emitted by
      * the source Watchable.
-     *
+     * 
      * Normally, a Watchable that returns multiple items will do so by calling its Watcher's
      * <code>onNext</code> closure for each such item. You can change this behavior, instructing
      * the Watchable to compose a list of all of these multiple items and then to call the
@@ -516,42 +533,46 @@ public interface IObservable<T> {
      * Watchable object's <code>toList</code> method prior to calling its <code>subscribe</code>
      * method.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolist&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolist.png"></a>
-     *
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolist&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolist.png"></a>
+     * 
      * @return a Watchable that emits a single item: a List containing all of the items emitted by
      *         the source Watchable.
      */
     public IObservable<List<T>> toList();
-    
-     /**
-      * Sort T objects by their natural order (object must implement Comparable).
-      * <p>
-      * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolistsorted&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolistsorted.png"></a>
-      * 
-      * @throws ClassCastException
-      *             if T objects do not implement Comparable
-      * @return
-      */
-     public IObservable<List<T>> toSortedList();
 
-     /**
-      * Sort T objects using the defined sort function.
-      * <p>
-      * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolistsorted&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolistsorted.png"></a>
-      * 
-      * @param sortFunction
-      * @return
-      */
-     public IObservable<List<T>> toSortedList(Func2<Integer, T, T> sortFunction);
+    /**
+     * Sort T objects by their natural order (object must implement Comparable).
+     * <p>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolistsorted&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolistsorted.png"></a>
+     * 
+     * @throws ClassCastException
+     *             if T objects do not implement Comparable
+     * @return
+     */
+    public IObservable<List<T>> toSortedList();
 
-     /**
-      * Sort T objects using the defined sort function.
-      * <p>
-      * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolistsorted&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolistsorted.png"></a>
-      * 
-      * @param sortFunction
-      * @return
-      */
-     public IObservable<List<T>> toSortedList(final Object sortFunction);
+    /**
+     * Sort T objects using the defined sort function.
+     * <p>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolistsorted&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolistsorted.png"></a>
+     * 
+     * @param sortFunction
+     * @return
+     */
+    public IObservable<List<T>> toSortedList(Func2<Integer, T, T> sortFunction);
+
+    /**
+     * Sort T objects using the defined sort function.
+     * <p>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolistsorted&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolistsorted.png"></a>
+     * 
+     * @param sortFunction
+     * @return
+     */
+    public IObservable<List<T>> toSortedList(final Object sortFunction);
 
 }

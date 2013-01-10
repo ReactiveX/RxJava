@@ -7,11 +7,10 @@ import java.util.Vector;
 
 import org.junit.Test;
 import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IObservable;
-import org.rx.reactive.Notification;
 import org.rx.reactive.IDisposable;
+import org.rx.reactive.IObservable;
 import org.rx.reactive.IObserver;
-
+import org.rx.reactive.Notification;
 
 /**
  * Materializes the implicit notifications of an observable sequence as explicit notification values.

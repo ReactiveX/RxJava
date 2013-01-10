@@ -11,10 +11,9 @@ import org.junit.Test;
 import org.rx.functions.Func1;
 import org.rx.reactive.AbstractIObservable;
 import org.rx.reactive.CompositeException;
-import org.rx.reactive.IObservable;
 import org.rx.reactive.IDisposable;
+import org.rx.reactive.IObservable;
 import org.rx.reactive.IObserver;
-
 
 /**
  * When an onError occurs the resumeFunction will be executed and it's response passed to onNext instead of calling onError.

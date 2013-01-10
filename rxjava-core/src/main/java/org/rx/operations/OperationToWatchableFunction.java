@@ -6,10 +6,9 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.rx.functions.Func1;
 import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IObservable;
 import org.rx.reactive.IDisposable;
+import org.rx.reactive.IObservable;
 import org.rx.reactive.IObserver;
-
 
 /**
  * Accepts a Function and makes it into a Watchable.
@@ -20,7 +19,7 @@ import org.rx.reactive.IObserver;
  * @see WatchableExtensions.toWatchable
  * @see WatchableExtensions.create
  */
-/* package */ class OperationToWatchableFunction<T> extends AbstractIObservable<T> {
+/* package */class OperationToWatchableFunction<T> extends AbstractIObservable<T> {
     private final Func1<IDisposable, IObserver<T>> func;
 
     OperationToWatchableFunction(Func1<IDisposable, IObserver<T>> func) {

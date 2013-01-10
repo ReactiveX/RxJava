@@ -1,5 +1,6 @@
 package org.rx.reactive;
 
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
@@ -18,7 +19,6 @@ import org.rx.functions.Func2;
 import org.rx.functions.Functions;
 import org.rx.operations.OperationMaterialize;
 import org.rx.operations.WatchableExtensions;
-
 
 /**
  * Abstract parent class to provide common functionality of classes implementing the Watchable<T> interface.
@@ -175,7 +175,8 @@ public abstract class AbstractIObservable<T> implements IObservable<T> {
     }
 
     /**
-     * Helper method which acts as a synonym to <code>execute(APIServiceCallback<T> callback)</code> so that groovy can pass in a closure without the <code>as com.netflix.api.service.APIServiceCallback</code> at the end of it.
+     * Helper method which acts as a synonym to <code>execute(APIServiceCallback<T> callback)</code> so that groovy can pass in a closure without the <code>as
+     * com.netflix.api.service.APIServiceCallback</code> at the end of it.
      * 
      * @param callbacks
      */

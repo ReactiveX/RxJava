@@ -7,7 +7,6 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import org.rx.reactive.IDisposable;
 
-
 /**
  * Thread-safe wrapper around WatchableSubscription that ensures unsubscribe can be called only once.
  */

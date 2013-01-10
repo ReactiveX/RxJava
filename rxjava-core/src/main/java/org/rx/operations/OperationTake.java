@@ -8,10 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IObservable;
 import org.rx.reactive.IDisposable;
+import org.rx.reactive.IObservable;
 import org.rx.reactive.IObserver;
-
 
 /**
  * Returns a specified number of contiguous values from the start of an observable sequence.

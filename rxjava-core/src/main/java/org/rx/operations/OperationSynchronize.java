@@ -5,10 +5,9 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IObservable;
 import org.rx.reactive.IDisposable;
+import org.rx.reactive.IObservable;
 import org.rx.reactive.IObserver;
-
 
 /**
  * An observable that wraps an observable of the same type and then enforces the semantics

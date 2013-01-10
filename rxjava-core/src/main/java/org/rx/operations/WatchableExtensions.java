@@ -20,11 +20,10 @@ import org.rx.functions.Func3;
 import org.rx.functions.Func4;
 import org.rx.functions.Functions;
 import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IObservable;
-import org.rx.reactive.Notification;
 import org.rx.reactive.IDisposable;
+import org.rx.reactive.IObservable;
 import org.rx.reactive.IObserver;
-
+import org.rx.reactive.Notification;
 
 /**
  * A set of methods for creating, combining, and consuming Watchables.
@@ -35,7 +34,8 @@ import org.rx.reactive.IObserver;
  * <p>
  * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
  * <p>
- * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.legend&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.legend.png"></a>
+ * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.legend&ceoid=27321465&key=API&pageId=27321465"><img
+ * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.legend.png"></a>
  * 
  * @see <a href="https://confluence.corp.netflix.com/display/API/Watchers%2C+Watchables%2C+and+the+Reactive+Pattern">API.Next Programmer's Guide: Watchers, Watchables, and the Reactive Pattern</a>
  * @see <a href="http://www.scala-lang.org/api/current/index.html#scala.collection.Seq">scala.collection: Seq</a>
@@ -95,8 +95,10 @@ public class WatchableExtensions {
     /**
      * Creates a Watchable that will execute the given function when a Watcher subscribes to it.
      * <p>
-     * You can create a simple Watchable from scratch by using the <code>create</code> method. You pass this method a closure that accepts as a parameter the map of closures that a Watcher passes to a Watchable's <code>subscribe</code> method. Write
-     * the closure you pass to <code>create</code> so that it behaves as a Watchable - calling the passed-in <code>onNext</code>, <code>onError</code>, and <code>onCompleted</code> methods appropriately.
+     * You can create a simple Watchable from scratch by using the <code>create</code> method. You pass this method a closure that accepts as a parameter the map of closures that a Watcher passes to a
+     * Watchable's <code>subscribe</code> method. Write
+     * the closure you pass to <code>create</code> so that it behaves as a Watchable - calling the passed-in <code>onNext</code>, <code>onError</code>, and <code>onCompleted</code> methods
+     * appropriately.
      * <p>
      * A well-formed Watchable must call either the Watcher's <code>onCompleted</code> method exactly once or its <code>onError</code> method exactly once.
      * 
@@ -115,8 +117,10 @@ public class WatchableExtensions {
     /**
      * Creates a Watchable that will execute the given function when a Watcher subscribes to it.
      * <p>
-     * You can create a simple Watchable from scratch by using the <code>create</code> method. You pass this method a closure that accepts as a parameter the map of closures that a Watcher passes to a Watchable's <code>subscribe</code> method. Write
-     * the closure you pass to <code>create</code> so that it behaves as a Watchable - calling the passed-in <code>onNext</code>, <code>onError</code>, and <code>onCompleted</code> methods appropriately.
+     * You can create a simple Watchable from scratch by using the <code>create</code> method. You pass this method a closure that accepts as a parameter the map of closures that a Watcher passes to a
+     * Watchable's <code>subscribe</code> method. Write
+     * the closure you pass to <code>create</code> so that it behaves as a Watchable - calling the passed-in <code>onNext</code>, <code>onError</code>, and <code>onCompleted</code> methods
+     * appropriately.
      * <p>
      * A well-formed Watchable must call either the Watcher's <code>onCompleted</code> method exactly once or its <code>onError</code> method exactly once.
      * 
@@ -142,7 +146,8 @@ public class WatchableExtensions {
     /**
      * Returns a Watchable that returns no data to the Watcher and immediately invokes its <code>onCompleted</code> method.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.empty&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.empty.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.empty&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.empty.png"></a>
      * 
      * @param <T>
      *            the type of item emitted by the Watchable
@@ -158,7 +163,8 @@ public class WatchableExtensions {
      * <p>
      * Note: Maps to <code>Observable.Throw</code> in Rx - throw is a reserved word in Java.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.error&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.error.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.error&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.error.png"></a>
      * 
      * @param exception
      *            the error to throw
@@ -173,7 +179,8 @@ public class WatchableExtensions {
     /**
      * Filters a Watchable by discarding any of its emissions that do not meet some test.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.filter&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.filter.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.filter&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.filter.png"></a>
      * 
      * @param that
      *            the Watchable to filter
@@ -189,7 +196,8 @@ public class WatchableExtensions {
     /**
      * Filters a Watchable by discarding any of its emissions that do not meet some test.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.filter&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.filter.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.filter&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.filter.png"></a>
      * 
      * @param that
      *            the Watchable to filter
@@ -215,12 +223,14 @@ public class WatchableExtensions {
      * <p>
      * To convert any object into a Watchable that emits that object, pass that object into the <code>just</code> method.
      * <p>
-     * This is similar to the {@link toWatchable} method, except that <code>toWatchable</code> will convert an iterable object into a Watchable that emits each of the items in the iterable, one at a time, while the <code>just</code> method would
+     * This is similar to the {@link toWatchable} method, except that <code>toWatchable</code> will convert an iterable object into a Watchable that emits each of the items in the iterable, one at a
+     * time, while the <code>just</code> method would
      * convert the iterable into a Watchable that emits the entire iterable as a single item.
      * <p>
      * This value is the equivalent of <code>Observable.Return</code> in the Reactive Extensions library.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.just&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.just.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.just&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.just.png"></a>
      * 
      * @param value
      *            the value to pass to the Watcher's <code>onNext</code> method
@@ -241,7 +251,8 @@ public class WatchableExtensions {
      * <p>
      * To convert a Watchable that emits a sequence of objects into one that only emits the last object in this sequence before completing, use the <code>last</code> method.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.last&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.last.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.last&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.last.png"></a>
      * 
      * @param that
      *            the source Watchable
@@ -256,7 +267,8 @@ public class WatchableExtensions {
      * Applies a closure of your choosing to every notification emitted by a Watchable, and returns
      * this transformation as a new Watchable sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.map&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.map.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.map&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.map.png"></a>
      * 
      * @param sequence
      *            the source Watchable
@@ -277,7 +289,8 @@ public class WatchableExtensions {
      * Applies a closure of your choosing to every notification emitted by a Watchable, and returns
      * this transformation as a new Watchable sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.map&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.map.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.map&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.map.png"></a>
      * 
      * @param sequence
      *            the source Watchable
@@ -307,7 +320,8 @@ public class WatchableExtensions {
      * and then merges the results of that closure applied to every item emitted by the original
      * Watchable, emitting these merged results as its own sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mapmany&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mapMany.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mapmany&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mapMany.png"></a>
      * 
      * @param sequence
      *            the source Watchable
@@ -332,7 +346,8 @@ public class WatchableExtensions {
      * and then merges the results of that closure applied to every item emitted by the original
      * Watchable, emitting these merged results as its own sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mapmany&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mapMany.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mapmany&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mapMany.png"></a>
      * 
      * @param sequence
      *            the source Watchable
@@ -361,7 +376,8 @@ public class WatchableExtensions {
     /**
      * Materializes the implicit notifications of an observable sequence as explicit notification values.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.materialize&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.materialize.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.materialize&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.materialize.png"></a>
      * 
      * @param source
      *            An observable sequence of elements to project.
@@ -377,7 +393,8 @@ public class WatchableExtensions {
      * without any transformation. You can combine the output of multiple Watchables so that they
      * act like a single Watchable, by using the <code>merge</code> method.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.merge&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.merge.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.merge&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.merge.png"></a>
      * 
      * @param source
      *            a list of Watchables that emit sequences of items
@@ -394,7 +411,8 @@ public class WatchableExtensions {
      * without any transformation. You can combine the output of multiple Watchables so that they
      * act like a single Watchable, by using the <code>merge</code> method.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.merge&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.merge.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.merge&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.merge.png"></a>
      * 
      * @param source
      *            a series of Watchables that emit sequences of items
@@ -411,7 +429,8 @@ public class WatchableExtensions {
      * Watchable into one Watchable sequence without any transformation. You can combine the output
      * of multiple Watchables so that they act like a single Watchable, by using the <code>merge</code> method.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.merge.W&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.merge.W.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.merge.W&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.merge.W.png"></a>
      * 
      * @param source
      *            a Watchable that emits Watchables
@@ -430,7 +449,8 @@ public class WatchableExtensions {
      * <p>
      * This enables receiving all successes from merged sequences without one onError from one sequence causing all onNext calls to be prevented.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mergeDelayError&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mergeDelayError.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mergeDelayError&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mergeDelayError.png"></a>
      * 
      * @param source
      *            a list of Watchables that emit sequences of items
@@ -449,7 +469,8 @@ public class WatchableExtensions {
      * <p>
      * This enables receiving all successes from merged sequences without one onError from one sequence causing all onNext calls to be prevented.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mergeDelayError&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mergeDelayError.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mergeDelayError&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mergeDelayError.png"></a>
      * 
      * @param source
      *            a series of Watchables that emit sequences of items
@@ -468,7 +489,8 @@ public class WatchableExtensions {
      * <p>
      * This enables receiving all successes from merged sequences without one onError from one sequence causing all onNext calls to be prevented.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mergeDelayError.W&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mergeDelayError.W.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.mergeDelayError.W&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.mergeDelayError.W.png"></a>
      * 
      * @param source
      *            a Watchable that emits Watchables
@@ -485,7 +507,8 @@ public class WatchableExtensions {
      * 
      * This observable is useful primarily for testing purposes.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.never&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.never.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.never&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.never.png"></a>
      * 
      * @param <T>
      *            the type of item (not) emitted by the Watchable
@@ -507,14 +530,18 @@ public class WatchableExtensions {
     /**
      * Instruct a Watchable to pass control to another Watchable rather than calling <code>onError</code> if it encounters an error.
      * <p>
-     * By default, when a Watchable encounters an error that prevents it from emitting the expected item to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and then quits without calling any more of its Watcher's
-     * closures. The <code>onErrorResumeNext</code> method changes this behavior. If you pass another Watchable (<code>resumeSequence</code>) to a Watchable's <code>onErrorResumeNext</code> method, if the original Watchable encounters an error,
-     * instead of calling its Watcher's <code>onError</code> closure, it will instead relinquish control to <code>resumeSequence</code> which will call the Watcher's <code>onNext</code> method if it is able to do so. In such a case, because no
+     * By default, when a Watchable encounters an error that prevents it from emitting the expected item to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and then quits
+     * without calling any more of its Watcher's
+     * closures. The <code>onErrorResumeNext</code> method changes this behavior. If you pass another Watchable (<code>resumeSequence</code>) to a Watchable's <code>onErrorResumeNext</code> method, if
+     * the original Watchable encounters an error,
+     * instead of calling its Watcher's <code>onError</code> closure, it will instead relinquish control to <code>resumeSequence</code> which will call the Watcher's <code>onNext</code> method if it
+     * is able to do so. In such a case, because no
      * Watchable necessarily invokes <code>onError</code>, the Watcher may never know that an error happened.
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be encountered.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.onerrorresumenext&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.onerrorresumenext.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.onerrorresumenext&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.onerrorresumenext.png"></a>
      * 
      * @param that
      *            the source Watchable
@@ -530,9 +557,12 @@ public class WatchableExtensions {
      * Instruct a Watchable to pass control to another Watchable (the return value of a function)
      * rather than calling <code>onError</code> if it encounters an error.
      * <p>
-     * By default, when a Watchable encounters an error that prevents it from emitting the expected item to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and then quits without calling any more of its Watcher's
-     * closures. The <code>onErrorResumeNext</code> method changes this behavior. If you pass a closure that emits a Watchable (<code>resumeFunction</code>) to a Watchable's <code>onErrorResumeNext</code> method, if the original Watchable encounters
-     * an error, instead of calling its Watcher's <code>onError</code> closure, it will instead relinquish control to this new Watchable, which will call the Watcher's <code>onNext</code> method if it is able to do so. In such a case, because no
+     * By default, when a Watchable encounters an error that prevents it from emitting the expected item to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and then quits
+     * without calling any more of its Watcher's
+     * closures. The <code>onErrorResumeNext</code> method changes this behavior. If you pass a closure that emits a Watchable (<code>resumeFunction</code>) to a Watchable's
+     * <code>onErrorResumeNext</code> method, if the original Watchable encounters
+     * an error, instead of calling its Watcher's <code>onError</code> closure, it will instead relinquish control to this new Watchable, which will call the Watcher's <code>onNext</code> method if it
+     * is able to do so. In such a case, because no
      * Watchable necessarily invokes <code>onError</code>, the Watcher may never know that an error happened.
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be encountered.
@@ -555,9 +585,12 @@ public class WatchableExtensions {
      * Instruct a Watchable to emit a particular object (as returned by a closure) to its Watcher
      * rather than calling <code>onError</code> if it encounters an error.
      * <p>
-     * By default, when a Watchable encounters an error that prevents it from emitting the expected item to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and then quits without calling any more of its Watcher's
-     * closures. The <code>onErrorResumeNext</code> method changes this behavior. If you pass a function that returns another Watchable (<code>resumeFunction</code>) to a Watchable's <code>onErrorResumeNext</code> method, if the original Watchable
-     * encounters an error, instead of calling its Watcher's <code>onError</code> closure, it will instead relinquish control to this new Watchable which will call the Watcher's <code>onNext</code> method if it is able to do so. In such a case,
+     * By default, when a Watchable encounters an error that prevents it from emitting the expected item to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and then quits
+     * without calling any more of its Watcher's
+     * closures. The <code>onErrorResumeNext</code> method changes this behavior. If you pass a function that returns another Watchable (<code>resumeFunction</code>) to a Watchable's
+     * <code>onErrorResumeNext</code> method, if the original Watchable
+     * encounters an error, instead of calling its Watcher's <code>onError</code> closure, it will instead relinquish control to this new Watchable which will call the Watcher's <code>onNext</code>
+     * method if it is able to do so. In such a case,
      * because no Watchable necessarily invokes <code>onError</code>, the Watcher may never know that an error happened.
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be encountered.
@@ -586,8 +619,10 @@ public class WatchableExtensions {
      * Instruct a Watchable to emit a particular item to its Watcher's <code>onNext</code> closure
      * rather than calling <code>onError</code> if it encounters an error.
      * <p>
-     * By default, when a Watchable encounters an error that prevents it from emitting the expected item to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and then quits without calling any more of its Watcher's
-     * closures. The <code>onErrorReturn</code> method changes this behavior. If you pass a closure (<code>resumeFunction</code>) to a Watchable's <code>onErrorReturn</code> method, if the original Watchable encounters an error, instead of calling
+     * By default, when a Watchable encounters an error that prevents it from emitting the expected item to its Watcher, the Watchable calls its Watcher's <code>onError</code> closure, and then quits
+     * without calling any more of its Watcher's
+     * closures. The <code>onErrorReturn</code> method changes this behavior. If you pass a closure (<code>resumeFunction</code>) to a Watchable's <code>onErrorReturn</code> method, if the original
+     * Watchable encounters an error, instead of calling
      * its Watcher's <code>onError</code> closure, it will instead pass the return value of <code>resumeFunction</code> to the Watcher's <code>onNext</code> method.
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be encountered.
@@ -613,9 +648,11 @@ public class WatchableExtensions {
      * source Watchable, emitting the final result from the final call to your closure as its sole
      * output.
      * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code> method that does a similar operation on lists.
+     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code>
+     * method that does a similar operation on lists.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce.noseed&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.noseed.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce.noseed&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.noseed.png"></a>
      * 
      * @param <T>
      *            the type item emitted by the source Watchable
@@ -642,9 +679,11 @@ public class WatchableExtensions {
      * source Watchable, emitting the final result from the final call to your closure as its sole
      * output.
      * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code> method that does a similar operation on lists.
+     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code>
+     * method that does a similar operation on lists.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce.noseed&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.noseed.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce.noseed&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.noseed.png"></a>
      * 
      * @param <T>
      *            the type item emitted by the source Watchable
@@ -678,9 +717,11 @@ public class WatchableExtensions {
      * source Watchable, emitting the final result from the final call to your closure as its sole
      * output.
      * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code> method that does a similar operation on lists.
+     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code>
+     * method that does a similar operation on lists.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.png"></a>
      * 
      * @param <T>
      *            the type item emitted by the source Watchable
@@ -709,9 +750,11 @@ public class WatchableExtensions {
      * source Watchable, emitting the final result from the final call to your closure as its sole
      * output.
      * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code> method that does a similar operation on lists.
+     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code>
+     * method that does a similar operation on lists.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.reduce&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.reduce.png"></a>
      * 
      * @param <T>
      *            the type item emitted by the source Watchable
@@ -745,7 +788,8 @@ public class WatchableExtensions {
      * by a Watchable into the same closure, and so on until all items have been emitted by the
      * source Watchable, emitting the result of each of these iterations as its own sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.scan.noseed&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.noseed.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.scan.noseed&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.noseed.png"></a>
      * 
      * @param <T>
      *            the type item emitted by the source Watchable
@@ -768,7 +812,8 @@ public class WatchableExtensions {
      * by a Watchable into the same closure, and so on until all items have been emitted by the
      * source Watchable, emitting the result of each of these iterations as its own sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.scan.noseed&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.noseed.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.scan.noseed&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.noseed.png"></a>
      * 
      * @param <T>
      *            the type item emitted by the source Watchable
@@ -798,7 +843,8 @@ public class WatchableExtensions {
      * by a Watchable into the same closure, and so on until all items have been emitted by the
      * source Watchable, emitting the result of each of these iterations as its own sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.scan&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.scan&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.png"></a>
      * 
      * @param <T>
      *            the type item emitted by the source Watchable
@@ -823,7 +869,8 @@ public class WatchableExtensions {
      * by a Watchable into the same closure, and so on until all items have been emitted by the
      * source Watchable, emitting the result of each of these iterations as its own sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.scan&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.scan&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.scan.png"></a>
      * 
      * @param <T>
      *            the type item emitted by the source Watchable
@@ -854,7 +901,8 @@ public class WatchableExtensions {
      * Watchable. You can ignore the first <code>num</code> items emitted by a watchable and attend
      * only to those items that come after, by modifying the watchable with the <code>skip</code> method.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.skip&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.skip.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.skip&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.skip.png"></a>
      * 
      * @param items
      *            the source Watchable
@@ -872,7 +920,8 @@ public class WatchableExtensions {
      * Accepts a Watchable and wraps it in another Watchable that ensures that the resulting
      * Watchable is chronologically well-behaved.
      * <p>
-     * A well-behaved observable ensures <code>onNext</code>, <code>onCompleted</code>, or <code>onError</code> calls to its subscribers are not interleaved, <code>onCompleted</code> and <code>onError</code> are only called once respectively, and no
+     * A well-behaved observable ensures <code>onNext</code>, <code>onCompleted</code>, or <code>onError</code> calls to its subscribers are not interleaved, <code>onCompleted</code> and
+     * <code>onError</code> are only called once respectively, and no
      * <code>onNext</code> calls follow <code>onCompleted</code> and <code>onError</code> calls.
      * 
      * @param observable
@@ -889,10 +938,12 @@ public class WatchableExtensions {
      * Returns a Watchable that emits the first <code>num</code> items emitted by the source
      * Watchable.
      * <p>
-     * You can choose to pay attention only to the first <code>num</code> values emitted by a Watchable by calling its <code>take</code> method. This method returns a Watchable that will call a subscribing Watcher's <code>onNext</code> closure a
+     * You can choose to pay attention only to the first <code>num</code> values emitted by a Watchable by calling its <code>take</code> method. This method returns a Watchable that will call a
+     * subscribing Watcher's <code>onNext</code> closure a
      * maximum of <code>num</code> times before calling <code>onCompleted</code>.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.take&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.take.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.take&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.take.png"></a>
      * 
      * @param items
      *            the source Watchable
@@ -910,10 +961,13 @@ public class WatchableExtensions {
      * Returns a Watchable that emits a single item, a list composed of all the items emitted by
      * the source Watchable.
      * <p>
-     * Normally, a Watchable that returns multiple items will do so by calling its Watcher's <code>onNext</code> closure for each such item. You can change this behavior, instructing the Watchable to compose a list of all of these multiple items and
-     * then to call the Watcher's <code>onNext</code> closure once, passing it the entire list, by calling the Watchable object's <code>toList</code> method prior to calling its <code>subscribe</code> method.
+     * Normally, a Watchable that returns multiple items will do so by calling its Watcher's <code>onNext</code> closure for each such item. You can change this behavior, instructing the Watchable to
+     * compose a list of all of these multiple items and
+     * then to call the Watcher's <code>onNext</code> closure once, passing it the entire list, by calling the Watchable object's <code>toList</code> method prior to calling its <code>subscribe</code>
+     * method.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolist&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolist.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolist&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolist.png"></a>
      * 
      * @param that
      *            the source Watchable
@@ -927,7 +981,8 @@ public class WatchableExtensions {
     /**
      * Sort T objects by their natural order (object must implement Comparable).
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolistsorted&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolistsorted.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolistsorted&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolistsorted.png"></a>
      * 
      * @param sequence
      * @throws ClassCastException
@@ -941,7 +996,8 @@ public class WatchableExtensions {
     /**
      * Sort T objects using the defined sort function.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolistsorted.f&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolistsorted.f.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolistsorted.f&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolistsorted.f.png"></a>
      * 
      * @param sequence
      * @param sortFunction
@@ -954,7 +1010,8 @@ public class WatchableExtensions {
     /**
      * Sort T objects using the defined sort function.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolistsorted.f&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolistsorted.f.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.tolistsorted.f&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.tolistsorted.f.png"></a>
      * 
      * @param sequence
      * @param sortFunction
@@ -1042,12 +1099,15 @@ public class WatchableExtensions {
      * emitted, in sequence, by two other Watchables, with the results of this closure becoming the
      * sequence emitted by the returned Watchable.
      * <p>
-     * <code>zip</code> applies this closure in strict sequence, so the first item emitted by the new Watchable will be the result of the closure applied to the first item emitted by <code>w0</code> and the first item emitted by <code>w1</code>; the
+     * <code>zip</code> applies this closure in strict sequence, so the first item emitted by the new Watchable will be the result of the closure applied to the first item emitted by <code>w0</code>
+     * and the first item emitted by <code>w1</code>; the
      * second item emitted by the new Watchable will be the result of the closure applied to the second item emitted by <code>w0</code> and the second item emitted by <code>w1</code>; and so forth.
      * <p>
-     * The resulting <code>Watchable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Watchable with the shortest sequence.
+     * The resulting <code>Watchable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Watchable with the
+     * shortest sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.zip&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.zip.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.zip&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.zip.png"></a>
      * 
      * @param w0
      *            one source Watchable
@@ -1067,12 +1127,15 @@ public class WatchableExtensions {
      * emitted, in sequence, by two other Watchables, with the results of this closure becoming the
      * sequence emitted by the returned Watchable.
      * <p>
-     * <code>zip</code> applies this closure in strict sequence, so the first item emitted by the new Watchable will be the result of the closure applied to the first item emitted by <code>w0</code> and the first item emitted by <code>w1</code>; the
+     * <code>zip</code> applies this closure in strict sequence, so the first item emitted by the new Watchable will be the result of the closure applied to the first item emitted by <code>w0</code>
+     * and the first item emitted by <code>w1</code>; the
      * second item emitted by the new Watchable will be the result of the closure applied to the second item emitted by <code>w0</code> and the second item emitted by <code>w1</code>; and so forth.
      * <p>
-     * The resulting <code>Watchable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Watchable with the shortest sequence.
+     * The resulting <code>Watchable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Watchable with the
+     * shortest sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.zip&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.zip.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.zip&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.zip.png"></a>
      * 
      * @param w0
      *            one source Watchable
@@ -1099,13 +1162,17 @@ public class WatchableExtensions {
      * emitted, in sequence, by three other Watchables, with the results of this closure becoming
      * the sequence emitted by the returned Watchable.
      * <p>
-     * <code>zip</code> applies this closure in strict sequence, so the first item emitted by the new Watchable will be the result of the closure applied to the first item emitted by <code>w0</code>, the first item emitted by <code>w1</code>, and the
-     * first item emitted by <code>w2</code>; the second item emitted by the new Watchable will be the result of the closure applied to the second item emitted by <code>w0</code>, the second item emitted by <code>w1</code>, and the second item
+     * <code>zip</code> applies this closure in strict sequence, so the first item emitted by the new Watchable will be the result of the closure applied to the first item emitted by <code>w0</code>,
+     * the first item emitted by <code>w1</code>, and the
+     * first item emitted by <code>w2</code>; the second item emitted by the new Watchable will be the result of the closure applied to the second item emitted by <code>w0</code>, the second item
+     * emitted by <code>w1</code>, and the second item
      * emitted by <code>w2</code>; and so forth.
      * <p>
-     * The resulting <code>Watchable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Watchable with the shortest sequence.
+     * The resulting <code>Watchable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Watchable with the
+     * shortest sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.zip.3&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.zip.3.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.zip.3&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.zip.3.png"></a>
      * 
      * @param w0
      *            one source Watchable
@@ -1127,13 +1194,17 @@ public class WatchableExtensions {
      * emitted, in sequence, by three other Watchables, with the results of this closure becoming
      * the sequence emitted by the returned Watchable.
      * <p>
-     * <code>zip</code> applies this closure in strict sequence, so the first item emitted by the new Watchable will be the result of the closure applied to the first item emitted by <code>w0</code>, the first item emitted by <code>w1</code>, and the
-     * first item emitted by <code>w2</code>; the second item emitted by the new Watchable will be the result of the closure applied to the second item emitted by <code>w0</code>, the second item emitted by <code>w1</code>, and the second item
+     * <code>zip</code> applies this closure in strict sequence, so the first item emitted by the new Watchable will be the result of the closure applied to the first item emitted by <code>w0</code>,
+     * the first item emitted by <code>w1</code>, and the
+     * first item emitted by <code>w2</code>; the second item emitted by the new Watchable will be the result of the closure applied to the second item emitted by <code>w0</code>, the second item
+     * emitted by <code>w1</code>, and the second item
      * emitted by <code>w2</code>; and so forth.
      * <p>
-     * The resulting <code>Watchable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Watchable with the shortest sequence.
+     * The resulting <code>Watchable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Watchable with the
+     * shortest sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.zip.3&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.zip.3.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.zip.3&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.zip.3.png"></a>
      * 
      * @param w0
      *            one source Watchable
@@ -1162,12 +1233,16 @@ public class WatchableExtensions {
      * emitted, in sequence, by four other Watchables, with the results of this closure becoming
      * the sequence emitted by the returned Watchable.
      * <p>
-     * <code>zip</code> applies this closure in strict sequence, so the first item emitted by the new Watchable will be the result of the closure applied to the first item emitted by <code>w0</code>, the first item emitted by <code>w1</code>, the
-     * first item emitted by <code>w2</code>, and the first item emitted by <code>w3</code>; the second item emitted by the new Watchable will be the result of the closure applied to the second item emitted by each of those Watchables; and so forth.
+     * <code>zip</code> applies this closure in strict sequence, so the first item emitted by the new Watchable will be the result of the closure applied to the first item emitted by <code>w0</code>,
+     * the first item emitted by <code>w1</code>, the
+     * first item emitted by <code>w2</code>, and the first item emitted by <code>w3</code>; the second item emitted by the new Watchable will be the result of the closure applied to the second item
+     * emitted by each of those Watchables; and so forth.
      * <p>
-     * The resulting <code>Watchable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Watchable with the shortest sequence.
+     * The resulting <code>Watchable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Watchable with the
+     * shortest sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.zip.4&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.zip.4.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.zip.4&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.zip.4.png"></a>
      * 
      * @param w0
      *            one source Watchable
@@ -1191,12 +1266,16 @@ public class WatchableExtensions {
      * emitted, in sequence, by four other Watchables, with the results of this closure becoming
      * the sequence emitted by the returned Watchable.
      * <p>
-     * <code>zip</code> applies this closure in strict sequence, so the first item emitted by the new Watchable will be the result of the closure applied to the first item emitted by <code>w0</code>, the first item emitted by <code>w1</code>, the
-     * first item emitted by <code>w2</code>, and the first item emitted by <code>w3</code>; the second item emitted by the new Watchable will be the result of the closure applied to the second item emitted by each of those Watchables; and so forth.
+     * <code>zip</code> applies this closure in strict sequence, so the first item emitted by the new Watchable will be the result of the closure applied to the first item emitted by <code>w0</code>,
+     * the first item emitted by <code>w1</code>, the
+     * first item emitted by <code>w2</code>, and the first item emitted by <code>w3</code>; the second item emitted by the new Watchable will be the result of the closure applied to the second item
+     * emitted by each of those Watchables; and so forth.
      * <p>
-     * The resulting <code>Watchable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Watchable with the shortest sequence.
+     * The resulting <code>Watchable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Watchable with the
+     * shortest sequence.
      * <p>
-     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.zip.4&ceoid=27321465&key=API&pageId=27321465"><img src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.zip.4.png"></a>
+     * <a href="https://confluence.corp.netflix.com/plugins/gliffy/viewlargediagram.action?name=marble.zip.4&ceoid=27321465&key=API&pageId=27321465"><img
+     * src="https://confluence.corp.netflix.com/download/attachments/27321465/marble.zip.4.png"></a>
      * 
      * @param w0
      *            one source Watchable

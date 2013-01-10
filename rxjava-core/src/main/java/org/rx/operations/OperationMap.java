@@ -12,10 +12,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.rx.functions.Func1;
 import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IObservable;
 import org.rx.reactive.IDisposable;
+import org.rx.reactive.IObservable;
 import org.rx.reactive.IObserver;
-
 
 /* package */class OperationMap {
 

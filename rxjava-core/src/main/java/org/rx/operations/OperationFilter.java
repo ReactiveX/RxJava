@@ -6,10 +6,9 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.rx.functions.Func1;
 import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IObservable;
 import org.rx.reactive.IDisposable;
+import org.rx.reactive.IObservable;
 import org.rx.reactive.IObserver;
-
 
 /* package */final class OperationFilter<T> extends AbstractIObservable<T> {
     private final IObservable<T> that;

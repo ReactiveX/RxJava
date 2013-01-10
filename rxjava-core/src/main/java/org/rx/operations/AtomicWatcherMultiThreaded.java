@@ -22,7 +22,6 @@ import org.rx.reactive.AbstractIObservable;
 import org.rx.reactive.IDisposable;
 import org.rx.reactive.IObserver;
 
-
 /**
  * A thread-safe Watcher for transitioning states in operators.
  * <p>

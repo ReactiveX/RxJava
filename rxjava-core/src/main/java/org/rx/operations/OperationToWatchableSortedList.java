@@ -13,10 +13,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.junit.Test;
 import org.rx.functions.Func2;
 import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IObservable;
 import org.rx.reactive.IDisposable;
+import org.rx.reactive.IObservable;
 import org.rx.reactive.IObserver;
-
 
 /**
  * Similar to toList in that it converts a sequence<T> into a List<T> except that it accepts a Function that will provide an implementation of Comparator.

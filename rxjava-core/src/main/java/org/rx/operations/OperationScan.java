@@ -8,10 +8,9 @@ import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.rx.functions.Func2;
 import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IObservable;
 import org.rx.reactive.IDisposable;
+import org.rx.reactive.IObservable;
 import org.rx.reactive.IObserver;
-
 
 /* package */class OperationScan {
     /**
