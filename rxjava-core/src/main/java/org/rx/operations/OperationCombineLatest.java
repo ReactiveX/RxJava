@@ -22,7 +22,7 @@ import org.rx.reactive.Observable;
 import org.rx.reactive.Observer;
 import org.rx.reactive.Subscription;
 
-class OperationCombineLatest {
+public class OperationCombineLatest {
 
     public static <R, T0, T1> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<R, T0, T1> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
@@ -652,7 +652,7 @@ class OperationCombineLatest {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = combineLatest(ObservableExtensions.toObservable("one", "two"), ObservableExtensions.toObservable(2, 3, 4), combineLatestFunction);
+            Observable<String> w = combineLatest(Observable.toObservable("one", "two"), Observable.toObservable(2, 3, 4), combineLatestFunction);
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -671,7 +671,7 @@ class OperationCombineLatest {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = combineLatest(ObservableExtensions.toObservable("one", "two"), ObservableExtensions.toObservable(2), ObservableExtensions.toObservable(new int[] { 4, 5, 6 }), combineLatestFunction);
+            Observable<String> w = combineLatest(Observable.toObservable("one", "two"), Observable.toObservable(2), Observable.toObservable(new int[] { 4, 5, 6 }), combineLatestFunction);
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -688,7 +688,7 @@ class OperationCombineLatest {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = combineLatest(ObservableExtensions.toObservable("one"), ObservableExtensions.toObservable(2), ObservableExtensions.toObservable(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction);
+            Observable<String> w = combineLatest(Observable.toObservable("one"), Observable.toObservable(2), Observable.toObservable(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction);
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -781,7 +781,7 @@ class OperationCombineLatest {
             public Subscription subscribe(Observer<String> Observer) {
                 // just store the variable where it can be accessed so we can manually trigger it
                 this.Observer = Observer;
-                return ObservableExtensions.noOpSubscription();
+                return Observable.noOpSubscription();
             }
 
         }

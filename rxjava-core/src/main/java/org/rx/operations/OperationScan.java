@@ -11,7 +11,7 @@ import org.rx.reactive.Observable;
 import org.rx.reactive.Observer;
 import org.rx.reactive.Subscription;
 
-/* package */class OperationScan {
+public final class OperationScan {
     /**
      * Applies an accumulator function over an observable sequence and returns each intermediate result with the specified source and accumulator.
      * 
@@ -129,7 +129,7 @@ import org.rx.reactive.Subscription;
             @SuppressWarnings("unchecked")
             Observer<Integer> Observer = mock(Observer.class);
 
-            Observable<Integer> observable = ObservableExtensions.toObservable(1, 2, 3);
+            Observable<Integer> observable = Observable.toObservable(1, 2, 3);
 
             Observable<Integer> m = scan(observable, 0, new Func2<Integer, Integer, Integer>() {
 
@@ -156,7 +156,7 @@ import org.rx.reactive.Subscription;
             @SuppressWarnings("unchecked")
             Observer<Integer> Observer = mock(Observer.class);
 
-            Observable<Integer> observable = ObservableExtensions.toObservable(1, 2, 3);
+            Observable<Integer> observable = Observable.toObservable(1, 2, 3);
 
             Observable<Integer> m = scan(observable, new Func2<Integer, Integer, Integer>() {
 
@@ -183,7 +183,7 @@ import org.rx.reactive.Subscription;
             @SuppressWarnings("unchecked")
             Observer<Integer> Observer = mock(Observer.class);
 
-            Observable<Integer> observable = ObservableExtensions.toObservable(1);
+            Observable<Integer> observable = Observable.toObservable(1);
 
             Observable<Integer> m = scan(observable, new Func2<Integer, Integer, Integer>() {
 

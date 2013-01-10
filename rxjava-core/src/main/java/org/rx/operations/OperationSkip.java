@@ -15,7 +15,7 @@ import org.rx.reactive.Subscription;
  * 
  * @param <T>
  */
-/* package */final class OperationSkip {
+public final class OperationSkip {
 
     /**
      * Skips a specified number of contiguous values from the start of a Observable sequence and then returns the remaining values.
@@ -102,7 +102,7 @@ import org.rx.reactive.Subscription;
 
         @Test
         public void testSkip1() {
-            Observable<String> w = ObservableExtensions.toObservable("one", "two", "three");
+            Observable<String> w = Observable.toObservable("one", "two", "three");
             Observable<String> skip = skip(w, 2);
 
             @SuppressWarnings("unchecked")
@@ -117,7 +117,7 @@ import org.rx.reactive.Subscription;
 
         @Test
         public void testSkip2() {
-            Observable<String> w = ObservableExtensions.toObservable("one", "two", "three");
+            Observable<String> w = Observable.toObservable("one", "two", "three");
             Observable<String> skip = skip(w, 1);
 
             @SuppressWarnings("unchecked")

@@ -4,6 +4,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.rx.reactive.Observable;
 import org.rx.reactive.Observer;
 import org.rx.reactive.Subscription;
@@ -19,7 +20,7 @@ import org.rx.reactive.Subscription;
  * @param <T>
  *            The type of the observable sequence.
  */
-/* package */class OperationSynchronize<T> extends Observable<T> {
+public final class OperationSynchronize<T> {
 
     /**
      * Accepts an observable and wraps it in another observable which ensures that the resulting observable is well-behaved.
@@ -33,21 +34,25 @@ import org.rx.reactive.Subscription;
      * @return
      */
     public static <T> Observable<T> synchronize(Observable<T> observable) {
-        return new OperationSynchronize<T>(observable);
+        return new Synchronize<T>(observable);
     }
 
-    public OperationSynchronize(Observable<T> innerObservable) {
-        this.innerObservable = innerObservable;
-    }
+    private static class Synchronize<T> extends Observable<T> {
 
-    private Observable<T> innerObservable;
-    private AtomicObserver<T> atomicObserver;
+        public Synchronize(Observable<T> innerObservable) {
+            this.innerObservable = innerObservable;
+        }
 
-    public Subscription subscribe(Observer<T> Observer) {
-        AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-        atomicObserver = new AtomicObserver<T>(Observer, subscription);
-        subscription.setActual(innerObservable.subscribe(atomicObserver));
-        return subscription;
+        private Observable<T> innerObservable;
+        private AtomicObserverSingleThreaded<T> atomicObserver;
+
+        public Subscription subscribe(Observer<T> observer) {
+            AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+            atomicObserver = new AtomicObserverSingleThreaded<T>(observer, subscription);
+            subscription.setActual(innerObservable.subscribe(atomicObserver));
+            return subscription;
+        }
+
     }
 
     public static class UnitTest {
@@ -69,7 +74,7 @@ import org.rx.reactive.Subscription;
             t.sendOnCompleted();
 
             verify(w, times(1)).onNext("one");
-            verify(w, never()).onCompleted();
+            verify(w, Mockito.never()).onCompleted();
         }
 
         /**
@@ -89,7 +94,7 @@ import org.rx.reactive.Subscription;
             t.sendOnNext("two");
 
             verify(w, times(1)).onNext("one");
-            verify(w, never()).onNext("two");
+            verify(w, Mockito.never()).onNext("two");
         }
 
         /**
@@ -109,7 +114,7 @@ import org.rx.reactive.Subscription;
             t.sendOnError(new RuntimeException("bad"));
 
             verify(w, times(1)).onNext("one");
-            verify(w, never()).onError(any(Exception.class));
+            verify(w, Mockito.never()).onError(any(Exception.class));
         }
 
         /**
@@ -131,7 +136,7 @@ import org.rx.reactive.Subscription;
 
             verify(w, times(1)).onNext("one");
             verify(w, times(1)).onError(any(Exception.class));
-            verify(w, never()).onNext("two");
+            verify(w, Mockito.never()).onNext("two");
         }
 
         /**
@@ -153,7 +158,7 @@ import org.rx.reactive.Subscription;
 
             verify(w, times(1)).onNext("one");
             verify(w, times(1)).onError(any(Exception.class));
-            verify(w, never()).onCompleted();
+            verify(w, Mockito.never()).onCompleted();
         }
 
         /**
@@ -174,9 +179,9 @@ import org.rx.reactive.Subscription;
             t.sendOnNext("two");
 
             verify(w, times(1)).onNext("one");
-            verify(w, never()).onNext("two");
+            verify(w, Mockito.never()).onNext("two");
             verify(w, times(1)).onCompleted();
-            verify(w, never()).onError(any(Exception.class));
+            verify(w, Mockito.never()).onError(any(Exception.class));
         }
 
         /**
@@ -198,7 +203,7 @@ import org.rx.reactive.Subscription;
 
             verify(w, times(1)).onNext("one");
             verify(w, times(1)).onCompleted();
-            verify(w, never()).onError(any(Exception.class));
+            verify(w, Mockito.never()).onError(any(Exception.class));
         }
 
         /**

@@ -16,7 +16,7 @@ import org.rx.reactive.Subscription;
  * 
  * @param <T>
  */
-/* package */final class OperationTake {
+public final class OperationTake {
 
     /**
      * Returns a specified number of contiguous values from the start of an observable sequence.
@@ -108,7 +108,7 @@ import org.rx.reactive.Subscription;
 
         @Test
         public void testTake1() {
-            Observable<String> w = ObservableExtensions.toObservable("one", "two", "three");
+            Observable<String> w = Observable.toObservable("one", "two", "three");
             Observable<String> take = take(w, 2);
 
             @SuppressWarnings("unchecked")
@@ -123,7 +123,7 @@ import org.rx.reactive.Subscription;
 
         @Test
         public void testTake2() {
-            Observable<String> w = ObservableExtensions.toObservable("one", "two", "three");
+            Observable<String> w = Observable.toObservable("one", "two", "three");
             Observable<String> take = take(w, 1);
 
             @SuppressWarnings("unchecked")

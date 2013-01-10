@@ -15,7 +15,7 @@ import org.rx.reactive.Observable;
 import org.rx.reactive.Observer;
 import org.rx.reactive.Subscription;
 
-/* package */class OperationMap {
+public final class OperationMap {
 
     /**
      * Accepts a sequence and a transformation function. Returns a sequence that is the result of
@@ -130,7 +130,7 @@ import org.rx.reactive.Subscription;
             Map<String, String> m1 = getMap("One");
             Map<String, String> m2 = getMap("Two");
             @SuppressWarnings("unchecked")
-            Observable<Map<String, String>> observable = ObservableExtensions.toObservable(m1, m2);
+            Observable<Map<String, String>> observable = Observable.toObservable(m1, m2);
 
             Observable<String> m = map(observable, new Func1<String, Map<String, String>>() {
 
@@ -152,7 +152,7 @@ import org.rx.reactive.Subscription;
         @Test
         public void testMapMany() {
             /* simulate a top-level async call which returns IDs */
-            Observable<Integer> ids = ObservableExtensions.toObservable(1, 2);
+            Observable<Integer> ids = Observable.toObservable(1, 2);
 
             /* now simulate the behavior to take those IDs and perform nested async calls based on them */
             Observable<String> m = mapMany(ids, new Func1<Observable<String>, Integer>() {
@@ -165,11 +165,11 @@ import org.rx.reactive.Subscription;
                     if (id == 1) {
                         Map<String, String> m1 = getMap("One");
                         Map<String, String> m2 = getMap("Two");
-                        subObservable = ObservableExtensions.toObservable(m1, m2);
+                        subObservable = Observable.toObservable(m1, m2);
                     } else {
                         Map<String, String> m3 = getMap("Three");
                         Map<String, String> m4 = getMap("Four");
-                        subObservable = ObservableExtensions.toObservable(m3, m4);
+                        subObservable = Observable.toObservable(m3, m4);
                     }
 
                     /* simulate kicking off the async call and performing a select on it to transform the data */
@@ -197,15 +197,15 @@ import org.rx.reactive.Subscription;
             Map<String, String> m1 = getMap("One");
             Map<String, String> m2 = getMap("Two");
             @SuppressWarnings("unchecked")
-            Observable<Map<String, String>> observable1 = ObservableExtensions.toObservable(m1, m2);
+            Observable<Map<String, String>> observable1 = Observable.toObservable(m1, m2);
 
             Map<String, String> m3 = getMap("Three");
             Map<String, String> m4 = getMap("Four");
             @SuppressWarnings("unchecked")
-            Observable<Map<String, String>> observable2 = ObservableExtensions.toObservable(m3, m4);
+            Observable<Map<String, String>> observable2 = Observable.toObservable(m3, m4);
 
             @SuppressWarnings("unchecked")
-            Observable<Observable<Map<String, String>>> observable = ObservableExtensions.toObservable(observable1, observable2);
+            Observable<Observable<Map<String, String>>> observable = Observable.toObservable(observable1, observable2);
 
             Observable<String> m = mapMany(observable, new Func1<Observable<String>, Observable<Map<String, String>>>() {
 

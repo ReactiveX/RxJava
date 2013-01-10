@@ -29,7 +29,7 @@ import org.rx.reactive.Observer;
  * @param <T>
  */
 @ThreadSafe
-/* package */class AtomicObserver<T> implements Observer<T> {
+/* package */final class AtomicObserver<T> implements Observer<T> {
 
     /** Allow changing between forcing single or allowing multi-threaded execution of onNext */
     private static boolean allowMultiThreaded = true;

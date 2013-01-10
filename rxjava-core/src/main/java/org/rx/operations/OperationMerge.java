@@ -17,7 +17,7 @@ import org.rx.reactive.Observable;
 import org.rx.reactive.Observer;
 import org.rx.reactive.Subscription;
 
-/* package */class OperationMerge {
+public final class OperationMerge {
 
     /**
      * Flattens the observable sequences from the list of Observables into one observable sequence without any transformation.

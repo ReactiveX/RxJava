@@ -27,7 +27,7 @@ import org.rx.reactive.Subscription;
  * <p>
  * NOTE: If this is used on an infinite stream it will never call onError and effectively will swallow errors.
  */
-/* package */class OperationMergeDelayError {
+public final class OperationMergeDelayError {
 
     /**
      * Flattens the observable sequences from the list of Observables into one observable sequence without any transformation and delays any onError calls until after all sequences have called

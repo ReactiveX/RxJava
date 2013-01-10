@@ -37,7 +37,7 @@ import org.rx.reactive.Subscription;
  * @param <T>
  */
 @ThreadSafe
-/* package */class AtomicObserverMultiThreaded<T> implements Observer<T> {
+/* package */final class AtomicObserverMultiThreaded<T> implements Observer<T> {
 
     private final Observer<T> Observer;
     private final AtomicObservableSubscription subscription;

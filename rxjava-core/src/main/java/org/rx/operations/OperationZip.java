@@ -22,7 +22,7 @@ import org.rx.reactive.Observable;
 import org.rx.reactive.Observer;
 import org.rx.reactive.Subscription;
 
-class OperationZip {
+public final class OperationZip {
 
     public static <R, T0, T1> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Func2<R, T0, T1> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
@@ -649,7 +649,7 @@ class OperationZip {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = zip(ObservableExtensions.toObservable("one", "two"), ObservableExtensions.toObservable(2, 3, 4), zipr);
+            Observable<String> w = zip(Observable.toObservable("one", "two"), Observable.toObservable(2, 3, 4), zipr);
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -668,7 +668,7 @@ class OperationZip {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = zip(ObservableExtensions.toObservable("one", "two"), ObservableExtensions.toObservable(2), ObservableExtensions.toObservable(new int[] { 4, 5, 6 }), zipr);
+            Observable<String> w = zip(Observable.toObservable("one", "two"), Observable.toObservable(2), Observable.toObservable(new int[] { 4, 5, 6 }), zipr);
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -684,7 +684,7 @@ class OperationZip {
             @SuppressWarnings("unchecked")
             Observer<Integer> aObserver = mock(Observer.class);
 
-            Observable<Integer> w = zip(ObservableExtensions.toObservable(10, 20, 30), ObservableExtensions.toObservable(0, 1, 2), zipr);
+            Observable<Integer> w = zip(Observable.toObservable(10, 20, 30), Observable.toObservable(0, 1, 2), zipr);
             w.subscribe(aObserver);
 
             verify(aObserver, times(1)).onError(any(Exception.class));
@@ -786,7 +786,7 @@ class OperationZip {
             public Subscription subscribe(Observer<String> Observer) {
                 // just store the variable where it can be accessed so we can manually trigger it
                 this.Observer = Observer;
-                return ObservableExtensions.noOpSubscription();
+                return Observable.noOpSubscription();
             }
 
         }

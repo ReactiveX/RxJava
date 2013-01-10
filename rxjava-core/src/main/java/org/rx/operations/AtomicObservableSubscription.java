@@ -11,7 +11,7 @@ import org.rx.reactive.Subscription;
  * Thread-safe wrapper around ObservableSubscription that ensures unsubscribe can be called only once.
  */
 @ThreadSafe
-/* package */class AtomicObservableSubscription implements Subscription {
+/* package */final class AtomicObservableSubscription implements Subscription {
 
     private AtomicReference<Subscription> actualSubscription = new AtomicReference<Subscription>();
     private AtomicBoolean unsubscribed = new AtomicBoolean(false);

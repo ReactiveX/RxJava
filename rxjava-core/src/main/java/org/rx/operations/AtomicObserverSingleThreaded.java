@@ -34,7 +34,7 @@ import org.rx.reactive.Subscription;
  * @param <T>
  */
 @ThreadSafe
-/* package */class AtomicObserverSingleThreaded<T> implements Observer<T> {
+/* package */final class AtomicObserverSingleThreaded<T> implements Observer<T> {
 
     /**
      * Intrinsic synchronized locking with double-check short-circuiting was chosen after testing several other implementations.

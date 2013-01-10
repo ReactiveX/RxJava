@@ -18,7 +18,7 @@ import org.rx.reactive.Subscription;
  * <p>
  * See http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx for the Microsoft Rx equivalent.
  */
-public class OperationMaterialize {
+public final class OperationMaterialize {
 
     /**
      * Materializes the implicit notifications of an observable sequence as explicit notification values.
