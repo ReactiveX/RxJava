@@ -11,10 +11,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.rx.functions.Func1;
-import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IDisposable;
-import org.rx.reactive.IObservable;
-import org.rx.reactive.IObserver;
+import org.rx.reactive.Observable;
+import org.rx.reactive.Observer;
+import org.rx.reactive.Subscription;
 
 /* package */class OperationMap {
 
@@ -32,7 +31,7 @@ import org.rx.reactive.IObserver;
      *            the type of the output sequence.
      * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
      */
-    public static <T, R> IObservable<R> map(IObservable<T> sequence, Func1<R, T> func) {
+    public static <T, R> Observable<R> map(Observable<T> sequence, Func1<R, T> func) {
         return new MapObservable<T, R>(sequence, func);
     }
 
@@ -40,7 +39,7 @@ import org.rx.reactive.IObserver;
      * Accepts a sequence of observable sequences and a transformation function. Returns a flattened sequence that is the result of
      * applying the transformation function to each item in the sequence of each observable sequence.
      * <p>
-     * The closure should return an IObservable which will then be merged.
+     * The closure should return an Observable which will then be merged.
      * 
      * @param sequence
      *            the input sequence.
@@ -52,7 +51,7 @@ import org.rx.reactive.IObserver;
      *            the type of the output sequence.
      * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
      */
-    public static <T, R> IObservable<R> mapMany(IObservable<T> sequence, Func1<IObservable<R>, T> func) {
+    public static <T, R> Observable<R> mapMany(Observable<T> sequence, Func1<Observable<R>, T> func) {
         return OperationMerge.merge(map(sequence, func));
     }
 
@@ -64,19 +63,19 @@ import org.rx.reactive.IObserver;
      * @param <R>
      *            the type of the output sequence.
      */
-    private static class MapObservable<T, R> extends AbstractIObservable<R> {
-        public MapObservable(IObservable<T> sequence, Func1<R, T> func) {
+    private static class MapObservable<T, R> extends Observable<R> {
+        public MapObservable(Observable<T> sequence, Func1<R, T> func) {
             this.sequence = sequence;
             this.func = func;
         }
 
-        private IObservable<T> sequence;
+        private Observable<T> sequence;
 
         private Func1<R, T> func;
 
-        public IDisposable subscribe(IObserver<R> watcher) {
-            final AtomicWatchableSubscription subscription = new AtomicWatchableSubscription();
-            final IObserver<R> observer = new AtomicWatcher<R>(watcher, subscription);
+        public Subscription subscribe(Observer<R> Observer) {
+            final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+            final Observer<R> observer = new AtomicObserver<R>(Observer, subscription);
             subscription.setActual(sequence.subscribe(new MapObserver<T, R>(observer, func)));
             return subscription;
         }
@@ -90,13 +89,13 @@ import org.rx.reactive.IObserver;
      * @param <R>
      *            the type of the inner observer items.
      */
-    private static class MapObserver<T, R> implements IObserver<T> {
-        public MapObserver(IObserver<R> observer, Func1<R, T> func) {
+    private static class MapObserver<T, R> implements Observer<T> {
+        public MapObserver(Observer<R> observer, Func1<R, T> func) {
             this.observer = observer;
             this.func = func;
         }
 
-        IObserver<R> observer;
+        Observer<R> observer;
 
         Func1<R, T> func;
 
@@ -119,7 +118,7 @@ import org.rx.reactive.IObserver;
 
     public static class UnitTest {
         @Mock
-        IObserver<String> stringObserver;
+        Observer<String> stringObserver;
 
         @Before
         public void before() {
@@ -131,9 +130,9 @@ import org.rx.reactive.IObserver;
             Map<String, String> m1 = getMap("One");
             Map<String, String> m2 = getMap("Two");
             @SuppressWarnings("unchecked")
-            IObservable<Map<String, String>> observable = WatchableExtensions.toWatchable(m1, m2);
+            Observable<Map<String, String>> observable = ObservableExtensions.toObservable(m1, m2);
 
-            IObservable<String> m = map(observable, new Func1<String, Map<String, String>>() {
+            Observable<String> m = map(observable, new Func1<String, Map<String, String>>() {
 
                 @Override
                 public String call(Map<String, String> map) {
@@ -153,24 +152,24 @@ import org.rx.reactive.IObserver;
         @Test
         public void testMapMany() {
             /* simulate a top-level async call which returns IDs */
-            IObservable<Integer> ids = WatchableExtensions.toWatchable(1, 2);
+            Observable<Integer> ids = ObservableExtensions.toObservable(1, 2);
 
             /* now simulate the behavior to take those IDs and perform nested async calls based on them */
-            IObservable<String> m = mapMany(ids, new Func1<IObservable<String>, Integer>() {
+            Observable<String> m = mapMany(ids, new Func1<Observable<String>, Integer>() {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                public IObservable<String> call(Integer id) {
-                    /* simulate making a nested async call which creates another IObservable */
-                    IObservable<Map<String, String>> subObservable = null;
+                public Observable<String> call(Integer id) {
+                    /* simulate making a nested async call which creates another Observable */
+                    Observable<Map<String, String>> subObservable = null;
                     if (id == 1) {
                         Map<String, String> m1 = getMap("One");
                         Map<String, String> m2 = getMap("Two");
-                        subObservable = WatchableExtensions.toWatchable(m1, m2);
+                        subObservable = ObservableExtensions.toObservable(m1, m2);
                     } else {
                         Map<String, String> m3 = getMap("Three");
                         Map<String, String> m4 = getMap("Four");
-                        subObservable = WatchableExtensions.toWatchable(m3, m4);
+                        subObservable = ObservableExtensions.toObservable(m3, m4);
                     }
 
                     /* simulate kicking off the async call and performing a select on it to transform the data */
@@ -198,20 +197,20 @@ import org.rx.reactive.IObserver;
             Map<String, String> m1 = getMap("One");
             Map<String, String> m2 = getMap("Two");
             @SuppressWarnings("unchecked")
-            IObservable<Map<String, String>> observable1 = WatchableExtensions.toWatchable(m1, m2);
+            Observable<Map<String, String>> observable1 = ObservableExtensions.toObservable(m1, m2);
 
             Map<String, String> m3 = getMap("Three");
             Map<String, String> m4 = getMap("Four");
             @SuppressWarnings("unchecked")
-            IObservable<Map<String, String>> observable2 = WatchableExtensions.toWatchable(m3, m4);
+            Observable<Map<String, String>> observable2 = ObservableExtensions.toObservable(m3, m4);
 
             @SuppressWarnings("unchecked")
-            IObservable<IObservable<Map<String, String>>> observable = WatchableExtensions.toWatchable(observable1, observable2);
+            Observable<Observable<Map<String, String>>> observable = ObservableExtensions.toObservable(observable1, observable2);
 
-            IObservable<String> m = mapMany(observable, new Func1<IObservable<String>, IObservable<Map<String, String>>>() {
+            Observable<String> m = mapMany(observable, new Func1<Observable<String>, Observable<Map<String, String>>>() {
 
                 @Override
-                public IObservable<String> call(IObservable<Map<String, String>> o) {
+                public Observable<String> call(Observable<Map<String, String>> o) {
                     return map(o, new Func1<String, Map<String, String>>() {
 
                         @Override

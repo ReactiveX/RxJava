@@ -4,10 +4,9 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
-import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IDisposable;
-import org.rx.reactive.IObservable;
-import org.rx.reactive.IObserver;
+import org.rx.reactive.Observable;
+import org.rx.reactive.Observer;
+import org.rx.reactive.Subscription;
 
 /**
  * An observable that wraps an observable of the same type and then enforces the semantics
@@ -20,7 +19,7 @@ import org.rx.reactive.IObserver;
  * @param <T>
  *            The type of the observable sequence.
  */
-/* package */class OperationSynchronize<T> extends AbstractIObservable<T> {
+/* package */class OperationSynchronize<T> extends Observable<T> {
 
     /**
      * Accepts an observable and wraps it in another observable which ensures that the resulting observable is well-behaved.
@@ -33,21 +32,21 @@ import org.rx.reactive.IObserver;
      * @param <T>
      * @return
      */
-    public static <T> IObservable<T> synchronize(IObservable<T> observable) {
+    public static <T> Observable<T> synchronize(Observable<T> observable) {
         return new OperationSynchronize<T>(observable);
     }
 
-    public OperationSynchronize(IObservable<T> innerObservable) {
+    public OperationSynchronize(Observable<T> innerObservable) {
         this.innerObservable = innerObservable;
     }
 
-    private IObservable<T> innerObservable;
-    private AtomicWatcher<T> atomicWatcher;
+    private Observable<T> innerObservable;
+    private AtomicObserver<T> atomicObserver;
 
-    public IDisposable subscribe(IObserver<T> watcher) {
-        AtomicWatchableSubscription subscription = new AtomicWatchableSubscription();
-        atomicWatcher = new AtomicWatcher<T>(watcher, subscription);
-        subscription.setActual(innerObservable.subscribe(atomicWatcher));
+    public Subscription subscribe(Observer<T> Observer) {
+        AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        atomicObserver = new AtomicObserver<T>(Observer, subscription);
+        subscription.setActual(innerObservable.subscribe(atomicObserver));
         return subscription;
     }
 
@@ -58,12 +57,12 @@ import org.rx.reactive.IObserver;
          */
         @Test
         public void testOnCompletedAfterUnSubscribe() {
-            TestWatchable t = new TestWatchable(null);
-            IObservable<String> st = synchronize(t);
+            TestObservable t = new TestObservable(null);
+            Observable<String> st = synchronize(t);
 
             @SuppressWarnings("unchecked")
-            IObserver<String> w = mock(IObserver.class);
-            IDisposable ws = st.subscribe(w);
+            Observer<String> w = mock(Observer.class);
+            Subscription ws = st.subscribe(w);
 
             t.sendOnNext("one");
             ws.unsubscribe();
@@ -78,12 +77,12 @@ import org.rx.reactive.IObserver;
          */
         @Test
         public void testOnNextAfterUnSubscribe() {
-            TestWatchable t = new TestWatchable(null);
-            IObservable<String> st = synchronize(t);
+            TestObservable t = new TestObservable(null);
+            Observable<String> st = synchronize(t);
 
             @SuppressWarnings("unchecked")
-            IObserver<String> w = mock(IObserver.class);
-            IDisposable ws = st.subscribe(w);
+            Observer<String> w = mock(Observer.class);
+            Subscription ws = st.subscribe(w);
 
             t.sendOnNext("one");
             ws.unsubscribe();
@@ -98,12 +97,12 @@ import org.rx.reactive.IObserver;
          */
         @Test
         public void testOnErrorAfterUnSubscribe() {
-            TestWatchable t = new TestWatchable(null);
-            IObservable<String> st = synchronize(t);
+            TestObservable t = new TestObservable(null);
+            Observable<String> st = synchronize(t);
 
             @SuppressWarnings("unchecked")
-            IObserver<String> w = mock(IObserver.class);
-            IDisposable ws = st.subscribe(w);
+            Observer<String> w = mock(Observer.class);
+            Subscription ws = st.subscribe(w);
 
             t.sendOnNext("one");
             ws.unsubscribe();
@@ -118,13 +117,13 @@ import org.rx.reactive.IObserver;
          */
         @Test
         public void testOnNextAfterOnError() {
-            TestWatchable t = new TestWatchable(null);
-            IObservable<String> st = synchronize(t);
+            TestObservable t = new TestObservable(null);
+            Observable<String> st = synchronize(t);
 
             @SuppressWarnings("unchecked")
-            IObserver<String> w = mock(IObserver.class);
+            Observer<String> w = mock(Observer.class);
             @SuppressWarnings("unused")
-            IDisposable ws = st.subscribe(w);
+            Subscription ws = st.subscribe(w);
 
             t.sendOnNext("one");
             t.sendOnError(new RuntimeException("bad"));
@@ -140,13 +139,13 @@ import org.rx.reactive.IObserver;
          */
         @Test
         public void testOnCompletedAfterOnError() {
-            TestWatchable t = new TestWatchable(null);
-            IObservable<String> st = synchronize(t);
+            TestObservable t = new TestObservable(null);
+            Observable<String> st = synchronize(t);
 
             @SuppressWarnings("unchecked")
-            IObserver<String> w = mock(IObserver.class);
+            Observer<String> w = mock(Observer.class);
             @SuppressWarnings("unused")
-            IDisposable ws = st.subscribe(w);
+            Subscription ws = st.subscribe(w);
 
             t.sendOnNext("one");
             t.sendOnError(new RuntimeException("bad"));
@@ -162,13 +161,13 @@ import org.rx.reactive.IObserver;
          */
         @Test
         public void testOnNextAfterOnCompleted() {
-            TestWatchable t = new TestWatchable(null);
-            IObservable<String> st = synchronize(t);
+            TestObservable t = new TestObservable(null);
+            Observable<String> st = synchronize(t);
 
             @SuppressWarnings("unchecked")
-            IObserver<String> w = mock(IObserver.class);
+            Observer<String> w = mock(Observer.class);
             @SuppressWarnings("unused")
-            IDisposable ws = st.subscribe(w);
+            Subscription ws = st.subscribe(w);
 
             t.sendOnNext("one");
             t.sendOnCompleted();
@@ -185,13 +184,13 @@ import org.rx.reactive.IObserver;
          */
         @Test
         public void testOnErrorAfterOnCompleted() {
-            TestWatchable t = new TestWatchable(null);
-            IObservable<String> st = synchronize(t);
+            TestObservable t = new TestObservable(null);
+            Observable<String> st = synchronize(t);
 
             @SuppressWarnings("unchecked")
-            IObserver<String> w = mock(IObserver.class);
+            Observer<String> w = mock(Observer.class);
             @SuppressWarnings("unused")
-            IDisposable ws = st.subscribe(w);
+            Subscription ws = st.subscribe(w);
 
             t.sendOnNext("one");
             t.sendOnCompleted();
@@ -203,13 +202,13 @@ import org.rx.reactive.IObserver;
         }
 
         /**
-         * A Watchable that doesn't do the right thing on UnSubscribe/Error/etc in that it will keep sending events down the pipe regardless of what happens.
+         * A Observable that doesn't do the right thing on UnSubscribe/Error/etc in that it will keep sending events down the pipe regardless of what happens.
          */
-        private static class TestWatchable extends AbstractIObservable<String> {
+        private static class TestObservable extends Observable<String> {
 
-            IObserver<String> observer = null;
+            Observer<String> observer = null;
 
-            public TestWatchable(IDisposable s) {
+            public TestObservable(Subscription s) {
             }
 
             /* used to simulate subscription */
@@ -228,13 +227,13 @@ import org.rx.reactive.IObserver;
             }
 
             @Override
-            public IDisposable subscribe(final IObserver<String> observer) {
+            public Subscription subscribe(final Observer<String> observer) {
                 this.observer = observer;
-                return new IDisposable() {
+                return new Subscription() {
 
                     @Override
                     public void unsubscribe() {
-                        // going to do nothing to pretend I'm a bad Watchable that keeps allowing events to be sent
+                        // going to do nothing to pretend I'm a bad Observable that keeps allowing events to be sent
                     }
 
                 };

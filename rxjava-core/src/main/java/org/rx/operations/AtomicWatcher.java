@@ -2,13 +2,13 @@ package org.rx.operations;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.rx.reactive.IObserver;
+import org.rx.reactive.Observer;
 
 /**
- * A thread-safe Watcher for transitioning states in operators.
+ * A thread-safe Observer for transitioning states in operators.
  * <p>
  * Allows both single-threaded and multi-threaded execution controlled by the following FastProperty:
- * <li>reactive.watcher.multithreaded.enabled [Default: false]</li>
+ * <li>reactive.Observer.multithreaded.enabled [Default: false]</li>
  * <p>
  * Single-threaded Execution rules are:
  * <ul>
@@ -29,7 +29,7 @@ import org.rx.reactive.IObserver;
  * @param <T>
  */
 @ThreadSafe
-/* package */class AtomicWatcher<T> implements IObserver<T> {
+/* package */class AtomicObserver<T> implements Observer<T> {
 
     /** Allow changing between forcing single or allowing multi-threaded execution of onNext */
     private static boolean allowMultiThreaded = true;
@@ -41,29 +41,29 @@ import org.rx.reactive.IObserver;
         }
     }
 
-    private final IObserver<T> watcher;
+    private final Observer<T> Observer;
 
-    public AtomicWatcher(IObserver<T> watcher, AtomicWatchableSubscription subscription) {
+    public AtomicObserver(Observer<T> Observer, AtomicObservableSubscription subscription) {
         if (allowMultiThreaded) {
-            this.watcher = new AtomicWatcherMultiThreaded<T>(watcher, subscription);
+            this.Observer = new AtomicObserverMultiThreaded<T>(Observer, subscription);
         } else {
-            this.watcher = new AtomicWatcherSingleThreaded<T>(watcher, subscription);
+            this.Observer = new AtomicObserverSingleThreaded<T>(Observer, subscription);
         }
     }
 
     @Override
     public void onCompleted() {
-        watcher.onCompleted();
+        Observer.onCompleted();
     }
 
     @Override
     public void onError(Exception e) {
-        watcher.onError(e);
+        Observer.onError(e);
     }
 
     @Override
     public void onNext(T args) {
-        watcher.onNext(args);
+        Observer.onNext(args);
     }
 
 }

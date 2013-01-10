@@ -12,17 +12,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.junit.Test;
 import org.rx.functions.Func2;
-import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IDisposable;
-import org.rx.reactive.IObservable;
-import org.rx.reactive.IObserver;
+import org.rx.reactive.Observable;
+import org.rx.reactive.Observer;
+import org.rx.reactive.Subscription;
 
 /**
  * Similar to toList in that it converts a sequence<T> into a List<T> except that it accepts a Function that will provide an implementation of Comparator.
  * 
  * @param <T>
  */
-final class OperationToWatchableSortedList<T> extends AbstractIObservable<List<T>> {
+final class OperationToObservableSortedList<T> extends Observable<List<T>> {
 
     /**
      * Sort T objects by their natural order (object must implement Comparable).
@@ -32,8 +31,8 @@ final class OperationToWatchableSortedList<T> extends AbstractIObservable<List<T
      *             if T objects do not implement Comparable
      * @return
      */
-    public static <T> IObservable<List<T>> toSortedList(IObservable<T> sequence) {
-        return new OperationToWatchableSortedList<T>(sequence);
+    public static <T> Observable<List<T>> toSortedList(Observable<T> sequence) {
+        return new OperationToObservableSortedList<T>(sequence);
     }
 
     /**
@@ -43,37 +42,37 @@ final class OperationToWatchableSortedList<T> extends AbstractIObservable<List<T
      * @param sortFunction
      * @return
      */
-    public static <T> IObservable<List<T>> toSortedList(IObservable<T> sequence, Func2<Integer, T, T> sortFunction) {
-        return new OperationToWatchableSortedList<T>(sequence, sortFunction);
+    public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, Func2<Integer, T, T> sortFunction) {
+        return new OperationToObservableSortedList<T>(sequence, sortFunction);
     }
 
-    private final IObservable<T> that;
+    private final Observable<T> that;
     private final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();
     private final Func2<Integer, T, T> sortFunction;
 
     // unchecked as we're support Object for the default
     @SuppressWarnings("unchecked")
-    private OperationToWatchableSortedList(IObservable<T> that) {
+    private OperationToObservableSortedList(Observable<T> that) {
         this(that, defaultSortFunction);
     }
 
-    private OperationToWatchableSortedList(IObservable<T> that, Func2<Integer, T, T> sortFunction) {
+    private OperationToObservableSortedList(Observable<T> that, Func2<Integer, T, T> sortFunction) {
         this.that = that;
         this.sortFunction = sortFunction;
     }
 
-    public IDisposable subscribe(IObserver<List<T>> listObserver) {
-        final AtomicWatchableSubscription subscription = new AtomicWatchableSubscription();
-        final IObserver<List<T>> watcher = new AtomicWatcher<List<T>>(listObserver, subscription);
+    public Subscription subscribe(Observer<List<T>> listObserver) {
+        final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        final Observer<List<T>> Observer = new AtomicObserver<List<T>>(listObserver, subscription);
 
-        subscription.setActual(that.subscribe(new IObserver<T>() {
+        subscription.setActual(that.subscribe(new Observer<T>() {
             public void onNext(T value) {
                 // onNext can be concurrently executed so list must be thread-safe
                 list.add(value);
             }
 
             public void onError(Exception ex) {
-                watcher.onError(ex);
+                Observer.onError(ex);
             }
 
             public void onCompleted() {
@@ -94,8 +93,8 @@ final class OperationToWatchableSortedList<T> extends AbstractIObservable<List<T
 
                     });
 
-                    watcher.onNext(Collections.unmodifiableList(l));
-                    watcher.onCompleted();
+                    Observer.onNext(Collections.unmodifiableList(l));
+                    Observer.onCompleted();
                 } catch (Exception e) {
                     onError(e);
                 }
@@ -126,21 +125,21 @@ final class OperationToWatchableSortedList<T> extends AbstractIObservable<List<T
 
         @Test
         public void testSortedList() {
-            IObservable<Integer> w = WatchableExtensions.toWatchable(1, 3, 2, 5, 4);
-            IObservable<List<Integer>> watchable = toSortedList(w);
+            Observable<Integer> w = ObservableExtensions.toObservable(1, 3, 2, 5, 4);
+            Observable<List<Integer>> Observable = toSortedList(w);
 
             @SuppressWarnings("unchecked")
-            IObserver<List<Integer>> aWatcher = mock(IObserver.class);
-            watchable.subscribe(aWatcher);
-            verify(aWatcher, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
-            verify(aWatcher, never()).onError(any(Exception.class));
-            verify(aWatcher, times(1)).onCompleted();
+            Observer<List<Integer>> aObserver = mock(Observer.class);
+            Observable.subscribe(aObserver);
+            verify(aObserver, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
+            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
         }
 
         @Test
         public void testSortedListWithCustomFunction() {
-            IObservable<Integer> w = WatchableExtensions.toWatchable(1, 3, 2, 5, 4);
-            IObservable<List<Integer>> watchable = toSortedList(w, new Func2<Integer, Integer, Integer>() {
+            Observable<Integer> w = ObservableExtensions.toObservable(1, 3, 2, 5, 4);
+            Observable<List<Integer>> Observable = toSortedList(w, new Func2<Integer, Integer, Integer>() {
 
                 @Override
                 public Integer call(Integer t1, Integer t2) {
@@ -151,11 +150,11 @@ final class OperationToWatchableSortedList<T> extends AbstractIObservable<List<T
             ;
 
             @SuppressWarnings("unchecked")
-            IObserver<List<Integer>> aWatcher = mock(IObserver.class);
-            watchable.subscribe(aWatcher);
-            verify(aWatcher, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
-            verify(aWatcher, never()).onError(any(Exception.class));
-            verify(aWatcher, times(1)).onCompleted();
+            Observer<List<Integer>> aObserver = mock(Observer.class);
+            Observable.subscribe(aObserver);
+            verify(aObserver, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
+            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
         }
 
     }

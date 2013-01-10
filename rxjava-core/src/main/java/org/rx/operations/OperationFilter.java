@@ -5,25 +5,24 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 import org.rx.functions.Func1;
-import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IDisposable;
-import org.rx.reactive.IObservable;
-import org.rx.reactive.IObserver;
+import org.rx.reactive.Observable;
+import org.rx.reactive.Observer;
+import org.rx.reactive.Subscription;
 
-/* package */final class OperationFilter<T> extends AbstractIObservable<T> {
-    private final IObservable<T> that;
+/* package */final class OperationFilter<T> extends Observable<T> {
+    private final Observable<T> that;
     private final Func1<Boolean, T> predicate;
 
-    OperationFilter(IObservable<T> that, Func1<Boolean, T> predicate) {
+    OperationFilter(Observable<T> that, Func1<Boolean, T> predicate) {
         this.that = that;
         this.predicate = predicate;
     }
 
-    public IDisposable subscribe(IObserver<T> watcher) {
-        final AtomicWatchableSubscription subscription = new AtomicWatchableSubscription();
-        final IObserver<T> observer = new AtomicWatcher<T>(watcher, subscription);
+    public Subscription subscribe(Observer<T> Observer) {
+        final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        final Observer<T> observer = new AtomicObserver<T>(Observer, subscription);
 
-        subscription.setActual(that.subscribe(new IObserver<T>() {
+        subscription.setActual(that.subscribe(new Observer<T>() {
             public void onNext(T value) {
                 try {
                     if ((boolean) predicate.call(value)) {
@@ -51,8 +50,8 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testFilter() {
-            IObservable<String> w = WatchableExtensions.toWatchable("one", "two", "three");
-            IObservable<String> watchable = new OperationFilter<String>(w, new Func1<Boolean, String>() {
+            Observable<String> w = ObservableExtensions.toObservable("one", "two", "three");
+            Observable<String> Observable = new OperationFilter<String>(w, new Func1<Boolean, String>() {
 
                 @Override
                 public Boolean call(String t1) {
@@ -64,13 +63,13 @@ import org.rx.reactive.IObserver;
             });
 
             @SuppressWarnings("unchecked")
-            IObserver<String> aWatcher = mock(IObserver.class);
-            watchable.subscribe(aWatcher);
-            verify(aWatcher, never()).onNext("one");
-            verify(aWatcher, times(1)).onNext("two");
-            verify(aWatcher, never()).onNext("three");
-            verify(aWatcher, never()).onError(any(Exception.class));
-            verify(aWatcher, times(1)).onCompleted();
+            Observer<String> aObserver = mock(Observer.class);
+            Observable.subscribe(aObserver);
+            verify(aObserver, never()).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+            verify(aObserver, never()).onNext("three");
+            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
         }
     }
 }

@@ -1,7 +1,7 @@
 package org.rx.reactive;
 
 /**
- * An object representing a notification sent to a Watchable.
+ * An object representing a notification sent to a Observable.
  * 
  * For the Microsoft Rx equivalent see: http://msdn.microsoft.com/en-us/library/hh229462(v=vs.103).aspx
  */
