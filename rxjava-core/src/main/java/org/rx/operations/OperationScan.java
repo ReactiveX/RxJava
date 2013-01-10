@@ -7,13 +7,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.rx.functions.Func2;
-import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IObservable;
-import org.rx.reactive.IDisposable;
-import org.rx.reactive.IObserver;
+import org.rx.reactive.Observable;
+import org.rx.reactive.Observer;
+import org.rx.reactive.Subscription;
 
-
-/* package */class OperationScan {
+public final class OperationScan {
     /**
      * Applies an accumulator function over an observable sequence and returns each intermediate result with the specified source and accumulator.
      * 
@@ -24,10 +22,10 @@ import org.rx.reactive.IObserver;
      * @param accumulator
      *            An accumulator function to be invoked on each element from the sequence.
      * 
-     * @return An observable sequence whose elements are the result of accumulating the output from the list of IObservables.
+     * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
      * @see http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx
      */
-    public static <T> IObservable<T> scan(IObservable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
+    public static <T> Observable<T> scan(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
         return new Accumulator<T>(sequence, initialValue, accumulator);
     }
 
@@ -39,30 +37,30 @@ import org.rx.reactive.IObserver;
      * @param accumulator
      *            An accumulator function to be invoked on each element from the sequence.
      * 
-     * @return An observable sequence whose elements are the result of accumulating the output from the list of IObservables.
+     * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
      * @see http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx
      */
-    public static <T> IObservable<T> scan(IObservable<T> sequence, Func2<T, T, T> accumulator) {
+    public static <T> Observable<T> scan(Observable<T> sequence, Func2<T, T, T> accumulator) {
         return new Accumulator<T>(sequence, null, accumulator);
     }
 
-    private static class Accumulator<T> extends AbstractIObservable<T> {
-        private final IObservable<T> sequence;
+    private static class Accumulator<T> extends Observable<T> {
+        private final Observable<T> sequence;
         private final T initialValue;
         private Func2<T, T, T> accumlatorFunction;
 
-        private Accumulator(IObservable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
+        private Accumulator(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
             this.sequence = sequence;
             this.initialValue = initialValue;
             this.accumlatorFunction = accumulator;
         }
 
-        public IDisposable subscribe(final IObserver<T> observer) {
+        public Subscription subscribe(final Observer<T> observer) {
 
-            final AtomicWatchableSubscription s = new AtomicWatchableSubscription();
-            final AtomicWatcher<T> watcher = new AtomicWatcher<T>(observer, s);
+            final AtomicObservableSubscription s = new AtomicObservableSubscription();
+            final AtomicObserver<T> Observer = new AtomicObserver<T>(observer, s);
 
-            s.setActual(sequence.subscribe(new IObserver<T>() {
+            s.setActual(sequence.subscribe(new Observer<T>() {
                 private T acc = initialValue;
                 private boolean hasSentInitialValue = false;
 
@@ -83,7 +81,7 @@ import org.rx.reactive.IObserver;
                     }
                     if (!hasSentInitialValue) {
                         hasSentInitialValue = true;
-                        watcher.onNext(acc);
+                        Observer.onNext(acc);
                     }
 
                     try {
@@ -93,25 +91,25 @@ import org.rx.reactive.IObserver;
                             onError(new IllegalArgumentException("Null is an unsupported return value for an accumulator."));
                             return;
                         }
-                        watcher.onNext(acc);
+                        Observer.onNext(acc);
                     } catch (Exception ex) {
-                        watcher.onError(ex);
+                        Observer.onError(ex);
                         // unsubscribe since we blew up
                         s.unsubscribe();
                     }
                 }
 
                 public void onError(Exception ex) {
-                    watcher.onError(ex);
+                    Observer.onError(ex);
                 }
 
                 // synchronized because we access 'hasSentInitialValue'
                 public synchronized void onCompleted() {
                     // if only one sequence value existed, we send it without any accumulation
                     if (!hasSentInitialValue) {
-                        watcher.onNext(acc);
+                        Observer.onNext(acc);
                     }
-                    watcher.onCompleted();
+                    Observer.onCompleted();
                 }
             }));
 
@@ -129,11 +127,11 @@ import org.rx.reactive.IObserver;
         @Test
         public void testScanIntegersWithInitialValue() {
             @SuppressWarnings("unchecked")
-            IObserver<Integer> watcher = mock(IObserver.class);
+            Observer<Integer> Observer = mock(Observer.class);
 
-            IObservable<Integer> observable = WatchableExtensions.toWatchable(1, 2, 3);
+            Observable<Integer> observable = Observable.toObservable(1, 2, 3);
 
-            IObservable<Integer> m = scan(observable, 0, new Func2<Integer, Integer, Integer>() {
+            Observable<Integer> m = scan(observable, 0, new Func2<Integer, Integer, Integer>() {
 
                 @Override
                 public Integer call(Integer t1, Integer t2) {
@@ -141,26 +139,26 @@ import org.rx.reactive.IObserver;
                 }
 
             });
-            m.subscribe(watcher);
+            m.subscribe(Observer);
 
-            verify(watcher, never()).onError(any(Exception.class));
-            verify(watcher, times(1)).onNext(0);
-            verify(watcher, times(1)).onNext(1);
-            verify(watcher, times(1)).onNext(3);
-            verify(watcher, times(1)).onNext(6);
-            verify(watcher, times(4)).onNext(anyInt());
-            verify(watcher, times(1)).onCompleted();
-            verify(watcher, never()).onError(any(Exception.class));
+            verify(Observer, never()).onError(any(Exception.class));
+            verify(Observer, times(1)).onNext(0);
+            verify(Observer, times(1)).onNext(1);
+            verify(Observer, times(1)).onNext(3);
+            verify(Observer, times(1)).onNext(6);
+            verify(Observer, times(4)).onNext(anyInt());
+            verify(Observer, times(1)).onCompleted();
+            verify(Observer, never()).onError(any(Exception.class));
         }
 
         @Test
         public void testScanIntegersWithoutInitialValue() {
             @SuppressWarnings("unchecked")
-            IObserver<Integer> watcher = mock(IObserver.class);
+            Observer<Integer> Observer = mock(Observer.class);
 
-            IObservable<Integer> observable = WatchableExtensions.toWatchable(1, 2, 3);
+            Observable<Integer> observable = Observable.toObservable(1, 2, 3);
 
-            IObservable<Integer> m = scan(observable, new Func2<Integer, Integer, Integer>() {
+            Observable<Integer> m = scan(observable, new Func2<Integer, Integer, Integer>() {
 
                 @Override
                 public Integer call(Integer t1, Integer t2) {
@@ -168,26 +166,26 @@ import org.rx.reactive.IObserver;
                 }
 
             });
-            m.subscribe(watcher);
+            m.subscribe(Observer);
 
-            verify(watcher, never()).onError(any(Exception.class));
-            verify(watcher, never()).onNext(0);
-            verify(watcher, times(1)).onNext(1);
-            verify(watcher, times(1)).onNext(3);
-            verify(watcher, times(1)).onNext(6);
-            verify(watcher, times(3)).onNext(anyInt());
-            verify(watcher, times(1)).onCompleted();
-            verify(watcher, never()).onError(any(Exception.class));
+            verify(Observer, never()).onError(any(Exception.class));
+            verify(Observer, never()).onNext(0);
+            verify(Observer, times(1)).onNext(1);
+            verify(Observer, times(1)).onNext(3);
+            verify(Observer, times(1)).onNext(6);
+            verify(Observer, times(3)).onNext(anyInt());
+            verify(Observer, times(1)).onCompleted();
+            verify(Observer, never()).onError(any(Exception.class));
         }
 
         @Test
         public void testScanIntegersWithoutInitialValueAndOnlyOneValue() {
             @SuppressWarnings("unchecked")
-            IObserver<Integer> watcher = mock(IObserver.class);
+            Observer<Integer> Observer = mock(Observer.class);
 
-            IObservable<Integer> observable = WatchableExtensions.toWatchable(1);
+            Observable<Integer> observable = Observable.toObservable(1);
 
-            IObservable<Integer> m = scan(observable, new Func2<Integer, Integer, Integer>() {
+            Observable<Integer> m = scan(observable, new Func2<Integer, Integer, Integer>() {
 
                 @Override
                 public Integer call(Integer t1, Integer t2) {
@@ -195,14 +193,14 @@ import org.rx.reactive.IObserver;
                 }
 
             });
-            m.subscribe(watcher);
+            m.subscribe(Observer);
 
-            verify(watcher, never()).onError(any(Exception.class));
-            verify(watcher, never()).onNext(0);
-            verify(watcher, times(1)).onNext(1);
-            verify(watcher, times(1)).onNext(anyInt());
-            verify(watcher, times(1)).onCompleted();
-            verify(watcher, never()).onError(any(Exception.class));
+            verify(Observer, never()).onError(any(Exception.class));
+            verify(Observer, never()).onNext(0);
+            verify(Observer, times(1)).onNext(1);
+            verify(Observer, times(1)).onNext(anyInt());
+            verify(Observer, times(1)).onCompleted();
+            verify(Observer, never()).onError(any(Exception.class));
         }
     }
 

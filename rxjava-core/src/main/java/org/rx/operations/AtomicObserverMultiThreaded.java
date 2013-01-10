@@ -18,13 +18,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.rx.reactive.AbstractIObservable;
-import org.rx.reactive.IDisposable;
-import org.rx.reactive.IObserver;
-
+import org.rx.reactive.Observable;
+import org.rx.reactive.Observer;
+import org.rx.reactive.Subscription;
 
 /**
- * A thread-safe Watcher for transitioning states in operators.
+ * A thread-safe Observer for transitioning states in operators.
  * <p>
  * Execution rules are:
  * <ul>
@@ -38,15 +37,15 @@ import org.rx.reactive.IObserver;
  * @param <T>
  */
 @ThreadSafe
-/* package */class AtomicWatcherMultiThreaded<T> implements IObserver<T> {
+/* package */final class AtomicObserverMultiThreaded<T> implements Observer<T> {
 
-    private final IObserver<T> watcher;
-    private final AtomicWatchableSubscription subscription;
+    private final Observer<T> Observer;
+    private final AtomicObservableSubscription subscription;
     private final Sync sync = new Sync();
     private volatile boolean finishRequested = false;
 
-    public AtomicWatcherMultiThreaded(IObserver<T> watcher, AtomicWatchableSubscription subscription) {
-        this.watcher = watcher;
+    public AtomicObserverMultiThreaded(Observer<T> Observer, AtomicObservableSubscription subscription) {
+        this.Observer = Observer;
         this.subscription = subscription;
     }
 
@@ -69,7 +68,7 @@ import org.rx.reactive.IObserver;
             }
             // immediately enter a try/finally that will release the lock once done the work
             try {
-                watcher.onNext(arg);
+                Observer.onNext(arg);
             } finally {
                 // we finished this work so release it
                 sync.releaseShared(Sync.TYPE_NEXT);
@@ -107,7 +106,7 @@ import org.rx.reactive.IObserver;
             }
             // immediately enter a try/finally that will release the lock once done the work
             try {
-                watcher.onError(e);
+                Observer.onError(e);
             } finally {
                 // we finished this work so release it
                 sync.release(Sync.TYPE_FINISH);
@@ -145,7 +144,7 @@ import org.rx.reactive.IObserver;
             }
             // immediately enter a try/finally that will release the lock once done the work
             try {
-                watcher.onCompleted();
+                Observer.onCompleted();
             } finally {
                 // we finished this work so release it
                 sync.release(Sync.TYPE_FINISH);
@@ -306,7 +305,7 @@ import org.rx.reactive.IObserver;
 
     public static class UnitTest {
         @Mock
-        IObserver<String> aWatcher;
+        Observer<String> aObserver;
 
         @Before
         public void before() {
@@ -315,53 +314,53 @@ import org.rx.reactive.IObserver;
 
         @Test
         public void testSingleThreadedBasic() {
-            IDisposable s = mock(IDisposable.class);
-            TestSingleThreadedWatchable w = new TestSingleThreadedWatchable(s, "one", "two", "three");
+            Subscription s = mock(Subscription.class);
+            TestSingleThreadedObservable w = new TestSingleThreadedObservable(s, "one", "two", "three");
 
-            AtomicWatchableSubscription as = new AtomicWatchableSubscription(s);
-            AtomicWatcherMultiThreaded<String> aw = new AtomicWatcherMultiThreaded<String>(aWatcher, as);
+            AtomicObservableSubscription as = new AtomicObservableSubscription(s);
+            AtomicObserverMultiThreaded<String> aw = new AtomicObserverMultiThreaded<String>(aObserver, as);
 
             w.subscribe(aw);
             w.waitToFinish();
 
-            verify(aWatcher, times(1)).onNext("one");
-            verify(aWatcher, times(1)).onNext("two");
-            verify(aWatcher, times(1)).onNext("three");
-            verify(aWatcher, never()).onError(any(Exception.class));
-            verify(aWatcher, times(1)).onCompleted();
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+            verify(aObserver, times(1)).onNext("three");
+            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
             verify(s, never()).unsubscribe();
         }
 
         @Test
         public void testMultiThreadedBasic() {
-            IDisposable s = mock(IDisposable.class);
-            TestMultiThreadedWatchable w = new TestMultiThreadedWatchable(s, "one", "two", "three");
+            Subscription s = mock(Subscription.class);
+            TestMultiThreadedObservable w = new TestMultiThreadedObservable(s, "one", "two", "three");
 
-            AtomicWatchableSubscription as = new AtomicWatchableSubscription(s);
-            BusyWatcher busyWatcher = new BusyWatcher();
-            AtomicWatcherMultiThreaded<String> aw = new AtomicWatcherMultiThreaded<String>(busyWatcher, as);
+            AtomicObservableSubscription as = new AtomicObservableSubscription(s);
+            BusyObserver busyObserver = new BusyObserver();
+            AtomicObserverMultiThreaded<String> aw = new AtomicObserverMultiThreaded<String>(busyObserver, as);
 
             w.subscribe(aw);
             w.waitToFinish();
 
-            assertEquals(3, busyWatcher.onNextCount.get());
-            assertFalse(busyWatcher.onError);
-            assertTrue(busyWatcher.onCompleted);
+            assertEquals(3, busyObserver.onNextCount.get());
+            assertFalse(busyObserver.onError);
+            assertTrue(busyObserver.onCompleted);
             verify(s, never()).unsubscribe();
 
             assertTrue(w.maxConcurrentThreads.get() > 1);
-            assertTrue(busyWatcher.maxConcurrentThreads.get() > 1);
+            assertTrue(busyObserver.maxConcurrentThreads.get() > 1);
             System.out.println("maxConcurrentThreads: " + w.maxConcurrentThreads.get());
         }
 
         @Test
         public void testMultiThreadedWithNPE() {
-            IDisposable s = mock(IDisposable.class);
-            TestMultiThreadedWatchable w = new TestMultiThreadedWatchable(s, "one", "two", "three", null);
+            Subscription s = mock(Subscription.class);
+            TestMultiThreadedObservable w = new TestMultiThreadedObservable(s, "one", "two", "three", null);
 
-            AtomicWatchableSubscription as = new AtomicWatchableSubscription(s);
-            BusyWatcher busyWatcher = new BusyWatcher();
-            AtomicWatcherMultiThreaded<String> aw = new AtomicWatcherMultiThreaded<String>(busyWatcher, as);
+            AtomicObservableSubscription as = new AtomicObservableSubscription(s);
+            BusyObserver busyObserver = new BusyObserver();
+            AtomicObserverMultiThreaded<String> aw = new AtomicObserverMultiThreaded<String>(busyObserver, as);
 
             w.subscribe(aw);
             w.waitToFinish();
@@ -373,40 +372,40 @@ import org.rx.reactive.IObserver;
              * so the null could cause onError to occur before one or more of the other values
              * resulting in less onNext calls than 3.
              */
-            assertTrue(busyWatcher.onNextCount.get() >= 0 && busyWatcher.onNextCount.get() <= 3);
+            assertTrue(busyObserver.onNextCount.get() >= 0 && busyObserver.onNextCount.get() <= 3);
             // we expect an onError because of the null throwing an NPE
-            assertTrue(busyWatcher.onError);
+            assertTrue(busyObserver.onError);
             // no onCompleted because onError was invoked
-            assertFalse(busyWatcher.onCompleted);
+            assertFalse(busyObserver.onCompleted);
             verify(s, never()).unsubscribe();
 
             assertTrue(w.maxConcurrentThreads.get() > 1);
-            assertTrue(busyWatcher.maxConcurrentThreads.get() > 1);
+            assertTrue(busyObserver.maxConcurrentThreads.get() > 1);
         }
 
         @Test
         public void testMultiThreadedWithNPEinMiddle() {
-            IDisposable s = mock(IDisposable.class);
-            TestMultiThreadedWatchable w = new TestMultiThreadedWatchable(s, "one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
+            Subscription s = mock(Subscription.class);
+            TestMultiThreadedObservable w = new TestMultiThreadedObservable(s, "one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
 
-            AtomicWatchableSubscription as = new AtomicWatchableSubscription(s);
-            BusyWatcher busyWatcher = new BusyWatcher();
-            AtomicWatcherMultiThreaded<String> aw = new AtomicWatcherMultiThreaded<String>(busyWatcher, as);
+            AtomicObservableSubscription as = new AtomicObservableSubscription(s);
+            BusyObserver busyObserver = new BusyObserver();
+            AtomicObserverMultiThreaded<String> aw = new AtomicObserverMultiThreaded<String>(busyObserver, as);
 
             w.subscribe(aw);
             w.waitToFinish();
 
             System.out.println("maxConcurrentThreads: " + w.maxConcurrentThreads.get());
             // this should not be the full number of items since the error should stop it before it completes all 9
-            System.out.println("onNext count: " + busyWatcher.onNextCount.get());
-            assertTrue(busyWatcher.onNextCount.get() < 9);
-            assertTrue(busyWatcher.onError);
+            System.out.println("onNext count: " + busyObserver.onNextCount.get());
+            assertTrue(busyObserver.onNextCount.get() < 9);
+            assertTrue(busyObserver.onError);
             // no onCompleted because onError was invoked
-            assertFalse(busyWatcher.onCompleted);
+            assertFalse(busyObserver.onCompleted);
             verify(s, never()).unsubscribe();
 
             assertTrue(w.maxConcurrentThreads.get() > 1);
-            assertTrue(busyWatcher.maxConcurrentThreads.get() > 1);
+            assertTrue(busyObserver.maxConcurrentThreads.get() > 1);
         }
 
         /**
@@ -420,9 +419,9 @@ import org.rx.reactive.IObserver;
         public void runConcurrencyTest() {
             ExecutorService tp = Executors.newFixedThreadPool(20);
             try {
-                TestConcurrencyWatcher tw = new TestConcurrencyWatcher();
-                AtomicWatchableSubscription s = new AtomicWatchableSubscription();
-                AtomicWatcherMultiThreaded<String> w = new AtomicWatcherMultiThreaded<String>(tw, s);
+                TestConcurrencyObserver tw = new TestConcurrencyObserver();
+                AtomicObservableSubscription s = new AtomicObservableSubscription();
+                AtomicObserverMultiThreaded<String> w = new AtomicObserverMultiThreaded<String>(tw, s);
 
                 Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
                 Future<?> f2 = tp.submit(new OnNextThread(w, 5000));
@@ -431,7 +430,7 @@ import org.rx.reactive.IObserver;
                 Future<?> f5 = tp.submit(new OnNextThread(w, 22000));
                 Future<?> f6 = tp.submit(new OnNextThread(w, 15000));
 
-                Future<?> f10 = tp.submit(new CompletionThread(w, TestConcurrencyWatcherEvent.onCompleted, f1, f2, f3, f4));
+                Future<?> f10 = tp.submit(new CompletionThread(w, TestConcurrencyObserverEvent.onCompleted, f1, f2, f3, f4));
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
@@ -442,15 +441,15 @@ import org.rx.reactive.IObserver;
                 Future<?> f7 = tp.submit(new OnNextThread(w, 7500));
                 Future<?> f8 = tp.submit(new OnNextThread(w, 23500));
 
-                Future<?> f11 = tp.submit(new CompletionThread(w, TestConcurrencyWatcherEvent.onCompleted, f4, f6, f7));
-                Future<?> f12 = tp.submit(new CompletionThread(w, TestConcurrencyWatcherEvent.onCompleted, f4, f6, f7));
-                Future<?> f13 = tp.submit(new CompletionThread(w, TestConcurrencyWatcherEvent.onCompleted, f4, f6, f7));
-                Future<?> f14 = tp.submit(new CompletionThread(w, TestConcurrencyWatcherEvent.onCompleted, f4, f6, f7));
+                Future<?> f11 = tp.submit(new CompletionThread(w, TestConcurrencyObserverEvent.onCompleted, f4, f6, f7));
+                Future<?> f12 = tp.submit(new CompletionThread(w, TestConcurrencyObserverEvent.onCompleted, f4, f6, f7));
+                Future<?> f13 = tp.submit(new CompletionThread(w, TestConcurrencyObserverEvent.onCompleted, f4, f6, f7));
+                Future<?> f14 = tp.submit(new CompletionThread(w, TestConcurrencyObserverEvent.onCompleted, f4, f6, f7));
                 // // the next 4 onError events should wait on same as f10
-                Future<?> f15 = tp.submit(new CompletionThread(w, TestConcurrencyWatcherEvent.onError, f1, f2, f3, f4));
-                Future<?> f16 = tp.submit(new CompletionThread(w, TestConcurrencyWatcherEvent.onError, f1, f2, f3, f4));
-                Future<?> f17 = tp.submit(new CompletionThread(w, TestConcurrencyWatcherEvent.onError, f1, f2, f3, f4));
-                Future<?> f18 = tp.submit(new CompletionThread(w, TestConcurrencyWatcherEvent.onError, f1, f2, f3, f4));
+                Future<?> f15 = tp.submit(new CompletionThread(w, TestConcurrencyObserverEvent.onError, f1, f2, f3, f4));
+                Future<?> f16 = tp.submit(new CompletionThread(w, TestConcurrencyObserverEvent.onError, f1, f2, f3, f4));
+                Future<?> f17 = tp.submit(new CompletionThread(w, TestConcurrencyObserverEvent.onError, f1, f2, f3, f4));
+                Future<?> f18 = tp.submit(new CompletionThread(w, TestConcurrencyObserverEvent.onError, f1, f2, f3, f4));
 
                 waitOnThreads(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11, f12, f13, f14, f15, f16, f17, f18);
                 int numNextEvents = tw.assertEvents();
@@ -472,28 +471,28 @@ import org.rx.reactive.IObserver;
          * This spawns a single thread for the subscribe execution
          * 
          */
-        private static class TestSingleThreadedWatchable extends AbstractIObservable<String> {
+        private static class TestSingleThreadedObservable extends Observable<String> {
 
-            final IDisposable s;
+            final Subscription s;
             final String[] values;
             Thread t = null;
 
-            public TestSingleThreadedWatchable(IDisposable s, String... values) {
+            public TestSingleThreadedObservable(Subscription s, String... values) {
                 this.s = s;
                 this.values = values;
             }
 
             @Override
-            public IDisposable subscribe(final IObserver<String> observer) {
-                System.out.println("TestSingleThreadedWatchable subscribed to ...");
+            public Subscription subscribe(final Observer<String> observer) {
+                System.out.println("TestSingleThreadedObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 
                     @Override
                     public void run() {
                         try {
-                            System.out.println("running TestSingleThreadedWatchable thread");
+                            System.out.println("running TestSingleThreadedObservable thread");
                             for (String s : values) {
-                                System.out.println("TestSingleThreadedWatchable onNext: " + s);
+                                System.out.println("TestSingleThreadedObservable onNext: " + s);
                                 observer.onNext(s);
                             }
                             observer.onCompleted();
@@ -503,9 +502,9 @@ import org.rx.reactive.IObserver;
                     }
 
                 });
-                System.out.println("starting TestSingleThreadedWatchable thread");
+                System.out.println("starting TestSingleThreadedObservable thread");
                 t.start();
-                System.out.println("done starting TestSingleThreadedWatchable thread");
+                System.out.println("done starting TestSingleThreadedObservable thread");
                 return s;
             }
 
@@ -523,30 +522,30 @@ import org.rx.reactive.IObserver;
          * This spawns a thread for the subscription, then a separate thread for each onNext call.
          * 
          */
-        private static class TestMultiThreadedWatchable extends AbstractIObservable<String> {
+        private static class TestMultiThreadedObservable extends Observable<String> {
 
-            final IDisposable s;
+            final Subscription s;
             final String[] values;
             Thread t = null;
             AtomicInteger threadsRunning = new AtomicInteger();
             AtomicInteger maxConcurrentThreads = new AtomicInteger();
             ExecutorService threadPool;
 
-            public TestMultiThreadedWatchable(IDisposable s, String... values) {
+            public TestMultiThreadedObservable(Subscription s, String... values) {
                 this.s = s;
                 this.values = values;
                 this.threadPool = Executors.newCachedThreadPool();
             }
 
             @Override
-            public IDisposable subscribe(final IObserver<String> observer) {
-                System.out.println("TestMultiThreadedWatchable subscribed to ...");
+            public Subscription subscribe(final Observer<String> observer) {
+                System.out.println("TestMultiThreadedObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 
                     @Override
                     public void run() {
                         try {
-                            System.out.println("running TestMultiThreadedWatchable thread");
+                            System.out.println("running TestMultiThreadedObservable thread");
                             for (final String s : values) {
                                 threadPool.execute(new Runnable() {
 
@@ -555,7 +554,7 @@ import org.rx.reactive.IObserver;
                                         threadsRunning.incrementAndGet();
                                         try {
                                             // perform onNext call
-                                            System.out.println("TestMultiThreadedWatchable onNext: " + s);
+                                            System.out.println("TestMultiThreadedObservable onNext: " + s);
                                             if (s == null) {
                                                 // force an error
                                                 throw new NullPointerException();
@@ -591,9 +590,9 @@ import org.rx.reactive.IObserver;
                         observer.onCompleted();
                     }
                 });
-                System.out.println("starting TestMultiThreadedWatchable thread");
+                System.out.println("starting TestMultiThreadedObservable thread");
                 t.start();
-                System.out.println("done starting TestMultiThreadedWatchable thread");
+                System.out.println("done starting TestMultiThreadedObservable thread");
                 return s;
             }
 
@@ -606,7 +605,7 @@ import org.rx.reactive.IObserver;
             }
         }
 
-        private static class BusyWatcher implements IObserver<String> {
+        private static class BusyObserver implements Observer<String> {
             volatile boolean onCompleted = false;
             volatile boolean onError = false;
             AtomicInteger onNextCount = new AtomicInteger();
@@ -615,13 +614,13 @@ import org.rx.reactive.IObserver;
 
             @Override
             public void onCompleted() {
-                System.out.println(">>> BusyWatcher received onCompleted");
+                System.out.println(">>> BusyObserver received onCompleted");
                 onCompleted = true;
             }
 
             @Override
             public void onError(Exception e) {
-                System.out.println(">>> BusyWatcher received onError: " + e.getMessage());
+                System.out.println(">>> BusyObserver received onError: " + e.getMessage());
                 onError = true;
             }
 
@@ -630,7 +629,7 @@ import org.rx.reactive.IObserver;
                 threadsRunning.incrementAndGet();
                 try {
                     onNextCount.incrementAndGet();
-                    System.out.println(">>> BusyWatcher received onNext: " + args);
+                    System.out.println(">>> BusyObserver received onNext: " + args);
                     try {
                         // simulate doing something computational
                         Thread.sleep(200);
@@ -650,37 +649,38 @@ import org.rx.reactive.IObserver;
 
         }
 
-        private static enum TestConcurrencyWatcherEvent {
+        private static enum TestConcurrencyObserverEvent {
             onCompleted, onError, onNext;
         }
 
-        private static class TestConcurrencyWatcher implements IObserver<String> {
+        private static class TestConcurrencyObserver implements Observer<String> {
 
             /** used to store the order and number of events received */
-            private final LinkedBlockingQueue<TestConcurrencyWatcherEvent> events = new LinkedBlockingQueue<TestConcurrencyWatcherEvent>();
+            private final LinkedBlockingQueue<TestConcurrencyObserverEvent> events = new LinkedBlockingQueue<TestConcurrencyObserverEvent>();
             private final int waitTime;
 
-            public TestConcurrencyWatcher(int waitTimeInNext) {
+            @SuppressWarnings("unused")
+            public TestConcurrencyObserver(int waitTimeInNext) {
                 this.waitTime = waitTimeInNext;
             }
 
-            public TestConcurrencyWatcher() {
+            public TestConcurrencyObserver() {
                 this.waitTime = 0;
             }
 
             @Override
             public void onCompleted() {
-                events.add(TestConcurrencyWatcherEvent.onCompleted);
+                events.add(TestConcurrencyObserverEvent.onCompleted);
             }
 
             @Override
             public void onError(Exception e) {
-                events.add(TestConcurrencyWatcherEvent.onError);
+                events.add(TestConcurrencyObserverEvent.onError);
             }
 
             @Override
             public void onNext(String args) {
-                events.add(TestConcurrencyWatcherEvent.onNext);
+                events.add(TestConcurrencyObserverEvent.onNext);
                 // do some artificial work to make the thread scheduling/timing vary
                 int s = 0;
                 for (int i = 0; i < 20; i++) {
@@ -707,20 +707,20 @@ import org.rx.reactive.IObserver;
             public int assertEvents() throws IllegalStateException {
                 int nextCount = 0;
                 boolean finished = false;
-                for (TestConcurrencyWatcherEvent e : events) {
-                    if (e == TestConcurrencyWatcherEvent.onNext) {
+                for (TestConcurrencyObserverEvent e : events) {
+                    if (e == TestConcurrencyObserverEvent.onNext) {
                         if (finished) {
                             // already finished, we shouldn't get this again
                             throw new IllegalStateException("Received onNext but we're already finished.");
                         }
                         nextCount++;
-                    } else if (e == TestConcurrencyWatcherEvent.onError) {
+                    } else if (e == TestConcurrencyObserverEvent.onError) {
                         if (finished) {
                             // already finished, we shouldn't get this again
                             throw new IllegalStateException("Received onError but we're already finished.");
                         }
                         finished = true;
-                    } else if (e == TestConcurrencyWatcherEvent.onCompleted) {
+                    } else if (e == TestConcurrencyObserverEvent.onCompleted) {
                         if (finished) {
                             // already finished, we shouldn't get this again
                             throw new IllegalStateException("Received onCompleted but we're already finished.");
@@ -739,18 +739,18 @@ import org.rx.reactive.IObserver;
          */
         public static class OnNextThread implements Runnable {
 
-            private final IObserver<String> watcher;
+            private final Observer<String> Observer;
             private final int numStringsToSend;
 
-            OnNextThread(IObserver<String> watcher, int numStringsToSend) {
-                this.watcher = watcher;
+            OnNextThread(Observer<String> Observer, int numStringsToSend) {
+                this.Observer = Observer;
                 this.numStringsToSend = numStringsToSend;
             }
 
             @Override
             public void run() {
                 for (int i = 0; i < numStringsToSend; i++) {
-                    watcher.onNext("aString");
+                    Observer.onNext("aString");
                 }
             }
         }
@@ -760,12 +760,12 @@ import org.rx.reactive.IObserver;
          */
         public static class CompletionThread implements Runnable {
 
-            private final IObserver<String> watcher;
-            private final TestConcurrencyWatcherEvent event;
+            private final Observer<String> Observer;
+            private final TestConcurrencyObserverEvent event;
             private final Future<?>[] waitOnThese;
 
-            CompletionThread(IObserver<String> watcher, TestConcurrencyWatcherEvent event, Future<?>... waitOnThese) {
-                this.watcher = watcher;
+            CompletionThread(Observer<String> Observer, TestConcurrencyObserverEvent event, Future<?>... waitOnThese) {
+                this.Observer = Observer;
                 this.event = event;
                 this.waitOnThese = waitOnThese;
             }
@@ -784,10 +784,10 @@ import org.rx.reactive.IObserver;
                 }
 
                 /* send the event */
-                if (event == TestConcurrencyWatcherEvent.onError) {
-                    watcher.onError(new RuntimeException("mocked exception"));
-                } else if (event == TestConcurrencyWatcherEvent.onCompleted) {
-                    watcher.onCompleted();
+                if (event == TestConcurrencyObserverEvent.onError) {
+                    Observer.onError(new RuntimeException("mocked exception"));
+                } else if (event == TestConcurrencyObserverEvent.onCompleted) {
+                    Observer.onCompleted();
 
                 } else {
                     throw new IllegalArgumentException("Expecting either onError or onCompleted");

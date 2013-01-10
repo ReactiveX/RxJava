@@ -8,78 +8,85 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.rx.functions.Func1;
-import org.rx.reactive.AbstractIObservable;
 import org.rx.reactive.CompositeException;
-import org.rx.reactive.IObservable;
-import org.rx.reactive.IDisposable;
-import org.rx.reactive.IObserver;
+import org.rx.reactive.Observable;
+import org.rx.reactive.Observer;
+import org.rx.reactive.Subscription;
 
+public final class OperationOnErrorResumeNextViaFunction<T> {
 
-final class OperationOnErrorResumeNextViaFunction<T> extends AbstractIObservable<T> {
-    private final Func1<IObservable<T>, Exception> resumeFunction;
-    private final IObservable<T> originalSequence;
-
-    OperationOnErrorResumeNextViaFunction(IObservable<T> originalSequence, Func1<IObservable<T>, Exception> resumeFunction) {
-        this.resumeFunction = resumeFunction;
-        this.originalSequence = originalSequence;
+    public static <T> Observable<T> onErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<Observable<T>, Exception> resumeFunction) {
+        return new OnErrorResumeNextViaFunction<T>(originalSequence, resumeFunction);
     }
 
-    public IDisposable subscribe(IObserver<T> watcher) {
-        final AtomicWatchableSubscription subscription = new AtomicWatchableSubscription();
-        final IObserver<T> observer = new AtomicWatcher<T>(watcher, subscription);
+    private static class OnErrorResumeNextViaFunction<T> extends Observable<T> {
 
-        // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
-        final AtomicReference<AtomicWatchableSubscription> subscriptionRef = new AtomicReference<AtomicWatchableSubscription>(subscription);
+        private final Func1<Observable<T>, Exception> resumeFunction;
+        private final Observable<T> originalSequence;
 
-        // subscribe to the original Watchable and remember the subscription
-        subscription.setActual(originalSequence.subscribe(new IObserver<T>() {
-            public void onNext(T value) {
-                // forward the successful calls
-                observer.onNext(value);
-            }
+        public OnErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<Observable<T>, Exception> resumeFunction) {
+            this.resumeFunction = resumeFunction;
+            this.originalSequence = originalSequence;
+        }
 
-            /**
-             * Instead of passing the onError forward, we intercept and "resume" with the resumeSequence.
-             */
-            public void onError(Exception ex) {
-                /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
-                AtomicWatchableSubscription currentSubscription = subscriptionRef.get();
-                // check that we have not been unsubscribed before we can process the error
-                if (currentSubscription != null) {
-                    try {
-                        IObservable<T> resumeSequence = resumeFunction.call(ex);
-                        /* error occurred, so switch subscription to the 'resumeSequence' */
-                        AtomicWatchableSubscription innerSubscription = new AtomicWatchableSubscription(resumeSequence.subscribe(observer));
-                        /* we changed the sequence, so also change the subscription to the one of the 'resumeSequence' instead */
-                        if (!subscriptionRef.compareAndSet(currentSubscription, innerSubscription)) {
-                            // we failed to set which means 'subscriptionRef' was set to NULL via the unsubscribe below
-                            // so we want to immediately unsubscribe from the resumeSequence we just subscribed to
-                            innerSubscription.unsubscribe();
+        public Subscription subscribe(Observer<T> Observer) {
+            final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+            final Observer<T> observer = new AtomicObserver<T>(Observer, subscription);
+
+            // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
+            final AtomicReference<AtomicObservableSubscription> subscriptionRef = new AtomicReference<AtomicObservableSubscription>(subscription);
+
+            // subscribe to the original Observable and remember the subscription
+            subscription.setActual(originalSequence.subscribe(new Observer<T>() {
+                public void onNext(T value) {
+                    // forward the successful calls
+                    observer.onNext(value);
+                }
+
+                /**
+                 * Instead of passing the onError forward, we intercept and "resume" with the resumeSequence.
+                 */
+                public void onError(Exception ex) {
+                    /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
+                    AtomicObservableSubscription currentSubscription = subscriptionRef.get();
+                    // check that we have not been unsubscribed before we can process the error
+                    if (currentSubscription != null) {
+                        try {
+                            Observable<T> resumeSequence = resumeFunction.call(ex);
+                            /* error occurred, so switch subscription to the 'resumeSequence' */
+                            AtomicObservableSubscription innerSubscription = new AtomicObservableSubscription(resumeSequence.subscribe(observer));
+                            /* we changed the sequence, so also change the subscription to the one of the 'resumeSequence' instead */
+                            if (!subscriptionRef.compareAndSet(currentSubscription, innerSubscription)) {
+                                // we failed to set which means 'subscriptionRef' was set to NULL via the unsubscribe below
+                                // so we want to immediately unsubscribe from the resumeSequence we just subscribed to
+                                innerSubscription.unsubscribe();
+                            }
+                        } catch (Exception e) {
+                            // the resume function failed so we need to call onError
+                            // I am using CompositeException so that both exceptions can be seen
+                            observer.onError(new CompositeException("OnErrorResume function failed", Arrays.asList(ex, e)));
                         }
-                    } catch (Exception e) {
-                        // the resume function failed so we need to call onError
-                        // I am using CompositeException so that both exceptions can be seen
-                        observer.onError(new CompositeException("OnErrorResume function failed", Arrays.asList(ex, e)));
                     }
                 }
-            }
 
-            public void onCompleted() {
-                // forward the successful calls
-                observer.onCompleted();
-            }
-        }));
-
-        return new IDisposable() {
-            public void unsubscribe() {
-                // this will get either the original, or the resumeSequence one and unsubscribe on it
-                IDisposable s = subscriptionRef.getAndSet(null);
-                if (s != null) {
-                    s.unsubscribe();
+                public void onCompleted() {
+                    // forward the successful calls
+                    observer.onCompleted();
                 }
-            }
-        };
+            }));
+
+            return new Subscription() {
+                public void unsubscribe() {
+                    // this will get either the original, or the resumeSequence one and unsubscribe on it
+                    Subscription s = subscriptionRef.getAndSet(null);
+                    if (s != null) {
+                        s.unsubscribe();
+                    }
+                }
+            };
+        }
     }
 
     public static class UnitTest {
@@ -87,22 +94,22 @@ final class OperationOnErrorResumeNextViaFunction<T> extends AbstractIObservable
         @Test
         public void testResumeNext() {
             final AtomicReference<Exception> receivedException = new AtomicReference<Exception>();
-            IDisposable s = mock(IDisposable.class);
-            TestWatchable w = new TestWatchable(s, "one");
-            Func1<IObservable<String>, Exception> resume = new Func1<IObservable<String>, Exception>() {
+            Subscription s = mock(Subscription.class);
+            TestObservable w = new TestObservable(s, "one");
+            Func1<Observable<String>, Exception> resume = new Func1<Observable<String>, Exception>() {
 
                 @Override
-                public IObservable<String> call(Exception t1) {
+                public Observable<String> call(Exception t1) {
                     receivedException.set(t1);
-                    return WatchableExtensions.toWatchable("twoResume", "threeResume");
+                    return Observable.toObservable("twoResume", "threeResume");
                 }
 
             };
-            IObservable<String> watchable = new OperationOnErrorResumeNextViaFunction<String>(w, resume);
+            Observable<String> Observable = onErrorResumeNextViaFunction(w, resume);
 
             @SuppressWarnings("unchecked")
-            IObserver<String> aWatcher = mock(IObserver.class);
-            watchable.subscribe(aWatcher);
+            Observer<String> aObserver = mock(Observer.class);
+            Observable.subscribe(aObserver);
 
             try {
                 w.t.join();
@@ -110,13 +117,13 @@ final class OperationOnErrorResumeNextViaFunction<T> extends AbstractIObservable
                 fail(e.getMessage());
             }
 
-            verify(aWatcher, never()).onError(any(Exception.class));
-            verify(aWatcher, times(1)).onCompleted();
-            verify(aWatcher, times(1)).onNext("one");
-            verify(aWatcher, never()).onNext("two");
-            verify(aWatcher, never()).onNext("three");
-            verify(aWatcher, times(1)).onNext("twoResume");
-            verify(aWatcher, times(1)).onNext("threeResume");
+            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, Mockito.never()).onNext("two");
+            verify(aObserver, Mockito.never()).onNext("three");
+            verify(aObserver, times(1)).onNext("twoResume");
+            verify(aObserver, times(1)).onNext("threeResume");
             assertNotNull(receivedException.get());
         }
 
@@ -125,21 +132,21 @@ final class OperationOnErrorResumeNextViaFunction<T> extends AbstractIObservable
          */
         @Test
         public void testFunctionThrowsError() {
-            IDisposable s = mock(IDisposable.class);
-            TestWatchable w = new TestWatchable(s, "one");
-            Func1<IObservable<String>, Exception> resume = new Func1<IObservable<String>, Exception>() {
+            Subscription s = mock(Subscription.class);
+            TestObservable w = new TestObservable(s, "one");
+            Func1<Observable<String>, Exception> resume = new Func1<Observable<String>, Exception>() {
 
                 @Override
-                public IObservable<String> call(Exception t1) {
+                public Observable<String> call(Exception t1) {
                     throw new RuntimeException("exception from function");
                 }
 
             };
-            IObservable<String> watchable = new OperationOnErrorResumeNextViaFunction<String>(w, resume);
+            Observable<String> Observable = onErrorResumeNextViaFunction(w, resume);
 
             @SuppressWarnings("unchecked")
-            IObserver<String> aWatcher = mock(IObserver.class);
-            watchable.subscribe(aWatcher);
+            Observer<String> aObserver = mock(Observer.class);
+            Observable.subscribe(aObserver);
 
             try {
                 w.t.join();
@@ -148,35 +155,35 @@ final class OperationOnErrorResumeNextViaFunction<T> extends AbstractIObservable
             }
 
             // we should get the "one" value before the error
-            verify(aWatcher, times(1)).onNext("one");
+            verify(aObserver, times(1)).onNext("one");
 
-            // we should have received an onError call on the watcher since the resume function threw an exception
-            verify(aWatcher, times(1)).onError(any(Exception.class));
-            verify(aWatcher, times(0)).onCompleted();
+            // we should have received an onError call on the Observer since the resume function threw an exception
+            verify(aObserver, times(1)).onError(any(Exception.class));
+            verify(aObserver, times(0)).onCompleted();
         }
 
-        private static class TestWatchable extends AbstractIObservable<String> {
+        private static class TestObservable extends Observable<String> {
 
-            final IDisposable s;
+            final Subscription s;
             final String[] values;
             Thread t = null;
 
-            public TestWatchable(IDisposable s, String... values) {
+            public TestObservable(Subscription s, String... values) {
                 this.s = s;
                 this.values = values;
             }
 
             @Override
-            public IDisposable subscribe(final IObserver<String> observer) {
-                System.out.println("TestWatchable subscribed to ...");
+            public Subscription subscribe(final Observer<String> observer) {
+                System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 
                     @Override
                     public void run() {
                         try {
-                            System.out.println("running TestWatchable thread");
+                            System.out.println("running TestObservable thread");
                             for (String s : values) {
-                                System.out.println("TestWatchable onNext: " + s);
+                                System.out.println("TestObservable onNext: " + s);
                                 observer.onNext(s);
                             }
                             throw new RuntimeException("Forced Failure");
@@ -186,9 +193,9 @@ final class OperationOnErrorResumeNextViaFunction<T> extends AbstractIObservable
                     }
 
                 });
-                System.out.println("starting TestWatchable thread");
+                System.out.println("starting TestObservable thread");
                 t.start();
-                System.out.println("done starting TestWatchable thread");
+                System.out.println("done starting TestObservable thread");
                 return s;
             }
 
