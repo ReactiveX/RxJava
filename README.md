@@ -1,10 +1,14 @@
 # RxJava: Functional Reactive Programming on the JVM
 
-Java implementation of <a href="https://rx.codeplex.com">Rx Observables</a>
+This library is Java implementation of <a href="https://rx.codeplex.com">Rx Observables</a>.
+
+It is compatible with Java 5 and newer and has several <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors">language adaptors</a>.
+
+## Documentation
 
 <a href="http://netflix.github.com/RxJava/">Javadoc</a>
 
-Code:
+## Code
 
 - <a href="https://github.com/Netflix/RxJava/tree/master/rxjava-core">Java Core</a>   
   - <a href="https://github.com/Netflix/RxJava/blob/master/rxjava-core/src/main/java/org/rx/reactive/Observable.java">Observable</a>
