@@ -1,94 +1,141 @@
 package org.rx.functions;
 
-import groovy.lang.Closure;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.jruby.Ruby;
-import org.jruby.RubyProc;
-import org.jruby.javasupport.JavaEmbedUtils;
-import org.jruby.runtime.builtin.IRubyObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Allows execution of functions from multiple different languages.
+ * <p>
+ * Language support is provided via implementations of {@link FunctionLanguageAdaptor}.
+ * <p>
+ * This class will dynamically look for known language adaptors on the classpath at startup or new ones can be registered using {@link #registerLanguageAdaptor(Class, FunctionLanguageAdaptor)}.
+ */
 public class Functions {
 
     private static final Logger logger = LoggerFactory.getLogger(Functions.class);
 
+    private final static ConcurrentHashMap<Class<?>, FunctionLanguageAdaptor> languageAdaptors = new ConcurrentHashMap<Class<?>, FunctionLanguageAdaptor>();
+
+    static {
+        /* optimistically look for supported languages if they are in the classpath */
+        loadLanguageAdaptor("Groovy");
+        loadLanguageAdaptor("JRuby");
+        loadLanguageAdaptor("Clojure");
+        loadLanguageAdaptor("Scala");
+        // as new languages arise we can add them here but this does not prevent someone from using 'registerLanguageAdaptor' directly
+    }
+
+    private static void loadLanguageAdaptor(String name) {
+        String className = "org.rx.lang." + name.toLowerCase() + "." + name + "Adaptor";
+        try {
+            Class<?> c = Class.forName(className);
+            FunctionLanguageAdaptor a = (FunctionLanguageAdaptor) c.newInstance();
+            registerLanguageAdaptor(a.getFunctionClass(), a);
+        } catch (ClassNotFoundException e) {
+            logger.info("Could not found function language adaptor: " + name + " with path: " + className);
+        } catch (Exception e) {
+            logger.error("Failed trying to initialize function language adaptor: " + className, e);
+        }
+    }
+
+    public static void registerLanguageAdaptor(Class<?> functionClass, FunctionLanguageAdaptor adaptor) {
+        languageAdaptors.put(functionClass, adaptor);
+    }
+
+    public static void removeLanguageAdaptor(Class<?> functionClass) {
+        languageAdaptors.remove(functionClass);
+    }
+
+    public static Collection<FunctionLanguageAdaptor> getRegisteredLanguageAdaptors() {
+        return languageAdaptors.values();
+    }
+
     /**
      * Utility method for determining the type of closure/function and executing it.
      * 
-     * @param closure
+     * @param function
      * @param args
      */
     @SuppressWarnings("unchecked")
-    public static <R> R execute(Object closure, Object... args) {
+    public static <R> R execute(Object function, Object... args) {
         // if we have a tracer then log the start
         long startTime = -1;
         if (tracer != null && tracer.isTraceEnabled()) {
             try {
                 startTime = System.nanoTime();
-                tracer.traceStart(closure, args);
+                tracer.traceStart(function, args);
             } catch (Exception e) {
                 logger.warn("Failed to trace log.", e);
             }
         }
         // perform controller logic to determine what type of function we received and execute it
         try {
-            if (closure == null) {
-                throw new RuntimeException("closure is null. Can't send arguments to null closure.");
+            if (function == null) {
+                throw new RuntimeException("function is null. Can't send arguments to null function.");
             }
-            if (closure instanceof Closure) {
-                /* handle Groovy */
-                return (R) ((Closure<?>) closure).call(args);
-            } else if (closure instanceof RubyProc) {
-                // handle JRuby
-                RubyProc rubyProc = ((RubyProc) closure);
-                Ruby ruby = rubyProc.getRuntime();
-                IRubyObject rubyArgs[] = new IRubyObject[args.length];
-                for (int i = 0; i < args.length; i++) {
-                    rubyArgs[i] = JavaEmbedUtils.javaToRuby(ruby, args[i]);
+
+            /*
+             * TODO the following code needs to be evaluated for performance
+             * 
+             * The c.isInstance and keySet() functions may be areas of concern with as often as this will be executed
+             */
+
+            // check for language adaptor
+            for (@SuppressWarnings("rawtypes")
+            Class c : languageAdaptors.keySet()) {
+                if (c.isInstance(function)) {
+                    // found the language adaptor so execute
+                    return (R) languageAdaptors.get(c).call(function, args);
                 }
-                return (R) rubyProc.getBlock().call(ruby.getCurrentContext(), rubyArgs);
-            } else if (closure instanceof Func0) {
-                Func0<R> f = (Func0<R>) closure;
+            }
+            // no language adaptor found
+
+            // check Func* classes 
+            if (function instanceof Func0) {
+                Func0<R> f = (Func0<R>) function;
                 if (args.length != 0) {
                     throw new RuntimeException("The closure was Func0 and expected no arguments, but we received: " + args.length);
                 }
                 return (R) f.call();
-            } else if (closure instanceof Func1) {
-                Func1<R, Object> f = (Func1<R, Object>) closure;
+            } else if (function instanceof Func1) {
+                Func1<R, Object> f = (Func1<R, Object>) function;
                 if (args.length != 1) {
                     throw new RuntimeException("The closure was Func1 and expected 1 argument, but we received: " + args.length);
                 }
                 return f.call(args[0]);
-            } else if (closure instanceof Func2) {
-                Func2<R, Object, Object> f = (Func2<R, Object, Object>) closure;
+            } else if (function instanceof Func2) {
+                Func2<R, Object, Object> f = (Func2<R, Object, Object>) function;
                 if (args.length != 2) {
                     throw new RuntimeException("The closure was Func2 and expected 2 arguments, but we received: " + args.length);
                 }
                 return f.call(args[0], args[1]);
-            } else if (closure instanceof Func3) {
-                Func3<R, Object, Object, Object> f = (Func3<R, Object, Object, Object>) closure;
+            } else if (function instanceof Func3) {
+                Func3<R, Object, Object, Object> f = (Func3<R, Object, Object, Object>) function;
                 if (args.length != 3) {
                     throw new RuntimeException("The closure was Func3 and expected 3 arguments, but we received: " + args.length);
                 }
                 return (R) f.call(args[0], args[1], args[2]);
-            } else if (closure instanceof Func4) {
-                Func4<R, Object, Object, Object, Object> f = (Func4<R, Object, Object, Object, Object>) closure;
+            } else if (function instanceof Func4) {
+                Func4<R, Object, Object, Object, Object> f = (Func4<R, Object, Object, Object, Object>) function;
                 if (args.length != 1) {
                     throw new RuntimeException("The closure was Func4 and expected 4 arguments, but we received: " + args.length);
                 }
                 return f.call(args[0], args[1], args[2], args[3]);
-            } else if (closure instanceof FuncN) {
-                FuncN<R> f = (FuncN<R>) closure;
+            } else if (function instanceof FuncN) {
+                FuncN<R> f = (FuncN<R>) function;
                 return f.call(args);
-            } else {
-                throw new RuntimeException("Unsupported closure type: " + closure.getClass().getSimpleName());
             }
+
+            // no support found
+            throw new RuntimeException("Unsupported closure type: " + function.getClass().getSimpleName());
         } finally {
             // if we have a tracer then log the end
             if (tracer != null && tracer.isTraceEnabled()) {
                 try {
-                    tracer.traceEnd(startTime, System.nanoTime(), closure, args);
+                    tracer.traceEnd(startTime, System.nanoTime(), function, args);
                 } catch (Exception e) {
                     logger.warn("Failed to trace log.", e);
                 }
@@ -199,4 +246,5 @@ public class Functions {
     public static void registerTraceLogger(FunctionTraceLogger tracer) {
         Functions.tracer = tracer;
     }
+
 }
