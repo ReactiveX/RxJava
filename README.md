@@ -12,3 +12,10 @@ Code:
 - <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-groovy">Groovy Adaptor</a>   
 - <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-jruby">JRuby Adaptor</a>   
 - <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-clojure">Clojure Adaptor</a>   
+
+# Current Status
+
+- API design and naming conventions are being finalized.
+- Javadocs all reference images that aren't yet placed somewhere public.
+- Wiki documentation has not been migrated.
+- Need to audit with <a href="https://rx.codeplex.com">rx.codeplex.com</a> for API
