@@ -10,8 +10,6 @@ dependencies {
     compile 'com.google.code.findbugs:jsr305:2.0.0'
     provided 'junit:junit:4.10'
     provided 'org.mockito:mockito-core:1.9.5'
-    compile 'org.codehaus.groovy:groovy:1.8.8'
-    compile 'org.jruby:jruby:1.7.2'
 }
 
 eclipse {
@@ -22,5 +20,18 @@ eclipse {
     downloadSources = true
     downloadJavadoc = true
   }
+}
+
+javadoc {
+    // we do not want the org.rx.operations package include
+    exclude '**/operations/**'
+	
+    options {
+        doclet = "org.benjchristensen.doclet.DocletExclude"
+        docletpath = [rootProject.file('./gradle/doclet-exclude.jar')]
+        stylesheetFile = rootProject.file('./gradle/javadocStyleSheet.css')
+        windowTitle = "RxJava Javadoc ${project.version}"
+    }
+    options.addStringOption('top').value = '<h2 class="title" style="padding-top:40px">RxJava</h2>'
 }
 
