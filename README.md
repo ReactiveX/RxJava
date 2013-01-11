@@ -17,7 +17,7 @@ It is compatible with Java 5 and newer and has several <a href="https://github.c
 - <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-jruby">JRuby Adaptor</a>   
 - <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-clojure">Clojure Adaptor</a>   
 
-# Current Status
+## Current Status
 
 - API design and naming conventions are being finalized.
 - Javadocs all reference images that aren't yet placed somewhere public.
