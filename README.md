@@ -2,7 +2,7 @@
 
 This library is Java implementation of <a href="https://rx.codeplex.com">Rx Observables</a>.
 
-It is compatible with Java 5 and newer and has several <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors">language adaptors</a>.
+It is compatible with Java 5 and newer and has several <a href="RxJava/tree/master/language-adaptors">language adaptors</a>.
 
 ## Documentation
 
@@ -10,12 +10,12 @@ It is compatible with Java 5 and newer and has several <a href="https://github.c
 
 ## Code
 
-- <a href="https://github.com/Netflix/RxJava/tree/master/rxjava-core">Java Core</a>   
-  - <a href="https://github.com/Netflix/RxJava/blob/master/rxjava-core/src/main/java/org/rx/reactive/Observable.java">Observable</a>
-  - <a href="https://github.com/Netflix/RxJava/blob/master/rxjava-core/src/main/java/org/rx/reactive/Observer.java">Observer</a>
-- <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-groovy">Groovy Adaptor</a>   
-- <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-jruby">JRuby Adaptor</a>   
-- <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-clojure">Clojure Adaptor</a>   
+- <a href="RxJava/tree/master/rxjava-core">Java Core</a>   
+  - <a href="RxJava/blob/master/rxjava-core/src/main/java/org/rx/reactive/Observable.java">Observable</a>
+  - <a href="RxJava/blob/master/rxjava-core/src/main/java/org/rx/reactive/Observer.java">Observer</a>
+- <a href="RxJava/tree/master/language-adaptors/rxjava-groovy">Groovy Adaptor</a>   
+- <a href="RxJava/tree/master/language-adaptors/rxjava-jruby">JRuby Adaptor</a>   
+- <a href="RxJava/tree/master/language-adaptors/rxjava-clojure">Clojure Adaptor</a>   
 
 ## Current Status
 
@@ -26,7 +26,7 @@ It is compatible with Java 5 and newer and has several <a href="https://github.c
 
 ## Bugs and Feedback
 
-For bugs, questions and discussions please use the [Github Issues](Hystrix/issues).
+For bugs, questions and discussions please use the [Github Issues](RxJava/issues).
 
  
 ## LICENSE
