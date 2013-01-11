@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -136,9 +136,10 @@ public abstract class Observable<T> {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Subscription subscribe(final Object onNext) {
-        if (onNext instanceof Observer) {
-            throw new RuntimeException("Observers are not intended to be passed to this generic method. Your generic type is most likely wrong. This method is for dynamic code to send in closures.");
+    public Subscription subscribe(final Object o) {
+        if (o instanceof Observer) {
+            // in case a dynamic language is not correctly handling the overloaded methods and we receive an Observer just forward to the correct method.
+            return subscribe((Observer) o);
         }
         return subscribe(new Observer() {
 
@@ -152,10 +153,10 @@ public abstract class Observable<T> {
             }
 
             public void onNext(Object args) {
-                if (onNext == null) {
+                if (o == null) {
                     throw new RuntimeException("onNext must be implemented");
                 }
-                executeCallback(onNext, args);
+                executeCallback(o, args);
             }
 
         });
