@@ -69,15 +69,6 @@ public abstract class Observable<T> {
     public Observable() {
     }
 
-    public static <T> Observable<T> create(final Func1<Subscription, Observer<T>> f, Observer<T> observer) {
-        return new Observable<T>() {
-            @Override
-            public Subscription subscribe(Observer<T> observer) {
-                return f.call(observer);
-            }
-        };
-    }
-
     /**
      * A Observer must call a Observable's <code>subscribe</code> method in order to register itself
      * to receive push-based notifications from the Observable. A typical implementation of the
