@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,8 +56,13 @@ public class Functions {
         }
     }
 
-    public static void registerLanguageAdaptor(Class<?> functionClass, FunctionLanguageAdaptor adaptor) {
-        languageAdaptors.put(functionClass, adaptor);
+    public static void registerLanguageAdaptor(Class<?>[] functionClasses, FunctionLanguageAdaptor adaptor) {
+        for (Class<?> functionClass : functionClasses) {
+            if (functionClass.getPackage().getName().startsWith("java.")) {
+                throw new IllegalArgumentException("FunctionLanguageAdaptor implementations can not specify java.lang.* classes.");
+            }
+            languageAdaptors.put(functionClass, adaptor);
+        }
     }
 
     public static void removeLanguageAdaptor(Class<?> functionClass) {
