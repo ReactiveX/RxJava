@@ -15,8 +15,6 @@
  */
 package org.rx.lang.clojure;
 
-import static org.mockito.Mockito.*;
-
 import java.util.Arrays;
 
 import org.junit.Before;
@@ -82,8 +80,8 @@ public class ClojureAdaptor implements FunctionLanguageAdaptor {
     }
 
     @Override
-    public Class<?> getFunctionClass() {
-        return IFn.class;
+    public Class<?>[] getFunctionClass() {
+        return new Class<?>[] { IFn.class };
     }
 
     public static class UnitTest {

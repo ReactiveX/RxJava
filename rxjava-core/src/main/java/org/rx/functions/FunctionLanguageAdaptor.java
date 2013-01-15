@@ -30,8 +30,10 @@ public interface FunctionLanguageAdaptor {
      * The Class of the Function that this adaptor serves.
      * <p>
      * Example: groovy.lang.Closure
+     * <p>
+     * This should not return classes of java.* packages.
      * 
-     * @return Class
+     * @return Class[] of classes that this adaptor should be invoked for.
      */
-    public Class<?> getFunctionClass();
+    public Class<?>[] getFunctionClass();
 }
