@@ -405,6 +405,36 @@ public abstract class Observable<T> {
     }
 
     /**
+     * Converts an Iterable sequence to a Observable sequence.
+     * 
+     * @param iterable
+     *            the source Iterable sequence
+     * @param <T>
+     *            the type of items in the iterable sequence and the type emitted by the resulting
+     *            Observable
+     * @return a Observable that emits each item in the source Iterable sequence
+     * @see {@link #toObservable(Iterable)}
+     */
+    public static <T> Observable<T> from(Iterable<T> iterable) {
+        return toObservable(iterable);
+    }
+
+    /**
+     * Converts an Array sequence to a Observable sequence.
+     * 
+     * @param iterable
+     *            the source Array
+     * @param <T>
+     *            the type of items in the Array, and the type of items emitted by the resulting
+     *            Observable
+     * @return a Observable that emits each item in the source Array
+     * @see {@link #toObservable(Object...)}
+     */
+    public static <T> Observable<T> from(T... items) {
+        return toObservable(items);
+    }
+
+    /**
      * Returns a Observable that notifies an observer of a single value and then completes.
      * <p>
      * To convert any object into a Observable that emits that object, pass that object into the <code>just</code> method.
