@@ -29,11 +29,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.rx.functions.FunctionLanguageAdaptor;
-import org.rx.reactive.Notification;
-import org.rx.reactive.Observable;
-import org.rx.reactive.Observer;
-import org.rx.reactive.Subscription;
+
+import rx.observables.Notification;
+import rx.observables.Observable;
+import rx.observables.Observer;
+import rx.observables.Subscription;
+import rx.util.FunctionLanguageAdaptor;
 
 public class JRubyAdaptor implements FunctionLanguageAdaptor {
 

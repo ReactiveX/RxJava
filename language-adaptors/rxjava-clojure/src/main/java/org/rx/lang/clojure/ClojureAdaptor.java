@@ -21,8 +21,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.rx.functions.FunctionLanguageAdaptor;
-import org.rx.reactive.Observer;
+
+import rx.observables.Observer;
+import rx.util.FunctionLanguageAdaptor;
 
 import clojure.lang.IFn;
 import clojure.lang.RT;
