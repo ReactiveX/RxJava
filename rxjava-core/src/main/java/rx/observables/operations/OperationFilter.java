@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,16 +28,16 @@ import rx.util.Func1;
 
 public final class OperationFilter<T> {
 
-    public static <T> Observable<T> filter(Observable<T> that, Func1<Boolean, T> predicate) {
+    public static <T> Observable<T> filter(Observable<T> that, Func1<T, Boolean> predicate) {
         return new Filter<T>(that, predicate);
     }
 
     private static class Filter<T> extends Observable<T> {
 
         private final Observable<T> that;
-        private final Func1<Boolean, T> predicate;
+        private final Func1<T, Boolean> predicate;
 
-        public Filter(Observable<T> that, Func1<Boolean, T> predicate) {
+        public Filter(Observable<T> that, Func1<T, Boolean> predicate) {
             this.that = that;
             this.predicate = predicate;
         }
@@ -76,7 +76,7 @@ public final class OperationFilter<T> {
         @Test
         public void testFilter() {
             Observable<String> w = Observable.toObservable("one", "two", "three");
-            Observable<String> Observable = filter(w, new Func1<Boolean, String>() {
+            Observable<String> Observable = filter(w, new Func1<String, Boolean>() {
 
                 @Override
                 public Boolean call(String t1) {

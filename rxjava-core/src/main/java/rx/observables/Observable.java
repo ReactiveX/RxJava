@@ -371,7 +371,7 @@ public abstract class Observable<T> {
      *            cancelling the subscription (if applicable)
      * @return a Observable that, when a Observer subscribes to it, will execute the given function
      */
-    public static <T> Observable<T> create(Func1<Subscription, Observer<T>> func) {
+    public static <T> Observable<T> create(Func1<Observer<T>, Subscription> func) {
         return OperationToObservableFunction.toObservableFunction(func);
     }
 
@@ -395,7 +395,7 @@ public abstract class Observable<T> {
      * @return a Observable that, when a Observer subscribes to it, will execute the given function
      */
     public static <T> Observable<T> create(final Object callback) {
-        return create(new Func1<Subscription, Observer<T>>() {
+        return create(new Func1<Observer<T>, Subscription>() {
 
             @Override
             public Subscription call(Observer<T> t1) {
@@ -451,7 +451,7 @@ public abstract class Observable<T> {
      * @return a Observable that emits only those items in the original Observable that the filter
      *         evaluates as true
      */
-    public static <T> Observable<T> filter(Observable<T> that, Func1<Boolean, T> predicate) {
+    public static <T> Observable<T> filter(Observable<T> that, Func1<T, Boolean> predicate) {
         return OperationFilter.filter(that, predicate);
     }
 
@@ -469,7 +469,7 @@ public abstract class Observable<T> {
      *         evaluates as true
      */
     public static <T> Observable<T> filter(Observable<T> that, final Object function) {
-        return filter(that, new Func1<Boolean, T>() {
+        return filter(that, new Func1<T, Boolean>() {
 
             @Override
             public Boolean call(T t1) {
@@ -574,7 +574,7 @@ public abstract class Observable<T> {
      * @return a Observable that is the result of applying the transformation function to each item
      *         in the sequence emitted by the source Observable
      */
-    public static <T, R> Observable<R> map(Observable<T> sequence, Func1<R, T> func) {
+    public static <T, R> Observable<R> map(Observable<T> sequence, Func1<T, R> func) {
         return OperationMap.map(sequence, func);
     }
 
@@ -597,7 +597,7 @@ public abstract class Observable<T> {
      *         in the sequence emitted by the source Observable
      */
     public static <T, R> Observable<R> map(Observable<T> sequence, final Object function) {
-        return map(sequence, new Func1<R, T>() {
+        return map(sequence, new Func1<T, R>() {
 
             @Override
             public R call(T t1) {
@@ -629,7 +629,7 @@ public abstract class Observable<T> {
      *         function to each item emitted by the source Observable and merging the results of
      *         the Observables obtained from this transformation
      */
-    public static <T, R> Observable<R> mapMany(Observable<T> sequence, Func1<Observable<R>, T> func) {
+    public static <T, R> Observable<R> mapMany(Observable<T> sequence, Func1<T, Observable<R>> func) {
         return OperationMap.mapMany(sequence, func);
     }
 
@@ -656,7 +656,7 @@ public abstract class Observable<T> {
      *         Observables obtained from this transformation
      */
     public static <T, R> Observable<R> mapMany(Observable<T> sequence, final Object function) {
-        return mapMany(sequence, new Func1<R, T>() {
+        return mapMany(sequence, new Func1<T, R>() {
 
             @Override
             public R call(T t1) {
@@ -846,7 +846,7 @@ public abstract class Observable<T> {
      *            encounters an error
      * @return the source Observable, with its behavior modified as described
      */
-    public static <T> Observable<T> onErrorResumeNext(final Observable<T> that, final Func1<Observable<T>, Exception> resumeFunction) {
+    public static <T> Observable<T> onErrorResumeNext(final Observable<T> that, final Func1<Exception, Observable<T>> resumeFunction) {
         return OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(that, resumeFunction);
     }
 
@@ -876,7 +876,7 @@ public abstract class Observable<T> {
      * @return the source Observable, with its behavior modified as described
      */
     public static <T> Observable<T> onErrorResumeNext(final Observable<T> that, final Object resumeFunction) {
-        return onErrorResumeNext(that, new Func1<Observable<T>, Exception>() {
+        return onErrorResumeNext(that, new Func1<Exception, Observable<T>>() {
 
             @Override
             public Observable<T> call(Exception e) {
@@ -936,7 +936,7 @@ public abstract class Observable<T> {
      *            otherwise cause it to call <code>onError</code>
      * @return the source Observable, with its behavior modified as described
      */
-    public static <T> Observable<T> onErrorReturn(final Observable<T> that, Func1<T, Exception> resumeFunction) {
+    public static <T> Observable<T> onErrorReturn(final Observable<T> that, Func1<Exception, T> resumeFunction) {
         return OperationOnErrorReturn.onErrorReturn(that, resumeFunction);
     }
 
@@ -1344,7 +1344,7 @@ public abstract class Observable<T> {
      * @param sortFunction
      * @return
      */
-    public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, Func2<Integer, T, T> sortFunction) {
+    public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, Func2<T, T, Integer> sortFunction) {
         return OperationToObservableSortedList.toSortedList(sequence, sortFunction);
     }
 
@@ -1359,7 +1359,7 @@ public abstract class Observable<T> {
      * @return
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, final Object sortFunction) {
-        return OperationToObservableSortedList.toSortedList(sequence, new Func2<Integer, T, T>() {
+        return OperationToObservableSortedList.toSortedList(sequence, new Func2<T, T, Integer>() {
 
             @Override
             public Integer call(T t1, T t2) {
@@ -1393,7 +1393,7 @@ public abstract class Observable<T> {
      *            results in a value that will be emitted by the resulting Observable
      * @return a Observable that emits the zipped results
      */
-    public static <R, T0, T1> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Func2<R, T0, T1> reduceFunction) {
+    public static <R, T0, T1> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> reduceFunction) {
         return OperationZip.zip(w0, w1, reduceFunction);
     }
 
@@ -1422,7 +1422,7 @@ public abstract class Observable<T> {
      * @return a Observable that emits the zipped results
      */
     public static <R, T0, T1> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, final Object function) {
-        return zip(w0, w1, new Func2<R, T0, T1>() {
+        return zip(w0, w1, new Func2<T0, T1, R>() {
 
             @Override
             public R call(T0 t0, T1 t1) {
@@ -1460,7 +1460,7 @@ public abstract class Observable<T> {
      *            results in a value that will be emitted by the resulting Observable
      * @return a Observable that emits the zipped results
      */
-    public static <R, T0, T1, T2> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<R, T0, T1, T2> function) {
+    public static <R, T0, T1, T2> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> function) {
         return OperationZip.zip(w0, w1, w2, function);
     }
 
@@ -1493,7 +1493,7 @@ public abstract class Observable<T> {
      * @return a Observable that emits the zipped results
      */
     public static <R, T0, T1, T2> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, final Object function) {
-        return zip(w0, w1, w2, new Func3<R, T0, T1, T2>() {
+        return zip(w0, w1, w2, new Func3<T0, T1, T2, R>() {
 
             @Override
             public R call(T0 t0, T1 t1, T2 t2) {
@@ -1532,7 +1532,7 @@ public abstract class Observable<T> {
      *            results in a value that will be emitted by the resulting Observable
      * @return a Observable that emits the zipped results
      */
-    public static <R, T0, T1, T2, T3> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<R, T0, T1, T2, T3> reduceFunction) {
+    public static <R, T0, T1, T2, T3> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> reduceFunction) {
         return OperationZip.zip(w0, w1, w2, w3, reduceFunction);
     }
 
@@ -1566,7 +1566,7 @@ public abstract class Observable<T> {
      * @return a Observable that emits the zipped results
      */
     public static <R, T0, T1, T2, T3> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, final Object function) {
-        return zip(w0, w1, w2, w3, new Func4<R, T0, T1, T2, T3>() {
+        return zip(w0, w1, w2, w3, new Func4<T0, T1, T2, T3, R>() {
 
             @Override
             public R call(T0 t0, T1 t1, T2 t2, T3 t3) {
@@ -1605,7 +1605,7 @@ public abstract class Observable<T> {
      *         evaluates as "true"
      */
     public Observable<T> filter(final Object callback) {
-        return filter(this, new Func1<Boolean, T>() {
+        return filter(this, new Func1<T, Boolean>() {
 
             public Boolean call(T t1) {
                 return Functions.execute(callback, t1);
@@ -1655,7 +1655,7 @@ public abstract class Observable<T> {
      *         closure to each item in the sequence emitted by the input Observable.
      */
     public <R> Observable<R> map(final Object callback) {
-        return map(this, new Func1<R, T>() {
+        return map(this, new Func1<T, R>() {
 
             public R call(T t1) {
                 return Functions.execute(callback, t1);
@@ -1678,7 +1678,7 @@ public abstract class Observable<T> {
      *         function to each item in the input sequence and merging the results of the
      *         Observables obtained from this transformation.
      */
-    public <R> Observable<R> mapMany(Func1<Observable<R>, T> func) {
+    public <R> Observable<R> mapMany(Func1<T, Observable<R>> func) {
         return mapMany(this, func);
     }
 
@@ -1698,7 +1698,7 @@ public abstract class Observable<T> {
      *         Observables obtained from this transformation.
      */
     public <R> Observable<R> mapMany(final Object callback) {
-        return mapMany(this, new Func1<Observable<R>, T>() {
+        return mapMany(this, new Func1<T, Observable<R>>() {
 
             public Observable<R> call(T t1) {
                 return Functions.execute(callback, t1);
@@ -1742,7 +1742,7 @@ public abstract class Observable<T> {
      * @param resumeFunction
      * @return the original Observable, with appropriately modified behavior
      */
-    public Observable<T> onErrorResumeNext(final Func1<Observable<T>, Exception> resumeFunction) {
+    public Observable<T> onErrorResumeNext(final Func1<Exception, Observable<T>> resumeFunction) {
         return onErrorResumeNext(this, resumeFunction);
     }
 
@@ -1771,7 +1771,7 @@ public abstract class Observable<T> {
      * @return the original Observable with appropriately modified behavior
      */
     public Observable<T> onErrorResumeNext(final Object resumeFunction) {
-        return onErrorResumeNext(this, new Func1<Observable<T>, Exception>() {
+        return onErrorResumeNext(this, new Func1<Exception, Observable<T>>() {
 
             public Observable<T> call(Exception e) {
                 return Functions.execute(resumeFunction, e);
@@ -1829,7 +1829,7 @@ public abstract class Observable<T> {
      * @param resumeFunction
      * @return the original Observable with appropriately modified behavior
      */
-    public Observable<T> onErrorReturn(Func1<T, Exception> resumeFunction) {
+    public Observable<T> onErrorReturn(Func1<Exception, T> resumeFunction) {
         return onErrorReturn(this, resumeFunction);
     }
 
@@ -1857,7 +1857,7 @@ public abstract class Observable<T> {
      * @return the original Observable with appropriately modified behavior
      */
     public Observable<T> onErrorReturn(final Object resumeFunction) {
-        return onErrorReturn(this, new Func1<T, Exception>() {
+        return onErrorReturn(this, new Func1<Exception, T>() {
 
             public T call(Exception e) {
                 return Functions.execute(resumeFunction, e);
@@ -2154,7 +2154,7 @@ public abstract class Observable<T> {
      * @param sortFunction
      * @return
      */
-    public Observable<List<T>> toSortedList(Func2<Integer, T, T> sortFunction) {
+    public Observable<List<T>> toSortedList(Func2<T, T, Integer> sortFunction) {
         return toSortedList(this, sortFunction);
     }
 

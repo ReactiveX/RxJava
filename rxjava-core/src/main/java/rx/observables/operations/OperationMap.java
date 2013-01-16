@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,7 +47,7 @@ public final class OperationMap {
      *            the type of the output sequence.
      * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
      */
-    public static <T, R> Observable<R> map(Observable<T> sequence, Func1<R, T> func) {
+    public static <T, R> Observable<R> map(Observable<T> sequence, Func1<T, R> func) {
         return new MapObservable<T, R>(sequence, func);
     }
 
@@ -67,7 +67,7 @@ public final class OperationMap {
      *            the type of the output sequence.
      * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
      */
-    public static <T, R> Observable<R> mapMany(Observable<T> sequence, Func1<Observable<R>, T> func) {
+    public static <T, R> Observable<R> mapMany(Observable<T> sequence, Func1<T, Observable<R>> func) {
         return OperationMerge.merge(map(sequence, func));
     }
 
@@ -80,14 +80,14 @@ public final class OperationMap {
      *            the type of the output sequence.
      */
     private static class MapObservable<T, R> extends Observable<R> {
-        public MapObservable(Observable<T> sequence, Func1<R, T> func) {
+        public MapObservable(Observable<T> sequence, Func1<T, R> func) {
             this.sequence = sequence;
             this.func = func;
         }
 
         private Observable<T> sequence;
 
-        private Func1<R, T> func;
+        private Func1<T, R> func;
 
         public Subscription subscribe(Observer<R> Observer) {
             final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
@@ -106,14 +106,14 @@ public final class OperationMap {
      *            the type of the inner observer items.
      */
     private static class MapObserver<T, R> implements Observer<T> {
-        public MapObserver(Observer<R> observer, Func1<R, T> func) {
+        public MapObserver(Observer<R> observer, Func1<T, R> func) {
             this.observer = observer;
             this.func = func;
         }
 
         Observer<R> observer;
 
-        Func1<R, T> func;
+        Func1<T, R> func;
 
         public void onNext(T value) {
             try {
@@ -148,7 +148,7 @@ public final class OperationMap {
             @SuppressWarnings("unchecked")
             Observable<Map<String, String>> observable = Observable.toObservable(m1, m2);
 
-            Observable<String> m = map(observable, new Func1<String, Map<String, String>>() {
+            Observable<String> m = map(observable, new Func1<Map<String, String>, String>() {
 
                 @Override
                 public String call(Map<String, String> map) {
@@ -171,7 +171,7 @@ public final class OperationMap {
             Observable<Integer> ids = Observable.toObservable(1, 2);
 
             /* now simulate the behavior to take those IDs and perform nested async calls based on them */
-            Observable<String> m = mapMany(ids, new Func1<Observable<String>, Integer>() {
+            Observable<String> m = mapMany(ids, new Func1<Integer, Observable<String>>() {
 
                 @SuppressWarnings("unchecked")
                 @Override
@@ -189,7 +189,7 @@ public final class OperationMap {
                     }
 
                     /* simulate kicking off the async call and performing a select on it to transform the data */
-                    return map(subObservable, new Func1<String, Map<String, String>>() {
+                    return map(subObservable, new Func1<Map<String, String>, String>() {
                         @Override
                         public String call(Map<String, String> map) {
                             return map.get("firstName");
@@ -223,11 +223,11 @@ public final class OperationMap {
             @SuppressWarnings("unchecked")
             Observable<Observable<Map<String, String>>> observable = Observable.toObservable(observable1, observable2);
 
-            Observable<String> m = mapMany(observable, new Func1<Observable<String>, Observable<Map<String, String>>>() {
+            Observable<String> m = mapMany(observable, new Func1<Observable<Map<String, String>>, Observable<String>>() {
 
                 @Override
                 public Observable<String> call(Observable<Map<String, String>> o) {
-                    return map(o, new Func1<String, Map<String, String>>() {
+                    return map(o, new Func1<Map<String, String>, String>() {
 
                         @Override
                         public String call(Map<String, String> map) {

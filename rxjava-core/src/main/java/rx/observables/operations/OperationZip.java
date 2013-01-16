@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,14 +40,14 @@ import rx.util.Functions;
 
 public final class OperationZip {
 
-    public static <R, T0, T1> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Func2<R, T0, T1> zipFunction) {
+    public static <T0, T1, R> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T0>(a, w0));
         a.addObserver(new ZipObserver<R, T1>(a, w1));
         return a;
     }
 
-    public static <R, T0, T1, T2> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<R, T0, T1, T2> zipFunction) {
+    public static <T0, T1, T2, R> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T0>(a, w0));
         a.addObserver(new ZipObserver<R, T1>(a, w1));
@@ -55,7 +55,7 @@ public final class OperationZip {
         return a;
     }
 
-    public static <R, T0, T1, T2, T3> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<R, T0, T1, T2, T3> zipFunction) {
+    public static <T0, T1, T2, T3, R> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T0>(a, w0));
         a.addObserver(new ZipObserver<R, T1>(a, w1));
@@ -660,7 +660,7 @@ public final class OperationZip {
         /* mock calls don't do generics */
         @Test
         public void testZip2Types() {
-            Func2<String, String, Integer> zipr = getConcatStringIntegerZipr();
+            Func2<String, Integer, String> zipr = getConcatStringIntegerZipr();
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
@@ -679,7 +679,7 @@ public final class OperationZip {
         /* mock calls don't do generics */
         @Test
         public void testZip3Types() {
-            Func3<String, String, Integer, int[]> zipr = getConcatStringIntegerIntArrayZipr();
+            Func3<String, Integer, int[], String> zipr = getConcatStringIntegerIntArrayZipr();
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
@@ -758,8 +758,8 @@ public final class OperationZip {
             return zipr;
         }
 
-        private Func2<String, String, Integer> getConcatStringIntegerZipr() {
-            Func2<String, String, Integer> zipr = new Func2<String, String, Integer>() {
+        private Func2<String, Integer, String> getConcatStringIntegerZipr() {
+            Func2<String, Integer, String> zipr = new Func2<String, Integer, String>() {
 
                 @Override
                 public String call(String s, Integer i) {
@@ -770,8 +770,8 @@ public final class OperationZip {
             return zipr;
         }
 
-        private Func3<String, String, Integer, int[]> getConcatStringIntegerIntArrayZipr() {
-            Func3<String, String, Integer, int[]> zipr = new Func3<String, String, Integer, int[]>() {
+        private Func3<String, Integer, int[], String> getConcatStringIntegerIntArrayZipr() {
+            Func3<String, Integer, int[], String> zipr = new Func3<String, Integer, int[], String>() {
 
                 @Override
                 public String call(String s, Integer i, int[] iArray) {

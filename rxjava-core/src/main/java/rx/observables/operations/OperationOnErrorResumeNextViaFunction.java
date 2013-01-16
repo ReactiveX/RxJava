@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,16 +33,16 @@ import rx.util.Func1;
 
 public final class OperationOnErrorResumeNextViaFunction<T> {
 
-    public static <T> Observable<T> onErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<Observable<T>, Exception> resumeFunction) {
+    public static <T> Observable<T> onErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<Exception, Observable<T>> resumeFunction) {
         return new OnErrorResumeNextViaFunction<T>(originalSequence, resumeFunction);
     }
 
     private static class OnErrorResumeNextViaFunction<T> extends Observable<T> {
 
-        private final Func1<Observable<T>, Exception> resumeFunction;
+        private final Func1<Exception, Observable<T>> resumeFunction;
         private final Observable<T> originalSequence;
 
-        public OnErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<Observable<T>, Exception> resumeFunction) {
+        public OnErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<Exception, Observable<T>> resumeFunction) {
             this.resumeFunction = resumeFunction;
             this.originalSequence = originalSequence;
         }
@@ -112,7 +112,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
             final AtomicReference<Exception> receivedException = new AtomicReference<Exception>();
             Subscription s = mock(Subscription.class);
             TestObservable w = new TestObservable(s, "one");
-            Func1<Observable<String>, Exception> resume = new Func1<Observable<String>, Exception>() {
+            Func1<Exception, Observable<String>> resume = new Func1<Exception, Observable<String>>() {
 
                 @Override
                 public Observable<String> call(Exception t1) {
@@ -150,7 +150,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
         public void testFunctionThrowsError() {
             Subscription s = mock(Subscription.class);
             TestObservable w = new TestObservable(s, "one");
-            Func1<Observable<String>, Exception> resume = new Func1<Observable<String>, Exception>() {
+            Func1<Exception, Observable<String>> resume = new Func1<Exception, Observable<String>>() {
 
                 @Override
                 public Observable<String> call(Exception t1) {

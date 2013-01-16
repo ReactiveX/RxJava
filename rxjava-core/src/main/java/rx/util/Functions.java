@@ -121,25 +121,25 @@ public class Functions {
                 }
                 return (R) f.call();
             } else if (function instanceof Func1) {
-                Func1<R, Object> f = (Func1<R, Object>) function;
+                Func1<Object, R> f = (Func1<Object, R>) function;
                 if (args.length != 1) {
                     throw new RuntimeException("The closure was Func1 and expected 1 argument, but we received: " + args.length);
                 }
                 return f.call(args[0]);
             } else if (function instanceof Func2) {
-                Func2<R, Object, Object> f = (Func2<R, Object, Object>) function;
+                Func2<Object, Object, R> f = (Func2<Object, Object, R>) function;
                 if (args.length != 2) {
                     throw new RuntimeException("The closure was Func2 and expected 2 arguments, but we received: " + args.length);
                 }
                 return f.call(args[0], args[1]);
             } else if (function instanceof Func3) {
-                Func3<R, Object, Object, Object> f = (Func3<R, Object, Object, Object>) function;
+                Func3<Object, Object, Object, R> f = (Func3<Object, Object, Object, R>) function;
                 if (args.length != 3) {
                     throw new RuntimeException("The closure was Func3 and expected 3 arguments, but we received: " + args.length);
                 }
                 return (R) f.call(args[0], args[1], args[2]);
             } else if (function instanceof Func4) {
-                Func4<R, Object, Object, Object, Object> f = (Func4<R, Object, Object, Object, Object>) function;
+                Func4<Object, Object, Object, Object, R> f = (Func4<Object, Object, Object, Object, R>) function;
                 if (args.length != 1) {
                     throw new RuntimeException("The closure was Func4 and expected 4 arguments, but we received: " + args.length);
                 }
@@ -163,7 +163,7 @@ public class Functions {
         }
     }
 
-    public static <R, T0> FuncN<R> fromFunc(final Func1<R, T0> f) {
+    public static <T0, R> FuncN<R> fromFunc(final Func1<T0, R> f) {
         return new FuncN<R>() {
 
             /**
@@ -184,7 +184,7 @@ public class Functions {
         };
     }
 
-    public static <R, T0, T1> FuncN<R> fromFunc(final Func2<R, T0, T1> f) {
+    public static <T0, T1, R> FuncN<R> fromFunc(final Func2<T0, T1, R> f) {
         return new FuncN<R>() {
 
             /**
@@ -204,7 +204,7 @@ public class Functions {
         };
     }
 
-    public static <R, T0, T1, T2> FuncN<R> fromFunc(final Func3<R, T0, T1, T2> f) {
+    public static <T0, T1, T2, R> FuncN<R> fromFunc(final Func3<T0, T1, T2, R> f) {
         return new FuncN<R>() {
 
             /**
@@ -224,7 +224,7 @@ public class Functions {
         };
     }
 
-    public static <R, T0, T1, T2, T3> FuncN<R> fromFunc(final Func4<R, T0, T1, T2, T3> f) {
+    public static <T0, T1, T2, T3, R> FuncN<R> fromFunc(final Func4<T0, T1, T2, T3, R> f) {
         return new FuncN<R>() {
 
             /**

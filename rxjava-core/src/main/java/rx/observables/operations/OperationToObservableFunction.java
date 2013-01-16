@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,14 +37,14 @@ import rx.util.Func1;
  */
 public final class OperationToObservableFunction<T> {
 
-    public static <T> Observable<T> toObservableFunction(Func1<Subscription, Observer<T>> func) {
+    public static <T> Observable<T> toObservableFunction(Func1<Observer<T>, Subscription> func) {
         return new ToObservableFunction<T>(func);
     }
 
     private static class ToObservableFunction<T> extends Observable<T> {
-        private final Func1<Subscription, Observer<T>> func;
+        private final Func1<Observer<T>, Subscription> func;
 
-        public ToObservableFunction(Func1<Subscription, Observer<T>> func) {
+        public ToObservableFunction(Func1<Observer<T>, Subscription> func) {
             this.func = func;
         }
 
@@ -67,7 +67,7 @@ public final class OperationToObservableFunction<T> {
         @Test
         public void testCreate() {
 
-            Observable<String> observable = toObservableFunction(new Func1<Subscription, Observer<String>>() {
+            Observable<String> observable = toObservableFunction(new Func1<Observer<String>, Subscription>() {
 
                 @Override
                 public Subscription call(Observer<String> Observer) {

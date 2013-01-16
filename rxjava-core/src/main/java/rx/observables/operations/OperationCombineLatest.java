@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,14 +40,14 @@ import rx.util.Functions;
 
 public class OperationCombineLatest {
 
-    public static <R, T0, T1> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<R, T0, T1> combineLatestFunction) {
+    public static <T0, T1, R> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
         a.addObserver(new CombineObserver<R, T1>(a, w1));
         return a;
     }
 
-    public static <R, T0, T1, T2> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<R, T0, T1, T2> combineLatestFunction) {
+    public static <T0, T1, T2, R> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
         a.addObserver(new CombineObserver<R, T1>(a, w1));
@@ -55,7 +55,7 @@ public class OperationCombineLatest {
         return a;
     }
 
-    public static <R, T0, T1, T2, T3> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<R, T0, T1, T2, T3> combineLatestFunction) {
+    public static <T0, T1, T2, T3, R> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
         a.addObserver(new CombineObserver<R, T1>(a, w1));
@@ -663,7 +663,7 @@ public class OperationCombineLatest {
         /* mock calls don't do generics */
         @Test
         public void testCombineLatest2Types() {
-            Func2<String, String, Integer> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
+            Func2<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
@@ -682,7 +682,7 @@ public class OperationCombineLatest {
         /* mock calls don't do generics */
         @Test
         public void testCombineLatest3TypesA() {
-            Func3<String, String, Integer, int[]> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
+            Func3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
@@ -699,7 +699,7 @@ public class OperationCombineLatest {
         /* mock calls don't do generics */
         @Test
         public void testCombineLatest3TypesB() {
-            Func3<String, String, Integer, int[]> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
+            Func3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
@@ -753,8 +753,8 @@ public class OperationCombineLatest {
             return combineLatestFunction;
         }
 
-        private Func2<String, String, Integer> getConcatStringIntegerCombineLatestFunction() {
-            Func2<String, String, Integer> combineLatestFunction = new Func2<String, String, Integer>() {
+        private Func2<String, Integer, String> getConcatStringIntegerCombineLatestFunction() {
+            Func2<String, Integer, String> combineLatestFunction = new Func2<String, Integer, String>() {
 
                 @Override
                 public String call(String s, Integer i) {
@@ -765,8 +765,8 @@ public class OperationCombineLatest {
             return combineLatestFunction;
         }
 
-        private Func3<String, String, Integer, int[]> getConcatStringIntegerIntArrayCombineLatestFunction() {
-            Func3<String, String, Integer, int[]> combineLatestFunction = new Func3<String, String, Integer, int[]>() {
+        private Func3<String, Integer, int[], String> getConcatStringIntegerIntArrayCombineLatestFunction() {
+            Func3<String, Integer, int[], String> combineLatestFunction = new Func3<String, Integer, int[], String>() {
 
                 @Override
                 public String call(String s, Integer i, int[] iArray) {

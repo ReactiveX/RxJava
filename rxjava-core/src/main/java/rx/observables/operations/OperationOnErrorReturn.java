@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,15 +36,15 @@ import rx.util.Func1;
  */
 public final class OperationOnErrorReturn<T> {
 
-    public static <T> Observable<T> onErrorReturn(Observable<T> originalSequence, Func1<T, Exception> resumeFunction) {
+    public static <T> Observable<T> onErrorReturn(Observable<T> originalSequence, Func1<Exception, T> resumeFunction) {
         return new OnErrorReturn<T>(originalSequence, resumeFunction);
     }
 
     private static class OnErrorReturn<T> extends Observable<T> {
-        private final Func1<T, Exception> resumeFunction;
+        private final Func1<Exception, T> resumeFunction;
         private final Observable<T> originalSequence;
 
-        public OnErrorReturn(Observable<T> originalSequence, Func1<T, Exception> resumeFunction) {
+        public OnErrorReturn(Observable<T> originalSequence, Func1<Exception, T> resumeFunction) {
             this.resumeFunction = resumeFunction;
             this.originalSequence = originalSequence;
         }
@@ -120,7 +120,7 @@ public final class OperationOnErrorReturn<T> {
             TestObservable w = new TestObservable(s, "one");
             final AtomicReference<Exception> capturedException = new AtomicReference<Exception>();
 
-            Observable<String> Observable = onErrorReturn(w, new Func1<String, Exception>() {
+            Observable<String> Observable = onErrorReturn(w, new Func1<Exception, String>() {
 
                 @Override
                 public String call(Exception e) {
@@ -156,7 +156,7 @@ public final class OperationOnErrorReturn<T> {
             TestObservable w = new TestObservable(s, "one");
             final AtomicReference<Exception> capturedException = new AtomicReference<Exception>();
 
-            Observable<String> Observable = onErrorReturn(w, new Func1<String, Exception>() {
+            Observable<String> Observable = onErrorReturn(w, new Func1<Exception, String>() {
 
                 @Override
                 public String call(Exception e) {
