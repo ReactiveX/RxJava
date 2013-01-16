@@ -46,6 +46,8 @@ import rx.observables.operations.OperationToObservableIterable;
 import rx.observables.operations.OperationToObservableList;
 import rx.observables.operations.OperationToObservableSortedList;
 import rx.observables.operations.OperationZip;
+import rx.util.Action0;
+import rx.util.Action1;
 import rx.util.Func1;
 import rx.util.Func2;
 import rx.util.Func3;
@@ -133,6 +135,7 @@ public abstract class Observable<T> {
             // in case a dynamic language is not correctly handling the overloaded methods and we receive an Observer just forward to the correct method.
             return subscribe((Observer) o);
         }
+
         return subscribe(new Observer() {
 
             public void onCompleted() {
@@ -149,6 +152,29 @@ public abstract class Observable<T> {
                     throw new RuntimeException("onNext must be implemented");
                 }
                 executeCallback(o, args);
+            }
+
+        });
+    }
+
+    public Subscription subscribe(final Action1<T> onNext) {
+
+        return subscribe(new Observer<T>() {
+
+            public void onCompleted() {
+                // do nothing
+            }
+
+            public void onError(Exception e) {
+                handleError(e);
+                // no callback defined
+            }
+
+            public void onNext(T args) {
+                if (onNext == null) {
+                    throw new RuntimeException("onNext must be implemented");
+                }
+                onNext.call(args);
             }
 
         });
@@ -179,6 +205,31 @@ public abstract class Observable<T> {
         });
     }
 
+    public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError) {
+
+        return subscribe(new Observer<T>() {
+
+            public void onCompleted() {
+                // do nothing
+            }
+
+            public void onError(Exception e) {
+                handleError(e);
+                if (onError != null) {
+                    onError.call(e);
+                }
+            }
+
+            public void onNext(T args) {
+                if (onNext == null) {
+                    throw new RuntimeException("onNext must be implemented");
+                }
+                onNext.call(args);
+            }
+
+        });
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Subscription subscribe(final Object onNext, final Object onError, final Object onComplete) {
         return subscribe(new Observer() {
@@ -201,6 +252,31 @@ public abstract class Observable<T> {
                     throw new RuntimeException("onNext must be implemented");
                 }
                 executeCallback(onNext, args);
+            }
+
+        });
+    }
+
+    public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError, final Action0 onComplete) {
+
+        return subscribe(new Observer<T>() {
+
+            public void onCompleted() {
+                onComplete.call();
+            }
+
+            public void onError(Exception e) {
+                handleError(e);
+                if (onError != null) {
+                    onError.call(e);
+                }
+            }
+
+            public void onNext(T args) {
+                if (onNext == null) {
+                    throw new RuntimeException("onNext must be implemented");
+                }
+                onNext.call(args);
             }
 
         });
