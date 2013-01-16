@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.rx.lang.jruby;
+package rx.lang.jruby;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -163,7 +163,7 @@ public class JRubyAdaptor implements FunctionLanguageAdaptor {
 
             StringBuilder b = new StringBuilder();
             // force JRuby to always use subscribe(Object)
-            b.append("import org.rx.reactive.Observable").append("\n");
+            b.append("import \"rx.observables.Observable\"").append("\n");
             b.append("class Observable").append("\n");
             b.append("  java_alias :subscribe, :subscribe, [java.lang.Object]").append("\n");
             b.append("end").append("\n");

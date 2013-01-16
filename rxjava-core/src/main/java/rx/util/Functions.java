@@ -44,7 +44,7 @@ public class Functions {
     }
 
     private static void loadLanguageAdaptor(String name) {
-        String className = "org.rx.lang." + name.toLowerCase() + "." + name + "Adaptor";
+        String className = "rx.lang." + name.toLowerCase() + "." + name + "Adaptor";
         try {
             Class<?> c = Class.forName(className);
             FunctionLanguageAdaptor a = (FunctionLanguageAdaptor) c.newInstance();

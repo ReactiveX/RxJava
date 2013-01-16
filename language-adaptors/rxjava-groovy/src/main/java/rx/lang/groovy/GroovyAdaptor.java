@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.rx.lang.groovy;
+package rx.lang.groovy;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;

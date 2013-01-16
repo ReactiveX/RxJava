@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.rx.lang.clojure;
+package rx.lang.clojure;
 
 import java.util.Arrays;
 
@@ -100,7 +100,7 @@ public class ClojureAdaptor implements FunctionLanguageAdaptor {
 
         @Test
         public void testTake() {
-            runClojureScript("(-> (org.rx.reactive.Observable/toObservable [\"one\" \"two\" \"three\"]) (.take 2) (.subscribe (fn [arg] (println arg))))");
+            runClojureScript("(-> (rx.observables.Observable/toObservable [\"one\" \"two\" \"three\"]) (.take 2) (.subscribe (fn [arg] (println arg))))");
         }
 
         // commented out for now as I can't figure out how to set the var 'a' with the 'assertion' instance when running the code from java 
