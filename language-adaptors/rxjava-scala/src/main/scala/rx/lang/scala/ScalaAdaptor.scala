@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.rx.lang.scala
+package rx.lang.scala
 
-import org.rx.functions.FunctionLanguageAdaptor
+import rx.util.FunctionLanguageAdaptor
 import org.junit.{Assert, Before, Test}
-import org.rx.reactive.Observable
+import rx.observables.Observable
 import org.scalatest.junit.JUnitSuite
 import org.mockito.Mockito._
 import org.mockito.{MockitoAnnotations, Mock}
