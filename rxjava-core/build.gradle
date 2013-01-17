@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'idea'
 
 // we want to target Java 1.5 so this can be used on Android
 sourceCompatibility = JavaVersion.VERSION_1_5
