@@ -1,0 +1,36 @@
+apply plugin: 'scala'
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.unchecked = true
+
+    configure(scalaCompileOptions.forkOptions) {
+        memoryMaximumSize = '1g'
+        jvmArgs = ['-XX:MaxPermSize=512m']
+    }
+}
+
+dependencies {
+    // Scala compiler and related tools
+    scalaTools 'org.scala-lang:scala-compiler:2.10.0'
+    scalaTools 'org.scala-lang:scala-library:2.10.0'
+
+    compile 'org.scala-lang:scala-library:2.10.0'
+    compile 'org.scala-lang:scala-reflect:2.10.0'
+    compile 'org.scalatest:scalatest_2.10:1.9.1'
+
+    compile project(':rxjava-core')
+    provided 'junit:junit:4.10'
+    provided 'org.mockito:mockito-core:1.9.5'
+
+    testCompile 'org.scalatest:scalatest_2.10:1.9.1'
+}
+
+task test(overwrite: true, dependsOn: testClasses) << {
+    ant.taskdef(name: 'scalatest',
+            classname: 'org.scalatest.tools.ScalaTestAntTask',
+            classpath: sourceSets.test.runtimeClasspath.asPath
+    )
+    ant.scalatest(runpath: sourceSets.test.classesDir,
+            haltonfailure: 'true',
+            fork: 'false') {reporter(type: 'stdout')}
+}
