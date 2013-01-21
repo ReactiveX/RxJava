@@ -15,6 +15,6 @@
  */
 package rx.util;
 
-public interface Action0 {
+public interface Action0 extends Function {
     public void call();
 }
