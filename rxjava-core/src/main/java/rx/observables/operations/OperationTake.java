@@ -26,6 +26,7 @@ import org.junit.Test;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
+import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
 /**
@@ -44,7 +45,7 @@ public final class OperationTake {
      */
     public static <T> Func1<Observer<T>, Subscription> take(final Observable<T> items, final int num) {
         // wrap in a Watchbable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new Func1<Observer<T>, Subscription>() {
+        return new OperatorSubscribeFunction<T>() {
 
             @Override
             public Subscription call(Observer<T> observer) {
@@ -65,9 +66,10 @@ public final class OperationTake {
      * 
      * @param <T>
      */
-    private static class Take<T> implements Func1<Observer<T>, Subscription> {
+    private static class Take<T> implements OperatorSubscribeFunction<T> {
         private final int num;
         private final Observable<T> items;
+        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
         Take(final Observable<T> items, final int num) {
             this.num = num;
@@ -75,7 +77,7 @@ public final class OperationTake {
         }
 
         public Subscription call(Observer<T> observer) {
-            return items.subscribe(new ItemObserver(observer));
+            return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
         /**
@@ -105,8 +107,8 @@ public final class OperationTake {
                 if (counter.getAndIncrement() < num) {
                     observer.onNext(args);
                 } else {
-                    observer.onCompleted();
-                    // TODO do we need to unsubscribe here?
+                    // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
+                    subscription.unsubscribe();
                 }
             }
 
@@ -168,8 +170,7 @@ public final class OperationTake {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, never()).onNext("two");
             verify(aObserver, never()).onNext("three");
-            // TODO commented this out for now as it's broken and I'm questioning whether it needs to be
-            //            verify(s, times(1)).unsubscribe();
+            verify(s, times(1)).unsubscribe();
         }
 
         private static class TestObservable extends Observable<String> {

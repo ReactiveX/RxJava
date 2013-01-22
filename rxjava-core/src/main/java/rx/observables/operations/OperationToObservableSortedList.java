@@ -64,7 +64,7 @@ public final class OperationToObservableSortedList<T> {
         return new ToObservableSortedList<T>(sequence, sortFunction);
     }
 
-    private static class ToObservableSortedList<T> implements Func1<Observer<List<T>>, Subscription> {
+    private static class ToObservableSortedList<T> implements OperatorSubscribeFunction<List<T>> {
 
         private final Observable<T> that;
         private final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();

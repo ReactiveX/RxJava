@@ -46,6 +46,7 @@ import rx.observables.operations.OperationToObservableIterable;
 import rx.observables.operations.OperationToObservableList;
 import rx.observables.operations.OperationToObservableSortedList;
 import rx.observables.operations.OperationZip;
+import rx.observables.operations.OperatorSubscribeFunction;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
 import rx.util.functions.Action0;
@@ -74,7 +75,7 @@ public class Observable<T> {
 
     private final Func1<Observer<T>, Subscription> onSubscribe;
 
-    public Observable(Func1<Observer<T>, Subscription> onSubscribe) {
+    protected Observable(Func1<Observer<T>, Subscription> onSubscribe) {
         this.onSubscribe = onSubscribe;
     }
 
@@ -104,16 +105,23 @@ public class Observable<T> {
      *         to stop receiving notifications before the provider has finished sending them
      */
     public Subscription subscribe(Observer<T> observer) {
-        /*
-         * Wrap the observer and subscription in Atomic* wrappers to:
-         * 
-         * - ensure correct behavior of onNext, onCompleted and onError.
-         * - allow the Observer to have access to the subscription in asynchronous execution for checking if unsubscribed occurred without onComplete/onError.
-         * - handle both synchronous and asynchronous subscribe() execution flows
-         */
-        final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-        final Observer<T> atomicObserver = new AtomicObserver<T>(observer, subscription);
-        return subscription.wrap(onSubscribe.call(atomicObserver));
+        if (onSubscribe instanceof OperatorSubscribeFunction) {
+            /*
+             * This means it's a 'trusted' operator so we won't wrap it.
+             */
+            return onSubscribe.call(observer);
+        } else {
+            /*
+             * Wrap the observer and subscription in Atomic* wrappers to:
+             * 
+             * - ensure correct behavior of onNext, onCompleted and onError.
+             * - allow the Observer to have access to the subscription in asynchronous execution for checking if unsubscribed occurred without onComplete/onError.
+             * - handle both synchronous and asynchronous subscribe() execution flows
+             */
+            final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+            final Observer<T> atomicObserver = new AtomicObserver<T>(observer, subscription);
+            return subscription.wrap(onSubscribe.call(atomicObserver));
+        }
     };
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

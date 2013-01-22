@@ -24,6 +24,7 @@ import org.mockito.Mockito;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
+import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
 public final class OperationFilter<T> {
@@ -32,10 +33,11 @@ public final class OperationFilter<T> {
         return new Filter<T>(that, predicate);
     }
 
-    private static class Filter<T> implements Func1<Observer<T>, Subscription> {
+    private static class Filter<T> implements OperatorSubscribeFunction<T> {
 
         private final Observable<T> that;
         private final Func1<T, Boolean> predicate;
+        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
         public Filter(Observable<T> that, Func1<T, Boolean> predicate) {
             this.that = that;
@@ -43,7 +45,7 @@ public final class OperationFilter<T> {
         }
 
         public Subscription call(final Observer<T> observer) {
-            return that.subscribe(new Observer<T>() {
+            return subscription.wrap(that.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     try {
                         if ((boolean) predicate.call(value)) {
@@ -51,7 +53,8 @@ public final class OperationFilter<T> {
                         }
                     } catch (Exception ex) {
                         observer.onError(ex);
-                        // TODO is there a way to tell 'that' to unsubscribe if we have an error? 
+                        // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
+                        subscription.unsubscribe();
                     }
                 }
 
@@ -62,7 +65,7 @@ public final class OperationFilter<T> {
                 public void onCompleted() {
                     observer.onCompleted();
                 }
-            });
+            }));
         }
 
     }

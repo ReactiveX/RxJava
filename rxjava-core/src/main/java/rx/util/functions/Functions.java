@@ -91,12 +91,6 @@ public class Functions {
         } else {
             /* not an Rx Function so try language adaptors */
 
-            /*
-             * TODO the following code needs to be evaluated for performance
-             * 
-             * The c.isInstance and keySet() functions may be areas of concern with as often as this will be executed
-             */
-
             // check for language adaptor
             for (final Class c : languageAdaptors.keySet()) {
                 if (c.isInstance(function)) {

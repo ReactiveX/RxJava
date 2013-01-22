@@ -25,6 +25,7 @@ import org.mockito.MockitoAnnotations;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
+import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -61,10 +62,11 @@ public final class OperationScan {
         return new Accumulator<T>(sequence, null, accumulator);
     }
 
-    private static class Accumulator<T> implements Func1<Observer<T>, Subscription> {
+    private static class Accumulator<T> implements OperatorSubscribeFunction<T> {
         private final Observable<T> sequence;
         private final T initialValue;
         private Func2<T, T, T> accumlatorFunction;
+        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
         private Accumulator(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
             this.sequence = sequence;
@@ -74,7 +76,7 @@ public final class OperationScan {
 
         public Subscription call(final Observer<T> observer) {
 
-            return sequence.subscribe(new Observer<T>() {
+            return subscription.wrap(sequence.subscribe(new Observer<T>() {
                 private T acc = initialValue;
                 private boolean hasSentInitialValue = false;
 
@@ -108,7 +110,8 @@ public final class OperationScan {
                         observer.onNext(acc);
                     } catch (Exception ex) {
                         observer.onError(ex);
-                        // TODO is there a correct way to unsubscribe from the sequence?
+                        // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
+                        subscription.unsubscribe();
                     }
                 }
 
@@ -124,7 +127,7 @@ public final class OperationScan {
                     }
                     observer.onCompleted();
                 }
-            });
+            }));
         }
     }
 

@@ -112,7 +112,7 @@ public final class OperationZip {
      * @param <R>
      */
     @ThreadSafe
-    private static class Aggregator<R> implements Func1<Observer<R>, Subscription> {
+    private static class Aggregator<R> implements OperatorSubscribeFunction<R> {
 
         private volatile AtomicObserverSingleThreaded<R> observer;
         private final FuncN<R> zipFunction;

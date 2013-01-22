@@ -58,7 +58,7 @@ public final class OperationSynchronize<T> {
         return new Synchronize<T>(observable);
     }
 
-    private static class Synchronize<T> implements Func1<Observer<T>, Subscription> {
+    private static class Synchronize<T> implements OperatorSubscribeFunction<T> {
 
         public Synchronize(Observable<T> innerObservable) {
             this.innerObservable = innerObservable;

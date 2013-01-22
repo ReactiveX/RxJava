@@ -62,7 +62,7 @@ public final class OperationSkip {
      * 
      * @param <T>
      */
-    private static class Skip<T> implements Func1<Observer<T>, Subscription> {
+    private static class Skip<T> implements OperatorSubscribeFunction<T> {
         private final int num;
         private final Observable<T> items;
 
