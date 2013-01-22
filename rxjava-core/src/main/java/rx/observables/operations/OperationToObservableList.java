@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,14 +29,15 @@ import org.mockito.Mockito;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
+import rx.util.functions.Func1;
 
 public final class OperationToObservableList<T> {
 
-    public static <T> Observable<List<T>> toObservableList(Observable<T> that) {
+    public static <T> Func1<Observer<List<T>>, Subscription> toObservableList(Observable<T> that) {
         return new ToObservableList<T>(that);
     }
 
-    private static class ToObservableList<T> extends Observable<List<T>> {
+    private static class ToObservableList<T> implements OperatorSubscribeFunction<List<T>> {
 
         private final Observable<T> that;
         final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();
@@ -45,18 +46,16 @@ public final class OperationToObservableList<T> {
             this.that = that;
         }
 
-        public Subscription subscribe(Observer<List<T>> listObserver) {
-            final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-            final Observer<List<T>> Observer = new AtomicObserver<List<T>>(listObserver, subscription);
+        public Subscription call(final Observer<List<T>> observer) {
 
-            subscription.setActual(that.subscribe(new Observer<T>() {
+            return that.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     // onNext can be concurrently executed so list must be thread-safe
                     list.add(value);
                 }
 
                 public void onError(Exception ex) {
-                    Observer.onError(ex);
+                    observer.onError(ex);
                 }
 
                 public void onCompleted() {
@@ -67,18 +66,17 @@ public final class OperationToObservableList<T> {
                             l.add(t);
                         }
 
-                        // benjchristensen => I want to make this immutable but some clients are sorting this
+                        // benjchristensen => I want to make this list immutable but some clients are sorting this
                         // instead of using toSortedList() and this change breaks them until we migrate their code.
-                        // Observer.onNext(Collections.unmodifiableList(l));
-                        Observer.onNext(l);
-                        Observer.onCompleted();
+                        // observer.onNext(Collections.unmodifiableList(l));
+                        observer.onNext(l);
+                        observer.onCompleted();
                     } catch (Exception e) {
                         onError(e);
                     }
 
                 }
-            }));
-            return subscription;
+            });
         }
     }
 
@@ -87,11 +85,11 @@ public final class OperationToObservableList<T> {
         @Test
         public void testList() {
             Observable<String> w = Observable.toObservable("one", "two", "three");
-            Observable<List<String>> Observable = toObservableList(w);
+            Observable<List<String>> observable = Observable.create(toObservableList(w));
 
             @SuppressWarnings("unchecked")
             Observer<List<String>> aObserver = mock(Observer.class);
-            Observable.subscribe(aObserver);
+            observable.subscribe(aObserver);
             verify(aObserver, times(1)).onNext(Arrays.asList("one", "two", "three"));
             verify(aObserver, Mockito.never()).onError(any(Exception.class));
             verify(aObserver, times(1)).onCompleted();

@@ -25,22 +25,23 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.observables.CompositeException;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
-import rx.util.Func1;
+import rx.util.AtomicObservableSubscription;
+import rx.util.CompositeException;
+import rx.util.functions.Func1;
 
 /**
  * When an onError occurs the resumeFunction will be executed and it's response passed to onNext instead of calling onError.
  */
 public final class OperationOnErrorReturn<T> {
 
-    public static <T> Observable<T> onErrorReturn(Observable<T> originalSequence, Func1<Exception, T> resumeFunction) {
+    public static <T> Func1<Observer<T>, Subscription> onErrorReturn(Observable<T> originalSequence, Func1<Exception, T> resumeFunction) {
         return new OnErrorReturn<T>(originalSequence, resumeFunction);
     }
 
-    private static class OnErrorReturn<T> extends Observable<T> {
+    private static class OnErrorReturn<T> implements OperatorSubscribeFunction<T> {
         private final Func1<Exception, T> resumeFunction;
         private final Observable<T> originalSequence;
 
@@ -49,15 +50,14 @@ public final class OperationOnErrorReturn<T> {
             this.originalSequence = originalSequence;
         }
 
-        public Subscription subscribe(Observer<T> Observer) {
+        public Subscription call(final Observer<T> observer) {
             final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-            final Observer<T> observer = new AtomicObserver<T>(Observer, subscription);
 
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
             final AtomicReference<AtomicObservableSubscription> subscriptionRef = new AtomicReference<AtomicObservableSubscription>(subscription);
 
             // subscribe to the original Observable and remember the subscription
-            subscription.setActual(originalSequence.subscribe(new Observer<T>() {
+            subscription.wrap(originalSequence.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     // forward the successful calls
                     observer.onNext(value);
@@ -120,7 +120,7 @@ public final class OperationOnErrorReturn<T> {
             TestObservable w = new TestObservable(s, "one");
             final AtomicReference<Exception> capturedException = new AtomicReference<Exception>();
 
-            Observable<String> Observable = onErrorReturn(w, new Func1<Exception, String>() {
+            Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Exception, String>() {
 
                 @Override
                 public String call(Exception e) {
@@ -128,11 +128,11 @@ public final class OperationOnErrorReturn<T> {
                     return "failure";
                 }
 
-            });
+            }));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
-            Observable.subscribe(aObserver);
+            observable.subscribe(aObserver);
 
             try {
                 w.t.join();
@@ -156,7 +156,7 @@ public final class OperationOnErrorReturn<T> {
             TestObservable w = new TestObservable(s, "one");
             final AtomicReference<Exception> capturedException = new AtomicReference<Exception>();
 
-            Observable<String> Observable = onErrorReturn(w, new Func1<Exception, String>() {
+            Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Exception, String>() {
 
                 @Override
                 public String call(Exception e) {
@@ -164,11 +164,11 @@ public final class OperationOnErrorReturn<T> {
                     throw new RuntimeException("exception from function");
                 }
 
-            });
+            }));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
-            Observable.subscribe(aObserver);
+            observable.subscribe(aObserver);
 
             try {
                 w.t.join();
@@ -192,6 +192,14 @@ public final class OperationOnErrorReturn<T> {
             Thread t = null;
 
             public TestObservable(Subscription s, String... values) {
+                super(new Func1<Observer<String>, Subscription>() {
+
+                    @Override
+                    public Subscription call(Observer<String> t1) {
+                        // do nothing as we are overriding subscribe for testing purposes
+                        return null;
+                    }
+                });
                 this.s = s;
                 this.values = values;
             }

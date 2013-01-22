@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,7 @@ import rx.observables.Notification;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
+import rx.util.functions.Func1;
 
 /**
  * Materializes the implicit notifications of an observable sequence as explicit notification values.
@@ -44,11 +45,11 @@ public final class OperationMaterialize {
      * @return An observable sequence whose elements are the result of materializing the notifications of the given sequence.
      * @see http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx
      */
-    public static <T> Observable<Notification<T>> materialize(final Observable<T> sequence) {
+    public static <T> Func1<Observer<Notification<T>>, Subscription> materialize(final Observable<T> sequence) {
         return new MaterializeObservable<T>(sequence);
     }
 
-    private static class MaterializeObservable<T> extends Observable<Notification<T>> {
+    private static class MaterializeObservable<T> implements OperatorSubscribeFunction<Notification<T>> {
 
         private final Observable<T> sequence;
 
@@ -57,32 +58,27 @@ public final class OperationMaterialize {
         }
 
         @Override
-        public Subscription subscribe(Observer<Notification<T>> Observer) {
-            final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-            final Observer<Notification<T>> atomicObserver = new AtomicObserver<Notification<T>>(Observer, subscription);
-
-            subscription.setActual(sequence.subscribe(new Observer<T>() {
+        public Subscription call(final Observer<Notification<T>> observer) {
+            return sequence.subscribe(new Observer<T>() {
 
                 @Override
                 public void onCompleted() {
-                    atomicObserver.onNext(new Notification<T>());
-                    atomicObserver.onCompleted();
+                    observer.onNext(new Notification<T>());
+                    observer.onCompleted();
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    atomicObserver.onNext(new Notification<T>(e));
-                    atomicObserver.onCompleted();
+                    observer.onNext(new Notification<T>(e));
+                    observer.onCompleted();
                 }
 
                 @Override
                 public void onNext(T value) {
-                    atomicObserver.onNext(new Notification<T>(value));
+                    observer.onNext(new Notification<T>(value));
                 }
 
-            }));
-
-            return subscription;
+            });
         }
 
     }
@@ -94,7 +90,7 @@ public final class OperationMaterialize {
             final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", null, "three");
 
             TestObserver Observer = new TestObserver();
-            Observable<Notification<String>> m = materialize(o1);
+            Observable<Notification<String>> m = Observable.create(materialize(o1));
             m.subscribe(Observer);
 
             try {
@@ -119,7 +115,7 @@ public final class OperationMaterialize {
             final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
 
             TestObserver Observer = new TestObserver();
-            Observable<Notification<String>> m = materialize(o1);
+            Observable<Notification<String>> m = Observable.create(materialize(o1));
             m.subscribe(Observer);
 
             try {
@@ -144,7 +140,7 @@ public final class OperationMaterialize {
         public void testMultipleSubscribes() {
             final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", null, "three");
 
-            Observable<Notification<String>> m = materialize(o1);
+            Observable<Notification<String>> m = Observable.create(materialize(o1));
 
             TestObserver Observer1 = new TestObserver();
             m.subscribe(Observer1);
@@ -192,6 +188,14 @@ public final class OperationMaterialize {
         String[] valuesToReturn;
 
         TestAsyncErrorObservable(String... values) {
+            super(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(Observer<String> t1) {
+                    // do nothing as we are overriding subscribe for testing purposes
+                    return null;
+                }
+            });
             valuesToReturn = values;
         }
 
