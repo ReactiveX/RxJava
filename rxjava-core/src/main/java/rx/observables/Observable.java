@@ -606,6 +606,7 @@ public abstract class Observable<T> {
         final FuncN _f = Functions.from(function);
         return map(sequence, new Func1<T, R>() {
 
+            @SuppressWarnings("unchecked")
             @Override
             public R call(T t1) {
                 return (R) _f.call(t1);
@@ -667,6 +668,7 @@ public abstract class Observable<T> {
         final FuncN _f = Functions.from(function);
         return mapMany(sequence, new Func1<T, R>() {
 
+            @SuppressWarnings("unchecked")
             @Override
             public R call(T t1) {
                 return (R) _f.call(t1);
