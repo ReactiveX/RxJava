@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,14 +24,19 @@ import org.mockito.Mockito;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
+import rx.util.AtomicObservableSubscription;
+import rx.util.AtomicObserverSingleThreaded;
+import rx.util.functions.Func1;
 
 /**
  * An observable that wraps an observable of the same type and then enforces the semantics
  * expected of a well-behaved observable.
- * 
+ * <p>
  * An observable that ensures onNext, onCompleted, or onError calls on its subscribers are
  * not interleaved, onCompleted and onError are only called once respectively, and no
  * onNext calls follow onCompleted and onError calls.
+ * <p>
+ * NOTE: {@link Observable#create} already wraps Observables so this is generally redundant.
  * 
  * @param <T>
  *            The type of the observable sequence.
@@ -49,11 +54,11 @@ public final class OperationSynchronize<T> {
      * @param <T>
      * @return
      */
-    public static <T> Observable<T> synchronize(Observable<T> observable) {
+    public static <T> Func1<Observer<T>, Subscription> synchronize(Observable<T> observable) {
         return new Synchronize<T>(observable);
     }
 
-    private static class Synchronize<T> extends Observable<T> {
+    private static class Synchronize<T> implements OperatorSubscribeFunction<T> {
 
         public Synchronize(Observable<T> innerObservable) {
             this.innerObservable = innerObservable;
@@ -62,11 +67,10 @@ public final class OperationSynchronize<T> {
         private Observable<T> innerObservable;
         private AtomicObserverSingleThreaded<T> atomicObserver;
 
-        public Subscription subscribe(Observer<T> observer) {
+        public Subscription call(Observer<T> observer) {
             AtomicObservableSubscription subscription = new AtomicObservableSubscription();
             atomicObserver = new AtomicObserverSingleThreaded<T>(observer, subscription);
-            subscription.setActual(innerObservable.subscribe(atomicObserver));
-            return subscription;
+            return subscription.wrap(innerObservable.subscribe(atomicObserver));
         }
 
     }
@@ -79,7 +83,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnCompletedAfterUnSubscribe() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = synchronize(t);
+            Observable<String> st = Observable.create(synchronize(t));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -99,7 +103,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnNextAfterUnSubscribe() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = synchronize(t);
+            Observable<String> st = Observable.create(synchronize(t));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -119,7 +123,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnErrorAfterUnSubscribe() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = synchronize(t);
+            Observable<String> st = Observable.create(synchronize(t));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -139,7 +143,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnNextAfterOnError() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = synchronize(t);
+            Observable<String> st = Observable.create(synchronize(t));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -161,7 +165,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnCompletedAfterOnError() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = synchronize(t);
+            Observable<String> st = Observable.create(synchronize(t));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -183,7 +187,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnNextAfterOnCompleted() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = synchronize(t);
+            Observable<String> st = Observable.create(synchronize(t));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -206,7 +210,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnErrorAfterOnCompleted() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = synchronize(t);
+            Observable<String> st = Observable.create(synchronize(t));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -230,6 +234,14 @@ public final class OperationSynchronize<T> {
             Observer<String> observer = null;
 
             public TestObservable(Subscription s) {
+                super(new Func1<Observer<String>, Subscription>() {
+
+                    @Override
+                    public Subscription call(Observer<String> t1) {
+                        // do nothing as we are overriding subscribe for testing purposes
+                        return null;
+                    }
+                });
             }
 
             /* used to simulate subscription */

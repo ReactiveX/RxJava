@@ -24,29 +24,28 @@ import org.mockito.Mockito;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
-import rx.util.Func1;
+import rx.util.AtomicObservableSubscription;
+import rx.util.functions.Func1;
 
 public final class OperationFilter<T> {
 
-    public static <T> Observable<T> filter(Observable<T> that, Func1<T, Boolean> predicate) {
+    public static <T> Func1<Observer<T>, Subscription> filter(Observable<T> that, Func1<T, Boolean> predicate) {
         return new Filter<T>(that, predicate);
     }
 
-    private static class Filter<T> extends Observable<T> {
+    private static class Filter<T> implements OperatorSubscribeFunction<T> {
 
         private final Observable<T> that;
         private final Func1<T, Boolean> predicate;
+        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
         public Filter(Observable<T> that, Func1<T, Boolean> predicate) {
             this.that = that;
             this.predicate = predicate;
         }
 
-        public Subscription subscribe(Observer<T> Observer) {
-            final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-            final Observer<T> observer = new AtomicObserver<T>(Observer, subscription);
-
-            subscription.setActual(that.subscribe(new Observer<T>() {
+        public Subscription call(final Observer<T> observer) {
+            return subscription.wrap(that.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     try {
                         if ((boolean) predicate.call(value)) {
@@ -54,6 +53,7 @@ public final class OperationFilter<T> {
                         }
                     } catch (Exception ex) {
                         observer.onError(ex);
+                        // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
                         subscription.unsubscribe();
                     }
                 }
@@ -66,9 +66,8 @@ public final class OperationFilter<T> {
                     observer.onCompleted();
                 }
             }));
-
-            return subscription;
         }
+
     }
 
     public static class UnitTest {
@@ -76,7 +75,7 @@ public final class OperationFilter<T> {
         @Test
         public void testFilter() {
             Observable<String> w = Observable.toObservable("one", "two", "three");
-            Observable<String> Observable = filter(w, new Func1<String, Boolean>() {
+            Observable<String> observable = Observable.create(filter(w, new Func1<String, Boolean>() {
 
                 @Override
                 public Boolean call(String t1) {
@@ -85,11 +84,11 @@ public final class OperationFilter<T> {
                     else
                         return false;
                 }
-            });
+            }));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
-            Observable.subscribe(aObserver);
+            observable.subscribe(aObserver);
             verify(aObserver, Mockito.never()).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, Mockito.never()).onNext("three");

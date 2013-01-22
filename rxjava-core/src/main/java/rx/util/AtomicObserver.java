@@ -1,19 +1,19 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.util;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -22,8 +22,8 @@ import rx.observables.Observer;
 /**
  * A thread-safe Observer for transitioning states in operators.
  * <p>
- * Allows both single-threaded and multi-threaded execution controlled by the following FastProperty:
- * <li>reactive.Observer.multithreaded.enabled [Default: false]</li>
+ * Allows both single-threaded and multi-threaded execution controlled by the following System property:
+ * <li>rx.onNext.multithreaded.enabled [Default: false]</li>
  * <p>
  * Single-threaded Execution rules are:
  * <ul>
@@ -44,7 +44,7 @@ import rx.observables.Observer;
  * @param <T>
  */
 @ThreadSafe
-/* package */final class AtomicObserver<T> implements Observer<T> {
+public final class AtomicObserver<T> implements Observer<T> {
 
     /** Allow changing between forcing single or allowing multi-threaded execution of onNext */
     private static boolean allowMultiThreaded = false;

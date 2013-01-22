@@ -32,22 +32,23 @@ import org.mockito.InOrder;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
-import rx.util.Func2;
-import rx.util.Func3;
-import rx.util.Func4;
-import rx.util.FuncN;
-import rx.util.Functions;
+import rx.util.functions.Func1;
+import rx.util.functions.Func2;
+import rx.util.functions.Func3;
+import rx.util.functions.Func4;
+import rx.util.functions.FuncN;
+import rx.util.functions.Functions;
 
 public class OperationCombineLatest {
 
-    public static <T0, T1, R> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> combineLatestFunction) {
+    public static <T0, T1, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
         a.addObserver(new CombineObserver<R, T1>(a, w1));
         return a;
     }
 
-    public static <T0, T1, T2, R> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> combineLatestFunction) {
+    public static <T0, T1, T2, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
         a.addObserver(new CombineObserver<R, T1>(a, w1));
@@ -55,7 +56,7 @@ public class OperationCombineLatest {
         return a;
     }
 
-    public static <T0, T1, T2, T3, R> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> combineLatestFunction) {
+    public static <T0, T1, T2, T3, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
         a.addObserver(new CombineObserver<R, T1>(a, w1));
@@ -102,7 +103,7 @@ public class OperationCombineLatest {
      * 
      * @param <R>
      */
-    private static class Aggregator<R> extends Observable<R> {
+    private static class Aggregator<R> implements OperatorSubscribeFunction<R> {
 
         private final FuncN<R> combineLatestFunction;
         private Observer<R> Observer;
@@ -236,7 +237,7 @@ public class OperationCombineLatest {
         }
 
         @Override
-        public Subscription subscribe(Observer<R> Observer) {
+        public Subscription call(Observer<R> Observer) {
             if (this.Observer != null) {
                 throw new IllegalStateException("Only one Observer can subscribe to this Observable.");
             }
@@ -282,7 +283,7 @@ public class OperationCombineLatest {
             TestObservable w2 = new TestObservable();
             TestObservable w3 = new TestObservable();
 
-            Observable<String> combineLatestW = combineLatest(w1, w2, w3, getConcat3StringsCombineLatestFunction());
+            Observable<String> combineLatestW = Observable.create(combineLatest(w1, w2, w3, getConcat3StringsCombineLatestFunction()));
             combineLatestW.subscribe(w);
 
             /* simulate sending data */
@@ -319,7 +320,7 @@ public class OperationCombineLatest {
             TestObservable w2 = new TestObservable();
             TestObservable w3 = new TestObservable();
 
-            Observable<String> combineLatestW = combineLatest(w1, w2, w3, getConcat3StringsCombineLatestFunction());
+            Observable<String> combineLatestW = Observable.create(combineLatest(w1, w2, w3, getConcat3StringsCombineLatestFunction()));
             combineLatestW.subscribe(w);
 
             /* simulate sending data */
@@ -359,7 +360,7 @@ public class OperationCombineLatest {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            Observable.create(a).subscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             CombineObserver<String, String> r1 = mock(CombineObserver.class);
@@ -403,7 +404,7 @@ public class OperationCombineLatest {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            Observable.create(a).subscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             CombineObserver<String, String> r1 = mock(CombineObserver.class);
@@ -440,7 +441,7 @@ public class OperationCombineLatest {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            Observable.create(a).subscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             CombineObserver<String, String> r1 = mock(CombineObserver.class);
@@ -477,7 +478,7 @@ public class OperationCombineLatest {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            Observable.create(a).subscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             CombineObserver<String, String> r1 = mock(CombineObserver.class);
@@ -509,7 +510,7 @@ public class OperationCombineLatest {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            Observable.create(a).subscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             CombineObserver<String, String> r1 = mock(CombineObserver.class);
@@ -555,7 +556,7 @@ public class OperationCombineLatest {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            Observable.create(a).subscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             CombineObserver<String, String> r1 = mock(CombineObserver.class);
@@ -593,7 +594,7 @@ public class OperationCombineLatest {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            Subscription subscription = a.subscribe(aObserver);
+            Subscription subscription = Observable.create(a).subscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             CombineObserver<String, String> r1 = mock(CombineObserver.class);
@@ -631,7 +632,7 @@ public class OperationCombineLatest {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            Observable.create(a).subscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             CombineObserver<String, String> r1 = mock(CombineObserver.class);
@@ -668,7 +669,7 @@ public class OperationCombineLatest {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = combineLatest(Observable.toObservable("one", "two"), Observable.toObservable(2, 3, 4), combineLatestFunction);
+            Observable<String> w = Observable.create(combineLatest(Observable.toObservable("one", "two"), Observable.toObservable(2, 3, 4), combineLatestFunction));
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -687,7 +688,7 @@ public class OperationCombineLatest {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = combineLatest(Observable.toObservable("one", "two"), Observable.toObservable(2), Observable.toObservable(new int[] { 4, 5, 6 }), combineLatestFunction);
+            Observable<String> w = Observable.create(combineLatest(Observable.toObservable("one", "two"), Observable.toObservable(2), Observable.toObservable(new int[] { 4, 5, 6 }), combineLatestFunction));
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -704,7 +705,7 @@ public class OperationCombineLatest {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = combineLatest(Observable.toObservable("one"), Observable.toObservable(2), Observable.toObservable(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction);
+            Observable<String> w = Observable.create(combineLatest(Observable.toObservable("one"), Observable.toObservable(2), Observable.toObservable(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction));
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -792,6 +793,17 @@ public class OperationCombineLatest {
         private static class TestObservable extends Observable<String> {
 
             Observer<String> Observer;
+
+            public TestObservable() {
+                super(new Func1<Observer<String>, Subscription>() {
+
+                    @Override
+                    public Subscription call(rx.observables.Observer<String> t1) {
+                        return null;
+                        // do nothing ... we are overriding the subscribe method for testing
+                    }
+                });
+            }
 
             @Override
             public Subscription subscribe(Observer<String> Observer) {

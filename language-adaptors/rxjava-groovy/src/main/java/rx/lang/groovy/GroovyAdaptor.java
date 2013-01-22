@@ -33,7 +33,7 @@ import rx.observables.Notification;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
-import rx.util.FunctionLanguageAdaptor;
+import rx.util.functions.FunctionLanguageAdaptor;
 
 public class GroovyAdaptor implements FunctionLanguageAdaptor {
 

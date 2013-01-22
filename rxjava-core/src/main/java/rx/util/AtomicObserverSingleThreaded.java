@@ -1,19 +1,19 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.util;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
@@ -36,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
+import rx.util.functions.Func1;
 
 /**
  * A thread-safe Observer for transitioning states in operators.
@@ -50,7 +51,7 @@ import rx.observables.Subscription;
  * @param <T>
  */
 @ThreadSafe
-/* package */final class AtomicObserverSingleThreaded<T> implements Observer<T> {
+public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
 
     /**
      * Intrinsic synchronized locking with double-check short-circuiting was chosen after testing several other implementations.
@@ -133,13 +134,14 @@ import rx.observables.Subscription;
         @Test
         public void testSingleThreadedBasic() {
             Subscription s = mock(Subscription.class);
-            TestSingleThreadedObservable w = new TestSingleThreadedObservable(s, "one", "two", "three");
+            TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable(s, "one", "two", "three");
+            Observable<String> w = Observable.create(onSubscribe);
 
             AtomicObservableSubscription as = new AtomicObservableSubscription(s);
             AtomicObserverSingleThreaded<String> aw = new AtomicObserverSingleThreaded<String>(aObserver, as);
 
             w.subscribe(aw);
-            w.waitToFinish();
+            onSubscribe.waitToFinish();
 
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
@@ -152,14 +154,15 @@ import rx.observables.Subscription;
         @Test
         public void testMultiThreadedBasic() {
             Subscription s = mock(Subscription.class);
-            TestMultiThreadedObservable w = new TestMultiThreadedObservable(s, "one", "two", "three");
+            TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three");
+            Observable<String> w = Observable.create(onSubscribe);
 
             AtomicObservableSubscription as = new AtomicObservableSubscription(s);
             BusyObserver busyObserver = new BusyObserver();
             AtomicObserverSingleThreaded<String> aw = new AtomicObserverSingleThreaded<String>(busyObserver, as);
 
             w.subscribe(aw);
-            w.waitToFinish();
+            onSubscribe.waitToFinish();
 
             assertEquals(3, busyObserver.onNextCount.get());
             assertFalse(busyObserver.onError);
@@ -167,7 +170,7 @@ import rx.observables.Subscription;
             verify(s, never()).unsubscribe();
 
             // we can have concurrency ...
-            assertTrue(w.maxConcurrentThreads.get() > 1);
+            assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
             // ... but the onNext execution should be single threaded
             assertEquals(1, busyObserver.maxConcurrentThreads.get());
         }
@@ -175,16 +178,17 @@ import rx.observables.Subscription;
         @Test
         public void testMultiThreadedWithNPE() {
             Subscription s = mock(Subscription.class);
-            TestMultiThreadedObservable w = new TestMultiThreadedObservable(s, "one", "two", "three", null);
+            TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null);
+            Observable<String> w = Observable.create(onSubscribe);
 
             AtomicObservableSubscription as = new AtomicObservableSubscription(s);
             BusyObserver busyObserver = new BusyObserver();
             AtomicObserverSingleThreaded<String> aw = new AtomicObserverSingleThreaded<String>(busyObserver, as);
 
             w.subscribe(aw);
-            w.waitToFinish();
+            onSubscribe.waitToFinish();
 
-            System.out.println("maxConcurrentThreads: " + w.maxConcurrentThreads.get());
+            System.out.println("maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get());
 
             // we can't know how many onNext calls will occur since they each run on a separate thread
             // that depends on thread scheduling so 0, 1, 2 and 3 are all valid options
@@ -196,7 +200,7 @@ import rx.observables.Subscription;
             verify(s, never()).unsubscribe();
 
             // we can have concurrency ...
-            assertTrue(w.maxConcurrentThreads.get() > 1);
+            assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
             // ... but the onNext execution should be single threaded
             assertEquals(1, busyObserver.maxConcurrentThreads.get());
         }
@@ -204,16 +208,17 @@ import rx.observables.Subscription;
         @Test
         public void testMultiThreadedWithNPEinMiddle() {
             Subscription s = mock(Subscription.class);
-            TestMultiThreadedObservable w = new TestMultiThreadedObservable(s, "one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
+            TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
+            Observable<String> w = Observable.create(onSubscribe);
 
             AtomicObservableSubscription as = new AtomicObservableSubscription(s);
             BusyObserver busyObserver = new BusyObserver();
             AtomicObserverSingleThreaded<String> aw = new AtomicObserverSingleThreaded<String>(busyObserver, as);
 
             w.subscribe(aw);
-            w.waitToFinish();
+            onSubscribe.waitToFinish();
 
-            System.out.println("maxConcurrentThreads: " + w.maxConcurrentThreads.get());
+            System.out.println("maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get());
             // this should not be the full number of items since the error should stop it before it completes all 9
             System.out.println("onNext count: " + busyObserver.onNextCount.get());
             assertTrue(busyObserver.onNextCount.get() < 9);
@@ -223,7 +228,7 @@ import rx.observables.Subscription;
             verify(s, never()).unsubscribe();
 
             // we can have concurrency ...
-            assertTrue(w.maxConcurrentThreads.get() > 1);
+            assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
             // ... but the onNext execution should be single threaded
             assertEquals(1, busyObserver.maxConcurrentThreads.get());
         }
@@ -452,19 +457,19 @@ import rx.observables.Subscription;
          * This spawns a single thread for the subscribe execution
          * 
          */
-        private static class TestSingleThreadedObservable extends Observable<String> {
+        private static class TestSingleThreadedObservable implements Func1<Observer<String>, Subscription> {
 
             final Subscription s;
             final String[] values;
-            Thread t = null;
+            private Thread t = null;
 
-            public TestSingleThreadedObservable(Subscription s, String... values) {
+            public TestSingleThreadedObservable(final Subscription s, final String... values) {
                 this.s = s;
                 this.values = values;
+
             }
 
-            @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription call(final Observer<String> observer) {
                 System.out.println("TestSingleThreadedObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 
@@ -503,7 +508,7 @@ import rx.observables.Subscription;
          * This spawns a thread for the subscription, then a separate thread for each onNext call.
          * 
          */
-        private static class TestMultiThreadedObservable extends Observable<String> {
+        private static class TestMultiThreadedObservable implements Func1<Observer<String>, Subscription> {
 
             final Subscription s;
             final String[] values;
@@ -519,7 +524,7 @@ import rx.observables.Subscription;
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription call(final Observer<String> observer) {
                 System.out.println("TestMultiThreadedObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

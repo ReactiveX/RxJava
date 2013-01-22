@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
+import rx.util.functions.Func1;
 
 /**
  * Accepts an Iterable object and exposes it as an Observable.
@@ -35,27 +36,24 @@ import rx.observables.Subscription;
  */
 public final class OperationToObservableIterable<T> {
 
-    public static <T> Observable<T> toObservableIterable(Iterable<T> list) {
+    public static <T> Func1<Observer<T>, Subscription> toObservableIterable(Iterable<T> list) {
         return new ToObservableIterable<T>(list);
     }
 
-    private static class ToObservableIterable<T> extends Observable<T> {
+    private static class ToObservableIterable<T> implements OperatorSubscribeFunction<T> {
         public ToObservableIterable(Iterable<T> list) {
             this.iterable = list;
         }
 
         public Iterable<T> iterable;
 
-        public Subscription subscribe(Observer<T> Observer) {
-            final AtomicObservableSubscription subscription = new AtomicObservableSubscription(Observable.noOpSubscription());
-            final Observer<T> observer = new AtomicObserver<T>(Observer, subscription);
-
+        public Subscription call(Observer<T> observer) {
             for (T item : iterable) {
                 observer.onNext(item);
             }
             observer.onCompleted();
 
-            return subscription;
+            return Observable.noOpSubscription();
         }
     }
 
@@ -63,11 +61,11 @@ public final class OperationToObservableIterable<T> {
 
         @Test
         public void testIterable() {
-            Observable<String> Observable = toObservableIterable(Arrays.<String> asList("one", "two", "three"));
+            Observable<String> observable = Observable.create(toObservableIterable(Arrays.<String> asList("one", "two", "three")));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
-            Observable.subscribe(aObserver);
+            observable.subscribe(aObserver);
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, times(1)).onNext("three");
