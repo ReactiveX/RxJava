@@ -581,9 +581,9 @@ public abstract class Observable<T> {
      *         in the sequence emitted by the source Observable
      */
     public static <T, R> Observable<R> map(Observable<T> sequence, Func1<T, R> func) {
-        //                        return OperationMap.map(sequence, func);
+                                return OperationMap.map(sequence, func);
 
-        return (Observable<R>) ChainedObservable.chain(sequence).addFunction(func);
+//        return (Observable<R>) ChainedObservable.chain(sequence).addFunction(func);
     }
 
     /**
