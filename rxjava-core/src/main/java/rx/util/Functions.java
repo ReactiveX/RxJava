@@ -79,23 +79,17 @@ public class Functions {
      * @param function
      * @param args
      */
-    @SuppressWarnings("unchecked")
-    public static <R> R execute(Object function, Object... args) {
-        // if we have a tracer then log the start
-        long startTime = -1;
-        if (tracer != null && tracer.isTraceEnabled()) {
-            try {
-                startTime = System.nanoTime();
-                tracer.traceStart(function, args);
-            } catch (Exception e) {
-                logger.warn("Failed to trace log.", e);
-            }
+    @SuppressWarnings({ "rawtypes" })
+    public static FuncN from(final Object function) {
+        if (function == null) {
+            throw new RuntimeException("function is null. Can't send arguments to null function.");
         }
-        // perform controller logic to determine what type of function we received and execute it
-        try {
-            if (function == null) {
-                throw new RuntimeException("function is null. Can't send arguments to null function.");
-            }
+
+        /* check for typed Rx Function implementation first */
+        if (function instanceof Function) {
+            return fromFunction((Function) function);
+        } else {
+            /* not an Rx Function so try language adaptors */
 
             /*
              * TODO the following code needs to be evaluated for performance
@@ -104,98 +98,219 @@ public class Functions {
              */
 
             // check for language adaptor
-            for (@SuppressWarnings("rawtypes")
-            Class c : languageAdaptors.keySet()) {
+            for (final Class c : languageAdaptors.keySet()) {
                 if (c.isInstance(function)) {
-                    // found the language adaptor so execute
-                    return (R) languageAdaptors.get(c).call(function, args);
+                    final FunctionLanguageAdaptor la = languageAdaptors.get(c);
+                    // found the language adaptor so wrap in FuncN and return
+                    return new FuncN() {
+
+                        @Override
+                        public Object call(Object... args) {
+                            return la.call(function, args);
+                        }
+
+                    };
                 }
             }
             // no language adaptor found
-
-            // check Func* classes 
-            if (function instanceof Func0) {
-                Func0<R> f = (Func0<R>) function;
-                if (args.length != 0) {
-                    throw new RuntimeException("The closure was Func0 and expected no arguments, but we received: " + args.length);
-                }
-                return (R) f.call();
-            } else if (function instanceof Func1) {
-                Func1<Object, R> f = (Func1<Object, R>) function;
-                if (args.length != 1) {
-                    throw new RuntimeException("The closure was Func1 and expected 1 argument, but we received: " + args.length);
-                }
-                return f.call(args[0]);
-            } else if (function instanceof Func2) {
-                Func2<Object, Object, R> f = (Func2<Object, Object, R>) function;
-                if (args.length != 2) {
-                    throw new RuntimeException("The closure was Func2 and expected 2 arguments, but we received: " + args.length);
-                }
-                return f.call(args[0], args[1]);
-            } else if (function instanceof Func3) {
-                Func3<Object, Object, Object, R> f = (Func3<Object, Object, Object, R>) function;
-                if (args.length != 3) {
-                    throw new RuntimeException("The closure was Func3 and expected 3 arguments, but we received: " + args.length);
-                }
-                return (R) f.call(args[0], args[1], args[2]);
-            } else if (function instanceof Func4) {
-                Func4<Object, Object, Object, Object, R> f = (Func4<Object, Object, Object, Object, R>) function;
-                if (args.length != 1) {
-                    throw new RuntimeException("The closure was Func4 and expected 4 arguments, but we received: " + args.length);
-                }
-                return f.call(args[0], args[1], args[2], args[3]);
-            } else if (function instanceof FuncN) {
-                FuncN<R> f = (FuncN<R>) function;
-                return f.call(args);
-            }
-
-            // no support found
-            throw new RuntimeException("Unsupported closure type: " + function.getClass().getSimpleName());
-        } finally {
-            // if we have a tracer then log the end
-            if (tracer != null && tracer.isTraceEnabled()) {
-                try {
-                    tracer.traceEnd(startTime, System.nanoTime(), function, args);
-                } catch (Exception e) {
-                    logger.warn("Failed to trace log.", e);
-                }
-            }
         }
+
+        // no support found
+        throw new RuntimeException("Unsupported closure type: " + function.getClass().getSimpleName());
     }
 
-    public static <T0, R> FuncN<R> fromFunc(final Func1<T0, R> f) {
+    //
+    //    @SuppressWarnings("unchecked")
+    //    private static <R> R executionRxFunction(Function function, Object... args) {
+    //        // check Func* classes 
+    //        if (function instanceof Func0) {
+    //            Func0<R> f = (Func0<R>) function;
+    //            if (args.length != 0) {
+    //                throw new RuntimeException("The closure was Func0 and expected no arguments, but we received: " + args.length);
+    //            }
+    //            return (R) f.call();
+    //        } else if (function instanceof Func1) {
+    //            Func1<Object, R> f = (Func1<Object, R>) function;
+    //            if (args.length != 1) {
+    //                throw new RuntimeException("The closure was Func1 and expected 1 argument, but we received: " + args.length);
+    //            }
+    //            return f.call(args[0]);
+    //        } else if (function instanceof Func2) {
+    //            Func2<Object, Object, R> f = (Func2<Object, Object, R>) function;
+    //            if (args.length != 2) {
+    //                throw new RuntimeException("The closure was Func2 and expected 2 arguments, but we received: " + args.length);
+    //            }
+    //            return f.call(args[0], args[1]);
+    //        } else if (function instanceof Func3) {
+    //            Func3<Object, Object, Object, R> f = (Func3<Object, Object, Object, R>) function;
+    //            if (args.length != 3) {
+    //                throw new RuntimeException("The closure was Func3 and expected 3 arguments, but we received: " + args.length);
+    //            }
+    //            return (R) f.call(args[0], args[1], args[2]);
+    //        } else if (function instanceof Func4) {
+    //            Func4<Object, Object, Object, Object, R> f = (Func4<Object, Object, Object, Object, R>) function;
+    //            if (args.length != 1) {
+    //                throw new RuntimeException("The closure was Func4 and expected 4 arguments, but we received: " + args.length);
+    //            }
+    //            return f.call(args[0], args[1], args[2], args[3]);
+    //        } else if (function instanceof Func5) {
+    //            Func5<Object, Object, Object, Object, Object, R> f = (Func5<Object, Object, Object, Object, Object, R>) function;
+    //            if (args.length != 1) {
+    //                throw new RuntimeException("The closure was Func5 and expected 5 arguments, but we received: " + args.length);
+    //            }
+    //            return f.call(args[0], args[1], args[2], args[3], args[4]);
+    //        } else if (function instanceof Func6) {
+    //            Func6<Object, Object, Object, Object, Object, Object, R> f = (Func6<Object, Object, Object, Object, Object, Object, R>) function;
+    //            if (args.length != 1) {
+    //                throw new RuntimeException("The closure was Func6 and expected 6 arguments, but we received: " + args.length);
+    //            }
+    //            return f.call(args[0], args[1], args[2], args[3], args[4], args[5]);
+    //        } else if (function instanceof Func7) {
+    //            Func7<Object, Object, Object, Object, Object, Object, Object, R> f = (Func7<Object, Object, Object, Object, Object, Object, Object, R>) function;
+    //            if (args.length != 1) {
+    //                throw new RuntimeException("The closure was Func7 and expected 7 arguments, but we received: " + args.length);
+    //            }
+    //            return f.call(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+    //        } else if (function instanceof Func8) {
+    //            Func8<Object, Object, Object, Object, Object, Object, Object, Object, R> f = (Func8<Object, Object, Object, Object, Object, Object, Object, Object, R>) function;
+    //            if (args.length != 1) {
+    //                throw new RuntimeException("The closure was Func8 and expected 8 arguments, but we received: " + args.length);
+    //            }
+    //            return f.call(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+    //        } else if (function instanceof Func9) {
+    //            Func9<Object, Object, Object, Object, Object, Object, Object, Object, Object, R> f = (Func9<Object, Object, Object, Object, Object, Object, Object, Object, Object, R>) function;
+    //            if (args.length != 1) {
+    //                throw new RuntimeException("The closure was Func9 and expected 9 arguments, but we received: " + args.length);
+    //            }
+    //            return f.call(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
+    //        } else if (function instanceof FuncN) {
+    //            FuncN<R> f = (FuncN<R>) function;
+    //            return f.call(args);
+    //        } else if (function instanceof Action0) {
+    //            Action0 f = (Action0) function;
+    //            if (args.length != 1) {
+    //                throw new RuntimeException("The closure was Action0 and expected 0 arguments, but we received: " + args.length);
+    //            }
+    //            f.call();
+    //            return null;
+    //        } else if (function instanceof Action1) {
+    //            Action1<Object> f = (Action1<Object>) function;
+    //            if (args.length != 1) {
+    //                throw new RuntimeException("The closure was Action1 and expected 1 argument, but we received: " + args.length);
+    //            }
+    //            f.call(args[0]);
+    //            return null;
+    //        } else if (function instanceof Action2) {
+    //            Action2<Object, Object> f = (Action2<Object, Object>) function;
+    //            if (args.length != 1) {
+    //                throw new RuntimeException("The closure was Action2 and expected 2 argument, but we received: " + args.length);
+    //            }
+    //            f.call(args[0], args[1]);
+    //            return null;
+    //        } else if (function instanceof Action3) {
+    //            Action3<Object, Object, Object> f = (Action3<Object, Object, Object>) function;
+    //            if (args.length != 1) {
+    //                throw new RuntimeException("The closure was Action1 and expected 1 argument, but we received: " + args.length);
+    //            }
+    //            f.call(args[0], args[1], args[2]);
+    //            return null;
+    //        }
+    //
+    //        throw new RuntimeException("Unknown implementation of Function: " + function.getClass().getSimpleName());
+    //    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static FuncN fromFunction(Function function) {
+        // check Func* classes 
+        if (function instanceof Func0) {
+            return fromFunc((Func0) function);
+        } else if (function instanceof Func1) {
+            return fromFunc((Func1) function);
+        } else if (function instanceof Func2) {
+            return fromFunc((Func2) function);
+        } else if (function instanceof Func3) {
+            return fromFunc((Func3) function);
+        } else if (function instanceof Func4) {
+            return fromFunc((Func4) function);
+        } else if (function instanceof Func5) {
+            return fromFunc((Func5) function);
+        } else if (function instanceof Func6) {
+            return fromFunc((Func6) function);
+        } else if (function instanceof Func7) {
+            return fromFunc((Func7) function);
+        } else if (function instanceof Func8) {
+            return fromFunc((Func8) function);
+        } else if (function instanceof Func9) {
+            return fromFunc((Func9) function);
+        } else if (function instanceof FuncN) {
+            return (FuncN) function;
+        } else if (function instanceof Action0) {
+            return fromAction((Action0) function);
+        } else if (function instanceof Action1) {
+            return fromAction((Action1) function);
+        } else if (function instanceof Action2) {
+            return fromAction((Action2) function);
+        } else if (function instanceof Action3) {
+            return fromAction((Action3) function);
+        }
+
+        throw new RuntimeException("Unknown implementation of Function: " + function.getClass().getSimpleName());
+    }
+
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
+    public static <R> FuncN<R> fromFunc(final Func0<R> f) {
         return new FuncN<R>() {
 
-            /**
-             * If it can't cast to this it should throw an exception as that means code is using this wrong.
-             * <p>
-             * We unfortunately need FuncN to be Object and this is a bridge between typed and non-typed hence this being unchecked
-             */
-            @SuppressWarnings("unchecked")
             @Override
             public R call(Object... args) {
-                if (args.length == 0) {
-                    return f.call(null);
-                } else {
-                    return f.call((T0) args[0]);
+                if (args.length != 0) {
+                    throw new RuntimeException("Func0 expecting 0 arguments.");
                 }
+                return f.call();
             }
 
         };
     }
 
-    public static <T0, T1, R> FuncN<R> fromFunc(final Func2<T0, T1, R> f) {
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
+    public static <T0, R> FuncN<R> fromFunc(final Func1<T0, R> f) {
         return new FuncN<R>() {
 
-            /**
-             * If it can't cast to this it should throw an exception as that means code is using this wrong.
-             * <p>
-             * We unfortunately need FuncN to be Object and this is a bridge between typed and non-typed hence this being unchecked
-             */
             @SuppressWarnings("unchecked")
             @Override
             public R call(Object... args) {
-                if (args.length < 2) {
+                if (args.length != 1) {
+                    throw new RuntimeException("Func1 expecting 1 argument.");
+                }
+                return f.call((T0) args[0]);
+            }
+
+        };
+    }
+
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
+    public static <T0, T1, R> FuncN<R> fromFunc(final Func2<T0, T1, R> f) {
+        return new FuncN<R>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public R call(Object... args) {
+                if (args.length != 2) {
                     throw new RuntimeException("Func2 expecting 2 arguments.");
                 }
                 return f.call((T0) args[0], (T1) args[1]);
@@ -204,18 +319,19 @@ public class Functions {
         };
     }
 
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
     public static <T0, T1, T2, R> FuncN<R> fromFunc(final Func3<T0, T1, T2, R> f) {
         return new FuncN<R>() {
 
-            /**
-             * If it can't cast to this it should throw an exception as that means code is using this wrong.
-             * <p>
-             * We unfortunately need FuncN to be Object and this is a bridge between typed and non-typed hence this being unchecked
-             */
             @SuppressWarnings("unchecked")
             @Override
             public R call(Object... args) {
-                if (args.length < 3) {
+                if (args.length != 3) {
                     throw new RuntimeException("Func3 expecting 3 arguments.");
                 }
                 return f.call((T0) args[0], (T1) args[1], (T2) args[2]);
@@ -224,18 +340,19 @@ public class Functions {
         };
     }
 
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
     public static <T0, T1, T2, T3, R> FuncN<R> fromFunc(final Func4<T0, T1, T2, T3, R> f) {
         return new FuncN<R>() {
 
-            /**
-             * If it can't cast to this it should throw an exception as that means code is using this wrong.
-             * <p>
-             * We unfortunately need FuncN to be Object and this is a bridge between typed and non-typed hence this being unchecked
-             */
             @SuppressWarnings("unchecked")
             @Override
             public R call(Object... args) {
-                if (args.length < 4) {
+                if (args.length != 4) {
                     throw new RuntimeException("Func4 expecting 4 arguments.");
                 }
                 return f.call((T0) args[0], (T1) args[1], (T2) args[2], (T3) args[3]);
@@ -244,27 +361,196 @@ public class Functions {
         };
     }
 
-    private static volatile FunctionTraceLogger tracer = null;
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
+    public static <T0, T1, T2, T3, T4, R> FuncN<R> fromFunc(final Func5<T0, T1, T2, T3, T4, R> f) {
+        return new FuncN<R>() {
 
-    public static interface FunctionTraceLogger {
-        public boolean isTraceEnabled();
+            @SuppressWarnings("unchecked")
+            @Override
+            public R call(Object... args) {
+                if (args.length != 5) {
+                    throw new RuntimeException("Func5 expecting 5 arguments.");
+                }
+                return f.call((T0) args[0], (T1) args[1], (T2) args[2], (T3) args[3], (T4) args[4]);
+            }
 
-        public void traceStart(Object closure, Object... args);
-
-        /**
-         * 
-         * @param start
-         *            nanoTime
-         * @param end
-         *            nanoTime
-         * @param closure
-         * @param args
-         */
-        public void traceEnd(long start, long end, Object closure, Object... args);
+        };
     }
 
-    public static void registerTraceLogger(FunctionTraceLogger tracer) {
-        Functions.tracer = tracer;
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
+    public static <T0, T1, T2, T3, T4, T5, R> FuncN<R> fromFunc(final Func6<T0, T1, T2, T3, T4, T5, R> f) {
+        return new FuncN<R>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public R call(Object... args) {
+                if (args.length != 6) {
+                    throw new RuntimeException("Func6 expecting 6 arguments.");
+                }
+                return f.call((T0) args[0], (T1) args[1], (T2) args[2], (T3) args[3], (T4) args[4], (T5) args[5]);
+            }
+
+        };
+    }
+
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
+    public static <T0, T1, T2, T3, T4, T5, T6, R> FuncN<R> fromFunc(final Func7<T0, T1, T2, T3, T4, T5, T6, R> f) {
+        return new FuncN<R>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public R call(Object... args) {
+                if (args.length != 7) {
+                    throw new RuntimeException("Func7 expecting 7 arguments.");
+                }
+                return f.call((T0) args[0], (T1) args[1], (T2) args[2], (T3) args[3], (T4) args[4], (T5) args[5], (T6) args[6]);
+            }
+
+        };
+    }
+
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
+    public static <T0, T1, T2, T3, T4, T5, T6, T7, R> FuncN<R> fromFunc(final Func8<T0, T1, T2, T3, T4, T5, T6, T7, R> f) {
+        return new FuncN<R>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public R call(Object... args) {
+                if (args.length != 8) {
+                    throw new RuntimeException("Func8 expecting 8 arguments.");
+                }
+                return f.call((T0) args[0], (T1) args[1], (T2) args[2], (T3) args[3], (T4) args[4], (T5) args[5], (T6) args[6], (T7) args[7]);
+            }
+
+        };
+    }
+
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
+    public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, R> FuncN<R> fromFunc(final Func9<T0, T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
+        return new FuncN<R>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public R call(Object... args) {
+                if (args.length != 9) {
+                    throw new RuntimeException("Func9 expecting 9 arguments.");
+                }
+                return f.call((T0) args[0], (T1) args[1], (T2) args[2], (T3) args[3], (T4) args[4], (T5) args[5], (T6) args[6], (T7) args[7], (T8) args[8]);
+            }
+
+        };
+    }
+
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
+    public static FuncN<Void> fromAction(final Action0 f) {
+        return new FuncN<Void>() {
+
+            @Override
+            public Void call(Object... args) {
+                if (args.length != 0) {
+                    throw new RuntimeException("Action0 expecting 0 arguments.");
+                }
+                f.call();
+                return null;
+            }
+
+        };
+    }
+
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
+    public static <T0> FuncN<Void> fromAction(final Action1<T0> f) {
+        return new FuncN<Void>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public Void call(Object... args) {
+                if (args.length != 1) {
+                    throw new RuntimeException("Action1 expecting 1 argument.");
+                }
+                f.call((T0) args[0]);
+                return null;
+            }
+
+        };
+    }
+
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
+    public static <T0, T1> FuncN<Void> fromAction(final Action2<T0, T1> f) {
+        return new FuncN<Void>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public Void call(Object... args) {
+                if (args.length != 2) {
+                    throw new RuntimeException("Action3 expecting 2 arguments.");
+                }
+                f.call((T0) args[0], (T1) args[1]);
+                return null;
+            }
+
+        };
+    }
+
+    /**
+     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * 
+     * @param f
+     * @return {@link FuncN}
+     */
+    public static <T0, T1, T2> FuncN<Void> fromAction(final Action3<T0, T1, T2> f) {
+        return new FuncN<Void>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public Void call(Object... args) {
+                if (args.length != 3) {
+                    throw new RuntimeException("Action3 expecting 3 arguments.");
+                }
+                f.call((T0) args[0], (T1) args[1], (T2) args[2]);
+                return null;
+            }
+
+        };
     }
 
 }
