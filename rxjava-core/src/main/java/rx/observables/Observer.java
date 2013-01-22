@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,8 @@ package rx.observables;
 /**
  * Provides a mechanism for receiving push-based notifications.
  * <p>
- * After an Observer calls a Observable's <code>Observable.subscribe</code> method, the Observable calls the Observer's <code>onNext</code> method to provide notifications. A well-behaved Observable will
+ * After an Observer calls a Observable's <code>Observable.subscribe</code> method, the Observable calls the Observer's <code>onNext</code> method to provide notifications. A well-behaved Observable
+ * will
  * call a Observer's <code>onCompleted</code> closure exactly once or the Observer's <code>onError</code> closure exactly once.
  * <p>
  * For more informationon, see: <a
@@ -50,7 +51,8 @@ public interface Observer<T> {
      * <p>
      * The Observable calls this closure 1 or more times, unless it calls <code>onError</code> in which case this closure may never be called.
      * <p>
-     * The Observable will not call this closure again after it calls either <code>onCompleted</code> or <code>onError</code>, though this does not guarantee that chronologically-speaking, this closure
+     * The Observable will not call this closure again after it calls either <code>onCompleted</code> or <code>onError</code>, though this does not guarantee that chronologically-speaking, this
+     * closure
      * will not be called after one of those closures is called (because the Observable may assign the calling of these closures to chronologically-independent threads). See <a href=
      * "https://confluence.corp.netflix.com/display/API/Observers%2C+Observables%2C+and+the+Reactive+Pattern#Observers%2CObservables%2CandtheReactivePattern-%7B%7Bwx.synchronize%28%26%238239%3B%29%7D%7D"
      * ><code>wx.synchronize()</code></a> for information on how to enforce chronologically-ordered behavior.
