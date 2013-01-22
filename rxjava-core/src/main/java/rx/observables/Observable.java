@@ -1626,7 +1626,7 @@ public abstract class Observable<T> {
      * @return a Observable that emits only those items in the original Observable that the filter
      *         evaluates as <code>true</code>
      */
-    public Observable<T> filter(Func1<Boolean, T> predicate) {
+    public Observable<T> filter(Func1<T, Boolean> predicate) {
         return filter(this, predicate);
     }
 
