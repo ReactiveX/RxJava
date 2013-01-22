@@ -32,22 +32,25 @@ import org.mockito.InOrder;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
-import rx.util.Func2;
-import rx.util.Func3;
-import rx.util.Func4;
-import rx.util.FuncN;
-import rx.util.Functions;
+import rx.util.AtomicObservableSubscription;
+import rx.util.AtomicObserverSingleThreaded;
+import rx.util.functions.Func1;
+import rx.util.functions.Func2;
+import rx.util.functions.Func3;
+import rx.util.functions.Func4;
+import rx.util.functions.FuncN;
+import rx.util.functions.Functions;
 
 public final class OperationZip {
 
-    public static <T0, T1, R> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> zipFunction) {
+    public static <T0, T1, R> Func1<Observer<R>, Subscription> zip(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T0>(a, w0));
         a.addObserver(new ZipObserver<R, T1>(a, w1));
         return a;
     }
 
-    public static <T0, T1, T2, R> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> zipFunction) {
+    public static <T0, T1, T2, R> Func1<Observer<R>, Subscription> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T0>(a, w0));
         a.addObserver(new ZipObserver<R, T1>(a, w1));
@@ -55,7 +58,7 @@ public final class OperationZip {
         return a;
     }
 
-    public static <T0, T1, T2, T3, R> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> zipFunction) {
+    public static <T0, T1, T2, T3, R> Func1<Observer<R>, Subscription> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T0>(a, w0));
         a.addObserver(new ZipObserver<R, T1>(a, w1));
@@ -79,7 +82,7 @@ public final class OperationZip {
         public void startWatching() {
             if (subscribed.compareAndSet(false, true)) {
                 // only subscribe once even if called more than once
-                subscription.setActual(w.subscribe(this));
+                subscription.wrap(w.subscribe(this));
             }
         }
 
@@ -109,19 +112,18 @@ public final class OperationZip {
      * @param <R>
      */
     @ThreadSafe
-    private static class Aggregator<R> extends Observable<R> {
+    private static class Aggregator<R> implements Func1<Observer<R>, Subscription> {
 
+        private volatile AtomicObserverSingleThreaded<R> observer;
         private final FuncN<R> zipFunction;
-        private volatile AtomicObserver<R> Observer = null;
-        private volatile AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-        private AtomicBoolean started = new AtomicBoolean(false);
-        private AtomicBoolean running = new AtomicBoolean(true);
-        private ConcurrentHashMap<ZipObserver<R, ?>, Boolean> completed = new ConcurrentHashMap<ZipObserver<R, ?>, Boolean>();
+        private final AtomicBoolean started = new AtomicBoolean(false);
+        private final AtomicBoolean running = new AtomicBoolean(true);
+        private final ConcurrentHashMap<ZipObserver<R, ?>, Boolean> completed = new ConcurrentHashMap<ZipObserver<R, ?>, Boolean>();
 
         /* we use ConcurrentHashMap despite synchronization of methods because stop() does NOT use synchronization and this map is used by it and can be called by other threads */
         private ConcurrentHashMap<ZipObserver<R, ?>, ConcurrentLinkedQueue<Object>> receivedValuesPerObserver = new ConcurrentHashMap<ZipObserver<R, ?>, ConcurrentLinkedQueue<Object>>();
         /* we use a ConcurrentLinkedQueue to retain ordering (I'd like to just use a ConcurrentLinkedHashMap for 'receivedValuesPerObserver' but that doesn't exist in standard java */
-        private ConcurrentLinkedQueue<ZipObserver<R, ?>> Observers = new ConcurrentLinkedQueue<ZipObserver<R, ?>>();
+        private ConcurrentLinkedQueue<ZipObserver<R, ?>> observers = new ConcurrentLinkedQueue<ZipObserver<R, ?>>();
 
         public Aggregator(FuncN<R> zipFunction) {
             this.zipFunction = zipFunction;
@@ -135,7 +137,7 @@ public final class OperationZip {
         @GuardedBy("Invoked ONLY from the static factory methods at top of this class which are always an atomic execution by a single thread.")
         private void addObserver(ZipObserver<R, ?> w) {
             // initialize this ZipObserver
-            Observers.add(w);
+            observers.add(w);
             receivedValuesPerObserver.put(w, new ConcurrentLinkedQueue<Object>());
         }
 
@@ -148,11 +150,11 @@ public final class OperationZip {
             // store that this ZipObserver is completed
             completed.put(w, Boolean.TRUE);
             // if all ZipObservers are completed, we mark the whole thing as completed
-            if (completed.size() == Observers.size()) {
+            if (completed.size() == observers.size()) {
                 if (running.compareAndSet(true, false)) {
                     // this thread succeeded in setting running=false so let's propagate the completion
                     // mark ourselves as done
-                    Observer.onCompleted();
+                    observer.onCompleted();
                 }
             }
         }
@@ -165,7 +167,7 @@ public final class OperationZip {
         void error(ZipObserver<R, ?> w, Exception e) {
             if (running.compareAndSet(true, false)) {
                 // this thread succeeded in setting running=false so let's propagate the error
-                Observer.onError(e);
+                observer.onError(e);
                 /* since we receive an error we want to tell everyone to stop */
                 stop();
             }
@@ -180,7 +182,7 @@ public final class OperationZip {
          * @param arg
          */
         void next(ZipObserver<R, ?> w, Object arg) {
-            if (Observer == null) {
+            if (observer == null) {
                 throw new RuntimeException("This shouldn't be running if a Observer isn't registered");
             }
 
@@ -193,7 +195,7 @@ public final class OperationZip {
             receivedValuesPerObserver.get(w).add(arg);
 
             // define here so the variable is out of the synchronized scope
-            Object[] argsToZip = new Object[Observers.size()];
+            Object[] argsToZip = new Object[observers.size()];
 
             /* we have to synchronize here despite using concurrent data structures because the compound logic here must all be done atomically */
             synchronized (this) {
@@ -206,26 +208,27 @@ public final class OperationZip {
                 }
                 // if we get to here this means all the queues have data
                 int i = 0;
-                for (ZipObserver<R, ?> rw : Observers) {
+                for (ZipObserver<R, ?> rw : observers) {
                     argsToZip[i++] = receivedValuesPerObserver.get(rw).remove();
                 }
             }
             // if we did not return above from the synchronized block we can now invoke the zipFunction with all of the args
             // we do this outside the synchronized block as it is now safe to call this concurrently and don't need to block other threads from calling
             // this 'next' method while another thread finishes calling this zipFunction
-            Observer.onNext(zipFunction.call(argsToZip));
+            observer.onNext(zipFunction.call(argsToZip));
         }
 
         @Override
-        public Subscription subscribe(Observer<R> Observer) {
+        public Subscription call(Observer<R> observer) {
             if (started.compareAndSet(false, true)) {
-                this.Observer = new AtomicObserver<R>(Observer, subscription);
+                AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+                this.observer = new AtomicObserverSingleThreaded<R>(observer, subscription);
                 /* start the Observers */
-                for (ZipObserver<R, ?> rw : Observers) {
+                for (ZipObserver<R, ?> rw : observers) {
                     rw.startWatching();
                 }
 
-                return subscription.setActual(new Subscription() {
+                return subscription.wrap(new Subscription() {
 
                     @Override
                     public void unsubscribe() {
@@ -256,7 +259,7 @@ public final class OperationZip {
             /* tell ourselves to stop processing onNext events by setting running=false */
             if (running.compareAndSet(true, false)) {
                 /* propogate to all Observers to unsubscribe if this thread succeeded in setting running=false */
-                for (ZipObserver<R, ?> rw : Observers) {
+                for (ZipObserver<R, ?> rw : observers) {
                     if (rw.subscription != null) {
                         rw.subscription.unsubscribe();
                     }
@@ -278,7 +281,7 @@ public final class OperationZip {
             TestObservable w2 = new TestObservable();
             TestObservable w3 = new TestObservable();
 
-            Observable<String> zipW = zip(w1, w2, w3, getConcat3StringsZipr());
+            Observable<String> zipW = Observable.create(zip(w1, w2, w3, getConcat3StringsZipr()));
             zipW.subscribe(w);
 
             /* simulate sending data */
@@ -312,7 +315,7 @@ public final class OperationZip {
             TestObservable w2 = new TestObservable();
             TestObservable w3 = new TestObservable();
 
-            Observable<String> zipW = zip(w1, w2, w3, getConcat3StringsZipr());
+            Observable<String> zipW = Observable.create(zip(w1, w2, w3, getConcat3StringsZipr()));
             zipW.subscribe(w);
 
             /* simulate sending data */
@@ -351,7 +354,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            a.call(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -395,7 +398,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            a.call(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -434,7 +437,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            a.call(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -473,7 +476,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            a.call(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -505,7 +508,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            a.call(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -551,7 +554,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            a.call(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -589,7 +592,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            Subscription subscription = a.subscribe(aObserver);
+            Subscription subscription = a.call(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -627,7 +630,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.subscribe(aObserver);
+            a.call(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -665,7 +668,7 @@ public final class OperationZip {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = zip(Observable.toObservable("one", "two"), Observable.toObservable(2, 3, 4), zipr);
+            Observable<String> w = Observable.create(zip(Observable.toObservable("one", "two"), Observable.toObservable(2, 3, 4), zipr));
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -684,7 +687,7 @@ public final class OperationZip {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = zip(Observable.toObservable("one", "two"), Observable.toObservable(2), Observable.toObservable(new int[] { 4, 5, 6 }), zipr);
+            Observable<String> w = Observable.create(zip(Observable.toObservable("one", "two"), Observable.toObservable(2), Observable.toObservable(new int[] { 4, 5, 6 }), zipr));
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -700,7 +703,7 @@ public final class OperationZip {
             @SuppressWarnings("unchecked")
             Observer<Integer> aObserver = mock(Observer.class);
 
-            Observable<Integer> w = zip(Observable.toObservable(10, 20, 30), Observable.toObservable(0, 1, 2), zipr);
+            Observable<Integer> w = Observable.create(zip(Observable.toObservable(10, 20, 30), Observable.toObservable(0, 1, 2), zipr));
             w.subscribe(aObserver);
 
             verify(aObserver, times(1)).onError(any(Exception.class));
@@ -797,6 +800,17 @@ public final class OperationZip {
         private static class TestObservable extends Observable<String> {
 
             Observer<String> Observer;
+
+            TestObservable() {
+                super(new Func1<Observer<String>, Subscription>() {
+
+                    @Override
+                    public Subscription call(rx.observables.Observer<String> t1) {
+                        // do nothing as we're overriding subscribe for testing
+                        return null;
+                    }
+                });
+            }
 
             @Override
             public Subscription subscribe(Observer<String> Observer) {

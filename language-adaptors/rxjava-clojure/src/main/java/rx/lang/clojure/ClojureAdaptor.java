@@ -23,7 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.observables.Observer;
-import rx.util.FunctionLanguageAdaptor;
+import rx.util.functions.FunctionLanguageAdaptor;
 
 import clojure.lang.IFn;
 import clojure.lang.RT;

@@ -1,19 +1,19 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.util;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
@@ -37,6 +37,7 @@ import org.mockito.MockitoAnnotations;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
+import rx.util.functions.Func1;
 
 /**
  * A thread-safe Observer for transitioning states in operators.
@@ -494,6 +495,14 @@ import rx.observables.Subscription;
             Thread t = null;
 
             public TestSingleThreadedObservable(Subscription s, String... values) {
+                super(new Func1<Observer<String>, Subscription>() {
+
+                    @Override
+                    public Subscription call(rx.observables.Observer<String> t1) {
+                        // do nothing, we're overriding 'subscribe' for the test
+                        return null;
+                    }
+                });
                 this.s = s;
                 this.values = values;
             }
@@ -548,6 +557,14 @@ import rx.observables.Subscription;
             ExecutorService threadPool;
 
             public TestMultiThreadedObservable(Subscription s, String... values) {
+                super(new Func1<Observer<String>, Subscription>() {
+
+                    @Override
+                    public Subscription call(rx.observables.Observer<String> t1) {
+                        // do nothing, we're overriding 'subscribe' for the test
+                        return null;
+                    }
+                });
                 this.s = s;
                 this.values = values;
                 this.threadPool = Executors.newCachedThreadPool();

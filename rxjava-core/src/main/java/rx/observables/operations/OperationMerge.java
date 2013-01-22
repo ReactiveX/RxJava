@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,6 +32,7 @@ import org.mockito.MockitoAnnotations;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
+import rx.util.functions.Func1;
 
 public final class OperationMerge {
 
@@ -43,25 +44,23 @@ public final class OperationMerge {
      * @return An observable sequence whose elements are the result of flattening the output from the list of Observables.
      * @see http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx
      */
-    public static <T> Observable<T> merge(final Observable<Observable<T>> sequences) {
-        // wrap in a Observable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of merge rather than 1 handling both, which is not thread-safe.
-        return new Observable<T>() {
+    public static <T> Func1<Observer<T>, Subscription> merge(final Observable<Observable<T>> o) {
+        // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
+        return new Func1<Observer<T>, Subscription>() {
 
             @Override
-            public Subscription subscribe(Observer<T> Observer) {
-                AtomicObservableSubscription s = new AtomicObservableSubscription();
-                s.setActual(new MergeObservable<T>(sequences).subscribe(new AtomicObserver<T>(Observer, s)));
-                return s;
+            public Subscription call(Observer<T> observer) {
+                return new MergeObservable<T>(o).call(observer);
             }
         };
     }
 
-    public static <T> Observable<T> merge(final Observable<T>... sequences) {
-        return merge(new Observable<Observable<T>>() {
+    public static <T> Func1<Observer<T>, Subscription> merge(final Observable<T>... sequences) {
+        return merge(Observable.create(new Func1<Observer<Observable<T>>, Subscription>() {
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription subscribe(Observer<Observable<T>> observer) {
+            public Subscription call(Observer<Observable<T>> observer) {
                 for (Observable<T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
@@ -82,16 +81,16 @@ public final class OperationMerge {
 
                 };
             }
-        });
+        }));
     }
 
-    public static <T> Observable<T> merge(final List<Observable<T>> sequences) {
-        return merge(new Observable<Observable<T>>() {
+    public static <T> Func1<Observer<T>, Subscription> merge(final List<Observable<T>> sequences) {
+        return merge(Observable.create(new Func1<Observer<Observable<T>>, Subscription>() {
 
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription subscribe(Observer<Observable<T>> observer) {
+            public Subscription call(Observer<Observable<T>> observer) {
                 for (Observable<T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
@@ -113,7 +112,7 @@ public final class OperationMerge {
 
                 };
             }
-        });
+        }));
     }
 
     /**
@@ -127,7 +126,7 @@ public final class OperationMerge {
      * 
      * @param <T>
      */
-    private static final class MergeObservable<T> extends Observable<T> {
+    private static final class MergeObservable<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<Observable<T>> sequences;
         private final MergeSubscription ourSubscription = new MergeSubscription();
         private AtomicBoolean stopped = new AtomicBoolean(false);
@@ -139,7 +138,7 @@ public final class OperationMerge {
             this.sequences = sequences;
         }
 
-        public MergeSubscription subscribe(Observer<T> actualObserver) {
+        public MergeSubscription call(Observer<T> actualObserver) {
             /**
              * Subscribe to the parent Observable to get to the children Observables
              */
@@ -299,10 +298,10 @@ public final class OperationMerge {
             final Observable<String> o1 = new TestSynchronousObservable();
             final Observable<String> o2 = new TestSynchronousObservable();
 
-            Observable<Observable<String>> observableOfObservables = new Observable<Observable<String>>() {
+            Observable<Observable<String>> observableOfObservables = Observable.create(new Func1<Observer<Observable<String>>, Subscription>() {
 
                 @Override
-                public Subscription subscribe(Observer<Observable<String>> observer) {
+                public Subscription call(Observer<Observable<String>> observer) {
                     // simulate what would happen in an observable
                     observer.onNext(o1);
                     observer.onNext(o2);
@@ -318,8 +317,8 @@ public final class OperationMerge {
                     };
                 }
 
-            };
-            Observable<String> m = merge(observableOfObservables);
+            });
+            Observable<String> m = Observable.create(merge(observableOfObservables));
             m.subscribe(stringObserver);
 
             verify(stringObserver, never()).onError(any(Exception.class));
@@ -333,7 +332,7 @@ public final class OperationMerge {
             final Observable<String> o2 = new TestSynchronousObservable();
 
             @SuppressWarnings("unchecked")
-            Observable<String> m = merge(o1, o2);
+            Observable<String> m = Observable.create(merge(o1, o2));
             m.subscribe(stringObserver);
 
             verify(stringObserver, never()).onError(any(Exception.class));
@@ -349,7 +348,7 @@ public final class OperationMerge {
             listOfObservables.add(o1);
             listOfObservables.add(o2);
 
-            Observable<String> m = merge(listOfObservables);
+            Observable<String> m = Observable.create(merge(listOfObservables));
             m.subscribe(stringObserver);
 
             verify(stringObserver, never()).onError(any(Exception.class));
@@ -363,7 +362,7 @@ public final class OperationMerge {
             TestObservable tB = new TestObservable();
 
             @SuppressWarnings("unchecked")
-            Observable<String> m = merge(tA, tB);
+            Observable<String> m = Observable.create(merge(tA, tB));
             Subscription s = m.subscribe(stringObserver);
 
             tA.sendOnNext("Aone");
@@ -390,7 +389,7 @@ public final class OperationMerge {
             final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
             @SuppressWarnings("unchecked")
-            Observable<String> m = merge(o1, o2);
+            Observable<String> m = Observable.create(merge(o1, o2));
             m.subscribe(stringObserver);
 
             try {
@@ -415,7 +414,7 @@ public final class OperationMerge {
             final Observable<String> o2 = new TestErrorObservable("one", "two", "three"); // we expect to lose all of these since o1 is done first and fails
 
             @SuppressWarnings("unchecked")
-            Observable<String> m = merge(o1, o2);
+            Observable<String> m = Observable.create(merge(o1, o2));
             m.subscribe(stringObserver);
 
             verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -440,7 +439,7 @@ public final class OperationMerge {
             final Observable<String> o4 = new TestErrorObservable("nine");// we expect to lose all of these since o2 is done first and fails
 
             @SuppressWarnings("unchecked")
-            Observable<String> m = merge(o1, o2, o3, o4);
+            Observable<String> m = Observable.create(merge(o1, o2, o3, o4));
             m.subscribe(stringObserver);
 
             verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -457,6 +456,17 @@ public final class OperationMerge {
         }
 
         private static class TestSynchronousObservable extends Observable<String> {
+
+            TestSynchronousObservable() {
+                super(new Func1<Observer<String>, Subscription>() {
+
+                    @Override
+                    public Subscription call(Observer<String> t1) {
+                        // do nothing as we are overriding subscribe for testing purposes
+                        return null;
+                    }
+                });
+            }
 
             @Override
             public Subscription subscribe(Observer<String> observer) {
@@ -477,6 +487,17 @@ public final class OperationMerge {
 
         private static class TestASynchronousObservable extends Observable<String> {
             Thread t;
+
+            TestASynchronousObservable() {
+                super(new Func1<Observer<String>, Subscription>() {
+
+                    @Override
+                    public Subscription call(Observer<String> t1) {
+                        // do nothing as we are overriding subscribe for testing purposes
+                        return null;
+                    }
+                });
+            }
 
             @Override
             public Subscription subscribe(final Observer<String> observer) {
@@ -520,6 +541,14 @@ public final class OperationMerge {
             };
 
             public TestObservable() {
+                super(new Func1<Observer<String>, Subscription>() {
+
+                    @Override
+                    public Subscription call(Observer<String> t1) {
+                        // do nothing as we are overriding subscribe for testing purposes
+                        return null;
+                    }
+                });
             }
 
             /* used to simulate subscription */
@@ -550,6 +579,14 @@ public final class OperationMerge {
             String[] valuesToReturn;
 
             TestErrorObservable(String... values) {
+                super(new Func1<Observer<String>, Subscription>() {
+
+                    @Override
+                    public Subscription call(Observer<String> t1) {
+                        // do nothing as we are overriding subscribe for testing purposes
+                        return null;
+                    }
+                });
                 valuesToReturn = values;
             }
 

@@ -1,4 +1,4 @@
-package rx.util;
+package rx.util.functions;
 
 /**
  * All Func and Action interfaces extend from this.

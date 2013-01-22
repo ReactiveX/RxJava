@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,8 @@ import org.mockito.MockitoAnnotations;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
-import rx.util.Func2;
+import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 public final class OperationScan {
     /**
@@ -41,7 +42,7 @@ public final class OperationScan {
      * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
      * @see http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx
      */
-    public static <T> Observable<T> scan(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
+    public static <T> Func1<Observer<T>, Subscription> scan(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
         return new Accumulator<T>(sequence, initialValue, accumulator);
     }
 
@@ -56,11 +57,11 @@ public final class OperationScan {
      * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
      * @see http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx
      */
-    public static <T> Observable<T> scan(Observable<T> sequence, Func2<T, T, T> accumulator) {
+    public static <T> Func1<Observer<T>, Subscription> scan(Observable<T> sequence, Func2<T, T, T> accumulator) {
         return new Accumulator<T>(sequence, null, accumulator);
     }
 
-    private static class Accumulator<T> extends Observable<T> {
+    private static class Accumulator<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> sequence;
         private final T initialValue;
         private Func2<T, T, T> accumlatorFunction;
@@ -71,12 +72,9 @@ public final class OperationScan {
             this.accumlatorFunction = accumulator;
         }
 
-        public Subscription subscribe(final Observer<T> observer) {
+        public Subscription call(final Observer<T> observer) {
 
-            final AtomicObservableSubscription s = new AtomicObservableSubscription();
-            final AtomicObserver<T> Observer = new AtomicObserver<T>(observer, s);
-
-            s.setActual(sequence.subscribe(new Observer<T>() {
+            return sequence.subscribe(new Observer<T>() {
                 private T acc = initialValue;
                 private boolean hasSentInitialValue = false;
 
@@ -97,7 +95,7 @@ public final class OperationScan {
                     }
                     if (!hasSentInitialValue) {
                         hasSentInitialValue = true;
-                        Observer.onNext(acc);
+                        observer.onNext(acc);
                     }
 
                     try {
@@ -107,29 +105,26 @@ public final class OperationScan {
                             onError(new IllegalArgumentException("Null is an unsupported return value for an accumulator."));
                             return;
                         }
-                        Observer.onNext(acc);
+                        observer.onNext(acc);
                     } catch (Exception ex) {
-                        Observer.onError(ex);
-                        // unsubscribe since we blew up
-                        s.unsubscribe();
+                        observer.onError(ex);
+                        // TODO is there a correct way to unsubscribe from the sequence?
                     }
                 }
 
                 public void onError(Exception ex) {
-                    Observer.onError(ex);
+                    observer.onError(ex);
                 }
 
                 // synchronized because we access 'hasSentInitialValue'
                 public synchronized void onCompleted() {
                     // if only one sequence value existed, we send it without any accumulation
                     if (!hasSentInitialValue) {
-                        Observer.onNext(acc);
+                        observer.onNext(acc);
                     }
-                    Observer.onCompleted();
+                    observer.onCompleted();
                 }
-            }));
-
-            return s;
+            });
         }
     }
 
@@ -147,14 +142,14 @@ public final class OperationScan {
 
             Observable<Integer> observable = Observable.toObservable(1, 2, 3);
 
-            Observable<Integer> m = scan(observable, 0, new Func2<Integer, Integer, Integer>() {
+            Observable<Integer> m = Observable.create(scan(observable, 0, new Func2<Integer, Integer, Integer>() {
 
                 @Override
                 public Integer call(Integer t1, Integer t2) {
                     return t1 + t2;
                 }
 
-            });
+            }));
             m.subscribe(Observer);
 
             verify(Observer, never()).onError(any(Exception.class));
@@ -174,14 +169,14 @@ public final class OperationScan {
 
             Observable<Integer> observable = Observable.toObservable(1, 2, 3);
 
-            Observable<Integer> m = scan(observable, new Func2<Integer, Integer, Integer>() {
+            Observable<Integer> m = Observable.create(scan(observable, new Func2<Integer, Integer, Integer>() {
 
                 @Override
                 public Integer call(Integer t1, Integer t2) {
                     return t1 + t2;
                 }
 
-            });
+            }));
             m.subscribe(Observer);
 
             verify(Observer, never()).onError(any(Exception.class));
@@ -201,14 +196,14 @@ public final class OperationScan {
 
             Observable<Integer> observable = Observable.toObservable(1);
 
-            Observable<Integer> m = scan(observable, new Func2<Integer, Integer, Integer>() {
+            Observable<Integer> m = Observable.create(scan(observable, new Func2<Integer, Integer, Integer>() {
 
                 @Override
                 public Integer call(Integer t1, Integer t2) {
                     return t1 + t2;
                 }
 
-            });
+            }));
             m.subscribe(Observer);
 
             verify(Observer, never()).onError(any(Exception.class));

@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,14 +27,16 @@ import org.mockito.Mockito;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
+import rx.util.AtomicObservableSubscription;
+import rx.util.functions.Func1;
 
 public final class OperationOnErrorResumeNextViaObservable<T> {
 
-    public static <T> Observable<T> onErrorResumeNextViaObservable(Observable<T> originalSequence, Observable<T> resumeSequence) {
+    public static <T> Func1<Observer<T>, Subscription> onErrorResumeNextViaObservable(Observable<T> originalSequence, Observable<T> resumeSequence) {
         return new OnErrorResumeNextViaObservable<T>(originalSequence, resumeSequence);
     }
 
-    private static class OnErrorResumeNextViaObservable<T> extends Observable<T> {
+    private static class OnErrorResumeNextViaObservable<T> implements Func1<Observer<T>, Subscription> {
 
         private final Observable<T> resumeSequence;
         private final Observable<T> originalSequence;
@@ -44,15 +46,14 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             this.originalSequence = originalSequence;
         }
 
-        public Subscription subscribe(Observer<T> Observer) {
+        public Subscription call(final Observer<T> observer) {
             final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-            final Observer<T> observer = new AtomicObserver<T>(Observer, subscription);
 
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
             final AtomicReference<AtomicObservableSubscription> subscriptionRef = new AtomicReference<AtomicObservableSubscription>(subscription);
 
             // subscribe to the original Observable and remember the subscription
-            subscription.setActual(originalSequence.subscribe(new Observer<T>() {
+            subscription.wrap(originalSequence.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     // forward the successful calls
                     observer.onNext(value);
@@ -102,11 +103,11 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             Subscription s = mock(Subscription.class);
             TestObservable w = new TestObservable(s, "one");
             Observable<String> resume = Observable.toObservable("twoResume", "threeResume");
-            Observable<String> Observable = onErrorResumeNextViaObservable(w, resume);
+            Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
-            Observable.subscribe(aObserver);
+            observable.subscribe(aObserver);
 
             try {
                 w.t.join();
@@ -131,6 +132,14 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             Thread t = null;
 
             public TestObservable(Subscription s, String... values) {
+                super(new Func1<Observer<String>, Subscription>() {
+
+                    @Override
+                    public Subscription call(Observer<String> t1) {
+                        // do nothing as we are overriding subscribe for testing purposes
+                        return null;
+                    }
+                });
                 this.s = s;
                 this.values = values;
             }

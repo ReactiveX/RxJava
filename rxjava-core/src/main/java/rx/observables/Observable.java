@@ -26,6 +26,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import rx.observables.operations.OperationFilter;
@@ -41,19 +42,20 @@ import rx.observables.operations.OperationScan;
 import rx.observables.operations.OperationSkip;
 import rx.observables.operations.OperationSynchronize;
 import rx.observables.operations.OperationTake;
-import rx.observables.operations.OperationToObservableFunction;
 import rx.observables.operations.OperationToObservableIterable;
 import rx.observables.operations.OperationToObservableList;
 import rx.observables.operations.OperationToObservableSortedList;
 import rx.observables.operations.OperationZip;
-import rx.util.Action0;
-import rx.util.Action1;
-import rx.util.Func1;
-import rx.util.Func2;
-import rx.util.Func3;
-import rx.util.Func4;
-import rx.util.FuncN;
-import rx.util.Functions;
+import rx.util.AtomicObservableSubscription;
+import rx.util.AtomicObserver;
+import rx.util.functions.Action0;
+import rx.util.functions.Action1;
+import rx.util.functions.Func1;
+import rx.util.functions.Func2;
+import rx.util.functions.Func3;
+import rx.util.functions.Func4;
+import rx.util.functions.FuncN;
+import rx.util.functions.Functions;
 
 /**
  * The Observable interface that implements the Reactive Pattern.
@@ -68,9 +70,12 @@ import rx.util.Functions;
  * 
  * @param <T>
  */
-public abstract class Observable<T> {
+public class Observable<T> {
 
-    public Observable() {
+    private final Func1<Observer<T>, Subscription> onSubscribe;
+
+    public Observable(Func1<Observer<T>, Subscription> onSubscribe) {
+        this.onSubscribe = onSubscribe;
     }
 
     /**
@@ -98,7 +103,18 @@ public abstract class Observable<T> {
      * @return a <code>ObservableSubscription</code> reference to an interface that allows observers
      *         to stop receiving notifications before the provider has finished sending them
      */
-    public abstract Subscription subscribe(Observer<T> observer);
+    public Subscription subscribe(Observer<T> observer) {
+        /*
+         * Wrap the observer and subscription in Atomic* wrappers to:
+         * 
+         * - ensure correct behavior of onNext, onCompleted and onError.
+         * - allow the Observer to have access to the subscription in asynchronous execution for checking if unsubscribed occurred without onComplete/onError.
+         * - handle both synchronous and asynchronous subscribe() execution flows
+         */
+        final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        final Observer<T> atomicObserver = new AtomicObserver<T>(observer, subscription);
+        return subscription.wrap(onSubscribe.call(atomicObserver));
+    };
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Subscription subscribe(final Map<String, Object> callbacks) {
@@ -314,8 +330,15 @@ public abstract class Observable<T> {
      *            the type of item emitted by the Observable
      */
     private static class NeverObservable<T> extends Observable<T> {
-        public Subscription subscribe(Observer<T> observer) {
-            return new NullObservableSubscription();
+        public NeverObservable() {
+            super(new Func1<Observer<T>, Subscription>() {
+
+                @Override
+                public Subscription call(Observer<T> t1) {
+                    return new NullObservableSubscription();
+                }
+
+            });
         }
     }
 
@@ -334,23 +357,26 @@ public abstract class Observable<T> {
      *            the type of object returned by the Observable
      */
     private static class ThrowObservable<T> extends Observable<T> {
-        private Exception exception;
 
-        public ThrowObservable(Exception exception) {
-            this.exception = exception;
+        public ThrowObservable(final Exception exception) {
+            super(new Func1<Observer<T>, Subscription>() {
+
+                /**
+                 * Accepts a Observer and calls its <code>onError</code> method.
+                 * 
+                 * @param observer
+                 *            a Observer of this Observable
+                 * @return a reference to the subscription
+                 */
+                @Override
+                public Subscription call(Observer<T> observer) {
+                    observer.onError(exception);
+                    return new NullObservableSubscription();
+                }
+
+            });
         }
 
-        /**
-         * Accepts a Observer and calls its <code>onError</code> method.
-         * 
-         * @param observer
-         *            a Observer of this Observable
-         * @return a reference to the subscription
-         */
-        public Subscription subscribe(Observer<T> observer) {
-            observer.onError(this.exception);
-            return new NullObservableSubscription();
-        }
     }
 
     /**
@@ -373,7 +399,7 @@ public abstract class Observable<T> {
      * @return a Observable that, when a Observer subscribes to it, will execute the given function
      */
     public static <T> Observable<T> create(Func1<Observer<T>, Subscription> func) {
-        return OperationToObservableFunction.toObservableFunction(func);
+        return new Observable<T>(func);
     }
 
     /**
@@ -455,7 +481,7 @@ public abstract class Observable<T> {
      *         evaluates as true
      */
     public static <T> Observable<T> filter(Observable<T> that, Func1<T, Boolean> predicate) {
-        return OperationFilter.filter(that, predicate);
+        return create(OperationFilter.filter(that, predicate));
     }
 
     /**
@@ -558,7 +584,7 @@ public abstract class Observable<T> {
      *         by the source Observable
      */
     public static <T> Observable<T> last(final Observable<T> that) {
-        return OperationLast.last(that);
+        return create(OperationLast.last(that));
     }
 
     /**
@@ -580,7 +606,7 @@ public abstract class Observable<T> {
      *         in the sequence emitted by the source Observable
      */
     public static <T, R> Observable<R> map(Observable<T> sequence, Func1<T, R> func) {
-        return OperationMap.map(sequence, func);
+        return create(OperationMap.map(sequence, func));
     }
 
     /**
@@ -638,7 +664,7 @@ public abstract class Observable<T> {
      *         the Observables obtained from this transformation
      */
     public static <T, R> Observable<R> mapMany(Observable<T> sequence, Func1<T, Observable<R>> func) {
-        return OperationMap.mapMany(sequence, func);
+        return create(OperationMap.mapMany(sequence, func));
     }
 
     /**
@@ -689,7 +715,7 @@ public abstract class Observable<T> {
      * @see http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx
      */
     public static <T> Observable<Notification<T>> materialize(final Observable<T> sequence) {
-        return OperationMaterialize.materialize(sequence);
+        return create(OperationMaterialize.materialize(sequence));
     }
 
     /**
@@ -707,7 +733,7 @@ public abstract class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> merge(List<Observable<T>> source) {
-        return OperationMerge.merge(source);
+        return create(OperationMerge.merge(source));
     }
 
     /**
@@ -725,7 +751,7 @@ public abstract class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> merge(Observable<Observable<T>> source) {
-        return OperationMerge.merge(source);
+        return create(OperationMerge.merge(source));
     }
 
     /**
@@ -743,7 +769,7 @@ public abstract class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> merge(Observable<T>... source) {
-        return OperationMerge.merge(source);
+        return create(OperationMerge.merge(source));
     }
 
     /**
@@ -763,7 +789,7 @@ public abstract class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> mergeDelayError(List<Observable<T>> source) {
-        return OperationMergeDelayError.mergeDelayError(source);
+        return create(OperationMergeDelayError.mergeDelayError(source));
     }
 
     /**
@@ -783,7 +809,7 @@ public abstract class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> mergeDelayError(Observable<Observable<T>> source) {
-        return OperationMergeDelayError.mergeDelayError(source);
+        return create(OperationMergeDelayError.mergeDelayError(source));
     }
 
     /**
@@ -803,7 +829,7 @@ public abstract class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> mergeDelayError(Observable<T>... source) {
-        return OperationMergeDelayError.mergeDelayError(source);
+        return create(OperationMergeDelayError.mergeDelayError(source));
     }
 
     /**
@@ -858,7 +884,7 @@ public abstract class Observable<T> {
      * @return the source Observable, with its behavior modified as described
      */
     public static <T> Observable<T> onErrorResumeNext(final Observable<T> that, final Func1<Exception, Observable<T>> resumeFunction) {
-        return OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(that, resumeFunction);
+        return create(OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(that, resumeFunction));
     }
 
     /**
@@ -924,7 +950,7 @@ public abstract class Observable<T> {
      * @return the source Observable, with its behavior modified as described
      */
     public static <T> Observable<T> onErrorResumeNext(final Observable<T> that, final Observable<T> resumeSequence) {
-        return OperationOnErrorResumeNextViaObservable.onErrorResumeNextViaObservable(that, resumeSequence);
+        return create(OperationOnErrorResumeNextViaObservable.onErrorResumeNextViaObservable(that, resumeSequence));
     }
 
     /**
@@ -951,7 +977,7 @@ public abstract class Observable<T> {
      * @return the source Observable, with its behavior modified as described
      */
     public static <T> Observable<T> onErrorReturn(final Observable<T> that, Func1<Exception, T> resumeFunction) {
-        return OperationOnErrorReturn.onErrorReturn(that, resumeFunction);
+        return create(OperationOnErrorReturn.onErrorReturn(that, resumeFunction));
     }
 
     /**
@@ -982,7 +1008,7 @@ public abstract class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public static <T> Observable<T> reduce(Observable<T> sequence, Func2<T, T, T> accumulator) {
-        return OperationScan.scan(sequence, accumulator).last();
+        return last(create(OperationScan.scan(sequence, accumulator)));
     }
 
     /**
@@ -1056,7 +1082,7 @@ public abstract class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public static <T> Observable<T> reduce(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
-        return OperationScan.scan(sequence, initialValue, accumulator).last();
+        return last(create(OperationScan.scan(sequence, initialValue, accumulator)));
     }
 
     /**
@@ -1122,7 +1148,7 @@ public abstract class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
     public static <T> Observable<T> scan(Observable<T> sequence, Func2<T, T, T> accumulator) {
-        return OperationScan.scan(sequence, accumulator);
+        return create(OperationScan.scan(sequence, accumulator));
     }
 
     /**
@@ -1182,7 +1208,7 @@ public abstract class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
     public static <T> Observable<T> scan(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
-        return OperationScan.scan(sequence, initialValue, accumulator);
+        return create(OperationScan.scan(sequence, initialValue, accumulator));
     }
 
     /**
@@ -1238,7 +1264,7 @@ public abstract class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229847(v=vs.103).aspx">MSDN: Observable.Skip Method</a>
      */
     public static <T> Observable<T> skip(final Observable<T> items, int num) {
-        return OperationSkip.skip(items, num);
+        return create(OperationSkip.skip(items, num));
     }
 
     /**
@@ -1256,7 +1282,7 @@ public abstract class Observable<T> {
      * @return a Observable that is a chronologically well-behaved version of the source Observable
      */
     public static <T> Observable<T> synchronize(Observable<T> observable) {
-        return OperationSynchronize.synchronize(observable);
+        return create(OperationSynchronize.synchronize(observable));
     }
 
     /**
@@ -1279,7 +1305,7 @@ public abstract class Observable<T> {
      *         Observable
      */
     public static <T> Observable<T> take(final Observable<T> items, final int num) {
-        return OperationTake.take(items, num);
+        return create(OperationTake.take(items, num));
     }
 
     /**
@@ -1302,7 +1328,7 @@ public abstract class Observable<T> {
      *         items emitted by the source Observable
      */
     public static <T> Observable<List<T>> toList(final Observable<T> that) {
-        return OperationToObservableList.toObservableList(that);
+        return create(OperationToObservableList.toObservableList(that));
     }
 
     /**
@@ -1322,7 +1348,7 @@ public abstract class Observable<T> {
      * @return a Observable that emits each item in the source Iterable sequence
      */
     public static <T> Observable<T> toObservable(Iterable<T> iterable) {
-        return OperationToObservableIterable.toObservableIterable(iterable);
+        return create(OperationToObservableIterable.toObservableIterable(iterable));
     }
 
     /**
@@ -1357,7 +1383,7 @@ public abstract class Observable<T> {
      * @return
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence) {
-        return OperationToObservableSortedList.toSortedList(sequence);
+        return create(OperationToObservableSortedList.toSortedList(sequence));
     }
 
     /**
@@ -1371,7 +1397,7 @@ public abstract class Observable<T> {
      * @return
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, Func2<T, T, Integer> sortFunction) {
-        return OperationToObservableSortedList.toSortedList(sequence, sortFunction);
+        return create(OperationToObservableSortedList.toSortedList(sequence, sortFunction));
     }
 
     /**
@@ -1387,14 +1413,14 @@ public abstract class Observable<T> {
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, final Object sortFunction) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(sortFunction);
-        return OperationToObservableSortedList.toSortedList(sequence, new Func2<T, T, Integer>() {
+        return create(OperationToObservableSortedList.toSortedList(sequence, new Func2<T, T, Integer>() {
 
             @Override
             public Integer call(T t1, T t2) {
                 return (Integer) _f.call(t1, t2);
             }
 
-        });
+        }));
     }
 
     /**
@@ -1422,7 +1448,7 @@ public abstract class Observable<T> {
      * @return a Observable that emits the zipped results
      */
     public static <R, T0, T1> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> reduceFunction) {
-        return OperationZip.zip(w0, w1, reduceFunction);
+        return create(OperationZip.zip(w0, w1, reduceFunction));
     }
 
     /**
@@ -1492,7 +1518,7 @@ public abstract class Observable<T> {
      * @return a Observable that emits the zipped results
      */
     public static <R, T0, T1, T2> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> function) {
-        return OperationZip.zip(w0, w1, w2, function);
+        return create(OperationZip.zip(w0, w1, w2, function));
     }
 
     /**
@@ -1567,7 +1593,7 @@ public abstract class Observable<T> {
      * @return a Observable that emits the zipped results
      */
     public static <R, T0, T1, T2, T3> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> reduceFunction) {
-        return OperationZip.zip(w0, w1, w2, w3, reduceFunction);
+        return create(OperationZip.zip(w0, w1, w2, w3, reduceFunction));
     }
 
     /**
@@ -1761,7 +1787,7 @@ public abstract class Observable<T> {
      * @see http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx
      */
     public Observable<Notification<T>> materialize() {
-        return OperationMaterialize.materialize(this);
+        return materialize(this);
     }
 
     /**
@@ -2230,6 +2256,32 @@ public abstract class Observable<T> {
         @Before
         public void before() {
             MockitoAnnotations.initMocks(this);
+        }
+
+        @Test
+        public void testCreate() {
+
+            Observable<String> observable = create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(Observer<String> Observer) {
+                    Observer.onNext("one");
+                    Observer.onNext("two");
+                    Observer.onNext("three");
+                    Observer.onCompleted();
+                    return Observable.noOpSubscription();
+                }
+
+            });
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+            observable.subscribe(aObserver);
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+            verify(aObserver, times(1)).onNext("three");
+            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
         }
 
         @Test
