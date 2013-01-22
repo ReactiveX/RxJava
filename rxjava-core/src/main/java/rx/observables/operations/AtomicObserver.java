@@ -47,7 +47,7 @@ import rx.observables.Observer;
 /* package */final class AtomicObserver<T> implements Observer<T> {
 
     /** Allow changing between forcing single or allowing multi-threaded execution of onNext */
-    private static boolean allowMultiThreaded = true;
+    private static boolean allowMultiThreaded = false;
     static {
         String v = System.getProperty("rx.onNext.multithreaded.enabled");
         if (v != null) {
