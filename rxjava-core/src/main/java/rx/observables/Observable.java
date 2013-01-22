@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -581,9 +580,7 @@ public abstract class Observable<T> {
      *         in the sequence emitted by the source Observable
      */
     public static <T, R> Observable<R> map(Observable<T> sequence, Func1<T, R> func) {
-                                return OperationMap.map(sequence, func);
-
-//        return (Observable<R>) ChainedObservable.chain(sequence).addFunction(func);
+        return OperationMap.map(sequence, func);
     }
 
     /**
@@ -2221,75 +2218,6 @@ public abstract class Observable<T> {
      */
     public Observable<List<T>> toSortedList(final Object sortFunction) {
         return toSortedList(this, sortFunction);
-    }
-
-    /**
-     * Used to chain functions together rather than compose them so we reduce the size of the stack and number of onNext calls.
-     * 
-     * @param <T>
-     */
-    private static class ChainedObservable<T> extends Observable<T> {
-
-        private final Observable<T> actual;
-        // we use rawtypes as we can have a list of functions each converting to different types 
-        @SuppressWarnings("rawtypes")
-        private final ConcurrentLinkedQueue<FuncN> functions;
-
-        @SuppressWarnings({ "rawtypes" })
-        private ChainedObservable(Observable<T> actual) {
-            if (actual instanceof ChainedObservable) {
-                throw new IllegalStateException("You shouldn't wrap a ChainedObservable with another ChainedObservable");
-            } else {
-                // or use the existing one
-                this.actual = actual;
-                this.functions = new ConcurrentLinkedQueue<FuncN>();
-            }
-        }
-
-        public static <T> ChainedObservable<T> chain(Observable<T> observable) {
-            if (observable instanceof ChainedObservable) {
-                return (ChainedObservable<T>) observable;
-            } else {
-                return new ChainedObservable<T>(observable);
-            }
-        }
-
-        public ChainedObservable<T> addFunction(Object function) {
-            // get an implementation of FuncN to memoize the function and then 
-            // add to the functions list to be applied when this observable it subscribed to
-            this.functions.add(Functions.from(function));
-            return this;
-        }
-
-        @Override
-        public Subscription subscribe(final Observer<T> observer) {
-            return actual.subscribe(new Observer<T>() {
-
-                @Override
-                public void onCompleted() {
-                    observer.onCompleted();
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    observer.onError(e);
-                }
-
-                @SuppressWarnings({ "rawtypes", "unchecked" })
-                @Override
-                public void onNext(T v) {
-                    // perform all functions
-                    Object value = (Integer) v;
-                    for (FuncN f : functions) {
-                        value = f.call(value);
-                    }
-                    // now that we've performed all functions pass the resulting value to the actual observer
-                    observer.onNext((T) value);
-                }
-
-            });
-        }
-
     }
 
     public static class UnitTest {
