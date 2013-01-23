@@ -1,11 +1,10 @@
 package rx.subjects;
 
-import groovy.lang.Reference;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import junit.framework.Assert;
 
@@ -78,7 +77,7 @@ public class Subject<T> extends Observable<T> implements Observer<T> {
         @Test
         public void test() {
             Subject<Integer> subject = Subject.<Integer> create();
-            final Reference<List<Notification<String>>> actualRef = new Reference<List<Notification<String>>>();
+            final AtomicReference<List<Notification<String>>> actualRef = new AtomicReference<List<Notification<String>>>();
 
             Observable<List<Notification<Integer>>> wNotificationsList = subject.materialize().toList();
             wNotificationsList.subscribe(new Action1<List<Notification<String>>>() {
