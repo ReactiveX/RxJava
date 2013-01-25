@@ -34,6 +34,7 @@ import rx.observables.Notification;
 import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
+import rx.util.functions.Func1;
 import rx.util.functions.FunctionLanguageAdaptor;
 
 public class JRubyAdaptor implements FunctionLanguageAdaptor {
@@ -194,6 +195,14 @@ public class JRubyAdaptor implements FunctionLanguageAdaptor {
             private final int count;
 
             public TestObservable(int count) {
+                super(new Func1<Observer<String>, Subscription>() {
+
+                    @Override
+                    public Subscription call(Observer<String> t1) {
+                        // do nothing, override subscribe for test
+                        return null;
+                    }
+                });
                 this.count = count;
             }
 
