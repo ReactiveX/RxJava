@@ -343,7 +343,7 @@ public class Observable<T> {
 
                 @Override
                 public Subscription call(Observer<T> t1) {
-                    return new NullObservableSubscription();
+                    return new NoOpObservableSubscription();
                 }
 
             });
@@ -353,7 +353,7 @@ public class Observable<T> {
     /**
      * A disposable object that does nothing when its unsubscribe method is called.
      */
-    private static class NullObservableSubscription implements Subscription {
+    private static class NoOpObservableSubscription implements Subscription {
         public void unsubscribe() {
         }
     }
@@ -379,7 +379,7 @@ public class Observable<T> {
                 @Override
                 public Subscription call(Observer<T> observer) {
                     observer.onError(exception);
-                    return new NullObservableSubscription();
+                    return new NoOpObservableSubscription();
                 }
 
             });
@@ -862,7 +862,7 @@ public class Observable<T> {
      * @return
      */
     public static Subscription noOpSubscription() {
-        return new NullObservableSubscription();
+        return new NoOpObservableSubscription();
     }
 
     /**
