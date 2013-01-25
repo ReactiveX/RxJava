@@ -1,4 +1,7 @@
 apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
 dependencies {
     compile project(':rxjava-core')
     compile 'org.clojure:clojure:1.5.+'
