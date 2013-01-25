@@ -1,6 +1,7 @@
 apply plugin: 'scala'
 
 tasks.withType(ScalaCompile) {
+	scalaCompileOptions.fork = true
     scalaCompileOptions.unchecked = true
 
     configure(scalaCompileOptions.forkOptions) {
