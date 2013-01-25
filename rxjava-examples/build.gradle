@@ -1,0 +1,43 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'clojure'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+aotCompile = true
+warnOnReflection = true
+
+repositories {
+  mavenCentral()
+  clojarsRepo()
+}
+
+dependencies {
+    compile project(':language-adaptors:rxjava-clojure')
+    compile project(':language-adaptors:rxjava-groovy')
+    provided 'junit:junit:4.10'
+    provided 'org.mockito:mockito-core:1.9.5'
+}
+
+/* 
+ * Add Counterclockwise and include 'provided' dependencies
+ */
+eclipse {
+  project {
+    natures "ccw.nature"
+  }
+  classpath {
+    plusConfigurations += configurations.provided
+    downloadSources = true
+    downloadJavadoc = true
+  }
+}
+
+/* 
+ * Adds clojuresque to the (build) classpath
+ */
+buildscript {
+  repositories { maven { url "http://clojars.org/repo" } }
+  dependencies { classpath "clojuresque:clojuresque:1.5.4" }
+}
+
