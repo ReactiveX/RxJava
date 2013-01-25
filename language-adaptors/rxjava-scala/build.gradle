@@ -1,4 +1,6 @@
 apply plugin: 'scala'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
 
 tasks.withType(ScalaCompile) {
 	scalaCompileOptions.fork = true
