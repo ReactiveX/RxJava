@@ -62,3 +62,6 @@ bin/
 
 # NetBeans specific files/directories
 .nbattrs
+
+# Scala build
+*.cache
