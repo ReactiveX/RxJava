@@ -150,30 +150,34 @@ public final class OperationConcat {
 		public void testConcatUnsubscribe() {
             CountDownLatch callOnce = new CountDownLatch(1);
             CountDownLatch okToContinue = new CountDownLatch(1);
-            TestObservable w = new TestObservable(callOnce, okToContinue, "one", "two", "three");
+            TestObservable w1 = new TestObservable(null, null, "one", "two", "three");
+            TestObservable w2 = new TestObservable(callOnce, okToContinue, "four", "five", "six");
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             @SuppressWarnings("unchecked")
-            Observable<String> concat = Observable.create(concat(w));
+            Observable<String> concat = Observable.create(concat(w1, w2));
             Subscription s1 = concat.subscribe(aObserver);
             
             try {
-                //Allow the observable to call onNext once.
+                //Block main thread to allow observable "w1" to complete and observable "w2" to call onNext once.
             	callOnce.await();
                 s1.unsubscribe();
                 //Unblock the observable to continue.
                 okToContinue.countDown();
-                w.t.join();                
+                w1.t.join();   
+                w2.t.join();
             } catch (Exception e) {
                 e.printStackTrace();
                 fail(e.getMessage());
             }
 
-            System.out.println("TestObservable thread finished");
             verify(aObserver, times(1)).onNext("one");
-            verify(aObserver, never()).onNext("two");
-            verify(aObserver, never()).onNext("three");
+            verify(aObserver, times(1)).onNext("two");
+            verify(aObserver, times(1)).onNext("three");
+            verify(aObserver, times(1)).onNext("four");
+            verify(aObserver, never()).onNext("five");
+            verify(aObserver, never()).onNext("six");
  		}
 		
 	    private static class TestObservable extends Observable<String> {
@@ -211,34 +215,31 @@ public final class OperationConcat {
 	            
 	            @Override
 	            public Subscription subscribe(final Observer<String> observer) {
-	                System.out.println("TestObservable subscribed to ...");
 	                t = new Thread(new Runnable() {
 
 	                    @Override
 	                    public void run() {
 	                        try {
-	                            System.out.println("running TestObservable thread");
 		                        while(count < values.length && subscribed) {
-	                                System.out.println("TestObservable onNext: " + s);
 	                                observer.onNext(values[count]);
 	                                count++;
 	                                //Unblock the main thread to call unsubscribe.
-	                                once.countDown();
+	                                if (null != once)
+	                                	once.countDown();
 	                                //Block until the main thread has called unsubscribe.
-	                                okToContinue.await();
-		                        }
-		                        
+	                                if (null != once)
+	                                	okToContinue.await();
+		                        }		                        
 		                        if (subscribed)
-	                            observer.onCompleted();
-	                        } catch (Exception e) {
-	                            throw new RuntimeException(e);
+		                        	observer.onCompleted();
+	                        } catch (InterruptedException e) {
+	                            e.printStackTrace();
+	                            fail(e.getMessage());
 	                        }
 	                    }
 
 	                });
-	                System.out.println("starting TestObservable thread");
 	                t.start();
-	                System.out.println("done starting TestObservable thread");
 	                return s;
 	            }
 
