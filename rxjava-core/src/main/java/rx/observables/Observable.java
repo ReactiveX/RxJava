@@ -346,7 +346,7 @@ public class Observable<T> {
 
                 @Override
                 public Subscription call(Observer<T> t1) {
-                    return new NullObservableSubscription();
+                    return new NoOpObservableSubscription();
                 }
 
             });
@@ -356,7 +356,7 @@ public class Observable<T> {
     /**
      * A disposable object that does nothing when its unsubscribe method is called.
      */
-    private static class NullObservableSubscription implements Subscription {
+    private static class NoOpObservableSubscription implements Subscription {
         public void unsubscribe() {
         }
     }
@@ -382,7 +382,7 @@ public class Observable<T> {
                 @Override
                 public Subscription call(Observer<T> observer) {
                     observer.onError(exception);
-                    return new NullObservableSubscription();
+                    return new NoOpObservableSubscription();
                 }
 
             });
@@ -862,10 +862,49 @@ public class Observable<T> {
     /**
      * A ObservableSubscription that does nothing.
      * 
+     * //TODO should this be moved to a Subscriptions utility class?
+     * 
      * @return
      */
     public static Subscription noOpSubscription() {
-        return new NullObservableSubscription();
+        return new NoOpObservableSubscription();
+    }
+
+    /**
+     * A Subscription implemented via a Func
+     * 
+     * //TODO should this be moved to a Subscriptions utility class?
+     * 
+     * @return
+     */
+    public static Subscription createSubscription(final Action0 unsubscribe) {
+        return new Subscription() {
+
+            @Override
+            public void unsubscribe() {
+                unsubscribe.call();
+            }
+
+        };
+    }
+
+    /**
+     * A Subscription implemented via an anonymous function (such as closures from other languages).
+     * 
+     * //TODO should this be moved to a Subscriptions utility class?
+     * 
+     * @return
+     */
+    public static Subscription createSubscription(final Object unsubscribe) {
+        final FuncN f = Functions.from(unsubscribe);
+        return new Subscription() {
+
+            @Override
+            public void unsubscribe() {
+                f.call();
+            }
+
+        };
     }
 
     /**
