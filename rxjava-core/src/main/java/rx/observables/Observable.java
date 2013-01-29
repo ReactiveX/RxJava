@@ -859,10 +859,49 @@ public class Observable<T> {
     /**
      * A ObservableSubscription that does nothing.
      * 
+     * //TODO should this be moved to a Subscriptions utility class?
+     * 
      * @return
      */
     public static Subscription noOpSubscription() {
         return new NoOpObservableSubscription();
+    }
+
+    /**
+     * A Subscription implemented via a Func
+     * 
+     * //TODO should this be moved to a Subscriptions utility class?
+     * 
+     * @return
+     */
+    public static Subscription createSubscription(final Action0 unsubscribe) {
+        return new Subscription() {
+
+            @Override
+            public void unsubscribe() {
+                unsubscribe.call();
+            }
+
+        };
+    }
+
+    /**
+     * A Subscription implemented via an anonymous function (such as closures from other languages).
+     * 
+     * //TODO should this be moved to a Subscriptions utility class?
+     * 
+     * @return
+     */
+    public static Subscription createSubscription(final Object unsubscribe) {
+        final FuncN f = Functions.from(unsubscribe);
+        return new Subscription() {
+
+            @Override
+            public void unsubscribe() {
+                f.call();
+            }
+
+        };
     }
 
     /**

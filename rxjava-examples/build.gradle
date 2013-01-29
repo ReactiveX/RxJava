@@ -15,8 +15,10 @@ repositories {
 dependencies {
     compile project(':language-adaptors:rxjava-clojure')
     compile project(':language-adaptors:rxjava-groovy')
+    compile "clj-http:clj-http:0.6.3" // https://clojars.org/clj-http
     provided 'junit:junit:4.10'
     provided 'org.mockito:mockito-core:1.9.5'
+    groovy "org.codehaus.groovy:groovy:2.0.2"
 }
 
 /* 
