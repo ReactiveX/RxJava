@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -1406,6 +1407,7 @@ public class Observable<T> {
      * 
      * Any object that supports the {@link Future} interface can be converted into a Observable that emits
      * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
+     * The subscribe method on this synchronously so the Subscription returned doesn't nothing.
      * 
      * @param future
      *            the source {@link Future}
@@ -1423,6 +1425,8 @@ public class Observable<T> {
      * 
      * Any object that supports the {@link Future} interface can be converted into a Observable that emits
      * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
+     * The subscribe method on this synchronously so the Subscription returned doesn't nothing.
+     * If the future timesout the {@link TimeoutException} exception is passed to the onError. 
      * 
      * @param future
      *            the source {@link Future}
