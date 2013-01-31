@@ -913,7 +913,7 @@ public class Observable<T> {
      * @return
      */
     public static Subscription createSubscription(final Object unsubscribe) {
-        final FuncN f = Functions.from(unsubscribe);
+        final FuncN<?> f = Functions.from(unsubscribe);
         return new Subscription() {
 
             @Override
