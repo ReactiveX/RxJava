@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +45,7 @@ import rx.observables.operations.OperationScan;
 import rx.observables.operations.OperationSkip;
 import rx.observables.operations.OperationSynchronize;
 import rx.observables.operations.OperationTake;
+import rx.observables.operations.OperationToObservableFuture;
 import rx.observables.operations.OperationToObservableIterable;
 import rx.observables.operations.OperationToObservableList;
 import rx.observables.operations.OperationToObservableSortedList;
@@ -1396,6 +1400,45 @@ public class Observable<T> {
      */
     public static <T> Observable<T> toObservable(Iterable<T> iterable) {
         return create(OperationToObservableIterable.toObservableIterable(iterable));
+    }
+
+    /**
+     * Converts an Future to a Observable sequence.
+     * 
+     * Any object that supports the {@link Future} interface can be converted into a Observable that emits
+     * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
+     * The subscribe method on this synchronously so the Subscription returned doesn't nothing.
+     * 
+     * @param future
+     *            the source {@link Future}
+     * @param <T>
+     *            the type of of object that the future's returns and the type emitted by the resulting
+     *            Observable
+     * @return a Observable that emits the item from the source Future
+     */
+    public static <T> Observable<T> toObservable(Future<T> future) {
+        return create(OperationToObservableFuture.toObservableFuture(future));
+    }
+    
+    /**
+     * Converts an Future to a Observable sequence.
+     * 
+     * Any object that supports the {@link Future} interface can be converted into a Observable that emits
+     * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
+     * The subscribe method on this synchronously so the Subscription returned doesn't nothing.
+     * If the future timesout the {@link TimeoutException} exception is passed to the onError. 
+     * 
+     * @param future
+     *            the source {@link Future}
+     * @param time the maximum time to wait
+     * @param unit the time unit of the time argument
+     * @param <T>
+     *            the type of of object that the future's returns and the type emitted by the resulting
+     *            Observable
+     * @return a Observable that emits the item from the source Future
+     */
+    public static <T> Observable<T> toObservable(Future<T> future, long time, TimeUnit unit) {
+        return create(OperationToObservableFuture.toObservableFuture(future, time, unit));
     }
 
     /**
