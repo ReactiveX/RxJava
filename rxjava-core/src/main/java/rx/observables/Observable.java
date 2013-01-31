@@ -787,9 +787,9 @@ public class Observable<T> {
      * 
      * @param source
      *           a series of Observables that emit sequences of items
-     * @return a Observable that emits a sequence of elements that are the result of flattening the
+     * @return a Observable that emits a sequence of elements that are the result of combining the
      *         output from the <code>source</code> Observables
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
      */
     public static <T> Observable<T> concat(Observable<T>... source) {
         return create(OperationConcat.concat(source));
