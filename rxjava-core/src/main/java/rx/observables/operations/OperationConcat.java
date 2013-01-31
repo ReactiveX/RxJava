@@ -40,7 +40,14 @@ import rx.util.functions.Func1;
 
 public final class OperationConcat {
 
-    public static <T> Func1<Observer<T>, Subscription> concat(final Observable<T>... sequences) {
+    /**
+     * Combine the observable sequences from the list of Observables into one observable sequence without any transformation.
+     * 
+     * @param sequences
+     *            An observable sequence of elements to project.
+     * @return An observable sequence whose elements are the result of combining the output from the list of Observables.
+     */	
+	public static <T> Func1<Observer<T>, Subscription> concat(final Observable<T>... sequences) {
         return new OperatorSubscribeFunction<T>() {
 
             @Override
