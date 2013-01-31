@@ -65,13 +65,13 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
      * compositional by its very nature.
      */
 
-    private final Observer<T> Observer;
+    private final Observer<T> observer;
     private final AtomicObservableSubscription subscription;
     private volatile boolean finishRequested = false;
     private volatile boolean finished = false;
 
     public AtomicObserverSingleThreaded(Observer<T> Observer, AtomicObservableSubscription subscription) {
-        this.Observer = Observer;
+        this.observer = Observer;
         this.subscription = subscription;
     }
 
@@ -86,7 +86,7 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
                 // if we're already stopped, or a finish request has been received, we won't allow further onNext requests
                 return;
             }
-            Observer.onNext(arg);
+            observer.onNext(arg);
         }
     }
 
@@ -101,7 +101,7 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
             if (finished || subscription.isUnsubscribed()) {
                 return;
             }
-            Observer.onError(e);
+            observer.onError(e);
             finished = true;
         }
     }
@@ -117,7 +117,7 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
             if (finished || subscription.isUnsubscribed()) {
                 return;
             }
-            Observer.onCompleted();
+            observer.onCompleted();
             finished = true;
         }
     }
