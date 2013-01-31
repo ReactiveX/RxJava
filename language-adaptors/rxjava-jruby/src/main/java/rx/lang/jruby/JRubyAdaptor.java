@@ -164,7 +164,7 @@ public class JRubyAdaptor implements FunctionLanguageAdaptor {
 
             StringBuilder b = new StringBuilder();
             // force JRuby to always use subscribe(Object)
-            b.append("import \"rx.observables.Observable\"").append("\n");
+            b.append("import \"rx.Observable\"").append("\n");
             b.append("class Observable").append("\n");
             b.append("  java_alias :subscribe, :subscribe, [java.lang.Object]").append("\n");
             b.append("end").append("\n");
