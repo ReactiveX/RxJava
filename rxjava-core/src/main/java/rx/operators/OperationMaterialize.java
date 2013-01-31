@@ -188,14 +188,6 @@ public final class OperationMaterialize {
         String[] valuesToReturn;
 
         TestAsyncErrorObservable(String... values) {
-            super(new Func1<Observer<String>, Subscription>() {
-
-                @Override
-                public Subscription call(Observer<String> t1) {
-                    // do nothing as we are overriding subscribe for testing purposes
-                    return null;
-                }
-            });
             valuesToReturn = values;
         }
 

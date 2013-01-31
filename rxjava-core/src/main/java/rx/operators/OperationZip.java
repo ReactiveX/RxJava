@@ -801,17 +801,6 @@ public final class OperationZip {
 
             Observer<String> Observer;
 
-            TestObservable() {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(rx.Observer<String> t1) {
-                        // do nothing as we're overriding subscribe for testing
-                        return null;
-                    }
-                });
-            }
-
             @Override
             public Subscription subscribe(Observer<String> Observer) {
                 // just store the variable where it can be accessed so we can manually trigger it

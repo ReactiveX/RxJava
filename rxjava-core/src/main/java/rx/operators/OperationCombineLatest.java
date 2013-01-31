@@ -794,17 +794,6 @@ public class OperationCombineLatest {
 
             Observer<String> Observer;
 
-            public TestObservable() {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(rx.Observer<String> t1) {
-                        return null;
-                        // do nothing ... we are overriding the subscribe method for testing
-                    }
-                });
-            }
-
             @Override
             public Subscription subscribe(Observer<String> Observer) {
                 // just store the variable where it can be accessed so we can manually trigger it

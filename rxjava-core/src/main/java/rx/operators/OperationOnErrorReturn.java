@@ -192,14 +192,6 @@ public final class OperationOnErrorReturn<T> {
             Thread t = null;
 
             public TestObservable(Subscription s, String... values) {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(Observer<String> t1) {
-                        // do nothing as we are overriding subscribe for testing purposes
-                        return null;
-                    }
-                });
                 this.s = s;
                 this.values = values;
             }

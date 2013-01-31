@@ -457,17 +457,6 @@ public final class OperationMerge {
 
         private static class TestSynchronousObservable extends Observable<String> {
 
-            TestSynchronousObservable() {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(Observer<String> t1) {
-                        // do nothing as we are overriding subscribe for testing purposes
-                        return null;
-                    }
-                });
-            }
-
             @Override
             public Subscription subscribe(Observer<String> observer) {
 
@@ -487,17 +476,6 @@ public final class OperationMerge {
 
         private static class TestASynchronousObservable extends Observable<String> {
             Thread t;
-
-            TestASynchronousObservable() {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(Observer<String> t1) {
-                        // do nothing as we are overriding subscribe for testing purposes
-                        return null;
-                    }
-                });
-            }
 
             @Override
             public Subscription subscribe(final Observer<String> observer) {
@@ -540,17 +518,6 @@ public final class OperationMerge {
 
             };
 
-            public TestObservable() {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(Observer<String> t1) {
-                        // do nothing as we are overriding subscribe for testing purposes
-                        return null;
-                    }
-                });
-            }
-
             /* used to simulate subscription */
             public void sendOnCompleted() {
                 observer.onCompleted();
@@ -579,14 +546,6 @@ public final class OperationMerge {
             String[] valuesToReturn;
 
             TestErrorObservable(String... values) {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(Observer<String> t1) {
-                        // do nothing as we are overriding subscribe for testing purposes
-                        return null;
-                    }
-                });
                 valuesToReturn = values;
             }
 

@@ -625,17 +625,6 @@ public final class OperationMergeDelayError {
 
         private static class TestSynchronousObservable extends Observable<String> {
 
-            public TestSynchronousObservable() {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(Observer<String> t1) {
-                        // do nothing as we are overriding subscribe for testing purposes
-                        return null;
-                    }
-                });
-            }
-
             @Override
             public Subscription subscribe(Observer<String> observer) {
 
@@ -655,17 +644,6 @@ public final class OperationMergeDelayError {
 
         private static class TestASynchronousObservable extends Observable<String> {
             Thread t;
-
-            public TestASynchronousObservable() {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(Observer<String> t1) {
-                        // do nothing as we are overriding subscribe for testing purposes
-                        return null;
-                    }
-                });
-            }
 
             @Override
             public Subscription subscribe(final Observer<String> observer) {
@@ -708,17 +686,6 @@ public final class OperationMergeDelayError {
 
             };
 
-            public TestObservable() {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(Observer<String> t1) {
-                        // do nothing as we are overriding subscribe for testing purposes
-                        return null;
-                    }
-                });
-            }
-
             /* used to simulate subscription */
             public void sendOnCompleted() {
                 observer.onCompleted();
@@ -747,14 +714,6 @@ public final class OperationMergeDelayError {
             String[] valuesToReturn;
 
             TestErrorObservable(String... values) {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(Observer<String> t1) {
-                        // do nothing as we are overriding subscribe for testing purposes
-                        return null;
-                    }
-                });
                 valuesToReturn = values;
             }
 
@@ -792,14 +751,6 @@ public final class OperationMergeDelayError {
             String[] valuesToReturn;
 
             TestAsyncErrorObservable(String... values) {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(Observer<String> t1) {
-                        // do nothing as we are overriding subscribe for testing purposes
-                        return null;
-                    }
-                });
                 valuesToReturn = values;
             }
 

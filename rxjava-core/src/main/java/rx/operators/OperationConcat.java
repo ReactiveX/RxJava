@@ -278,15 +278,6 @@ public final class OperationConcat {
 	            private final CountDownLatch okToContinue; 
 	            
 	            public TestObservable(CountDownLatch once, CountDownLatch okToContinue, String... values) {
-	                super(new Func1<Observer<String>, Subscription>() {
-
-	                    @Override
-	                    public Subscription call(Observer<String> t1) {
-	                        // do nothing as we are overriding subscribe for testing purposes
-	                        return null;
-	                    }
-	                });
-	                
 	                this.values = values;
 	                this.once = once;
 	                this.okToContinue = okToContinue;

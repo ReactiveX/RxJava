@@ -84,6 +84,10 @@ public class Observable<T> {
         this(onSubscribe, false);
     }
 
+    protected Observable() {
+        this(null, false);
+    }
+
     private Observable(Func1<Observer<T>, Subscription> onSubscribe, boolean isTrusted) {
         this.onSubscribe = onSubscribe;
         this.isTrusted = isTrusted;
@@ -115,6 +119,10 @@ public class Observable<T> {
      *         to stop receiving notifications before the provider has finished sending them
      */
     public Subscription subscribe(Observer<T> observer) {
+        if (onSubscribe == null) {
+            throw new IllegalStateException("onSubscribe function can not be null.");
+            // the subscribe function can also be overridden but generally that's not the appropriate approach so I won't mention that in the exception
+        }
         if (isTrusted) {
             return onSubscribe.call(observer);
         } else {

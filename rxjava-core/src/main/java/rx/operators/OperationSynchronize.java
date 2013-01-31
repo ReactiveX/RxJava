@@ -234,14 +234,6 @@ public final class OperationSynchronize<T> {
             Observer<String> observer = null;
 
             public TestObservable(Subscription s) {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(Observer<String> t1) {
-                        // do nothing as we are overriding subscribe for testing purposes
-                        return null;
-                    }
-                });
             }
 
             /* used to simulate subscription */
