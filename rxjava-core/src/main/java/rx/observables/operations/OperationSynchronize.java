@@ -25,7 +25,7 @@ import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
 import rx.util.AtomicObservableSubscription;
-import rx.util.AtomicObserverSingleThreaded;
+import rx.util.SynchronizedObserver;
 import rx.util.functions.Func1;
 
 /**
@@ -58,18 +58,18 @@ public final class OperationSynchronize<T> {
         return new Synchronize<T>(observable);
     }
 
-    private static class Synchronize<T> implements OperatorSubscribeFunction<T> {
+    private static class Synchronize<T> implements Func1<Observer<T>, Subscription> {
 
         public Synchronize(Observable<T> innerObservable) {
             this.innerObservable = innerObservable;
         }
 
         private Observable<T> innerObservable;
-        private AtomicObserverSingleThreaded<T> atomicObserver;
+        private SynchronizedObserver<T> atomicObserver;
 
         public Subscription call(Observer<T> observer) {
             AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-            atomicObserver = new AtomicObserverSingleThreaded<T>(observer, subscription);
+            atomicObserver = new SynchronizedObserver<T>(observer, subscription);
             return subscription.wrap(innerObservable.subscribe(atomicObserver));
         }
 

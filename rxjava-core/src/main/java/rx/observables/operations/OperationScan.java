@@ -62,7 +62,7 @@ public final class OperationScan {
         return new Accumulator<T>(sequence, null, accumulator);
     }
 
-    private static class Accumulator<T> implements OperatorSubscribeFunction<T> {
+    private static class Accumulator<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> sequence;
         private final T initialValue;
         private Func2<T, T, T> accumlatorFunction;

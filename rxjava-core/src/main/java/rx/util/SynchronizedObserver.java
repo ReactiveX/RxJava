@@ -51,7 +51,7 @@ import rx.util.functions.Func1;
  * @param <T>
  */
 @ThreadSafe
-public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
+public final class SynchronizedObserver<T> implements Observer<T> {
 
     /**
      * Intrinsic synchronized locking with double-check short-circuiting was chosen after testing several other implementations.
@@ -61,8 +61,10 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
      * - https://github.com/benjchristensen/JavaLockPerformanceTests/tree/master/src/com/benjchristensen/performance/locks/Observer
      * 
      * The major characteristic that made me choose synchronized instead of Reentrant or a customer AbstractQueueSynchronizer implementation
-     * is that intrinsic locking performed better when nested, and AtomicObserverSingleThreaded will end up nested most of the time since Rx is
+     * is that intrinsic locking performed better when nested, and AtomicObserver will end up nested most of the time since Rx is
      * compositional by its very nature.
+     * 
+     * // TODO composing of this class should rarely happen now with updated design so this decision should be revisited 
      */
 
     private final Observer<T> observer;
@@ -70,7 +72,7 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
     private volatile boolean finishRequested = false;
     private volatile boolean finished = false;
 
-    public AtomicObserverSingleThreaded(Observer<T> Observer, AtomicObservableSubscription subscription) {
+    public SynchronizedObserver(Observer<T> Observer, AtomicObservableSubscription subscription) {
         this.observer = Observer;
         this.subscription = subscription;
     }
@@ -138,7 +140,7 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
             Observable<String> w = Observable.create(onSubscribe);
 
             AtomicObservableSubscription as = new AtomicObservableSubscription(s);
-            AtomicObserverSingleThreaded<String> aw = new AtomicObserverSingleThreaded<String>(aObserver, as);
+            SynchronizedObserver<String> aw = new SynchronizedObserver<String>(aObserver, as);
 
             w.subscribe(aw);
             onSubscribe.waitToFinish();
@@ -148,7 +150,7 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
             verify(aObserver, times(1)).onNext("three");
             verify(aObserver, never()).onError(any(Exception.class));
             verify(aObserver, times(1)).onCompleted();
-            verify(s, never()).unsubscribe();
+            verify(s, times(1)).unsubscribe();
         }
 
         @Test
@@ -159,7 +161,7 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
 
             AtomicObservableSubscription as = new AtomicObservableSubscription(s);
             BusyObserver busyObserver = new BusyObserver();
-            AtomicObserverSingleThreaded<String> aw = new AtomicObserverSingleThreaded<String>(busyObserver, as);
+            SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as);
 
             w.subscribe(aw);
             onSubscribe.waitToFinish();
@@ -167,7 +169,7 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
             assertEquals(3, busyObserver.onNextCount.get());
             assertFalse(busyObserver.onError);
             assertTrue(busyObserver.onCompleted);
-            verify(s, never()).unsubscribe();
+            verify(s, times(1)).unsubscribe();
 
             // we can have concurrency ...
             assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
@@ -183,7 +185,7 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
 
             AtomicObservableSubscription as = new AtomicObservableSubscription(s);
             BusyObserver busyObserver = new BusyObserver();
-            AtomicObserverSingleThreaded<String> aw = new AtomicObserverSingleThreaded<String>(busyObserver, as);
+            SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as);
 
             w.subscribe(aw);
             onSubscribe.waitToFinish();
@@ -197,7 +199,7 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
             assertTrue(busyObserver.onError);
             // no onCompleted because onError was invoked
             assertFalse(busyObserver.onCompleted);
-            verify(s, never()).unsubscribe();
+            verify(s, times(1)).unsubscribe();
 
             // we can have concurrency ...
             assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
@@ -213,7 +215,7 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
 
             AtomicObservableSubscription as = new AtomicObservableSubscription(s);
             BusyObserver busyObserver = new BusyObserver();
-            AtomicObserverSingleThreaded<String> aw = new AtomicObserverSingleThreaded<String>(busyObserver, as);
+            SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as);
 
             w.subscribe(aw);
             onSubscribe.waitToFinish();
@@ -225,7 +227,7 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
             assertTrue(busyObserver.onError);
             // no onCompleted because onError was invoked
             assertFalse(busyObserver.onCompleted);
-            verify(s, never()).unsubscribe();
+            verify(s, times(1)).unsubscribe();
 
             // we can have concurrency ...
             assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
@@ -246,7 +248,7 @@ public final class AtomicObserverSingleThreaded<T> implements Observer<T> {
             try {
                 TestConcurrencyObserver tw = new TestConcurrencyObserver();
                 AtomicObservableSubscription s = new AtomicObservableSubscription();
-                AtomicObserverSingleThreaded<String> w = new AtomicObserverSingleThreaded<String>(tw, s);
+                SynchronizedObserver<String> w = new SynchronizedObserver<String>(tw, s);
 
                 Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
                 Future<?> f2 = tp.submit(new OnNextThread(w, 5000));

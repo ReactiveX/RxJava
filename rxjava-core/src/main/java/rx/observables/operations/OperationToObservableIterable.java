@@ -40,7 +40,7 @@ public final class OperationToObservableIterable<T> {
         return new ToObservableIterable<T>(list);
     }
 
-    private static class ToObservableIterable<T> implements OperatorSubscribeFunction<T> {
+    private static class ToObservableIterable<T> implements Func1<Observer<T>, Subscription> {
         public ToObservableIterable(Iterable<T> list) {
             this.iterable = list;
         }

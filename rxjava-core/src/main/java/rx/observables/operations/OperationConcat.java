@@ -16,11 +16,8 @@
 package rx.observables.operations;
 
 
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -48,7 +45,7 @@ public final class OperationConcat {
      * @return An observable sequence whose elements are the result of combining the output from the list of Observables.
      */	
 	public static <T> Func1<Observer<T>, Subscription> concat(final Observable<T>... sequences) {
-        return new OperatorSubscribeFunction<T>() {
+        return new Func1<Observer<T>, Subscription>() {
 
             @Override
             public Subscription call(Observer<T> observer) {
@@ -76,7 +73,7 @@ public final class OperationConcat {
     	return concat(list);
     }
     
-    private static class Concat<T> implements OperatorSubscribeFunction<T> {
+    private static class Concat<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T>[] sequences;
         private int num = 0;
         private int count = 0;

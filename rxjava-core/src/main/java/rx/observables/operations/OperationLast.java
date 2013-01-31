@@ -40,7 +40,7 @@ public final class OperationLast<T> {
         return new Last<T>(observable);
     }
 
-    private static class Last<T> implements OperatorSubscribeFunction<T> {
+    private static class Last<T> implements Func1<Observer<T>, Subscription> {
 
         private final AtomicReference<T> lastValue = new AtomicReference<T>();
         private final Observable<T> that;

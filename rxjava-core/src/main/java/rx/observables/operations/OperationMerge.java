@@ -46,7 +46,7 @@ public final class OperationMerge {
      */
     public static <T> Func1<Observer<T>, Subscription> merge(final Observable<Observable<T>> o) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new OperatorSubscribeFunction<T>() {
+        return new Func1<Observer<T>, Subscription>() {
 
             @Override
             public Subscription call(Observer<T> observer) {
@@ -56,7 +56,7 @@ public final class OperationMerge {
     }
 
     public static <T> Func1<Observer<T>, Subscription> merge(final Observable<T>... sequences) {
-        return merge(Observable.create(new OperatorSubscribeFunction<Observable<T>>() {
+        return merge(Observable.create(new Func1<Observer<Observable<T>>, Subscription>() {
             private volatile boolean unsubscribed = false;
 
             @Override
@@ -85,7 +85,7 @@ public final class OperationMerge {
     }
 
     public static <T> Func1<Observer<T>, Subscription> merge(final List<Observable<T>> sequences) {
-        return merge(Observable.create(new OperatorSubscribeFunction<Observable<T>>() {
+        return merge(Observable.create(new Func1<Observer<Observable<T>>, Subscription>() {
 
             private volatile boolean unsubscribed = false;
 
@@ -126,7 +126,7 @@ public final class OperationMerge {
      * 
      * @param <T>
      */
-    private static final class MergeObservable<T> implements OperatorSubscribeFunction<T> {
+    private static final class MergeObservable<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<Observable<T>> sequences;
         private final MergeSubscription ourSubscription = new MergeSubscription();
         private AtomicBoolean stopped = new AtomicBoolean(false);

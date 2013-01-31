@@ -103,7 +103,7 @@ public class OperationCombineLatest {
      * 
      * @param <R>
      */
-    private static class Aggregator<R> implements OperatorSubscribeFunction<R> {
+    private static class Aggregator<R> implements Func1<Observer<R>, Subscription> {
 
         private final FuncN<R> combineLatestFunction;
         private Observer<R> Observer;

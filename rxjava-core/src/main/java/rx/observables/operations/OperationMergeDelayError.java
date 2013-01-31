@@ -58,7 +58,7 @@ public final class OperationMergeDelayError {
      */
     public static <T> Func1<Observer<T>, Subscription> mergeDelayError(final Observable<Observable<T>> sequences) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new OperatorSubscribeFunction<T>() {
+        return new Func1<Observer<T>, Subscription>() {
 
             @Override
             public Subscription call(Observer<T> observer) {
@@ -68,7 +68,7 @@ public final class OperationMergeDelayError {
     }
 
     public static <T> Func1<Observer<T>, Subscription> mergeDelayError(final Observable<T>... sequences) {
-        return mergeDelayError(Observable.create(new OperatorSubscribeFunction<Observable<T>>() {
+        return mergeDelayError(Observable.create(new Func1<Observer<Observable<T>>, Subscription>() {
             private volatile boolean unsubscribed = false;
 
             @Override
@@ -97,7 +97,7 @@ public final class OperationMergeDelayError {
     }
 
     public static <T> Func1<Observer<T>, Subscription> mergeDelayError(final List<Observable<T>> sequences) {
-        return mergeDelayError(Observable.create(new OperatorSubscribeFunction<Observable<T>>() {
+        return mergeDelayError(Observable.create(new Func1<Observer<Observable<T>>, Subscription>() {
 
             private volatile boolean unsubscribed = false;
 
@@ -138,7 +138,7 @@ public final class OperationMergeDelayError {
      * 
      * @param <T>
      */
-    private static final class MergeDelayErrorObservable<T> implements OperatorSubscribeFunction<T> {
+    private static final class MergeDelayErrorObservable<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<Observable<T>> sequences;
         private final MergeSubscription ourSubscription = new MergeSubscription();
         private AtomicBoolean stopped = new AtomicBoolean(false);

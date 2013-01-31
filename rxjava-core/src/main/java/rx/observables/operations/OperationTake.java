@@ -45,7 +45,7 @@ public final class OperationTake {
      */
     public static <T> Func1<Observer<T>, Subscription> take(final Observable<T> items, final int num) {
         // wrap in a Watchbable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new OperatorSubscribeFunction<T>() {
+        return new Func1<Observer<T>, Subscription>() {
 
             @Override
             public Subscription call(Observer<T> observer) {
@@ -66,7 +66,7 @@ public final class OperationTake {
      * 
      * @param <T>
      */
-    private static class Take<T> implements OperatorSubscribeFunction<T> {
+    private static class Take<T> implements Func1<Observer<T>, Subscription> {
         private final int num;
         private final Observable<T> items;
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();

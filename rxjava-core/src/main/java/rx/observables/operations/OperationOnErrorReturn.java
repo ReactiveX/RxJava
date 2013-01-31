@@ -41,7 +41,7 @@ public final class OperationOnErrorReturn<T> {
         return new OnErrorReturn<T>(originalSequence, resumeFunction);
     }
 
-    private static class OnErrorReturn<T> implements OperatorSubscribeFunction<T> {
+    private static class OnErrorReturn<T> implements Func1<Observer<T>, Subscription> {
         private final Func1<Exception, T> resumeFunction;
         private final Observable<T> originalSequence;
 

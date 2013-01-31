@@ -1,10 +1,6 @@
 package rx.observables.operations;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +13,7 @@ import rx.observables.Subscription;
 import rx.util.functions.Func1;
 
 public class OperationToObservableFuture {
-    private static class ToObservableFuture<T> implements OperatorSubscribeFunction<T> {
+    private static class ToObservableFuture<T> implements Func1<Observer<T>, Subscription> {
         private final Future<T> that;
         private final Long time;
         private final TimeUnit unit;

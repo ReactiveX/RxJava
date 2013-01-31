@@ -36,7 +36,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
         return new OnErrorResumeNextViaObservable<T>(originalSequence, resumeSequence);
     }
 
-    private static class OnErrorResumeNextViaObservable<T> implements OperatorSubscribeFunction<T> {
+    private static class OnErrorResumeNextViaObservable<T> implements Func1<Observer<T>, Subscription> {
 
         private final Observable<T> resumeSequence;
         private final Observable<T> originalSequence;

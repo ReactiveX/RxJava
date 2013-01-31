@@ -49,7 +49,7 @@ public final class OperationMaterialize {
         return new MaterializeObservable<T>(sequence);
     }
 
-    private static class MaterializeObservable<T> implements OperatorSubscribeFunction<Notification<T>> {
+    private static class MaterializeObservable<T> implements Func1<Observer<Notification<T>>, Subscription> {
 
         private final Observable<T> sequence;
 

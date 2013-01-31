@@ -37,7 +37,7 @@ public final class OperationToObservableList<T> {
         return new ToObservableList<T>(that);
     }
 
-    private static class ToObservableList<T> implements OperatorSubscribeFunction<List<T>> {
+    private static class ToObservableList<T> implements Func1<Observer<List<T>>, Subscription> {
 
         private final Observable<T> that;
         final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();

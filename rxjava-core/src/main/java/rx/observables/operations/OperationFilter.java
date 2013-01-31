@@ -33,7 +33,7 @@ public final class OperationFilter<T> {
         return new Filter<T>(that, predicate);
     }
 
-    private static class Filter<T> implements OperatorSubscribeFunction<T> {
+    private static class Filter<T> implements Func1<Observer<T>, Subscription> {
 
         private final Observable<T> that;
         private final Func1<T, Boolean> predicate;
