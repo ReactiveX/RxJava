@@ -119,7 +119,7 @@
     (customObservableNonBlocking)
     (.skip 10)
     (.take 5)
-    (.map #(do (str % "_transformed")))
+    (.map #(str % "_transformed"))
     (.subscribe #(println "onNext =>" %))))
 
 ; To see output
