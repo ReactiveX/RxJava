@@ -29,10 +29,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.observables.Notification;
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Notification;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.functions.Func1;
 import rx.util.functions.FunctionLanguageAdaptor;
 
@@ -210,7 +210,7 @@ public class GroovyAdaptor implements FunctionLanguageAdaptor {
             Binding binding = new Binding();
             binding.setVariable("mockApiCall", new TestFactory());
             binding.setVariable("a", assertion);
-            binding.setVariable("o", rx.observables.Observable.class);
+            binding.setVariable("o", rx.Observable.class);
 
             /* parse the script and execute it */
             InvokerHelper.createScript(loader.parseClass(script), binding).run();

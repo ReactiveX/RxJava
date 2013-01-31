@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.operators;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
@@ -45,7 +45,7 @@ public final class OperationTake {
      */
     public static <T> Func1<Observer<T>, Subscription> take(final Observable<T> items, final int num) {
         // wrap in a Watchbable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new OperatorSubscribeFunction<T>() {
+        return new Func1<Observer<T>, Subscription>() {
 
             @Override
             public Subscription call(Observer<T> observer) {
@@ -66,7 +66,7 @@ public final class OperationTake {
      * 
      * @param <T>
      */
-    private static class Take<T> implements OperatorSubscribeFunction<T> {
+    private static class Take<T> implements Func1<Observer<T>, Subscription> {
         private final int num;
         private final Observable<T> items;
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
@@ -180,14 +180,6 @@ public final class OperationTake {
             Thread t = null;
 
             public TestObservable(Subscription s, String... values) {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(Observer<String> t1) {
-                        // do nothing as we are overriding subscribe for testing purposes
-                        return null;
-                    }
-                });
                 this.s = s;
                 this.values = values;
             }

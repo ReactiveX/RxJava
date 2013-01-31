@@ -1,84 +1,75 @@
-/**
- * Copyright 2013 Netflix, Inc.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package rx.util;
 
-import javax.annotation.concurrent.ThreadSafe;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.observables.Observer;
+import rx.Observer;
 
 /**
- * A thread-safe Observer for transitioning states in operators.
+ * Wrapper around Observer to ensure compliance with Rx contract.
  * <p>
- * Allows both single-threaded and multi-threaded execution controlled by the following System property:
- * <li>rx.onNext.multithreaded.enabled [Default: false]</li>
+ * The following is taken from the Rx Design Guidelines document: http://go.microsoft.com/fwlink/?LinkID=205219
+ * <pre>
+ * Messages sent to instances of the IObserver interface follow the following grammar:
+ * 
+ * OnNext* (OnCompleted | OnError)?
+ * 
+ * This grammar allows observable sequences to send any amount (0 or more) of OnNext messages to the subscribed
+ * observer instance, optionally followed by a single success (OnCompleted) or failure (OnError) message.
+ * 
+ * The single message indicating that an observable sequence has finished ensures that consumers of the observable
+ * sequence can deterministically establish that it is safe to perform cleanup operations.
+ * 
+ * A single failure further ensures that abort semantics can be maintained for operators that work on
+ * multiple observable sequences (see paragraph 6.6).
+ * </pre>
+ * 
  * <p>
- * Single-threaded Execution rules are:
+ * This wrapper will do the following:
  * <ul>
- * <li>Allow only single-threaded, synchronous, ordered execution of onNext, onCompleted, onError</li>
+ * <li>Allow only single execution of either onError or onCompleted.</li>
  * <li>Once an onComplete or onError are performed, no further calls can be executed</li>
  * <li>If unsubscribe is called, this means we call completed() and don't allow any further onNext calls.</li>
+ * <li>When onError or onComplete occur it will unsubscribe from the Observable (if executing asynchronously).</li>
  * </ul>
  * <p>
- * Multi-threaded Execution rules are:
- * <ul>
- * <li>Allows multiple threads to perform onNext concurrently</li>
- * <li>When an onComplete, onError or unsubscribe request is received, block until all current onNext calls are completed</li>
- * <li>When an unsubscribe is received, block until all current onNext are completed</li>
- * <li>Once an onComplete or onError are performed, no further calls can be executed</li>
- * <li>If unsubscribe is called, this means we call completed() and don't allow any further onNext calls.</li>
- * </ul>
+ * It will not synchronized onNext execution. Use the {@link SynchronizedObserver} to do that.
  * 
  * @param <T>
  */
-@ThreadSafe
-public final class AtomicObserver<T> implements Observer<T> {
+public class AtomicObserver<T> implements Observer<T> {
 
-    /** Allow changing between forcing single or allowing multi-threaded execution of onNext */
-    private static boolean allowMultiThreaded = false;
-    static {
-        String v = System.getProperty("rx.onNext.multithreaded.enabled");
-        if (v != null) {
-            // if we have a property set then we'll use it
-            allowMultiThreaded = Boolean.parseBoolean(v);
-        }
-    }
+    private final Observer<T> actual;
+    private final AtomicBoolean isFinished = new AtomicBoolean(false);
+    private final AtomicObservableSubscription subscription;
 
-    private final Observer<T> Observer;
-
-    public AtomicObserver(Observer<T> Observer, AtomicObservableSubscription subscription) {
-        if (allowMultiThreaded) {
-            this.Observer = new AtomicObserverMultiThreaded<T>(Observer, subscription);
-        } else {
-            this.Observer = new AtomicObserverSingleThreaded<T>(Observer, subscription);
-        }
+    public AtomicObserver(AtomicObservableSubscription subscription, Observer<T> actual) {
+        this.subscription = subscription;
+        this.actual = actual;
     }
 
     @Override
     public void onCompleted() {
-        Observer.onCompleted();
+        if (isFinished.compareAndSet(false, true)) {
+            actual.onCompleted();
+            // auto-unsubscribe
+            subscription.unsubscribe();
+        }
     }
 
     @Override
     public void onError(Exception e) {
-        Observer.onError(e);
+        if (isFinished.compareAndSet(false, true)) {
+            actual.onError(e);
+            // auto-unsubscribe
+            subscription.unsubscribe();
+        }
     }
 
     @Override
     public void onNext(T args) {
-        Observer.onNext(args);
+        if (!isFinished.get()) {
+            actual.onNext(args);
+        }
     }
 
 }

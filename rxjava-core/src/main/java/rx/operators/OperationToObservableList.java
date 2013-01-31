@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -26,9 +26,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.functions.Func1;
 
 public final class OperationToObservableList<T> {
@@ -37,7 +37,7 @@ public final class OperationToObservableList<T> {
         return new ToObservableList<T>(that);
     }
 
-    private static class ToObservableList<T> implements OperatorSubscribeFunction<List<T>> {
+    private static class ToObservableList<T> implements Func1<Observer<List<T>>, Subscription> {
 
         private final Observable<T> that;
         final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();

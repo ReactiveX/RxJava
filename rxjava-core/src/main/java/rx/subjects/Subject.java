@@ -10,12 +10,12 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import rx.observables.Notification;
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Notification;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
-import rx.util.AtomicObserver;
+import rx.util.SynchronizedObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
@@ -37,7 +37,7 @@ public class Subject<T> extends Observable<T> implements Observer<T> {
                 });
 
                 // on subscribe add it to the map of outbound observers to notify
-                observers.put(subscription, new AtomicObserver<T>(observer, subscription));
+                observers.put(subscription, new SynchronizedObserver<T>(observer, subscription));
                 return subscription;
             }
         };

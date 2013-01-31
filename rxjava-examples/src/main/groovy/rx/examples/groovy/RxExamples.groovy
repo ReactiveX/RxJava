@@ -1,8 +1,8 @@
 package rx.examples.groovy;
 
-import rx.observables.Observable
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.functions.Func1;
 
 // --------------------------------------------------

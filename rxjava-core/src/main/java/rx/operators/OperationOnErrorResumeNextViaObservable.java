@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.operators;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
@@ -24,9 +24,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
@@ -36,7 +36,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
         return new OnErrorResumeNextViaObservable<T>(originalSequence, resumeSequence);
     }
 
-    private static class OnErrorResumeNextViaObservable<T> implements OperatorSubscribeFunction<T> {
+    private static class OnErrorResumeNextViaObservable<T> implements Func1<Observer<T>, Subscription> {
 
         private final Observable<T> resumeSequence;
         private final Observable<T> originalSequence;
@@ -132,14 +132,6 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             Thread t = null;
 
             public TestObservable(Subscription s, String... values) {
-                super(new Func1<Observer<String>, Subscription>() {
-
-                    @Override
-                    public Subscription call(Observer<String> t1) {
-                        // do nothing as we are overriding subscribe for testing purposes
-                        return null;
-                    }
-                });
                 this.s = s;
                 this.values = values;
             }

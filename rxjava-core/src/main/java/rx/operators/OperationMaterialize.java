@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.operators;
 
 import static org.junit.Assert.*;
 
@@ -22,10 +22,10 @@ import java.util.Vector;
 
 import org.junit.Test;
 
-import rx.observables.Notification;
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Notification;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.functions.Func1;
 
 /**
@@ -49,7 +49,7 @@ public final class OperationMaterialize {
         return new MaterializeObservable<T>(sequence);
     }
 
-    private static class MaterializeObservable<T> implements OperatorSubscribeFunction<Notification<T>> {
+    private static class MaterializeObservable<T> implements Func1<Observer<Notification<T>>, Subscription> {
 
         private final Observable<T> sequence;
 
@@ -188,14 +188,6 @@ public final class OperationMaterialize {
         String[] valuesToReturn;
 
         TestAsyncErrorObservable(String... values) {
-            super(new Func1<Observer<String>, Subscription>() {
-
-                @Override
-                public Subscription call(Observer<String> t1) {
-                    // do nothing as we are overriding subscribe for testing purposes
-                    return null;
-                }
-            });
             valuesToReturn = values;
         }
 

@@ -1,6 +1,6 @@
 package rx.examples.java;
 
-import rx.observables.Observable;
+import rx.Observable;
 import rx.util.functions.Action1;
 
 public class RxExamples {

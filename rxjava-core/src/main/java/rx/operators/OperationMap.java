@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -26,9 +26,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.functions.Func1;
 
 public final class OperationMap {
@@ -79,7 +79,7 @@ public final class OperationMap {
      * @param <R>
      *            the type of the output sequence.
      */
-    private static class MapObservable<T, R> implements OperatorSubscribeFunction<R> {
+    private static class MapObservable<T, R> implements Func1<Observer<R>, Subscription> {
         public MapObservable(Observable<T> sequence, Func1<T, R> func) {
             this.sequence = sequence;
             this.func = func;
