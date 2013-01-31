@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -24,9 +24,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.functions.Func1;
 
 /**
@@ -40,7 +40,7 @@ public final class OperationLast<T> {
         return new Last<T>(observable);
     }
 
-    private static class Last<T> implements OperatorSubscribeFunction<T> {
+    private static class Last<T> implements Func1<Observer<T>, Subscription> {
 
         private final AtomicReference<T> lastValue = new AtomicReference<T>();
         private final Observable<T> that;

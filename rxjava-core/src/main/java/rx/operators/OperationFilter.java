@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -21,9 +21,9 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
@@ -33,7 +33,7 @@ public final class OperationFilter<T> {
         return new Filter<T>(that, predicate);
     }
 
-    private static class Filter<T> implements OperatorSubscribeFunction<T> {
+    private static class Filter<T> implements Func1<Observer<T>, Subscription> {
 
         private final Observable<T> that;
         private final Func1<T, Boolean> predicate;

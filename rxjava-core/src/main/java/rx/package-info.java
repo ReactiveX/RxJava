@@ -42,4 +42,4 @@
  * <p>Usage examples can be found on the Watchable and Watcher
  * classes.</p>
  */
-package rx.observables;
+package rx;

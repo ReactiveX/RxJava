@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.operators;
 
 
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -31,9 +28,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
@@ -48,7 +45,7 @@ public final class OperationConcat {
      * @return An observable sequence whose elements are the result of combining the output from the list of Observables.
      */	
 	public static <T> Func1<Observer<T>, Subscription> concat(final Observable<T>... sequences) {
-        return new OperatorSubscribeFunction<T>() {
+        return new Func1<Observer<T>, Subscription>() {
 
             @Override
             public Subscription call(Observer<T> observer) {
@@ -76,7 +73,7 @@ public final class OperationConcat {
     	return concat(list);
     }
     
-    private static class Concat<T> implements OperatorSubscribeFunction<T> {
+    private static class Concat<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T>[] sequences;
         private int num = 0;
         private int count = 0;
@@ -281,15 +278,6 @@ public final class OperationConcat {
 	            private final CountDownLatch okToContinue; 
 	            
 	            public TestObservable(CountDownLatch once, CountDownLatch okToContinue, String... values) {
-	                super(new Func1<Observer<String>, Subscription>() {
-
-	                    @Override
-	                    public Subscription call(Observer<String> t1) {
-	                        // do nothing as we are overriding subscribe for testing purposes
-	                        return null;
-	                    }
-	                });
-	                
 	                this.values = values;
 	                this.once = once;
 	                this.okToContinue = okToContinue;

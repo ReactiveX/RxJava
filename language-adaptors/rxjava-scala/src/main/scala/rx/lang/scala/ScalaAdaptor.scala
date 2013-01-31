@@ -17,7 +17,7 @@ package rx.lang.scala
 
 import rx.util.functions.FunctionLanguageAdaptor
 import org.junit.{Assert, Before, Test}
-import rx.observables.Observable
+import rx.Observable
 import org.scalatest.junit.JUnitSuite
 import org.mockito.Mockito._
 import org.mockito.{MockitoAnnotations, Mock}

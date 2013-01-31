@@ -30,10 +30,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.observables.Notification;
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Notification;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.functions.Func1;
 import rx.util.functions.FunctionLanguageAdaptor;
 
@@ -164,7 +164,7 @@ public class JRubyAdaptor implements FunctionLanguageAdaptor {
 
             StringBuilder b = new StringBuilder();
             // force JRuby to always use subscribe(Object)
-            b.append("import \"rx.observables.Observable\"").append("\n");
+            b.append("import \"rx.Observable\"").append("\n");
             b.append("class Observable").append("\n");
             b.append("  java_alias :subscribe, :subscribe, [java.lang.Object]").append("\n");
             b.append("end").append("\n");

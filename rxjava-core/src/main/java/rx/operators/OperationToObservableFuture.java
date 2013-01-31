@@ -1,23 +1,19 @@
-package rx.observables.operations;
+package rx.operators;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.functions.Func1;
 
 public class OperationToObservableFuture {
-    private static class ToObservableFuture<T> implements OperatorSubscribeFunction<T> {
+    private static class ToObservableFuture<T> implements Func1<Observer<T>, Subscription> {
         private final Future<T> that;
         private final Long time;
         private final TimeUnit unit;

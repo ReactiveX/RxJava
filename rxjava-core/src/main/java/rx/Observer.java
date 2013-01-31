@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables;
+package rx;
 
 /**
  * Provides a mechanism for receiving push-based notifications.

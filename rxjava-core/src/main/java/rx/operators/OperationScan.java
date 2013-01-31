@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -22,9 +22,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -62,7 +62,7 @@ public final class OperationScan {
         return new Accumulator<T>(sequence, null, accumulator);
     }
 
-    private static class Accumulator<T> implements OperatorSubscribeFunction<T> {
+    private static class Accumulator<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> sequence;
         private final T initialValue;
         private Func2<T, T, T> accumlatorFunction;
