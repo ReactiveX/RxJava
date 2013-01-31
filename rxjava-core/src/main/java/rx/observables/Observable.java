@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import rx.observables.operations.OperationConcat;
 import rx.observables.operations.OperationFilter;
 import rx.observables.operations.OperationLast;
 import rx.observables.operations.OperationMap;
@@ -784,6 +785,20 @@ public class Observable<T> {
         return create(OperationMerge.merge(source));
     }
 
+    /**
+     * Combines the objects emitted by two or more Observables, and emits the result as a single Observable, 
+     * by using the <code>concat</code> method.
+     * 
+     * @param source
+     *           a series of Observables that emit sequences of items
+     * @return a Observable that emits a sequence of elements that are the result of combining the
+     *         output from the <code>source</code> Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    public static <T> Observable<T> concat(Observable<T>... source) {
+        return create(OperationConcat.concat(source));
+    }
+    
     /**
      * Same functionality as <code>merge</code> except that errors received to onError will be held until all sequences have finished (onComplete/onError) before sending the error.
      * <p>
