@@ -211,3 +211,4 @@ fetchWikipediaArticleAsynchronouslyWithErrorHandling("Tiger", "NonExistentTitle"
     .subscribe(
         { println "--- Article ---\n" + it.substring(0, 125)}, 
         { println "--- Error ---\n" + it.getMessage()})
+    
