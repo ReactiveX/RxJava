@@ -25,8 +25,8 @@ static void main(String[] args) {
             v.executor.shutdownNow();
         });
     
-    v = new VideoExample();
-    v.getVideoGridForDisplay(1).toList().subscribe(
+    VideoExample v2 = new VideoExample();
+    v2.getVideoGridForDisplay(1).toList().subscribe(
         { videoDictionaryList -> // onNext
             // this will be called once with a list
             // and demonstrates how a sequence can be combined
@@ -35,7 +35,7 @@ static void main(String[] args) {
         { exception -> // onError
             println("Error: " + exception) },
         { // onCompleted
-            v.executor.shutdownNow();
+            v2.executor.shutdownNow();
         });
 }
 /**
