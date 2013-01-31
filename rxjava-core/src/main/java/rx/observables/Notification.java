@@ -119,4 +119,43 @@ public class Notification<T> {
     public static enum Kind {
         OnNext, OnError, OnCompleted
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder("[").append(super.toString()).append(" ").append(getKind());
+        if (hasValue())
+            str.append(" ").append(getValue());
+        if (hasException())
+            str.append(" ").append(getException().getMessage());
+        str.append("]");
+        return str.toString();
+    }
+    
+    @Override
+    public int hashCode() {
+        int hash = getKind().hashCode();
+        if (hasValue())
+            hash = hash * 31 + getValue().hashCode();
+        if (hasException())
+            hash = hash * 31 + getException().hashCode();
+        return hash;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
+        if (obj.getClass() != getClass())
+            return false;
+        Notification notification = (Notification) obj;
+        if (notification.getKind() != getKind())
+            return false;
+        if (hasValue() && !getValue().equals(notification.getValue()))
+            return false;
+        if (hasException() && !getException().equals(notification.getException()))
+            return false;
+        return true;
+    }
 }
