@@ -22,6 +22,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Assert;
@@ -32,6 +35,7 @@ import rx.observables.Observable;
 import rx.observables.Observer;
 import rx.observables.Subscription;
 import rx.util.AtomicObservableSubscription;
+import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
 public final class OperationConcat {
@@ -46,6 +50,25 @@ public final class OperationConcat {
         };
     }
 
+    public static <T> Func1<Observer<T>, Subscription> concat(final List<Observable<T>> sequences) {
+    	@SuppressWarnings("unchecked")
+		Observable<T>[] o = sequences.toArray((Observable<T>[])Array.newInstance(Observable.class, sequences.size()));
+    	return concat(o);
+    }
+
+    public static <T> Func1<Observer<T>, Subscription> concat(final Observable<Observable<T>> sequences) {   	
+    	final List<Observable<T>> list = new ArrayList<Observable<T>>();
+     	sequences.toList().subscribe(new Action1<List<Observable<T>>>(){
+			@Override
+			public void call(List<Observable<T>> t1) {
+				list.addAll(t1);
+			}
+     		
+     	});    	
+     
+    	return concat(list);
+    }
+    
     private static class Concat<T> implements OperatorSubscribeFunction<T> {
         private final Observable<T>[] sequences;
         private int num = 0;
@@ -133,8 +156,8 @@ public final class OperationConcat {
 	
 		@Test
 		public void testConcat() {		        
-			String[] o = {"1", "3", "5", "7"};			        
-			String[] e = {"2", "4", "6"};			         
+			final String[] o = {"1", "3", "5", "7"};			        
+			final String[] e = {"2", "4", "6"};			         
 			        
 			final Observable<String> odds  = Observable.toObservable(o);			        
 			final Observable<String> even = Observable.toObservable(e);
@@ -145,13 +168,30 @@ public final class OperationConcat {
 			Assert.assertEquals(expected.length, index);
 		 
 		}
+
+		@Test
+		public void testConcatWithList() {		        
+			final String[] o = {"1", "3", "5", "7"};			        
+			final String[] e = {"2", "4", "6"};			         
+			        
+			final Observable<String> odds  = Observable.toObservable(o);			        
+			final Observable<String> even = Observable.toObservable(e);
+			final List<Observable<String>> list = new ArrayList<Observable<String>>();
+			list.add(odds);
+			list.add(even);
+			@SuppressWarnings("unchecked")
+	        Observable<String> concat = Observable.create(concat(list));			        
+			concat.subscribe(observer);   	
+			Assert.assertEquals(expected.length, index);
+		 
+		}
 		
 		@Test 
 		public void testConcatUnsubscribe() {
-            CountDownLatch callOnce = new CountDownLatch(1);
-            CountDownLatch okToContinue = new CountDownLatch(1);
-            TestObservable w1 = new TestObservable(null, null, "one", "two", "three");
-            TestObservable w2 = new TestObservable(callOnce, okToContinue, "four", "five", "six");
+            final CountDownLatch callOnce = new CountDownLatch(1);
+            final CountDownLatch okToContinue = new CountDownLatch(1);
+            final TestObservable w1 = new TestObservable(null, null, "one", "two", "three");
+            final TestObservable w2 = new TestObservable(callOnce, okToContinue, "four", "five", "six");
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -179,6 +219,41 @@ public final class OperationConcat {
             verify(aObserver, never()).onNext("five");
             verify(aObserver, never()).onNext("six");
  		}
+		
+        @Test
+        public void testMergeObservableOfObservables() {
+			final String[] o = {"1", "3", "5", "7"};			        
+			final String[] e = {"2", "4", "6"};			         
+			        
+			final Observable<String> odds  = Observable.toObservable(o);			        
+			final Observable<String> even = Observable.toObservable(e);
+
+            Observable<Observable<String>> observableOfObservables = Observable.create(new Func1<Observer<Observable<String>>, Subscription>() {
+
+                @Override
+                public Subscription call(Observer<Observable<String>> observer) {
+                    // simulate what would happen in an observable
+                    observer.onNext(odds);
+                    observer.onNext(even);
+                    observer.onCompleted();
+
+                    return new Subscription() {
+
+                        @Override
+                        public void unsubscribe() {
+                            // unregister ... will never be called here since we are executing synchronously
+                        }
+
+                    };
+                }
+
+            });
+			@SuppressWarnings("unchecked")
+	        Observable<String> concat = Observable.create(concat(observableOfObservables));			        
+			concat.subscribe(observer);   	
+			Assert.assertEquals(expected.length, index);
+       }
+
 		
 	    private static class TestObservable extends Observable<String> {
 
