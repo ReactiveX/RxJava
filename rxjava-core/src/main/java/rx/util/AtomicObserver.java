@@ -2,7 +2,7 @@ package rx.util;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.observables.Observer;
+import rx.Observer;
 
 /**
  * Wrapper around Observer to ensure compliance with Rx contract.

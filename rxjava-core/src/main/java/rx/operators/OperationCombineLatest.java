@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -29,9 +29,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 import rx.util.functions.Func3;
@@ -798,7 +798,7 @@ public class OperationCombineLatest {
                 super(new Func1<Observer<String>, Subscription>() {
 
                     @Override
-                    public Subscription call(rx.observables.Observer<String> t1) {
+                    public Subscription call(rx.Observer<String> t1) {
                         return null;
                         // do nothing ... we are overriding the subscribe method for testing
                     }

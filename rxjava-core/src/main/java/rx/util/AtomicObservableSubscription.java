@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import rx.observables.Subscription;
+import rx.Subscription;
 
 /**
  * Thread-safe wrapper around Observable Subscription that ensures unsubscribe can be called only once.

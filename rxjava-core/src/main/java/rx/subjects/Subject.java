@@ -10,10 +10,10 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import rx.observables.Notification;
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Notification;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
 import rx.util.SynchronizedObserver;
 import rx.util.functions.Action1;

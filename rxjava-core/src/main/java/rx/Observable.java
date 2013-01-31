@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables;
+package rx;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -32,25 +32,25 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import rx.observables.operations.OperationConcat;
-import rx.observables.operations.OperationFilter;
-import rx.observables.operations.OperationLast;
-import rx.observables.operations.OperationMap;
-import rx.observables.operations.OperationMaterialize;
-import rx.observables.operations.OperationMerge;
-import rx.observables.operations.OperationMergeDelayError;
-import rx.observables.operations.OperationOnErrorResumeNextViaFunction;
-import rx.observables.operations.OperationOnErrorResumeNextViaObservable;
-import rx.observables.operations.OperationOnErrorReturn;
-import rx.observables.operations.OperationScan;
-import rx.observables.operations.OperationSkip;
-import rx.observables.operations.OperationSynchronize;
-import rx.observables.operations.OperationTake;
-import rx.observables.operations.OperationToObservableFuture;
-import rx.observables.operations.OperationToObservableIterable;
-import rx.observables.operations.OperationToObservableList;
-import rx.observables.operations.OperationToObservableSortedList;
-import rx.observables.operations.OperationZip;
+import rx.operators.OperationConcat;
+import rx.operators.OperationFilter;
+import rx.operators.OperationLast;
+import rx.operators.OperationMap;
+import rx.operators.OperationMaterialize;
+import rx.operators.OperationMerge;
+import rx.operators.OperationMergeDelayError;
+import rx.operators.OperationOnErrorResumeNextViaFunction;
+import rx.operators.OperationOnErrorResumeNextViaObservable;
+import rx.operators.OperationOnErrorReturn;
+import rx.operators.OperationScan;
+import rx.operators.OperationSkip;
+import rx.operators.OperationSynchronize;
+import rx.operators.OperationTake;
+import rx.operators.OperationToObservableFuture;
+import rx.operators.OperationToObservableIterable;
+import rx.operators.OperationToObservableList;
+import rx.operators.OperationToObservableSortedList;
+import rx.operators.OperationZip;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
 import rx.util.functions.Action0;

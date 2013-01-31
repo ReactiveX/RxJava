@@ -13,36 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.observables.operations;
+package rx.operators;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.observables.Observable;
-import rx.observables.Observer;
-import rx.observables.Subscription;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
+import rx.util.CompositeException;
 import rx.util.functions.Func1;
 
-public final class OperationOnErrorResumeNextViaObservable<T> {
+/**
+ * When an onError occurs the resumeFunction will be executed and it's response passed to onNext instead of calling onError.
+ */
+public final class OperationOnErrorReturn<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> onErrorResumeNextViaObservable(Observable<T> originalSequence, Observable<T> resumeSequence) {
-        return new OnErrorResumeNextViaObservable<T>(originalSequence, resumeSequence);
+    public static <T> Func1<Observer<T>, Subscription> onErrorReturn(Observable<T> originalSequence, Func1<Exception, T> resumeFunction) {
+        return new OnErrorReturn<T>(originalSequence, resumeFunction);
     }
 
-    private static class OnErrorResumeNextViaObservable<T> implements Func1<Observer<T>, Subscription> {
-
-        private final Observable<T> resumeSequence;
+    private static class OnErrorReturn<T> implements Func1<Observer<T>, Subscription> {
+        private final Func1<Exception, T> resumeFunction;
         private final Observable<T> originalSequence;
 
-        public OnErrorResumeNextViaObservable(Observable<T> originalSequence, Observable<T> resumeSequence) {
-            this.resumeSequence = resumeSequence;
+        public OnErrorReturn(Observable<T> originalSequence, Func1<Exception, T> resumeFunction) {
+            this.resumeFunction = resumeFunction;
             this.originalSequence = originalSequence;
         }
 
@@ -67,13 +71,25 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                     AtomicObservableSubscription currentSubscription = subscriptionRef.get();
                     // check that we have not been unsubscribed before we can process the error
                     if (currentSubscription != null) {
-                        /* error occurred, so switch subscription to the 'resumeSequence' */
-                        AtomicObservableSubscription innerSubscription = new AtomicObservableSubscription(resumeSequence.subscribe(observer));
-                        /* we changed the sequence, so also change the subscription to the one of the 'resumeSequence' instead */
-                        if (!subscriptionRef.compareAndSet(currentSubscription, innerSubscription)) {
-                            // we failed to set which means 'subscriptionRef' was set to NULL via the unsubscribe below
-                            // so we want to immediately unsubscribe from the resumeSequence we just subscribed to
-                            innerSubscription.unsubscribe();
+                        try {
+                            /* error occurred, so execute the function, give it the exception and call onNext with the response */
+                            onNext(resumeFunction.call(ex));
+                            /*
+                             * we are not handling an exception thrown from this function ... should we do something?
+                             * error handling within an error handler is a weird one to determine what we should do
+                             * right now I'm going to just let it throw whatever exceptions occur (such as NPE)
+                             * but I'm considering calling the original Observer.onError to act as if this OnErrorReturn operator didn't happen
+                             */
+
+                            /* we are now completed */
+                            onCompleted();
+
+                            /* unsubscribe since it blew up */
+                            currentSubscription.unsubscribe();
+                        } catch (Exception e) {
+                            // the return function failed so we need to call onError
+                            // I am using CompositeException so that both exceptions can be seen
+                            observer.onError(new CompositeException("OnErrorReturn function failed", Arrays.asList(ex, e)));
                         }
                     }
                 }
@@ -102,8 +118,17 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
         public void testResumeNext() {
             Subscription s = mock(Subscription.class);
             TestObservable w = new TestObservable(s, "one");
-            Observable<String> resume = Observable.toObservable("twoResume", "threeResume");
-            Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
+            final AtomicReference<Exception> capturedException = new AtomicReference<Exception>();
+
+            Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Exception, String>() {
+
+                @Override
+                public String call(Exception e) {
+                    capturedException.set(e);
+                    return "failure";
+                }
+
+            }));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -118,11 +143,46 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             verify(aObserver, Mockito.never()).onError(any(Exception.class));
             verify(aObserver, times(1)).onCompleted();
             verify(aObserver, times(1)).onNext("one");
-            verify(aObserver, Mockito.never()).onNext("two");
-            verify(aObserver, Mockito.never()).onNext("three");
-            verify(aObserver, times(1)).onNext("twoResume");
-            verify(aObserver, times(1)).onNext("threeResume");
+            verify(aObserver, times(1)).onNext("failure");
+            assertNotNull(capturedException.get());
+        }
 
+        /**
+         * Test that when a function throws an exception this is propagated through onError
+         */
+        @Test
+        public void testFunctionThrowsError() {
+            Subscription s = mock(Subscription.class);
+            TestObservable w = new TestObservable(s, "one");
+            final AtomicReference<Exception> capturedException = new AtomicReference<Exception>();
+
+            Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Exception, String>() {
+
+                @Override
+                public String call(Exception e) {
+                    capturedException.set(e);
+                    throw new RuntimeException("exception from function");
+                }
+
+            }));
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+            observable.subscribe(aObserver);
+
+            try {
+                w.t.join();
+            } catch (InterruptedException e) {
+                fail(e.getMessage());
+            }
+
+            // we should get the "one" value before the error
+            verify(aObserver, times(1)).onNext("one");
+
+            // we should have received an onError call on the Observer since the resume function threw an exception
+            verify(aObserver, times(1)).onError(any(Exception.class));
+            verify(aObserver, times(0)).onCompleted();
+            assertNotNull(capturedException.get());
         }
 
         private static class TestObservable extends Observable<String> {

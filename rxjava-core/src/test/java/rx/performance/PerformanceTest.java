@@ -2,8 +2,8 @@ package rx.performance;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.observables.Observable;
-import rx.observables.Observer;
+import rx.Observable;
+import rx.Observer;
 import rx.util.functions.Func1;
 
 public class PerformanceTest {
