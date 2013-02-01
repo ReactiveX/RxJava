@@ -1,2 +1,4 @@
-org.rx.functions
-org.rx.reactive
+rx
+rx.subjects
+rx.util
+rx.util.functions
