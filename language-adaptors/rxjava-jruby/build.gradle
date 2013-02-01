@@ -6,5 +6,5 @@ dependencies {
     compile project(':rxjava-core')
     compile 'org.jruby:jruby:1.7.2'
     provided 'junit:junit:4.10'
-    provided 'org.mockito:mockito-core:1.9.5'
+    provided 'org.mockito:mockito-core:1.8.5'
 }

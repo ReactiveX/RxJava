@@ -4,7 +4,7 @@ apply plugin: 'idea'
 
 dependencies {
     compile project(':rxjava-core')
-    provided 'org.clojure:clojure:1.5.+'
+    provided 'org.clojure:clojure:1.4.+'
     provided 'junit:junit:4.10'
-    provided 'org.mockito:mockito-core:1.9.5'
+    provided 'org.mockito:mockito-core:1.8.5'
 }
