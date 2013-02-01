@@ -10,7 +10,7 @@ It is compatible with Java 5 and newer and has several <a href="RxJava/tree/mast
 
 ## Code
 
-- <a href="RxJava/tree/master/rxjava-core">Java Core</a>   
+- <a href="./RxJava/tree/master/rxjava-core">Java Core</a>   
   - <a href="RxJava/blob/master/rxjava-core/src/main/java/rx/Observable.java">Observable</a>
   - <a href="RxJava/blob/master/rxjava-core/src/main/java/rx/Observer.java">Observer</a>
 - <a href="RxJava/tree/master/language-adaptors/rxjava-groovy">Groovy Adaptor</a>   
