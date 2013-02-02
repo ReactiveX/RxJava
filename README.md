@@ -6,7 +6,7 @@ It is compatible with Java 5 and newer and has several <a href="https://github.c
 
 ## Documentation
 
-<a href="http://netflix.github.com/RxJava/">Javadoc</a>
+<a href="http://netflix.github.com/RxJava/javadoc/">Javadoc</a>
 
 ## Code
 
@@ -19,10 +19,8 @@ It is compatible with Java 5 and newer and has several <a href="https://github.c
 
 ## Current Status
 
-- API design and naming conventions are being finalized.
 - Javadocs all reference images that aren't yet placed somewhere public.
-- Wiki documentation has not been migrated.
-- Need to audit with <a href="https://rx.codeplex.com">rx.codeplex.com</a> for API
+- Wiki documentation is still being finished.
 
 ## Bugs and Feedback
 
