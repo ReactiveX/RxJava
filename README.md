@@ -4,7 +4,7 @@ This library is a Java implementation of <a href="https://rx.codeplex.com">Rx Ob
 
 ## Documentation
 
-- [Wiki](RxJava/wiki)
+- [Wiki](https://github.com/Netflix/RxJava/wiki)
 - <a href="http://netflix.github.com/RxJava/javadoc/">Javadoc</a>
 
 ## Code
@@ -19,7 +19,7 @@ This library is a Java implementation of <a href="https://rx.codeplex.com">Rx Ob
 
 ## Bugs and Feedback
 
-For bugs, questions and discussions please use the [Github Issues](RxJava/issues).
+For bugs, questions and discussions please use the [Github Issues](https://github.com/Netflix/RxJava/issues).
 
  
 ## LICENSE
