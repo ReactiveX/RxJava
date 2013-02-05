@@ -40,6 +40,7 @@ dependencies {
 	
 	// scala
     scalaTools 'org.scala-lang:scala-compiler:2.10+'
+    scalaTools 'org.scala-lang:scala-library:2.10+'
     provided 'org.scalatest:scalatest_2.10:1.9.1'
 }
 
