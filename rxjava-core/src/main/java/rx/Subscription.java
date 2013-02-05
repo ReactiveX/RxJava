@@ -18,9 +18,9 @@ package rx;
 public interface Subscription {
 
     /**
-     * Stop receiving notifications on the observer that was registered when this IDisposable was received.
+     * Stop receiving notifications on the {@link Observer} that was registered when this Subscription was received.
      * <p>
-     * This allows unregistering a Observer before it has finished receiving all events (ie. before onCompleted is called).
+     * This allows unregistering an {@link Observer} before it has finished receiving all events (ie. before onCompleted is called).
      */
     public void unsubscribe();
 

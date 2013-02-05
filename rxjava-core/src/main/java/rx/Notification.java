@@ -16,7 +16,7 @@
 package rx;
 
 /**
- * An object representing a notification sent to a Observable.
+ * An object representing a notification sent to an {@link Observable}.
  * 
  * For the Microsoft Rx equivalent see: http://msdn.microsoft.com/en-us/library/hh229462(v=vs.103).aspx
  */
@@ -119,7 +119,7 @@ public class Notification<T> {
     public static enum Kind {
         OnNext, OnError, OnCompleted
     }
-    
+
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder("[").append(super.toString()).append(" ").append(getKind());
@@ -130,7 +130,7 @@ public class Notification<T> {
         str.append("]");
         return str.toString();
     }
-    
+
     @Override
     public int hashCode() {
         int hash = getKind().hashCode();
@@ -140,7 +140,7 @@ public class Notification<T> {
             hash = hash * 31 + getException().hashCode();
         return hash;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null)
