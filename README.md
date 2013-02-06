@@ -17,6 +17,69 @@ This library is a Java implementation of <a href="https://rx.codeplex.com">Rx Ob
 - <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-scala">Scala Adaptor</a> 
 - <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-jruby">JRuby Adaptor</a>   
 
+## Binaries
+
+Binaries and dependency information for Maven, Ivy, Gradle and others can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22).
+
+Example for Maven:
+
+```xml
+<dependency>
+    <groupId>com.netflix.rxjava</groupId>
+    <artifactId>rxjava-core</artifactId>
+    <version>0.5.0</version>
+</dependency>
+```
+and for Ivy:
+
+```xml
+<dependency org="com.netflix.rxjava" name="rxjava-core" rev="0.5.0" />
+```
+
+If you need to download the jars instead of using a build system, create a Maven pom file like this with the desired version:
+
+```xml
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+	<groupId>com.netflix.rxjava.download</groupId>
+	<artifactId>rxjava-download</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<name>Simple POM to download rxjava-core and dependencies</name>
+	<url>http://github.com/Netflix/RxJava</url>
+	<dependencies>
+		<dependency>
+			<groupId>com.netflix.rxjava</groupId>
+			<artifactId>rxjava-core</artifactId>
+			<version>0.5.0</version>
+			<scope/>
+		</dependency>
+	</dependencies>
+</project>
+```
+
+Then execute:
+
+```
+mvn -f download-rxjava-pom.xml dependency:copy-dependencies
+```
+
+It will download rxjava-core-*.jar and its dependencies into ./target/dependency/.
+
+You need Java 6 or later.
+
+## Build
+
+To build:
+
+```
+$ git clone git@github.com:Netflix/RxJava.git
+$ cd RxJava/
+$ ./gradlew build
+```
+
+Futher details on building can be found on the [Getting Started](RxJava/wiki/Getting-Started) page of the wiki.
+
 ## Bugs and Feedback
 
 For bugs, questions and discussions please use the [Github Issues](https://github.com/Netflix/RxJava/issues).
