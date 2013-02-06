@@ -55,7 +55,7 @@ class ScalaAdaptor extends FunctionLanguageAdaptor {
 
     def call(function: AnyRef, args: Array[AnyRef]) : Object = {
         function match {
-            case (func: Map[String, _]) => return matchOption(function.asInstanceOf[Map[String, _]].get(ON_NEXT), args)
+            case (func: Map[String, _]) => return matchOption(func.get(ON_NEXT), args)
             case _ => return matchFunction(function, args)
         }
     }
