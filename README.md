@@ -78,7 +78,7 @@ $ cd RxJava/
 $ ./gradlew build
 ```
 
-Futher details on building can be found on the [Getting Started](RxJava/wiki/Getting-Started) page of the wiki.
+Futher details on building can be found on the [Getting Started](https://github.com/Netflix/RxJava/wiki/Getting-Started) page of the wiki.
 
 ## Bugs and Feedback
 
