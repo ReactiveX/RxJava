@@ -2,7 +2,21 @@
 
 This library is a Java implementation of <a href="https://rx.codeplex.com">Rx Observables</a>.
 
-## Documentation
+Some of the goals of RxJava are:
+
+- Stay close to the original Rx.Net implementation while adjusting naming conventions and idioms to Java
+- All contracts of Rx should be the same
+- Target the JVM not a language. The first languages supported (beyond Java itself) are 
+<a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-groovy">Groovy</a>, 
+<a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-clojure">Clojure</a>, 
+<a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-scala">Scala</a> 
+<a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-jruby">and JRuby</a>. 
+New language adapters can be <a href="https://github.com/Netflix/RxJava/wiki/How-to-Contribute">contributed</a>.
+- Support Java 5 (to include Android support) and higher with an eventual goal to target a build for Java 8 with its lambda support.
+
+Learn more about Rx on the <a href="https://github.com/Netflix/RxJava/wiki">Wiki Home</a>.
+
+## Full Documentation
 
 - [Wiki](https://github.com/Netflix/RxJava/wiki)
 - <a href="http://netflix.github.com/RxJava/javadoc/">Javadoc</a>
