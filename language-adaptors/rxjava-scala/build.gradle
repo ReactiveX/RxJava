@@ -34,3 +34,13 @@ task test(overwrite: true, dependsOn: testClasses) << {
             haltonfailure: 'true',
             fork: 'false') {reporter(type: 'stdout')}
 }
+
+eclipse {
+  classpath {
+    //you can tweak the classpath of the Eclipse project by adding extra configurations:
+    plusConfigurations += configurations.provided
+
+    downloadSources = true
+    downloadJavadoc = true
+  }
+}
