@@ -48,7 +48,7 @@ public final class OperationFilter<T> {
             return subscription.wrap(that.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     try {
-                        if ((boolean) predicate.call(value)) {
+                        if (predicate.call(value)) {
                             observer.onNext(value);
                         }
                     } catch (Exception ex) {
@@ -79,10 +79,7 @@ public final class OperationFilter<T> {
 
                 @Override
                 public Boolean call(String t1) {
-                    if (t1.equals("two"))
-                        return true;
-                    else
-                        return false;
+                    return t1.equals("two");
                 }
             }));
 
