@@ -99,6 +99,17 @@ public final class OperationTake {
     }
 
 
+    /**
+     * This class is NOT thread-safe if invoked and referenced multiple times. In other words, don't subscribe to it multiple times from different threads.
+     * <p>
+     * It IS thread-safe from within it while receiving onNext events from multiple threads.
+     * <p>
+     * This should all be fine as long as it's kept as a private class and a new instance created from static factory method above.
+     * <p>
+     * Note how the take() factory method above protects us from a single instance being exposed with the Observable wrapper handling the subscribe flow.
+     *
+     * @param <T>
+     */
     private static class TakeWhile<T> implements Func1<Observer<T>, Subscription> {
         private final AtomicInteger counter = new AtomicInteger();
         private final Observable<T> items;
