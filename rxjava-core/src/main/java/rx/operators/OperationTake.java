@@ -149,6 +149,48 @@ public final class OperationTake {
 
     public static class UnitTest {
 
+
+
+        @Test
+        public void testTakeWhile1() {
+            Observable<Integer> w = Observable.toObservable(1, 2, 3);
+            Observable<Integer> take = Observable.create(takeWhile(w, new Func1<Integer, Boolean>() {
+                @Override
+                public Boolean call(Integer input) {
+                    return input < 3;
+                }
+            }));
+
+            @SuppressWarnings("unchecked")
+            Observer<Integer> aObserver = mock(Observer.class);
+            take.subscribe(aObserver);
+            verify(aObserver, times(1)).onNext(1);
+            verify(aObserver, times(1)).onNext(2);
+            verify(aObserver, never()).onNext(3);
+            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
+        }
+
+        @Test
+        public void testTakeWhile2() {
+            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> take = Observable.create(takeWhile(w, new Func2<String, Integer, Boolean>() {
+                @Override
+                public Boolean call(String input, Integer index) {
+                    return index < 2;
+                }
+            }));
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+            take.subscribe(aObserver);
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+            verify(aObserver, never()).onNext("three");
+            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
+        }
+
         @Test
         public void testTake1() {
             Observable<String> w = Observable.toObservable("one", "two", "three");
