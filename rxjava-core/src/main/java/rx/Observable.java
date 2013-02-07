@@ -131,7 +131,7 @@ public class Observable<T> {
             AtomicObservableSubscription subscription = new AtomicObservableSubscription();
             return subscription.wrap(onSubscribe.call(new AtomicObserver<T>(subscription, observer)));
         }
-    };
+    }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Subscription subscribe(final Map<String, Object> callbacks) {
