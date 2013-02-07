@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,25 +28,14 @@ import rx.Observer;
 import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 /**
  * Returns a specified number of contiguous values from the start of an observable sequence.
- * 
+ *
  * @param <T>
  */
 public final class OperationTake {
-
-    /**
-     * Returns a specified number of contiguous values from the start of an observable sequence.
-     * 
-     * @param items
-     * @param num
-     * @return
-     */
-    public static <T> Func1<Observer<T>, Subscription> take(final Observable<T> items, final int num) {
-        Func1<T, Boolean> predicate = numPredicate(num);
-        return takeWhile(items, predicate);
-    }
 
     /**
      * Returns a specified number of contiguous values from the start of an observable sequence.
@@ -55,7 +44,29 @@ public final class OperationTake {
      * @param num
      * @return
      */
+    public static <T> Func1<Observer<T>, Subscription> take(final Observable<T> items, final int num) {
+        return takeWhile(items, OperationTake.<T>numPredicate(num));
+    }
+
+    /**
+     * Returns a specified number of contiguous values from the start of an observable sequence.
+     *
+     * @param items
+     * @param predicate a function to test each source element for a condition
+     * @return
+     */
     public static <T> Func1<Observer<T>, Subscription> takeWhile(final Observable<T> items, final Func1<T, Boolean> predicate) {
+        return takeWhile(items, OperationTake.<T>skipIndex(predicate));
+    }
+
+    /**
+     * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
+     *
+     * @param items
+     * @param predicate true to the function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
+     * @return
+     */
+    public static <T> Func1<Observer<T>, Subscription> takeWhile(final Observable<T> items, final Func2<T, Integer, Boolean> predicate) {
         // wrap in a Watchbable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
         return new Func1<Observer<T>, Subscription>() {
 
@@ -67,25 +78,34 @@ public final class OperationTake {
         };
     }
 
-    private static <T> Func1<T, Boolean> numPredicate(final int num) {
-        return new Func1<T, Boolean>() {
-            final AtomicInteger counter = new AtomicInteger();
+    private static <T> Func2<T, Integer, Boolean> numPredicate(final int num) {
+        return new Func2<T, Integer, Boolean>() {
 
             @Override
-            public Boolean call(T input) {
-                return counter.getAndIncrement() < num;
+            public Boolean call(T input, Integer index) {
+                return index < num;
             }
 
         };
     }
 
+    private static <T> Func2<T, Integer, Boolean> skipIndex(final Func1<T, Boolean> underlying) {
+        return new Func2<T, Integer, Boolean>() {
+            @Override
+            public Boolean call(T input, Integer index) {
+                return underlying.call(input);
+            }
+        };
+    }
+
 
     private static class TakeWhile<T> implements Func1<Observer<T>, Subscription> {
+        private final AtomicInteger counter = new AtomicInteger();
         private final Observable<T> items;
-        private final Func1<T, Boolean> predicate;
+        private final Func2<T, Integer, Boolean> predicate;
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
-        private TakeWhile(Observable<T> items, Func1<T, Boolean> predicate) {
+        private TakeWhile(Observable<T> items, Func2<T, Integer, Boolean> predicate) {
             this.items = items;
             this.predicate = predicate;
         }
@@ -115,7 +135,7 @@ public final class OperationTake {
 
             @Override
             public void onNext(T args) {
-                if (predicate.call(args)) {
+                if (predicate.call(args, counter.getAndIncrement())) {
                     observer.onNext(args);
                 } else {
                     // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
