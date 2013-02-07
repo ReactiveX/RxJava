@@ -44,48 +44,59 @@ public final class OperationTake {
      * @return
      */
     public static <T> Func1<Observer<T>, Subscription> take(final Observable<T> items, final int num) {
+        Func1<T, Boolean> predicate = numPredicate(num);
+        return takeWhile(items, predicate);
+    }
+
+    /**
+     * Returns a specified number of contiguous values from the start of an observable sequence.
+     *
+     * @param items
+     * @param num
+     * @return
+     */
+    public static <T> Func1<Observer<T>, Subscription> takeWhile(final Observable<T> items, final Func1<T, Boolean> predicate) {
         // wrap in a Watchbable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
         return new Func1<Observer<T>, Subscription>() {
 
             @Override
             public Subscription call(Observer<T> observer) {
-                return new Take<T>(items, num).call(observer);
+                return new TakeWhile<T>(items, predicate).call(observer);
             }
 
         };
     }
 
-    /**
-     * This class is NOT thread-safe if invoked and referenced multiple times. In other words, don't subscribe to it multiple times from different threads.
-     * <p>
-     * It IS thread-safe from within it while receiving onNext events from multiple threads.
-     * <p>
-     * This should all be fine as long as it's kept as a private class and a new instance created from static factory method above.
-     * <p>
-     * Note how the take() factory method above protects us from a single instance being exposed with the Observable wrapper handling the subscribe flow.
-     * 
-     * @param <T>
-     */
-    private static class Take<T> implements Func1<Observer<T>, Subscription> {
-        private final int num;
+    private static <T> Func1<T, Boolean> numPredicate(final int num) {
+        return new Func1<T, Boolean>() {
+            final AtomicInteger counter = new AtomicInteger();
+
+            @Override
+            public Boolean call(T input) {
+                return counter.getAndIncrement() < num;
+            }
+
+        };
+    }
+
+
+    private static class TakeWhile<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> items;
+        private final Func1<T, Boolean> predicate;
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
-        Take(final Observable<T> items, final int num) {
-            this.num = num;
+        private TakeWhile(Observable<T> items, Func1<T, Boolean> predicate) {
             this.items = items;
+            this.predicate = predicate;
         }
 
+
+        @Override
         public Subscription call(Observer<T> observer) {
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
-        /**
-         * Used to subscribe to the 'items' Observable sequence and forward to the actualObserver up to 'num' count.
-         */
         private class ItemObserver implements Observer<T> {
-
-            private AtomicInteger counter = new AtomicInteger();
             private final Observer<T> observer;
 
             public ItemObserver(Observer<T> observer) {
@@ -104,7 +115,7 @@ public final class OperationTake {
 
             @Override
             public void onNext(T args) {
-                if (counter.getAndIncrement() < num) {
+                if (predicate.call(args)) {
                     observer.onNext(args);
                 } else {
                     // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
