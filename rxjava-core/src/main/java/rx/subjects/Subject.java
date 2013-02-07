@@ -76,7 +76,7 @@ public class Subject<T> extends Observable<T> implements Observer<T> {
     public static class UnitTest {
         @Test
         public void test() {
-            Subject<Integer> subject = Subject.<Integer> create();
+            Subject<Integer> subject = Subject.create();
             final AtomicReference<List<Notification<String>>> actualRef = new AtomicReference<List<Notification<String>>>();
 
             Observable<List<Notification<Integer>>> wNotificationsList = subject.materialize().toList();

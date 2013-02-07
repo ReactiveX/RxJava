@@ -373,7 +373,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
         }
 
         private static enum TestConcurrencyObserverEvent {
-            onCompleted, onError, onNext;
+            onCompleted, onError, onNext
         }
 
         private static class TestConcurrencyObserver implements Observer<String> {
