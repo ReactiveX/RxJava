@@ -27,12 +27,18 @@ Example for Maven:
 <dependency>
     <groupId>com.netflix.rxjava</groupId>
     <artifactId>rxjava-clojure</artifactId>
-    <version>0.5.0</version>
+    <version>x.y.z</version>
 </dependency>
 ```
 
 and for Ivy:
 
 ```xml
-<dependency org="com.netflix.rxjava" name="rxjava-clojure" rev="0.5.0" />
+<dependency org="com.netflix.rxjava" name="rxjava-clojure" rev="x.y.z" />
+```
+
+and for Leiningen:
+
+```clojure
+[com.netflix.rxjava/rxjava-clojure "x.y.z"]
 ```
