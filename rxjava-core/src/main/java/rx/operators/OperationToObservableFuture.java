@@ -64,7 +64,7 @@ public class OperationToObservableFuture {
             Future<Object> future = mock(Future.class);
             Object value = new Object();
             when(future.get()).thenReturn(value);
-            ToObservableFuture ob = new ToObservableFuture(future);
+            ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
             Observer<Object> o = mock(Observer.class);
 
             Subscription sub = ob.call(o);
@@ -81,7 +81,7 @@ public class OperationToObservableFuture {
             Future<Object> future = mock(Future.class);
             RuntimeException e = new RuntimeException();
             when(future.get()).thenThrow(e);
-            ToObservableFuture ob = new ToObservableFuture(future);
+            ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
             Observer<Object> o = mock(Observer.class);
 
             Subscription sub = ob.call(o);

@@ -149,7 +149,7 @@ public class Notification<T> {
             return true;
         if (obj.getClass() != getClass())
             return false;
-        Notification notification = (Notification) obj;
+        Notification<?> notification = (Notification<?>) obj;
         if (notification.getKind() != getKind())
             return false;
         if (hasValue() && !getValue().equals(notification.getValue()))
