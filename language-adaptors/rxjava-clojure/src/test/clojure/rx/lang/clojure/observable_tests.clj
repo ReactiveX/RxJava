@@ -1,4 +1,4 @@
-(ns rx.lang.clojure.examples.rx-examples
+(ns rx.lang.clojure.observable-tests
   (import rx.Observable))
 
 ;; still need to get this wired up in build.gradle to run as tests

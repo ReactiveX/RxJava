@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'clojure'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
@@ -7,6 +8,51 @@ dependencies {
     provided 'org.clojure:clojure:1.4.+'
     provided 'junit:junit:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
+    
+    // clojure
+    testCompile 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
+}
+
+/*
+ * Clojure
+ */
+aotCompile = true
+warnOnReflection = true
+
+buildscript {
+  repositories { maven { url "http://clojars.org/repo" } }
+  dependencies { classpath "clojuresque:clojuresque:1.5.4" }
+}
+
+repositories {
+  mavenCentral()
+  clojarsRepo()
+}
+
+/*
+ * Add Counterclockwise and include 'provided' dependencies
+ */
+eclipse {
+  project {
+    natures "ccw.nature"
+  }
+  classpath {
+    plusConfigurations += configurations.provided
+    downloadSources = true
+    downloadJavadoc = true
+  }
+}
+
+
+// setup Eclipse
+eclipse {
+  classpath {
+    //you can tweak the classpath of the Eclipse project by adding extra configurations:
+    plusConfigurations += configurations.provided
+
+    downloadSources = true
+    downloadJavadoc = true
+  }
 }
 
 // include /src/examples folder
@@ -23,13 +69,4 @@ configurations {
 // include 'examples' in build task
 build.dependsOn examplesClasses
 
-// setup Eclipse
-eclipse {
-  classpath {
-    //you can tweak the classpath of the Eclipse project by adding extra configurations:
-    plusConfigurations += configurations.provided
 
-    downloadSources = true
-    downloadJavadoc = true
-  }
-}
