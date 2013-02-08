@@ -35,7 +35,7 @@ public final class OperationForEach {
     /**
      * Accepts a sequence and a action. Applies the action to each element in
      * the sequence.
-     * 
+     *
      * @param sequence
      *            the input sequence.
      * @param onNext
@@ -48,7 +48,7 @@ public final class OperationForEach {
     /**
      * Accepts a sequence and a action. Applies the action to each element in
      * the sequence.
-     * 
+     *
      * @param sequence
      *            the input sequence.
      * @param onNext
@@ -63,7 +63,7 @@ public final class OperationForEach {
     /**
      * Accepts a sequence and a action. Applies the action to each element in
      * the sequence.
-     * 
+     *
      * @param sequence
      *            the input sequence.
      * @param onNext

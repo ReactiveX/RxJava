@@ -201,6 +201,16 @@ public class GroovyAdaptor implements FunctionLanguageAdaptor {
             runGroovyScript("o.toSortedList(o.toObservable(1, 3, 2, 5, 4), {a, b -> a - b}).subscribe({ result -> a.received(result)});");
             verify(assertion, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
         }
+        
+        @Test
+        public void testForEach() {
+            runGroovyScript("o.toObservable(1, 3, 2, 5, 4).forEach({ result -> a.received(result)});");
+            verify(assertion, times(1)).received(1);
+            verify(assertion, times(1)).received(3);
+            verify(assertion, times(1)).received(2);
+            verify(assertion, times(1)).received(5);
+            verify(assertion, times(1)).received(4);
+        }
 
         private void runGroovyScript(String script) {
             ClassLoader parent = getClass().getClassLoader();
