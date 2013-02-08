@@ -1,0 +1,239 @@
+/**
+ * Copyright 2013 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package rx.lang.groovy
+
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import rx.Notification;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
+import rx.util.functions.Func1;
+
+def class ObservableTests {
+
+    @Mock
+    ScriptAssertion a;
+
+    @Mock
+    Observer<Integer> w;
+
+    @Before
+    public void before() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testCreate() {
+        Observable.create({it.onNext('hello');it.onCompleted();}).subscribe({ result -> a.received(result)});
+        verify(a, times(1)).received("hello");
+    }
+
+    @Test
+    public void testFilter() {
+        Observable.filter(Observable.toObservable(1, 2, 3), {it >= 2}).subscribe({ result -> a.received(result)});
+        verify(a, times(0)).received(1);
+        verify(a, times(1)).received(2);
+        verify(a, times(1)).received(3);
+    }
+
+    @Test
+    public void testLast() {
+        new TestFactory().getObservable().last().subscribe({ result -> a.received(result)});
+        verify(a, times(1)).received("hello_1");
+    }
+
+    @Test
+    public void testMap1() {
+        new TestFactory().getObservable().map({v -> 'say' + v}).subscribe({ result -> a.received(result)});
+        verify(a, times(1)).received("sayhello_1");
+    }
+
+    @Test
+    public void testMap2() {
+        Observable.map(Observable.toObservable(1, 2, 3), {'hello_' + it}).subscribe({ result -> a.received(result)});
+        verify(a, times(1)).received("hello_" + 1);
+        verify(a, times(1)).received("hello_" + 2);
+        verify(a, times(1)).received("hello_" + 3);
+    }
+
+    @Test
+    public void testMaterialize() {
+        Observable.materialize(Observable.toObservable(1, 2, 3)).subscribe({ result -> a.received(result)});
+        // we expect 4 onNext calls: 3 for 1, 2, 3 ObservableNotification.OnNext and 1 for ObservableNotification.OnCompleted
+        verify(a, times(4)).received(any(Notification.class));
+        verify(a, times(0)).error(any(Exception.class));
+    }
+
+    @Test
+    public void testMergeDelayError() {
+        Observable.mergeDelayError(
+                Observable.toObservable(1, 2, 3),
+                Observable.merge(
+                Observable.toObservable(6),
+                Observable.error(new NullPointerException()),
+                Observable.toObservable(7)),
+                Observable.toObservable(4, 5))
+                .subscribe( { result -> a.received(result)}, { exception -> a.error(exception)});
+
+        verify(a, times(1)).received(1);
+        verify(a, times(1)).received(2);
+        verify(a, times(1)).received(3);
+        verify(a, times(1)).received(4);
+        verify(a, times(1)).received(5);
+        verify(a, times(1)).received(6);
+        verify(a, times(0)).received(7);
+        verify(a, times(1)).error(any(NullPointerException.class));
+    }
+
+    @Test
+    public void testMerge() {
+        Observable.merge(
+                Observable.toObservable(1, 2, 3),
+                Observable.merge(
+                Observable.toObservable(6),
+                Observable.error(new NullPointerException()),
+                Observable.toObservable(7)),
+                Observable.toObservable(4, 5))
+                .subscribe({ result -> a.received(result)}, { exception -> a.error(exception)});
+
+        // executing synchronously so we can deterministically know what order things will come
+        verify(a, times(1)).received(1);
+        verify(a, times(1)).received(2);
+        verify(a, times(1)).received(3);
+        verify(a, times(0)).received(4); // the NPE will cause this sequence to be skipped
+        verify(a, times(0)).received(5); // the NPE will cause this sequence to be skipped
+        verify(a, times(1)).received(6); // this comes before the NPE so should exist
+        verify(a, times(0)).received(7);// this comes in the sequence after the NPE
+        verify(a, times(1)).error(any(NullPointerException.class));
+    }
+
+    @Test
+    public void testScriptWithMaterialize() {
+        new TestFactory().getObservable().materialize().subscribe({ result -> a.received(result)});
+        // 2 times: once for hello_1 and once for onCompleted
+        verify(a, times(2)).received(any(Notification.class));
+    }
+
+    @Test
+    public void testScriptWithMerge() {
+        TestFactory f = new TestFactory();
+        Observable.merge(f.getObservable(), f.getObservable()).subscribe({ result -> a.received(result)});
+        verify(a, times(1)).received("hello_1");
+        verify(a, times(1)).received("hello_2");
+    }
+
+    @Test
+    public void testScriptWithOnNext() {
+        new TestFactory().getObservable().subscribe({ result -> a.received(result)});
+        verify(a).received("hello_1");
+    }
+
+    @Test
+    public void testSkipTake() {
+        Observable.skip(Observable.toObservable(1, 2, 3), 1).take(1).subscribe({ result -> a.received(result)});
+        verify(a, times(0)).received(1);
+        verify(a, times(1)).received(2);
+        verify(a, times(0)).received(3);
+    }
+
+    @Test
+    public void testSkip() {
+        Observable.skip(Observable.toObservable(1, 2, 3), 2).subscribe({ result -> a.received(result)});
+        verify(a, times(0)).received(1);
+        verify(a, times(0)).received(2);
+        verify(a, times(1)).received(3);
+    }
+
+    @Test
+    public void testTake() {
+        Observable.take(Observable.toObservable(1, 2, 3), 2).subscribe({ result -> a.received(result)});
+        verify(a, times(1)).received(1);
+        verify(a, times(1)).received(2);
+        verify(a, times(0)).received(3);
+    }
+
+    @Test
+    public void testToSortedList() {
+        new TestFactory().getNumbers().toSortedList().subscribe({ result -> a.received(result)});
+        verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
+    }
+
+    @Test
+    public void testToSortedListStatic() {
+        Observable.toSortedList(Observable.toObservable(1, 3, 2, 5, 4)).subscribe({ result -> a.received(result)});
+        verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
+    }
+
+    @Test
+    public void testToSortedListWithFunction() {
+        new TestFactory().getNumbers().toSortedList({a, b -> a - b}).subscribe({ result -> a.received(result)});
+        verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
+    }
+
+    @Test
+    public void testToSortedListWithFunctionStatic() {
+        Observable.toSortedList(Observable.toObservable(1, 3, 2, 5, 4), {a, b -> a - b}).subscribe({ result -> a.received(result)});
+        verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
+    }
+
+    def class TestFactory {
+        int counter = 1;
+
+        public Observable<Integer> getNumbers() {
+            return Observable.toObservable(1, 3, 2, 5, 4);
+        }
+
+        public TestObservable getObservable() {
+            return new TestObservable(counter++);
+        }
+    }
+
+    def interface ScriptAssertion {
+        public void error(Exception o);
+
+        public void received(Object o);
+    }
+
+    def class TestObservable extends Observable<String> {
+        private final int count;
+
+        public TestObservable(int count) {
+            this.count = count;
+        }
+
+        public Subscription subscribe(Observer<String> observer) {
+
+            observer.onNext("hello_" + count);
+            observer.onCompleted();
+
+            return new Subscription() {
+
+                public void unsubscribe() {
+                    // unregister ... will never be called here since we are executing synchronously
+                }
+            };
+        }
+    }
+}
