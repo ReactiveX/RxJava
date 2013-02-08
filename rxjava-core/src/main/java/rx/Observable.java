@@ -1325,6 +1325,35 @@ public class Observable<T> {
         return create(OperationTake.take(items, num));
     }
 
+    public static <T> Observable<T> takeWhile(final Observable<T> items, Func1<T, Boolean> predicate) {
+        return create(OperationTake.takeWhile(items, predicate));
+    }
+
+    public static <T> Observable<T> takeWhile(final Observable<T> items, Object predicate) {
+        final FuncN _f = Functions.from(predicate);
+
+        return takeWhile(items, new Func1<T, Boolean>() {
+            @Override
+            public Boolean call(T t) {
+                return (Boolean) _f.call(t);
+            }
+        });
+    }
+    public static <T> Observable<T> takeWhileWithIndex(final Observable<T> items, Func2<T, Integer, Boolean> predicate) {
+        return create(OperationTake.takeWhileWithIndex(items, predicate));
+    }
+
+    public static <T> Observable<T> takeWhileWithIndex(final Observable<T> items, Object predicate) {
+        final FuncN _f = Functions.from(predicate);
+
+        return create(OperationTake.takeWhileWithIndex(items, new Func2<T, Integer, Boolean>() {
+            @Override
+            public Boolean call(T t, Integer integer) {
+                return (Boolean) _f.call(t, integer);
+            }
+        }));
+    }
+
     /**
      * Returns an Observable that emits a single item, a list composed of all the items emitted by
      * the source Observable.
@@ -2211,6 +2240,35 @@ public class Observable<T> {
      */
     public Observable<T> take(final int num) {
         return take(this, num);
+    }
+
+
+    /**
+     * Returns an Observable that items emitted by the source Observable as long as a specified condition is true.
+     *
+     * @param predicate a function to test each source element for a condition
+     * @return
+     */
+    public Observable<T> takeWhile(final Func1<T, Boolean> predicate) {
+        return takeWhile(this, predicate);
+    }
+
+    public Observable<T> takeWhile(final Object predicate) {
+        return takeWhile(this, predicate);
+    }
+
+    /**
+     * Returns an Observable that items emitted by the source Observable as long as a specified condition is true.
+     *
+     * @param predicate true to the function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
+     * @return
+     */
+    public Observable<T> takeWhileWithIndex(final Func2<T, Integer, Boolean> predicate) {
+        return takeWhileWithIndex(this, predicate);
+    }
+
+    public Observable<T> takeWhileWithIndex(final Object predicate) {
+        return takeWhileWithIndex(this, predicate);
     }
 
     /**

@@ -45,7 +45,7 @@ public final class OperationTake {
      * @return
      */
     public static <T> Func1<Observer<T>, Subscription> take(final Observable<T> items, final int num) {
-        return takeWhile(items, OperationTake.<T>numPredicate(num));
+        return takeWhileWithIndex(items, OperationTake.<T>numPredicate(num));
     }
 
     /**
@@ -56,7 +56,7 @@ public final class OperationTake {
      * @return
      */
     public static <T> Func1<Observer<T>, Subscription> takeWhile(final Observable<T> items, final Func1<T, Boolean> predicate) {
-        return takeWhile(items, OperationTake.<T>skipIndex(predicate));
+        return takeWhileWithIndex(items, OperationTake.<T>skipIndex(predicate));
     }
 
     /**
@@ -66,7 +66,7 @@ public final class OperationTake {
      * @param predicate true to the function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
      * @return
      */
-    public static <T> Func1<Observer<T>, Subscription> takeWhile(final Observable<T> items, final Func2<T, Integer, Boolean> predicate) {
+    public static <T> Func1<Observer<T>, Subscription> takeWhileWithIndex(final Observable<T> items, final Func2<T, Integer, Boolean> predicate) {
         // wrap in a Watchbable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
         return new Func1<Observer<T>, Subscription>() {
 
@@ -185,7 +185,7 @@ public final class OperationTake {
         @Test
         public void testTakeWhile2() {
             Observable<String> w = Observable.toObservable("one", "two", "three");
-            Observable<String> take = Observable.create(takeWhile(w, new Func2<String, Integer, Boolean>() {
+            Observable<String> take = Observable.create(takeWhileWithIndex(w, new Func2<String, Integer, Boolean>() {
                 @Override
                 public Boolean call(String input, Integer index) {
                     return index < 2;

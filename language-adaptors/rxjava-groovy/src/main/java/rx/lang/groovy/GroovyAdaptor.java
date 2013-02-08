@@ -179,6 +179,22 @@ public class GroovyAdaptor implements FunctionLanguageAdaptor {
         }
 
         @Test
+        public void testTakeWhileViaGroovy() {
+            runGroovyScript("o.takeWhile(o.toObservable(1, 2, 3), { x -> x < 3}).subscribe({ result -> a.received(result)});");
+            verify(assertion, times(1)).received(1);
+            verify(assertion, times(1)).received(2);
+            verify(assertion, times(0)).received(3);
+        }
+
+        @Test
+        public void testTakeWhileWithIndexViaGroovy() {
+            runGroovyScript("o.takeWhileWithIndex(o.toObservable(1, 2, 3), { x, i -> i < 2}).subscribe({ result -> a.received(result)});");
+            verify(assertion, times(1)).received(1);
+            verify(assertion, times(1)).received(2);
+            verify(assertion, times(0)).received(3);
+        }
+
+        @Test
         public void testToSortedList() {
             runGroovyScript("mockApiCall.getNumbers().toSortedList().subscribe({ result -> a.received(result)});");
             verify(assertion, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
