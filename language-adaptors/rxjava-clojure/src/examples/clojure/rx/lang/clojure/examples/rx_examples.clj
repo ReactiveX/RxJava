@@ -1,12 +1,10 @@
-(ns rx.examples.clojure.rx-examples
+(ns rx.lang.clojure.examples.rx-examples
   (import rx.Observable)
   (:require [clj-http.client :as http]))
 
 ; NOTE on naming conventions. I'm using camelCase names (against clojure convention)
 ; in this file as I'm purposefully keeping functions and methods across
 ; different language implementations in-sync for easy comparison.
-;
-; See rx.examples.groovy.RxExamples, rx.examples.java.RxExamples, etc.
 
 ; --------------------------------------------------
 ; Hello World!
