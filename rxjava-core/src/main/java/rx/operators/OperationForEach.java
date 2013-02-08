@@ -96,17 +96,21 @@ public final class OperationForEach {
 
         @Override
         public void onCompleted() {
-            running = false;
-            if (onCompleted != null) {
-                onCompleted.call();
+            if(running) {
+                running = false;
+                if (onCompleted != null) {
+                    onCompleted.call();
+                }
             }
         }
 
         @Override
         public void onError(final Exception e) {
-            running = false;
-            if (onError != null) {
-                onError.call(e);
+            if(running) {
+                running = false;
+                if (onError != null) {
+                    onError.call(e);
+                }
             }
         }
 

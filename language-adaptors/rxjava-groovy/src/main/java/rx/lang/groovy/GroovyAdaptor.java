@@ -211,6 +211,29 @@ public class GroovyAdaptor implements FunctionLanguageAdaptor {
             verify(assertion, times(1)).received(5);
             verify(assertion, times(1)).received(4);
         }
+        
+        @Test
+        public void testForEachWithComplete() {
+            runGroovyScript("o.toObservable(1, 3, 2, 5, 4).forEach({ result -> a.received(result)}, {a.received('done')});");
+            verify(assertion, times(1)).received(1);
+            verify(assertion, times(1)).received(3);
+            verify(assertion, times(1)).received(2);
+            verify(assertion, times(1)).received(5);
+            verify(assertion, times(1)).received(4);
+            verify(assertion, times(1)).received("done");
+        }
+        
+        @Test
+        public void testForEachWithCompleteAndError() {
+            runGroovyScript("o.toObservable(1, 3, 2, 5, 4).forEach({ result -> throw new RuntimeException('err')}, {a.received('done')}, {err -> a.received(err.message)});");
+            verify(assertion, times(0)).received(1);
+            verify(assertion, times(0)).received(3);
+            verify(assertion, times(0)).received(2);
+            verify(assertion, times(0)).received(5);
+            verify(assertion, times(0)).received(4);
+            verify(assertion, times(1)).received("err");
+            verify(assertion, times(0)).received("done");
+        }
 
         private void runGroovyScript(String script) {
             ClassLoader parent = getClass().getClassLoader();
