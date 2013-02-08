@@ -34,6 +34,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.operators.OperationConcat;
 import rx.operators.OperationFilter;
+import rx.operators.OperationForEach;
 import rx.operators.OperationLast;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
@@ -1693,6 +1694,37 @@ public class Observable<T> {
     }
 
     /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     */
+    public static <T> void forEach(final Observable<T> sequence, final Action1<T> onNext) {
+        OperationForEach.forEach(sequence, onNext);
+    }
+
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     * @param onCompleted
+     */
+    public static <T> void forEach(final Observable<T> sequence, final Action1<T> onNext, final Action0 onCompleted) {
+        OperationForEach.forEach(sequence, onNext, onCompleted);
+    }
+
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     * @param onCompleted
+     * @param onError
+     */
+    public static <T> void forEach(final Observable<T> sequence, final Action1<T> onNext, final Action0 onCompleted,
+                                   final Action1<Exception> onError) {
+        OperationForEach.forEach(sequence, onNext, onCompleted, onError);
+    }
+
+    /**
      * Filters an Observable by discarding any of its emissions that do not meet some test.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
@@ -2211,6 +2243,36 @@ public class Observable<T> {
      */
     public Observable<T> take(final int num) {
         return take(this, num);
+    }
+
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     */
+    public void forEach(final Action1<T> onNext) {
+        forEach(this, onNext);
+    }
+
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     * @param onCompleted
+     */
+    public void forEach(final Action1<T> onNext, final Action0 onCompleted) {
+        forEach(this, onNext, onCompleted);
+    }
+
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     * @param onCompleted
+     * @param onError
+     */
+    public void forEach(final Action1<T> onNext, final Action0 onCompleted, final Action1<Exception> onError) {
+        forEach(this, onNext, onCompleted, onError);
     }
 
     /**
