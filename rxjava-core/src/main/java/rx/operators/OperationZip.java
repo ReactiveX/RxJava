@@ -259,8 +259,10 @@ public final class OperationZip {
             /* tell ourselves to stop processing onNext events by setting running=false */
             if (running.compareAndSet(true, false)) {
                 /* propogate to all Observers to unsubscribe if this thread succeeded in setting running=false */
-                for (ZipObserver<T, ?> rw : observers) {
-                    rw.subscription.unsubscribe();
+                for (ZipObserver<T, ?> o : observers) {
+                    if (o.subscription != null) {
+                        o.subscription.unsubscribe();
+                    }
                 }
             }
         }
