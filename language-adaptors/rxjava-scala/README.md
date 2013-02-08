@@ -23,12 +23,12 @@ Example for Maven:
 <dependency>
     <groupId>com.netflix.rxjava</groupId>
     <artifactId>rxjava-scala</artifactId>
-    <version>0.5.0</version>
+    <version>x.y.z</version>
 </dependency>
 ```
 
 and for Ivy:
 
 ```xml
-<dependency org="com.netflix.rxjava" name="rxjava-scala" rev="0.5.0" />
+<dependency org="com.netflix.rxjava" name="rxjava-scala" rev="x.y.z" />
 ```
