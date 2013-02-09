@@ -1,5 +1,5 @@
 (ns rx.lang.clojure.examples.rx-examples
-  (import rx.Observable)
+  (:import rx.Observable)
   (:require [clj-http.client :as http]))
 
 ; NOTE on naming conventions. I'm using camelCase names (against clojure convention)
