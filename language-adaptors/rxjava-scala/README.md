@@ -32,3 +32,11 @@ and for Ivy:
 ```xml
 <dependency org="com.netflix.rxjava" name="rxjava-scala" rev="x.y.z" />
 ```
+
+and for sbt:
+
+```scala
+libraryDependencies ++= Seq(
+  "com.netflix.rxjava" % "rxjava-scala" % "x.y.z"
+)
+```
