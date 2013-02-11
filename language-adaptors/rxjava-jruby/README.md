@@ -1,14 +1,14 @@
 # JRuby Adaptor for RxJava
 
 
-This adaptor allows 'org.jruby.RubyProc' lambda functions to be used and RxJava will know how to invoke them.
+This adaptor allows `org.jruby.RubyProc` lambda functions to be used and RxJava will know how to invoke them.
 
 This enables code such as:
 
 ```ruby
   Observable.toObservable("one", "two", "three")
     .take(2) 
-    .subscribe(lambda{|arg| puts arg})
+    .subscribe(lambda { |arg| puts arg })
 ```
 
 # Binaries
@@ -29,4 +29,10 @@ and for Ivy:
 
 ```xml
 <dependency org="com.netflix.rxjava" name="rxjava-jruby" rev="x.y.z" />
+```
+
+and for JBundler:
+
+```ruby
+jar 'com.netflix.rxjava:rxjava-ruby', 'x.y.z'
 ```
