@@ -53,6 +53,7 @@ import rx.operators.OperationToObservableSortedList;
 import rx.operators.OperationZip;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
+import rx.util.Range;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
@@ -545,6 +546,20 @@ public class Observable<T> {
      */
     public static <T> Observable<T> from(T... items) {
         return toObservable(items);
+    }
+
+    /**
+     * Generates an observable sequence of integral numbers within a specified range.
+     *
+     * @param start The value of the first integer in the sequence
+     * @param count The number of sequential integers to generate.
+     *
+     * @return An observable sequence that contains a range of sequential integral numbers.
+     *
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229460(v=vs.103).aspx">Observable.Range Method (Int32, Int32)</a>
+     */
+    public static Observable<Integer> range(int start, int count) {
+        return from(Range.createWithCount(start, count));
     }
 
     /**
