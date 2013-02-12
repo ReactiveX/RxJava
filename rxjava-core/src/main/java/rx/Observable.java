@@ -52,6 +52,8 @@ import rx.operators.OperationToObservableIterable;
 import rx.operators.OperationToObservableList;
 import rx.operators.OperationToObservableSortedList;
 import rx.operators.OperationZip;
+import rx.plugins.RxJavaErrorHandler;
+import rx.plugins.RxJavaPlugins;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
 import rx.util.Range;
@@ -330,10 +332,14 @@ public class Observable<T> {
         });
     }
 
+    /**
+     * Allow the {@link RxJavaErrorHandler} to receive the exception from onError.
+     * 
+     * @param e
+     */
     private void handleError(Exception e) {
-        // not implemented yet since open-sourcing
-        // intended for plugins to capture and log all errors
-        // even if Observers drop them on the floor
+        // onError should be rare so we'll only fetch when needed
+        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
     }
 
     /**
