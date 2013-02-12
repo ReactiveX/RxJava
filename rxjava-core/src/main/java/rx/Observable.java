@@ -46,6 +46,7 @@ import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSynchronize;
 import rx.operators.OperationTake;
+import rx.operators.OperationTakeLast;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
 import rx.operators.OperationToObservableList;
