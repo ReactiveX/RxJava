@@ -23,13 +23,14 @@ import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Returns a specified number of contiguous elements from the end of an observable sequence.
+ */
 public final class OperationTakeLast {
 
     public static <T> Func1<Observer<T>, Subscription> takeLast(final Observable<T> items, final int count) {

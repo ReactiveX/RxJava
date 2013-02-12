@@ -1348,6 +1348,22 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits the last <code>count</code> items emitted by the source
+     * Observable.
+     *
+     * @param items
+     *            the source Observable
+     * @param count
+     *            the number of items from the end of the sequence emitted by the source
+     *            Observable to emit
+     * @return an Observable that only emits the last <code>count</code> items emitted by the source
+     *         Observable
+     */
+    public static <T> Observable<T> takeLast(final Observable<T> items, final int count) {
+        return _create(OperationTakeLast.takeLast(items, count));
+    }
+
+    /**
      * Returns an Observable that emits a single item, a list composed of all the items emitted by
      * the source Observable.
      * <p>
@@ -2233,6 +2249,20 @@ public class Observable<T> {
      */
     public Observable<T> take(final int num) {
         return take(this, num);
+    }
+
+    /**
+     * Returns an Observable that emits the last <code>count</code> items emitted by the source
+     * Observable.
+     *
+     * @param count
+     *            the number of items from the end of the sequence emitted by the source
+     *            Observable to emit
+     * @return an Observable that only emits the last <code>count</code> items emitted by the source
+     *         Observable
+     */
+    public Observable<T> takeLast(final int count) {
+        return takeLast(this, count);
     }
 
     /**
