@@ -131,6 +131,23 @@ class UnitTestSuite extends JUnitSuite {
         verify(assertion, times(1)).received("1")
     }
 
+  @Test def testClosureVersusMap() {
+    // using closure
+    Observable.toObservable("1", "2", "3")
+      .take(2)
+      .subscribe((callback: String) => {
+          println(callback)
+      })
+      
+    // using Map of closures
+    Observable.toObservable("1", "2", "3")
+      .take(2)
+      .subscribe(Map(
+        "onNext" -> ((callback: String) => {
+          println(callback)
+        })))
+  }
+
     @Test def testFilterWithToList() {
         val numbers = Observable.toObservable[Int](1, 2, 3, 4, 5, 6, 7, 8, 9)
         numbers.filter((x: Int) => 0 == (x % 2)).toList().subscribe(
