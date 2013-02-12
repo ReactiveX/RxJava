@@ -24,6 +24,7 @@ import rx.util.functions.Func1;
 
 import java.util.Iterator;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -133,6 +134,39 @@ public final class OperationTakeLast {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, never()).onError(any(Exception.class));
             verify(aObserver, times(1)).onCompleted();
+        }
+
+        @Test
+        public void testTakeLastOrdering() {
+            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> take = Observable.create(takeLast(w, 2));
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+            take.subscribe(countingWrapper(aObserver));
+            verify(aObserver, times(1)).onNext("two_1");
+            verify(aObserver, times(1)).onNext("three_2");
+        }
+
+
+        private static Observer<String> countingWrapper(final Observer<String> underlying) {
+            return new Observer<String>() {
+                private final AtomicInteger counter = new AtomicInteger();
+                @Override
+                public void onCompleted() {
+                    underlying.onCompleted();
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    underlying.onCompleted();
+                }
+
+                @Override
+                public void onNext(String args) {
+                    underlying.onNext(args + "_" + counter.incrementAndGet());
+                }
+            };
         }
 
     }
