@@ -1526,6 +1526,50 @@ public class Observable<T> {
         return _create(OperationZip.zip(w0, w1, reduceFunction));
     }
 
+
+    /**
+     * Determines whether two sequences are equal by comparing the elements pairwise.
+     *
+     * @param first observable to compare
+     * @param second observable to compare
+     * @param <T> type of sequence
+     * @return sequence of booleans, true if two sequences are equal by comparing the elements pairwise; otherwise, false.
+     */
+    public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second) {
+        return sequenceEqual(first, second, new Func2<T, T, Boolean>() {
+            @Override
+            public Boolean call(T first, T second) {
+                return first.equals(second);
+            }
+        });
+    }
+
+    /**
+     * Determines whether two sequences are equal by comparing the elements pairwise using a specified equality function.
+     *
+     * @param first observable sequence to compare
+     * @param second observable sequence to compare
+     * @param equality a function used to compare elements of both sequences
+     * @param <T> type of sequence
+     * @return sequence of booleans, true if two sequences are equal by comparing the elements pairwise; otherwise, false.
+     */
+    private static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Func2<T, T, Boolean> equality) {
+        return zip(first, second, equality);
+    }
+
+    /**
+     * Determines whether two sequences are equal by comparing the elements pairwise using a specified equality function.
+     *
+     * @param first observable sequence to compare
+     * @param second observable sequence to compare
+     * @param equality a function used to compare elements of both sequences
+     * @param <T> type of sequence
+     * @return sequence of booleans, true if two sequences are equal by comparing the elements pairwise; otherwise, false.
+     */
+    private static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Object equality) {
+        return zip(first, second, equality);
+    }
+
     /**
      * Returns an Observable that applies a function of your choosing to the combination of items
      * emitted, in sequence, by two other Observables, with the results of this function becoming the
@@ -2359,6 +2403,19 @@ public class Observable<T> {
             verify(w, times(1)).onNext(anyInt());
             verify(w).onNext(60);
         }
+
+        @Test
+        public void testSequenceEqual() {
+            Observable<Integer> first = toObservable(1, 2, 3);
+            Observable<Integer> second = toObservable(1, 2, 4);
+            @SuppressWarnings("unchecked")
+            Observer<Boolean> result = mock(Observer.class);
+            sequenceEqual(first, second).subscribe(result);
+            verify(result, times(2)).onNext(true);
+            verify(result, times(1)).onNext(false);
+        }
+
+
 
     }
 }
