@@ -43,17 +43,21 @@ public class Functions {
         // as new languages arise we can add them here but this does not prevent someone from using 'registerLanguageAdaptor' directly
     }
 
-    private static void loadLanguageAdaptor(String name) {
+    private static boolean loadLanguageAdaptor(String name) {
         String className = "rx.lang." + name.toLowerCase() + "." + name + "Adaptor";
         try {
             Class<?> c = Class.forName(className);
             FunctionLanguageAdaptor a = (FunctionLanguageAdaptor) c.newInstance();
             registerLanguageAdaptor(a.getFunctionClass(), a);
+            logger.info("Successfully loaded function language adaptor: " + name + " with path: " + className);
         } catch (ClassNotFoundException e) {
-            logger.info("Could not found function language adaptor: " + name + " with path: " + className);
+            logger.info("Could not find function language adaptor: " + name + " with path: " + className);
+            return false;
         } catch (Exception e) {
             logger.error("Failed trying to initialize function language adaptor: " + className, e);
+            return false;
         }
+        return true;
     }
 
     public static void registerLanguageAdaptor(Class<?>[] functionClasses, FunctionLanguageAdaptor adaptor) {
