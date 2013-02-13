@@ -47,13 +47,17 @@ import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSynchronize;
 import rx.operators.OperationTake;
+import rx.operators.OperationTakeLast;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
 import rx.operators.OperationToObservableList;
 import rx.operators.OperationToObservableSortedList;
 import rx.operators.OperationZip;
+import rx.plugins.RxJavaErrorHandler;
+import rx.plugins.RxJavaPlugins;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
+import rx.util.Range;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
@@ -329,10 +333,14 @@ public class Observable<T> {
         });
     }
 
+    /**
+     * Allow the {@link RxJavaErrorHandler} to receive the exception from onError.
+     * 
+     * @param e
+     */
     private void handleError(Exception e) {
-        // not implemented yet since open-sourcing
-        // intended for plugins to capture and log all errors
-        // even if Observers drop them on the floor
+        // onError should be rare so we'll only fetch when needed
+        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
     }
 
     /**
@@ -414,6 +422,13 @@ public class Observable<T> {
         return new Observable<T>(func);
     }
 
+    /*
+     * Private version that creates a 'trusted' Observable to allow performance optimizations.
+     */
+    private static <T> Observable<T> _create(Func1<Observer<T>, Subscription> func) {
+        return new Observable<T>(func, true);
+    }
+
     /**
      * Creates an Observable that will execute the given function when a {@link Observer} subscribes to it.
      * <p>
@@ -485,7 +500,7 @@ public class Observable<T> {
      * @return an Observable that emits only those items in the original Observable that the filter evaluates as true
      */
     public static <T> Observable<T> filter(Observable<T> that, Func1<T, Boolean> predicate) {
-        return create(OperationFilter.filter(that, predicate));
+        return _create(OperationFilter.filter(that, predicate));
     }
 
     /**
@@ -542,6 +557,20 @@ public class Observable<T> {
     }
 
     /**
+     * Generates an observable sequence of integral numbers within a specified range.
+     *
+     * @param start The value of the first integer in the sequence
+     * @param count The number of sequential integers to generate.
+     *
+     * @return An observable sequence that contains a range of sequential integral numbers.
+     *
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229460(v=vs.103).aspx">Observable.Range Method (Int32, Int32)</a>
+     */
+    public static Observable<Integer> range(int start, int count) {
+        return from(Range.createWithCount(start, count));
+    }
+
+    /**
      * Returns an Observable that notifies an {@link Observer} of a single value and then completes.
      * <p>
      * To convert any object into an Observable that emits that object, pass that object into the <code>just</code> method.
@@ -578,7 +607,7 @@ public class Observable<T> {
      *         by the source Observable
      */
     public static <T> Observable<T> last(final Observable<T> that) {
-        return create(OperationLast.last(that));
+        return _create(OperationLast.last(that));
     }
 
     /**
@@ -599,7 +628,7 @@ public class Observable<T> {
      *         in the sequence emitted by the source Observable
      */
     public static <T, R> Observable<R> map(Observable<T> sequence, Func1<T, R> func) {
-        return create(OperationMap.map(sequence, func));
+        return _create(OperationMap.map(sequence, func));
     }
 
     /**
@@ -655,7 +684,7 @@ public class Observable<T> {
      *         the Observables obtained from this transformation
      */
     public static <T, R> Observable<R> mapMany(Observable<T> sequence, Func1<T, Observable<R>> func) {
-        return create(OperationMap.mapMany(sequence, func));
+        return _create(OperationMap.mapMany(sequence, func));
     }
 
     /**
@@ -704,7 +733,7 @@ public class Observable<T> {
      * @see http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx
      */
     public static <T> Observable<Notification<T>> materialize(final Observable<T> sequence) {
-        return create(OperationMaterialize.materialize(sequence));
+        return _create(OperationMaterialize.materialize(sequence));
     }
 
     /**
@@ -721,7 +750,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> merge(List<Observable<T>> source) {
-        return create(OperationMerge.merge(source));
+        return _create(OperationMerge.merge(source));
     }
 
     /**
@@ -738,7 +767,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> merge(Observable<Observable<T>> source) {
-        return create(OperationMerge.merge(source));
+        return _create(OperationMerge.merge(source));
     }
 
     /**
@@ -755,7 +784,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> merge(Observable<T>... source) {
-        return create(OperationMerge.merge(source));
+        return _create(OperationMerge.merge(source));
     }
 
     /**
@@ -771,7 +800,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
      */
     public static <T> Observable<T> concat(Observable<T>... source) {
-        return create(OperationConcat.concat(source));
+        return _create(OperationConcat.concat(source));
     }
 
     /**
@@ -790,7 +819,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> mergeDelayError(List<Observable<T>> source) {
-        return create(OperationMergeDelayError.mergeDelayError(source));
+        return _create(OperationMergeDelayError.mergeDelayError(source));
     }
 
     /**
@@ -809,7 +838,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> mergeDelayError(Observable<Observable<T>> source) {
-        return create(OperationMergeDelayError.mergeDelayError(source));
+        return _create(OperationMergeDelayError.mergeDelayError(source));
     }
 
     /**
@@ -828,7 +857,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> mergeDelayError(Observable<T>... source) {
-        return create(OperationMergeDelayError.mergeDelayError(source));
+        return _create(OperationMergeDelayError.mergeDelayError(source));
     }
 
     /**
@@ -917,7 +946,7 @@ public class Observable<T> {
      * @return the source Observable, with its behavior modified as described
      */
     public static <T> Observable<T> onErrorResumeNext(final Observable<T> that, final Func1<Exception, Observable<T>> resumeFunction) {
-        return create(OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(that, resumeFunction));
+        return _create(OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(that, resumeFunction));
     }
 
     /**
@@ -981,7 +1010,7 @@ public class Observable<T> {
      * @return the source Observable, with its behavior modified as described
      */
     public static <T> Observable<T> onErrorResumeNext(final Observable<T> that, final Observable<T> resumeSequence) {
-        return create(OperationOnErrorResumeNextViaObservable.onErrorResumeNextViaObservable(that, resumeSequence));
+        return _create(OperationOnErrorResumeNextViaObservable.onErrorResumeNextViaObservable(that, resumeSequence));
     }
 
     /**
@@ -1005,7 +1034,7 @@ public class Observable<T> {
      * @return the source Observable, with its behavior modified as described
      */
     public static <T> Observable<T> onErrorReturn(final Observable<T> that, Func1<Exception, T> resumeFunction) {
-        return create(OperationOnErrorReturn.onErrorReturn(that, resumeFunction));
+        return _create(OperationOnErrorReturn.onErrorReturn(that, resumeFunction));
     }
 
     /**
@@ -1035,7 +1064,7 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public static <T> Observable<T> reduce(Observable<T> sequence, Func2<T, T, T> accumulator) {
-        return last(create(OperationScan.scan(sequence, accumulator)));
+        return last(_create(OperationScan.scan(sequence, accumulator)));
     }
 
     /**
@@ -1107,7 +1136,7 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public static <T> Observable<T> reduce(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
-        return last(create(OperationScan.scan(sequence, initialValue, accumulator)));
+        return last(_create(OperationScan.scan(sequence, initialValue, accumulator)));
     }
 
     /**
@@ -1171,7 +1200,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
     public static <T> Observable<T> scan(Observable<T> sequence, Func2<T, T, T> accumulator) {
-        return create(OperationScan.scan(sequence, accumulator));
+        return _create(OperationScan.scan(sequence, accumulator));
     }
 
     /**
@@ -1229,7 +1258,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
     public static <T> Observable<T> scan(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
-        return create(OperationScan.scan(sequence, initialValue, accumulator));
+        return _create(OperationScan.scan(sequence, initialValue, accumulator));
     }
 
     /**
@@ -1283,7 +1312,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229847(v=vs.103).aspx">MSDN: Observable.Skip Method</a>
      */
     public static <T> Observable<T> skip(final Observable<T> items, int num) {
-        return create(OperationSkip.skip(items, num));
+        return _create(OperationSkip.skip(items, num));
     }
 
     /**
@@ -1301,7 +1330,7 @@ public class Observable<T> {
      * @return an Observable that is a chronologically well-behaved version of the source Observable
      */
     public static <T> Observable<T> synchronize(Observable<T> observable) {
-        return create(OperationSynchronize.synchronize(observable));
+        return _create(OperationSynchronize.synchronize(observable));
     }
 
     /**
@@ -1323,7 +1352,23 @@ public class Observable<T> {
      *         Observable
      */
     public static <T> Observable<T> take(final Observable<T> items, final int num) {
-        return create(OperationTake.take(items, num));
+        return _create(OperationTake.take(items, num));
+    }
+
+    /**
+     * Returns an Observable that emits the last <code>count</code> items emitted by the source
+     * Observable.
+     *
+     * @param items
+     *            the source Observable
+     * @param count
+     *            the number of items from the end of the sequence emitted by the source
+     *            Observable to emit
+     * @return an Observable that only emits the last <code>count</code> items emitted by the source
+     *         Observable
+     */
+    public static <T> Observable<T> takeLast(final Observable<T> items, final int count) {
+        return _create(OperationTakeLast.takeLast(items, count));
     }
 
     /**
@@ -1346,7 +1391,7 @@ public class Observable<T> {
      *         items emitted by the source Observable
      */
     public static <T> Observable<List<T>> toList(final Observable<T> that) {
-        return create(OperationToObservableList.toObservableList(that));
+        return _create(OperationToObservableList.toObservableList(that));
     }
 
     /**
@@ -1365,7 +1410,7 @@ public class Observable<T> {
      * @return an Observable that emits each item in the source Iterable sequence
      */
     public static <T> Observable<T> toObservable(Iterable<T> iterable) {
-        return create(OperationToObservableIterable.toObservableIterable(iterable));
+        return _create(OperationToObservableIterable.toObservableIterable(iterable));
     }
 
     /**
@@ -1383,7 +1428,7 @@ public class Observable<T> {
      * @return an Observable that emits the item from the source Future
      */
     public static <T> Observable<T> toObservable(Future<T> future) {
-        return create(OperationToObservableFuture.toObservableFuture(future));
+        return _create(OperationToObservableFuture.toObservableFuture(future));
     }
 
     /**
@@ -1406,7 +1451,7 @@ public class Observable<T> {
      * @return an Observable that emits the item from the source Future
      */
     public static <T> Observable<T> toObservable(Future<T> future, long time, TimeUnit unit) {
-        return create(OperationToObservableFuture.toObservableFuture(future, time, unit));
+        return _create(OperationToObservableFuture.toObservableFuture(future, time, unit));
     }
 
     /**
@@ -1439,7 +1484,7 @@ public class Observable<T> {
      * @return
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence) {
-        return create(OperationToObservableSortedList.toSortedList(sequence));
+        return _create(OperationToObservableSortedList.toSortedList(sequence));
     }
 
     /**
@@ -1452,7 +1497,7 @@ public class Observable<T> {
      * @return
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, Func2<T, T, Integer> sortFunction) {
-        return create(OperationToObservableSortedList.toSortedList(sequence, sortFunction));
+        return _create(OperationToObservableSortedList.toSortedList(sequence, sortFunction));
     }
 
     /**
@@ -1467,7 +1512,7 @@ public class Observable<T> {
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, final Object sortFunction) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(sortFunction);
-        return create(OperationToObservableSortedList.toSortedList(sequence, new Func2<T, T, Integer>() {
+        return _create(OperationToObservableSortedList.toSortedList(sequence, new Func2<T, T, Integer>() {
 
             @Override
             public Integer call(T t1, T t2) {
@@ -1502,7 +1547,51 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      */
     public static <R, T0, T1> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> reduceFunction) {
-        return create(OperationZip.zip(w0, w1, reduceFunction));
+        return _create(OperationZip.zip(w0, w1, reduceFunction));
+    }
+
+
+    /**
+     * Determines whether two sequences are equal by comparing the elements pairwise.
+     *
+     * @param first observable to compare
+     * @param second observable to compare
+     * @param <T> type of sequence
+     * @return sequence of booleans, true if two sequences are equal by comparing the elements pairwise; otherwise, false.
+     */
+    public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second) {
+        return sequenceEqual(first, second, new Func2<T, T, Boolean>() {
+            @Override
+            public Boolean call(T first, T second) {
+                return first.equals(second);
+            }
+        });
+    }
+
+    /**
+     * Determines whether two sequences are equal by comparing the elements pairwise using a specified equality function.
+     *
+     * @param first observable sequence to compare
+     * @param second observable sequence to compare
+     * @param equality a function used to compare elements of both sequences
+     * @param <T> type of sequence
+     * @return sequence of booleans, true if two sequences are equal by comparing the elements pairwise; otherwise, false.
+     */
+    private static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Func2<T, T, Boolean> equality) {
+        return zip(first, second, equality);
+    }
+
+    /**
+     * Determines whether two sequences are equal by comparing the elements pairwise using a specified equality function.
+     *
+     * @param first observable sequence to compare
+     * @param second observable sequence to compare
+     * @param equality a function used to compare elements of both sequences
+     * @param <T> type of sequence
+     * @return sequence of booleans, true if two sequences are equal by comparing the elements pairwise; otherwise, false.
+     */
+    private static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Object equality) {
+        return zip(first, second, equality);
     }
 
     /**
@@ -1572,7 +1661,7 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      */
     public static <R, T0, T1, T2> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> function) {
-        return create(OperationZip.zip(w0, w1, w2, function));
+        return _create(OperationZip.zip(w0, w1, w2, function));
     }
 
     /**
@@ -1647,7 +1736,7 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      */
     public static <R, T0, T1, T2, T3> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> reduceFunction) {
-        return create(OperationZip.zip(w0, w1, w2, w3, reduceFunction));
+        return _create(OperationZip.zip(w0, w1, w2, w3, reduceFunction));
     }
 
     /**
@@ -2389,6 +2478,20 @@ public class Observable<T> {
     public void forEach(final Object onNext, final Object onCompleted, final Object onError) {
         forEach(this, onNext, onCompleted, onError);
     }
+    
+    /*
+     * Returns an Observable that emits the last <code>count</code> items emitted by the source
+     * Observable.
+     *
+     * @param count
+     *            the number of items from the end of the sequence emitted by the source
+     *            Observable to emit
+     * @return an Observable that only emits the last <code>count</code> items emitted by the source
+     *         Observable
+     */
+    public Observable<T> takeLast(final int count) {
+        return takeLast(this, count);
+    }
 
     /**
      * Returns an Observable that emits a single item, a list composed of all the items emitted by
@@ -2514,6 +2617,19 @@ public class Observable<T> {
             verify(w, times(1)).onNext(anyInt());
             verify(w).onNext(60);
         }
+
+        @Test
+        public void testSequenceEqual() {
+            Observable<Integer> first = toObservable(1, 2, 3);
+            Observable<Integer> second = toObservable(1, 2, 4);
+            @SuppressWarnings("unchecked")
+            Observer<Boolean> result = mock(Observer.class);
+            sequenceEqual(first, second).subscribe(result);
+            verify(result, times(2)).onNext(true);
+            verify(result, times(1)).onNext(false);
+        }
+
+
 
     }
 }
