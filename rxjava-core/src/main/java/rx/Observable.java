@@ -34,6 +34,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.operators.OperationConcat;
 import rx.operators.OperationFilter;
+import rx.operators.OperationForEach;
 import rx.operators.OperationLast;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
@@ -1833,6 +1834,122 @@ public class Observable<T> {
     }
 
     /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     */
+    public static <T> void forEach(final Observable<T> sequence, final Action1<T> onNext) {
+        OperationForEach.forEach(sequence, onNext);
+    }
+    
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     */
+    public static <T> void forEach(final Observable<T> sequence, final Object onNext) {
+        @SuppressWarnings("rawtypes")
+        final FuncN _f = Functions.from(onNext);
+        OperationForEach.forEach(sequence, 
+                new Action1<T>() {
+        
+                    @Override
+                    public void call(T t1) {
+                        _f.call(t1);
+                        
+                    }
+                });
+    }
+
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     * @param onCompleted
+     */
+    public static <T> void forEach(final Observable<T> sequence, final Action1<T> onNext, final Action0 onCompleted) {
+        OperationForEach.forEach(sequence, onNext, onCompleted);
+    }
+    
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     * @param onCompleted
+     */
+    public static <T> void forEach(final Observable<T> sequence, final Object onNext, final Object onCompleted) {
+        @SuppressWarnings("rawtypes")
+        final FuncN _f = Functions.from(onNext);
+        @SuppressWarnings("rawtypes")
+        final FuncN _f2 = Functions.from(onCompleted);
+        OperationForEach.forEach(sequence, 
+                new Action1<T>() {
+        
+                    @Override
+                    public void call(T t1) {
+                        _f.call(t1);
+                        
+                    }
+                }, new Action0() {
+                    
+                    @Override
+                    public void call() {
+                        _f2.call();
+                    }
+                });
+    }
+
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     * @param onCompleted
+     * @param onError
+     */
+    public static <T> void forEach(final Observable<T> sequence, final Action1<T> onNext, final Action0 onCompleted,
+                                   final Action1<Exception> onError) {
+        OperationForEach.forEach(sequence, onNext, onCompleted, onError);
+    }
+    
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     * @param onCompleted
+     * @param onError
+     */
+    public static <T> void forEach(final Observable<T> sequence, final Object onNext, final Object onCompleted,
+                                   final Object onError) {
+        @SuppressWarnings("rawtypes")
+        final FuncN _f = Functions.from(onNext);
+        @SuppressWarnings("rawtypes")
+        final FuncN _f2 = Functions.from(onCompleted);
+        @SuppressWarnings("rawtypes")
+        final FuncN _f3 = Functions.from(onError);
+        OperationForEach.forEach(sequence, 
+                new Action1<T>() {
+        
+                    @Override
+                    public void call(T t1) {
+                        _f.call(t1);
+                        
+                    }
+                }, new Action0() {
+                    
+                    @Override
+                    public void call() {
+                        _f2.call();
+                    }
+                }, new Action1<Exception>() {
+
+                    @Override
+                    public void call(Exception t1) {
+                        _f3.call(t1);
+                    }
+                });
+    }
+
+    /**
      * Filters an Observable by discarding any of its emissions that do not meet some test.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
@@ -2394,6 +2511,66 @@ public class Observable<T> {
     }
 
     /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     */
+    public void forEach(final Action1<T> onNext) {
+        forEach(this, onNext);
+    }
+    
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     */
+    public <T> void forEach(final Object onNext) {
+        forEach(this, onNext);
+    }
+
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     * @param onCompleted
+     */
+    public void forEach(final Action1<T> onNext, final Action0 onCompleted) {
+        forEach(this, onNext, onCompleted);
+    }
+    
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     * @param onCompleted
+     */
+    public void forEach(final Object onNext, final Object onCompleted) {
+        forEach(this, onNext, onCompleted);
+    }
+
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     * @param onCompleted
+     * @param onError
+     */
+    public void forEach(final Action1<T> onNext, final Action0 onCompleted, final Action1<Exception> onError) {
+        forEach(this, onNext, onCompleted, onError);
+    }
+    
+    /**
+     * Invokes an action for each element in the sequence.
+     *
+     * @param onNext
+     * @param onCompleted
+     * @param onError
+     */
+    public void forEach(final Object onNext, final Object onCompleted, final Object onError) {
+        forEach(this, onNext, onCompleted, onError);
+    }
+    
+    /*
      * Returns an Observable that emits the last <code>count</code> items emitted by the source
      * Observable.
      *

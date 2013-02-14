@@ -213,6 +213,40 @@ def class ObservableTests {
         Observable.toSortedList(Observable.toObservable(1, 3, 2, 5, 4), {a, b -> a - b}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
     }
+    
+    @Test
+    public void testForEach() {
+        Observable.toObservable(1, 3, 2, 5, 4).forEach({ result -> a.received(result)});
+        verify(a, times(1)).received(1);
+        verify(a, times(1)).received(3);
+        verify(a, times(1)).received(2);
+        verify(a, times(1)).received(5);
+        verify(a, times(1)).received(4);
+    }
+
+    @Test
+    public void testForEachWithComplete() {
+        Observable.toObservable(1, 3, 2, 5, 4).forEach({ result -> a.received(result)}, {a.received('done')});
+        verify(a, times(1)).received(1);
+        verify(a, times(1)).received(3);
+        verify(a, times(1)).received(2);
+        verify(a, times(1)).received(5);
+        verify(a, times(1)).received(4);
+        verify(a, times(1)).received("done");
+    }
+
+    @Test
+    public void testForEachWithCompleteAndError() {
+        Observable.toObservable(1, 3, 2, 5, 4).forEach({ result -> throw new RuntimeException('err')}, {a.received('done')}, {err -> a.received(err.message)});
+        verify(a, times(0)).received(1);
+        verify(a, times(0)).received(3);
+        verify(a, times(0)).received(2);
+        verify(a, times(0)).received(5);
+        verify(a, times(0)).received(4);
+        verify(a, times(1)).received("err");
+        verify(a, times(0)).received("done");
+    }
+    
 
     def class TestFactory {
         int counter = 1;
