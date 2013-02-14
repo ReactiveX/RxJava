@@ -213,6 +213,63 @@ def class ObservableTests {
         Observable.toSortedList(Observable.toObservable(1, 3, 2, 5, 4), {a, b -> a - b}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
     }
+    
+    @Test
+    public void testForEach() {
+        Observable.create(new AsyncObservable()).forEach({ result -> a.received(result)});
+        verify(a, times(1)).received(1);
+        verify(a, times(1)).received(2);
+        verify(a, times(1)).received(3);
+    }
+
+    @Test
+    public void testForEachWithComplete() {
+        Observable.create(new AsyncObservable()).forEach({ result -> a.received(result)}, {}, {a.received('done')});
+        verify(a, times(1)).received(1);
+        verify(a, times(1)).received(2);
+        verify(a, times(1)).received(3);
+        verify(a, times(1)).received("done");
+    }
+
+    @Test
+    public void testForEachWithError() {
+        Observable.create(new AsyncObservable()).forEach({ result -> throw new RuntimeException('err')}, {err -> a.received(err.message)});
+        verify(a, times(0)).received(1);
+        verify(a, times(0)).received(2);
+        verify(a, times(0)).received(3);
+        verify(a, times(1)).received("err");
+        verify(a, times(0)).received("done");
+    }
+
+    @Test
+    public void testForEachWithCompleteAndError() {
+        Observable.create(new AsyncObservable()).forEach({ result -> throw new RuntimeException('err')}, {err -> a.received(err.message)}, {a.received('done')},);
+        verify(a, times(0)).received(1);
+        verify(a, times(0)).received(2);
+        verify(a, times(0)).received(3);
+        verify(a, times(1)).received("err");
+        verify(a, times(0)).received("done");
+    }
+
+    def class AsyncObservable implements Func1<Observer<Integer>, Subscription> {
+
+        public Subscription call(final Observer<Integer> observer) {
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        Thread.sleep(50)
+                    }catch(Exception e) {
+                        // ignore
+                    }
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onNext(3);
+                    observer.onCompleted();
+                }
+            }).start();
+            return Observable.noOpSubscription();
+        }
+    }
 
     def class TestFactory {
         int counter = 1;
