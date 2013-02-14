@@ -43,11 +43,17 @@ eclipse {
   }
 }
 
+idea {
+	module {
+		// include 'provided' dependencies on the classpath
+		scopes.PROVIDED.plus += configurations.provided
+	}
+}
 
-// setup Eclipse
+
 eclipse {
   classpath {
-    //you can tweak the classpath of the Eclipse project by adding extra configurations:
+    // include 'provided' dependencies on the classpath
     plusConfigurations += configurations.provided
 
     downloadSources = true
