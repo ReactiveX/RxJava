@@ -120,7 +120,7 @@ public class Observable<T> {
      * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
      * 
      * 
-     * @param Observer
+     * @param observer
      * @return a {@link Subscription} reference that allows observers
      *         to stop receiving notifications before the provider has finished sending them
      */
@@ -447,9 +447,9 @@ public class Observable<T> {
      *            as appropriate, and returns a {@link Subscription} to allow canceling the subscription (if applicable)
      * @return an Observable that, when an {@link Observer} subscribes to it, will execute the given function
      */
-    public static <T> Observable<T> create(final Object callback) {
+    public static <T> Observable<T> create(final Object func) {
         @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(callback);
+        final FuncN _f = Functions.from(func);
         return create(new Func1<Observer<T>, Subscription>() {
 
             @Override
@@ -509,7 +509,7 @@ public class Observable<T> {
      * 
      * @param that
      *            the Observable to filter
-     * @param predicate
+     * @param function
      *            a function that evaluates the items emitted by the source Observable, returning <code>true</code> if they pass the filter
      * @return an Observable that emits only those items in the original Observable that the filter evaluates as true
      */
@@ -544,7 +544,7 @@ public class Observable<T> {
     /**
      * Converts an Array to an Observable sequence.
      * 
-     * @param iterable
+     * @param items
      *            the source Array
      * @param <T>
      *            the type of items in the Array, and the type of items emitted by the resulting Observable
@@ -574,7 +574,7 @@ public class Observable<T> {
      * <p>
      * To convert any object into an Observable that emits that object, pass that object into the <code>just</code> method.
      * <p>
-     * This is similar to the {@link toObservable} method, except that <code>toObservable</code> will convert
+     * This is similar to the {@link #toObservable} method, except that <code>toObservable</code> will convert
      * an {@link Iterable} object into an Observable that emits each of the items in the {@link Iterable}, one
      * at a time, while the <code>just</code> method would convert the {@link Iterable} into an Observable
      * that emits the entire {@link Iterable} as a single item.
@@ -647,9 +647,9 @@ public class Observable<T> {
      * @return an Observable that is the result of applying the transformation function to each item
      *         in the sequence emitted by the source Observable
      */
-    public static <T, R> Observable<R> map(Observable<T> sequence, final Object function) {
+    public static <T, R> Observable<R> map(Observable<T> sequence, final Object func) {
         @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(function);
+        final FuncN _f = Functions.from(func);
         return map(sequence, new Func1<T, R>() {
 
             @SuppressWarnings("unchecked")
@@ -707,9 +707,9 @@ public class Observable<T> {
      *         function to each item emitted by the source Observable and merging the results of
      *         the Observables obtained from this transformation
      */
-    public static <T, R> Observable<R> mapMany(Observable<T> sequence, final Object function) {
+    public static <T, R> Observable<R> mapMany(Observable<T> sequence, final Object func) {
         @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(function);
+        final FuncN _f = Functions.from(func);
         return mapMany(sequence, new Func1<T, R>() {
 
             @SuppressWarnings("unchecked")
@@ -726,10 +726,10 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/materialize.png">
      * 
-     * @param source
+     * @param sequence
      *            An observable sequence of elements to project.
      * @return An observable sequence whose elements are the result of materializing the notifications of the given sequence.
-     * @see http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">MSDN: Observable.Materialize</a>
      */
     public static <T> Observable<Notification<T>> materialize(final Observable<T> sequence) {
         return _create(OperationMaterialize.materialize(sequence));
@@ -746,7 +746,7 @@ public class Observable<T> {
      *            a list of Observables that emit sequences of items
      * @return an Observable that emits a sequence of elements that are the result of flattening the
      *         output from the <code>source</code> list of Observables
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge</a>
      */
     public static <T> Observable<T> merge(List<Observable<T>> source) {
         return _create(OperationMerge.merge(source));
@@ -1003,7 +1003,7 @@ public class Observable<T> {
      * 
      * @param that
      *            the source Observable
-     * @param resumeFunction
+     * @param resumeSequence
      *            a function that returns an Observable that will take over if the source Observable
      *            encounters an error
      * @return the source Observable, with its behavior modified as described
@@ -1461,7 +1461,7 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toObservable.png">
      * 
-     * @param iterable
+     * @param items
      *            the source Array
      * @param <T>
      *            the type of items in the Array, and the type of items emitted by the resulting
@@ -1612,7 +1612,7 @@ public class Observable<T> {
      *            one source Observable
      * @param w1
      *            another source Observable
-     * @param reduceFunction
+     * @param function
      *            a function that, when applied to an item emitted by each of the source Observables,
      *            results in a value that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
@@ -1918,7 +1918,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/materialize.png">
      * 
      * @return An observable sequence whose elements are the result of materializing the notifications of the given sequence.
-     * @see http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">MSDN: Observable.materialize</a>
      */
     public Observable<Notification<T>> materialize() {
         return materialize(this);
@@ -2050,8 +2050,7 @@ public class Observable<T> {
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors
      * be encountered.
-     * 
-     * @param that
+     *
      * @param resumeFunction
      * @return the original Observable with appropriately modified behavior
      */
