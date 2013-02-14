@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Language support is provided via implementations of {@link FunctionLanguageAdaptor}.
  * <p>
- * This class will dynamically look for known language adaptors on the classpath at startup or new ones can be registered using {@link #registerLanguageAdaptor(Class, FunctionLanguageAdaptor)}.
+ * This class will dynamically look for known language adaptors on the classpath at startup or new ones can be registered using {@link #registerLanguageAdaptor(Class[], FunctionLanguageAdaptor)}.
  */
 public class Functions {
 
@@ -81,7 +81,6 @@ public class Functions {
      * Utility method for determining the type of closure/function and executing it.
      * 
      * @param function
-     * @param args
      */
     @SuppressWarnings({ "rawtypes" })
     public static FuncN from(final Object function) {
