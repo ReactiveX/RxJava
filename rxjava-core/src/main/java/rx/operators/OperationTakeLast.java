@@ -16,6 +16,7 @@
 package rx.operators;
 
 import org.junit.Test;
+import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -115,9 +116,10 @@ public final class OperationTakeLast {
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
+            InOrder inOrder = inOrder(aObserver);
             take.subscribe(aObserver);
-            verify(aObserver, times(1)).onNext("two");
-            verify(aObserver, times(1)).onNext("three");
+            inOrder.verify(aObserver, times(1)).onNext("two");
+            inOrder.verify(aObserver, times(1)).onNext("three");
             verify(aObserver, never()).onNext("one");
             verify(aObserver, never()).onError(any(Exception.class));
             verify(aObserver, times(1)).onCompleted();
@@ -134,39 +136,6 @@ public final class OperationTakeLast {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, never()).onError(any(Exception.class));
             verify(aObserver, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testTakeLastOrdering() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
-            Observable<String> take = Observable.create(takeLast(w, 2));
-
-            @SuppressWarnings("unchecked")
-            Observer<String> aObserver = mock(Observer.class);
-            take.subscribe(countingWrapper(aObserver));
-            verify(aObserver, times(1)).onNext("two_1");
-            verify(aObserver, times(1)).onNext("three_2");
-        }
-
-
-        private static Observer<String> countingWrapper(final Observer<String> underlying) {
-            return new Observer<String>() {
-                private final AtomicInteger counter = new AtomicInteger();
-                @Override
-                public void onCompleted() {
-                    underlying.onCompleted();
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    underlying.onCompleted();
-                }
-
-                @Override
-                public void onNext(String args) {
-                    underlying.onNext(args + "_" + counter.incrementAndGet());
-                }
-            };
         }
 
     }
