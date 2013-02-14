@@ -1371,6 +1371,57 @@ public class Observable<T> {
     }
 
     /**
+     * Returns a specified number of contiguous values from the start of an observable sequence.
+     *
+     * @param items
+     * @param predicate a function to test each source element for a condition
+     * @return
+     */
+    public static <T> Observable<T> takeWhile(final Observable<T> items, Func1<T, Boolean> predicate) {
+        return create(OperationTake.takeWhile(items, predicate));
+    }
+
+    /**
+     * Returns a specified number of contiguous values from the start of an observable sequence.
+     *
+     * @param items
+     * @param predicate a function to test each source element for a condition
+     * @return
+     */
+    public static <T> Observable<T> takeWhile(final Observable<T> items, Object predicate) {
+        final FuncN _f = Functions.from(predicate);
+
+        return takeWhile(items, new Func1<T, Boolean>() {
+            @Override
+            public Boolean call(T t) {
+                return (Boolean) _f.call(t);
+            }
+        });
+    }
+
+    /**
+     * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
+     *
+     * @param items
+     * @param predicate a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
+     * @return
+     */
+    public static <T> Observable<T> takeWhileWithIndex(final Observable<T> items, Func2<T, Integer, Boolean> predicate) {
+        return create(OperationTake.takeWhileWithIndex(items, predicate));
+    }
+
+    public static <T> Observable<T> takeWhileWithIndex(final Observable<T> items, Object predicate) {
+        final FuncN _f = Functions.from(predicate);
+
+        return create(OperationTake.takeWhileWithIndex(items, new Func2<T, Integer, Boolean>() {
+            @Override
+            public Boolean call(T t, Integer integer) {
+                return (Boolean) _f.call(t, integer);
+            }
+        }));
+    }
+
+    /**
      * Returns an Observable that emits a single item, a list composed of all the items emitted by
      * the source Observable.
      * <p>
@@ -2299,6 +2350,47 @@ public class Observable<T> {
      */
     public Observable<T> take(final int num) {
         return take(this, num);
+    }
+
+
+    /**
+     * Returns an Observable that items emitted by the source Observable as long as a specified condition is true.
+     *
+     * @param predicate a function to test each source element for a condition
+     * @return
+     */
+    public Observable<T> takeWhile(final Func1<T, Boolean> predicate) {
+        return takeWhile(this, predicate);
+    }
+
+    /**
+     * Returns a specified number of contiguous values from the start of an observable sequence.
+     *
+     * @param predicate a function to test each source element for a condition
+     * @return
+     */
+    public Observable<T> takeWhile(final Object predicate) {
+        return takeWhile(this, predicate);
+    }
+
+    /**
+     * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
+     *
+     * @param predicate a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
+     * @return
+     */
+    public Observable<T> takeWhileWithIndex(final Func2<T, Integer, Boolean> predicate) {
+        return takeWhileWithIndex(this, predicate);
+    }
+
+    /**
+     * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
+     *
+     * @param predicate a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
+     * @return
+     */
+    public Observable<T> takeWhileWithIndex(final Object predicate) {
+        return takeWhileWithIndex(this, predicate);
     }
 
     /**
