@@ -22,6 +22,7 @@ import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -223,32 +224,16 @@ def class ObservableTests {
     }
 
     @Test
-    public void testForEachWithComplete() {
-        Observable.create(new AsyncObservable()).forEach({ result -> a.received(result)}, {}, {a.received('done')});
-        verify(a, times(1)).received(1);
-        verify(a, times(1)).received(2);
-        verify(a, times(1)).received(3);
-        verify(a, times(1)).received("done");
-    }
-
-    @Test
     public void testForEachWithError() {
-        Observable.create(new AsyncObservable()).forEach({ result -> throw new RuntimeException('err')}, {err -> a.received(err.message)});
+        try {
+            Observable.create(new AsyncObservable()).forEach({ result -> throw new RuntimeException('err')});
+            fail("we expect an exception to be thrown");
+        }catch(Exception e) {
+        
+        }
         verify(a, times(0)).received(1);
         verify(a, times(0)).received(2);
         verify(a, times(0)).received(3);
-        verify(a, times(1)).received("err");
-        verify(a, times(0)).received("done");
-    }
-
-    @Test
-    public void testForEachWithCompleteAndError() {
-        Observable.create(new AsyncObservable()).forEach({ result -> throw new RuntimeException('err')}, {err -> a.received(err.message)}, {a.received('done')},);
-        verify(a, times(0)).received(1);
-        verify(a, times(0)).received(2);
-        verify(a, times(0)).received(3);
-        verify(a, times(1)).received("err");
-        verify(a, times(0)).received("done");
     }
 
     def class AsyncObservable implements Func1<Observer<Integer>, Subscription> {

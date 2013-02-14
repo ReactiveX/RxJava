@@ -26,6 +26,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -334,33 +335,39 @@ public class Observable<T> {
     }
 
     /**
-     * Blocking version of {@link #subscribe(Observer)}.
+     * Invokes an action for each element in the observable sequence, and blocks until the sequence is terminated.
      * <p>
      * NOTE: This will block even if the Observable is asynchronous.
+     * <p>
+     * This is similar to {@link #subscribe(Observer)} but blocks. Because it blocks it does not need the {@link Observer#onCompleted()} or {@link Observer#onError(Exception)} methods.
      * 
-     * @param observer
+     * @param onNext
+     *            {@link Action1}
+     * @throws RuntimeException
+     *             if error occurs
      */
-    public void forEach(final Observer<T> observer) {
+    public void forEach(final Action1<T> onNext) {
         final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicReference<Exception> exceptionFromOnError = new AtomicReference<Exception>();
+
         subscribe(new Observer<T>() {
             public void onCompleted() {
-                try {
-                    observer.onCompleted();
-                } finally {
-                    latch.countDown();
-                }
+                latch.countDown();
             }
 
             public void onError(Exception e) {
-                try {
-                    observer.onError(e);
-                } finally {
-                    latch.countDown();
-                }
+                /*
+                 * If we receive an onError event we set the reference on the outer thread
+                 * so we can git it and throw after the latch.await().
+                 * 
+                 * We do this instead of throwing directly since this may be on a different thread and the latch is still waiting.
+                 */
+                exceptionFromOnError.set(e);
+                latch.countDown();
             }
 
             public void onNext(T args) {
-                observer.onNext(args);
+                onNext.call(args);
             }
         });
         // block until the subscription completes and then return
@@ -369,46 +376,21 @@ public class Observable<T> {
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
         }
-    }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void forEach(final Map<String, Object> callbacks) {
-        // lookup and memoize onNext
-        Object _onNext = callbacks.get("onNext");
-        if (_onNext == null) {
-            throw new RuntimeException("onNext must be implemented");
+        if (exceptionFromOnError.get() != null) {
+            if (exceptionFromOnError.get() instanceof RuntimeException) {
+                throw (RuntimeException) exceptionFromOnError.get();
+            } else {
+                throw new RuntimeException(exceptionFromOnError.get());
+            }
         }
-        final FuncN onNext = Functions.from(_onNext);
-
-        forEach(new Observer() {
-
-            public void onCompleted() {
-                Object onComplete = callbacks.get("onCompleted");
-                if (onComplete != null) {
-                    Functions.from(onComplete).call();
-                }
-            }
-
-            public void onError(Exception e) {
-                handleError(e);
-                Object onError = callbacks.get("onError");
-                if (onError != null) {
-                    Functions.from(onError).call(e);
-                }
-            }
-
-            public void onNext(Object args) {
-                onNext.call(args);
-            }
-
-        });
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void forEach(final Object o) {
-        if (o instanceof Observer) {
-            // in case a dynamic language is not correctly handling the overloaded methods and we receive an Observer just forward to the correct method.
-            forEach((Observer) o);
+        if (o instanceof Action1) {
+            // in case a dynamic language is not correctly handling the overloaded methods and we receive an Action1 just forward to the correct method.
+            forEach((Action1) o);
         }
 
         // lookup and memoize onNext
@@ -417,155 +399,14 @@ public class Observable<T> {
         }
         final FuncN onNext = Functions.from(o);
 
-        forEach(new Observer() {
+        forEach(new Action1() {
 
-            public void onCompleted() {
-                // do nothing
-            }
-
-            public void onError(Exception e) {
-                handleError(e);
-                // no callback defined
-            }
-
-            public void onNext(Object args) {
+            public void call(Object args) {
                 onNext.call(args);
             }
 
         });
     }
-
-    public void forEach(final Action1<T> onNext) {
-
-        forEach(new Observer<T>() {
-
-            public void onCompleted() {
-                // do nothing
-            }
-
-            public void onError(Exception e) {
-                handleError(e);
-                // no callback defined
-            }
-
-            public void onNext(T args) {
-                if (onNext == null) {
-                    throw new RuntimeException("onNext must be implemented");
-                }
-                onNext.call(args);
-            }
-
-        });
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void forEach(final Object onNext, final Object onError) {
-        // lookup and memoize onNext
-        if (onNext == null) {
-            throw new RuntimeException("onNext must be implemented");
-        }
-        final FuncN onNextFunction = Functions.from(onNext);
-
-        forEach(new Observer() {
-
-            public void onCompleted() {
-                // do nothing
-            }
-
-            public void onError(Exception e) {
-                handleError(e);
-                if (onError != null) {
-                    Functions.from(onError).call(e);
-                }
-            }
-
-            public void onNext(Object args) {
-                onNextFunction.call(args);
-            }
-
-        });
-    }
-
-    public void forEach(final Action1<T> onNext, final Action1<Exception> onError) {
-
-        forEach(new Observer<T>() {
-
-            public void onCompleted() {
-                // do nothing
-            }
-
-            public void onError(Exception e) {
-                handleError(e);
-                if (onError != null) {
-                    onError.call(e);
-                }
-            }
-
-            public void onNext(T args) {
-                if (onNext == null) {
-                    throw new RuntimeException("onNext must be implemented");
-                }
-                onNext.call(args);
-            }
-
-        });
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void forEach(final Object onNext, final Object onError, final Object onComplete) {
-        // lookup and memoize onNext
-        if (onNext == null) {
-            throw new RuntimeException("onNext must be implemented");
-        }
-        final FuncN onNextFunction = Functions.from(onNext);
-
-        forEach(new Observer() {
-
-            public void onCompleted() {
-                if (onComplete != null) {
-                    Functions.from(onComplete).call();
-                }
-            }
-
-            public void onError(Exception e) {
-                handleError(e);
-                if (onError != null) {
-                    Functions.from(onError).call(e);
-                }
-            }
-
-            public void onNext(Object args) {
-                onNextFunction.call(args);
-            }
-
-        });
-    }
-
-    public void forEach(final Action1<T> onNext, final Action1<Exception> onError, final Action0 onComplete) {
-
-        forEach(new Observer<T>() {
-
-            public void onCompleted() {
-                onComplete.call();
-            }
-
-            public void onError(Exception e) {
-                handleError(e);
-                if (onError != null) {
-                    onError.call(e);
-                }
-            }
-
-            public void onNext(T args) {
-                if (onNext == null) {
-                    throw new RuntimeException("onNext must be implemented");
-                }
-                onNext.call(args);
-            }
-
-        });
-    }
-
 
     /**
      * Allow the {@link RxJavaErrorHandler} to receive the exception from onError.
