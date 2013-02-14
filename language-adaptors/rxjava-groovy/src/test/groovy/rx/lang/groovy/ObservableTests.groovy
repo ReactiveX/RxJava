@@ -229,7 +229,7 @@ def class ObservableTests {
             Observable.create(new AsyncObservable()).forEach({ result -> throw new RuntimeException('err')});
             fail("we expect an exception to be thrown");
         }catch(Exception e) {
-        
+            // do nothing as we expect this
         }
         verify(a, times(0)).received(1);
         verify(a, times(0)).received(2);
