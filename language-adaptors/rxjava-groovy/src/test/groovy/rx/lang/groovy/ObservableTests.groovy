@@ -231,9 +231,6 @@ def class ObservableTests {
         }catch(Exception e) {
             // do nothing as we expect this
         }
-        verify(a, times(0)).received(1);
-        verify(a, times(0)).received(2);
-        verify(a, times(0)).received(3);
     }
 
     def class AsyncObservable implements Func1<Observer<Integer>, Subscription> {
