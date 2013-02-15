@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 0.5.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.5.3%22)) ###
+
+* [Issue 45](https://github.com/Netflix/Hystrix/issues/45) Operator: ForEach
+* [Issue 87](https://github.com/Netflix/Hystrix/issues/87) Operator: TakeWhile
+* [Pull 145](https://github.com/Netflix/Hystrix/pull/145) IntelliJ IDEA support in Gradle build
+
 ### Version 0.5.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.5.2%22)) ###
 
 * [Issue 68](https://github.com/Netflix/Hystrix/issues/68) Operator: Range
