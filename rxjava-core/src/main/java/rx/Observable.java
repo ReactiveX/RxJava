@@ -374,6 +374,10 @@ public class Observable<T> {
         try {
             latch.await();
         } catch (InterruptedException e) {
+            // set the interrupted flag again so callers can still get it
+            // for more information see https://github.com/Netflix/RxJava/pull/147#issuecomment-13624780
+            Thread.currentThread().interrupt();
+            // using Runtime so it is not checked
             throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
         }
 
