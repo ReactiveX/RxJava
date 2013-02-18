@@ -17,6 +17,8 @@ package rx;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +28,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
@@ -58,6 +61,7 @@ import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
+import rx.util.Exceptions;
 import rx.util.Range;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -382,12 +386,102 @@ public class Observable<T> {
         }
 
         if (exceptionFromOnError.get() != null) {
-            if (exceptionFromOnError.get() instanceof RuntimeException) {
-                throw (RuntimeException) exceptionFromOnError.get();
-            } else {
-                throw new RuntimeException(exceptionFromOnError.get());
-            }
+            throw Exceptions.propagate(exceptionFromOnError.get());
         }
+    }
+
+    /**
+     * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
+     *
+     * @return The single element in the observable sequence.
+     */
+    public T single() {
+        return single(Functions.<T>alwaysTrue());
+    }
+
+    /**
+     * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
+     *
+     * @param predicate A predicate function to evaluate for elements in the sequence.
+     * @return The single element in the observable sequence.
+     */
+    public T single(Func1<T, Boolean> predicate) {
+        return singleOrDefault(false, null, predicate);
+    }
+
+    /**
+     * Returns the only element of an observable sequence, or a default value if the observable sequence is empty.
+     *
+     * @param defaultValue default value for a sequence.
+     * @return The single element in the observable sequence, or a default value if no value is found.
+     */
+    public T singleOrDefault(T defaultValue) {
+        return singleOrDefault(defaultValue, Functions.<T>alwaysTrue());
+    }
+
+    /**
+     * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
+     * @param defaultValue default value for a sequence.
+     * @param predicate A predicate function to evaluate for elements in the sequence.
+     * @return The single element in the observable sequence, or a default value if no value is found.
+     */
+    public T singleOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
+        return singleOrDefault(true, defaultValue, predicate);
+    }
+
+
+    private T singleOrDefault(boolean useDefault, T defaultValue, Func1<T, Boolean> predicate) {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicReference<Exception> exception = new AtomicReference<Exception>();
+        final AtomicReference<T> element = new AtomicReference<T>();
+        final AtomicInteger received = new AtomicInteger(0);
+
+        Subscription subscription = subscribe(new Observer<T>() {
+            public void onCompleted() {
+                latch.countDown();
+            }
+
+            public void onError(Exception e) {
+                exception.set(e);
+                latch.countDown();
+            }
+
+            public void onNext(T args) {
+                if (received.getAndIncrement() == 0) {
+                    element.set(args);
+                } else {
+                    latch.countDown();
+                }
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
+        }
+
+        if (exception.get() != null) {
+            throw Exceptions.propagate(exception.get());
+        }
+
+        if (received.get() == 0 && useDefault) {
+            return defaultValue;
+        }
+
+        if (received.get() == 1) {
+            T result = element.get();
+
+            if (predicate.call(result)) {
+                return result;
+            }
+            throw new IllegalStateException("Single value should match the predicate");
+        }
+
+        subscription.unsubscribe();
+        throw new IllegalStateException("Expected single value in the stream");
+
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -2621,6 +2715,24 @@ public class Observable<T> {
             sequenceEqual(first, second).subscribe(result);
             verify(result, times(2)).onNext(true);
             verify(result, times(1)).onNext(false);
+        }
+
+        @Test
+        public void testSingle() {
+            Observable<Integer> observable = toObservable(1);
+            assertEquals(1, (int) observable.single());
+        }
+
+        @Test
+        public void testSingleDefault() {
+            Observable<Integer> observable = toObservable();
+            assertEquals(1, (int) observable.singleOrDefault(1));
+        }
+
+        @Test(expected = IllegalStateException.class)
+        public void testSingleWrong() {
+            Observable<Integer> observable = toObservable(1, 2);
+            observable.single();
         }
 
     }
