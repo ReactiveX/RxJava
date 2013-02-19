@@ -447,11 +447,12 @@ public class Observable<T> {
             }
 
             public void onNext(T args) {
-                if (received.getAndIncrement() == 0) {
+                int count = received.getAndIncrement();
+                if (count == 0) {
                     element.set(args);
-                } else {
+                } else if (count == 1) {
                     latch.countDown();
-                }
+                } // else ignore, we will unsubscribe below
             }
         });
 
