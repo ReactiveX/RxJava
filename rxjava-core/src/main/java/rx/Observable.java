@@ -331,6 +331,12 @@ public class Observable<T> {
         });
     }
 
+    /**
+     * Samples the next value (blocking without buffering) from in an observable sequence.
+     *
+     * @return The enumerable sequence that blocks upon each iteration until the next element
+     * in the observable source sequence becomes available.
+     */
     public Iterable<T> next() {
         final BlockingQueue<Notification<T>> notifications = new LinkedBlockingQueue<Notification<T>>();
 
