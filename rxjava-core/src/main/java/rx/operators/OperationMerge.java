@@ -20,6 +20,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -56,32 +57,7 @@ public final class OperationMerge {
     }
 
     public static <T> Func1<Observer<T>, Subscription> merge(final Observable<T>... sequences) {
-        return merge(Observable.create(new Func1<Observer<Observable<T>>, Subscription>() {
-            private volatile boolean unsubscribed = false;
-
-            @Override
-            public Subscription call(Observer<Observable<T>> observer) {
-                for (Observable<T> o : sequences) {
-                    if (!unsubscribed) {
-                        observer.onNext(o);
-                    } else {
-                        // break out of the loop if we are unsubscribed
-                        break;
-                    }
-                }
-                if (!unsubscribed) {
-                    observer.onCompleted();
-                }
-                return new Subscription() {
-
-                    @Override
-                    public void unsubscribe() {
-                        unsubscribed = true;
-                    }
-
-                };
-            }
-        }));
+        return merge(Arrays.asList(sequences));
     }
 
     public static <T> Func1<Observer<T>, Subscription> merge(final List<Observable<T>> sequences) {
