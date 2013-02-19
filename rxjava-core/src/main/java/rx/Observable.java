@@ -2661,6 +2661,64 @@ public class Observable<T> {
             verify(result, times(1)).onNext(false);
         }
 
+        @Test
+        public void testTakeUntil() {
+            Subscription sSource = mock(Subscription.class);
+            Subscription sOther = mock(Subscription.class);
+            TestObservable source = new TestObservable(sSource);
+            TestObservable other = new TestObservable(sOther);
+
+            Observer<String> result = mock(Observer.class);
+            Observable<String> stringObservable = takeUntil(source, other);
+            stringObservable.subscribe(result);
+            source.sendOnNext("one");
+            source.sendOnNext("two");
+            other.sendOnNext("three");
+            source.sendOnNext("four");
+            source.sendOnCompleted();
+            other.sendOnCompleted();
+
+            verify(result, times(1)).onNext("one");
+            verify(result, times(1)).onNext("two");
+            verify(result, times(0)).onNext("three");
+            verify(result, times(0)).onNext("four");
+            verify(sSource, times(1)).unsubscribe();
+            verify(sOther, times(1)).unsubscribe();
+
+        }
+
+        private static class TestObservable extends Observable<String> {
+
+            Observer<String> observer = null;
+            Subscription s;
+
+            public TestObservable(Subscription s) {
+                this.s = s;
+            }
+
+            /* used to simulate subscription */
+            public void sendOnCompleted() {
+                observer.onCompleted();
+            }
+
+            /* used to simulate subscription */
+            public void sendOnNext(String value) {
+                observer.onNext(value);
+            }
+
+            /* used to simulate subscription */
+            @SuppressWarnings("unused")
+            public void sendOnError(Exception e) {
+                observer.onError(e);
+            }
+
+            @Override
+            public Subscription subscribe(final Observer<String> observer) {
+                this.observer = observer;
+                return s;
+            }
+        }
+
     }
 
 }
