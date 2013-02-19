@@ -54,6 +54,7 @@ import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
+import rx.util.Exceptions;
 import rx.util.Range;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -367,7 +368,7 @@ public class Observable<T> {
                     buf = take();
                 }
                 if (buf.isOnError()) {
-                    throw new RuntimeException(buf.getException());
+                    throw Exceptions.propagate(buf.getException());
                 }
 
                 T result = buf.getValue();
@@ -379,7 +380,7 @@ public class Observable<T> {
                 try {
                     return notifications.take();
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    throw Exceptions.propagate(e);
                 }
             }
 
@@ -2706,7 +2707,7 @@ public class Observable<T> {
 
         }
 
-        @Test(expected = RuntimeException.class)
+        @Test(expected = IllegalStateException.class)
         public void testNextWithException() {
             Observable<String> obs = create(new Func1<Observer<String>, Subscription>() {
 
