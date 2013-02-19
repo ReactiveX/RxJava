@@ -58,6 +58,7 @@ import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
+import rx.util.Pair;
 import rx.util.Range;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -865,6 +866,43 @@ public class Observable<T> {
     public static <T> Observable<T> merge(Observable<T>... source) {
         return _create(OperationMerge.merge(source));
     }
+
+    /**
+     * Returns the values from the source observable sequence until the other observable sequence produces a value.
+     *
+     * @param source the source sequence to propagate elements for.
+     * @param other  the observable sequence that terminates propagation of elements of the source sequence.
+     * @param <T>    the type of source.
+     * @param <E>    the other type.
+     * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
+     */
+    public static <T, E> Observable<T> takeUntil(final Observable<T> source, final Observable<E> other) {
+        Observable<Pair<Integer, T>> s = source.map(new Func1<T, Pair<Integer, T>>() {
+            @Override
+            public Pair<Integer, T> call(T arg) {
+                return Pair.create(1, arg);
+            }
+        });
+        Observable<Pair<Integer, T>> o = other.map(new Func1<E, Pair<Integer, T>>() {
+            @Override
+            public Pair<Integer, T> call(E arg) {
+                return Pair.create(2, null);
+            }
+        });
+
+        return Observable.merge(s, o).takeWhile(new Func1<Pair<Integer, T>, Boolean>() {
+            @Override
+            public Boolean call(Pair<Integer, T> pair) {
+                return pair.getFirst() == 1;
+            }
+        }).map(new Func1<Pair<Integer, T>, T>() {
+            @Override
+            public T call(Pair<Integer, T> pair) {
+                return pair.getSecond();
+            }
+        });
+    }
+
 
     /**
      * Combines the objects emitted by two or more Observables, and emits the result as a single Observable,
