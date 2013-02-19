@@ -15,19 +15,15 @@
  */
 package rx;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -332,6 +328,73 @@ public class Observable<T> {
             }
 
         });
+    }
+
+    public Iterable<T> next() {
+        final BlockingQueue<Notification<T>> notifications = new LinkedBlockingQueue<Notification<T>>();
+
+        materialize().subscribe(new Observer<Notification<T>>() {
+            @Override
+            public void onCompleted() {
+                // ignore
+            }
+
+            @Override
+            public void onError(Exception e) {
+                // ignore
+            }
+
+            @Override
+            public void onNext(Notification<T> args) {
+                notifications.offer(args);
+            }
+        });
+
+        final Iterator<T> it = new Iterator<T>() {
+            private Notification<T> buf;
+
+            @Override
+            public boolean hasNext() {
+                if (buf == null) {
+                    buf = take();
+                }
+                return !buf.isOnCompleted();
+            }
+
+            @Override
+            public T next() {
+                if (buf == null) {
+                    buf = take();
+                }
+                if (buf.isOnError()) {
+                    throw new RuntimeException(buf.getException());
+                }
+
+                T result = buf.getValue();
+                buf = null;
+                return result;
+            }
+
+            private Notification<T> take() {
+                try {
+                    return notifications.take();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Read-only iterator");
+            }
+        };
+
+        return new Iterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return it;
+            }
+        };
     }
 
     /**
@@ -2560,11 +2623,11 @@ public class Observable<T> {
             Observable<String> observable = create(new Func1<Observer<String>, Subscription>() {
 
                 @Override
-                public Subscription call(Observer<String> Observer) {
-                    Observer.onNext("one");
-                    Observer.onNext("two");
-                    Observer.onNext("three");
-                    Observer.onCompleted();
+                public Subscription call(Observer<String> observer) {
+                    observer.onNext("one");
+                    observer.onNext("two");
+                    observer.onNext("three");
+                    observer.onCompleted();
                     return Observable.noOpSubscription();
                 }
 
@@ -2622,6 +2685,51 @@ public class Observable<T> {
             verify(result, times(2)).onNext(true);
             verify(result, times(1)).onNext(false);
         }
+
+        @Test
+        public void testNext() {
+            Observable<String> obs = toObservable("one", "two", "three");
+
+            Iterable<String> next = obs.next();
+            Iterator<String> it = next.iterator();
+
+            assertEquals(true, it.hasNext());
+            assertEquals("one", it.next());
+
+            assertEquals(true, it.hasNext());
+            assertEquals("two", it.next());
+
+            assertEquals(true, it.hasNext());
+            assertEquals("three", it.next());
+
+            assertEquals(false, it.hasNext());
+
+        }
+
+        @Test(expected = RuntimeException.class)
+        public void testNextWithException() {
+            Observable<String> obs = create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(Observer<String> observer) {
+                    observer.onNext("one");
+                    observer.onError(new IllegalStateException());
+                    return Observable.noOpSubscription();
+                }
+            });
+
+            Iterable<String> next = obs.next();
+            Iterator<String> it = next.iterator();
+
+            assertEquals(true, it.hasNext());
+            assertEquals("one", it.next());
+
+            assertEquals(true, it.hasNext());
+            it.next();
+
+        }
+
+
 
     }
 
