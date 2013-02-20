@@ -517,47 +517,12 @@ public class Observable<T> {
      *             if error occurs
      */
     public void forEach(final Action1<T> onNext) {
-        final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Exception> exceptionFromOnError = new AtomicReference<Exception>();
+        Iterable<T> next = next();
 
-        subscribe(new Observer<T>() {
-            public void onCompleted() {
-                latch.countDown();
-            }
-
-            public void onError(Exception e) {
-                /*
-                 * If we receive an onError event we set the reference on the outer thread
-                 * so we can git it and throw after the latch.await().
-                 * 
-                 * We do this instead of throwing directly since this may be on a different thread and the latch is still waiting.
-                 */
-                exceptionFromOnError.set(e);
-                latch.countDown();
-            }
-
-            public void onNext(T args) {
-                onNext.call(args);
-            }
-        });
-        // block until the subscription completes and then return
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            // set the interrupted flag again so callers can still get it
-            // for more information see https://github.com/Netflix/RxJava/pull/147#issuecomment-13624780
-            Thread.currentThread().interrupt();
-            // using Runtime so it is not checked
-            throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
+        for (T val : next) {
+            onNext.call(val);
         }
 
-        if (exceptionFromOnError.get() != null) {
-            if (exceptionFromOnError.get() instanceof RuntimeException) {
-                throw (RuntimeException) exceptionFromOnError.get();
-            } else {
-                throw new RuntimeException(exceptionFromOnError.get());
-            }
-        }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
