@@ -224,6 +224,18 @@ def class ObservableTests {
     }
 
     @Test
+    public void testSingle1() {
+        def s = Observable.toObservable("one").single({ x -> x.length() == 3})
+        assertEquals("one", s)
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testSingle2() {
+        Observable.toObservable("one", "two").single({ x -> x.length() == 3})
+    }
+
+
+    @Test
     public void testForEachWithError() {
         try {
             Observable.create(new AsyncObservable()).forEach({ result -> throw new RuntimeException('err')});

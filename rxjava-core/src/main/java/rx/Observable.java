@@ -424,6 +424,23 @@ public class Observable<T> {
     }
 
     /**
+     * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
+     *
+     * @param predicate A predicate function to evaluate for elements in the sequence.
+     * @return The single element in the observable sequence.
+     */
+    public T single(Object predicate) {
+        final FuncN _f = Functions.from(predicate);
+
+        return singleOrDefault(false, null, new Func1<T, Boolean>() {
+            @Override
+            public Boolean call(T t) {
+                return (Boolean) _f.call(t);
+            }
+        });
+    }
+
+    /**
      * Returns the only element of an observable sequence, or a default value if the observable sequence is empty.
      *
      * @param defaultValue default value for a sequence.
@@ -441,6 +458,24 @@ public class Observable<T> {
      */
     public T singleOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
         return singleOrDefault(true, defaultValue, predicate);
+    }
+
+    /**
+     * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
+     *
+     * @param defaultValue default value for a sequence.
+     * @param predicate    A predicate function to evaluate for elements in the sequence.
+     * @return The single element in the observable sequence, or a default value if no value is found.
+     */
+    public T singleOrDefault(T defaultValue, Object predicate) {
+        final FuncN _f = Functions.from(predicate);
+
+        return singleOrDefault(true, defaultValue, new Func1<T, Boolean>() {
+            @Override
+            public Boolean call(T t) {
+                return (Boolean) _f.call(t);
+            }
+        });
     }
 
 
