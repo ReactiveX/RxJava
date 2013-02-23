@@ -2891,6 +2891,42 @@ public class Observable<T> {
         }
 
 
+        @Test
+        public void testLastOrDefault1() {
+            Observable<String> observable = toObservable("one", "two", "three");
+            assertEquals("three", observable.lastOrDefault("default"));
+        }
+
+        @Test
+        public void testLastOrDefault2() {
+            Observable<String> observable = toObservable();
+            assertEquals("default", observable.lastOrDefault("default"));
+        }
+
+        @Test(expected = IllegalStateException.class)
+        public void testLastOrDefaultWrongPredicate() {
+            Observable<Integer> observable = toObservable(1, 0, -1);
+            observable.lastOrDefault(0, new Func1<Integer, Boolean>() {
+                @Override
+                public Boolean call(Integer args) {
+                    return args >= 0;
+                }
+            });
+        }
+
+        @Test
+        public void testLastOrDefaultWithPredicate() {
+            Observable<Integer> observable = toObservable(1, 0, -1);
+            int last = observable.lastOrDefault(0, new Func1<Integer, Boolean>() {
+                @Override
+                public Boolean call(Integer args) {
+                    return args < 0;
+                }
+            });
+
+            assertEquals(-1, last);
+        }
+
 
 
     }
