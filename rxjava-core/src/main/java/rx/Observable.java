@@ -825,6 +825,45 @@ public class Observable<T> {
     }
 
     /**
+     * Returns the last element of an observable sequence, or a default value if no value is found.
+     * @param source the source observable.
+     * @param defaultValue a default value that would be returned if observable is empty.
+     * @param <T> the type of source.
+     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
+     */
+    public static <T> T lastOrDefault(Observable<T> source, T defaultValue) {
+        return lastOrDefault(source, defaultValue, Functions.<T>alwaysTrue());
+    }
+
+
+    /**
+     * Returns the last element of an observable sequence that matches the predicate, or a default value if no value is found.
+     * @param source the source observable.
+     * @param defaultValue a default value that would be returned if observable is empty.
+     * @param predicate a predicate function to evaluate for elements in the sequence.
+     * @param <T> the type of source.
+     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
+     */
+    public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Func1<T, Boolean> predicate) {
+        boolean found = false;
+        T result = null;
+        for (T value : source.next()) {
+            found = true;
+            result = value;
+        }
+
+        if (!found) {
+            return defaultValue;
+        }
+
+        if (!predicate.call(result)) {
+            throw new IllegalStateException("Last value should match the predicate");
+        }
+
+        return result;
+    }
+
+    /**
      * Applies a function of your choosing to every notification emitted by an Observable, and returns
      * this transformation as a new Observable sequence.
      * <p>
@@ -2094,6 +2133,27 @@ public class Observable<T> {
      */
     public Observable<T> last() {
         return last(this);
+    }
+
+    /**
+     * Returns the last element, or a default value if no value is found.
+     *
+     * @param defaultValue a default value that would be returned if observable is empty.
+     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
+     */
+    public T lastOrDefault(T defaultValue) {
+        return lastOrDefault(this, defaultValue);
+    }
+
+    /**
+     * Returns the last element that matches the predicate, or a default value if no value is found.
+     *
+     * @param defaultValue a default value that would be returned if observable is empty.
+     * @param predicate    a predicate function to evaluate for elements in the sequence.
+     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
+     */
+    public T lastOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
+        return lastOrDefault(this, defaultValue, predicate);
     }
 
     /**
