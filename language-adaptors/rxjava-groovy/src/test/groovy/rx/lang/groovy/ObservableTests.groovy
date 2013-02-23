@@ -234,6 +234,17 @@ def class ObservableTests {
         Observable.toObservable("one", "two").single({ x -> x.length() == 3})
     }
 
+    @Test
+    public void testLastOrDefault() {
+        def val = Observable.toObservable("one", "two").lastOrDefault("default", { x -> x.length() == 3})
+        assertEquals("two", val)
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testLastOrDefault2() {
+        Observable.toObservable("one", "two").lastOrDefault("default", { x -> x.length() > 3})
+    }
+
 
     @Test
     public void testForEachWithError() {

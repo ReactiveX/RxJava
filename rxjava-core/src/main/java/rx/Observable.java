@@ -863,12 +863,33 @@ public class Observable<T> {
         return result;
     }
 
+
+    /**
+     * Returns the last element of an observable sequence that matches the predicate, or a default value if no value is found.
+     * @param source the source observable.
+     * @param defaultValue a default value that would be returned if observable is empty.
+     * @param predicate a predicate function to evaluate for elements in the sequence.
+     * @param <T> the type of source.
+     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
+     */
+    public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Object predicate){
+        @SuppressWarnings("rawtypes")
+        final FuncN _f = Functions.from(predicate);
+
+        return lastOrDefault(source, defaultValue, new Func1<T, Boolean>() {
+            @Override
+            public Boolean call(T args) {
+                return (Boolean) _f.call(args);
+            }
+        });
+    }
+
     /**
      * Applies a function of your choosing to every notification emitted by an Observable, and returns
      * this transformation as a new Observable sequence.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/map.png">
-     * 
+     *
      * @param sequence
      *            the source Observable
      * @param func
@@ -2153,6 +2174,17 @@ public class Observable<T> {
      * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
      */
     public T lastOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
+        return lastOrDefault(this, defaultValue, predicate);
+    }
+
+    /**
+     * Returns the last element that matches the predicate, or a default value if no value is found.
+     *
+     * @param defaultValue a default value that would be returned if observable is empty.
+     * @param predicate    a predicate function to evaluate for elements in the sequence.
+     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
+     */
+    public T lastOrDefault(T defaultValue, Object predicate) {
         return lastOrDefault(this, defaultValue, predicate);
     }
 
