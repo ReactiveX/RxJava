@@ -1520,10 +1520,16 @@ public class Observable<T> {
         return _create(OperationToObservableList.toObservableList(that));
     }
 
-    public Iterable<T> toIterable() {
+    /**
+     * Converts an observable sequence to an Iterable.
+     *
+     * @param that the source Observable
+     * @return Observable converted to Iterable.
+     */
+    public static <T> Iterable<T> toIterable(final Observable<T> that) {
         final BlockingQueue<Notification<T>> notifications = new LinkedBlockingQueue<Notification<T>>();
 
-        materialize().subscribe(new Observer<Notification<T>>() {
+        materialize(that).subscribe(new Observer<Notification<T>>() {
             @Override
             public void onCompleted() {
                 // ignore
@@ -2605,6 +2611,15 @@ public class Observable<T> {
      */
     public Observable<List<T>> toSortedList(final Object sortFunction) {
         return toSortedList(this, sortFunction);
+    }
+
+    /**
+     * Converts an observable sequence to an Iterable.
+     *
+     * @return Observable converted to Iterable.
+     */
+    public Iterable<T> toIterable() {
+        return toIterable(this);
     }
 
     public static class UnitTest {
