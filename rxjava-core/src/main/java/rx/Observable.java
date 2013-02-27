@@ -15,17 +15,12 @@
  */
 package rx;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
@@ -58,6 +53,7 @@ import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
+import rx.util.Exceptions;
 import rx.util.Range;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -1525,6 +1521,79 @@ public class Observable<T> {
     }
 
     /**
+     * Converts an observable sequence to an Iterable.
+     *
+     * @param that the source Observable
+     * @return Observable converted to Iterable.
+     */
+    public static <T> Iterable<T> toIterable(final Observable<T> that) {
+        final BlockingQueue<Notification<T>> notifications = new LinkedBlockingQueue<Notification<T>>();
+
+        materialize(that).subscribe(new Observer<Notification<T>>() {
+            @Override
+            public void onCompleted() {
+                // ignore
+            }
+
+            @Override
+            public void onError(Exception e) {
+                // ignore
+            }
+
+            @Override
+            public void onNext(Notification<T> args) {
+                notifications.offer(args);
+            }
+        });
+
+        final Iterator<T> it = new Iterator<T>() {
+            private Notification<T> buf;
+
+            @Override
+            public boolean hasNext() {
+                if (buf == null) {
+                    buf = take();
+                }
+                return !buf.isOnCompleted();
+            }
+
+            @Override
+            public T next() {
+                if (buf == null) {
+                    buf = take();
+                }
+                if (buf.isOnError()) {
+                    throw Exceptions.propagate(buf.getException());
+                }
+
+                T result = buf.getValue();
+                buf = null;
+                return result;
+            }
+
+            private Notification<T> take() {
+                try {
+                    return notifications.take();
+                } catch (InterruptedException e) {
+                    throw Exceptions.propagate(e);
+                }
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Read-only iterator");
+            }
+        };
+
+        return new Iterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return it;
+            }
+        };
+    }
+
+    /**
      * Converts an Iterable sequence to an Observable sequence.
      * 
      * Any object that supports the Iterable interface can be converted into an Observable that emits
@@ -2544,6 +2613,15 @@ public class Observable<T> {
         return toSortedList(this, sortFunction);
     }
 
+    /**
+     * Converts an observable sequence to an Iterable.
+     *
+     * @return Observable converted to Iterable.
+     */
+    public Iterable<T> toIterable() {
+        return toIterable(this);
+    }
+
     public static class UnitTest {
 
         @Mock
@@ -2621,6 +2699,52 @@ public class Observable<T> {
             sequenceEqual(first, second).subscribe(result);
             verify(result, times(2)).onNext(true);
             verify(result, times(1)).onNext(false);
+        }
+
+
+        @Test
+        public void testToIterable() {
+            Observable<String> obs = toObservable("one", "two", "three");
+
+            Iterator<String> it = obs.toIterable().iterator();
+
+            assertEquals(true, it.hasNext());
+            assertEquals("one", it.next());
+
+            assertEquals(true, it.hasNext());
+            assertEquals("two", it.next());
+
+            assertEquals(true, it.hasNext());
+            assertEquals("three", it.next());
+
+            assertEquals(false, it.hasNext());
+
+        }
+
+        @Test(expected = TestException.class)
+        public void testToIterableWithException() {
+            Observable<String> obs = create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(Observer<String> observer) {
+                    observer.onNext("one");
+                    observer.onError(new TestException());
+                    return Observable.noOpSubscription();
+                }
+            });
+
+            Iterator<String> it = obs.toIterable().iterator();
+
+            assertEquals(true, it.hasNext());
+            assertEquals("one", it.next());
+
+            assertEquals(true, it.hasNext());
+            it.next();
+
+        }
+
+        private static class TestException extends RuntimeException {
+
         }
 
     }
