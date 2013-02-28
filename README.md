@@ -1,4 +1,4 @@
-# RxJava: Functional Reactive Programming on the JVM
+# RxJava: Functional Reactive Programming on the JVM [![Build Status](https://secure.travis-ci.org/mairbek/RxJava.png)](http://travis-ci.org/mairbek/RxJava)
 
 This library is a Java implementation of <a href="https://rx.codeplex.com">Rx Observables</a>.
 
