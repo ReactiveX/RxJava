@@ -1661,7 +1661,7 @@ public class Observable<T> {
      * @return The single element in the observable sequence.
      */
     public static <T> T single(Observable<T> that) {
-        return single(that, Functions.<T>alwaysTrue());
+        return singleOrDefault(that, false, null);
     }
 
     /**
@@ -1673,7 +1673,7 @@ public class Observable<T> {
      * @return The single element in the observable sequence.
      */
     public static <T> T single(Observable<T> that, Func1<T, Boolean> predicate) {
-        return singleOrDefault(that, false, null, predicate);
+        return single(that.filter(predicate));
     }
 
     /**
@@ -1704,7 +1704,7 @@ public class Observable<T> {
      * @return The single element in the observable sequence, or a default value if no value is found.
      */
     public static <T> T singleOrDefault(Observable<T> that, T defaultValue) {
-        return singleOrDefault(that, defaultValue, Functions.<T>alwaysTrue());
+        return singleOrDefault(that, true, defaultValue);
     }
 
     /**
@@ -1716,7 +1716,7 @@ public class Observable<T> {
      * @return The single element in the observable sequence, or a default value if no value is found.
      */
     public static <T> T singleOrDefault(Observable<T> that, T defaultValue, Func1<T, Boolean> predicate) {
-        return singleOrDefault(that, true, defaultValue, predicate);
+        return singleOrDefault(that.filter(predicate), defaultValue);
     }
 
     /**
@@ -1739,7 +1739,7 @@ public class Observable<T> {
         });
     }
 
-    private static <T> T singleOrDefault(Observable<T> that, boolean hasDefault, T defaultVal, Func1<T, Boolean> predicate) {
+    private static <T> T singleOrDefault(Observable<T> that, boolean hasDefault, T defaultVal) {
         Iterator<T> it = that.toIterable().iterator();
 
         if (!it.hasNext()) {
@@ -1753,13 +1753,6 @@ public class Observable<T> {
 
         if (it.hasNext()) {
             throw new IllegalStateException("Expected single entry. Actually more than one entry.");
-        }
-
-        if (!predicate.call(result)) {
-            if (hasDefault) {
-                return defaultVal;
-            }
-            throw new IllegalStateException("Last value should match the predicate");
         }
 
         return result;
@@ -2929,6 +2922,23 @@ public class Observable<T> {
         }
 
         @Test(expected = IllegalStateException.class)
+        public void testSingleDefaultWithMoreThanOne() {
+            Observable<String> observable = toObservable("one", "two", "three");
+            observable.singleOrDefault("default");
+        }
+
+        @Test
+        public void testSingleWithPredicateDefault() {
+            Observable<String> observable = toObservable("one", "two", "four");
+            assertEquals("four", observable.single(new Func1<String, Boolean>() {
+                @Override
+                public Boolean call(String s) {
+                    return s.length() == 4;
+                }
+            }));
+        }
+
+        @Test(expected = IllegalStateException.class)
         public void testSingleWrong() {
             Observable<Integer> observable = toObservable(1, 2);
             observable.single();
@@ -2946,15 +2956,26 @@ public class Observable<T> {
         }
 
         @Test
-        public void testSingleDefaultWrongPredicate() {
-            Observable<String> observable = toObservable("one");
+        public void testSingleDefaultPredicateMatchesNothing() {
+            Observable<String> observable = toObservable("one", "two");
             String result = observable.singleOrDefault("default", new Func1<String, Boolean>() {
                 @Override
                 public Boolean call(String args) {
-                    return args.length() > 3;
+                    return args.length() == 4;
                 }
             });
             assertEquals("default", result);
+        }
+
+        @Test(expected = IllegalStateException.class)
+        public void testSingleDefaultPredicateMatchesMoreThanOne() {
+            Observable<String> observable = toObservable("one", "two");
+            String result = observable.singleOrDefault("default", new Func1<String, Boolean>() {
+                @Override
+                public Boolean call(String args) {
+                    return args.length() == 3;
+                }
+            });
         }
 
         private static class TestException extends RuntimeException {
