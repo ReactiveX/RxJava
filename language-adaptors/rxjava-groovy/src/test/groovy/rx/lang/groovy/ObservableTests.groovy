@@ -233,6 +233,18 @@ def class ObservableTests {
         }
     }
 
+    @Test
+    public void testLastOrDefault() {
+        def val = Observable.toObservable("one", "two").lastOrDefault("default", { x -> x.length() == 3})
+        assertEquals("two", val)
+    }
+
+    @Test
+    public void testLastOrDefault2() {
+        def val = Observable.toObservable("one", "two").lastOrDefault("default", { x -> x.length() > 3})
+        assertEquals("default", val)
+    }
+
     def class AsyncObservable implements Func1<Observer<Integer>, Subscription> {
 
         public Subscription call(final Observer<Integer> observer) {
