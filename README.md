@@ -16,6 +16,14 @@ New language adapters can be <a href="https://github.com/Netflix/RxJava/wiki/How
 
 Learn more about Rx on the <a href="https://github.com/Netflix/RxJava/wiki">Wiki Home</a> and the <a href="http://techblog.netflix.com/2013/02/rxjava-netflix-api.html">Netflix TechBlog post</a> where RxJava was introduced.
 
+## Master Build Status
+
+<a href='https://netflixoss.ci.cloudbees.com/job/RxJava-master/'><img src='https://netflixoss.ci.cloudbees.com/job/RxJava-master/badge/icon'></a>
+
+## Pull Request Build Status
+
+<a href='https://netflixoss.ci.cloudbees.com/job/RxJava-pull-requests/'><img src='https://netflixoss.ci.cloudbees.com/job/RxJava-pull-requests/badge/icon'></a>
+
 ## Full Documentation
 
 - [Wiki](https://github.com/Netflix/RxJava/wiki)
