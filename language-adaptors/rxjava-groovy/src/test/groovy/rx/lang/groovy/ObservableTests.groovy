@@ -233,6 +233,17 @@ def class ObservableTests {
         }
     }
 
+    @Test
+    public void testSingle1() {
+        def s = Observable.toObservable("one").single({ x -> x.length() == 3})
+        assertEquals("one", s)
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testSingle2() {
+        Observable.toObservable("one", "two").single({ x -> x.length() == 3})
+    }
+
     def class AsyncObservable implements Func1<Observer<Integer>, Subscription> {
 
         public Subscription call(final Observer<Integer> observer) {

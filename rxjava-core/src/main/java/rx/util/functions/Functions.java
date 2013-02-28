@@ -550,4 +550,18 @@ public class Functions {
         };
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> Func1<T, Boolean> alwaysTrue() {
+        return (Func1<T, Boolean>) AlwaysTrue.INSTANCE;
+    }
+
+    private enum AlwaysTrue implements Func1<Object, Boolean> {
+        INSTANCE;
+
+        @Override
+        public Boolean call(Object o) {
+            return true;
+        }
+    }
+
 }
