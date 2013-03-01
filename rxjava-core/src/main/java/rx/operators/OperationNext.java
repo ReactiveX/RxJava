@@ -70,12 +70,12 @@ public final class OperationNext {
 
         @Override
         public boolean hasNext() {
-            return !observer.isCompleted();
+            return !observer.isCompleted(false);
         }
 
         @Override
         public T next() {
-            if (observer.isCompleted()) {
+            if (observer.isCompleted(true)) {
                 throw new IllegalStateException("Observable is completed");
             }
 
@@ -131,14 +131,18 @@ public final class OperationNext {
             waiting.set(true);
         }
 
-        public boolean isCompleted() {
+        public boolean isCompleted(boolean rethrowExceptionIfExists) {
             Notification<T> lastItem = buf.peek();
             if (lastItem == null) {
                 return false;
             }
 
             if (lastItem.isOnError()) {
-                throw Exceptions.propagate(lastItem.getException());
+                if (rethrowExceptionIfExists) {
+                    throw Exceptions.propagate(lastItem.getException());
+                } else {
+                    return true;
+                }
             }
 
             return lastItem.isOnCompleted();
@@ -219,6 +223,35 @@ public final class OperationNext {
             }
         }
 
+        @Test
+        public void testOnErrorViaHasNext() throws Throwable {
+            Subscription s = mock(Subscription.class);
+            final TestObservable obs = new TestObservable(s);
+
+            Iterator<String> it = next(obs).iterator();
+
+            assertTrue(it.hasNext());
+
+            Future<String> next = nextAsync(it);
+            Thread.sleep(100);
+            obs.sendOnNext("one");
+            assertEquals("one", next.get());
+
+            assertTrue(it.hasNext());
+
+            next = nextAsync(it);
+            Thread.sleep(100);
+            obs.sendOnError(new TestException());
+
+            // this should not throw an exception but instead just return false
+            try {
+                assertFalse(it.hasNext());
+            } catch (Exception e) {
+                fail("should not have received exception");
+                e.printStackTrace();
+            }
+        }
+
         private Future<String> nextAsync(final Iterator<String> it) throws Exception {
 
             return executor.submit(new Callable<String>() {
@@ -250,7 +283,6 @@ public final class OperationNext {
             }
 
             /* used to simulate subscription */
-            @SuppressWarnings("unused")
             public void sendOnError(Exception e) {
                 observer.onError(e);
             }
