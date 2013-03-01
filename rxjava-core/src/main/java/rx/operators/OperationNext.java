@@ -108,11 +108,11 @@ public final class OperationNext {
             if (waiting.getAndSet(false) || !args.isOnNext()) {
                 Notification<T> toOffer = args;
                 while (!buf.offer(toOffer)) {
-                    Notification<T> poll = buf.poll();
+                    Notification<T> concurrentItem = buf.poll();
 
                     // in case if we won race condition with onComplete/onError method
-                    if (!poll.isOnNext()) {
-                        toOffer = poll;
+                    if (!concurrentItem.isOnNext()) {
+                        toOffer = concurrentItem;
                     }
                 }
             }
