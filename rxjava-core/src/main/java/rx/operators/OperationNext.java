@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,20 +15,29 @@
  */
 package rx.operators;
 
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Iterator;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Test;
+
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.Exceptions;
-
-import java.util.Iterator;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-
+import rx.util.functions.Func1;
 
 /**
  * Samples the next value (blocking without buffering) from in an observable sequence.
@@ -86,7 +95,6 @@ public final class OperationNext {
             throw new UnsupportedOperationException("Read only iterator");
         }
     }
-
 
     private static class NextObserver<T> implements Observer<Notification<T>> {
         private final BlockingQueue<Notification<T>> buf = new ArrayBlockingQueue<Notification<T>>(1);
@@ -153,7 +161,6 @@ public final class OperationNext {
 
     }
 
-
     public static class UnitTest {
         private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -183,7 +190,6 @@ public final class OperationNext {
             obs.sendOnCompleted();
 
             assertFalse(it.hasNext());
-
         }
 
         @Test(expected = TestException.class)
@@ -257,10 +263,83 @@ public final class OperationNext {
 
         }
 
+        @SuppressWarnings("serial")
         private static class TestException extends RuntimeException {
 
         }
 
+        /**
+         * Confirm that no buffering or blocking of the Observable onNext calls occurs and it just grabs the next emitted value.
+         * 
+         * This results in output such as => a: 1 b: 2 c: 89
+         * 
+         * @throws Exception
+         */
+        @Test
+        public void testNoBufferingOrBlockingOfSequence() throws Exception {
+            final CountDownLatch finished = new CountDownLatch(1);
+            final AtomicBoolean running = new AtomicBoolean(true);
+            final AtomicInteger count = new AtomicInteger(0);
+            final Observable<Integer> obs = Observable.create(new Func1<Observer<Integer>, Subscription>() {
+
+                @Override
+                public Subscription call(final Observer<Integer> o) {
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            try {
+                                while (running.get()) {
+                                    o.onNext(count.incrementAndGet());
+                                    Thread.sleep(0, 100);
+                                }
+                                o.onCompleted();
+                            } catch (Exception e) {
+                                o.onError(e);
+                            } finally {
+                                finished.countDown();
+                            }
+                        }
+                    }).start();
+                    return Observable.noOpSubscription();
+                }
+
+            });
+
+            Iterator<Integer> it = next(obs).iterator();
+
+            assertTrue(it.hasNext());
+            int a = it.next();
+            assertTrue(it.hasNext());
+            int b = it.next();
+            // we should have a different value
+            assertTrue("a and b should be different", a != b);
+
+            // wait for some time
+            Thread.sleep(100);
+            // make sure the counter in the observable has increased beyond b
+            while (count.get() <= (b + 10)) {
+                Thread.sleep(100);
+            }
+
+            assertTrue(it.hasNext());
+            int expectedHigherThan = count.get();
+            int c = it.next();
+
+            assertTrue("c should not just be the next in sequence", c != (b + 1));
+            assertTrue("expected that c [" + c + "] is higher than " + expectedHigherThan, c > expectedHigherThan);
+
+            assertTrue(it.hasNext());
+
+            // shut down the thread
+            running.set(false);
+
+            finished.await();
+
+            assertFalse(it.hasNext());
+
+            System.out.println("a: " + a + " b: " + b + " c: " + c);
+        }
 
     }
 
