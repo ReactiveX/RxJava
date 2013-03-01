@@ -36,6 +36,7 @@ import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
 import rx.operators.OperationMergeDelayError;
+import rx.operators.OperationNext;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
@@ -1711,6 +1712,17 @@ public class Observable<T> {
     }
 
     /**
+     * Samples the next value (blocking without buffering) from in an observable sequence.
+     *
+     * @param items the source observable sequence.
+     * @param <T> the type of observable.
+     * @return iterable that blocks upon each iteration until the next element in the observable source sequence becomes available.
+     */
+    public static <T> Iterable<T> next(Observable<T> items) {
+        return OperationNext.next(items);
+    }
+
+    /**
      * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
      * 
      * @param that
@@ -2890,6 +2902,15 @@ public class Observable<T> {
      */
     public Iterable<T> toIterable() {
         return toIterable(this);
+    }
+
+    /**
+     * Samples the next value (blocking without buffering) from in an observable sequence.
+     *
+     * @return iterable that blocks upon each iteration until the next element in the observable source sequence becomes available.
+     */
+    public Iterable<T> next() {
+        return next(this);
     }
 
     public static class UnitTest {
