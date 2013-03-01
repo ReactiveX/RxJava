@@ -27,7 +27,7 @@ public final class Range implements Iterable<Integer> {
     private final int step;
 
     public static Range createWithCount(int start, int count) {
-        return create(start, start * (count + 1));
+        return create(start, start + count);
     }
 
     public static Range create(int start, int end) {
@@ -92,6 +92,21 @@ public final class Range implements Iterable<Integer> {
         @Test
         public void testRangeWithCount() {
             assertEquals(Arrays.asList(1, 2, 3, 4, 5), toList(Range.createWithCount(1, 5)));
+        }
+
+        @Test
+        public void testRangeWithCount2() {
+            assertEquals(Arrays.asList(2, 3, 4, 5), toList(Range.createWithCount(2, 4)));
+        }
+
+        @Test
+        public void testRangeWithCount3() {
+            assertEquals(Arrays.asList(0, 1, 2, 3), toList(Range.createWithCount(0, 4)));
+        }
+
+        @Test
+        public void testRangeWithCount4() {
+            assertEquals(Arrays.asList(10, 11, 12, 13, 14), toList(Range.createWithCount(10, 5)));
         }
 
 
