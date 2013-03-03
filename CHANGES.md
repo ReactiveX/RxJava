@@ -1,5 +1,14 @@
 # RxJava Releases #
 
+### Version 0.5.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.5.4%22)) ###
+
+* [Issue 18](https://github.com/Netflix/RxJava/issues/18) Operator: ToIterable
+* [Issue 58](https://github.com/Netflix/RxJava/issues/58) Operator: LastOrDefault
+* [Issue 66](https://github.com/Netflix/RxJava/issues/66) Operator: Next
+* [Issue 77](https://github.com/Netflix/RxJava/issues/77) Operator: Single and SingleOrDefault
+* [Issue 164](https://github.com/Netflix/RxJava/issues/164) Range.createWithCount bugfix
+* [Pull 161](https://github.com/Netflix/RxJava/pull/161) Build Status Badges and CI Integration
+
 ### Version 0.5.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.5.3%22)) ###
 
 * [Issue 45](https://github.com/Netflix/RxJava/issues/45) Operator: ForEach
