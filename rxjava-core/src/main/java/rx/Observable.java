@@ -29,33 +29,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import rx.operators.OperationConcat;
-import rx.operators.OperationFilter;
-import rx.operators.OperationLast;
-import rx.operators.OperationMap;
-import rx.operators.OperationMaterialize;
-import rx.operators.OperationMerge;
-import rx.operators.OperationMergeDelayError;
-import rx.operators.OperationNext;
-import rx.operators.OperationOnErrorResumeNextViaFunction;
-import rx.operators.OperationOnErrorResumeNextViaObservable;
-import rx.operators.OperationOnErrorReturn;
-import rx.operators.OperationScan;
-import rx.operators.OperationSkip;
-import rx.operators.OperationSynchronize;
-import rx.operators.OperationTake;
-import rx.operators.OperationTakeLast;
-import rx.operators.OperationToObservableFuture;
-import rx.operators.OperationToObservableIterable;
-import rx.operators.OperationToObservableList;
-import rx.operators.OperationToObservableSortedList;
-import rx.operators.OperationZip;
+import rx.operators.*;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
 import rx.util.Exceptions;
-import rx.util.Pair;
 import rx.util.Range;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -989,30 +968,7 @@ public class Observable<T> {
      * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
      */
     public static <T, E> Observable<T> takeUntil(final Observable<T> source, final Observable<E> other) {
-        Observable<Pair<Integer, T>> s = source.map(new Func1<T, Pair<Integer, T>>() {
-            @Override
-            public Pair<Integer, T> call(T arg) {
-                return Pair.create(1, arg);
-            }
-        });
-        Observable<Pair<Integer, T>> o = other.map(new Func1<E, Pair<Integer, T>>() {
-            @Override
-            public Pair<Integer, T> call(E arg) {
-                return Pair.create(2, null);
-            }
-        });
-
-        return Observable.merge(s, o).takeWhile(new Func1<Pair<Integer, T>, Boolean>() {
-            @Override
-            public Boolean call(Pair<Integer, T> pair) {
-                return pair.getFirst() == 1;
-            }
-        }).map(new Func1<Pair<Integer, T>, T>() {
-            @Override
-            public T call(Pair<Integer, T> pair) {
-                return pair.getSecond();
-            }
-        });
+        return _create(OperatorTakeUntil.takeUntil(source, other));
     }
 
 
@@ -2877,6 +2833,17 @@ public class Observable<T> {
     }
 
     /**
+     * Returns the values from the source observable sequence until the other observable sequence produces a value.
+     *
+     * @param other  the observable sequence that terminates propagation of elements of the source sequence.
+     * @param <E>    the other type.
+     * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
+     */
+    public <E> Observable<T> takeUntil(Observable<E> other) {
+        return takeUntil(this, other);
+    }
+
+    /**
      * Returns an Observable that emits a single item, a list composed of all the items emitted by
      * the source Observable.
      * 
@@ -3188,63 +3155,6 @@ public class Observable<T> {
             });
         }
 
-        @Test
-        public void testTakeUntil() {
-            Subscription sSource = mock(Subscription.class);
-            Subscription sOther = mock(Subscription.class);
-            TestObservable source = new TestObservable(sSource);
-            TestObservable other = new TestObservable(sOther);
-
-            Observer<String> result = mock(Observer.class);
-            Observable<String> stringObservable = takeUntil(source, other);
-            stringObservable.subscribe(result);
-            source.sendOnNext("one");
-            source.sendOnNext("two");
-            other.sendOnNext("three");
-            source.sendOnNext("four");
-            source.sendOnCompleted();
-            other.sendOnCompleted();
-
-            verify(result, times(1)).onNext("one");
-            verify(result, times(1)).onNext("two");
-            verify(result, times(0)).onNext("three");
-            verify(result, times(0)).onNext("four");
-            verify(sSource, times(1)).unsubscribe();
-            verify(sOther, times(1)).unsubscribe();
-
-        }
-
-        private static class TestObservable extends Observable<String> {
-
-            Observer<String> observer = null;
-            Subscription s;
-
-            public TestObservable(Subscription s) {
-                this.s = s;
-            }
-
-            /* used to simulate subscription */
-            public void sendOnCompleted() {
-                observer.onCompleted();
-            }
-
-            /* used to simulate subscription */
-            public void sendOnNext(String value) {
-                observer.onNext(value);
-            }
-
-            /* used to simulate subscription */
-            @SuppressWarnings("unused")
-            public void sendOnError(Exception e) {
-                observer.onError(e);
-            }
-
-            @Override
-            public Subscription subscribe(final Observer<String> observer) {
-                this.observer = observer;
-                return s;
-            }
-        }
 
         private static class TestException extends RuntimeException {
 
