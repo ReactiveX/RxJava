@@ -29,42 +29,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import rx.operators.OperationConcat;
-import rx.operators.OperationFilter;
-import rx.operators.OperationLast;
-import rx.operators.OperationMap;
-import rx.operators.OperationMaterialize;
-import rx.operators.OperationMerge;
-import rx.operators.OperationMergeDelayError;
-import rx.operators.OperationNext;
-import rx.operators.OperationOnErrorResumeNextViaFunction;
-import rx.operators.OperationOnErrorResumeNextViaObservable;
-import rx.operators.OperationOnErrorReturn;
-import rx.operators.OperationScan;
-import rx.operators.OperationSkip;
-import rx.operators.OperationSynchronize;
-import rx.operators.OperationTake;
-import rx.operators.OperationTakeLast;
-import rx.operators.OperationToObservableFuture;
-import rx.operators.OperationToObservableIterable;
-import rx.operators.OperationToObservableList;
-import rx.operators.OperationToObservableSortedList;
-import rx.operators.OperationZip;
+import rx.operators.*;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
 import rx.util.Exceptions;
 import rx.util.Range;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
-import rx.util.functions.Func3;
-import rx.util.functions.Func4;
-import rx.util.functions.FuncN;
-import rx.util.functions.FunctionLanguageAdaptor;
-import rx.util.functions.Functions;
+import rx.util.functions.*;
 
 /**
  * The Observable interface that implements the Reactive Pattern.
@@ -704,6 +676,45 @@ public class Observable<T> {
      */
     public static Observable<Integer> range(int start, int count) {
         return from(Range.createWithCount(start, count));
+    }
+
+    /**
+     * Returns an observable sequence that invokes the observable factory whenever a new observer subscribes.
+     * The Defer operator allows you to defer or delay the creation of the sequence until the time when an observer
+     * subscribes to the sequence. This is useful to allow an observer to easily obtain an updates or refreshed version
+     * of the sequence.
+     *
+     * @param observableFactory the observable factory function to invoke for each observer that subscribes to the resulting sequence.
+     * @param <T> the type of the observable.
+     * @return the observable sequence whose observers trigger an invocation of the given observable factory function.
+     */
+    public static <T> Observable<T> defer(Func0<Observable<T>> observableFactory) {
+        return _create(OperationDefer.defer(observableFactory));
+    }
+
+    /**
+     * Returns an observable sequence that invokes the observable factory whenever a new observer subscribes.
+     * The Defer operator allows you to defer or delay the creation of the sequence until the time when an observer
+     * subscribes to the sequence. This is useful to allow an observer to easily obtain an updates or refreshed version
+     * of the sequence.
+     *
+     * @param observableFactory the observable factory function to invoke for each observer that subscribes to the resulting sequence.
+     * @param <T> the type of the observable.
+     * @return the observable sequence whose observers trigger an invocation of the given observable factory function.
+     */
+    public static <T> Observable<T> defer(Object observableFactory) {
+        @SuppressWarnings("rawtypes")
+        final FuncN _f = Functions.from(observableFactory);
+
+        return _create(OperationDefer.defer(new Func0<Observable<T>>() {
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public Observable<T> call() {
+                return (Observable<T>) _f.call();
+            }
+
+        }));
     }
 
     /**
