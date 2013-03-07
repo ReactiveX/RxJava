@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 class VideoExample {
 
@@ -104,17 +105,27 @@ def Observable getVideoGridForDisplay(userId) {
  */
 def Observable<VideoList> getListOfLists(userId) {
     return Observable.create({ observer -> 
+        AtomicBoolean isRunning = new AtomicBoolean(true); 
         // this will happen on a separate thread as it requires a network call
         executor.execute(new Runnable() {
             def void run() {
                 // simulate network latency
                 Thread.sleep(180);
                 for(i in 0..15) {
+                    if(!isRunning.get()) {
+                        // we have received an unsubscribe
+                        break;
+                    }
+                    //println("****** emitting list: " + i)
                     observer.onNext(new VideoList(i))
                 }
                 observer.onCompleted();
             }
         })
+        return Observable.createSubscription({
+            // see https://github.com/Netflix/RxJava/issues/173 for a possibly simpler way of doing this
+            isRunning.set(false);
+        });
     })
 }
 
@@ -141,7 +152,10 @@ class VideoList {
             // we already have the videos once a list is loaded
             // so we won't launch another thread but return
             // the sequence of videos via push
+            // NOTE: This will always execute all 50 even if take(2) asks for only 2
+            //       as it performs synchronously and is not lazy.
             for(i in 0..50) {
+                //println("emitting video: " + i)
                 observer.onNext(new Video((listPosition*1000)+i))
             }
             observer.onCompleted();
@@ -243,4 +257,3 @@ def combine( Map... m ) {
   }
 
 }
-
