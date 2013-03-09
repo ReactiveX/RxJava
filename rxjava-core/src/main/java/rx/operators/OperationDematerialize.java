@@ -15,11 +15,18 @@
  */
 package rx.operators;
 
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
@@ -68,7 +75,6 @@ public final class OperationDematerialize {
                             break;
                         case OnError:
                             observer.onError(value.getException());
-                            observer.onCompleted();
                             break;
                         case OnCompleted:
                             observer.onCompleted();
@@ -76,6 +82,64 @@ public final class OperationDematerialize {
                     }
                 }
             });
+        }
+    }
+
+    public static class UnitTest {
+
+        @Test
+        public void testDematerialize1() {
+
+            Observable<String> observable = Observable.just("test");
+            Observable<String> dematerializedObservable = Observable.create(dematerialize(observable.materialize()));
+
+            TestObserver testObserver = new TestObserver();
+            dematerializedObservable.subscribe(testObserver);
+
+            assertFalse(testObserver.onError);
+            assertTrue(testObserver.onCompleted);
+            assertTrue(testObserver.notifications.size() == 1);
+            assertTrue(testObserver.notifications.get(0) == "test");
+        }
+
+        @Test
+        public void testDematerialize2() {
+            Exception exception = new Exception("test");
+            Observable<String> observable = Observable.error(exception);
+            Observable<String> dematerializedObservable = Observable.create(dematerialize(observable.materialize()));
+
+            TestObserver testObserver = new TestObserver();
+            dematerializedObservable.subscribe(testObserver);
+
+            assertTrue(testObserver.onError);
+            assertTrue(exception == testObserver.exception);
+            assertFalse(testObserver.onCompleted);
+            assertTrue(testObserver.notifications.isEmpty());
+        }
+
+        private static class TestObserver implements Observer<String> {
+
+            boolean onCompleted = false;
+            boolean onError = false;
+            Exception exception = null;
+            List<String> notifications = new Vector<String>();
+
+            @Override
+            public void onCompleted() {
+                this.onCompleted = true;
+            }
+
+            @Override
+            public void onError(Exception e) {
+                this.onError = true;
+                exception = e;
+            }
+
+            @Override
+            public void onNext(String value) {
+                this.notifications.add(value);
+            }
+
         }
     }
 }
