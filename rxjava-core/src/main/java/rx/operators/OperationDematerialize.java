@@ -15,7 +15,6 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
@@ -25,9 +24,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
-
-import java.util.List;
-import java.util.Vector;
 
 /**
  * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
