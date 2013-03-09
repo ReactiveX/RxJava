@@ -16,6 +16,7 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 
@@ -59,12 +60,10 @@ public final class OperationDematerialize {
             return sequence.subscribe(new Observer<Notification<T>>() {
                 @Override
                 public void onCompleted() {
-                    observer.onCompleted();
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    observer.onError(e);
                 }
 
                 @Override
@@ -89,57 +88,30 @@ public final class OperationDematerialize {
 
         @Test
         public void testDematerialize1() {
+            Observable<Notification<Integer>> notifications = Observable.toObservable(1, 2).materialize();
+            Observable<Integer> dematerialize = Observable.dematerialize(notifications);
 
-            Observable<String> observable = Observable.just("test");
-            Observable<String> dematerializedObservable = Observable.create(dematerialize(observable.materialize()));
+            Observer<Integer> aObserver = mock(Observer.class);
+            dematerialize.subscribe(aObserver);
 
-            TestObserver testObserver = new TestObserver();
-            dematerializedObservable.subscribe(testObserver);
-
-            assertFalse(testObserver.onError);
-            assertTrue(testObserver.onCompleted);
-            assertTrue(testObserver.notifications.size() == 1);
-            assertTrue(testObserver.notifications.get(0) == "test");
+            verify(aObserver, times(1)).onNext(1);
+            verify(aObserver, times(1)).onNext(2);
+            verify(aObserver, times(1)).onCompleted();
+            verify(aObserver, never()).onError(any(Exception.class));
         }
 
         @Test
         public void testDematerialize2() {
             Exception exception = new Exception("test");
-            Observable<String> observable = Observable.error(exception);
-            Observable<String> dematerializedObservable = Observable.create(dematerialize(observable.materialize()));
+            Observable<Integer> observable = Observable.error(exception);
+            Observable<Integer> dematerialize = Observable.create(dematerialize(observable.materialize()));
 
-            TestObserver testObserver = new TestObserver();
-            dematerializedObservable.subscribe(testObserver);
+            Observer<Integer> aObserver = mock(Observer.class);
+            dematerialize.subscribe(aObserver);
 
-            assertTrue(testObserver.onError);
-            assertTrue(exception == testObserver.exception);
-            assertFalse(testObserver.onCompleted);
-            assertTrue(testObserver.notifications.isEmpty());
-        }
-
-        private static class TestObserver implements Observer<String> {
-
-            boolean onCompleted = false;
-            boolean onError = false;
-            Exception exception = null;
-            List<String> notifications = new Vector<String>();
-
-            @Override
-            public void onCompleted() {
-                this.onCompleted = true;
-            }
-
-            @Override
-            public void onError(Exception e) {
-                this.onError = true;
-                exception = e;
-            }
-
-            @Override
-            public void onNext(String value) {
-                this.notifications.add(value);
-            }
-
+            verify(aObserver, times(1)).onError(exception);
+            verify(aObserver, times(0)).onCompleted();
+            verify(aObserver, times(0)).onNext(any(Integer.class));
         }
     }
 }
