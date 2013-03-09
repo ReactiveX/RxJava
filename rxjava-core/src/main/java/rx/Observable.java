@@ -30,6 +30,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import rx.operators.OperationConcat;
+import rx.operators.OperationDematerialize;
 import rx.operators.OperationFilter;
 import rx.operators.OperationLast;
 import rx.operators.OperationMap;
@@ -925,6 +926,18 @@ public class Observable<T> {
      */
     public static <T> Observable<Notification<T>> materialize(final Observable<T> sequence) {
         return _create(OperationMaterialize.materialize(sequence));
+    }
+
+    /**
+     * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
+     *
+     * @param sequence
+     *            An observable sequence containing explicit notification values which have to be turned into implicit notifications.
+     * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">MSDN: Observable.Dematerialize</a>
+     */
+    public static <T> Observable<T> dematerialize(final Observable<Notification<T>> sequence) {
+        return _create(OperationDematerialize.dematerialize(sequence));
     }
 
     /**
@@ -2404,6 +2417,16 @@ public class Observable<T> {
      */
     public Observable<Notification<T>> materialize() {
         return materialize(this);
+    }
+
+    /**
+     * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
+     *
+     * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">MSDN: Observable.dematerialize</a>
+     */
+    public Observable<T> dematerialize() {
+        return dematerialize((Observable<Notification<T>>)this);
     }
 
     /**
