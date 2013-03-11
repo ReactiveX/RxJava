@@ -65,7 +65,7 @@ public class Observable<T> {
         this(null, false);
     }
 
-    private Observable(Func1<Observer<T>, Subscription> onSubscribe, boolean isTrusted) {
+    /*package*/ Observable(Func1<Observer<T>, Subscription> onSubscribe, boolean isTrusted) {
         this.onSubscribe = onSubscribe;
         this.isTrusted = isTrusted;
     }

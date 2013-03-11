@@ -98,9 +98,15 @@ public final class OperatorGroupBy {
                 return pair.value;
             }
         });
-        return new GroupedObservable<K, R>(key, observable);
-    }
+        return new GroupedObservable<K, R>(key, new Func1<Observer<R>, Subscription>() {
 
+            @Override
+            public Subscription call(Observer<R> observer) {
+                return observable.subscribe(observer);
+            }
+
+        });
+    }
 
     private static class KeyValue<K, V> {
         private final K key;
