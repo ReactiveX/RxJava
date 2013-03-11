@@ -29,27 +29,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import rx.operators.OperationConcat;
-import rx.operators.OperationFilter;
-import rx.operators.OperationLast;
-import rx.operators.OperationMap;
-import rx.operators.OperationMaterialize;
-import rx.operators.OperationMerge;
-import rx.operators.OperationMergeDelayError;
-import rx.operators.OperationNext;
-import rx.operators.OperationOnErrorResumeNextViaFunction;
-import rx.operators.OperationOnErrorResumeNextViaObservable;
-import rx.operators.OperationOnErrorReturn;
-import rx.operators.OperationScan;
-import rx.operators.OperationSkip;
-import rx.operators.OperationSynchronize;
-import rx.operators.OperationTake;
-import rx.operators.OperationTakeLast;
-import rx.operators.OperationToObservableFuture;
-import rx.operators.OperationToObservableIterable;
-import rx.operators.OperationToObservableList;
-import rx.operators.OperationToObservableSortedList;
-import rx.operators.OperationZip;
+import rx.operators.*;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
 import rx.util.AtomicObservableSubscription;
@@ -992,6 +972,34 @@ public class Observable<T> {
      */
     public static <T> Observable<T> concat(Observable<T>... source) {
         return _create(OperationConcat.concat(source));
+    }
+
+    /**
+     * Groups the elements of an observable and selects the resulting elements by using a specified function.
+     *
+     * @param source an observable whose elements to group.
+     * @param keySelector a function to extract the key for each element.
+     * @param elementSelector a function to map each source element to an element in an observable group.
+     * @param <K> the key type.
+     * @param <T> the source type.
+     * @param <R> the resulting observable type.
+     * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+     */
+    public static <K, T, R> Observable<GroupedObservable<K, R>> groupBy(Observable<T> source, final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
+        return _create(OperatorGroupBy.groupBy(source, keySelector, elementSelector));
+    }
+
+    /**
+     * Groups the elements of an observable according to a specified key selector function and
+     *
+     * @param source an observable whose elements to group.
+     * @param keySelector a function to extract the key for each element.
+     * @param <K> the key type.
+     * @param <T> the source type.
+     * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+     */
+    public static <K, T> Observable<GroupedObservable<K, T>> groupBy(Observable<T> source, final Func1<T, K> keySelector) {
+        return _create(OperatorGroupBy.groupBy(source, keySelector));
     }
 
     /**
@@ -2906,6 +2914,30 @@ public class Observable<T> {
 
     public Observable<T> startWith(T... values) {
         return concat(Observable.<T>from(values), this);
+    }
+
+    /**
+     * Groups the elements of an observable and selects the resulting elements by using a specified function.
+     *
+     * @param keySelector a function to extract the key for each element.
+     * @param elementSelector a function to map each source element to an element in an observable group.
+     * @param <K> the key type.
+     * @param <R> the resulting observable type.
+     * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+     */
+    public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
+        return groupBy(this, keySelector, elementSelector);
+    }
+
+    /**
+     * Groups the elements of an observable according to a specified key selector function and
+     *
+     * @param keySelector a function to extract the key for each element.
+     * @param <K> the key type.
+     * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+     */
+    public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<T, K> keySelector) {
+        return groupBy(this, keySelector);
     }
 
     /**

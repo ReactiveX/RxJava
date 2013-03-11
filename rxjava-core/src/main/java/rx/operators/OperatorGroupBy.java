@@ -26,7 +26,7 @@ import rx.util.functions.Functions;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public final class OperatorGroupBy {
 
@@ -132,6 +132,16 @@ public final class OperatorGroupBy {
             assertEquals(Arrays.asList("four", "five"), map.get(4));
             assertEquals(Arrays.asList("three"), map.get(5));
 
+        }
+
+        @Test
+        public void testEmpty() {
+            Observable<String> source = Observable.from();
+            Observable<GroupedObservable<Integer, String>> grouped = Observable.create(groupBy(source, length));
+
+            Map<Integer, List<String>> map = toMap(grouped);
+
+            assertTrue(map.isEmpty());
         }
 
         private static <K, V> Map<K, List<V>> toMap(Observable<GroupedObservable<K, V>> observable) {
