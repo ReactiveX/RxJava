@@ -1032,6 +1032,34 @@ public class Observable<T> {
     }
 
     /**
+     * Groups the elements of an observable and selects the resulting elements by using a specified function.
+     *
+     * @param source an observable whose elements to group.
+     * @param keySelector a function to extract the key for each element.
+     * @param elementSelector a function to map each source element to an element in an observable group.
+     * @param <K> the key type.
+     * @param <T> the source type.
+     * @param <R> the resulting observable type.
+     * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+     */
+    public static <K, T, R> Observable<GroupedObservable<K, R>> groupBy(Observable<T> source, final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
+        return _create(OperatorGroupBy.groupBy(source, keySelector, elementSelector));
+    }
+
+    /**
+     * Groups the elements of an observable according to a specified key selector function and
+     *
+     * @param source an observable whose elements to group.
+     * @param keySelector a function to extract the key for each element.
+     * @param <K> the key type.
+     * @param <T> the source type.
+     * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+     */
+    public static <K, T> Observable<GroupedObservable<K, T>> groupBy(Observable<T> source, final Func1<T, K> keySelector) {
+        return _create(OperatorGroupBy.groupBy(source, keySelector));
+    }
+
+    /**
      * Same functionality as <code>merge</code> except that errors received to onError will be held until all sequences have finished (onComplete/onError) before sending the error.
      * <p>
      * Only the first onError received will be sent.
@@ -2929,6 +2957,34 @@ public class Observable<T> {
      */
     public Iterable<T> toIterable() {
         return toIterable(this);
+    }
+
+    public Observable<T> startWith(T... values) {
+        return concat(Observable.<T>from(values), this);
+    }
+
+    /**
+     * Groups the elements of an observable and selects the resulting elements by using a specified function.
+     *
+     * @param keySelector a function to extract the key for each element.
+     * @param elementSelector a function to map each source element to an element in an observable group.
+     * @param <K> the key type.
+     * @param <R> the resulting observable type.
+     * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+     */
+    public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
+        return groupBy(this, keySelector, elementSelector);
+    }
+
+    /**
+     * Groups the elements of an observable according to a specified key selector function and
+     *
+     * @param keySelector a function to extract the key for each element.
+     * @param <K> the key type.
+     * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+     */
+    public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<T, K> keySelector) {
+        return groupBy(this, keySelector);
     }
 
     /**
