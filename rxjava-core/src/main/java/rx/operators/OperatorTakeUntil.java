@@ -73,12 +73,12 @@ public class OperatorTakeUntil {
                     Type type = pair.getFirst();
                     Notification<T> notification = pair.getSecond();
 
-                    if (type == Type.OTHER || notification.isOnCompleted()) {
-                        observer.onCompleted();
-                    } else if (notification.isOnError()) {
+                    if (notification.isOnError()) {
                         observer.onError(notification.getException());
-                    } else {
+                    } else if (type == Type.SOURCE && notification.isOnNext()) {
                         observer.onNext(notification.getValue());
+                    } else if ((type == Type.OTHER && notification.isOnNext()) || (type == Type.SOURCE && notification.isOnCompleted())) {
+                        observer.onCompleted();
                     }
 
                 }
@@ -97,7 +97,17 @@ public class OperatorTakeUntil {
             Observable<Pair<Type, Notification<T>>> o = other.materialize().map(new Func1<Notification<E>, Pair<Type, Notification<T>>>() {
                 @Override
                 public Pair<Type, Notification<T>> call(Notification<E> arg) {
-                    return Pair.create(Type.OTHER, null);
+                    Notification<T> n = null;
+                    if (arg.isOnNext()) {
+                        n = new Notification<T>((T)null);
+                    }
+                    if (arg.isOnCompleted()) {
+                        n = new Notification<T>();
+                    }
+                    if (arg.isOnError()) {
+                        n = new Notification<T>(arg.getException());
+                    }
+                    return Pair.create(Type.OTHER, n);
                 }
             });
 
@@ -200,8 +210,8 @@ public class OperatorTakeUntil {
             verify(result, times(1)).onNext("one");
             verify(result, times(1)).onNext("two");
             // ignore other exception
-            verify(result, times(0)).onError(any(TestException.class));
-            verify(result, times(1)).onCompleted();
+            verify(result, times(1)).onError(any(TestException.class));
+            verify(result, times(0)).onCompleted();
             verify(sSource, times(1)).unsubscribe();
             verify(sOther, times(1)).unsubscribe();
 
@@ -223,9 +233,9 @@ public class OperatorTakeUntil {
 
             verify(result, times(1)).onNext("one");
             verify(result, times(1)).onNext("two");
-            verify(result, times(1)).onCompleted();
-            verify(sSource, times(1)).unsubscribe();
-            verify(sOther, times(1)).unsubscribe();
+            verify(result, times(0)).onCompleted();
+            verify(sSource, times(0)).unsubscribe();
+            verify(sOther, times(0)).unsubscribe();
 
         }
 
