@@ -29,27 +29,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import rx.operators.OperationConcat;
-import rx.operators.OperationFilter;
-import rx.operators.OperationLast;
-import rx.operators.OperationMap;
-import rx.operators.OperationMaterialize;
-import rx.operators.OperationMerge;
-import rx.operators.OperationMergeDelayError;
-import rx.operators.OperationNext;
-import rx.operators.OperationOnErrorResumeNextViaFunction;
-import rx.operators.OperationOnErrorResumeNextViaObservable;
-import rx.operators.OperationOnErrorReturn;
-import rx.operators.OperationScan;
-import rx.operators.OperationSkip;
-import rx.operators.OperationSynchronize;
-import rx.operators.OperationTake;
-import rx.operators.OperationTakeLast;
-import rx.operators.OperationToObservableFuture;
-import rx.operators.OperationToObservableIterable;
-import rx.operators.OperationToObservableList;
-import rx.operators.OperationToObservableSortedList;
-import rx.operators.OperationZip;
+import rx.operators.*;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
 import rx.util.AtomicObservableSubscription;
@@ -977,6 +957,20 @@ public class Observable<T> {
     public static <T> Observable<T> merge(Observable<T>... source) {
         return _create(OperationMerge.merge(source));
     }
+
+    /**
+     * Returns the values from the source observable sequence until the other observable sequence produces a value.
+     *
+     * @param source the source sequence to propagate elements for.
+     * @param other  the observable sequence that terminates propagation of elements of the source sequence.
+     * @param <T>    the type of source.
+     * @param <E>    the other type.
+     * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
+     */
+    public static <T, E> Observable<T> takeUntil(final Observable<T> source, final Observable<E> other) {
+        return OperatorTakeUntil.takeUntil(source, other);
+    }
+
 
     /**
      * Combines the objects emitted by two or more Observables, and emits the result as a single Observable,
@@ -2839,6 +2833,17 @@ public class Observable<T> {
     }
 
     /**
+     * Returns the values from the source observable sequence until the other observable sequence produces a value.
+     *
+     * @param other  the observable sequence that terminates propagation of elements of the source sequence.
+     * @param <E>    the other type.
+     * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
+     */
+    public <E> Observable<T> takeUntil(Observable<E> other) {
+        return takeUntil(this, other);
+    }
+
+    /**
      * Returns an Observable that emits a single item, a list composed of all the items emitted by
      * the source Observable.
      * 
@@ -2992,7 +2997,6 @@ public class Observable<T> {
             verify(result, times(1)).onNext(false);
         }
 
-
         @Test
         public void testToIterable() {
             Observable<String> obs = toObservable("one", "two", "three");
@@ -3082,7 +3086,7 @@ public class Observable<T> {
 
             assertEquals(-1, last);
         }
-        
+
         public void testSingle() {
             Observable<String> observable = toObservable("one");
             assertEquals("one", observable.single());
@@ -3150,6 +3154,7 @@ public class Observable<T> {
                 }
             });
         }
+
 
         private static class TestException extends RuntimeException {
 
