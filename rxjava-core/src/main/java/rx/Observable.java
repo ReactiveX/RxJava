@@ -908,6 +908,18 @@ public class Observable<T> {
     }
 
     /**
+     * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
+     *
+     * @param sequence
+     *            An observable sequence containing explicit notification values which have to be turned into implicit notifications.
+     * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">MSDN: Observable.Dematerialize</a>
+     */
+    public static <T> Observable<T> dematerialize(final Observable<Notification<T>> sequence) {
+        return _create(OperationDematerialize.dematerialize(sequence));
+    }
+
+    /**
      * Flattens the Observable sequences from a list of Observables into one Observable sequence
      * without any transformation. You can combine the output of multiple Observables so that they
      * act like a single Observable, by using the <code>merge</code> method.
@@ -2398,6 +2410,19 @@ public class Observable<T> {
      */
     public Observable<Notification<T>> materialize() {
         return materialize(this);
+    }
+
+    /**
+     * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
+     * 
+     * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">MSDN: Observable.dematerialize</a>
+     * @throws Exception
+     *             if attempted on Observable not of type {@code Observable<Notification<T>>}.
+     */
+    @SuppressWarnings("unchecked")
+    public Observable<T> dematerialize() {
+        return dematerialize((Observable<Notification<T>>)this);
     }
 
     /**
