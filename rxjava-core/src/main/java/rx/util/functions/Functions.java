@@ -555,12 +555,26 @@ public class Functions {
         return (Func1<T, Boolean>) AlwaysTrue.INSTANCE;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> Func1<T, T> identity() {
+        return (Func1<T, T>) Identity.INSTANCE;
+    }
+
     private enum AlwaysTrue implements Func1<Object, Boolean> {
         INSTANCE;
 
         @Override
         public Boolean call(Object o) {
             return true;
+        }
+    }
+
+    private enum Identity implements Func1<Object, Object> {
+        INSTANCE;
+
+        @Override
+        public Object call(Object o) {
+            return o;
         }
     }
 
