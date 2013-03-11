@@ -1714,6 +1714,18 @@ public class Observable<T> {
     }
 
     /**
+     * Samples the most recent value in an observable sequence.
+     *
+     * @param source the source observable sequence.
+     * @param <T> the type of observable.
+     * @param initialValue the initial value that will be yielded by the enumerable sequence if no element has been sampled yet.
+     * @return the iterable that returns the last sampled element upon each iteration.
+     */
+    public static <T> Iterable<T> mostRecent(Observable<T> source, T initialValue) {
+        return OperationMostRecent.mostRecent(source, initialValue);
+    }
+
+    /**
      * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
      * 
      * @param that
@@ -2936,6 +2948,17 @@ public class Observable<T> {
     public Iterable<T> next() {
         return next(this);
     }
+
+    /**
+     * Samples the most recent value in an observable sequence.
+     *
+     * @param initialValue the initial value that will be yielded by the enumerable sequence if no element has been sampled yet.
+     * @return the iterable that returns the last sampled element upon each iteration.
+     */
+    public Iterable<T> mostRecent(T initialValue) {
+        return mostRecent(this, initialValue);
+    }
+
 
     public static class UnitTest {
 
