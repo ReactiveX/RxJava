@@ -1651,70 +1651,24 @@ public class Observable<T> {
      * @return Observable converted to Iterable.
      */
     public static <T> Iterable<T> toIterable(final Observable<T> that) {
-        final BlockingQueue<Notification<T>> notifications = new LinkedBlockingQueue<Notification<T>>();
-
-        materialize(that).subscribe(new Observer<Notification<T>>() {
-            @Override
-            public void onCompleted() {
-                // ignore
-            }
-
-            @Override
-            public void onError(Exception e) {
-                // ignore
-            }
-
-            @Override
-            public void onNext(Notification<T> args) {
-                notifications.offer(args);
-            }
-        });
-
-        final Iterator<T> it = new Iterator<T>() {
-            private Notification<T> buf;
-
-            @Override
-            public boolean hasNext() {
-                if (buf == null) {
-                    buf = take();
-                }
-                return !buf.isOnCompleted();
-            }
-
-            @Override
-            public T next() {
-                if (buf == null) {
-                    buf = take();
-                }
-                if (buf.isOnError()) {
-                    throw Exceptions.propagate(buf.getException());
-                }
-
-                T result = buf.getValue();
-                buf = null;
-                return result;
-            }
-
-            private Notification<T> take() {
-                try {
-                    return notifications.take();
-                } catch (InterruptedException e) {
-                    throw Exceptions.propagate(e);
-                }
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("Read-only iterator");
-            }
-        };
 
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
-                return it;
+                return getIterator(that);
             }
         };
+    }
+
+    /**
+     * Returns an iterator that iterates all values of the observable.
+     *
+     * @param that an observable sequence to get an iterator for.
+     * @param <T> the type of source.
+     * @return the iterator that could be used to iterate over the elements of the observable.
+     */
+    public static <T> Iterator<T> getIterator(Observable<T> that) {
+        return OperatorToIterator.toIterator(that);
     }
 
     /**
@@ -2932,6 +2886,15 @@ public class Observable<T> {
      */
     public Iterable<T> toIterable() {
         return toIterable(this);
+    }
+
+    /**
+     * Returns an iterator that iterates all values of the observable.
+     *
+     * @return the iterator that could be used to iterate over the elements of the observable.
+     */
+    public Iterator<T> getIterator() {
+        return getIterator(this);
     }
 
     /**
