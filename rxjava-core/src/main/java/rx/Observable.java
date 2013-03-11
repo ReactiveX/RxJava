@@ -968,7 +968,7 @@ public class Observable<T> {
      * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
      */
     public static <T, E> Observable<T> takeUntil(final Observable<T> source, final Observable<E> other) {
-        return _create(OperatorTakeUntil.takeUntil(source, other));
+        return OperatorTakeUntil.takeUntil(source, other);
     }
 
 

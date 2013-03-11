@@ -16,15 +16,11 @@
 package rx.operators;
 
 import org.junit.Test;
-import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
-import rx.util.Pair;
 import rx.util.functions.Func1;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class OperatorTakeUntil {
@@ -38,91 +34,100 @@ public class OperatorTakeUntil {
      * @param <E>    the other type.
      * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
      */
-    public static <T, E> Func1<Observer<T>, Subscription> takeUntil(final Observable<T> source, final Observable<E> other) {
-        return new TakeUntil<T, E>(source, other);
+    public static <T, E> Observable<T> takeUntil(final Observable<T> source, final Observable<E> other) {
+        Observable<Notification<T>> s = Observable.create(new SourceObservable<T>(source));
+        Observable<Notification<T>> o = Observable.create(new OtherObservable<T, E>(other));
+        Observable<Notification<T>> result = Observable.merge(s, o);
+
+        return result.takeWhile(new Func1<Notification<T>, Boolean>() {
+            @Override
+            public Boolean call(Notification<T> notification) {
+                return !notification.halt;
+            }
+        }).map(new Func1<Notification<T>, T>() {
+            @Override
+            public T call(Notification<T> notification) {
+                return notification.value;
+            }
+        });
     }
 
-    private static class TakeUntil<T, E> implements Func1<Observer<T>, Subscription> {
+    private static class Notification<T> {
+        private final boolean halt;
+        private final T value;
 
-        private final Observable<T> source;
-        private final Observable<E> other;
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        public static <T> Notification<T> value(T value) {
+            return new Notification<T>(false, value);
+        }
 
-        private TakeUntil(Observable<T> source, Observable<E> other) {
-            this.source = source;
-            this.other = other;
+        public static <T> Notification<T> halt() {
+            return new Notification<T>(true, null);
+        }
+
+        private Notification(boolean halt, T value) {
+            this.halt = halt;
+            this.value = value;
+        }
+
+    }
+
+    private static class SourceObservable<T> implements Func1<Observer<Notification<T>>, Subscription> {
+        private final Observable<T> sequence;
+
+        private SourceObservable(Observable<T> sequence) {
+            this.sequence = sequence;
         }
 
         @Override
-        public Subscription call(final Observer<T> observer) {
-            Observable<Pair<Type, Notification<T>>> result = mergeWithIdentifier(source, other);
-
-            return subscription.wrap(result.subscribe(new Observer<Pair<Type, Notification<T>>>() {
+        public Subscription call(final Observer<Notification<T>> notificationObserver) {
+            return sequence.subscribe(new Observer<T>() {
                 @Override
                 public void onCompleted() {
-                    // ignore
+                    notificationObserver.onNext(Notification.<T>halt());
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    // ignore
+                    notificationObserver.onError(e);
                 }
 
                 @Override
-                public void onNext(Pair<Type, Notification<T>> pair) {
-                    Type type = pair.getFirst();
-                    Notification<T> notification = pair.getSecond();
-
-                    if (notification.isOnError()) {
-                        observer.onError(notification.getException());
-                    } else if (type == Type.SOURCE && notification.isOnNext()) {
-                        observer.onNext(notification.getValue());
-                    } else if ((type == Type.OTHER && notification.isOnNext()) || (type == Type.SOURCE && notification.isOnCompleted())) {
-                        observer.onCompleted();
-                    }
-
-                }
-            }));
-        }
-
-        @SuppressWarnings("unchecked")
-        private static <T, E> Observable<Pair<Type, Notification<T>>> mergeWithIdentifier(Observable<T> source, Observable<E> other) {
-            Observable<Pair<Type, Notification<T>>> s = source.materialize().map(new Func1<Notification<T>, Pair<Type, Notification<T>>>() {
-                @Override
-                public Pair<Type, Notification<T>> call(Notification<T> arg) {
-                    return Pair.create(Type.SOURCE, arg);
+                public void onNext(T args) {
+                    notificationObserver.onNext(Notification.value(args));
                 }
             });
-
-            Observable<Pair<Type, Notification<T>>> o = other.materialize().map(new Func1<Notification<E>, Pair<Type, Notification<T>>>() {
-                @Override
-                public Pair<Type, Notification<T>> call(Notification<E> arg) {
-                    Notification<T> n = null;
-                    if (arg.isOnNext()) {
-                        n = new Notification<T>((T)null);
-                    }
-                    if (arg.isOnCompleted()) {
-                        n = new Notification<T>();
-                    }
-                    if (arg.isOnError()) {
-                        n = new Notification<T>(arg.getException());
-                    }
-                    return Pair.create(Type.OTHER, n);
-                }
-            });
-
-            return Observable.merge(s, o);
         }
-
-        private static enum Type {
-            SOURCE, OTHER
-        }
-
     }
 
+    private static class OtherObservable<T, E> implements Func1<Observer<Notification<T>>, Subscription> {
+        private final Observable<E> sequence;
+
+        private OtherObservable(Observable<E> sequence) {
+            this.sequence = sequence;
+        }
+
+        @Override
+        public Subscription call(final Observer<Notification<T>> notificationObserver) {
+            return sequence.subscribe(new Observer<E>() {
+                @Override
+                public void onCompleted() {
+                    // Ignore
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    notificationObserver.onError(e);
+                }
+
+                @Override
+                public void onNext(E args) {
+                    notificationObserver.onNext(Notification.<T>halt());
+                }
+            });
+        }
+    }
 
     public static class UnitTest {
-
 
         @Test
         public void testTakeUntil() {
@@ -132,7 +137,7 @@ public class OperatorTakeUntil {
             TestObservable other = new TestObservable(sOther);
 
             Observer<String> result = mock(Observer.class);
-            Observable<String> stringObservable = Observable.create(new TakeUntil<String, String>(source, other));
+            Observable<String> stringObservable = takeUntil(source, other);
             stringObservable.subscribe(result);
             source.sendOnNext("one");
             source.sendOnNext("two");
@@ -158,7 +163,7 @@ public class OperatorTakeUntil {
             TestObservable other = new TestObservable(sOther);
 
             Observer<String> result = mock(Observer.class);
-            Observable<String> stringObservable = Observable.create(new TakeUntil<String, String>(source, other));
+            Observable<String> stringObservable = takeUntil(source, other);
             stringObservable.subscribe(result);
             source.sendOnNext("one");
             source.sendOnNext("two");
@@ -177,17 +182,18 @@ public class OperatorTakeUntil {
             Subscription sOther = mock(Subscription.class);
             TestObservable source = new TestObservable(sSource);
             TestObservable other = new TestObservable(sOther);
+            Exception error = new Exception();
 
             Observer<String> result = mock(Observer.class);
-            Observable<String> stringObservable = Observable.create(new TakeUntil<String, String>(source, other));
+            Observable<String> stringObservable = takeUntil(source, other);
             stringObservable.subscribe(result);
             source.sendOnNext("one");
             source.sendOnNext("two");
-            source.sendOnError(new TestException());
+            source.sendOnError(error);
 
             verify(result, times(1)).onNext("one");
             verify(result, times(1)).onNext("two");
-            verify(result, times(1)).onError(any(TestException.class));
+            verify(result, times(1)).onError(error);
             verify(sSource, times(1)).unsubscribe();
             verify(sOther, times(1)).unsubscribe();
 
@@ -199,18 +205,19 @@ public class OperatorTakeUntil {
             Subscription sOther = mock(Subscription.class);
             TestObservable source = new TestObservable(sSource);
             TestObservable other = new TestObservable(sOther);
+            Exception error = new Exception();
 
             Observer<String> result = mock(Observer.class);
-            Observable<String> stringObservable = Observable.create(new TakeUntil<String, String>(source, other));
+            Observable<String> stringObservable = takeUntil(source, other);
             stringObservable.subscribe(result);
             source.sendOnNext("one");
             source.sendOnNext("two");
-            other.sendOnError(new TestException());
+            other.sendOnError(error);
 
             verify(result, times(1)).onNext("one");
             verify(result, times(1)).onNext("two");
             // ignore other exception
-            verify(result, times(1)).onError(any(TestException.class));
+            verify(result, times(1)).onError(error);
             verify(result, times(0)).onCompleted();
             verify(sSource, times(1)).unsubscribe();
             verify(sOther, times(1)).unsubscribe();
@@ -225,7 +232,7 @@ public class OperatorTakeUntil {
             TestObservable other = new TestObservable(sOther);
 
             Observer<String> result = mock(Observer.class);
-            Observable<String> stringObservable = Observable.create(new TakeUntil<String, String>(source, other));
+            Observable<String> stringObservable = takeUntil(source, other);
             stringObservable.subscribe(result);
             source.sendOnNext("one");
             source.sendOnNext("two");
@@ -269,10 +276,6 @@ public class OperatorTakeUntil {
                 this.observer = observer;
                 return s;
             }
-        }
-
-        private static class TestException extends RuntimeException {
-
         }
 
     }
