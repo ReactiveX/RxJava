@@ -2904,6 +2904,10 @@ public class Observable<T> {
         return toIterable(this);
     }
 
+    public Observable<T> startWith(T... values) {
+        return concat(Observable.<T>from(values), this);
+    }
+
     /**
      * Samples the next value (blocking without buffering) from in an observable sequence.
      *
