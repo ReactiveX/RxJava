@@ -1,3 +1,18 @@
+/**
+ * Copyright 2013 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.operators;
 
 import org.junit.Test;
@@ -9,6 +24,7 @@ import rx.util.functions.Func1;
 import rx.util.functions.Functions;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,23 +42,26 @@ public final class OperatorGroupBy {
             }
         });
 
-        return new GroupBy<K, T, R>(keyval);
+        return new GroupBy<K, R>(keyval);
     }
 
-    private static class GroupBy<K, T, R> implements Func1<Observer<GroupedObservable<K, R>>, Subscription> {
-        private final Observable<KeyValue<K, R>> source;
-        private final Set<K> keys = new HashSet<K>();
+    public static <K, T> Func1<Observer<GroupedObservable<K, T>>, Subscription> groupBy(Observable<T> source, final Func1<T, K> keySelector) {
+        return groupBy(source, keySelector, Functions.<T>identity());
+    }
 
-        private GroupBy(Observable<KeyValue<K, R>> source) {
+    private static class GroupBy<K, V> implements Func1<Observer<GroupedObservable<K, V>>, Subscription> {
+        private final Observable<KeyValue<K, V>> source;
+        private final ConcurrentHashMap<K, Boolean> keys = new ConcurrentHashMap<K, Boolean>();
+
+        private GroupBy(Observable<KeyValue<K, V>> source) {
             this.source = source;
         }
 
 
         @Override
-        public Subscription call(final Observer<GroupedObservable<K, R>> observer) {
+        public Subscription call(final Observer<GroupedObservable<K, V>> observer) {
 
-            return source.subscribe(new Observer<KeyValue<K, R>>() {
-                private final Object lock = new Object();
+            return source.subscribe(new Observer<KeyValue<K, V>>() {
 
                 @Override
                 public void onCompleted() {
@@ -55,28 +74,23 @@ public final class OperatorGroupBy {
                 }
 
                 @Override
-                public void onNext(final KeyValue<K, R> args) {
-
-                    if (!keys.contains(args.key)) {
-                        synchronized (lock) {
-                            if (!keys.contains(args.key)) {
-                                observer.onNext(buildObservableFor(source, args));
-                                keys.add(args.key);
-                            }
-                        }
+                public void onNext(final KeyValue<K, V> args) {
+                    K key = args.key;
+                    boolean newGroup = keys.putIfAbsent(key, true) == null;
+                    if (newGroup) {
+                        observer.onNext(buildObservableFor(source, key));
                     }
-
                 }
 
             });
         }
     }
 
-    private static <K, R> GroupedObservable<K, R> buildObservableFor(Observable<KeyValue<K, R>> source, final KeyValue<K, R> element) {
+    private static <K, R> GroupedObservable<K, R> buildObservableFor(Observable<KeyValue<K, R>> source, final K key) {
         final Observable<R> observable = source.filter(new Func1<KeyValue<K, R>, Boolean>() {
             @Override
             public Boolean call(KeyValue<K, R> pair) {
-                return element.key.equals(pair.key);
+                return key.equals(pair.key);
             }
         }).map(new Func1<KeyValue<K, R>, R>() {
             @Override
@@ -84,7 +98,7 @@ public final class OperatorGroupBy {
                 return pair.value;
             }
         });
-        return new GroupedObservable<K, R>(element.key, observable);
+        return new GroupedObservable<K, R>(key, observable);
     }
 
 
@@ -109,7 +123,7 @@ public final class OperatorGroupBy {
         @Test
         public void testGroupBy() {
             Observable<String> source = Observable.from("one", "two", "three", "four", "five", "six");
-            Observable<GroupedObservable<Integer, String>> grouped = Observable.create(groupBy(source, length, Functions.<String>identity()));
+            Observable<GroupedObservable<Integer, String>> grouped = Observable.create(groupBy(source, length));
 
             Map<Integer, List<String>> map = toMap(grouped);
 
