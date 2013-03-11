@@ -255,6 +255,15 @@ def class ObservableTests {
         Observable.toObservable("one", "two").single({ x -> x.length() == 3})
     }
 
+    @Test
+    public void testDefer() {
+        def obs = Observable.toObservable(1, 2)
+        Observable.defer({-> obs }).subscribe({ result -> a.received(result)})
+        verify(a, times(1)).received(1);
+        verify(a, times(1)).received(2);
+
+    }
+
     def class AsyncObservable implements Func1<Observer<Integer>, Subscription> {
 
         public Subscription call(final Observer<Integer> observer) {
