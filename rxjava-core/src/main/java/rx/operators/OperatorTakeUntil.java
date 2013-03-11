@@ -216,7 +216,6 @@ public class OperatorTakeUntil {
 
             verify(result, times(1)).onNext("one");
             verify(result, times(1)).onNext("two");
-            // ignore other exception
             verify(result, times(1)).onError(error);
             verify(result, times(0)).onCompleted();
             verify(sSource, times(1)).unsubscribe();
