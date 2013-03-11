@@ -61,8 +61,12 @@ def class ObservableTests {
 
     @Test
     public void testLast() {
-        new TestFactory().getObservable().last().subscribe({ result -> a.received(result)});
-        verify(a, times(1)).received("hello_1");
+        assertEquals("three", Observable.toObservable("one", "two", "three").last())
+    }
+
+    @Test
+    public void testLastWithPredicate() {
+        assertEquals("two", Observable.toObservable("one", "two", "three").last({ x -> x.length() == 3}))
     }
 
     @Test

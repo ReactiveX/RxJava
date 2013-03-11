@@ -16,6 +16,7 @@
 package rx;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
@@ -31,7 +32,6 @@ import org.mockito.MockitoAnnotations;
 
 import rx.operators.OperationConcat;
 import rx.operators.OperationFilter;
-import rx.operators.OperationLast;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
@@ -732,18 +732,28 @@ public class Observable<T> {
     }
 
     /**
-     * Takes the last item emitted by a source Observable and returns an Observable that emits only
-     * that item as its sole emission.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.png">
-     * 
-     * @param that
-     *            the source Observable
-     * @return an Observable that emits a single item, which is identical to the last item emitted
-     *         by the source Observable
+     * Returns the last element of an observable sequence with a specified source.
+     *
+     * @param that the source Observable
+     * @return the last element in the observable sequence.
      */
-    public static <T> Observable<T> last(final Observable<T> that) {
-        return _create(OperationLast.last(that));
+    public static <T> T last(final Observable<T> that) {
+        T result = null;
+        for (T value : that.toIterable()) {
+            result = value;
+        }
+        return result;
+    }
+
+    /**
+     * Returns the last element of an observable sequence that matches the predicate.
+     *
+     * @param that the source Observable
+     * @param predicate a predicate function to evaluate for elements in the sequence.
+     * @return the last element in the observable sequence.
+     */
+    public static <T> T last(final Observable<T> that, final Func1<T, Boolean> predicate) {
+        return last(that.filter(predicate));
     }
 
     /**
@@ -1255,7 +1265,7 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public static <T> Observable<T> reduce(Observable<T> sequence, Func2<T, T, T> accumulator) {
-        return last(_create(OperationScan.scan(sequence, accumulator)));
+        return takeLast(_create(OperationScan.scan(sequence, accumulator)), 1);
     }
 
     /**
@@ -1327,7 +1337,7 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public static <T> Observable<T> reduce(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
-        return last(_create(OperationScan.scan(sequence, initialValue, accumulator)));
+        return takeLast(_create(OperationScan.scan(sequence, initialValue, accumulator)), 1);
     }
 
     /**
@@ -2269,15 +2279,40 @@ public class Observable<T> {
     }
 
     /**
-     * Converts an Observable that emits a sequence of objects into one that only emits the last
-     * object in this sequence before completing.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.png">
-     * 
-     * @return an Observable that emits only the last item emitted by the original Observable
+     * Returns the last element of an observable sequence with a specified source.
+     *
+     * @return the last element in the observable sequence.
      */
-    public Observable<T> last() {
+    public T last() {
         return last(this);
+    }
+
+    /**
+     * Returns the last element of an observable sequence that matches the predicate.
+     *
+     * @param predicate a predicate function to evaluate for elements in the sequence.
+     * @return the last element in the observable sequence.
+     */
+    public T last(final Func1<T, Boolean> predicate) {
+        return last(this, predicate);
+    }
+
+    /**
+     * Returns the last element of an observable sequence that matches the predicate.
+     *
+     * @param predicate a predicate function to evaluate for elements in the sequence.
+     * @return the last element in the observable sequence.
+     */
+    public T last(final Object predicate) {
+        @SuppressWarnings("rawtypes")
+        final FuncN _f = Functions.from(predicate);
+
+        return last(this, new Func1<T, Boolean>() {
+            @Override
+            public Boolean call(T args) {
+                return (Boolean) _f.call(args);
+            }
+        });
     }
 
     /**
@@ -3150,6 +3185,33 @@ public class Observable<T> {
                 }
             });
         }
+
+        @Test
+        public void testLast() {
+            Observable<String> obs = Observable.toObservable("one", "two", "three");
+
+            assertEquals("three", obs.last());
+        }
+
+        @Test
+        public void testLastWithPredicate() {
+            Observable<String> obs = Observable.toObservable("one", "two", "three");
+
+            assertEquals("two", obs.last(new Func1<String, Boolean>() {
+                @Override
+                public Boolean call(String s) {
+                    return s.length() == 3;
+                }
+            }));
+        }
+
+        @Test
+        public void testLastEmptyObservable() {
+            Observable<String> obs = Observable.toObservable();
+
+            assertNull(obs.last());
+        }
+
 
         private static class TestException extends RuntimeException {
 
