@@ -1651,6 +1651,23 @@ public class Observable<T> {
      * @return Observable converted to Iterable.
      */
     public static <T> Iterable<T> toIterable(final Observable<T> that) {
+
+        return new Iterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return getIterator(that);
+            }
+        };
+    }
+
+    /**
+     * Returns an iterator that iterates all values of the observable.
+     *
+     * @param that an observable sequence to get an iterator for.
+     * @param <T> the type of source.
+     * @return the iterator that could be used to iterate over the elements of the observable.
+     */
+    public static <T> Iterator<T> getIterator(Observable<T> that) {
         final BlockingQueue<Notification<T>> notifications = new LinkedBlockingQueue<Notification<T>>();
 
         materialize(that).subscribe(new Observer<Notification<T>>() {
@@ -1670,7 +1687,7 @@ public class Observable<T> {
             }
         });
 
-        final Iterator<T> it = new Iterator<T>() {
+        return new Iterator<T>() {
             private Notification<T> buf;
 
             @Override
@@ -1706,13 +1723,6 @@ public class Observable<T> {
             @Override
             public void remove() {
                 throw new UnsupportedOperationException("Read-only iterator");
-            }
-        };
-
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return it;
             }
         };
     }
@@ -2932,6 +2942,15 @@ public class Observable<T> {
      */
     public Iterable<T> toIterable() {
         return toIterable(this);
+    }
+
+    /**
+     * Returns an iterator that iterates all values of the observable.
+     *
+     * @return the iterator that could be used to iterate over the elements of the observable.
+     */
+    public Iterator<T> getIterator() {
+        return getIterator(this);
     }
 
     /**
