@@ -18,6 +18,7 @@ package rx.lang.groovy.examples;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.BooleanSubscription;
 import rx.util.functions.Func1;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -66,8 +67,9 @@ static void main(String[] args) {
  *  [id:1000, title:video-1000-title, length:5428, bookmark:0, 
  *      rating:[actual:4, average:3, predicted:0]]
  */
-def Observable getVideoGridForDisplay(userId) {
-    getListOfLists(userId).mapMany({ VideoList list ->
+Observable getVideoGridForDisplay(userId) {
+    // take the first 5 lists
+    getListOfLists(userId).take(5).mapMany({ VideoList list ->
         // for each VideoList we want to fetch the videos
         list.getVideos()
             .take(10) // we only want the first 10 of each list
@@ -103,29 +105,23 @@ def Observable getVideoGridForDisplay(userId) {
  * 
  * Observable<VideoList> is the "push" equivalent to List<VideoList>
  */
-def Observable<VideoList> getListOfLists(userId) {
+Observable<VideoList> getListOfLists(userId) {
     return Observable.create({ observer -> 
-        AtomicBoolean isRunning = new AtomicBoolean(true); 
+        BooleanSubscription subscription = new BooleanSubscription();
         // this will happen on a separate thread as it requires a network call
-        executor.execute(new Runnable() {
-            def void run() {
+        executor.execute({
                 // simulate network latency
                 Thread.sleep(180);
                 for(i in 0..15) {
-                    if(!isRunning.get()) {
-                        // we have received an unsubscribe
+                    if(subscription.isUnsubscribed()) {
                         break;
                     }
                     //println("****** emitting list: " + i)
                     observer.onNext(new VideoList(i))
                 }
                 observer.onCompleted();
-            }
         })
-        return Observable.createSubscription({
-            // see https://github.com/Netflix/RxJava/issues/173 for a possibly simpler way of doing this
-            isRunning.set(false);
-        });
+        return subscription;
     })
 }
 
@@ -139,15 +135,15 @@ class VideoList {
         this.listPosition = position
     }
     
-    def String getListName() {
+    String getListName() {
         return "ListName-" + listPosition
     }
     
-    def Integer getListPosition() {
+    Integer getListPosition() {
         return listPosition
     }
     
-    def Observable<Video> getVideos() {
+    Observable<Video> getVideos() {
         return Observable.create({ observer ->
             // we already have the videos once a list is loaded
             // so we won't launch another thread but return
@@ -170,7 +166,7 @@ class Video {
     }
     
     // synchronous
-    def Observable<Map<String, String>> getMetadata() {
+    Observable<Map<String, String>> getMetadata() {
         // simulate fetching metadata from an in-memory cache
         // so it will not asynchronously execute on a thread but
         // immediately return an Observable with the data
@@ -184,14 +180,13 @@ class Video {
     }
     
     // asynchronous
-    def Observable<Integer> getBookmark(userId) {
+    Observable<Integer> getBookmark(userId) {
         // simulate fetching the bookmark for this user
         // that specifies the last played position if
         // this video has been played before
         return Observable.create({ observer -> 
             // this will happen on a separate thread as it requires a network call
-            executor.execute(new Runnable() {
-                def void run() {
+            executor.execute({
                     // simulate network latency
                     Thread.sleep(4);
                     if(randint(6) > 1) {
@@ -202,23 +197,20 @@ class Video {
                         observer.onNext(randint(4000));
                     }
                     observer.onCompleted();
-                }
             })
         })
     }
     
     // asynchronous
-    def Observable<VideoRating> getRating(userId) {
+    Observable<VideoRating> getRating(userId) {
         // simulate fetching the VideoRating for this user
         return Observable.create({ observer ->
             // this will happen on a separate thread as it requires a network call
-            executor.execute(new Runnable() {
-                def void run() {
+            executor.execute({
                     // simulate network latency
                     Thread.sleep(10);
                     observer.onNext(new VideoRating(videoId, userId))
                     observer.onCompleted();
-                }
             })
         })
     }
@@ -231,15 +223,15 @@ class VideoRating {
         this.userId = userId;
     }
     
-    def Integer getPredictedStarRating() {
+    Integer getPredictedStarRating() {
         return randint(5)
     }
     
-    def Integer getAverageStarRating() {
+    Integer getAverageStarRating() {
         return randint(4)
     }
     
-    def Integer getActualStarRating() {
+    Integer getActualStarRating() {
         return randint(5)
     }
 }
