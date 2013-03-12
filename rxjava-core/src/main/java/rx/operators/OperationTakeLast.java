@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,20 +15,20 @@
  */
 package rx.operators;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Iterator;
+import java.util.concurrent.LinkedBlockingDeque;
+
 import org.junit.Test;
 import org.mockito.InOrder;
+
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
-
-import java.util.Iterator;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
 
 /**
  * Returns a specified number of contiguous elements from the end of an observable sequence.
