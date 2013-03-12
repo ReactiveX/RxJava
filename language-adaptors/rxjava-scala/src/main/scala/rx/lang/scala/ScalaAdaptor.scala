@@ -160,10 +160,10 @@ class UnitTestSuite extends JUnitSuite {
         verify(assertion, times(1)).received(List(2,4,6,8))
     }
 
-    @Test def testLast() {
+    @Test def testTakeLast() {
         val numbers = Observable.toObservable[Int](1, 2, 3, 4, 5, 6, 7, 8, 9)
-        numbers.last().subscribe((callback: Int) => {
-            println("testLast: onNext -> got " + callback)
+        numbers.takeLast(1).subscribe((callback: Int) => {
+            println("testTakeLast: onNext -> got " + callback)
             assertion.received(callback)
         })
         verify(assertion, times(1)).received(9)
