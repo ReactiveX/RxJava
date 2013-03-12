@@ -32,6 +32,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.AtomicObservableSubscription;
 import rx.util.SynchronizedObserver;
 import rx.util.functions.Func1;
@@ -805,7 +806,7 @@ public final class OperationZip {
             public Subscription subscribe(Observer<String> Observer) {
                 // just store the variable where it can be accessed so we can manually trigger it
                 this.Observer = Observer;
-                return Observable.noOpSubscription();
+                return Subscriptions.empty();
             }
 
         }
