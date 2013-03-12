@@ -24,6 +24,16 @@ Learn more about Rx on the <a href="https://github.com/Netflix/RxJava/wiki">Wiki
 
 <a href='https://netflixoss.ci.cloudbees.com/job/RxJava-pull-requests/'><img src='https://netflixoss.ci.cloudbees.com/job/RxJava-pull-requests/badge/icon'></a>
 
+## Versioning
+
+RxJava is working towards a 1.0 release which will be reached once it "more or less" becomes feature complete with the [Rx.Net version](https://rx.codeplex.com). The backlog of features needed to accomplish this are documented in the [project issues](https://github.com/Netflix/RxJava/issues).
+
+In short, once the current issue list hits 0 open we will bump to version 1.0.
+
+Until that time the "semantic versioning" will be prefixed with the 0.* and breaking changes will be done such as 0.5.x -> 0.6.x All incremental non-breaking changes with additive functionality will be done like 0.5.1 -> 0.5.2.
+
+Once we hit 1.0 it will follow the normal major.minor.patch semantic versioning approach.
+
 ## Full Documentation
 
 - [Wiki](https://github.com/Netflix/RxJava/wiki)
@@ -49,13 +59,13 @@ Example for Maven:
 <dependency>
     <groupId>com.netflix.rxjava</groupId>
     <artifactId>rxjava-core</artifactId>
-    <version>0.5.0</version>
+    <version>x.y.z</version>
 </dependency>
 ```
 and for Ivy:
 
 ```xml
-<dependency org="com.netflix.rxjava" name="rxjava-core" rev="0.5.0" />
+<dependency org="com.netflix.rxjava" name="rxjava-core" rev="x.y.z" />
 ```
 
 If you need to download the jars instead of using a build system, create a Maven pom file like this with the desired version:
@@ -73,7 +83,7 @@ If you need to download the jars instead of using a build system, create a Maven
 		<dependency>
 			<groupId>com.netflix.rxjava</groupId>
 			<artifactId>rxjava-core</artifactId>
-			<version>0.5.0</version>
+			<version>x.y.z</version>
 			<scope/>
 		</dependency>
 	</dependencies>
