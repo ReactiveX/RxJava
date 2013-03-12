@@ -16,10 +16,10 @@
 package rx.operators;
 
 import org.junit.Test;
-import rx.GroupedObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observables.GroupedObservable;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
 

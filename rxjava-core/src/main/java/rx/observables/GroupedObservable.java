@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx;
+package rx.observables;
 
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.util.functions.Func1;
 
 /**
@@ -29,7 +32,7 @@ public class GroupedObservable<K, T> extends Observable<T> {
     private final K key;
 
     public GroupedObservable(K key, Func1<Observer<T>, Subscription> onSubscribe) {
-        super(onSubscribe, true);
+        super(onSubscribe);
         this.key = key;
     }
 
