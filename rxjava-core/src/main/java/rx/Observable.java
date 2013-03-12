@@ -2171,7 +2171,7 @@ public class Observable<T> {
      *            type of sequence
      * @return sequence of booleans, true if two sequences are equal by comparing the elements pairwise; otherwise, false.
      */
-    private static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Func2<T, T, Boolean> equality) {
+    public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Func2<T, T, Boolean> equality) {
         return zip(first, second, equality);
     }
 
@@ -2188,7 +2188,7 @@ public class Observable<T> {
      *            type of sequence
      * @return sequence of booleans, true if two sequences are equal by comparing the elements pairwise; otherwise, false.
      */
-    private static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Object equality) {
+    public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Object equality) {
         return zip(first, second, equality);
     }
 
