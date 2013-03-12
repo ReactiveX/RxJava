@@ -42,6 +42,13 @@ public class OperatorTakeUntil {
     public static <T, E> Observable<T> takeUntil(final Observable<T> source, final Observable<E> other) {
         Observable<Notification<T>> s = Observable.create(new SourceObservable<T>(source));
         Observable<Notification<T>> o = Observable.create(new OtherObservable<T, E>(other));
+
+        @SuppressWarnings("unchecked")
+        /**
+         * In JDK 7 we could use 'varargs' instead of 'unchecked'.
+         * See http://stackoverflow.com/questions/1445233/is-it-possible-to-solve-the-a-generic-array-of-t-is-created-for-a-varargs-param
+         * and http://hg.openjdk.java.net/jdk7/tl/langtools/rev/46cf751559ae 
+         */
         Observable<Notification<T>> result = Observable.merge(s, o);
 
         return result.takeWhile(new Func1<Notification<T>, Boolean>() {
@@ -135,6 +142,7 @@ public class OperatorTakeUntil {
     public static class UnitTest {
 
         @Test
+        @SuppressWarnings("unchecked")
         public void testTakeUntil() {
             Subscription sSource = mock(Subscription.class);
             Subscription sOther = mock(Subscription.class);
@@ -161,6 +169,7 @@ public class OperatorTakeUntil {
         }
 
         @Test
+        @SuppressWarnings("unchecked")
         public void testTakeUntilSourceCompleted() {
             Subscription sSource = mock(Subscription.class);
             Subscription sOther = mock(Subscription.class);
@@ -182,6 +191,7 @@ public class OperatorTakeUntil {
         }
 
         @Test
+        @SuppressWarnings("unchecked")
         public void testTakeUntilSourceError() {
             Subscription sSource = mock(Subscription.class);
             Subscription sOther = mock(Subscription.class);
@@ -205,6 +215,7 @@ public class OperatorTakeUntil {
         }
 
         @Test
+        @SuppressWarnings("unchecked")
         public void testTakeUntilOtherError() {
             Subscription sSource = mock(Subscription.class);
             Subscription sOther = mock(Subscription.class);
@@ -229,6 +240,7 @@ public class OperatorTakeUntil {
         }
 
         @Test
+        @SuppressWarnings("unchecked")
         public void testTakeUntilOtherCompleted() {
             Subscription sSource = mock(Subscription.class);
             Subscription sOther = mock(Subscription.class);
@@ -270,7 +282,6 @@ public class OperatorTakeUntil {
             }
 
             /* used to simulate subscription */
-            @SuppressWarnings("unused")
             public void sendOnError(Exception e) {
                 observer.onError(e);
             }

@@ -107,6 +107,7 @@ public class PerformanceTest {
         System.out.println("nonCompositionalTestWithArrayOfFunctionsTotalTime: " + nonCompositionalTestWithArrayOfFunctionsTotalTime.get());
     }
 
+    @SuppressWarnings("unchecked")
     public void runCompositionTestWithMultipleOperations(AtomicLong aggregateTime, Integer[] values) {
         System.out.println("runCompositionTestWithMultipleOperations");
 
@@ -191,6 +192,7 @@ public class PerformanceTest {
         final AtomicInteger onNextSum = new AtomicInteger(0);
         final long start = System.nanoTime();
         final MathFunction m = new MathFunction();
+        @SuppressWarnings("rawtypes")
         final Func1[] functionCalls = new Func1<?, ?>[50];
         for (int i = 0; i < 50; i++) {
             functionCalls[i] = m;
@@ -198,6 +200,7 @@ public class PerformanceTest {
 
         Observable.from(values).map(new Func1<Integer, Integer>() {
 
+            @SuppressWarnings("unchecked")
             @Override
             public Integer call(Integer t1) {
                 // iterate the 50 times here in a loop rather than via composition

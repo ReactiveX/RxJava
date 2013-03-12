@@ -84,6 +84,7 @@ public final class OperationDematerialize {
     public static class UnitTest {
 
         @Test
+        @SuppressWarnings("unchecked")
         public void testDematerialize1() {
             Observable<Notification<Integer>> notifications = Observable.toObservable(1, 2).materialize();
             Observable<Integer> dematerialize = Observable.dematerialize(notifications);
@@ -98,6 +99,7 @@ public final class OperationDematerialize {
         }
 
         @Test
+        @SuppressWarnings("unchecked")
         public void testDematerialize2() {
             Exception exception = new Exception("test");
             Observable<Integer> observable = Observable.error(exception);

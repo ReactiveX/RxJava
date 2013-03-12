@@ -179,7 +179,6 @@ public final class OperationMostRecent {
             }
 
             /* used to simulate subscription */
-            @SuppressWarnings("unused")
             public void sendOnError(Exception e) {
                 observer.onError(e);
             }
@@ -192,7 +191,7 @@ public final class OperationMostRecent {
         }
 
         private static class TestException extends RuntimeException {
-
+            private static final long serialVersionUID = 1L;
         }
 
     }

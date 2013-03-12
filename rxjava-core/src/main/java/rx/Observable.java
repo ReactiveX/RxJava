@@ -3087,6 +3087,7 @@ public class Observable<T> {
         return toIterable(this);
     }
 
+    @SuppressWarnings("unchecked")
     public Observable<T> startWith(T... values) {
         return concat(Observable.<T> from(values), this);
     }
@@ -3378,8 +3379,7 @@ public class Observable<T> {
 
         @Test(expected = IllegalStateException.class)
         public void testSingleDefaultPredicateMatchesMoreThanOne() {
-            Observable<String> observable = toObservable("one", "two");
-            String result = observable.singleOrDefault("default", new Func1<String, Boolean>() {
+            toObservable("one", "two").singleOrDefault("default", new Func1<String, Boolean>() {
                 @Override
                 public Boolean call(String args) {
                     return args.length() == 3;
@@ -3388,7 +3388,7 @@ public class Observable<T> {
         }
 
         private static class TestException extends RuntimeException {
-
+            private static final long serialVersionUID = 1L;
         }
 
     }
