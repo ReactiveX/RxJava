@@ -1,5 +1,20 @@
 # RxJava Releases #
 
+### Version 0.6.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.6.0%22)) ###
+
+* [Issue 154](https://github.com/Netflix/RxJava/issues/154) Add OSGi manifest headers
+* [Issue 173](https://github.com/Netflix/RxJava/issues/173) Subscription Utilities and Default Implementations
+* [Pull 184](https://github.com/Netflix/RxJava/pull/184) Convert 'last' from non-blocking to blocking to match Rx.Net (see [Issue 57](https://github.com/Netflix/RxJava/issues/57))
+
+*NOTE:* This is a version bump from 0.5 to 0.6 because [Issue 173](https://github.com/Netflix/RxJava/issues/173) and [Pull 184](https://github.com/Netflix/RxJava/pull/184) include breaking changes.
+
+These changes are being done in the goal of matching the [Rx.Net](https://rx.codeplex.com) implementation so breaking changes will be made prior to 1.0 on 0.x releases if necessary.
+
+It was found that the `last()` operator was implemented [incorrectly](https://github.com/Netflix/RxJava/issues/57) (non-blocking instead of blocking) so any use of `last()` on version 0.5.x should be changed to use `takeLast(1)`. Since the return type needed to change this could not be done via a deprecation.
+
+Also [removed](https://github.com/Netflix/RxJava/issues/173) were the `Observable.createSubscription`/`Observable.noOpSubscription` methods which are now on the rx.subscriptions.Subscriptions utility class as `Subscriptions.create`/`Subscriptions.empty`. These methods could have been deprecated rather than removed but since another breaking change was being done they were just cleanly changed as part of the pre-1.0 process.
+
+
 ### Version 0.5.5 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.5.5%22)) ###
 
 * [Issue 35](https://github.com/Netflix/RxJava/issues/35) Operator: Defer
