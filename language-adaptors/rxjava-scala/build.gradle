@@ -1,6 +1,7 @@
 apply plugin: 'scala'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'osgi'
 
 tasks.withType(ScalaCompile) {
 	scalaCompileOptions.fork = true
@@ -50,4 +51,13 @@ idea {
 		// include 'provided' dependencies on the classpath
 		scopes.PROVIDED.plus += configurations.provided
 	}
+}
+
+jar {
+    manifest {
+        name = 'rxjava-scala'
+        instruction 'Bundle-Vendor', 'Netflix'
+        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
+    }
 }
