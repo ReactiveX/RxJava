@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'osgi'
 
 dependencies {
     compile project(':rxjava-core')
@@ -24,4 +25,13 @@ idea {
 		// include 'provided' dependencies on the classpath
 		scopes.PROVIDED.plus += configurations.provided
 	}
+}
+
+jar {
+    manifest {
+        name = 'rxjava-jruby'
+        instruction 'Bundle-Vendor', 'Netflix'
+        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
+    }
 }

@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'osgi'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -40,5 +41,14 @@ javadoc {
         windowTitle = "RxJava Javadoc ${project.version}"
     }
     options.addStringOption('top').value = '<h2 class="title" style="padding-top:40px">RxJava</h2>'
+}
+
+jar {
+    manifest {
+        name = 'rxjava-core'
+        instruction 'Bundle-Vendor', 'Netflix'
+        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
+    }
 }
 

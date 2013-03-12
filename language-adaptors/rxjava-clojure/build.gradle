@@ -2,6 +2,7 @@ apply plugin: 'java'
 apply plugin: 'clojure'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'osgi'
 
 dependencies {
     compile project(':rxjava-core')
@@ -75,4 +76,11 @@ configurations {
 // include 'examples' in build task
 build.dependsOn examplesClasses
 
-
+jar {
+    manifest {
+        name = 'rxjava-clojure'
+        instruction 'Bundle-Vendor', 'Netflix'
+        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
+    }
+}
