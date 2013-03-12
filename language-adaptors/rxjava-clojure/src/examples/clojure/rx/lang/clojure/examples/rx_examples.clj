@@ -1,5 +1,5 @@
 (ns rx.lang.clojure.examples.rx-examples
-  (:import rx.Observable)
+  (:import rx.Observable rx.subscriptions.Subscriptions)
   (:require [clj-http.client :as http]))
 
 ; NOTE on naming conventions. I'm using camelCase names (against clojure convention)
@@ -62,7 +62,7 @@
       (-> observer .onCompleted)
       ; return a NoOpSubsription since this blocks and thus
       ; can't be unsubscribed from
-      (Observable/noOpSubscription))))
+      (Subscriptions/empty))))
 
 ; To see output
 (comment
@@ -81,7 +81,7 @@
                 ; after sending all values we complete the sequence
                 (-> observer .onCompleted))]
         ; return a subscription that cancels the future
-        (Observable/createSubscription #(future-cancel f))))))
+        (Subscriptions/create #(future-cancel f))))))
 
 ; To see output
 (comment
@@ -100,7 +100,7 @@
                 ; after sending response to onnext we complete the sequence
                 (-> observer .onCompleted))]
         ; a subscription that cancels the future if unsubscribed
-        (Observable/createSubscription #(future-cancel f))))))
+        (Subscriptions/create #(future-cancel f))))))
 
 ; To see output
 (comment
@@ -147,7 +147,7 @@
                   (-> observer .onCompleted)
                   (catch Exception e (-> observer (.onError e))))) ]
         ; a subscription that cancels the future if unsubscribed
-        (Observable/createSubscription #(future-cancel f))))))
+        (Subscriptions/create #(future-cancel f))))))
 
 (defn getVideoBookmark [userId, videoId]
   "Asynchronously fetch bookmark for video
@@ -165,7 +165,7 @@
                   (-> observer .onCompleted)
                   (catch Exception e (-> observer (.onError e)))))]
         ; a subscription that cancels the future if unsubscribed
-        (Observable/createSubscription #(future-cancel f))))))
+        (Subscriptions/create #(future-cancel f))))))
 
 (defn getVideoMetadata [videoId, preferredLanguage]
   "Asynchronously fetch movie metadata for a given language
@@ -190,7 +190,7 @@
                   (-> observer .onCompleted)
                   (catch Exception e (-> observer (.onError e))))) ]
         ; a subscription that cancels the future if unsubscribed
-        (Observable/createSubscription #(future-cancel f))))))
+        (Subscriptions/create #(future-cancel f))))))
 
 
 (defn getVideoForUser [userId videoId]
@@ -256,7 +256,7 @@
                 ; after sending response to onNext we complete the sequence
                 (-> observer .onCompleted))]
         ; a subscription that cancels the future if unsubscribed
-        (Observable/createSubscription #(future-cancel f))))))
+        (Subscriptions/create #(future-cancel f))))))
 
 ; To see output
 (comment

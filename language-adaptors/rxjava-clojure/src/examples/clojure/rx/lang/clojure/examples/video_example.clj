@@ -1,5 +1,5 @@
 (ns rx.lang.clojure.examples.video-example
-  (:import [rx Observable Observer Subscription]))
+  (:import [rx Observable Observer Subscription] rx.subscriptions.Subscriptions))
 
 ; Adapted from language-adaptors/rxjava-groovy/src/examples/groovy/rx/lang/groovy/examples/VideoExample.groovy
 
@@ -93,7 +93,7 @@
   [f]
   (Observable/create (fn [^Observer observer]
                        (let [f (future (f observer))]
-                         (Observable/createSubscription #(future-cancel f))))))
+                         (Subscriptions/create #(future-cancel f))))))
 
 (defn ^Observable get-list-of-lists
   "
@@ -122,7 +122,7 @@
                        (dotimes [i 50]
                          (.onNext observer (+ (* position 1000) i)))
                        (.onCompleted observer)
-                       (Observable/noOpSubscription))))
+                       (Subscriptions/empty))))
 
 (comment (.subscribe (video-list->videos (video-list 2)) println))
 
@@ -133,7 +133,7 @@
                                           :actors ["actor1" "actor2"]
                                           :duration 5428 })
                        (.onCompleted observer)
-                       (Observable/noOpSubscription))))
+                       (Subscriptions/empty))))
 
 (comment (.subscribe (video->metadata 10) println))
 
