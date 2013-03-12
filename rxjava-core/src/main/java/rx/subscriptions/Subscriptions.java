@@ -12,7 +12,7 @@ public class Subscriptions {
      * @return {@link Subscription}
      */
     public static Subscription empty() {
-        return new EmptySubscription();
+        return EMPTY;
     }
 
     /**
@@ -20,7 +20,7 @@ public class Subscriptions {
      * 
      * @return {@link Subscription}
      */
-    public static Subscription createSubscription(final Action0 unsubscribe) {
+    public static Subscription create(final Action0 unsubscribe) {
         return new Subscription() {
 
             @Override
@@ -36,7 +36,7 @@ public class Subscriptions {
      * 
      * @return {@link Subscription}
      */
-    public static Subscription createSubscription(final Object unsubscribe) {
+    public static Subscription create(final Object unsubscribe) {
         final FuncN<?> f = Functions.from(unsubscribe);
         return new Subscription() {
 
@@ -51,8 +51,8 @@ public class Subscriptions {
     /**
      * A {@link Subscription} that does nothing when its unsubscribe method is called.
      */
-    private static class EmptySubscription implements Subscription {
+    private static Subscription EMPTY = new Subscription() {
         public void unsubscribe() {
         }
-    }
+    };
 }
