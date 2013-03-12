@@ -1,4 +1,6 @@
 rx
+rx.observables
 rx.subjects
+rx.subscriptions
 rx.util
 rx.util.functions
