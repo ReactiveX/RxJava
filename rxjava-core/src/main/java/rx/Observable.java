@@ -66,6 +66,7 @@ import rx.operators.OperatorTakeUntil;
 import rx.operators.OperatorToIterator;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
+import rx.subscriptions.Subscriptions;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
 import rx.util.Range;
@@ -529,20 +530,13 @@ public class Observable<T> {
 
                 @Override
                 public Subscription call(Observer<T> t1) {
-                    return new NoOpObservableSubscription();
+                    return Subscriptions.empty();
                 }
 
             }, true);
         }
     }
 
-    /**
-     * A {@link Subscription} that does nothing when its unsubscribe method is called.
-     */
-    private static class NoOpObservableSubscription implements Subscription {
-        public void unsubscribe() {
-        }
-    }
 
     /**
      * an Observable that calls {@link Observer#onError(Exception)} when the Observer subscribes.
@@ -565,7 +559,7 @@ public class Observable<T> {
                 @Override
                 public Subscription call(Observer<T> observer) {
                     observer.onError(exception);
-                    return new NoOpObservableSubscription();
+                    return Subscriptions.empty();
                 }
 
             }, true);
@@ -1224,54 +1218,6 @@ public class Observable<T> {
      */
     public static <T> Observable<T> never() {
         return new NeverObservable<T>();
-    }
-
-    /**
-     * A {@link Subscription} that does nothing.
-     * 
-     * //TODO should this be moved to a Subscriptions utility class?
-     * 
-     * @return
-     */
-    public static Subscription noOpSubscription() {
-        return new NoOpObservableSubscription();
-    }
-
-    /**
-     * A {@link Subscription} implemented via a Func
-     * 
-     * //TODO should this be moved to a Subscriptions utility class?
-     * 
-     * @return
-     */
-    public static Subscription createSubscription(final Action0 unsubscribe) {
-        return new Subscription() {
-
-            @Override
-            public void unsubscribe() {
-                unsubscribe.call();
-            }
-
-        };
-    }
-
-    /**
-     * A {@link Subscription} implemented via an anonymous function (such as closures from other languages).
-     * 
-     * //TODO should this be moved to a Subscriptions utility class?
-     * 
-     * @return
-     */
-    public static Subscription createSubscription(final Object unsubscribe) {
-        final FuncN<?> f = Functions.from(unsubscribe);
-        return new Subscription() {
-
-            @Override
-            public void unsubscribe() {
-                f.call();
-            }
-
-        };
     }
 
     /**
@@ -3172,7 +3118,7 @@ public class Observable<T> {
                     Observer.onNext("two");
                     Observer.onNext("three");
                     Observer.onCompleted();
-                    return Observable.noOpSubscription();
+                    return Subscriptions.empty();
                 }
 
             });
@@ -3257,7 +3203,7 @@ public class Observable<T> {
                 public Subscription call(Observer<String> observer) {
                     observer.onNext("one");
                     observer.onError(new TestException());
-                    return Observable.noOpSubscription();
+                    return Subscriptions.empty();
                 }
             });
 
