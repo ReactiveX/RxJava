@@ -36,6 +36,7 @@ import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.Exceptions;
 import rx.util.functions.Func1;
 
@@ -333,7 +334,7 @@ public final class OperationNext {
                             }
                         }
                     }).start();
-                    return Observable.noOpSubscription();
+                    return Subscriptions.empty();
                 }
 
             });

@@ -28,6 +28,7 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.AtomicObservableSubscription;
 import rx.util.CompositeException;
 import rx.util.functions.Func1;
@@ -114,7 +115,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
                 public Subscription call(Observer<String> observer) {
                     observer.onNext("one");
                     observer.onError(new Exception("injected failure"));
-                    return Observable.noOpSubscription();
+                    return Subscriptions.empty();
                 }
             });
 

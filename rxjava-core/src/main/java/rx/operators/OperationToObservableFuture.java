@@ -7,9 +7,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
 public class OperationToObservableFuture {
@@ -45,7 +45,7 @@ public class OperationToObservableFuture {
 
             // the get() has already completed so there is no point in
             // giving the user a way to cancel.
-            return Observable.noOpSubscription();
+            return Subscriptions.empty();
         }
     }
 

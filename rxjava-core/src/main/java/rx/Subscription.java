@@ -15,6 +15,13 @@
  */
 package rx;
 
+import rx.subscriptions.Subscriptions;
+
+/**
+ * Subscription returns from {@link Observable#subscribe(Observer)} to allow unsubscribing.
+ * <p>
+ * See utilities in {@link Subscriptions} and implementations in the {@link rx.subscriptions} package.
+ */
 public interface Subscription {
 
     /**
