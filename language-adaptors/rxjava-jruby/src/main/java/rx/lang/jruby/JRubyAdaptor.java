@@ -84,7 +84,7 @@ public class JRubyAdaptor implements FunctionLanguageAdaptor {
 
         @Test
         public void testLast() {
-            String script = "mockApiCall.getObservable().last().subscribe(lambda{|result| a.received(result)})";
+            String script = "mockApiCall.getObservable().takeLast(1).subscribe(lambda{|result| a.received(result)})";
             runGroovyScript(script);
             verify(assertion, times(1)).received("hello_1");
         }
