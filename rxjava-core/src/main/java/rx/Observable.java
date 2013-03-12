@@ -1976,7 +1976,8 @@ public class Observable<T> {
      * 
      * Any object that supports the {@link Future} interface can be converted into an Observable that emits
      * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
-     * The subscribe method on this synchronously so the Subscription returned doesn't nothing.
+     * <p>
+     * This is blocking so the Subscription returned when calling {@link #subscribe(Observer)} does nothing.
      * 
      * @param future
      *            the source {@link Future}
@@ -1995,7 +1996,8 @@ public class Observable<T> {
      * Any object that supports the {@link Future} interface can be converted into an Observable that emits
      * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
      * The subscribe method on this synchronously so the Subscription returned doesn't nothing.
-     * If the future timesout the {@link TimeoutException} exception is passed to the onError.
+     * <p>
+     * This is blocking so the Subscription returned when calling {@link #subscribe(Observer)} does nothing.
      * 
      * @param future
      *            the source {@link Future}
