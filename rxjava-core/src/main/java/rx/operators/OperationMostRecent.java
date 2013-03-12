@@ -15,18 +15,19 @@
  */
 package rx.operators;
 
-import org.junit.Test;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.util.Exceptions;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
+import org.junit.Test;
+
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
+import rx.util.Exceptions;
 
 /**
  * Samples the most recent value in an observable sequence.
@@ -84,7 +85,6 @@ public final class OperationMostRecent {
         private MostRecentObserver(T value) {
             this.value = new AtomicReference<T>(value);
         }
-
 
         @Override
         public void onCompleted() {

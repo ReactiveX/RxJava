@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,7 @@
  */
 package rx.operators;
 
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
@@ -33,7 +34,7 @@ public final class OperationDematerialize {
 
     /**
      * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
-     *
+     * 
      * @param sequence
      *            An observable sequence containing explicit notification values which have to be turned into implicit notifications.
      * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
@@ -65,15 +66,15 @@ public final class OperationDematerialize {
                 @Override
                 public void onNext(Notification<T> value) {
                     switch (value.getKind()) {
-                        case OnNext:
-                            observer.onNext(value.getValue());
-                            break;
-                        case OnError:
-                            observer.onError(value.getException());
-                            break;
-                        case OnCompleted:
-                            observer.onCompleted();
-                            break;
+                    case OnNext:
+                        observer.onNext(value.getValue());
+                        break;
+                    case OnError:
+                        observer.onError(value.getException());
+                        break;
+                    case OnCompleted:
+                        observer.onCompleted();
+                        break;
                     }
                 }
             });

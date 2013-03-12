@@ -1,12 +1,29 @@
 package rx.performance;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable;
 import rx.Observer;
 import rx.util.functions.Func1;
 
 public class PerformanceTest {
+
+    /*
+     * Example run:
+     * 
+     * compositionTestTotalTime: 2432
+     * nonCompositionalTestWithDirectLoopTotalTime: 2043
+     * nonCompositionalTestWithArrayOfFunctionsTotalTime: 1925
+     * 
+     * compositionTestTotalTime: 2362
+     * nonCompositionalTestWithDirectLoopTotalTime: 1910
+     * nonCompositionalTestWithArrayOfFunctionsTotalTime: 1823
+     * 
+     * compositionTestTotalTime: 2456
+     * nonCompositionalTestWithDirectLoopTotalTime: 2004
+     * nonCompositionalTestWithArrayOfFunctionsTotalTime: 2014
+     */
 
     /*
      * >>> Statically typed <<<
@@ -72,16 +89,25 @@ public class PerformanceTest {
             values[i] = i;
         }
 
+        AtomicLong compositionTestTotalTime = new AtomicLong();
+        AtomicLong nonCompositionalTestWithDirectLoopTotalTime = new AtomicLong();
+        AtomicLong nonCompositionalTestWithArrayOfFunctionsTotalTime = new AtomicLong();
+
         for (int i = 0; i < 100; i++) {
             System.out.println("-------------------------------");
-//            test.runCompositionTestWithMultipleOperations(values);
-            test.runCompositionTest(values);
-            test.runNonCompositionalTestWithDirectLoop(values);
-            test.runNonCompositionalTestWithArrayOfFunctions(values);
+            //            test.runCompositionTestWithMultipleOperations(values);
+            test.runCompositionTest(compositionTestTotalTime, values);
+            test.runNonCompositionalTestWithDirectLoop(nonCompositionalTestWithDirectLoopTotalTime, values);
+            test.runNonCompositionalTestWithArrayOfFunctions(nonCompositionalTestWithArrayOfFunctionsTotalTime, values);
         }
+
+        System.out.println("-------------------------------");
+        System.out.println("compositionTestTotalTime: " + compositionTestTotalTime.get());
+        System.out.println("nonCompositionalTestWithDirectLoopTotalTime: " + nonCompositionalTestWithDirectLoopTotalTime.get());
+        System.out.println("nonCompositionalTestWithArrayOfFunctionsTotalTime: " + nonCompositionalTestWithArrayOfFunctionsTotalTime.get());
     }
 
-    public void runCompositionTestWithMultipleOperations(Integer[] values) {
+    public void runCompositionTestWithMultipleOperations(AtomicLong aggregateTime, Integer[] values) {
         System.out.println("runCompositionTestWithMultipleOperations");
 
         // old code before memoizing
@@ -120,7 +146,7 @@ public class PerformanceTest {
 
     }
 
-    public void runCompositionTest(Integer[] values) {
+    public void runCompositionTest(AtomicLong aggregateTime, Integer[] values) {
         System.out.println("runCompositionTest");
 
         final AtomicInteger onNextSum = new AtomicInteger(0);
@@ -134,10 +160,10 @@ public class PerformanceTest {
                 .map(m).map(m).map(m).map(m).map(m).map(m).map(m).map(m).map(m).map(m)
                 .map(m).map(m).map(m).map(m).map(m).map(m).map(m).map(m).map(m).map(m)
                 .map(m).map(m).map(m).map(m).map(m).map(m).map(m).map(m).map(m).map(m)
-                .subscribe(new TestObserver(onNextSum, start));
+                .subscribe(new TestObserver(onNextSum, start, aggregateTime));
     }
 
-    public void runNonCompositionalTestWithDirectLoop(Integer[] values) {
+    public void runNonCompositionalTestWithDirectLoop(AtomicLong aggregateTime, Integer[] values) {
         System.out.println("runNonCompositionalTestWithDirectLoop");
 
         final AtomicInteger onNextSum = new AtomicInteger(0);
@@ -155,11 +181,11 @@ public class PerformanceTest {
                 return t1;
             }
 
-        }).subscribe(new TestObserver(onNextSum, start));
+        }).subscribe(new TestObserver(onNextSum, start, aggregateTime));
 
     }
 
-    public void runNonCompositionalTestWithArrayOfFunctions(Integer[] values) {
+    public void runNonCompositionalTestWithArrayOfFunctions(AtomicLong aggregateTime, Integer[] values) {
         System.out.println("runNonCompositionalTestWithArrayOfFunctions");
 
         final AtomicInteger onNextSum = new AtomicInteger(0);
@@ -181,17 +207,19 @@ public class PerformanceTest {
                 return t1;
             }
 
-        }).subscribe(new TestObserver(onNextSum, start));
+        }).subscribe(new TestObserver(onNextSum, start, aggregateTime));
 
     }
 
     private static final class TestObserver implements Observer<Integer> {
         private final AtomicInteger onNextSum;
+        private final AtomicLong aggregateTime;
         private final long start;
 
-        private TestObserver(AtomicInteger onNextSum, long start) {
+        private TestObserver(AtomicInteger onNextSum, long start, AtomicLong aggregateTime) {
             this.onNextSum = onNextSum;
             this.start = start;
+            this.aggregateTime = aggregateTime;
         }
 
         @Override
@@ -207,7 +235,9 @@ public class PerformanceTest {
         @Override
         public void onCompleted() {
             long end = System.nanoTime();
-            System.out.println("Sum: " + onNextSum.get() + " Time: " + ((double) (end - start)) / 1000 / 1000 + "ms");
+            double timeInMilliseconds = ((double) (end - start)) / 1000 / 1000;
+            aggregateTime.addAndGet(Math.round(timeInMilliseconds));
+            System.out.println("Sum: " + onNextSum.get() + " Time: " + timeInMilliseconds + "ms");
         }
     }
 

@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,23 +15,28 @@
  */
 package rx.operators;
 
+import static org.mockito.Mockito.*;
+
 import org.junit.Test;
+
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
-import static org.mockito.Mockito.*;
-
 public class OperatorTakeUntil {
 
     /**
      * Returns the values from the source observable sequence until the other observable sequence produces a value.
-     *
-     * @param source the source sequence to propagate elements for.
-     * @param other  the observable sequence that terminates propagation of elements of the source sequence.
-     * @param <T>    the type of source.
-     * @param <E>    the other type.
+     * 
+     * @param source
+     *            the source sequence to propagate elements for.
+     * @param other
+     *            the observable sequence that terminates propagation of elements of the source sequence.
+     * @param <T>
+     *            the type of source.
+     * @param <E>
+     *            the other type.
      * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
      */
     public static <T, E> Observable<T> takeUntil(final Observable<T> source, final Observable<E> other) {
@@ -83,7 +88,7 @@ public class OperatorTakeUntil {
             return sequence.subscribe(new Observer<T>() {
                 @Override
                 public void onCompleted() {
-                    notificationObserver.onNext(Notification.<T>halt());
+                    notificationObserver.onNext(Notification.<T> halt());
                 }
 
                 @Override
@@ -121,7 +126,7 @@ public class OperatorTakeUntil {
 
                 @Override
                 public void onNext(E args) {
-                    notificationObserver.onNext(Notification.<T>halt());
+                    notificationObserver.onNext(Notification.<T> halt());
                 }
             });
         }
