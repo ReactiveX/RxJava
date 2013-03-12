@@ -1,5 +1,13 @@
 # RxJava Releases #
 
+### Version 0.5.5 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.5.5%22)) ###
+
+* [Issue 35](https://github.com/Netflix/RxJava/issues/35) Operator: Defer
+* [Issue 37](https://github.com/Netflix/RxJava/issues/37) Operator: Dematerialize
+* [Issue 50](https://github.com/Netflix/RxJava/issues/50) Operator: GetEnumerator (GetIterator)
+* [Issue 64](https://github.com/Netflix/RxJava/issues/64) Operator: MostRecent
+* [Issue 86](https://github.com/Netflix/RxJava/issues/86) Operator: TakeUntil
+
 ### Version 0.5.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.5.4%22)) ###
 
 * [Issue 18](https://github.com/Netflix/RxJava/issues/18) Operator: ToIterable
