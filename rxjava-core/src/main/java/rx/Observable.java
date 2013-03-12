@@ -15,12 +15,19 @@
  */
 package rx;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
@@ -30,14 +37,48 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import rx.observables.GroupedObservable;
-import rx.operators.*;
+import rx.operators.OperationConcat;
+import rx.operators.OperationDefer;
+import rx.operators.OperationDematerialize;
+import rx.operators.OperationFilter;
+import rx.operators.OperationLast;
+import rx.operators.OperationMap;
+import rx.operators.OperationMaterialize;
+import rx.operators.OperationMerge;
+import rx.operators.OperationMergeDelayError;
+import rx.operators.OperationMostRecent;
+import rx.operators.OperationNext;
+import rx.operators.OperationOnErrorResumeNextViaFunction;
+import rx.operators.OperationOnErrorResumeNextViaObservable;
+import rx.operators.OperationOnErrorReturn;
+import rx.operators.OperationScan;
+import rx.operators.OperationSkip;
+import rx.operators.OperationSynchronize;
+import rx.operators.OperationTake;
+import rx.operators.OperationTakeLast;
+import rx.operators.OperationToObservableFuture;
+import rx.operators.OperationToObservableIterable;
+import rx.operators.OperationToObservableList;
+import rx.operators.OperationToObservableSortedList;
+import rx.operators.OperationZip;
+import rx.operators.OperatorGroupBy;
+import rx.operators.OperatorTakeUntil;
+import rx.operators.OperatorToIterator;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
-import rx.util.Exceptions;
 import rx.util.Range;
-import rx.util.functions.*;
+import rx.util.functions.Action0;
+import rx.util.functions.Action1;
+import rx.util.functions.Func0;
+import rx.util.functions.Func1;
+import rx.util.functions.Func2;
+import rx.util.functions.Func3;
+import rx.util.functions.Func4;
+import rx.util.functions.FuncN;
+import rx.util.functions.FunctionLanguageAdaptor;
+import rx.util.functions.Functions;
 
 /**
  * The Observable interface that implements the Reactive Pattern.
@@ -58,15 +99,29 @@ public class Observable<T> {
     private final Func1<Observer<T>, Subscription> onSubscribe;
     private final boolean isTrusted;
 
-    protected Observable(Func1<Observer<T>, Subscription> onSubscribe) {
-        this(onSubscribe, false);
-    }
-
     protected Observable() {
         this(null, false);
     }
 
-    /*package*/ Observable(Func1<Observer<T>, Subscription> onSubscribe, boolean isTrusted) {
+    /**
+     * Construct an Observable with Function to execute when subscribed to.
+     * <p>
+     * NOTE: Generally you're better off using {@link #create(Func1)} to create an Observable instead of using inheritance.
+     * 
+     * @param onSubscribe
+     *            {@link Func1} to be executed when {@link #subscribe(Observer)} is called.
+     */
+    protected Observable(Func1<Observer<T>, Subscription> onSubscribe) {
+        this(onSubscribe, false);
+    }
+
+    /**
+     * @param onSubscribe
+     *            {@link Func1} to be executed when {@link #subscribe(Observer)} is called.
+     * @param isTrusted
+     *            boolean true if the <code>onSubscribe</code> function is guaranteed to conform to the correct contract and thus shortcuts can be taken.
+     */
+    private Observable(Func1<Observer<T>, Subscription> onSubscribe, boolean isTrusted) {
         this.onSubscribe = onSubscribe;
         this.isTrusted = isTrusted;
     }
@@ -384,7 +439,7 @@ public class Observable<T> {
 
     /**
      * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
-     *
+     * 
      * @return The single element in the observable sequence.
      */
     public T single() {
@@ -393,8 +448,9 @@ public class Observable<T> {
 
     /**
      * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
-     *
-     * @param predicate A predicate function to evaluate for elements in the sequence.
+     * 
+     * @param predicate
+     *            A predicate function to evaluate for elements in the sequence.
      * @return The single element in the observable sequence.
      */
     public T single(Func1<T, Boolean> predicate) {
@@ -403,8 +459,9 @@ public class Observable<T> {
 
     /**
      * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
-     *
-     * @param predicate A predicate function to evaluate for elements in the sequence.
+     * 
+     * @param predicate
+     *            A predicate function to evaluate for elements in the sequence.
      * @return The single element in the observable sequence.
      */
     public T single(Object predicate) {
@@ -413,8 +470,9 @@ public class Observable<T> {
 
     /**
      * Returns the only element of an observable sequence, or a default value if the observable sequence is empty.
-     *
-     * @param defaultValue default value for a sequence.
+     * 
+     * @param defaultValue
+     *            default value for a sequence.
      * @return The single element in the observable sequence, or a default value if no value is found.
      */
     public T singleOrDefault(T defaultValue) {
@@ -423,8 +481,11 @@ public class Observable<T> {
 
     /**
      * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
-     * @param defaultValue default value for a sequence.
-     * @param predicate A predicate function to evaluate for elements in the sequence.
+     * 
+     * @param defaultValue
+     *            default value for a sequence.
+     * @param predicate
+     *            A predicate function to evaluate for elements in the sequence.
      * @return The single element in the observable sequence, or a default value if no value is found.
      */
     public T singleOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
@@ -433,9 +494,11 @@ public class Observable<T> {
 
     /**
      * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
-     *
-     * @param defaultValue default value for a sequence.
-     * @param predicate    A predicate function to evaluate for elements in the sequence.
+     * 
+     * @param defaultValue
+     *            default value for a sequence.
+     * @param predicate
+     *            A predicate function to evaluate for elements in the sequence.
      * @return The single element in the observable sequence, or a default value if no value is found.
      */
     public T singleOrDefault(T defaultValue, Object predicate) {
@@ -469,7 +532,7 @@ public class Observable<T> {
                     return new NoOpObservableSubscription();
                 }
 
-            });
+            }, true);
         }
     }
 
@@ -505,7 +568,7 @@ public class Observable<T> {
                     return new NoOpObservableSubscription();
                 }
 
-            });
+            }, true);
         }
 
     }
@@ -667,12 +730,14 @@ public class Observable<T> {
 
     /**
      * Generates an observable sequence of integral numbers within a specified range.
-     *
-     * @param start The value of the first integer in the sequence
-     * @param count The number of sequential integers to generate.
-     *
+     * 
+     * @param start
+     *            The value of the first integer in the sequence
+     * @param count
+     *            The number of sequential integers to generate.
+     * 
      * @return An observable sequence that contains a range of sequential integral numbers.
-     *
+     * 
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229460(v=vs.103).aspx">Observable.Range Method (Int32, Int32)</a>
      */
     public static Observable<Integer> range(int start, int count) {
@@ -684,9 +749,11 @@ public class Observable<T> {
      * The Defer operator allows you to defer or delay the creation of the sequence until the time when an observer
      * subscribes to the sequence. This is useful to allow an observer to easily obtain an updates or refreshed version
      * of the sequence.
-     *
-     * @param observableFactory the observable factory function to invoke for each observer that subscribes to the resulting sequence.
-     * @param <T> the type of the observable.
+     * 
+     * @param observableFactory
+     *            the observable factory function to invoke for each observer that subscribes to the resulting sequence.
+     * @param <T>
+     *            the type of the observable.
      * @return the observable sequence whose observers trigger an invocation of the given observable factory function.
      */
     public static <T> Observable<T> defer(Func0<Observable<T>> observableFactory) {
@@ -698,9 +765,11 @@ public class Observable<T> {
      * The Defer operator allows you to defer or delay the creation of the sequence until the time when an observer
      * subscribes to the sequence. This is useful to allow an observer to easily obtain an updates or refreshed version
      * of the sequence.
-     *
-     * @param observableFactory the observable factory function to invoke for each observer that subscribes to the resulting sequence.
-     * @param <T> the type of the observable.
+     * 
+     * @param observableFactory
+     *            the observable factory function to invoke for each observer that subscribes to the resulting sequence.
+     * @param <T>
+     *            the type of the observable.
      * @return the observable sequence whose observers trigger an invocation of the given observable factory function.
      */
     public static <T> Observable<T> defer(Object observableFactory) {
@@ -760,9 +829,13 @@ public class Observable<T> {
 
     /**
      * Returns the last element of an observable sequence, or a default value if no value is found.
-     * @param source the source observable.
-     * @param defaultValue a default value that would be returned if observable is empty.
-     * @param <T> the type of source.
+     * 
+     * @param source
+     *            the source observable.
+     * @param defaultValue
+     *            a default value that would be returned if observable is empty.
+     * @param <T>
+     *            the type of source.
      * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
      */
     public static <T> T lastOrDefault(Observable<T> source, T defaultValue) {
@@ -783,10 +856,15 @@ public class Observable<T> {
 
     /**
      * Returns the last element of an observable sequence that matches the predicate, or a default value if no value is found.
-     * @param source the source observable.
-     * @param defaultValue a default value that would be returned if observable is empty.
-     * @param predicate a predicate function to evaluate for elements in the sequence.
-     * @param <T> the type of source.
+     * 
+     * @param source
+     *            the source observable.
+     * @param defaultValue
+     *            a default value that would be returned if observable is empty.
+     * @param predicate
+     *            a predicate function to evaluate for elements in the sequence.
+     * @param <T>
+     *            the type of source.
      * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
      */
     public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Func1<T, Boolean> predicate) {
@@ -795,13 +873,18 @@ public class Observable<T> {
 
     /**
      * Returns the last element of an observable sequence that matches the predicate, or a default value if no value is found.
-     * @param source the source observable.
-     * @param defaultValue a default value that would be returned if observable is empty.
-     * @param predicate a predicate function to evaluate for elements in the sequence.
-     * @param <T> the type of source.
+     * 
+     * @param source
+     *            the source observable.
+     * @param defaultValue
+     *            a default value that would be returned if observable is empty.
+     * @param predicate
+     *            a predicate function to evaluate for elements in the sequence.
+     * @param <T>
+     *            the type of source.
      * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
      */
-    public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Object predicate){
+    public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Object predicate) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(predicate);
 
@@ -941,7 +1024,7 @@ public class Observable<T> {
 
     /**
      * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
-     *
+     * 
      * @param sequence
      *            An observable sequence containing explicit notification values which have to be turned into implicit notifications.
      * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
@@ -1004,17 +1087,20 @@ public class Observable<T> {
 
     /**
      * Returns the values from the source observable sequence until the other observable sequence produces a value.
-     *
-     * @param source the source sequence to propagate elements for.
-     * @param other  the observable sequence that terminates propagation of elements of the source sequence.
-     * @param <T>    the type of source.
-     * @param <E>    the other type.
+     * 
+     * @param source
+     *            the source sequence to propagate elements for.
+     * @param other
+     *            the observable sequence that terminates propagation of elements of the source sequence.
+     * @param <T>
+     *            the type of source.
+     * @param <E>
+     *            the other type.
      * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
      */
     public static <T, E> Observable<T> takeUntil(final Observable<T> source, final Observable<E> other) {
         return OperatorTakeUntil.takeUntil(source, other);
     }
-
 
     /**
      * Combines the objects emitted by two or more Observables, and emits the result as a single Observable,
@@ -1034,13 +1120,19 @@ public class Observable<T> {
 
     /**
      * Groups the elements of an observable and selects the resulting elements by using a specified function.
-     *
-     * @param source an observable whose elements to group.
-     * @param keySelector a function to extract the key for each element.
-     * @param elementSelector a function to map each source element to an element in an observable group.
-     * @param <K> the key type.
-     * @param <T> the source type.
-     * @param <R> the resulting observable type.
+     * 
+     * @param source
+     *            an observable whose elements to group.
+     * @param keySelector
+     *            a function to extract the key for each element.
+     * @param elementSelector
+     *            a function to map each source element to an element in an observable group.
+     * @param <K>
+     *            the key type.
+     * @param <T>
+     *            the source type.
+     * @param <R>
+     *            the resulting observable type.
      * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
      */
     public static <K, T, R> Observable<GroupedObservable<K, R>> groupBy(Observable<T> source, final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
@@ -1049,11 +1141,15 @@ public class Observable<T> {
 
     /**
      * Groups the elements of an observable according to a specified key selector function and
-     *
-     * @param source an observable whose elements to group.
-     * @param keySelector a function to extract the key for each element.
-     * @param <K> the key type.
-     * @param <T> the source type.
+     * 
+     * @param source
+     *            an observable whose elements to group.
+     * @param keySelector
+     *            a function to extract the key for each element.
+     * @param <K>
+     *            the key type.
+     * @param <T>
+     *            the source type.
      * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
      */
     public static <K, T> Observable<GroupedObservable<K, T>> groupBy(Observable<T> source, final Func1<T, K> keySelector) {
@@ -1615,7 +1711,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the last <code>count</code> items emitted by the source
      * Observable.
-     *
+     * 
      * @param items
      *            the source Observable
      * @param count
@@ -1630,9 +1726,10 @@ public class Observable<T> {
 
     /**
      * Returns a specified number of contiguous values from the start of an observable sequence.
-     *
+     * 
      * @param items
-     * @param predicate a function to test each source element for a condition
+     * @param predicate
+     *            a function to test each source element for a condition
      * @return
      */
     public static <T> Observable<T> takeWhile(final Observable<T> items, Func1<T, Boolean> predicate) {
@@ -1641,9 +1738,10 @@ public class Observable<T> {
 
     /**
      * Returns a specified number of contiguous values from the start of an observable sequence.
-     *
+     * 
      * @param items
-     * @param predicate a function to test each source element for a condition
+     * @param predicate
+     *            a function to test each source element for a condition
      * @return
      */
     public static <T> Observable<T> takeWhile(final Observable<T> items, Object predicate) {
@@ -1660,9 +1758,10 @@ public class Observable<T> {
 
     /**
      * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
-     *
+     * 
      * @param items
-     * @param predicate a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
+     * @param predicate
+     *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
      * @return
      */
     public static <T> Observable<T> takeWhileWithIndex(final Observable<T> items, Func2<T, Integer, Boolean> predicate) {
@@ -1706,8 +1805,9 @@ public class Observable<T> {
 
     /**
      * Converts an observable sequence to an Iterable.
-     *
-     * @param that the source Observable
+     * 
+     * @param that
+     *            the source Observable
      * @return Observable converted to Iterable.
      */
     public static <T> Iterable<T> toIterable(final Observable<T> that) {
@@ -1722,9 +1822,11 @@ public class Observable<T> {
 
     /**
      * Returns an iterator that iterates all values of the observable.
-     *
-     * @param that an observable sequence to get an iterator for.
-     * @param <T> the type of source.
+     * 
+     * @param that
+     *            an observable sequence to get an iterator for.
+     * @param <T>
+     *            the type of source.
      * @return the iterator that could be used to iterate over the elements of the observable.
      */
     public static <T> Iterator<T> getIterator(Observable<T> that) {
@@ -1733,9 +1835,11 @@ public class Observable<T> {
 
     /**
      * Samples the next value (blocking without buffering) from in an observable sequence.
-     *
-     * @param items the source observable sequence.
-     * @param <T> the type of observable.
+     * 
+     * @param items
+     *            the source observable sequence.
+     * @param <T>
+     *            the type of observable.
      * @return iterable that blocks upon each iteration until the next element in the observable source sequence becomes available.
      */
     public static <T> Iterable<T> next(Observable<T> items) {
@@ -1744,10 +1848,13 @@ public class Observable<T> {
 
     /**
      * Samples the most recent value in an observable sequence.
-     *
-     * @param source the source observable sequence.
-     * @param <T> the type of observable.
-     * @param initialValue the initial value that will be yielded by the enumerable sequence if no element has been sampled yet.
+     * 
+     * @param source
+     *            the source observable sequence.
+     * @param <T>
+     *            the type of observable.
+     * @param initialValue
+     *            the initial value that will be yielded by the enumerable sequence if no element has been sampled yet.
      * @return the iterable that returns the last sampled element upon each iteration.
      */
     public static <T> Iterable<T> mostRecent(Observable<T> source, T initialValue) {
@@ -2031,13 +2138,15 @@ public class Observable<T> {
         return _create(OperationZip.zip(w0, w1, reduceFunction));
     }
 
-
     /**
      * Determines whether two sequences are equal by comparing the elements pairwise.
-     *
-     * @param first observable to compare
-     * @param second observable to compare
-     * @param <T> type of sequence
+     * 
+     * @param first
+     *            observable to compare
+     * @param second
+     *            observable to compare
+     * @param <T>
+     *            type of sequence
      * @return sequence of booleans, true if two sequences are equal by comparing the elements pairwise; otherwise, false.
      */
     public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second) {
@@ -2051,27 +2160,35 @@ public class Observable<T> {
 
     /**
      * Determines whether two sequences are equal by comparing the elements pairwise using a specified equality function.
-     *
-     * @param first observable sequence to compare
-     * @param second observable sequence to compare
-     * @param equality a function used to compare elements of both sequences
-     * @param <T> type of sequence
+     * 
+     * @param first
+     *            observable sequence to compare
+     * @param second
+     *            observable sequence to compare
+     * @param equality
+     *            a function used to compare elements of both sequences
+     * @param <T>
+     *            type of sequence
      * @return sequence of booleans, true if two sequences are equal by comparing the elements pairwise; otherwise, false.
      */
-    private static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Func2<T, T, Boolean> equality) {
+    public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Func2<T, T, Boolean> equality) {
         return zip(first, second, equality);
     }
 
     /**
      * Determines whether two sequences are equal by comparing the elements pairwise using a specified equality function.
-     *
-     * @param first observable sequence to compare
-     * @param second observable sequence to compare
-     * @param equality a function used to compare elements of both sequences
-     * @param <T> type of sequence
+     * 
+     * @param first
+     *            observable sequence to compare
+     * @param second
+     *            observable sequence to compare
+     * @param equality
+     *            a function used to compare elements of both sequences
+     * @param <T>
+     *            type of sequence
      * @return sequence of booleans, true if two sequences are equal by comparing the elements pairwise; otherwise, false.
      */
-    private static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Object equality) {
+    public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Object equality) {
         return zip(first, second, equality);
     }
 
@@ -2314,8 +2431,9 @@ public class Observable<T> {
 
     /**
      * Returns the last element, or a default value if no value is found.
-     *
-     * @param defaultValue a default value that would be returned if observable is empty.
+     * 
+     * @param defaultValue
+     *            a default value that would be returned if observable is empty.
      * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
      */
     public T lastOrDefault(T defaultValue) {
@@ -2324,9 +2442,11 @@ public class Observable<T> {
 
     /**
      * Returns the last element that matches the predicate, or a default value if no value is found.
-     *
-     * @param defaultValue a default value that would be returned if observable is empty.
-     * @param predicate    a predicate function to evaluate for elements in the sequence.
+     * 
+     * @param defaultValue
+     *            a default value that would be returned if observable is empty.
+     * @param predicate
+     *            a predicate function to evaluate for elements in the sequence.
      * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
      */
     public T lastOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
@@ -2335,9 +2455,11 @@ public class Observable<T> {
 
     /**
      * Returns the last element that matches the predicate, or a default value if no value is found.
-     *
-     * @param defaultValue a default value that would be returned if observable is empty.
-     * @param predicate    a predicate function to evaluate for elements in the sequence.
+     * 
+     * @param defaultValue
+     *            a default value that would be returned if observable is empty.
+     * @param predicate
+     *            a predicate function to evaluate for elements in the sequence.
      * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
      */
     public T lastOrDefault(T defaultValue, Object predicate) {
@@ -2448,7 +2570,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public Observable<T> dematerialize() {
-        return dematerialize((Observable<Notification<T>>)this);
+        return dematerialize((Observable<Notification<T>>) this);
     }
 
     /**
@@ -2577,7 +2699,7 @@ public class Observable<T> {
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors
      * be encountered.
-     *
+     * 
      * @param resumeFunction
      * @return the original Observable with appropriately modified behavior
      */
@@ -2828,11 +2950,11 @@ public class Observable<T> {
         return take(this, num);
     }
 
-
     /**
      * Returns an Observable that items emitted by the source Observable as long as a specified condition is true.
-     *
-     * @param predicate a function to test each source element for a condition
+     * 
+     * @param predicate
+     *            a function to test each source element for a condition
      * @return
      */
     public Observable<T> takeWhile(final Func1<T, Boolean> predicate) {
@@ -2841,8 +2963,9 @@ public class Observable<T> {
 
     /**
      * Returns a specified number of contiguous values from the start of an observable sequence.
-     *
-     * @param predicate a function to test each source element for a condition
+     * 
+     * @param predicate
+     *            a function to test each source element for a condition
      * @return
      */
     public Observable<T> takeWhile(final Object predicate) {
@@ -2851,8 +2974,9 @@ public class Observable<T> {
 
     /**
      * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
-     *
-     * @param predicate a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
+     * 
+     * @param predicate
+     *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
      * @return
      */
     public Observable<T> takeWhileWithIndex(final Func2<T, Integer, Boolean> predicate) {
@@ -2861,8 +2985,9 @@ public class Observable<T> {
 
     /**
      * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
-     *
-     * @param predicate a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
+     * 
+     * @param predicate
+     *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
      * @return
      */
     public Observable<T> takeWhileWithIndex(final Object predicate) {
@@ -2872,7 +2997,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the last <code>count</code> items emitted by the source
      * Observable.
-     *
+     * 
      * @param count
      *            the number of items from the end of the sequence emitted by the source
      *            Observable to emit
@@ -2885,9 +3010,11 @@ public class Observable<T> {
 
     /**
      * Returns the values from the source observable sequence until the other observable sequence produces a value.
-     *
-     * @param other  the observable sequence that terminates propagation of elements of the source sequence.
-     * @param <E>    the other type.
+     * 
+     * @param other
+     *            the observable sequence that terminates propagation of elements of the source sequence.
+     * @param <E>
+     *            the other type.
      * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
      */
     public <E> Observable<T> takeUntil(Observable<E> other) {
@@ -2953,24 +3080,29 @@ public class Observable<T> {
 
     /**
      * Converts an observable sequence to an Iterable.
-     *
+     * 
      * @return Observable converted to Iterable.
      */
     public Iterable<T> toIterable() {
         return toIterable(this);
     }
 
+    @SuppressWarnings("unchecked")
     public Observable<T> startWith(T... values) {
-        return concat(Observable.<T>from(values), this);
+        return concat(Observable.<T> from(values), this);
     }
 
     /**
      * Groups the elements of an observable and selects the resulting elements by using a specified function.
-     *
-     * @param keySelector a function to extract the key for each element.
-     * @param elementSelector a function to map each source element to an element in an observable group.
-     * @param <K> the key type.
-     * @param <R> the resulting observable type.
+     * 
+     * @param keySelector
+     *            a function to extract the key for each element.
+     * @param elementSelector
+     *            a function to map each source element to an element in an observable group.
+     * @param <K>
+     *            the key type.
+     * @param <R>
+     *            the resulting observable type.
      * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
      */
     public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
@@ -2979,9 +3111,11 @@ public class Observable<T> {
 
     /**
      * Groups the elements of an observable according to a specified key selector function and
-     *
-     * @param keySelector a function to extract the key for each element.
-     * @param <K> the key type.
+     * 
+     * @param keySelector
+     *            a function to extract the key for each element.
+     * @param <K>
+     *            the key type.
      * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
      */
     public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<T, K> keySelector) {
@@ -2990,7 +3124,7 @@ public class Observable<T> {
 
     /**
      * Returns an iterator that iterates all values of the observable.
-     *
+     * 
      * @return the iterator that could be used to iterate over the elements of the observable.
      */
     public Iterator<T> getIterator() {
@@ -2999,7 +3133,7 @@ public class Observable<T> {
 
     /**
      * Samples the next value (blocking without buffering) from in an observable sequence.
-     *
+     * 
      * @return iterable that blocks upon each iteration until the next element in the observable source sequence becomes available.
      */
     public Iterable<T> next() {
@@ -3008,14 +3142,14 @@ public class Observable<T> {
 
     /**
      * Samples the most recent value in an observable sequence.
-     *
-     * @param initialValue the initial value that will be yielded by the enumerable sequence if no element has been sampled yet.
+     * 
+     * @param initialValue
+     *            the initial value that will be yielded by the enumerable sequence if no element has been sampled yet.
      * @return the iterable that returns the last sampled element upon each iteration.
      */
     public Iterable<T> mostRecent(T initialValue) {
         return mostRecent(this, initialValue);
     }
-
 
     public static class UnitTest {
 
@@ -3245,8 +3379,7 @@ public class Observable<T> {
 
         @Test(expected = IllegalStateException.class)
         public void testSingleDefaultPredicateMatchesMoreThanOne() {
-            Observable<String> observable = toObservable("one", "two");
-            String result = observable.singleOrDefault("default", new Func1<String, Boolean>() {
+            toObservable("one", "two").singleOrDefault("default", new Func1<String, Boolean>() {
                 @Override
                 public Boolean call(String args) {
                     return args.length() == 3;
@@ -3254,9 +3387,8 @@ public class Observable<T> {
             });
         }
 
-
         private static class TestException extends RuntimeException {
-
+            private static final long serialVersionUID = 1L;
         }
 
     }

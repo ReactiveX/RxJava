@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,18 +15,23 @@
  */
 package rx.operators;
 
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.junit.Test;
+
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static org.junit.Assert.*;
 
 public final class OperatorGroupBy {
 
@@ -46,7 +51,7 @@ public final class OperatorGroupBy {
     }
 
     public static <K, T> Func1<Observer<GroupedObservable<K, T>>, Subscription> groupBy(Observable<T> source, final Func1<T, K> keySelector) {
-        return groupBy(source, keySelector, Functions.<T>identity());
+        return groupBy(source, keySelector, Functions.<T> identity());
     }
 
     private static class GroupBy<K, V> implements Func1<Observer<GroupedObservable<K, V>>, Subscription> {
@@ -56,7 +61,6 @@ public final class OperatorGroupBy {
         private GroupBy(Observable<KeyValue<K, V>> source) {
             this.source = source;
         }
-
 
         @Override
         public Subscription call(final Observer<GroupedObservable<K, V>> observer) {

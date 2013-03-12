@@ -71,7 +71,7 @@ public class AtomicObserver<T> implements Observer<T> {
             if (!isFinished.get()) {
                 actual.onNext(args);
             }
-        }catch(Exception e) {
+        } catch (Exception e) {
             // handle errors if the onNext implementation fails, not just if the Observable fails
             onError(e);
         }
