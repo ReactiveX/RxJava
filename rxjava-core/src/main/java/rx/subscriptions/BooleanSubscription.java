@@ -20,7 +20,7 @@ public class BooleanSubscription implements Subscription {
 
     @Override
     public void unsubscribe() {
-        unsubscribed.set(false);
+        unsubscribed.set(true);
     }
 
 }
