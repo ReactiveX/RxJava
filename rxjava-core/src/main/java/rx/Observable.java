@@ -157,7 +157,14 @@ public class Observable<T> {
             // the subscribe function can also be overridden but generally that's not the appropriate approach so I won't mention that in the exception
         }
         if (isTrusted) {
-            return onSubscribe.call(observer);
+            Subscription s = onSubscribe.call(observer);
+            if (s == null) {
+                // this generally shouldn't be the case on a 'trusted' onSubscribe but in case it happens
+                // we want to gracefully handle it the same as AtomicObservableSubscription does
+                return Subscriptions.empty();
+            } else {
+                return s;
+            }
         } else {
             AtomicObservableSubscription subscription = new AtomicObservableSubscription();
             return subscription.wrap(onSubscribe.call(new AtomicObserver<T>(subscription, observer)));
