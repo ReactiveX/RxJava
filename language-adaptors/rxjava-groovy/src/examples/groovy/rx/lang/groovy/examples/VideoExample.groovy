@@ -108,19 +108,27 @@ Observable getVideoGridForDisplay(userId) {
 Observable<VideoList> getListOfLists(userId) {
     return Observable.create({ observer -> 
         BooleanSubscription subscription = new BooleanSubscription();
-        // this will happen on a separate thread as it requires a network call
-        executor.execute({
-                // simulate network latency
-                Thread.sleep(180);
-                for(i in 0..15) {
-                    if(subscription.isUnsubscribed()) {
-                        break;
+        try {
+            // this will happen on a separate thread as it requires a network call
+            executor.execute({
+                    // simulate network latency
+                    Thread.sleep(180);
+                    for(i in 0..15) {
+                        if(subscription.isUnsubscribed()) {
+                            break;
+                        }
+                        try {
+                            //println("****** emitting list: " + i)
+                            observer.onNext(new VideoList(i))
+                        }catch(Exception e) {
+                            observer.onError(e);
+                        }
                     }
-                    //println("****** emitting list: " + i)
-                    observer.onNext(new VideoList(i))
-                }
-                observer.onCompleted();
-        })
+                    observer.onCompleted();
+            })
+        }catch(Exception e) {
+            observer.onError(e);
+        }
         return subscription;
     })
 }
