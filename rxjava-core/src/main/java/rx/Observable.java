@@ -2598,8 +2598,8 @@ public class Observable<T> {
      *             if attempted on Observable not of type {@code Observable<Notification<T>>}.
      */
     @SuppressWarnings("unchecked")
-    public Observable<T> dematerialize() {
-        return dematerialize((Observable<Notification<T>>) this);
+    public <T2> Observable<T2> dematerialize() {
+        return dematerialize((Observable<Notification<T2>>)this);
     }
 
     /**
@@ -3459,6 +3459,19 @@ public class Observable<T> {
             Observable<String> obs = Observable.toObservable();
 
             assertNull(obs.last());
+        }
+
+        @Test
+        public void testMaterializeDematerializeChaining() {
+            Observable<Integer> obs = Observable.just(1);
+            Observable<Integer> chained = obs.materialize().dematerialize();
+
+            Observer<Integer> observer = mock(Observer.class);
+            chained.subscribe(observer);
+
+            verify(observer, times(1)).onNext(1);
+            verify(observer, times(1)).onCompleted();
+            verify(observer, times(0)).onError(any(Exception.class));
         }
 
         private static class TestException extends RuntimeException {
