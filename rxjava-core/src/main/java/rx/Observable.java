@@ -40,6 +40,7 @@ import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationFilter;
+import rx.operators.OperationWhere;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
@@ -720,6 +721,21 @@ public class Observable<T> {
             }
 
         });
+    }
+
+    /**
+     * Filters an Observable by discarding any of its emissions that do not meet some test.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
+     *
+     * @param that
+     *            the Observable to filter
+     * @param predicate
+     *            a function that evaluates the items emitted by the source Observable, returning <code>true</code> if they pass the filter
+     * @return an Observable that emits only those items in the original Observable that the filter evaluates as true
+     */
+    public static <T> Observable<T> where(Observable<T> that, Func1<T, Boolean> predicate) {
+        return _create(OperationWhere.where(that, predicate));
     }
 
     /**
@@ -2417,6 +2433,21 @@ public class Observable<T> {
                 return (Boolean) _f.call(t1);
             }
         });
+    }
+
+    /**
+     * Filters an Observable by discarding any of its emissions that do not meet some test.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
+     *
+     * @param predicate
+     *            a function that evaluates the items emitted by the source Observable, returning
+     *            <code>true</code> if they pass the filter
+     * @return an Observable that emits only those items in the original Observable that the filter
+     *         evaluates as <code>true</code>
+     */
+    public Observable<T> where(Func1<T, Boolean> predicate) {
+        return where(this, predicate);
     }
 
     /**
