@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
@@ -156,18 +155,30 @@ public class Observable<T> {
             throw new IllegalStateException("onSubscribe function can not be null.");
             // the subscribe function can also be overridden but generally that's not the appropriate approach so I won't mention that in the exception
         }
-        if (isTrusted) {
-            Subscription s = onSubscribe.call(observer);
-            if (s == null) {
-                // this generally shouldn't be the case on a 'trusted' onSubscribe but in case it happens
-                // we want to gracefully handle it the same as AtomicObservableSubscription does
-                return Subscriptions.empty();
+        try {
+            if (isTrusted) {
+                Subscription s = onSubscribe.call(observer);
+                if (s == null) {
+                    // this generally shouldn't be the case on a 'trusted' onSubscribe but in case it happens
+                    // we want to gracefully handle it the same as AtomicObservableSubscription does
+                    return Subscriptions.empty();
+                } else {
+                    return s;
+                }
             } else {
-                return s;
+                AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+                return subscription.wrap(onSubscribe.call(new AtomicObserver<T>(subscription, observer)));
             }
-        } else {
-            AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-            return subscription.wrap(onSubscribe.call(new AtomicObserver<T>(subscription, observer)));
+        } catch (Exception e) {
+            // if an unhandled error occurs executing the onSubscribe we will propagate it
+            try {
+                observer.onError(e);
+            } catch (Exception e2) {
+                // if this happens it means the onError itself failed (perhaps an invalid function implementation)
+                // so we are unable to propagate the error correctly and will just throw
+                throw new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
+            }
+            return Subscriptions.empty();
         }
     }
 
@@ -422,6 +433,18 @@ public class Observable<T> {
         }
     }
 
+    /**
+     * Invokes an action for each element in the observable sequence, and blocks until the sequence is terminated.
+     * <p>
+     * NOTE: This will block even if the Observable is asynchronous.
+     * <p>
+     * This is similar to {@link #subscribe(Observer)} but blocks. Because it blocks it does not need the {@link Observer#onCompleted()} or {@link Observer#onError(Exception)} methods.
+     * 
+     * @param onNext
+     *            {@link Action1}
+     * @throws RuntimeException
+     *             if error occurs
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void forEach(final Object o) {
         if (o instanceof Action1) {
@@ -3410,6 +3433,25 @@ public class Observable<T> {
                     return s.length() == 3;
                 }
             }));
+        }
+
+        @Test
+        public void testOnSubscribeFails() {
+            @SuppressWarnings("unchecked")
+            Observer<String> observer = mock(Observer.class);
+            final RuntimeException re = new RuntimeException("bad impl");
+            Observable<String> o = Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(Observer<String> t1) {
+                    throw re;
+                }
+
+            });
+            o.subscribe(observer);
+            verify(observer, times(0)).onNext(anyString());
+            verify(observer, times(0)).onCompleted();
+            verify(observer, times(1)).onError(re);
         }
 
         @Test
