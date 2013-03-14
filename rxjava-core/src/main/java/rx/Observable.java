@@ -36,32 +36,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import rx.observables.GroupedObservable;
-import rx.operators.OperationConcat;
-import rx.operators.OperationDefer;
-import rx.operators.OperationDematerialize;
-import rx.operators.OperationFilter;
-import rx.operators.OperationMap;
-import rx.operators.OperationMaterialize;
-import rx.operators.OperationMerge;
-import rx.operators.OperationMergeDelayError;
-import rx.operators.OperationMostRecent;
-import rx.operators.OperationNext;
-import rx.operators.OperationOnErrorResumeNextViaFunction;
-import rx.operators.OperationOnErrorResumeNextViaObservable;
-import rx.operators.OperationOnErrorReturn;
-import rx.operators.OperationScan;
-import rx.operators.OperationSkip;
-import rx.operators.OperationSynchronize;
-import rx.operators.OperationTake;
-import rx.operators.OperationTakeLast;
-import rx.operators.OperationToObservableFuture;
-import rx.operators.OperationToObservableIterable;
-import rx.operators.OperationToObservableList;
-import rx.operators.OperationToObservableSortedList;
-import rx.operators.OperationZip;
-import rx.operators.OperatorGroupBy;
-import rx.operators.OperatorTakeUntil;
-import rx.operators.OperatorToIterator;
+import rx.operators.*;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.Subscriptions;
@@ -764,6 +739,14 @@ public class Observable<T> {
      */
     public static Observable<Integer> range(int start, int count) {
         return from(Range.createWithCount(start, count));
+    }
+
+    public static <T> Observable<T> subscribeOn(Observable<T> source, Scheduler scheduler) {
+        return _create(OperationSubscribeOn.subscribeOn(source, scheduler));
+    }
+
+    public static <T> Observable<T> observeOn(Observable<T> source, Scheduler scheduler) {
+        return _create(OperationObserveOn.observeOn(source, scheduler));
     }
 
     /**
@@ -2587,6 +2570,14 @@ public class Observable<T> {
      */
     public Observable<Notification<T>> materialize() {
         return materialize(this);
+    }
+
+    public Observable<T> subscribeOn(Scheduler scheduler) {
+        return subscribeOn(this, scheduler);
+    }
+
+    public Observable<T> observeOn(Scheduler scheduler) {
+        return observeOn(this, scheduler);
     }
 
     /**
