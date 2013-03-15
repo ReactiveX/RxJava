@@ -24,6 +24,12 @@ Learn more about Rx on the <a href="https://github.com/Netflix/RxJava/wiki">Wiki
 
 <a href='https://netflixoss.ci.cloudbees.com/job/RxJava-pull-requests/'><img src='https://netflixoss.ci.cloudbees.com/job/RxJava-pull-requests/badge/icon'></a>
 
+## Communication
+
+- Google Group: [RxJava](http://groups.google.com/d/forum/rxjava)
+- Twitter: [@RxJava](http://twitter.com/RxJava)
+- [GitHub Issues](https://github.com/Netflix/RxJava/issues)
+
 ## Versioning
 
 RxJava is working towards a 1.0 release which will be reached once it "more or less" becomes feature complete with the [Rx.Net version](https://rx.codeplex.com). The backlog of features needed to accomplish this are documented in the [project issues](https://github.com/Netflix/RxJava/issues).
