@@ -29,7 +29,7 @@ import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
-
+import rx.subjects.Subject;
 /**
  * Returns a specified number of contiguous values from the start of an observable sequence.
  */
@@ -174,6 +174,37 @@ public final class OperationTake {
             verify(aObserver, times(1)).onNext(1);
             verify(aObserver, times(1)).onNext(2);
             verify(aObserver, never()).onNext(3);
+            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
+        }
+
+        @Test
+        public void testTakeWhileOnSubject1() {
+            Subject<Integer> s = Subject.create();
+            Observable<Integer> w = (Observable<Integer>)s;
+            Observable<Integer> take = Observable.create(takeWhile(w, new Func1<Integer, Boolean>() {
+                @Override
+                public Boolean call(Integer input) {
+                    return input < 3;
+                }
+            }));
+
+            @SuppressWarnings("unchecked")
+            Observer<Integer> aObserver = mock(Observer.class);
+            take.subscribe(aObserver);
+
+            s.onNext(1);
+            s.onNext(2);
+            s.onNext(3);
+            s.onNext(4);
+            s.onNext(5);
+            s.onCompleted();
+
+            verify(aObserver, times(1)).onNext(1);
+            verify(aObserver, times(1)).onNext(2);
+            verify(aObserver, never()).onNext(3);
+            verify(aObserver, never()).onNext(4);
+            verify(aObserver, never()).onNext(5);
             verify(aObserver, never()).onError(any(Exception.class));
             verify(aObserver, times(1)).onCompleted();
         }
