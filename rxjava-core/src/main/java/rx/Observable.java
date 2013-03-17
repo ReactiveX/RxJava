@@ -1183,6 +1183,18 @@ public class Observable<T> {
     }
 
     /**
+     * Emits the same objects as the given Observable, calling the given action
+     * when it calls <code>onComplete</code> or <code>onError</code>.
+     * @param source an observable
+     * @param action an action to be called when the source completes or errors.
+     * @return an Observable that emits the same objects, then calls the action.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN: Observable.Finally Method</a>
+     */
+    public static <T> Observable<T> finally0(Observable source, Action0 action) {
+        return _create(OperationFinally.finally0(source, action));
+    }
+
+    /**
      * Groups the elements of an observable and selects the resulting elements by using a specified function.
      * 
      * @param source
