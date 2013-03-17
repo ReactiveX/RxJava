@@ -2427,6 +2427,17 @@ public class Observable<T> {
     }
 
     /**
+     * Registers an action to be called when this observable calls
+     * <code>onComplete</code> or <code>onError</code>.
+     * @param action an action to be called when this observable completes or errors.
+     * @return an Observable that emits the same objects as this observable, then calls the action.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN: Observable.Finally Method</a>
+     */
+    public Observable<T> finally0(Action0 action) {
+        return _create(OperationFinally.finally0(this, action));
+    }
+
+    /**
      * Filters an Observable by discarding any of its emissions that do not meet some test.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
