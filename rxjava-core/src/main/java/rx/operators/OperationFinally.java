@@ -18,11 +18,7 @@ package rx.operators;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-
+import org.junit.Before;
 import org.junit.Test;
 
 import rx.Observable;
@@ -47,9 +43,10 @@ public final class OperationFinally {
      * @param sequence An observable sequence of elements
      * @param action An action to be taken when the sequence is complete or throws an exception
      * @return An observable sequence with the same elements as the input.
-     *         After the last element is consumed (just before {@link Observer#onComplete} is called),
-     *         or when an exception is thrown (just before {@link Observer#onError}), the action will be called.
-     * @see http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx
+     *         After the last element is consumed (and {@link Observer#onCompleted} has been called),
+     *         or after an exception is thrown (and {@link Observer#onError} has been called),
+     *         the given action will be called.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN Observable.Finally method</a>
      */
     public static <T> Func1<Observer<T>, Subscription> finally0(final Observable<T> sequence, final Action0 action) {
         return new Func1<Observer<T>, Subscription>() {
@@ -94,14 +91,14 @@ public final class OperationFinally {
 
             @Override
             public void onCompleted() {
-                finalAction.call();
                 observer.onCompleted();
+                finalAction.call();
             }
 
             @Override
             public void onError(Exception e) {
-                finalAction.call();
                 observer.onError(e);
+                finalAction.call();
             }
 
             @Override
@@ -112,30 +109,24 @@ public final class OperationFinally {
     }
 
     public static class UnitTest {
-        private static class TestAction implements Action0 {
-            public int called = 0;
-            @Override public void call() {
-                called++;
-            }
+        private Action0 aAction0;
+        private Observer<String> aObserver;
+        @Before
+        public void before() {
+            aAction0 = mock(Action0.class);
+            aObserver = mock(Observer.class);
         }
-
+        private void checkActionCalled(Observable<String> input) {
+            Observable.create(finally0(input, aAction0)).subscribe(aObserver);
+            verify(aAction0, times(1)).call();
+        }
         @Test
-        public void testFinally() {
-            final String[] n = {"1", "2", "3"};
-            final Observable<String> nums = Observable.toObservable(n);
-            TestAction action = new TestAction();
-            action.called = 0;
-            Observable<String> fin = Observable.create(finally0(nums, action));
-            @SuppressWarnings("unchecked")
-            Observer<String> aObserver = mock(Observer.class);
-            fin.subscribe(aObserver);
-            assertEquals(1, action.called);
-
-            action.called = 0;
-            Observable<String> error = Observable.<String>error(new RuntimeException("expected"));
-            fin = Observable.create(finally0(error, action));
-            fin.subscribe(aObserver);
-            assertEquals(1, action.called);
+        public void testFinallyCalledOnComplete() {
+            checkActionCalled(Observable.toObservable(new String[] {"1", "2", "3"}));
+        }
+        @Test
+        public void testFinallyCalledOnError() {
+            checkActionCalled(Observable.<String>error(new RuntimeException("expected")));
         }
     }
 }
