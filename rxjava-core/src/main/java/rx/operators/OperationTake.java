@@ -147,6 +147,7 @@ public final class OperationTake {
                 if (predicate.call(args, counter.getAndIncrement())) {
                     observer.onNext(args);
                 } else {
+                    observer.onCompleted();
                     // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
                     subscription.unsubscribe();
                 }
