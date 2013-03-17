@@ -40,6 +40,7 @@ import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationFilter;
+import rx.operators.OperationFinally;
 import rx.operators.OperationWhere;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
