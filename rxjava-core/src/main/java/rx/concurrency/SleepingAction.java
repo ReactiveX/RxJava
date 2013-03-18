@@ -7,12 +7,12 @@ import rx.util.functions.Func0;
 
 import java.util.concurrent.TimeUnit;
 
-public class DelayedAction implements Func0<Subscription> {
+public class SleepingAction implements Func0<Subscription> {
     private final Func0<Subscription> underlying;
     private final Scheduler scheduler;
     private final long execTime;
 
-    public DelayedAction(Func0<Subscription> underlying, Scheduler scheduler, long timespan, TimeUnit timeUnit) {
+    public SleepingAction(Func0<Subscription> underlying, Scheduler scheduler, long timespan, TimeUnit timeUnit) {
         this.underlying = underlying;
         this.scheduler = scheduler;
         this.execTime = scheduler.now() + timeUnit.toMillis(timespan);

@@ -22,7 +22,7 @@ public abstract class AbstractScheduler implements Scheduler {
 
     @Override
     public Subscription schedule(Func0<Subscription> action, long timespan, TimeUnit unit) {
-        return schedule(new DelayedAction(action, this, timespan, unit));
+        return schedule(new SleepingAction(action, this, timespan, unit));
     }
 
     @Override

@@ -1,17 +1,19 @@
 package rx.concurrency;
 
 import org.junit.Test;
-import rx.Scheduler;
+import org.mockito.InOrder;
 import rx.Subscription;
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.TimeUnit;
+
+import static org.mockito.Mockito.*;
 
 public class CurrentThreadScheduler extends AbstractScheduler {
     private static final CurrentThreadScheduler INSTANCE = new CurrentThreadScheduler();
+
     public static CurrentThreadScheduler getInstance() {
         return INSTANCE;
     }
@@ -30,53 +32,89 @@ public class CurrentThreadScheduler extends AbstractScheduler {
 
     private void enqueue(DiscardableAction action) {
         Queue<DiscardableAction> queue = QUEUE.get();
-        boolean exec = false;
+        boolean exec = queue == null;
 
-        if (queue == null) {
+        if (exec) {
             queue = new LinkedList<DiscardableAction>();
             QUEUE.set(queue);
-            exec = true;
         }
 
         queue.add(action);
 
-        while (exec && !queue.isEmpty()) {
-            queue.poll().call();
+        if (exec) {
+            while (!queue.isEmpty()) {
+                queue.poll().call();
+            }
+
+            QUEUE.set(null);
         }
     }
 
     public static class UnitTest {
 
         @Test
-        public void testScheduler() {
+        public void testOrdering() {
             final CurrentThreadScheduler scheduler = new CurrentThreadScheduler();
+
+            final Action0 firstStepStart = mock(Action0.class);
+            final Action0 firstStepEnd = mock(Action0.class);
+
+            final Action0 secondStepStart = mock(Action0.class);
+            final Action0 secondStepEnd = mock(Action0.class);
+
+            final Action0 thirdStepStart = mock(Action0.class);
+            final Action0 thirdStepEnd = mock(Action0.class);
 
             final Action0 firstAction = new Action0() {
                 @Override
                 public void call() {
-                    System.out.println("First action start");
-                    System.out.println("First action end");
+                    firstStepStart.call();
+                    firstStepEnd.call();
                 }
             };
             final Action0 secondAction = new Action0() {
                 @Override
                 public void call() {
-                    System.out.println("Second action start");
+                    secondStepStart.call();
                     scheduler.schedule(firstAction);
-                    System.out.println("Second action end");
+                    secondStepEnd.call();
 
                 }
             };
             final Action0 thirdAction = new Action0() {
                 @Override
                 public void call() {
-                    System.out.println("Third action start");
+                    thirdStepStart.call();
                     scheduler.schedule(secondAction);
-                    System.out.println("Third action end");
+                    thirdStepEnd.call();
                 }
             };
 
+            InOrder inOrder = inOrder(firstStepStart, firstStepEnd, secondStepStart, secondStepEnd, thirdStepStart, thirdStepEnd);
+
             scheduler.schedule(thirdAction);
+
+            inOrder.verify(thirdStepStart, times(1)).call();
+            inOrder.verify(thirdStepEnd, times(1)).call();
+            inOrder.verify(secondStepStart, times(1)).call();
+            inOrder.verify(secondStepEnd, times(1)).call();
+            inOrder.verify(firstStepStart, times(1)).call();
+            inOrder.verify(firstStepEnd, times(1)).call();
+        }
+
+        @Test
+        public void testSequenceOfActions() {
+            final CurrentThreadScheduler scheduler = new CurrentThreadScheduler();
+
+            final Action0 first = mock(Action0.class);
+            final Action0 second = mock(Action0.class);
+
+            scheduler.schedule(first);
+            scheduler.schedule(second);
+
+            verify(first, times(1)).call();
+            verify(second, times(1)).call();
+
         }
 
     }
