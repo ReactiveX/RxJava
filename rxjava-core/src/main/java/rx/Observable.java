@@ -741,10 +741,26 @@ public class Observable<T> {
         return from(Range.createWithCount(start, count));
     }
 
+    /**
+     * Asynchronously subscribes and unsubscribes observers on the specified scheduler.
+     *
+     * @param source    the source observable.
+     * @param scheduler the scheduler to perform subscription and unsubscription actions on.
+     * @param <T> the type of observable.
+     * @return the source sequence whose subscriptions and unsubscriptions happen on the specified scheduler.
+     */
     public static <T> Observable<T> subscribeOn(Observable<T> source, Scheduler scheduler) {
         return _create(OperationSubscribeOn.subscribeOn(source, scheduler));
     }
 
+    /**
+     * Asynchronously notify observers on the specified scheduler.
+     *
+     * @param source    the source observable.
+     * @param scheduler the scheduler to notify observers on.
+     * @param <T>       the type of observable.
+     * @return the source sequence whose observations happen on the specified scheduler.
+     */
     public static <T> Observable<T> observeOn(Observable<T> source, Scheduler scheduler) {
         return _create(OperationObserveOn.observeOn(source, scheduler));
     }
@@ -2572,10 +2588,22 @@ public class Observable<T> {
         return materialize(this);
     }
 
+    /**
+     * Asynchronously subscribes and unsubscribes observers on the specified scheduler.
+     *
+     * @param scheduler the scheduler to perform subscription and unsubscription actions on.
+     * @return the source sequence whose subscriptions and unsubscriptions happen on the specified scheduler.
+     */
     public Observable<T> subscribeOn(Scheduler scheduler) {
         return subscribeOn(this, scheduler);
     }
 
+    /**
+     * Asynchronously notify observers on the specified scheduler.
+     *
+     * @param scheduler the scheduler to notify observers on.
+     * @return the source sequence whose observations happen on the specified scheduler.
+     */
     public Observable<T> observeOn(Scheduler scheduler) {
         return observeOn(this, scheduler);
     }

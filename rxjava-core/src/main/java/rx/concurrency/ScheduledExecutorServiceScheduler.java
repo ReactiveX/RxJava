@@ -21,7 +21,6 @@ import rx.util.functions.Func0;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-// TODO [@mairbek] silly name
 public class ScheduledExecutorServiceScheduler extends AbstractScheduler {
     private final ScheduledExecutorService executorService;
 
