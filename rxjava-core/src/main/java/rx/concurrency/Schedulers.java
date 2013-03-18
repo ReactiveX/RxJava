@@ -3,6 +3,7 @@ package rx.concurrency;
 import rx.Scheduler;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class Schedulers {
     private Schedulers() {
@@ -23,5 +24,9 @@ public class Schedulers {
 
     public static Scheduler executor(Executor executor) {
         return new ExecutorScheduler(executor);
+    }
+
+    public static Scheduler scheduledExecutor(ScheduledExecutorService executor) {
+        return new ScheduledExecutorServiceScheduler(executor);
     }
 }
