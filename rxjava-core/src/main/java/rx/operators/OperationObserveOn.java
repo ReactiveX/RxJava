@@ -15,13 +15,19 @@
  */
 package rx.operators;
 
+import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
+import rx.concurrency.Schedulers;
 import rx.util.functions.Action0;
-import rx.util.functions.Func0;
 import rx.util.functions.Func1;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class OperationObserveOn {
 
@@ -64,23 +70,46 @@ public class OperationObserveOn {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(final Exception e) {
             scheduler.schedule(new Action0() {
                 @Override
                 public void call() {
-                    underlying.onCompleted();
+                    underlying.onError(e);
                 }
             });
         }
 
         @Override
-        public void onNext(T args) {
+        public void onNext(final T args) {
             scheduler.schedule(new Action0() {
                 @Override
                 public void call() {
-                    underlying.onCompleted();
+                    underlying.onNext(args);
                 }
             });
         }
     }
+
+    public static class UnitTest {
+
+        @Test
+        @SuppressWarnings("unchecked")
+        public void testObserveOn() {
+
+            Scheduler scheduler = spy(Schedulers.forwardingScheduler(Schedulers.immediate()));
+
+            Observer<Integer> observer = mock(Observer.class);
+            Observable.create(observeOn(Observable.toObservable(1, 2, 3), scheduler)).subscribe(observer);
+
+            verify(scheduler, times(4)).schedule(any(Action0.class));
+            verifyNoMoreInteractions(scheduler);
+
+            verify(observer, times(1)).onNext(1);
+            verify(observer, times(1)).onNext(2);
+            verify(observer, times(1)).onNext(3);
+            verify(observer, times(1)).onCompleted();
+        }
+
+    }
+
 }

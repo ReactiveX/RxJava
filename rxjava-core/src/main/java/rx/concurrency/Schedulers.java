@@ -44,4 +44,8 @@ public class Schedulers {
     public static Scheduler scheduledExecutor(ScheduledExecutorService executor) {
         return new ScheduledExecutorServiceScheduler(executor);
     }
+
+    public static Scheduler forwardingScheduler(Scheduler underlying) {
+        return new ForwardingScheduler(underlying);
+    }
 }
