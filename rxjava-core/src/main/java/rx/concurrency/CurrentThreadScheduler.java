@@ -68,7 +68,7 @@ public class CurrentThreadScheduler extends AbstractScheduler {
     public static class UnitTest {
 
         @Test
-        public void testOrdering() {
+        public void testNestedActions() {
             final CurrentThreadScheduler scheduler = new CurrentThreadScheduler();
 
             final Action0 firstStepStart = mock(Action0.class);

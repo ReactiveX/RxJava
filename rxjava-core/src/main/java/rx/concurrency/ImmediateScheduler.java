@@ -46,7 +46,7 @@ public final class ImmediateScheduler extends AbstractScheduler {
     public static class UnitTest {
 
         @Test
-        public void testOrdering() {
+        public void testNestedActions() {
             final ImmediateScheduler scheduler = new ImmediateScheduler();
 
             final Action0 firstStepStart = mock(Action0.class);
