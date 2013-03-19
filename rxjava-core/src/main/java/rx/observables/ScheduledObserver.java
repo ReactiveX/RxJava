@@ -24,21 +24,21 @@ public class ScheduledObserver<T> implements Observer<T> {
     }
 
     @Override
-    public void onError(Exception e) {
+    public void onError(final Exception e) {
         scheduler.schedule(new Action0() {
             @Override
             public void call() {
-                underlying.onCompleted();
+                underlying.onError(e);
             }
         });
     }
 
     @Override
-    public void onNext(T args) {
+    public void onNext(final T args) {
         scheduler.schedule(new Action0() {
             @Override
             public void call() {
-                underlying.onCompleted();
+                underlying.onNext(args);
             }
         });
     }
