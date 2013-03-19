@@ -31,13 +31,13 @@ public abstract class AbstractScheduler implements Scheduler {
     }
 
     @Override
-    public Subscription schedule(Action0 action, long timespan, TimeUnit unit) {
-        return schedule(asFunc0(action), timespan, unit);
+    public Subscription schedule(Action0 action, long dueTime, TimeUnit unit) {
+        return schedule(asFunc0(action), dueTime, unit);
     }
 
     @Override
-    public Subscription schedule(Func0<Subscription> action, long timespan, TimeUnit unit) {
-        return schedule(new SleepingAction(action, this, timespan, unit));
+    public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
+        return schedule(new SleepingAction(action, this, dueTime, unit));
     }
 
     @Override

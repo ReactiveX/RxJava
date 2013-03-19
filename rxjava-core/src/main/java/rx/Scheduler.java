@@ -20,16 +20,46 @@ import rx.util.functions.Func0;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Represents an object that schedules units of work.
+ */
 public interface Scheduler {
 
-    Subscription schedule(Action0 action);
-
+    /**
+     * Schedules a cancelable action to be executed.
+     *
+     * @param action action
+     * @return a subscription to be able to unsubscribe from action.
+     */
     Subscription schedule(Func0<Subscription> action);
 
-    Subscription schedule(Action0 action, long timespan, TimeUnit unit);
+    /**
+     * Schedules an action to be executed.
+     *
+     * @param action action
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    Subscription schedule(Action0 action);
 
-    Subscription schedule(Func0<Subscription> action, long timespan, TimeUnit unit);
+    /**
+     * Schedules an action to be executed in dueTime.
+     *
+     * @param action action
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    Subscription schedule(Action0 action, long dueTime, TimeUnit unit);
 
+    /**
+     * Schedules a cancelable action to be executed in dueTime.
+     *
+     * @param action action
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit);
+
+    /**
+     * Returns the scheduler's notion of current time.
+     */
     long now();
 
 }

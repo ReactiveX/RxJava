@@ -34,14 +34,14 @@ public class ScheduledExecutorServiceScheduler extends AbstractScheduler {
     }
 
     @Override
-    public Subscription schedule(Func0<Subscription> action, long timespan, TimeUnit unit) {
+    public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
         final DiscardableAction discardableAction = new DiscardableAction(action);
         executorService.schedule(new Runnable() {
             @Override
             public void run() {
                 discardableAction.call();
             }
-        }, timespan, unit);
+        }, dueTime, unit);
         return discardableAction;
     }
 

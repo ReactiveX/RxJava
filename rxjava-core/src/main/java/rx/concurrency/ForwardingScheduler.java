@@ -40,13 +40,13 @@ public class ForwardingScheduler implements Scheduler {
     }
 
     @Override
-    public Subscription schedule(Action0 action, long timespan, TimeUnit unit) {
-        return underlying.schedule(action, timespan, unit);
+    public Subscription schedule(Action0 action, long dueTime, TimeUnit unit) {
+        return underlying.schedule(action, dueTime, unit);
     }
 
     @Override
-    public Subscription schedule(Func0<Subscription> action, long timespan, TimeUnit unit) {
-        return underlying.schedule(action, timespan, unit);
+    public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
+        return underlying.schedule(action, dueTime, unit);
     }
 
     @Override
