@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +35,8 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.util.AtomicObservableSubscription;
+import rx.util.SynchronizedObserver;
 import rx.util.functions.Func1;
 
 public final class OperationMerge {
@@ -115,10 +119,20 @@ public final class OperationMerge {
         }
 
         public MergeSubscription call(Observer<T> actualObserver) {
+
+            /**
+             * We must synchronize a merge because we subscribe to multiple sequences in parallel that will each be emitting.
+             * <p>
+             * The calls from each sequence must be serialized.
+             * <p>
+             * Bug report: https://github.com/Netflix/RxJava/issues/200
+             */
+            SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(actualObserver, new AtomicObservableSubscription(ourSubscription));
+
             /**
              * Subscribe to the parent Observable to get to the children Observables
              */
-            sequences.subscribe(new ParentObserver(actualObserver));
+            sequences.subscribe(new ParentObserver(synchronizedObserver));
 
             /* return our subscription to allow unsubscribing */
             return ourSubscription;
@@ -380,6 +394,68 @@ public final class OperationMerge {
             verify(stringObserver, times(1)).onCompleted();
         }
 
+        @Test
+        public void testSynchronizationOfMultipleSequences() throws Exception {
+            final TestASynchronousObservable o1 = new TestASynchronousObservable();
+            final TestASynchronousObservable o2 = new TestASynchronousObservable();
+
+            // use this latch to cause onNext to wait until we're ready to let it go
+            final CountDownLatch endLatch = new CountDownLatch(1);
+
+            final AtomicInteger concurrentCounter = new AtomicInteger();
+            final AtomicInteger totalCounter = new AtomicInteger();
+
+            @SuppressWarnings("unchecked")
+            Observable<String> m = Observable.create(merge(o1, o2));
+            m.subscribe(new Observer<String>() {
+
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    throw new RuntimeException("failed", e);
+                }
+
+                @Override
+                public void onNext(String v) {
+                    totalCounter.incrementAndGet();
+                    concurrentCounter.incrementAndGet();
+                    try {
+                        // wait here until we're done asserting
+                        endLatch.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException("failed", e);
+                    } finally {
+                        concurrentCounter.decrementAndGet();
+                    }
+                }
+
+            });
+
+            // wait for both observables to send (one should be blocked)
+            o1.onNextBeingSent.await();
+            o2.onNextBeingSent.await();
+            
+            assertEquals(1, concurrentCounter.get());
+
+            // release so it can finish
+            endLatch.countDown();
+
+            try {
+                o1.t.join();
+                o2.t.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            assertEquals(2, totalCounter.get());
+            assertEquals(0, concurrentCounter.get());
+        }
+
         /**
          * unit test from OperationMergeDelayError backported here to show how these use cases work with normal merge
          */
@@ -452,6 +528,7 @@ public final class OperationMerge {
 
         private static class TestASynchronousObservable extends Observable<String> {
             Thread t;
+            final CountDownLatch onNextBeingSent = new CountDownLatch(1);
 
             @Override
             public Subscription subscribe(final Observer<String> observer) {
@@ -459,6 +536,7 @@ public final class OperationMerge {
 
                     @Override
                     public void run() {
+                        onNextBeingSent.countDown();
                         observer.onNext("hello");
                         observer.onCompleted();
                     }
