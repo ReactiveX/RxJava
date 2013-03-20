@@ -15,6 +15,8 @@
  */
 package rx.util;
 
+import rx.ObservedException;
+
 public class Exceptions {
     private Exceptions() {
 
@@ -25,6 +27,14 @@ public class Exceptions {
             throw (RuntimeException) t;
         } else {
             throw new RuntimeException(t);
+        }
+    }
+
+    public static RuntimeException propagateObserved(Exception t) {
+        if (t instanceof RuntimeException) {
+            throw (RuntimeException) t;
+        } else {
+            throw new ObservedException(t);
         }
     }
 

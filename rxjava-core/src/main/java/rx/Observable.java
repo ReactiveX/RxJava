@@ -68,6 +68,7 @@ import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.Subscriptions;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
+import rx.util.Exceptions;
 import rx.util.Range;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -425,12 +426,9 @@ public class Observable<T> {
             throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
         }
 
-        if (exceptionFromOnError.get() != null) {
-            if (exceptionFromOnError.get() instanceof RuntimeException) {
-                throw (RuntimeException) exceptionFromOnError.get();
-            } else {
-                throw new RuntimeException(exceptionFromOnError.get());
-            }
+        Exception exception = exceptionFromOnError.get();
+        if (exception != null) {
+            throw Exceptions.propagateObserved(exception);
         }
     }
 
@@ -3310,7 +3308,7 @@ public class Observable<T> {
         }
 
         @Test(expected = TestException.class)
-        public void testToIterableWithException() {
+        public void testToIterableWithCheckedException() throws TestException {
             Observable<String> obs = create(new Func1<Observer<String>, Subscription>() {
 
                 @Override
@@ -3327,8 +3325,43 @@ public class Observable<T> {
             assertEquals("one", it.next());
 
             assertEquals(true, it.hasNext());
-            it.next();
+            try {
+                it.next();
+            } catch (ObservedException e) {
+                throw (TestException) e.getCause();
+            }
 
+        }
+
+
+        @Test
+        public void testToIterableWithRuntimeException() {
+            final UnsupportedOperationException testException = new UnsupportedOperationException();
+
+            Observable<String> obs = Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(Observer<String> observer) {
+                    observer.onNext("one");
+                    observer.onError(testException);
+                    return Subscriptions.empty();
+                }
+            });
+
+            Iterator<String> it = obs.toIterable().iterator();
+
+            assertEquals(true, it.hasNext());
+            assertEquals("one", it.next());
+
+            assertEquals(true, it.hasNext());
+            boolean gotException = false;
+            try {
+                it.next();
+            } catch (RuntimeException e) {
+                assertSame(testException, e);
+                gotException = true;
+            }
+            assertTrue("got test exception", gotException);
         }
 
         @Test
@@ -3505,7 +3538,7 @@ public class Observable<T> {
             verify(observer, times(0)).onError(any(Exception.class));
         }
 
-        private static class TestException extends RuntimeException {
+        private static class TestException extends Exception {
             private static final long serialVersionUID = 1L;
         }
 
