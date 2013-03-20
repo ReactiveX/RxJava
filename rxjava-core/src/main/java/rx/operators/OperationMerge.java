@@ -118,7 +118,7 @@ public final class OperationMerge {
             this.sequences = sequences;
         }
 
-        public MergeSubscription call(Observer<T> actualObserver) {
+        public Subscription call(Observer<T> actualObserver) {
 
             /**
              * We must synchronize a merge because we subscribe to multiple sequences in parallel that will each be emitting.
@@ -127,7 +127,8 @@ public final class OperationMerge {
              * <p>
              * Bug report: https://github.com/Netflix/RxJava/issues/200
              */
-            SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(actualObserver, new AtomicObservableSubscription(ourSubscription));
+            AtomicObservableSubscription subscription = new AtomicObservableSubscription(ourSubscription);
+            SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(actualObserver, subscription);
 
             /**
              * Subscribe to the parent Observable to get to the children Observables
@@ -135,7 +136,7 @@ public final class OperationMerge {
             sequences.subscribe(new ParentObserver(synchronizedObserver));
 
             /* return our subscription to allow unsubscribing */
-            return ourSubscription;
+            return subscription;
         }
 
         /**
@@ -439,11 +440,13 @@ public final class OperationMerge {
             // wait for both observables to send (one should be blocked)
             o1.onNextBeingSent.await();
             o2.onNextBeingSent.await();
-            
-            assertEquals(1, concurrentCounter.get());
 
-            // release so it can finish
-            endLatch.countDown();
+            try { // in try/finally so threads are released via latch countDown even if assertion fails
+                assertEquals(1, concurrentCounter.get());
+            } finally {
+                // release so it can finish
+                endLatch.countDown();
+            }
 
             try {
                 o1.t.join();
