@@ -2,7 +2,10 @@
 ext.githubProjectName = rootProject.name // Change if github project name is not the same as the root project's name
 
 buildscript {
-    repositories { mavenRepo url: 'http://jcenter.bintray.com' }
+    repositories {
+        mavenLocal()
+        maven { url 'http://jcenter.bintray.com' }
+    }
     apply from: file('gradle/buildscript.gradle'), to: buildscript 
 }
 
@@ -44,4 +47,3 @@ project(':template-server') {
         compile project(':template-client')
     }
 }
-

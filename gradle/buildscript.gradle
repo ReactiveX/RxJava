@@ -4,7 +4,7 @@ repositories {
     repositories { maven { url 'http://dl.bintray.com/content/netflixoss/external-gradle-plugins/' } } // For gradle-release
 }
 dependencies {
-    classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.6.0'
+    classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.6.1'
     classpath 'com.mapvine:gradle-cobertura-plugin:0.1'
     classpath 'gradle-release:gradle-release:1.1'
 }
