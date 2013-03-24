@@ -94,5 +94,28 @@ public final class OperationToObservableList<T> {
             verify(aObserver, Mockito.never()).onError(any(Exception.class));
             verify(aObserver, times(1)).onCompleted();
         }
+
+        @Test
+        public void testListMultipleObservers() {
+            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<List<String>> observable = Observable.create(toObservableList(w));
+
+            @SuppressWarnings("unchecked")
+            Observer<List<String>> o1 = mock(Observer.class);
+            observable.subscribe(o1);
+
+            Observer<List<String>> o2 = mock(Observer.class);
+            observable.subscribe(o2);
+
+            List<String> expected = Arrays.asList("one", "two", "three");
+
+            verify(o1, times(1)).onNext(expected);
+            verify(o1, Mockito.never()).onError(any(Exception.class));
+            verify(o1, times(1)).onCompleted();
+
+            verify(o2, times(1)).onNext(expected);
+            verify(o2, Mockito.never()).onError(any(Exception.class));
+            verify(o2, times(1)).onCompleted();
+        }
     }
 }
