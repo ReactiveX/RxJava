@@ -40,7 +40,6 @@ public final class OperationToObservableList<T> {
     private static class ToObservableList<T> implements Func1<Observer<List<T>>, Subscription> {
 
         private final Observable<T> that;
-        final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();
 
         public ToObservableList(Observable<T> that) {
             this.that = that;
@@ -49,6 +48,7 @@ public final class OperationToObservableList<T> {
         public Subscription call(final Observer<List<T>> observer) {
 
             return that.subscribe(new Observer<T>() {
+                final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();
                 public void onNext(T value) {
                     // onNext can be concurrently executed so list must be thread-safe
                     list.add(value);
