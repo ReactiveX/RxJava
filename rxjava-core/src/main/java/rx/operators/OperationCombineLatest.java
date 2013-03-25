@@ -94,7 +94,7 @@ public class OperationCombineLatest {
         }
 
         @Override
-        public void onNext(Object args) {
+        public void onNext(T args) {
             a.next(this, args);
         }
     }
@@ -185,7 +185,7 @@ public class OperationCombineLatest {
          * @param w
          * @param arg
          */
-        void next(CombineObserver<R, ?> w, Object arg) {
+        <T> void next(CombineObserver<R, T> w, T arg) {
             if (Observer == null) {
                 throw new RuntimeException("This shouldn't be running if a Observer isn't registered");
             }
@@ -485,7 +485,7 @@ public class OperationCombineLatest {
 
             /* mock the Observable Observers that are 'pushing' data for us */
             CombineObserver<String, String> r1 = mock(CombineObserver.class);
-            CombineObserver<String, Integer> r2 = mock(CombineObserver.class);
+            CombineObserver<String, String> r2 = mock(CombineObserver.class);
 
             /* pretend we're starting up */
             a.addObserver(r1);
