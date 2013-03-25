@@ -304,7 +304,7 @@ public class OperationCombineLatest {
 
             /* we should have been called 4 times on the Observer */
             InOrder inOrder = inOrder(w);
-            inOrder.verify(w).onNext("1a2a3a");
+            inOrder.verify(w).onNext("1a2b3a");
             inOrder.verify(w).onNext("1a2b3b");
             inOrder.verify(w).onNext("1a2b3c");
             inOrder.verify(w).onNext("1a2b3d");
@@ -348,6 +348,45 @@ public class OperationCombineLatest {
 
         }
 
+        @SuppressWarnings("unchecked")
+        /* mock calls don't do generics */
+        @Test
+        public void testCombineLatestWithInterleavingSequences() {
+            Observer<String> w = mock(Observer.class);
+
+            TestObservable w1 = new TestObservable();
+            TestObservable w2 = new TestObservable();
+            TestObservable w3 = new TestObservable();
+
+            Observable<String> combineLatestW = Observable.create(combineLatest(w1, w2, w3, getConcat3StringsCombineLatestFunction()));
+            combineLatestW.subscribe(w);
+
+            /* simulate sending data */
+            w1.Observer.onNext("1a");
+            w2.Observer.onNext("2a");
+            w2.Observer.onNext("2b");
+            w3.Observer.onNext("3a");
+
+            w1.Observer.onNext("1b");
+            w2.Observer.onNext("2c");
+            w2.Observer.onNext("2d");
+            w3.Observer.onNext("3b");
+            
+            w1.Observer.onCompleted();
+            w2.Observer.onCompleted();
+            w3.Observer.onCompleted();
+
+            /* we should have been called 5 times on the Observer */
+            InOrder inOrder = inOrder(w);
+            inOrder.verify(w).onNext("1a2b3a");
+            inOrder.verify(w).onNext("1b2b3a");
+            inOrder.verify(w).onNext("1b2c3a");
+            inOrder.verify(w).onNext("1b2d3a");
+            inOrder.verify(w).onNext("1b2d3b");
+
+            inOrder.verify(w, times(1)).onCompleted();
+        }
+        
         /**
          * Testing internal private logic due to the complexity so I want to use TDD to test as a I build it rather than relying purely on the overall functionality expected by the public methods.
          */
