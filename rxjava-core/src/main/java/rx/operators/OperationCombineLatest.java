@@ -21,9 +21,10 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
@@ -111,25 +112,21 @@ public class OperationCombineLatest {
         private AtomicBoolean running = new AtomicBoolean(true);
 
         /**
-         * Use LinkedHashMap to retain the order we receive the CombineLatestObserver objects in.
-         * <p>
-         * Note that access to this LinkedList inside MUST BE SYNCHRONIZED
-         */
-        private Map<CombineObserver<R, ?>, LinkedList<Object>> receivedValuesPerObserver = new LinkedHashMap<CombineObserver<R, ?>, LinkedList<Object>>();
-
-        /**
          * store when a Observer completes
          * <p>
          * Note that access to this set MUST BE SYNCHRONIZED
          * */
-        private HashSet<CombineObserver<R, ?>> completed = new HashSet<CombineObserver<R, ?>>();
+        private Set<CombineObserver<R, ?>> completed = new HashSet<CombineObserver<R, ?>>();
 
         /**
          * The last value from a Observer
          * <p>
          * Note that access to this set MUST BE SYNCHRONIZED
          * */
-        private HashMap<CombineObserver<R, ?>, Object> lastValue = new HashMap<CombineObserver<R, ?>, Object>();
+        private Map<CombineObserver<R, ?>, Object> lastValue = new HashMap<CombineObserver<R, ?>, Object>();
+        
+        private Set<CombineObserver<R, ?>> hasLastValue = new HashSet<CombineObserver<R, ?>>();
+        private List<CombineObserver<R, ?>> observers = new LinkedList<CombineObserver<R, ?>>();
 
         public Aggregator(FuncN<R> combineLatestFunction) {
             this.combineLatestFunction = combineLatestFunction;
@@ -140,9 +137,8 @@ public class OperationCombineLatest {
          * 
          * @param w
          */
-        synchronized void addObserver(CombineObserver<R, ?> w) {
-            // initialize this CombineLatestObserver
-            receivedValuesPerObserver.put(w, new LinkedList<Object>());
+        synchronized <T> void addObserver(CombineObserver<R, T> w) {
+          observers.add(w);
         }
 
         /**
@@ -150,11 +146,11 @@ public class OperationCombineLatest {
          * 
          * @param w
          */
-        synchronized void complete(CombineObserver<R, ?> w) {
-            // store that this ZipObserver is completed
+        synchronized <T> void complete(CombineObserver<R, T> w) {
+            // store that this CombineLatestObserver is completed
             completed.add(w);
             // if all CombineObservers are completed, we mark the whole thing as completed
-            if (completed.size() == receivedValuesPerObserver.size()) {
+            if (completed.size() == observers.size()) {
                 if (running.get()) {
                     // mark ourselves as done
                     Observer.onCompleted();
@@ -169,7 +165,7 @@ public class OperationCombineLatest {
          * 
          * @param w
          */
-        synchronized void error(CombineObserver<R, ?> w, Exception e) {
+        synchronized <T> void error(CombineObserver<R, T> w, Exception e) {
             Observer.onError(e);
             /* tell ourselves to stop processing onNext events, event if the Observers don't obey the unsubscribe we're about to send */
             running.set(false);
@@ -196,39 +192,25 @@ public class OperationCombineLatest {
             }
 
             // define here so the variable is out of the synchronized scope
-            Object[] argsToCombineLatest = new Object[receivedValuesPerObserver.size()];
+            Object[] argsToCombineLatest = new Object[observers.size()];
 
             // we synchronize everything that touches receivedValues and the internal LinkedList objects
             synchronized (this) {
-                // add this value to the queue of the CombineLatestObserver for values received
-                receivedValuesPerObserver.get(w).add(arg);
                 // remember this as the last value for this Observer
                 lastValue.put(w, arg);
+                hasLastValue.add(w);
 
                 // if all CombineLatestObservers in 'receivedValues' map have a value, invoke the combineLatestFunction
-                for (CombineObserver<R, ?> rw : receivedValuesPerObserver.keySet()) {
-                    if (receivedValuesPerObserver.get(rw).peek() == null && !completed.contains(rw)) {
-                        // we have a null (and the Observer isn't completed) meaning the queues aren't all populated so won't do anything
+                for (CombineObserver<R, ?> rw : observers) {
+                    if (!hasLastValue.contains(rw)) {
+                        // we don't have a value yet for each observer to combine, so we don't have a combined value yet either
                         return;
                     }
                 }
-                // if we get to here this means all the queues have data (or some are completed)
+                // if we get to here this means all the queues have data
                 int i = 0;
-                boolean foundData = false;
-                for (CombineObserver<R, ?> _w : receivedValuesPerObserver.keySet()) {
-                    LinkedList<Object> q = receivedValuesPerObserver.get(_w);
-                    if (q.peek() == null) {
-                        // this is a completed Observer
-                        // we rely on the check above looking at completed.contains to mean that NULL here represents a completed Observer
-                        argsToCombineLatest[i++] = lastValue.get(_w);
-                    } else {
-                        foundData = true;
-                        argsToCombineLatest[i++] = q.remove();
-                    }
-                }
-                if (completed.size() == receivedValuesPerObserver.size() && !foundData) {
-                    // all are completed and queues have run out of data, so return and don't send empty data
-                    return;
+                for (CombineObserver<R, ?> _w : observers) {
+                    argsToCombineLatest[i++] = lastValue.get(_w);
                 }
             }
             // if we did not return above from the synchronized block we can now invoke the combineLatestFunction with all of the args
@@ -245,7 +227,7 @@ public class OperationCombineLatest {
             this.Observer = Observer;
 
             /* start the Observers */
-            for (CombineObserver<R, ?> rw : receivedValuesPerObserver.keySet()) {
+            for (CombineObserver<R, ?> rw : observers) {
                 rw.startWatching();
             }
 
@@ -263,7 +245,7 @@ public class OperationCombineLatest {
             /* tell ourselves to stop processing onNext events */
             running.set(false);
             /* propogate to all Observers to unsubscribe */
-            for (CombineObserver<R, ?> rw : receivedValuesPerObserver.keySet()) {
+            for (CombineObserver<R, ?> rw : observers) {
                 if (rw.subscription != null) {
                     rw.subscription.unsubscribe();
                 }
@@ -290,13 +272,13 @@ public class OperationCombineLatest {
             /* simulate sending data */
             // once for w1
             w1.Observer.onNext("1a");
+            w2.Observer.onNext("2a");
+            w3.Observer.onNext("3a");
             w1.Observer.onCompleted();
             // twice for w2
-            w2.Observer.onNext("2a");
             w2.Observer.onNext("2b");
             w2.Observer.onCompleted();
             // 4 times for w3
-            w3.Observer.onNext("3a");
             w3.Observer.onNext("3b");
             w3.Observer.onNext("3c");
             w3.Observer.onNext("3d");
@@ -304,11 +286,12 @@ public class OperationCombineLatest {
 
             /* we should have been called 4 times on the Observer */
             InOrder inOrder = inOrder(w);
+            inOrder.verify(w).onNext("1a2a3a");
             inOrder.verify(w).onNext("1a2b3a");
             inOrder.verify(w).onNext("1a2b3b");
             inOrder.verify(w).onNext("1a2b3c");
             inOrder.verify(w).onNext("1a2b3d");
-
+            inOrder.verify(w, never()).onNext(anyString());
             inOrder.verify(w, times(1)).onCompleted();
         }
 
@@ -341,17 +324,16 @@ public class OperationCombineLatest {
 
             /* we should have been called 1 time only on the Observer since we only combine the "latest" we don't go back and loop through others once completed */
             InOrder inOrder = inOrder(w);
-            inOrder.verify(w, times(1)).onNext("1a2a3a");
+            inOrder.verify(w, times(1)).onNext("1d2b3a");
             inOrder.verify(w, never()).onNext(anyString());
 
             inOrder.verify(w, times(1)).onCompleted();
 
         }
 
-        @SuppressWarnings("unchecked")
-        /* mock calls don't do generics */
         @Test
         public void testCombineLatestWithInterleavingSequences() {
+            @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
 
             TestObservable w1 = new TestObservable();
@@ -383,7 +365,8 @@ public class OperationCombineLatest {
             inOrder.verify(w).onNext("1b2c3a");
             inOrder.verify(w).onNext("1b2d3a");
             inOrder.verify(w).onNext("1b2d3b");
-
+            
+            inOrder.verify(w, never()).onNext(anyString());
             inOrder.verify(w, times(1)).onCompleted();
         }
         
@@ -568,14 +551,14 @@ public class OperationCombineLatest {
 
             verify(aObserver, never()).onError(any(Exception.class));
             verify(aObserver, never()).onCompleted();
-            verify(aObserver, times(1)).onNext("oneA");
+            verify(aObserver, times(1)).onNext("threeA");
 
             a.next(r1, "four");
             a.complete(r1);
             a.next(r2, "B");
-            verify(aObserver, times(1)).onNext("twoB");
+            verify(aObserver, times(1)).onNext("fourB");
             a.next(r2, "C");
-            verify(aObserver, times(1)).onNext("threeC");
+            verify(aObserver, times(1)).onNext("fourC");
             a.next(r2, "D");
             verify(aObserver, times(1)).onNext("fourD");
             a.next(r2, "E");
@@ -688,16 +671,18 @@ public class OperationCombineLatest {
             a.complete(r1);
             a.next(r2, "A");
 
-            verify(aObserver, never()).onError(any(Exception.class));
-            verify(aObserver, never()).onCompleted();
-            verify(aObserver, times(1)).onNext("oneA");
+            InOrder inOrder = inOrder(aObserver);
+            
+            inOrder.verify(aObserver, never()).onError(any(Exception.class));
+            inOrder.verify(aObserver, never()).onCompleted();
+            inOrder.verify(aObserver, times(1)).onNext("twoA");
 
             a.complete(r2);
 
-            verify(aObserver, never()).onError(any(Exception.class));
-            verify(aObserver, times(1)).onCompleted();
+            inOrder.verify(aObserver, never()).onError(any(Exception.class));
+            inOrder.verify(aObserver, times(1)).onCompleted();
             // we shouldn't get this since completed is called before any other onNext calls could trigger this
-            verify(aObserver, never()).onNext("twoA");
+            inOrder.verify(aObserver, never()).onNext(anyString());
         }
 
         @SuppressWarnings("unchecked")
@@ -714,7 +699,7 @@ public class OperationCombineLatest {
 
             verify(aObserver, never()).onError(any(Exception.class));
             verify(aObserver, times(1)).onCompleted();
-            verify(aObserver, times(1)).onNext("one2");
+            verify(aObserver, times(1)).onNext("two2");
             verify(aObserver, times(1)).onNext("two3");
             verify(aObserver, times(1)).onNext("two4");
         }
@@ -733,7 +718,7 @@ public class OperationCombineLatest {
 
             verify(aObserver, never()).onError(any(Exception.class));
             verify(aObserver, times(1)).onCompleted();
-            verify(aObserver, times(1)).onNext("one2[4, 5, 6]");
+            verify(aObserver, times(1)).onNext("two2[4, 5, 6]");
         }
 
         @SuppressWarnings("unchecked")
