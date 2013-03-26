@@ -275,6 +275,12 @@ def class ObservableTests {
 
     }
 
+    @Test
+    public void testAll() {
+        Observable.toObservable(1, 2, 3).all({ x -> x > 0 }).subscribe({ result -> a.received(result) });
+        verify(a, times(1)).received(true);
+    }
+
     def class AsyncObservable implements Func1<Observer<Integer>, Subscription> {
 
         public Subscription call(final Observer<Integer> observer) {
