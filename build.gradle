@@ -4,13 +4,15 @@ ext.githubProjectName = rootProject.name // Change if github project name is not
 buildscript {
     repositories {
         mavenLocal()
-        maven { url 'http://jcenter.bintray.com' }
+        mavenCentral() // maven { url 'http://jcenter.bintray.com' }
     }
     apply from: file('gradle/buildscript.gradle'), to: buildscript 
 }
 
 allprojects {
-    repositories { mavenRepo url: 'http://jcenter.bintray.com' }
+    repositories { 
+        mavenCentral() // maven { url: 'http://jcenter.bintray.com' }
+    }
 }
 
 apply from: file('gradle/convention.gradle')

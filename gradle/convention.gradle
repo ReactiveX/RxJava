@@ -1,15 +1,11 @@
-
-// For Artifactory
-rootProject.status = version.contains('-SNAPSHOT')?'snapshot':'release'
+status = version.contains('SNAPSHOT')?'snapshot':status
 
 subprojects { project ->
     apply plugin: 'java' // Plugin as major conventions
 
-    version = rootProject.version
-
     sourceCompatibility = 1.6
 
-    // GRADLE-2087 workaround, perform after java plugin
+    // Restore status after Java plugin
     status = rootProject.status
 
     task sourcesJar(type: Jar, dependsOn:classes) {
@@ -51,9 +47,6 @@ subprojects { project ->
         }
     }
 
-    // Ensure output is on a new line
-    javadoc.doFirst { println "" }
-
     configurations {
         provided {
             description = 'much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive.'
@@ -79,5 +72,5 @@ task aggregateJavadoc(type: Javadoc) {
 
 // Generate wrapper, which is distributed as part of source to alleviate the need of installing gradle
 task createWrapper(type: Wrapper) {
-    gradleVersion = '1.4'
+    gradleVersion = '1.5'
 }

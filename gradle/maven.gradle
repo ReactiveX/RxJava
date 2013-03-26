@@ -8,14 +8,16 @@ subprojects {
         sign configurations.archives
     }
 
-    /**
-     * Publishing to Maven Central example provided from http://jedicoder.blogspot.com/2011/11/automated-gradle-project-deployment-to.html
-     */
-    task uploadMavenCentral(type:Upload, dependsOn: signArchives) {
-        configuration = configurations.archives
-        doFirst {
-            repositories.mavenDeployer {
-                beforeDeployment { org.gradle.api.artifacts.maven.MavenDeployment deployment -> signing.signPom(deployment) }
+/**
+ * Publishing to Maven Central example provided from http://jedicoder.blogspot.com/2011/11/automated-gradle-project-deployment-to.html
+ * artifactory will execute uploadArchives to force generation of ivy.xml, and we don't want that to trigger an upload to maven
+ * central, so using custom upload task.
+ */
+task uploadMavenCentral(type:Upload, dependsOn: signArchives) {
+    configuration = configurations.archives
+    onlyIf { ['release', 'snapshot'].contains(project.status) }
+        repositories.mavenDeployer {
+            beforeDeployment { signing.signPom(it) }
 
                 // To test deployment locally, use the following instead of oss.sonatype.org
                 //repository(url: "file://localhost/${rootProject.rootDir}/repo")
@@ -62,5 +64,4 @@ subprojects {
                 }
             }
         }
-    }
 }

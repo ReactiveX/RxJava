@@ -1,47 +1,49 @@
 apply plugin: 'release'
 
-// Ignore release plugin's task because it calls out via GradleBuild. This is a good place to put an email to send out
-task release(overwrite: true, dependsOn: commitNewVersion) << {
-    // This is a good place to put an email to send out
-}
-commitNewVersion.dependsOn updateVersion
-updateVersion.dependsOn createReleaseTag
-createReleaseTag.dependsOn preTagCommit
-preTagCommit.dependsOn build
-preTagCommit.dependsOn buildWithArtifactory
-preTagCommit.dependsOn checkSnapshotDependencies
-checkSnapshotDependencies.dependsOn confirmReleaseVersion
-confirmReleaseVersion.dependsOn unSnapshotVersion
-unSnapshotVersion.dependsOn checkUpdateNeeded
-checkUpdateNeeded.dependsOn checkCommitNeeded
-checkCommitNeeded.dependsOn initScmPlugin
-
-[
-    uploadIvyLocal: 'uploadLocal', 
-    uploadArtifactory: 'artifactoryPublish', // Call out to compile against internal repository
-    buildWithArtifactory: 'build' // Build against internal repository
-].each { key, value ->
+[ uploadIvyLocal: 'uploadLocal', uploadArtifactory: 'artifactoryPublish', buildWithArtifactory: 'build' ].each { key, value ->
     // Call out to compile against internal repository
     task "${key}"(type: GradleBuild) {
         startParameter = project.gradle.startParameter.newInstance()
+        doFirst {
+            startParameter.projectProperties = [status: project.status]
+        }
         startParameter.addInitScript( file('gradle/netflix-oss.gradle') )
         startParameter.getExcludedTaskNames().add('check')
         tasks = [ 'build', value ]
     }
 }
-task releaseArtifactory(dependsOn: [preTagCommit, uploadArtifactory])
+
+// Marker task for following code to key in on
+task releaseCandidate(dependsOn: release)
+task forceCandidate {
+    onlyIf { gradle.taskGraph.hasTask(releaseCandidate) }
+    doFirst { project.status = 'candidate' }
+}
+release.dependsOn(forceCandidate)
+
+task releaseSnapshot(dependsOn: [uploadArtifactory, uploadMavenCentral])
+
+// Ensure our versions look like the project status before publishing
+task verifyStatus << {
+    def hasSnapshot = version.contains('-SNAPSHOT')
+    if (project.status == 'snapshot' && !hasSnapshot) {
+        throw new GradleException("Version (${version}) needs -SNAPSHOT if publishing snapshot")
+    }
+}
+uploadArtifactory.dependsOn(verifyStatus)
+uploadMavenCentral.dependsOn(verifyStatus)
 
 // Ensure upload happens before taggging but after all pre-checks
-createReleaseTag.dependsOn releaseArtifactory
+createReleaseTag.dependsOn([uploadArtifactory, uploadMavenCentral])
 
-subprojects.each { project ->
-    project.uploadMavenCentral.dependsOn rootProject.preTagCommit
-    rootProject.createReleaseTag.dependsOn project.uploadMavenCentral
+gradle.taskGraph.whenReady { taskGraph ->
+    def hasRelease = taskGraph.hasTask('commitNewVersion')
+    def indexOf = { return taskGraph.allTasks.indexOf(it) }
 
-    gradle.taskGraph.whenReady { taskGraph ->
-        if ( rootProject.status == 'release' && !taskGraph.hasTask(':release') ) {
-            throw new GradleException('"release" task has to be run before uploading a release')
-        }
+    if (hasRelease) {
+        assert indexOf(build) < indexOf(unSnapshotVersion), 'build target has to be after unSnapshotVersion'
+        assert indexOf(uploadMavenCentral) < indexOf(preTagCommit), 'preTagCommit has to be after uploadMavenCentral'
+        assert indexOf(uploadArtifactory) < indexOf(preTagCommit), 'preTagCommit has to be after uploadArtifactory'
     }
 }
 
@@ -49,12 +51,5 @@ subprojects.each { project ->
 ext.'gradle.release.useAutomaticVersion' = "true"
 
 release {
-    failOnCommitNeeded=true
-    failOnPublishNeeded=true
-    failOnSnapshotDependencies=true
-    failOnUnversionedFiles=true
-    failOnUpdateNeeded=true
-    includeProjectNameInTag=true
-    revertOnFail=true
-    requireBranch = null
+    git.requireBranch = null
 }

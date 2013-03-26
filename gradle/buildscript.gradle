@@ -6,5 +6,5 @@ repositories {
 dependencies {
     classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.6.1'
     classpath 'com.mapvine:gradle-cobertura-plugin:0.1'
-    classpath 'gradle-release:gradle-release:1.1'
+    classpath 'gradle-release:gradle-release:1.1.4'
 }
