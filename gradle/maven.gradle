@@ -24,6 +24,10 @@ subprojects {
                     authentication(userName: rootProject.sonatypeUsername, password: rootProject.sonatypePassword)
                 }
 
+                snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
+                    authentication(userName: rootProject.sonatypeUsername, password: rootProject.sonatypePassword)
+                }
+
                 // Prevent datastamp from being appending to artifacts during deployment
                 uniqueVersion = false
 
