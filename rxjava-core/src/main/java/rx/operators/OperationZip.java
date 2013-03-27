@@ -23,9 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -68,7 +65,9 @@ public final class OperationZip {
         return a;
     }
 
-    @ThreadSafe
+    /*
+     * ThreadSafe
+     */
     private static class ZipObserver<R, T> implements Observer<T> {
         final Observable<T> w;
         final Aggregator<R> a;
@@ -110,9 +109,10 @@ public final class OperationZip {
     /**
      * Receive notifications from each of the Observables we are reducing and execute the zipFunction whenever we have received events from all Observables.
      * 
+     * This class is thread-safe.
+     * 
      * @param <T>
      */
-    @ThreadSafe
     private static class Aggregator<T> implements Func1<Observer<T>, Subscription> {
 
         private volatile SynchronizedObserver<T> observer;
@@ -132,10 +132,11 @@ public final class OperationZip {
 
         /**
          * Receive notification of a Observer starting (meaning we should require it for aggregation)
+         *
+         * Thread Safety => Invoke ONLY from the static factory methods at top of this class which are always an atomic execution by a single thread.
          * 
          * @param w
          */
-        @GuardedBy("Invoked ONLY from the static factory methods at top of this class which are always an atomic execution by a single thread.")
         private void addObserver(ZipObserver<T, ?> w) {
             // initialize this ZipObserver
             observers.add(w);
