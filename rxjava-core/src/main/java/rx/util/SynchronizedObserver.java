@@ -26,8 +26,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -50,7 +48,6 @@ import rx.util.functions.Func1;
  * 
  * @param <T>
  */
-@ThreadSafe
 public final class SynchronizedObserver<T> implements Observer<T> {
 
     /**

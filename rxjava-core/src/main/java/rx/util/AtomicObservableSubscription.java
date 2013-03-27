@@ -18,8 +18,6 @@ package rx.util;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.annotation.concurrent.ThreadSafe;
-
 import rx.Subscription;
 
 /**
@@ -32,7 +30,6 @@ import rx.Subscription;
  * <li>handle both synchronous and asynchronous subscribe() execution flows</li>
  * </ul>
  */
-@ThreadSafe
 public final class AtomicObservableSubscription implements Subscription {
 
     private AtomicReference<Subscription> actualSubscription = new AtomicReference<Subscription>();
