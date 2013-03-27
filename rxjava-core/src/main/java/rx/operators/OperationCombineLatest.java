@@ -43,6 +43,14 @@ import rx.util.functions.Functions;
 
 public class OperationCombineLatest {
 
+    /**
+     * Combines the two given observables, emitting an event containing an aggregation of the latest values of each of the source observables
+     * each time an event is received from one of the source observables, where the aggregation is defined by the given function.
+     * @param w0 The first source observable.
+     * @param w1 The second source observable.
+     * @param combineLatestFunction The aggregation function used to combine the source observable values.
+     * @return A function from an observer to a subscription. This can be used to create an observable from.
+     */
     public static <T0, T1, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
@@ -50,6 +58,9 @@ public class OperationCombineLatest {
         return a;
     }
 
+    /**
+     * @see #combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> combineLatestFunction)
+     */
     public static <T0, T1, T2, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
@@ -58,6 +69,9 @@ public class OperationCombineLatest {
         return a;
     }
 
+    /**
+     * @see #combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> combineLatestFunction)
+     */
     public static <T0, T1, T2, T3, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
@@ -91,7 +105,7 @@ public class OperationCombineLatest {
 
         @Override
         public void onError(Exception e) {
-            a.error(this, e);
+            a.error(e);
         }
 
         @Override
@@ -101,32 +115,46 @@ public class OperationCombineLatest {
     }
 
     /**
-     * Receive notifications from each of the Observables we are reducing and execute the combineLatestFunction whenever we have received events from all Observables.
-     * 
-     * @param <R>
+     * Receive notifications from each of the observables we are reducing and execute the combineLatestFunction 
+     * whenever we have received an event from one of the observables, as soon as each Observable has received 
+     * at least one event.
      */
     private static class Aggregator<R> implements Func1<Observer<R>, Subscription> {
 
+        private Observer<R> observer;
+
         private final FuncN<R> combineLatestFunction;
-        private Observer<R> Observer;
-        private AtomicBoolean running = new AtomicBoolean(true);
+        private final AtomicBoolean running = new AtomicBoolean(true);
 
-        /**
-         * store when a Observer completes
-         * <p>
-         * Note that access to this set MUST BE SYNCHRONIZED
-         * */
-        private Set<CombineObserver<R, ?>> completed = new HashSet<CombineObserver<R, ?>>();
-
-        /**
-         * The last value from a Observer
-         * <p>
-         * Note that access to this set MUST BE SYNCHRONIZED
-         * */
-        private Map<CombineObserver<R, ?>, Object> lastValue = new HashMap<CombineObserver<R, ?>, Object>();
+        // used as an internal lock for handling the latest values and the completed state of each observer
+        private final Object lockObject = new Object();
         
-        private Set<CombineObserver<R, ?>> hasLastValue = new HashSet<CombineObserver<R, ?>>();
-        private List<CombineObserver<R, ?>> observers = new LinkedList<CombineObserver<R, ?>>();
+        /**
+         * Store when an observer completes.
+         * <p>
+         * Note that access to this set MUST BE SYNCHRONIZED via 'lockObject' above.
+         * */
+        private final Set<CombineObserver<R, ?>> completed = new HashSet<CombineObserver<R, ?>>();
+
+        /**
+         * The latest value from each observer
+         * <p>
+         * Note that access to this set MUST BE SYNCHRONIZED via 'lockObject' above.
+         * */
+        private final Map<CombineObserver<R, ?>, Object> latestValue = new HashMap<CombineObserver<R, ?>, Object>();
+        
+        /**
+         * Whether each observer has a latest value at all.
+         * <p>
+         * Note that access to this set MUST BE SYNCHRONIZED via 'lockObject' above.
+         * */
+        private final Set<CombineObserver<R, ?>> hasLatestValue = new HashSet<CombineObserver<R, ?>>();
+
+        /**
+         * Ordered list of observers to combine.
+         * No synchronization is necessary as these can not be added or changed asynchronously.
+         */
+        private final List<CombineObserver<R, ?>> observers = new LinkedList<CombineObserver<R, ?>>();
 
         public Aggregator(FuncN<R> combineLatestFunction) {
             this.combineLatestFunction = combineLatestFunction;
@@ -135,55 +163,53 @@ public class OperationCombineLatest {
         /**
          * Receive notification of a Observer starting (meaning we should require it for aggregation)
          * 
-         * @param w
+         * @param w The observer to add.
          */
-        synchronized <T> void addObserver(CombineObserver<R, T> w) {
-          observers.add(w);
+        <T> void addObserver(CombineObserver<R, T> w) {
+            observers.add(w);
         }
 
         /**
          * Receive notification of a Observer completing its iterations.
          * 
-         * @param w
+         * @param w The observer that has completed.
          */
-        synchronized <T> void complete(CombineObserver<R, T> w) {
-            // store that this CombineLatestObserver is completed
-            completed.add(w);
-            // if all CombineObservers are completed, we mark the whole thing as completed
-            if (completed.size() == observers.size()) {
-                if (running.get()) {
-                    // mark ourselves as done
-                    Observer.onCompleted();
-                    // just to ensure we stop processing in case we receive more onNext/complete/error calls after this
-                    running.set(false);
+        <T> void complete(CombineObserver<R, T> w) {
+            synchronized(lockObject) {
+                // store that this CombineLatestObserver is completed
+                completed.add(w);
+                // if all CombineObservers are completed, we mark the whole thing as completed
+                if (completed.size() == observers.size()) {
+                    if (running.get()) {
+                        // mark ourselves as done
+                        observer.onCompleted();
+                        // just to ensure we stop processing in case we receive more onNext/complete/error calls after this
+                        running.set(false);
+                    }
                 }
             }
         }
 
         /**
          * Receive error for a Observer. Throw the error up the chain and stop processing.
-         * 
-         * @param w
          */
-        synchronized <T> void error(CombineObserver<R, T> w, Exception e) {
-            Observer.onError(e);
-            /* tell ourselves to stop processing onNext events, event if the Observers don't obey the unsubscribe we're about to send */
-            running.set(false);
-            /* tell all Observers to unsubscribe since we had an error */
+        void error(Exception e) {
+            observer.onError(e);
+            /* tell all observers to unsubscribe since we had an error */
             stop();
         }
 
         /**
-         * Receive the next value from a Observer.
+         * Receive the next value from an observer.
          * <p>
-         * If we have received values from all Observers, trigger the combineLatest function, otherwise store the value and keep waiting.
+         * If we have received values from all observers, trigger the combineLatest function, otherwise store the value and keep waiting.
          * 
          * @param w
          * @param arg
          */
         <T> void next(CombineObserver<R, T> w, T arg) {
-            if (Observer == null) {
-                throw new RuntimeException("This shouldn't be running if a Observer isn't registered");
+            if (observer == null) {
+                throw new RuntimeException("This shouldn't be running if an Observer isn't registered");
             }
 
             /* if we've been 'unsubscribed' don't process anything further even if the things we're watching keep sending (likely because they are not responding to the unsubscribe call) */
@@ -194,15 +220,17 @@ public class OperationCombineLatest {
             // define here so the variable is out of the synchronized scope
             Object[] argsToCombineLatest = new Object[observers.size()];
 
-            // we synchronize everything that touches receivedValues and the internal LinkedList objects
-            synchronized (this) {
-                // remember this as the last value for this Observer
-                lastValue.put(w, arg);
-                hasLastValue.add(w);
+            // we synchronize everything that touches latest values
+            synchronized (lockObject) {
+                // remember this as the latest value for this observer
+                latestValue.put(w, arg);
+                
+                // remember that this observer now has a latest value set
+                hasLatestValue.add(w);
 
-                // if all CombineLatestObservers in 'receivedValues' map have a value, invoke the combineLatestFunction
+                // if all observers in the 'observers' list have a value, invoke the combineLatestFunction
                 for (CombineObserver<R, ?> rw : observers) {
-                    if (!hasLastValue.contains(rw)) {
+                    if (!hasLatestValue.contains(rw)) {
                         // we don't have a value yet for each observer to combine, so we don't have a combined value yet either
                         return;
                     }
@@ -210,48 +238,45 @@ public class OperationCombineLatest {
                 // if we get to here this means all the queues have data
                 int i = 0;
                 for (CombineObserver<R, ?> _w : observers) {
-                    argsToCombineLatest[i++] = lastValue.get(_w);
+                    argsToCombineLatest[i++] = latestValue.get(_w);
                 }
             }
             // if we did not return above from the synchronized block we can now invoke the combineLatestFunction with all of the args
             // we do this outside the synchronized block as it is now safe to call this concurrently and don't need to block other threads from calling
             // this 'next' method while another thread finishes calling this combineLatestFunction
-            Observer.onNext(combineLatestFunction.call(argsToCombineLatest));
+            observer.onNext(combineLatestFunction.call(argsToCombineLatest));
         }
 
         @Override
-        public Subscription call(Observer<R> Observer) {
-            if (this.Observer != null) {
+        public Subscription call(Observer<R> observer) {
+            if (this.observer != null) {
                 throw new IllegalStateException("Only one Observer can subscribe to this Observable.");
             }
-            this.Observer = Observer;
+            this.observer = observer;
 
-            /* start the Observers */
+            /* start the observers */
             for (CombineObserver<R, ?> rw : observers) {
                 rw.startWatching();
             }
 
             return new Subscription() {
-
                 @Override
                 public void unsubscribe() {
                     stop();
                 }
-
             };
         }
 
         private void stop() {
             /* tell ourselves to stop processing onNext events */
             running.set(false);
-            /* propogate to all Observers to unsubscribe */
+            /* propogate to all observers to unsubscribe */
             for (CombineObserver<R, ?> rw : observers) {
                 if (rw.subscription != null) {
                     rw.subscription.unsubscribe();
                 }
             }
         }
-
     }
 
     public static class UnitTest {
@@ -597,7 +622,7 @@ public class OperationCombineLatest {
             verify(aObserver, never()).onCompleted();
             verify(aObserver, times(1)).onNext("helloworld");
 
-            a.error(r1, new RuntimeException(""));
+            a.error(new RuntimeException(""));
             a.next(r1, "hello");
             a.next(r2, "again");
 
