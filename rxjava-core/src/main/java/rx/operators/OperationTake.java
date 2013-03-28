@@ -261,6 +261,18 @@ public final class OperationTake {
         }
 
         @Test
+        public void testTakeDoesntLeakErrors() {
+            Observable<String> source = Observable.concat(Observable.from("one"), Observable.<String>error(new Exception("test failed")));
+            Observable.create(take(source, 1)).last();
+        }
+
+        @Test
+        public void testTakeZeroDoesntLeakError() {
+            Observable<String> source = Observable.<String>error(new Exception("test failed"));
+            Observable.create(take(source, 0)).lastOrDefault("ok");
+        }
+
+        @Test
         public void testUnsubscribeAfterTake() {
             Subscription s = mock(Subscription.class);
             TestObservable w = new TestObservable(s, "one", "two", "three");
