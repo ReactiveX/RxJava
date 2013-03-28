@@ -140,7 +140,7 @@ public final class OperationNext {
 
             if (lastItem.isOnError()) {
                 if (rethrowExceptionIfExists) {
-                    throw Exceptions.propagate(lastItem.getException());
+                    throw Exceptions.propagateObserved(lastItem.getException());
                 } else {
                     return true;
                 }

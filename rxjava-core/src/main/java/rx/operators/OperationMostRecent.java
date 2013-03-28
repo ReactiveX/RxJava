@@ -66,7 +66,7 @@ public final class OperationMostRecent {
         @Override
         public T next() {
             if (observer.getException() != null) {
-                throw Exceptions.propagate(observer.getException());
+                throw Exceptions.propagateObserved(observer.getException());
             }
             return observer.getRecentValue();
         }

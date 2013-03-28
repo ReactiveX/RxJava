@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import rx.Notification;
 import rx.Observable;
+import rx.ObservedException;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -67,7 +68,7 @@ public class OperatorToIterator {
                     buf = take();
                 }
                 if (buf.isOnError()) {
-                    throw Exceptions.propagate(buf.getException());
+                    throw Exceptions.propagateObserved(buf.getException());
                 }
 
                 T result = buf.getValue();
@@ -110,7 +111,7 @@ public class OperatorToIterator {
     }
 
     @Test(expected = TestException.class)
-    public void testToIteratorWithException() {
+    public void testToIteratorWithCheckedException() throws TestException {
         Observable<String> obs = Observable.create(new Func1<Observer<String>, Subscription>() {
 
             @Override
@@ -127,10 +128,44 @@ public class OperatorToIterator {
         assertEquals("one", it.next());
 
         assertEquals(true, it.hasNext());
-        it.next();
+        try {
+            it.next();
+        } catch (ObservedException e) {
+            throw (TestException) e.getCause();
+        }
     }
 
-    private static class TestException extends RuntimeException {
+    private static class TestException extends Exception {
         private static final long serialVersionUID = 1L;
+    }
+
+    @Test
+    public void testToIteratorWithRuntimeException() {
+        final UnsupportedOperationException testException = new UnsupportedOperationException();
+
+        Observable<String> obs = Observable.create(new Func1<Observer<String>, Subscription>() {
+
+            @Override
+            public Subscription call(Observer<String> observer) {
+                observer.onNext("one");
+                observer.onError(testException);
+                return Subscriptions.empty();
+            }
+        });
+
+        Iterator<String> it = toIterator(obs);
+
+        assertEquals(true, it.hasNext());
+        assertEquals("one", it.next());
+
+        assertEquals(true, it.hasNext());
+        boolean gotException = false;
+        try {
+            it.next();
+        } catch (RuntimeException e) {
+            assertSame(testException, e);
+            gotException = true;
+        }
+        assertTrue("got test exception", gotException);
     }
 }
