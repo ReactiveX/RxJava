@@ -184,70 +184,6 @@ public class Observable<T> {
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Subscription subscribe(final Map<String, Object> callbacks) {
-        // lookup and memoize onNext
-        Object _onNext = callbacks.get("onNext");
-        if (_onNext == null) {
-            throw new RuntimeException("onNext must be implemented");
-        }
-        final FuncN onNext = Functions.from(_onNext);
-
-        return subscribe(new Observer() {
-
-            public void onCompleted() {
-                Object onComplete = callbacks.get("onCompleted");
-                if (onComplete != null) {
-                    Functions.from(onComplete).call();
-                }
-            }
-
-            public void onError(Exception e) {
-                handleError(e);
-                Object onError = callbacks.get("onError");
-                if (onError != null) {
-                    Functions.from(onError).call(e);
-                }
-            }
-
-            public void onNext(Object args) {
-                onNext.call(args);
-            }
-
-        });
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Subscription subscribe(final Object o) {
-        if (o instanceof Observer) {
-            // in case a dynamic language is not correctly handling the overloaded methods and we receive an Observer just forward to the correct method.
-            return subscribe((Observer) o);
-        }
-
-        // lookup and memoize onNext
-        if (o == null) {
-            throw new RuntimeException("onNext must be implemented");
-        }
-        final FuncN onNext = Functions.from(o);
-
-        return subscribe(new Observer() {
-
-            public void onCompleted() {
-                // do nothing
-            }
-
-            public void onError(Exception e) {
-                handleError(e);
-                // no callback defined
-            }
-
-            public void onNext(Object args) {
-                onNext.call(args);
-            }
-
-        });
-    }
-
     public Subscription subscribe(final Action1<T> onNext) {
 
         return subscribe(new Observer<T>() {
@@ -266,34 +202,6 @@ public class Observable<T> {
                     throw new RuntimeException("onNext must be implemented");
                 }
                 onNext.call(args);
-            }
-
-        });
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Subscription subscribe(final Object onNext, final Object onError) {
-        // lookup and memoize onNext
-        if (onNext == null) {
-            throw new RuntimeException("onNext must be implemented");
-        }
-        final FuncN onNextFunction = Functions.from(onNext);
-
-        return subscribe(new Observer() {
-
-            public void onCompleted() {
-                // do nothing
-            }
-
-            public void onError(Exception e) {
-                handleError(e);
-                if (onError != null) {
-                    Functions.from(onError).call(e);
-                }
-            }
-
-            public void onNext(Object args) {
-                onNextFunction.call(args);
             }
 
         });
@@ -319,36 +227,6 @@ public class Observable<T> {
                     throw new RuntimeException("onNext must be implemented");
                 }
                 onNext.call(args);
-            }
-
-        });
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Subscription subscribe(final Object onNext, final Object onError, final Object onComplete) {
-        // lookup and memoize onNext
-        if (onNext == null) {
-            throw new RuntimeException("onNext must be implemented");
-        }
-        final FuncN onNextFunction = Functions.from(onNext);
-
-        return subscribe(new Observer() {
-
-            public void onCompleted() {
-                if (onComplete != null) {
-                    Functions.from(onComplete).call();
-                }
-            }
-
-            public void onError(Exception e) {
-                handleError(e);
-                if (onError != null) {
-                    Functions.from(onError).call(e);
-                }
-            }
-
-            public void onNext(Object args) {
-                onNextFunction.call(args);
             }
 
         });
@@ -436,40 +314,6 @@ public class Observable<T> {
     }
 
     /**
-     * Invokes an action for each element in the observable sequence, and blocks until the sequence is terminated.
-     * <p>
-     * NOTE: This will block even if the Observable is asynchronous.
-     * <p>
-     * This is similar to {@link #subscribe(Observer)} but blocks. Because it blocks it does not need the {@link Observer#onCompleted()} or {@link Observer#onError(Exception)} methods.
-     * 
-     * @param onNext
-     *            {@link Action1}
-     * @throws RuntimeException
-     *             if error occurs
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void forEach(final Object o) {
-        if (o instanceof Action1) {
-            // in case a dynamic language is not correctly handling the overloaded methods and we receive an Action1 just forward to the correct method.
-            forEach((Action1) o);
-        }
-
-        // lookup and memoize onNext
-        if (o == null) {
-            throw new RuntimeException("onNext must be implemented");
-        }
-        final FuncN onNext = Functions.from(o);
-
-        forEach(new Action1() {
-
-            public void call(Object args) {
-                onNext.call(args);
-            }
-
-        });
-    }
-
-    /**
      * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
      * 
      * @return The single element in the observable sequence.
@@ -486,17 +330,6 @@ public class Observable<T> {
      * @return The single element in the observable sequence.
      */
     public T single(Func1<T, Boolean> predicate) {
-        return single(this, predicate);
-    }
-
-    /**
-     * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
-     * 
-     * @param predicate
-     *            A predicate function to evaluate for elements in the sequence.
-     * @return The single element in the observable sequence.
-     */
-    public T single(Object predicate) {
         return single(this, predicate);
     }
 
@@ -521,19 +354,6 @@ public class Observable<T> {
      * @return The single element in the observable sequence, or a default value if no value is found.
      */
     public T singleOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
-        return singleOrDefault(this, defaultValue, predicate);
-    }
-
-    /**
-     * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
-     * 
-     * @param defaultValue
-     *            default value for a sequence.
-     * @param predicate
-     *            A predicate function to evaluate for elements in the sequence.
-     * @return The single element in the observable sequence, or a default value if no value is found.
-     */
-    public T singleOrDefault(T defaultValue, Object predicate) {
         return singleOrDefault(this, defaultValue, predicate);
     }
 
@@ -626,38 +446,6 @@ public class Observable<T> {
     }
 
     /**
-     * Creates an Observable that will execute the given function when a {@link Observer} subscribes to it.
-     * <p>
-     * This method accept {@link Object} to allow different languages to pass in closures using {@link FunctionLanguageAdaptor}.
-     * <p>
-     * Write the function you pass to <code>create</code> so that it behaves as an Observable - calling the passed-in
-     * <code>onNext</code>, <code>onError</code>, and <code>onCompleted</code> methods appropriately.
-     * <p>
-     * A well-formed Observable must call either the {@link Observer}'s <code>onCompleted</code> method exactly once or its <code>onError</code> method exactly once.
-     * <p>
-     * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a> for detailed information.
-     * 
-     * @param <T>
-     *            the type emitted by the Observable sequence
-     * @param func
-     *            a function that accepts an <code>Observer<T></code> and calls its <code>onNext</code>, <code>onError</code>, and <code>onCompleted</code> methods
-     *            as appropriate, and returns a {@link Subscription} to allow canceling the subscription (if applicable)
-     * @return an Observable that, when an {@link Observer} subscribes to it, will execute the given function
-     */
-    public static <T> Observable<T> create(final Object func) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(func);
-        return create(new Func1<Observer<T>, Subscription>() {
-
-            @Override
-            public Subscription call(Observer<T> t1) {
-                return (Subscription) _f.call(t1);
-            }
-
-        });
-    }
-
-    /**
      * Returns an Observable that returns no data to the {@link Observer} and immediately invokes its <code>onCompleted</code> method.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/empty.png">
@@ -697,31 +485,6 @@ public class Observable<T> {
      */
     public static <T> Observable<T> filter(Observable<T> that, Func1<T, Boolean> predicate) {
         return _create(OperationFilter.filter(that, predicate));
-    }
-
-    /**
-     * Filters an Observable by discarding any of its emissions that do not meet some test.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
-     * 
-     * @param that
-     *            the Observable to filter
-     * @param function
-     *            a function that evaluates the items emitted by the source Observable, returning <code>true</code> if they pass the filter
-     * @return an Observable that emits only those items in the original Observable that the filter evaluates as true
-     */
-    public static <T> Observable<T> filter(Observable<T> that, final Object function) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(function);
-        return filter(that, new Func1<T, Boolean>() {
-
-            @Override
-            public Boolean call(T t1) {
-                return (Boolean) _f.call(t1);
-
-            }
-
-        });
     }
 
     /**
@@ -800,33 +563,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an observable sequence that invokes the observable factory whenever a new observer subscribes.
-     * The Defer operator allows you to defer or delay the creation of the sequence until the time when an observer
-     * subscribes to the sequence. This is useful to allow an observer to easily obtain an updates or refreshed version
-     * of the sequence.
-     * 
-     * @param observableFactory
-     *            the observable factory function to invoke for each observer that subscribes to the resulting sequence.
-     * @param <T>
-     *            the type of the observable.
-     * @return the observable sequence whose observers trigger an invocation of the given observable factory function.
-     */
-    public static <T> Observable<T> defer(Object observableFactory) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(observableFactory);
-
-        return _create(OperationDefer.defer(new Func0<Observable<T>>() {
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public Observable<T> call() {
-                return (Observable<T>) _f.call();
-            }
-
-        }));
-    }
-
-    /**
      * Returns an Observable that notifies an {@link Observer} of a single value and then completes.
      * <p>
      * To convert any object into an Observable that emits that object, pass that object into the <code>just</code> method.
@@ -880,19 +616,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns the last element of an observable sequence that matches the predicate.
-     * 
-     * @param that
-     *            the source Observable
-     * @param predicate
-     *            a predicate function to evaluate for elements in the sequence.
-     * @return the last element in the observable sequence.
-     */
-    public static <T> T last(final Observable<T> that, final Object predicate) {
-        return last(that.filter(predicate));
-    }
-
-    /**
      * Returns the last element of an observable sequence, or a default value if no value is found.
      * 
      * @param source
@@ -937,31 +660,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns the last element of an observable sequence that matches the predicate, or a default value if no value is found.
-     * 
-     * @param source
-     *            the source observable.
-     * @param defaultValue
-     *            a default value that would be returned if observable is empty.
-     * @param predicate
-     *            a predicate function to evaluate for elements in the sequence.
-     * @param <T>
-     *            the type of source.
-     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
-     */
-    public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Object predicate) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(predicate);
-
-        return lastOrDefault(source, defaultValue, new Func1<T, Boolean>() {
-            @Override
-            public Boolean call(T args) {
-                return (Boolean) _f.call(args);
-            }
-        });
-    }
-
-    /**
      * Applies a function of your choosing to every notification emitted by an Observable, and returns
      * this transformation as a new Observable sequence.
      * <p>
@@ -980,37 +678,6 @@ public class Observable<T> {
      */
     public static <T, R> Observable<R> map(Observable<T> sequence, Func1<T, R> func) {
         return _create(OperationMap.map(sequence, func));
-    }
-
-    /**
-     * Applies a function of your choosing to every notification emitted by an Observable, and returns
-     * this transformation as a new Observable sequence.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/map.png">
-     * 
-     * @param sequence
-     *            the source Observable
-     * @param func
-     *            a function to apply to each item in the sequence emitted by the source Observable
-     * @param <T>
-     *            the type of items emitted by the the source Observable
-     * @param <R>
-     *            the type of items returned by map function
-     * @return an Observable that is the result of applying the transformation function to each item
-     *         in the sequence emitted by the source Observable
-     */
-    public static <T, R> Observable<R> map(Observable<T> sequence, final Object func) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(func);
-        return map(sequence, new Func1<T, R>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public R call(T t1) {
-                return (R) _f.call(t1);
-            }
-
-        });
     }
 
     /**
@@ -1036,41 +703,6 @@ public class Observable<T> {
      */
     public static <T, R> Observable<R> mapMany(Observable<T> sequence, Func1<T, Observable<R>> func) {
         return _create(OperationMap.mapMany(sequence, func));
-    }
-
-    /**
-     * Creates a new Observable sequence by applying a function that you supply to each object in the
-     * original Observable sequence, where that function is itself an Observable that emits objects,
-     * and then merges the results of that function applied to every item emitted by the original
-     * Observable, emitting these merged results as its own sequence.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
-     * 
-     * @param sequence
-     *            the source Observable
-     * @param func
-     *            a function to apply to each item emitted by the source Observable, generating a
-     *            Observable
-     * @param <T>
-     *            the type emitted by the source Observable
-     * @param <R>
-     *            the type emitted by the Observables emitted by <code>func</code>
-     * @return an Observable that emits a sequence that is the result of applying the transformation
-     *         function to each item emitted by the source Observable and merging the results of
-     *         the Observables obtained from this transformation
-     */
-    public static <T, R> Observable<R> mapMany(Observable<T> sequence, final Object func) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(func);
-        return mapMany(sequence, new Func1<T, R>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public R call(T t1) {
-                return (R) _f.call(t1);
-            }
-
-        });
     }
 
     /**
@@ -1320,43 +952,6 @@ public class Observable<T> {
     }
 
     /**
-     * Instruct an Observable to pass control to another Observable (the return value of a function)
-     * rather than calling <code>onError</code> if it encounters an error.
-     * <p>
-     * By default, when an Observable encounters an error that prevents it from emitting the expected item to its Observer,
-     * the Observable calls its {@link Observer}'s <code>onError</code> function, and then quits without calling any more
-     * of its {@link Observer}'s closures. The <code>onErrorResumeNext</code> method changes this behavior. If you pass a
-     * function that emits an Observable (<code>resumeFunction</code>) to an Observable's <code>onErrorResumeNext</code> method,
-     * if the original Observable encounters an error, instead of calling its {@link Observer}'s <code>onError</code> function, it
-     * will instead relinquish control to this new Observable, which will call the {@link Observer}'s <code>onNext</code> method if
-     * it is able to do so. In such a case, because no Observable necessarily invokes <code>onError</code>, the Observer may
-     * never know that an error happened.
-     * <p>
-     * You can use this to prevent errors from propagating or to supply fallback data should errors be encountered.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorResumeNext.png">
-     * 
-     * @param that
-     *            the source Observable
-     * @param resumeFunction
-     *            a function that returns an Observable that will take over if the source Observable
-     *            encounters an error
-     * @return the source Observable, with its behavior modified as described
-     */
-    public static <T> Observable<T> onErrorResumeNext(final Observable<T> that, final Object resumeFunction) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(resumeFunction);
-        return onErrorResumeNext(that, new Func1<Exception, Observable<T>>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Observable<T> call(Exception e) {
-                return (Observable<T>) _f.call(e);
-            }
-        });
-    }
-
-    /**
      * Instruct an Observable to pass control to another Observable rather than calling <code>onError</code> if it encounters an error.
      * <p>
      * By default, when an Observable encounters an error that prevents it from emitting the expected item to its Observer,
@@ -1453,52 +1048,11 @@ public class Observable<T> {
      *            the type item emitted by the source Observable
      * @param sequence
      *            the source Observable
-     * @param accumulator
-     *            an accumulator function to be invoked on each element from the sequence, whose
-     *            result will be used in the next accumulator call (if applicable)
-     * 
-     * @return an Observable that emits a single element that is the result of accumulating the
-     *         output from applying the accumulator to the sequence of items emitted by the source
-     *         Observable
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
-     */
-    public static <T> Observable<T> reduce(final Observable<T> sequence, final Object accumulator) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(accumulator);
-        return reduce(sequence, new Func2<T, T, T>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public T call(T t1, T t2) {
-                return (T) _f.call(t1, t2);
-            }
-
-        });
-    }
-
-    /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the final result from the final call to your function as its sole
-     * output.
-     * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code>
-     * method that does a similar operation on lists.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
-     * 
-     * @param <T>
-     *            the type item emitted by the source Observable
-     * @param sequence
-     *            the source Observable
      * @param initialValue
      *            a seed passed into the first execution of the accumulator function
      * @param accumulator
      *            an accumulator function to be invoked on each element from the sequence, whose
      *            result will be used in the next accumulator call (if applicable)
-     * 
      * @return an Observable that emits a single element that is the result of accumulating the
      *         output from applying the accumulator to the sequence of items emitted by the source
      *         Observable
@@ -1507,47 +1061,6 @@ public class Observable<T> {
      */
     public static <T> Observable<T> reduce(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
         return takeLast(_create(OperationScan.scan(sequence, initialValue, accumulator)), 1);
-    }
-
-    /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the final result from the final call to your function as its sole
-     * output.
-     * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code>
-     * method that does a similar operation on lists.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
-     * 
-     * @param <T>
-     *            the type item emitted by the source Observable
-     * @param sequence
-     *            the source Observable
-     * @param initialValue
-     *            a seed passed into the first execution of the accumulator function
-     * @param accumulator
-     *            an accumulator function to be invoked on each element from the sequence, whose
-     *            result will be used in the next accumulator call (if applicable)
-     * @return an Observable that emits a single element that is the result of accumulating the
-     *         output from applying the accumulator to the sequence of items emitted by the source
-     *         Observable
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
-     */
-    public static <T> Observable<T> reduce(final Observable<T> sequence, final T initialValue, final Object accumulator) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(accumulator);
-        return reduce(sequence, initialValue, new Func2<T, T, T>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public T call(T t1, T t2) {
-                return (T) _f.call(t1, t2);
-            }
-
-        });
     }
 
     /**
@@ -1571,39 +1084,6 @@ public class Observable<T> {
      */
     public static <T> Observable<T> scan(Observable<T> sequence, Func2<T, T, T> accumulator) {
         return _create(OperationScan.scan(sequence, accumulator));
-    }
-
-    /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the result of each of these iterations as its own sequence.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
-     * 
-     * @param <T>
-     *            the type item emitted by the source Observable
-     * @param sequence
-     *            the source Observable
-     * @param accumulator
-     *            an accumulator function to be invoked on each element from the sequence, whose
-     *            result will be emitted and used in the next accumulator call (if applicable)
-     * @return an Observable that emits a sequence of items that are the result of accumulating the
-     *         output from the sequence emitted by the source Observable
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
-     */
-    public static <T> Observable<T> scan(final Observable<T> sequence, final Object accumulator) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(accumulator);
-        return scan(sequence, new Func2<T, T, T>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public T call(T t1, T t2) {
-                return (T) _f.call(t1, t2);
-            }
-
-        });
     }
 
     /**
@@ -1783,26 +1263,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns a specified number of contiguous values from the start of an observable sequence.
-     * 
-     * @param items
-     * @param predicate
-     *            a function to test each source element for a condition
-     * @return
-     */
-    public static <T> Observable<T> takeWhile(final Observable<T> items, Object predicate) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(predicate);
-
-        return takeWhile(items, new Func1<T, Boolean>() {
-            @Override
-            public Boolean call(T t) {
-                return (Boolean) _f.call(t);
-            }
-        });
-    }
-
-    /**
      * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
      * 
      * @param items
@@ -1811,10 +1271,6 @@ public class Observable<T> {
      * @return
      */
     public static <T> Observable<T> takeWhileWithIndex(final Observable<T> items, Func2<T, Integer, Boolean> predicate) {
-        return create(OperationTake.takeWhileWithIndex(items, predicate));
-    }
-
-    public static <T> Observable<T> takeWhileWithIndex(final Observable<T> items, Object predicate) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(predicate);
 
@@ -1935,28 +1391,6 @@ public class Observable<T> {
         return single(that.filter(predicate));
     }
 
-    /**
-     * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
-     * 
-     * @param that
-     *            the source Observable
-     * @param predicate
-     *            A predicate function to evaluate for elements in the sequence.
-     * @return The single element in the observable sequence.
-     * @throws IllegalStateException
-     *             if there is not exactly one element in the observable sequence that matches the predicate
-     */
-    public static <T> T single(Observable<T> that, Object predicate) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(predicate);
-
-        return single(that, new Func1<T, Boolean>() {
-            @Override
-            public Boolean call(T t) {
-                return (Boolean) _f.call(t);
-            }
-        });
-    }
 
     /**
      * Returns the only element of an observable sequence, or a default value if the observable sequence is empty.
@@ -1984,29 +1418,6 @@ public class Observable<T> {
      */
     public static <T> T singleOrDefault(Observable<T> that, T defaultValue, Func1<T, Boolean> predicate) {
         return singleOrDefault(that.filter(predicate), defaultValue);
-    }
-
-    /**
-     * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
-     * 
-     * @param that
-     *            the source Observable
-     * @param defaultValue
-     *            default value for a sequence.
-     * @param predicate
-     *            A predicate function to evaluate for elements in the sequence.
-     * @return The single element in the observable sequence, or a default value if no value is found.
-     */
-    public static <T> T singleOrDefault(Observable<T> that, T defaultValue, Object predicate) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(predicate);
-
-        return singleOrDefault(that, defaultValue, new Func1<T, Boolean>() {
-            @Override
-            public Boolean call(T t) {
-                return (Boolean) _f.call(t);
-            }
-        });
     }
 
     private static <T> T singleOrDefault(Observable<T> that, boolean hasDefault, T defaultVal) {
@@ -2137,28 +1548,6 @@ public class Observable<T> {
     }
 
     /**
-     * Sort T objects using the defined sort function.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
-     * 
-     * @param sequence
-     * @param sortFunction
-     * @return
-     */
-    public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, final Object sortFunction) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(sortFunction);
-        return _create(OperationToObservableSortedList.toSortedList(sequence, new Func2<T, T, Integer>() {
-
-            @Override
-            public Integer call(T t1, T t2) {
-                return (Integer) _f.call(t1, t2);
-            }
-
-        }));
-    }
-
-    /**
      * Returns an Observable that applies a function of your choosing to the combination of items
      * emitted, in sequence, by two other Observables, with the results of this function becoming the
      * sequence emitted by the returned Observable.
@@ -2224,61 +1613,6 @@ public class Observable<T> {
     }
 
     /**
-     * Determines whether two sequences are equal by comparing the elements pairwise using a specified equality function.
-     * 
-     * @param first
-     *            observable sequence to compare
-     * @param second
-     *            observable sequence to compare
-     * @param equality
-     *            a function used to compare elements of both sequences
-     * @param <T>
-     *            type of sequence
-     * @return sequence of booleans, true if two sequences are equal by comparing the elements pairwise; otherwise, false.
-     */
-    public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Object equality) {
-        return zip(first, second, equality);
-    }
-
-    /**
-     * Returns an Observable that applies a function of your choosing to the combination of items
-     * emitted, in sequence, by two other Observables, with the results of this function becoming the
-     * sequence emitted by the returned Observable.
-     * <p>
-     * <code>zip</code> applies this function in strict sequence, so the first item emitted by the new Observable will be the result of the function applied to the first item emitted by
-     * <code>w0</code>
-     * and the first item emitted by <code>w1</code>; the
-     * second item emitted by the new Observable will be the result of the function applied to the second item emitted by <code>w0</code> and the second item emitted by <code>w1</code>; and so forth.
-     * <p>
-     * The resulting <code>Observable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Observable with the
-     * shortest sequence.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
-     * 
-     * @param w0
-     *            one source Observable
-     * @param w1
-     *            another source Observable
-     * @param function
-     *            a function that, when applied to an item emitted by each of the source Observables,
-     *            results in a value that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
-     */
-    public static <R, T0, T1> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, final Object function) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(function);
-        return zip(w0, w1, new Func2<T0, T1, R>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public R call(T0 t0, T1 t1) {
-                return (R) _f.call(t0, t1);
-            }
-
-        });
-    }
-
-    /**
      * Returns an Observable that applies a function of your choosing to the combination of items
      * emitted, in sequence, by three other Observables, with the results of this function becoming
      * the sequence emitted by the returned Observable.
@@ -2308,48 +1642,6 @@ public class Observable<T> {
      */
     public static <R, T0, T1, T2> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> function) {
         return _create(OperationZip.zip(w0, w1, w2, function));
-    }
-
-    /**
-     * Returns an Observable that applies a function of your choosing to the combination of items
-     * emitted, in sequence, by three other Observables, with the results of this function becoming
-     * the sequence emitted by the returned Observable.
-     * <p>
-     * <code>zip</code> applies this function in strict sequence, so the first item emitted by the new Observable will be the result of the function applied to the first item emitted by
-     * <code>w0</code>,
-     * the first item emitted by <code>w1</code>, and the
-     * first item emitted by <code>w2</code>; the second item emitted by the new Observable will be the result of the function applied to the second item emitted by <code>w0</code>, the second item
-     * emitted by <code>w1</code>, and the second item
-     * emitted by <code>w2</code>; and so forth.
-     * <p>
-     * The resulting <code>Observable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Observable with the
-     * shortest sequence.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
-     * 
-     * @param w0
-     *            one source Observable
-     * @param w1
-     *            another source Observable
-     * @param w2
-     *            a third source Observable
-     * @param function
-     *            a function that, when applied to an item emitted by each of the source Observables,
-     *            results in a value that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
-     */
-    public static <R, T0, T1, T2> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, final Object function) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(function);
-        return zip(w0, w1, w2, new Func3<T0, T1, T2, R>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public R call(T0 t0, T1 t1, T2 t2) {
-                return (R) _f.call(t0, t1, t2);
-            }
-
-        });
     }
 
     /**
@@ -2386,49 +1678,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the combination of items
-     * emitted, in sequence, by four other Observables, with the results of this function becoming
-     * the sequence emitted by the returned Observable.
-     * <p>
-     * <code>zip</code> applies this function in strict sequence, so the first item emitted by the new Observable will be the result of the function applied to the first item emitted by
-     * <code>w0</code>,
-     * the first item emitted by <code>w1</code>, the
-     * first item emitted by <code>w2</code>, and the first item emitted by <code>w3</code>; the second item emitted by the new Observable will be the result of the function applied to the second item
-     * emitted by each of those Observables; and so forth.
-     * <p>
-     * The resulting <code>Observable<R></code> returned from <code>zip</code> will call <code>onNext</code> as many times as the number <code>onNext</code> calls of the source Observable with the
-     * shortest sequence.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
-     * 
-     * @param w0
-     *            one source Observable
-     * @param w1
-     *            another source Observable
-     * @param w2
-     *            a third source Observable
-     * @param w3
-     *            a fourth source Observable
-     * @param function
-     *            a function that, when applied to an item emitted by each of the source Observables,
-     *            results in a value that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
-     */
-    public static <R, T0, T1, T2, T3> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, final Object function) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(function);
-        return zip(w0, w1, w2, w3, new Func4<T0, T1, T2, T3, R>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public R call(T0 t0, T1 t1, T2 t2, T3 t3) {
-                return (R) _f.call(t0, t1, t2, t3);
-            }
-
-        });
-    }
-
-    /**
      * Filters an Observable by discarding any of its emissions that do not meet some test.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
@@ -2441,28 +1690,6 @@ public class Observable<T> {
      */
     public Observable<T> filter(Func1<T, Boolean> predicate) {
         return filter(this, predicate);
-    }
-
-    /**
-     * Filters an Observable by discarding any of its emissions that do not meet some test.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
-     * 
-     * @param callback
-     *            a function that evaluates the items emitted by the source Observable, returning
-     *            <code>true</code> if they pass the filter
-     * @return an Observable that emits only those items in the original Observable that the filter
-     *         evaluates as "true"
-     */
-    public Observable<T> filter(final Object callback) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(callback);
-        return filter(this, new Func1<T, Boolean>() {
-
-            public Boolean call(T t1) {
-                return (Boolean) _f.call(t1);
-            }
-        });
     }
 
     /**
@@ -2497,17 +1724,6 @@ public class Observable<T> {
      * @return the last element in the observable sequence.
      */
     public T last(final Func1<T, Boolean> predicate) {
-        return last(this, predicate);
-    }
-
-    /**
-     * Returns the last element of an observable sequence that matches the predicate.
-     * 
-     * @param predicate
-     *            a predicate function to evaluate for elements in the sequence.
-     * @return the last element in the observable sequence.
-     */
-    public T last(final Object predicate) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(predicate);
 
@@ -2544,19 +1760,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns the last element that matches the predicate, or a default value if no value is found.
-     * 
-     * @param defaultValue
-     *            a default value that would be returned if observable is empty.
-     * @param predicate
-     *            a predicate function to evaluate for elements in the sequence.
-     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
-     */
-    public T lastOrDefault(T defaultValue, Object predicate) {
-        return lastOrDefault(this, defaultValue, predicate);
-    }
-
-    /**
      * Applies a function of your choosing to every item emitted by an Observable, and returns this
      * transformation as a new Observable sequence.
      * <p>
@@ -2569,29 +1772,6 @@ public class Observable<T> {
      */
     public <R> Observable<R> map(Func1<T, R> func) {
         return map(this, func);
-    }
-
-    /**
-     * Applies a function of your choosing to every item emitted by an Observable, and returns this
-     * transformation as a new Observable sequence.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/map.png">
-     * 
-     * @param callback
-     *            a function to apply to each item in the sequence.
-     * @return an Observable that emits a sequence that is the result of applying the transformation
-     *         function to each item in the sequence emitted by the input Observable.
-     */
-    public <R> Observable<R> map(final Object callback) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(callback);
-        return map(this, new Func1<T, R>() {
-
-            @SuppressWarnings("unchecked")
-            public R call(T t1) {
-                return (R) _f.call(t1);
-            }
-        });
     }
 
     /**
@@ -2610,32 +1790,6 @@ public class Observable<T> {
      */
     public <R> Observable<R> mapMany(Func1<T, Observable<R>> func) {
         return mapMany(this, func);
-    }
-
-    /**
-     * Creates a new Observable sequence by applying a function that you supply to each item in the
-     * original Observable sequence, where that function is itself an Observable that emits items, and
-     * then merges the results of that function applied to every item emitted by the original
-     * Observable, emitting these merged results as its own sequence.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
-     * 
-     * @param callback
-     *            a function to apply to each item in the sequence that returns an Observable.
-     * @return an Observable that emits a sequence that is the result of applying the transformation'
-     *         function to each item in the input sequence and merging the results of the
-     *         Observables obtained from this transformation.
-     */
-    public <R> Observable<R> mapMany(final Object callback) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(callback);
-        return mapMany(this, new Func1<T, Observable<R>>() {
-
-            @SuppressWarnings("unchecked")
-            public Observable<R> call(T t1) {
-                return (Observable<R>) _f.call(t1);
-            }
-        });
     }
 
     /**
@@ -2672,7 +1826,7 @@ public class Observable<T> {
      * <code>onErrorResumeNext</code> method changes this behavior. If you pass another Observable
      * (<code>resumeFunction</code>) to an Observable's <code>onErrorResumeNext</code> method, if the
      * original Observable encounters an error, instead of calling its Observer's
-     * <code>onErrort</code> function, it will instead relinquish control to
+     * <code>onError</code> function, it will instead relinquish control to
      * <code>resumeFunction</code> which will call the Observer's <code>onNext</code> method if it
      * is able to do so. In such a case, because no Observable necessarily invokes
      * <code>onError</code>, the Observer may never know that an error happened.
@@ -2687,41 +1841,6 @@ public class Observable<T> {
      */
     public Observable<T> onErrorResumeNext(final Func1<Exception, Observable<T>> resumeFunction) {
         return onErrorResumeNext(this, resumeFunction);
-    }
-
-    /**
-     * Instruct an Observable to emit a particular item rather than calling <code>onError</code> if
-     * it encounters an error.
-     * <p>
-     * By default, when an Observable encounters an error that prevents it from emitting the expected
-     * item to its Observer, the Observable calls its Observer's <code>onError</code> function, and
-     * then quits without calling any more of its Observer's closures. The
-     * <code>onErrorResumeNext</code> method changes this behavior. If you pass another Observable
-     * (<code>resumeFunction</code>) to an Observable's <code>onErrorResumeNext</code> method, if the
-     * original Observable encounters an error, instead of calling its Observer's
-     * <code>onError</code> function, it will instead relinquish control to
-     * <code>resumeFunction</code> which will call the Observer's <code>onNext</code> method if it
-     * is able to do so. In such a case, because no Observable necessarily invokes
-     * <code>onError</code>, the Observer may never know that an error happened.
-     * <p>
-     * You can use this to prevent errors from propagating or to supply fallback data should errors
-     * be encountered.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorResumeNext.png">
-     * 
-     * @param resumeFunction
-     * @return the original Observable with appropriately modified behavior
-     */
-    public Observable<T> onErrorResumeNext(final Object resumeFunction) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(resumeFunction);
-        return onErrorResumeNext(this, new Func1<Exception, Observable<T>>() {
-
-            @SuppressWarnings("unchecked")
-            public Observable<T> call(Exception e) {
-                return (Observable<T>) _f.call(e);
-            }
-        });
     }
 
     /**
@@ -2775,37 +1894,6 @@ public class Observable<T> {
     }
 
     /**
-     * Instruct an Observable to emit a particular item rather than calling <code>onError</code> if
-     * it encounters an error.
-     * <p>
-     * By default, when an Observable encounters an error that prevents it from emitting the expected
-     * object to its Observer, the Observable calls its Observer's <code>onError</code> function, and
-     * then quits without calling any more of its Observer's closures. The
-     * <code>onErrorReturn</code> method changes this behavior. If you pass a function
-     * (<code>resumeFunction</code>) to an Observable's <code>onErrorReturn</code> method, if the
-     * original Observable encounters an error, instead of calling its Observer's
-     * <code>onError</code> function, it will instead call pass the return value of
-     * <code>resumeFunction</code> to the Observer's <code>onNext</code> method.
-     * <p>
-     * You can use this to prevent errors from propagating or to supply fallback data should errors
-     * be encountered.
-     * 
-     * @param resumeFunction
-     * @return the original Observable with appropriately modified behavior
-     */
-    public Observable<T> onErrorReturn(final Object resumeFunction) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(resumeFunction);
-        return onErrorReturn(this, new Func1<Exception, T>() {
-
-            @SuppressWarnings("unchecked")
-            public T call(Exception e) {
-                return (T) _f.call(e);
-            }
-        });
-    }
-
-    /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
      * by an Observable into the same function, and so on until all items have been emitted by the
@@ -2844,32 +1932,6 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
      * 
-     * @param accumulator
-     *            An accumulator function to be invoked on each element from the sequence, whose result
-     *            will be used in the next accumulator call (if applicable).
-     * 
-     * @return an Observable that emits a single element from the result of accumulating the output
-     *         from the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
-     */
-    public Observable<T> reduce(Object accumulator) {
-        return reduce(this, accumulator);
-    }
-
-    /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the final result from the final call to your function as its sole
-     * output.
-     * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate,"
-     * "compress," or "inject" in other programming contexts. Groovy, for instance, has an
-     * <code>inject</code> method that does a similar operation on lists.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
-     * 
      * @param initialValue
      *            The initial (seed) accumulator value.
      * @param accumulator
@@ -2882,33 +1944,6 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public Observable<T> reduce(T initialValue, Func2<T, T, T> accumulator) {
-        return reduce(this, initialValue, accumulator);
-    }
-
-    /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the final result from the final call to your function as its sole
-     * output.
-     * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate,"
-     * "compress," or "inject" in other programming contexts. Groovy, for instance, has an
-     * <code>inject</code> method that does a similar operation on lists.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
-     * 
-     * @param initialValue
-     *            The initial (seed) accumulator value.
-     * @param accumulator
-     *            An accumulator function to be invoked on each element from the sequence, whose
-     *            result will be used in the next accumulator call (if applicable).
-     * @return an Observable that emits a single element from the result of accumulating the output
-     *         from the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
-     */
-    public Observable<T> reduce(T initialValue, Object accumulator) {
         return reduce(this, initialValue, accumulator);
     }
 
@@ -2931,29 +1966,6 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
     public Observable<T> scan(Func2<T, T, T> accumulator) {
-        return scan(this, accumulator);
-    }
-
-    /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the result of each of these iterations. It emits the result of
-     * each of these iterations as a sequence from the returned Observable. This sort of function is
-     * sometimes called an accumulator.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
-     * 
-     * @param accumulator
-     *            An accumulator function to be invoked on each element from the sequence whose
-     *            result will be sent via <code>onNext</code> and used in the next accumulator call
-     *            (if applicable).
-     * 
-     * @return an Observable sequence whose elements are the result of accumulating the output from
-     *         the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
-     */
-    public Observable<T> scan(final Object accumulator) {
         return scan(this, accumulator);
     }
 
@@ -3070,17 +2082,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns a specified number of contiguous values from the start of an observable sequence.
-     * 
-     * @param predicate
-     *            a function to test each source element for a condition
-     * @return
-     */
-    public Observable<T> takeWhile(final Object predicate) {
-        return takeWhile(this, predicate);
-    }
-
-    /**
      * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
      * 
      * @param predicate
@@ -3088,17 +2089,6 @@ public class Observable<T> {
      * @return
      */
     public Observable<T> takeWhileWithIndex(final Func2<T, Integer, Boolean> predicate) {
-        return takeWhileWithIndex(this, predicate);
-    }
-
-    /**
-     * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
-     * 
-     * @param predicate
-     *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return
-     */
-    public Observable<T> takeWhileWithIndex(final Object predicate) {
         return takeWhileWithIndex(this, predicate);
     }
 
@@ -3171,18 +2161,6 @@ public class Observable<T> {
      * @return
      */
     public Observable<List<T>> toSortedList(Func2<T, T, Integer> sortFunction) {
-        return toSortedList(this, sortFunction);
-    }
-
-    /**
-     * Sort T objects using the defined sort function.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
-     * 
-     * @param sortFunction
-     * @return
-     */
-    public Observable<List<T>> toSortedList(final Object sortFunction) {
         return toSortedList(this, sortFunction);
     }
 

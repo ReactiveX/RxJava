@@ -77,12 +77,12 @@ public class Subject<T> extends Observable<T> implements Observer<T> {
         @Test
         public void test() {
             Subject<Integer> subject = Subject.create();
-            final AtomicReference<List<Notification<String>>> actualRef = new AtomicReference<List<Notification<String>>>();
+            final AtomicReference<List<Notification<Integer>>> actualRef = new AtomicReference<List<Notification<Integer>>>();
 
             Observable<List<Notification<Integer>>> wNotificationsList = subject.materialize().toList();
-            wNotificationsList.subscribe(new Action1<List<Notification<String>>>() {
+            wNotificationsList.subscribe(new Action1<List<Notification<Integer>>>() {
                 @Override
-                public void call(List<Notification<String>> actual) {
+                public void call(List<Notification<Integer>> actual) {
                     actualRef.set(actual);
                 }
             });
