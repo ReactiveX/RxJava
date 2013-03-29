@@ -41,18 +41,19 @@ import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationFilter;
-import rx.operators.OperationWhere;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMostRecent;
 import rx.operators.OperationNext;
+import rx.operators.OperationObserveOn;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
+import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSynchronize;
 import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
@@ -60,6 +61,7 @@ import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
 import rx.operators.OperationToObservableList;
 import rx.operators.OperationToObservableSortedList;
+import rx.operators.OperationWhere;
 import rx.operators.OperationZip;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorTakeUntil;
@@ -728,7 +730,7 @@ public class Observable<T> {
      * Filters an Observable by discarding any of its emissions that do not meet some test.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
-     *
+     * 
      * @param that
      *            the Observable to filter
      * @param predicate
@@ -781,6 +783,36 @@ public class Observable<T> {
      */
     public static Observable<Integer> range(int start, int count) {
         return from(Range.createWithCount(start, count));
+    }
+
+    /**
+     * Asynchronously subscribes and unsubscribes observers on the specified scheduler.
+     * 
+     * @param source
+     *            the source observable.
+     * @param scheduler
+     *            the scheduler to perform subscription and unsubscription actions on.
+     * @param <T>
+     *            the type of observable.
+     * @return the source sequence whose subscriptions and unsubscriptions happen on the specified scheduler.
+     */
+    public static <T> Observable<T> subscribeOn(Observable<T> source, Scheduler scheduler) {
+        return _create(OperationSubscribeOn.subscribeOn(source, scheduler));
+    }
+
+    /**
+     * Asynchronously notify observers on the specified scheduler.
+     * 
+     * @param source
+     *            the source observable.
+     * @param scheduler
+     *            the scheduler to notify observers on.
+     * @param <T>
+     *            the type of observable.
+     * @return the source sequence whose observations happen on the specified scheduler.
+     */
+    public static <T> Observable<T> observeOn(Observable<T> source, Scheduler scheduler) {
+        return _create(OperationObserveOn.observeOn(source, scheduler));
     }
 
     /**
@@ -2469,7 +2501,7 @@ public class Observable<T> {
      * Filters an Observable by discarding any of its emissions that do not meet some test.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
-     *
+     * 
      * @param predicate
      *            a function that evaluates the items emitted by the source Observable, returning
      *            <code>true</code> if they pass the filter
@@ -2651,6 +2683,28 @@ public class Observable<T> {
     }
 
     /**
+     * Asynchronously subscribes and unsubscribes observers on the specified scheduler.
+     * 
+     * @param scheduler
+     *            the scheduler to perform subscription and unsubscription actions on.
+     * @return the source sequence whose subscriptions and unsubscriptions happen on the specified scheduler.
+     */
+    public Observable<T> subscribeOn(Scheduler scheduler) {
+        return subscribeOn(this, scheduler);
+    }
+
+    /**
+     * Asynchronously notify observers on the specified scheduler.
+     * 
+     * @param scheduler
+     *            the scheduler to notify observers on.
+     * @return the source sequence whose observations happen on the specified scheduler.
+     */
+    public Observable<T> observeOn(Scheduler scheduler) {
+        return observeOn(this, scheduler);
+    }
+
+    /**
      * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
      * 
      * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
@@ -2660,7 +2714,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public <T2> Observable<T2> dematerialize() {
-        return dematerialize((Observable<Notification<T2>>)this);
+        return dematerialize((Observable<Notification<T2>>) this);
     }
 
     /**
@@ -3005,7 +3059,9 @@ public class Observable<T> {
 
     /**
      * Determines whether all elements of an observable sequence satisfies a condition.
-     * @param predicate a function to test each element for a condition.
+     * 
+     * @param predicate
+     *            a function to test each element for a condition.
      * @return true if all elements of an observable sequence satisfies a condition; otherwise, false.
      */
     public Observable<Boolean> all(Func1<T, Boolean> predicate) {
@@ -3014,7 +3070,9 @@ public class Observable<T> {
 
     /**
      * Determines whether all elements of an observable sequence satisfies a condition.
-     * @param predicate a function to test each element for a condition.
+     * 
+     * @param predicate
+     *            a function to test each element for a condition.
      * @return true if all elements of an observable sequence satisfies a condition; otherwise, false.
      */
     public Observable<Boolean> all(Object predicate) {
