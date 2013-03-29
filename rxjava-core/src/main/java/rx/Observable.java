@@ -36,6 +36,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import rx.observables.GroupedObservable;
+import rx.operators.OperationAll;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
@@ -1679,6 +1680,35 @@ public class Observable<T> {
     }
 
     /**
+     * Determines whether all elements of an observable sequence satisfies a condition.
+     * @param sequence an observable sequence whose elements to apply the predicate to.
+     * @param predicate a function to test each element for a condition.
+     * @param <T> the type of observable.
+     * @return true if all elements of an observable sequence satisfies a condition; otherwise, false.
+     */
+    public static <T> Observable<Boolean> all(final Observable<T> sequence, final Func1<T, Boolean> predicate) {
+        return _create(OperationAll.all(sequence, predicate));
+    }
+
+    /**
+     * Determines whether all elements of an observable sequence satisfies a condition.
+     * @param sequence an observable sequence whose elements to apply the predicate to.
+     * @param predicate a function to test each element for a condition.
+     * @param <T> the type of observable.
+     * @return true if all elements of an observable sequence satisfies a condition; otherwise, false.
+     */
+    public static <T> Observable<Boolean> all(final Observable<T> sequence, Object predicate) {
+        final FuncN _f = Functions.from(predicate);
+
+        return all(sequence, new Func1<T, Boolean>() {
+            @Override
+            public Boolean call(T t) {
+                return (Boolean) _f.call(t);
+            }
+        });
+    }
+
+    /**
      * Returns an Observable that skips the first <code>num</code> items emitted by the source
      * Observable. You can ignore the first <code>num</code> items emitted by an Observable and attend
      * only to those items that come after, by modifying the Observable with the <code>skip</code> method.
@@ -2995,6 +3025,24 @@ public class Observable<T> {
      */
     public Observable<T> scan(final T initialValue, final Object accumulator) {
         return scan(this, initialValue, accumulator);
+    }
+
+    /**
+     * Determines whether all elements of an observable sequence satisfies a condition.
+     * @param predicate a function to test each element for a condition.
+     * @return true if all elements of an observable sequence satisfies a condition; otherwise, false.
+     */
+    public Observable<Boolean> all(Func1<T, Boolean> predicate) {
+        return all(this, predicate);
+    }
+
+    /**
+     * Determines whether all elements of an observable sequence satisfies a condition.
+     * @param predicate a function to test each element for a condition.
+     * @return true if all elements of an observable sequence satisfies a condition; otherwise, false.
+     */
+    public Observable<Boolean> all(Object predicate) {
+        return all(this, predicate);
     }
 
     /**
