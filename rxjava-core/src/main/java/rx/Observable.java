@@ -1192,8 +1192,8 @@ public class Observable<T> {
      * @return an Observable that emits the same objects, then calls the action.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN: Observable.Finally Method</a>
      */
-    public static <T> Observable<T> finally0(Observable source, Action0 action) {
-        return _create(OperationFinally.finally0(source, action));
+    public static <T> Observable<T> finallyDo(Observable source, Action0 action) {
+        return _create(OperationFinally.finallyDo(source, action));
     }
 
     /**
@@ -2463,8 +2463,8 @@ public class Observable<T> {
      * @return an Observable that emits the same objects as this observable, then calls the action.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN: Observable.Finally Method</a>
      */
-    public Observable<T> finally0(Action0 action) {
-        return _create(OperationFinally.finally0(this, action));
+    public Observable<T> finallyDo(Action0 action) {
+        return _create(OperationFinally.finallyDo(this, action));
     }
 
     /**

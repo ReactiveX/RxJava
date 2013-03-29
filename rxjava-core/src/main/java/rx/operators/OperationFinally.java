@@ -33,12 +33,10 @@ public final class OperationFinally {
     /**
      * Call a given action when a sequence completes (with or without an
      * exception).  The returned observable is exactly as threadsafe as the
-     * source observable; in particular, any situation allowing the source to
-     * call onComplete or onError multiple times allows the returned observable
-     * to call the final action multiple times.
+     * source observable.
      * <p/>
      * Note that "finally" is a Java reserved word and cannot be an identifier,
-     * so we use "finally0".
+     * so we use "finallyDo".
      *
      * @param sequence An observable sequence of elements
      * @param action An action to be taken when the sequence is complete or throws an exception
@@ -48,7 +46,7 @@ public final class OperationFinally {
      *         the given action will be called.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN Observable.Finally method</a>
      */
-    public static <T> Func1<Observer<T>, Subscription> finally0(final Observable<T> sequence, final Action0 action) {
+    public static <T> Func1<Observer<T>, Subscription> finallyDo(final Observable<T> sequence, final Action0 action) {
         return new Func1<Observer<T>, Subscription>() {
             @Override
             public Subscription call(Observer<T> observer) {
@@ -60,26 +58,14 @@ public final class OperationFinally {
     private static class Finally<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> sequence;
         private final Action0 finalAction;
-        private Subscription s;
 
         Finally(final Observable<T> sequence, Action0 finalAction) {
             this.sequence = sequence;
             this.finalAction = finalAction;
         }
 
-        private final AtomicObservableSubscription Subscription = new AtomicObservableSubscription();
-
-        private final Subscription actualSubscription = new Subscription() {
-            @Override
-            public void unsubscribe() {
-                if (null != s)
-                    s.unsubscribe();
-            }
-        };
-
         public Subscription call(Observer<T> observer) {
-            s = sequence.subscribe(new FinallyObserver(observer));
-            return Subscription.wrap(actualSubscription);
+            return sequence.subscribe(new FinallyObserver(observer));
         }
 
         private class FinallyObserver implements Observer<T> {
@@ -91,14 +77,20 @@ public final class OperationFinally {
 
             @Override
             public void onCompleted() {
-                observer.onCompleted();
-                finalAction.call();
+                try {
+                    observer.onCompleted();
+                } finally {
+                    finalAction.call();
+                }
             }
 
             @Override
             public void onError(Exception e) {
-                observer.onError(e);
-                finalAction.call();
+                try {
+                    observer.onError(e);
+                } finally {
+                    finalAction.call();
+                }
             }
 
             @Override
@@ -117,7 +109,7 @@ public final class OperationFinally {
             aObserver = mock(Observer.class);
         }
         private void checkActionCalled(Observable<String> input) {
-            Observable.create(finally0(input, aAction0)).subscribe(aObserver);
+            Observable.create(finallyDo(input, aAction0)).subscribe(aObserver);
             verify(aAction0, times(1)).call();
         }
         @Test
