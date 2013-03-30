@@ -19,8 +19,8 @@ import rx.util.SynchronizedObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
-public class Subject<T> extends Observable<T> implements Observer<T> {
-    public static <T> Subject<T> create() {
+public class PublishSubject<T> extends Observable<T> implements Observer<T> {
+    public static <T> PublishSubject<T> create() {
         final ConcurrentHashMap<Subscription, Observer<T>> observers = new ConcurrentHashMap<Subscription, Observer<T>>();
 
         Func1<Observer<T>, Subscription> onSubscribe = new Func1<Observer<T>, Subscription>() {
@@ -42,12 +42,12 @@ public class Subject<T> extends Observable<T> implements Observer<T> {
             }
         };
 
-        return new Subject<T>(onSubscribe, observers);
+        return new PublishSubject<T>(onSubscribe, observers);
     }
 
     private final ConcurrentHashMap<Subscription, Observer<T>> observers;
 
-    protected Subject(Func1<Observer<T>, Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
+    protected PublishSubject(Func1<Observer<T>, Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
         super(onSubscribe);
         this.observers = observers;
     }
@@ -76,10 +76,10 @@ public class Subject<T> extends Observable<T> implements Observer<T> {
     public static class UnitTest {
         @Test
         public void test() {
-            Subject<Integer> subject = Subject.create();
+            PublishSubject<Integer> publishSubject = PublishSubject.create();
             final AtomicReference<List<Notification<String>>> actualRef = new AtomicReference<List<Notification<String>>>();
 
-            Observable<List<Notification<Integer>>> wNotificationsList = subject.materialize().toList();
+            Observable<List<Notification<Integer>>> wNotificationsList = publishSubject.materialize().toList();
             wNotificationsList.subscribe(new Action1<List<Notification<String>>>() {
                 @Override
                 public void call(List<Notification<String>> actual) {
@@ -108,10 +108,10 @@ public class Subject<T> extends Observable<T> implements Observer<T> {
                         }
                     };
                 }
-            }).subscribe(subject);
-            // the subject has received an onComplete from the first subscribe because
+            }).subscribe(publishSubject);
+            // the publishSubject has received an onComplete from the first subscribe because
             // it is synchronous and the next subscribe won't do anything.
-            Observable.toObservable(-1, -2, -3).subscribe(subject);
+            Observable.toObservable(-1, -2, -3).subscribe(publishSubject);
 
             List<Notification<Integer>> expected = new ArrayList<Notification<Integer>>();
             expected.add(new Notification<Integer>(-1));

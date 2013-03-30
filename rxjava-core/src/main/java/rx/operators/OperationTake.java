@@ -26,10 +26,11 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.subjects.PublishSubject;
 import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
-import rx.subjects.Subject;
+
 /**
  * Returns a specified number of contiguous values from the start of an observable sequence.
  */
@@ -181,11 +182,13 @@ public final class OperationTake {
 
         @Test
         public void testTakeWhileOnSubject1() {
-            Subject<Integer> s = Subject.create();
+            PublishSubject<Integer> s = PublishSubject.create();
             Observable<Integer> w = (Observable<Integer>)s;
-            Observable<Integer> take = Observable.create(takeWhile(w, new Func1<Integer, Boolean>() {
+            Observable<Integer> take = Observable.create(takeWhile(w, new Func1<Integer, Boolean>()
+            {
                 @Override
-                public Boolean call(Integer input) {
+                public Boolean call(Integer input)
+                {
                     return input < 3;
                 }
             }));
@@ -213,9 +216,11 @@ public final class OperationTake {
         @Test
         public void testTakeWhile2() {
             Observable<String> w = Observable.toObservable("one", "two", "three");
-            Observable<String> take = Observable.create(takeWhileWithIndex(w, new Func2<String, Integer, Boolean>() {
+            Observable<String> take = Observable.create(takeWhileWithIndex(w, new Func2<String, Integer, Boolean>()
+            {
                 @Override
-                public Boolean call(String input, Integer index) {
+                public Boolean call(String input, Integer index)
+                {
                     return index < 2;
                 }
             }));
