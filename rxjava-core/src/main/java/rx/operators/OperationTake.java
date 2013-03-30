@@ -23,8 +23,10 @@ import rx.subscriptions.Subscriptions;
 import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -82,6 +84,23 @@ public final class OperationTake {
         @Override
         public Subscription call(Observer<T> observer) {
             if (num < 1) {
+                items.subscribe(new Observer<T>()
+                {
+                    @Override
+                    public void onCompleted()
+                    {
+                    }
+
+                    @Override
+                    public void onError(Exception e)
+                    {
+                    }
+
+                    @Override
+                    public void onNext(T args)
+                    {
+                    }
+                }).unsubscribe();
                 observer.onCompleted();
                 return Subscriptions.empty();
             }
@@ -178,8 +197,28 @@ public final class OperationTake {
 
         @Test
         public void testTakeZeroDoesntLeakError() {
-            Observable<String> source = Observable.error(new Exception("test failed"));
+            final AtomicBoolean subscribed = new AtomicBoolean(false);
+            final AtomicBoolean unSubscribed = new AtomicBoolean(false);
+            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>()
+            {
+                @Override
+                public Subscription call(Observer<String> observer)
+                {
+                    subscribed.set(true);
+                    observer.onError(new Exception("test failed"));
+                    return new Subscription()
+                    {
+                        @Override
+                        public void unsubscribe()
+                        {
+                            unSubscribed.set(true);
+                        }
+                    };
+                }
+            });
             Observable.create(assertTrustedObservable(take(source, 0))).lastOrDefault("ok");
+            assertTrue("source subscribed", subscribed.get());
+            assertTrue("source unsubscribed", unSubscribed.get());
         }
 
         @Test
