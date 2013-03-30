@@ -41,6 +41,9 @@ import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationFilter;
+import rx.operators.OperationTake;
+import rx.operators.OperationTakeWhile;
+import rx.operators.OperationWhere;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
@@ -55,7 +58,6 @@ import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSynchronize;
-import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
@@ -1811,7 +1813,7 @@ public class Observable<T> {
      * @return
      */
     public static <T> Observable<T> takeWhile(final Observable<T> items, Func1<T, Boolean> predicate) {
-        return create(OperationTake.takeWhile(items, predicate));
+        return create(OperationTakeWhile.takeWhile(items, predicate));
     }
 
     /**
@@ -1843,16 +1845,18 @@ public class Observable<T> {
      * @return
      */
     public static <T> Observable<T> takeWhileWithIndex(final Observable<T> items, Func2<T, Integer, Boolean> predicate) {
-        return create(OperationTake.takeWhileWithIndex(items, predicate));
+        return create(OperationTakeWhile.takeWhileWithIndex(items, predicate));
     }
 
     public static <T> Observable<T> takeWhileWithIndex(final Observable<T> items, Object predicate) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(predicate);
 
-        return create(OperationTake.takeWhileWithIndex(items, new Func2<T, Integer, Boolean>() {
+        return create(OperationTakeWhile.takeWhileWithIndex(items, new Func2<T, Integer, Boolean>()
+        {
             @Override
-            public Boolean call(T t, Integer integer) {
+            public Boolean call(T t, Integer integer)
+            {
                 return (Boolean) _f.call(t, integer);
             }
         }));
