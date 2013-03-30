@@ -19,7 +19,7 @@ import rx.util.SynchronizedObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
-public class PublishSubject<T> extends Observable<T> implements Observer<T> {
+public class PublishSubject<T> extends Subject<T, T> {
     public static <T> PublishSubject<T> create() {
         final ConcurrentHashMap<Subscription, Observer<T>> observers = new ConcurrentHashMap<Subscription, Observer<T>>();
 
