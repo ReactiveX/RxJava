@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,6 +35,13 @@ public class CurrentThreadScheduler extends AbstractScheduler {
 
     private static final ThreadLocal<Queue<DiscardableAction>> QUEUE = new ThreadLocal<Queue<DiscardableAction>>();
 
+//  private static final ThreadLocal<Queue<DiscardableAction>> QUEUE = new ThreadLocal<Queue<DiscardableAction>>() {
+//  @Override
+//  protected Queue<DiscardableAction> initialValue() {
+//      return new LinkedList<DiscardableAction>();
+//  }
+//};
+    
     private CurrentThreadScheduler() {
     }
 
@@ -54,10 +61,18 @@ public class CurrentThreadScheduler extends AbstractScheduler {
             QUEUE.set(queue);
         }
 
+        // this means enqueue will always synchronously execute everything on the current thread ... 
+        // so how would there ever be more than one item in the queue?
+        // SleepingAction is also blocking so it wouldn't skip those, it would block until it finishes sleeping
+        // and if it did skip something what would ever trigger it eventually being executed unless something else
+        // is enqueued?
+        
         queue.add(action);
 
         if (exec) {
+            System.out.println("exec");
             while (!queue.isEmpty()) {
+                System.out.println("call in queue");
                 queue.poll().call();
             }
 

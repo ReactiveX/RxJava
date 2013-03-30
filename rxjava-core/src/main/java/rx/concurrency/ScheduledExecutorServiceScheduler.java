@@ -24,6 +24,10 @@ import java.util.concurrent.TimeUnit;
 public class ScheduledExecutorServiceScheduler extends AbstractScheduler {
     private final ScheduledExecutorService executorService;
 
+    
+    // this should probably just become an implementation detail of ExecutorScheduler
+    
+    
     public ScheduledExecutorServiceScheduler(ScheduledExecutorService executorService) {
         this.executorService = executorService;
     }

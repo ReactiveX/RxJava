@@ -38,6 +38,10 @@ public final class ImmediateScheduler extends AbstractScheduler {
 
     @Override
     public Subscription schedule(Func0<Subscription> action) {
+        // do we need to wrap this when we're executing it directly?
+        // the Func0 already returns a subscription so does this buy us anything?
+        // it will only ever return if the Func0 is actually async anyways and if it's async its
+        // subscription would do what's needed
         DiscardableAction discardableAction = new DiscardableAction(action);
         discardableAction.call();
         return discardableAction;

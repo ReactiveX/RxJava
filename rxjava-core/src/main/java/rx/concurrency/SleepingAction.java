@@ -15,12 +15,11 @@
  */
 package rx.concurrency;
 
+import java.util.concurrent.TimeUnit;
+
 import rx.Scheduler;
 import rx.Subscription;
-import rx.util.functions.Action0;
 import rx.util.functions.Func0;
-
-import java.util.concurrent.TimeUnit;
 
 public class SleepingAction implements Func0<Subscription> {
     private final Func0<Subscription> underlying;
@@ -37,6 +36,10 @@ public class SleepingAction implements Func0<Subscription> {
     public Subscription call() {
         if (execTime < scheduler.now()) {
             try {
+                // this will block the current thread ... which doesn't seem to work well with CurrentThreadScheduler
+                // shouldn't CurrentThreadScheduler be capable of doing other things while this is sleeping?
+                // In fact, this will block any of the concurrent systems -- it will take up a thread in a threadpool and make it sleep
+                // whereas I would think it should schedule itself on a timer
                 Thread.sleep(scheduler.now() - execTime);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -45,6 +48,5 @@ public class SleepingAction implements Func0<Subscription> {
         }
 
         return underlying.call();
-
     }
 }

@@ -41,6 +41,9 @@ public class Schedulers {
         return new ExecutorScheduler(executor);
     }
 
+    // do we need this one? 
+    // since the Scheduler interface allows both scheduled and non-scheduled it seems awkward to make someone choose what scheduler to use
+    // because the wrong choice will make the Scheduler not work correctly if a TimeUnit is given
     public static Scheduler scheduledExecutor(ScheduledExecutorService executor) {
         return new ScheduledExecutorServiceScheduler(executor);
     }
