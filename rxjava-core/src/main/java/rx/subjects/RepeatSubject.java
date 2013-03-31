@@ -2,10 +2,10 @@ package rx.subjects;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
+import rx.testing.UnsubscribeTester;
 import rx.util.functions.Func1;
 
 import java.util.ArrayList;
@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -270,8 +269,8 @@ public final class RepeatSubject<T> extends Subject<T, T>
         public void testUnsubscribeFromOnNext() {
             RepeatSubject<Object> subject = RepeatSubject.create();
 
-            UnsubscribeTest test1 = UnsubscribeTest.createOnNext(subject);
-            UnsubscribeTest test2 = UnsubscribeTest.createOnNext(subject);
+            UnsubscribeTester test1 = UnsubscribeTester.createOnNext(subject);
+            UnsubscribeTester test2 = UnsubscribeTester.createOnNext(subject);
 
             subject.onNext("one");
 
@@ -283,8 +282,8 @@ public final class RepeatSubject<T> extends Subject<T, T>
         public void testUnsubscribeFromOnCompleted() {
             RepeatSubject<Object> subject = RepeatSubject.create();
 
-            UnsubscribeTest test1 = UnsubscribeTest.createOnCompleted(subject);
-            UnsubscribeTest test2 = UnsubscribeTest.createOnCompleted(subject);
+            UnsubscribeTester test1 = UnsubscribeTester.createOnCompleted(subject);
+            UnsubscribeTester test2 = UnsubscribeTester.createOnCompleted(subject);
 
             subject.onCompleted();
 
@@ -296,8 +295,8 @@ public final class RepeatSubject<T> extends Subject<T, T>
         public void testUnsubscribeFromOnError() {
             RepeatSubject<Object> subject = RepeatSubject.create();
 
-            UnsubscribeTest test1 = UnsubscribeTest.createOnError(subject);
-            UnsubscribeTest test2 = UnsubscribeTest.createOnError(subject);
+            UnsubscribeTester test1 = UnsubscribeTester.createOnError(subject);
+            UnsubscribeTester test2 = UnsubscribeTester.createOnError(subject);
 
             subject.onError(new Exception());
 
@@ -305,100 +304,5 @@ public final class RepeatSubject<T> extends Subject<T, T>
             test2.assertPassed();
         }
 
-        private static class UnsubscribeTest
-        {
-            private Subscription subscription;
-
-            private UnsubscribeTest() {}
-
-            public static <T> UnsubscribeTest createOnNext(Observable<T> observable)
-            {
-                final UnsubscribeTest test = new UnsubscribeTest();
-                test.setSubscription(observable.subscribe(new Observer<T>()
-                {
-                    @Override
-                    public void onCompleted()
-                    {
-                    }
-
-                    @Override
-                    public void onError(Exception e)
-                    {
-                    }
-
-                    @Override
-                    public void onNext(T args)
-                    {
-                        test.doUnsubscribe();
-                    }
-                }));
-                return test;
-            }
-
-            public static <T> UnsubscribeTest createOnCompleted(Observable<T> observable)
-            {
-                final UnsubscribeTest test = new UnsubscribeTest();
-                test.setSubscription(observable.subscribe(new Observer<T>()
-                {
-                    @Override
-                    public void onCompleted()
-                    {
-                        test.doUnsubscribe();
-                    }
-
-                    @Override
-                    public void onError(Exception e)
-                    {
-                    }
-
-                    @Override
-                    public void onNext(T args)
-                    {
-                    }
-                }));
-                return test;
-            }
-
-            public static <T> UnsubscribeTest createOnError(Observable<T> observable)
-            {
-                final UnsubscribeTest test = new UnsubscribeTest();
-                test.setSubscription(observable.subscribe(new Observer<T>()
-                {
-                    @Override
-                    public void onCompleted()
-                    {
-                    }
-
-                    @Override
-                    public void onError(Exception e)
-                    {
-                        test.doUnsubscribe();
-                    }
-
-                    @Override
-                    public void onNext(T args)
-                    {
-                    }
-                }));
-                return test;
-            }
-
-            private void setSubscription(Subscription subscription)
-            {
-                this.subscription = subscription;
-            }
-
-            private void doUnsubscribe()
-            {
-                Subscription subscription = this.subscription;
-                this.subscription = null;
-                subscription.unsubscribe();
-            }
-
-            public void assertPassed()
-            {
-                assertTrue("expected notification was received", subscription == null);
-            }
-        }
     }
 }
