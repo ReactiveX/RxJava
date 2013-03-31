@@ -15,25 +15,25 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static rx.operators.AbstractOperation.UnitTest.*;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
-
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.subjects.PublishSubject;
 import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
-import rx.util.functions.Func2;
-import rx.subjects.Subject;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static rx.operators.AbstractOperation.UnitTest.assertTrustedObservable;
 /**
  * Returns a specified number of contiguous values from the start of an observable sequence.
  */
