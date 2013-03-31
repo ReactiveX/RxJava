@@ -2,10 +2,13 @@ package rx.subjects;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.testing.UnsubscribeTester;
+import rx.util.functions.Action1;
+import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 import java.util.ArrayList;
@@ -266,43 +269,38 @@ public final class RepeatSubject<T> extends Subject<T, T>
         }
 
         @Test
-        public void testUnsubscribeFromOnNext() {
-            RepeatSubject<Object> subject = RepeatSubject.create();
-
-            UnsubscribeTester test1 = UnsubscribeTester.createOnNext(subject);
-            UnsubscribeTester test2 = UnsubscribeTester.createOnNext(subject);
-
-            subject.onNext("one");
-
-            test1.assertPassed();
-            test2.assertPassed();
+        public void testUnsubscribe()
+        {
+            UnsubscribeTester.test(new Func0<RepeatSubject<Object>>()
+                                   {
+                                       @Override
+                                       public RepeatSubject<Object> call()
+                                       {
+                                           return RepeatSubject.create();
+                                       }
+                                   }, new Action1<RepeatSubject<Object>>()
+                                   {
+                                       @Override
+                                       public void call(RepeatSubject<Object> repeatSubject)
+                                       {
+                                           repeatSubject.onCompleted();
+                                       }
+                                   }, new Action1<RepeatSubject<Object>>()
+                                   {
+                                       @Override
+                                       public void call(RepeatSubject<Object> repeatSubject)
+                                       {
+                                           repeatSubject.onError(new Exception());
+                                       }
+                                   }, new Action1<RepeatSubject<Object>>()
+                                   {
+                                       @Override
+                                       public void call(RepeatSubject<Object> repeatSubject)
+                                       {
+                                           repeatSubject.onNext("one");
+                                       }
+                                   }
+            );
         }
-
-        @Test
-        public void testUnsubscribeFromOnCompleted() {
-            RepeatSubject<Object> subject = RepeatSubject.create();
-
-            UnsubscribeTester test1 = UnsubscribeTester.createOnCompleted(subject);
-            UnsubscribeTester test2 = UnsubscribeTester.createOnCompleted(subject);
-
-            subject.onCompleted();
-
-            test1.assertPassed();
-            test2.assertPassed();
-        }
-
-        @Test
-        public void testUnsubscribeFromOnError() {
-            RepeatSubject<Object> subject = RepeatSubject.create();
-
-            UnsubscribeTester test1 = UnsubscribeTester.createOnError(subject);
-            UnsubscribeTester test2 = UnsubscribeTester.createOnError(subject);
-
-            subject.onError(new Exception());
-
-            test1.assertPassed();
-            test2.assertPassed();
-        }
-
     }
 }
