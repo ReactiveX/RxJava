@@ -6,10 +6,12 @@ import rx.Subscription;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class UnsubscribeTester
 {
+    private boolean isDone = false;
     private Subscription subscription;
 
     public UnsubscribeTester() {}
@@ -59,17 +61,19 @@ public class UnsubscribeTester
             @Override
             public void onCompleted()
             {
-                test.doUnsubscribe();
+                test.doUnsubscribe("onCompleted");
             }
 
             @Override
             public void onError(Exception e)
             {
+                test.gotEvent("onError");
             }
 
             @Override
             public void onNext(T args)
             {
+                test.gotEvent("onNext");
             }
         }));
         return test;
@@ -83,17 +87,19 @@ public class UnsubscribeTester
             @Override
             public void onCompleted()
             {
+                test.gotEvent("onCompleted");
             }
 
             @Override
             public void onError(Exception e)
             {
-                test.doUnsubscribe();
+                test.doUnsubscribe("onError");
             }
 
             @Override
             public void onNext(T args)
             {
+                test.gotEvent("onNext");
             }
         }));
         return test;
@@ -107,17 +113,19 @@ public class UnsubscribeTester
             @Override
             public void onCompleted()
             {
+                test.gotEvent("onCompleted");
             }
 
             @Override
             public void onError(Exception e)
             {
+                test.gotEvent("onError");
             }
 
             @Override
             public void onNext(T args)
             {
-                test.doUnsubscribe();
+                test.doUnsubscribe("onNext");
             }
         }));
         return test;
@@ -128,15 +136,22 @@ public class UnsubscribeTester
         this.subscription = subscription;
     }
 
-    private void doUnsubscribe()
+    private void gotEvent(String event)
     {
-        Subscription subscription = this.subscription;
-        this.subscription = null;
-        subscription.unsubscribe();
+        assertFalse("received " + event + " after unsubscribe", isDone);
+    }
+
+    private void doUnsubscribe(String event)
+    {
+        gotEvent(event);
+        if (subscription != null) {
+            isDone = true;
+            subscription.unsubscribe();
+        }
     }
 
     private void assertPassed()
     {
-        assertTrue("expected notification was received", subscription == null);
+        assertTrue("expected notification was received", isDone);
     }
 }
