@@ -10,14 +10,22 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import org.mockito.Mockito;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.testing.UnsubscribeTester;
 import rx.util.AtomicObservableSubscription;
 import rx.util.SynchronizedObserver;
 import rx.util.functions.Action1;
+import rx.util.functions.Func0;
 import rx.util.functions.Func1;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class PublishSubject<T> extends Subject<T, T> {
     public static <T> PublishSubject<T> create() {
@@ -121,6 +129,179 @@ public class PublishSubject<T> extends Subject<T, T> {
             Assert.assertTrue(actualRef.get().containsAll(expected));
 
             sub.unsubscribe();
+        }
+
+        private final Exception testException = new Exception();
+
+        @Test
+        public void testCompleted() {
+            PublishSubject<Object> subject = PublishSubject.create();
+
+            Observer<String> aObserver = mock(Observer.class);
+            subject.subscribe(aObserver);
+
+            subject.onNext("one");
+            subject.onNext("two");
+            subject.onNext("three");
+            subject.onCompleted();
+
+            Observer<String> anotherObserver = mock(Observer.class);
+            subject.subscribe(anotherObserver);
+
+            subject.onNext("four");
+            subject.onCompleted();
+            subject.onError(new Exception());
+
+            assertCompletedObserver(aObserver);
+// todo bug?            assertNeverObserver(anotherObserver);
+        }
+
+        private void assertCompletedObserver(Observer<String> aObserver)
+        {
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+            verify(aObserver, times(1)).onNext("three");
+            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
+        }
+
+        private void assertNeverObserver(Observer<String> aObserver)
+        {
+            verify(aObserver, Mockito.never()).onNext(any(String.class));
+            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onCompleted();
+        }
+
+        @Test
+        public void testError() {
+            PublishSubject<Object> subject = PublishSubject.create();
+
+            Observer<String> aObserver = mock(Observer.class);
+            subject.subscribe(aObserver);
+
+            subject.onNext("one");
+            subject.onNext("two");
+            subject.onNext("three");
+            subject.onError(testException);
+
+            Observer<String> anotherObserver = mock(Observer.class);
+            subject.subscribe(anotherObserver);
+
+            subject.onNext("four");
+            subject.onError(new Exception());
+            subject.onCompleted();
+
+            assertErrorObserver(aObserver);
+// todo bug?            assertNeverObserver(anotherObserver);
+        }
+
+        private void assertErrorObserver(Observer<String> aObserver)
+        {
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+            verify(aObserver, times(1)).onNext("three");
+            verify(aObserver, times(1)).onError(testException);
+            verify(aObserver, Mockito.never()).onCompleted();
+        }
+
+
+        @Test
+        public void testSubscribeMidSequence() {
+            PublishSubject<Object> subject = PublishSubject.create();
+
+            Observer<String> aObserver = mock(Observer.class);
+            subject.subscribe(aObserver);
+
+            subject.onNext("one");
+            subject.onNext("two");
+
+            assertObservedUntilTwo(aObserver);
+
+            Observer<String> anotherObserver = mock(Observer.class);
+            subject.subscribe(anotherObserver);
+
+            subject.onNext("three");
+            subject.onCompleted();
+
+            assertCompletedObserver(aObserver);
+            assertCompletedStartingWithThreeObserver(anotherObserver);
+        }
+
+
+        private void assertCompletedStartingWithThreeObserver(Observer<String> aObserver)
+        {
+            verify(aObserver, Mockito.never()).onNext("one");
+            verify(aObserver, Mockito.never()).onNext("two");
+            verify(aObserver, times(1)).onNext("three");
+            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
+        }
+
+        @Test
+        public void testUnsubscribeFirstObserver() {
+            PublishSubject<Object> subject = PublishSubject.create();
+
+            Observer<String> aObserver = mock(Observer.class);
+            Subscription subscription = subject.subscribe(aObserver);
+
+            subject.onNext("one");
+            subject.onNext("two");
+
+            subscription.unsubscribe();
+            assertObservedUntilTwo(aObserver);
+
+            Observer<String> anotherObserver = mock(Observer.class);
+            subject.subscribe(anotherObserver);
+
+            subject.onNext("three");
+            subject.onCompleted();
+
+            assertObservedUntilTwo(aObserver);
+            assertCompletedStartingWithThreeObserver(anotherObserver);
+        }
+
+        private void assertObservedUntilTwo(Observer<String> aObserver)
+        {
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+            verify(aObserver, Mockito.never()).onNext("three");
+            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onCompleted();
+        }
+
+        @Test
+        public void testUnsubscribe()
+        {
+            UnsubscribeTester.test(new Func0<PublishSubject<Object>>()
+                                   {
+                                       @Override
+                                       public PublishSubject<Object> call()
+                                       {
+                                           return PublishSubject.create();
+                                       }
+                                   }, new Action1<PublishSubject<Object>>()
+                                   {
+                                       @Override
+                                       public void call(PublishSubject<Object> PublishSubject)
+                                       {
+                                           PublishSubject.onCompleted();
+                                       }
+                                   }, new Action1<PublishSubject<Object>>()
+                                   {
+                                       @Override
+                                       public void call(PublishSubject<Object> PublishSubject)
+                                       {
+                                           PublishSubject.onError(new Exception());
+                                       }
+                                   }, new Action1<PublishSubject<Object>>()
+                                   {
+                                       @Override
+                                       public void call(PublishSubject<Object> PublishSubject)
+                                       {
+                                           PublishSubject.onNext("one");
+                                       }
+                                   }
+            );
         }
     }
 }
