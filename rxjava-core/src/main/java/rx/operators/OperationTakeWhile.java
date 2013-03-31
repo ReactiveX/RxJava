@@ -18,9 +18,7 @@ package rx.operators;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.AbstractOperation.UnitTest.*;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -31,28 +29,51 @@ import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
-
+import rx.util.functions.Func2;
+import rx.subjects.Subject;
 /**
- * Returns a specified number of contiguous values from the start of an observable sequence.
+ * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
  */
-public final class OperationTake {
+public final class OperationTakeWhile {
 
     /**
      * Returns a specified number of contiguous values from the start of an observable sequence.
      * 
      * @param items
-     * @param num
+     * @param predicate
+     *            a function to test each source element for a condition
      * @return
      */
-    public static <T> Func1<Observer<T>, Subscription> take(final Observable<T> items, final int num) {
+    public static <T> Func1<Observer<T>, Subscription> takeWhile(final Observable<T> items, final Func1<T, Boolean> predicate) {
+        return takeWhileWithIndex(items, OperationTakeWhile.<T>skipIndex(predicate));
+    }
+
+    /**
+     * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
+     * 
+     * @param items
+     * @param predicate
+     *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
+     * @return
+     */
+    public static <T> Func1<Observer<T>, Subscription> takeWhileWithIndex(final Observable<T> items, final Func2<T, Integer, Boolean> predicate) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
         return new Func1<Observer<T>, Subscription>() {
 
             @Override
             public Subscription call(Observer<T> observer) {
-                return new Take<T>(items, num).call(observer);
+                return new TakeWhile<T>(items, predicate).call(observer);
             }
 
+        };
+    }
+
+    private static <T> Func2<T, Integer, Boolean> skipIndex(final Func1<T, Boolean> underlying) {
+        return new Func2<T, Integer, Boolean>() {
+            @Override
+            public Boolean call(T input, Integer index) {
+                return underlying.call(input);
+            }
         };
     }
 
@@ -63,45 +84,23 @@ public final class OperationTake {
      * <p>
      * This should all be fine as long as it's kept as a private class and a new instance created from static factory method above.
      * <p>
-     * Note how the take() factory method above protects us from a single instance being exposed with the Observable wrapper handling the subscribe flow.
+     * Note how the takeWhileWithIndex() factory method above protects us from a single instance being exposed with the Observable wrapper handling the subscribe flow.
      * 
      * @param <T>
      */
-    private static class Take<T> implements Func1<Observer<T>, Subscription> {
+    private static class TakeWhile<T> implements Func1<Observer<T>, Subscription> {
         private final AtomicInteger counter = new AtomicInteger();
         private final Observable<T> items;
-        private final int num;
+        private final Func2<T, Integer, Boolean> predicate;
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
-        private Take(Observable<T> items, int num) {
+        private TakeWhile(Observable<T> items, Func2<T, Integer, Boolean> predicate) {
             this.items = items;
-            this.num = num;
+            this.predicate = predicate;
         }
 
         @Override
         public Subscription call(Observer<T> observer) {
-            if (num < 1) {
-                items.subscribe(new Observer<T>()
-                {
-                    @Override
-                    public void onCompleted()
-                    {
-                    }
-
-                    @Override
-                    public void onError(Exception e)
-                    {
-                    }
-
-                    @Override
-                    public void onNext(T args)
-                    {
-                    }
-                }).unsubscribe();
-                observer.onCompleted();
-                return Subscriptions.empty();
-            }
-
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
@@ -114,28 +113,20 @@ public final class OperationTake {
 
             @Override
             public void onCompleted() {
-                if (counter.getAndSet(num) < num) {
-                    observer.onCompleted();
-                }
+                observer.onCompleted();
             }
 
             @Override
             public void onError(Exception e) {
-                if (counter.getAndSet(num) < num) {
-                    observer.onError(e);
-                }
+                observer.onError(e);
             }
 
             @Override
             public void onNext(T args) {
-                final int count = counter.incrementAndGet();
-                if (count <= num) {
+                if (predicate.call(args, counter.getAndIncrement())) {
                     observer.onNext(args);
-                    if (count == num) {
-                        observer.onCompleted();
-                    }
-                }
-                if (count >= num) {
+                } else {
+                    observer.onCompleted();
                     // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
                     subscription.unsubscribe();
                 }
@@ -148,9 +139,71 @@ public final class OperationTake {
     public static class UnitTest {
 
         @Test
-        public void testTake1() {
+        public void testTakeWhile1() {
+            Observable<Integer> w = Observable.toObservable(1, 2, 3);
+            Observable<Integer> take = Observable.create(takeWhile(w, new Func1<Integer, Boolean>()
+            {
+                @Override
+                public Boolean call(Integer input)
+                {
+                    return input < 3;
+                }
+            }));
+
+            @SuppressWarnings("unchecked")
+            Observer<Integer> aObserver = mock(Observer.class);
+            take.subscribe(aObserver);
+            verify(aObserver, times(1)).onNext(1);
+            verify(aObserver, times(1)).onNext(2);
+            verify(aObserver, never()).onNext(3);
+            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
+        }
+
+        @Test
+        public void testTakeWhileOnSubject1() {
+            Subject<Integer> s = Subject.create();
+            Observable<Integer> w = (Observable<Integer>)s;
+            Observable<Integer> take = Observable.create(takeWhile(w, new Func1<Integer, Boolean>()
+            {
+                @Override
+                public Boolean call(Integer input)
+                {
+                    return input < 3;
+                }
+            }));
+
+            @SuppressWarnings("unchecked")
+            Observer<Integer> aObserver = mock(Observer.class);
+            take.subscribe(aObserver);
+
+            s.onNext(1);
+            s.onNext(2);
+            s.onNext(3);
+            s.onNext(4);
+            s.onNext(5);
+            s.onCompleted();
+
+            verify(aObserver, times(1)).onNext(1);
+            verify(aObserver, times(1)).onNext(2);
+            verify(aObserver, never()).onNext(3);
+            verify(aObserver, never()).onNext(4);
+            verify(aObserver, never()).onNext(5);
+            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
+        }
+
+        @Test
+        public void testTakeWhile2() {
             Observable<String> w = Observable.toObservable("one", "two", "three");
-            Observable<String> take = Observable.create(assertTrustedObservable(take(w, 2)));
+            Observable<String> take = Observable.create(takeWhileWithIndex(w, new Func2<String, Integer, Boolean>()
+            {
+                @Override
+                public Boolean call(String input, Integer index)
+                {
+                    return index < 2;
+                }
+            }));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -163,22 +216,7 @@ public final class OperationTake {
         }
 
         @Test
-        public void testTake2() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
-            Observable<String> take = Observable.create(assertTrustedObservable(take(w, 1)));
-
-            @SuppressWarnings("unchecked")
-            Observer<String> aObserver = mock(Observer.class);
-            take.subscribe(aObserver);
-            verify(aObserver, times(1)).onNext("one");
-            verify(aObserver, never()).onNext("two");
-            verify(aObserver, never()).onNext("three");
-            verify(aObserver, never()).onError(any(Exception.class));
-            verify(aObserver, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testTakeDoesntLeakErrors() {
+        public void testTakeWhileDoesntLeakErrors() {
             Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>()
             {
                 @Override
@@ -189,33 +227,15 @@ public final class OperationTake {
                     return Subscriptions.empty();
                 }
             });
-            Observable.create(assertTrustedObservable(take(source, 1))).last();
-        }
 
-        @Test
-        public void testTakeZeroDoesntLeakError() {
-            final AtomicBoolean subscribed = new AtomicBoolean(false);
-            final AtomicBoolean unSubscribed = new AtomicBoolean(false);
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>()
+            Observable.create(takeWhile(source, new Func1<String, Boolean>()
             {
                 @Override
-                public Subscription call(Observer<String> observer)
+                public Boolean call(String s)
                 {
-                    subscribed.set(true);
-                    observer.onError(new Exception("test failed"));
-                    return new Subscription()
-                    {
-                        @Override
-                        public void unsubscribe()
-                        {
-                            unSubscribed.set(true);
-                        }
-                    };
+                    return false;
                 }
-            });
-            Observable.create(assertTrustedObservable(take(source, 0))).lastOrDefault("ok");
-            assertTrue("source subscribed", subscribed.get());
-            assertTrue("source unsubscribed", unSubscribed.get());
+            })).last();
         }
 
         @Test
@@ -225,7 +245,14 @@ public final class OperationTake {
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
-            Observable<String> take = Observable.create(assertTrustedObservable(take(w, 1)));
+            Observable<String> take = Observable.create(takeWhileWithIndex(w, new Func2<String, Integer, Boolean>()
+            {
+                @Override
+                public Boolean call(String s, Integer index)
+                {
+                    return index < 1;
+                }
+            }));
             take.subscribe(aObserver);
 
             // wait for the Observable to complete
