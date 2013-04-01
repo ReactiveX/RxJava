@@ -18,7 +18,7 @@ package rx.operators;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.AbstractOperation.UnitTest.*;
+import static rx.operators.Tester.UnitTest.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -281,6 +281,7 @@ public final class OperationTake {
             }
 
         }
+
     }
 
 }

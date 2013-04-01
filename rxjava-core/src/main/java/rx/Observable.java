@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
@@ -41,9 +42,6 @@ import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationFilter;
-import rx.operators.OperationTake;
-import rx.operators.OperationTakeWhile;
-import rx.operators.OperationWhere;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
@@ -56,17 +54,21 @@ import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSynchronize;
+import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
+import rx.operators.OperationTakeWhile;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
 import rx.operators.OperationToObservableList;
 import rx.operators.OperationToObservableSortedList;
+import rx.operators.OperationWhere;
 import rx.operators.OperationZip;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorTakeUntil;
 import rx.operators.OperatorToIterator;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
+import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
@@ -99,10 +101,9 @@ import rx.util.functions.Functions;
 public class Observable<T> {
 
     private final Func1<Observer<T>, Subscription> onSubscribe;
-    private final boolean isTrusted;
 
     protected Observable() {
-        this(null, false);
+        this(null);
     }
 
     /**
@@ -114,18 +115,7 @@ public class Observable<T> {
      *            {@link Func1} to be executed when {@link #subscribe(Observer)} is called.
      */
     protected Observable(Func1<Observer<T>, Subscription> onSubscribe) {
-        this(onSubscribe, false);
-    }
-
-    /**
-     * @param onSubscribe
-     *            {@link Func1} to be executed when {@link #subscribe(Observer)} is called.
-     * @param isTrusted
-     *            boolean true if the <code>onSubscribe</code> function is guaranteed to conform to the correct contract and thus shortcuts can be taken.
-     */
-    private Observable(Func1<Observer<T>, Subscription> onSubscribe, boolean isTrusted) {
         this.onSubscribe = onSubscribe;
-        this.isTrusted = isTrusted;
     }
 
     /**
@@ -159,7 +149,10 @@ public class Observable<T> {
             // the subscribe function can also be overridden but generally that's not the appropriate approach so I won't mention that in the exception
         }
         try {
-            if (isTrusted) {
+            /**
+             * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
+             */
+            if (observer.getClass().getPackage().getName().startsWith("rx")) {
                 Subscription s = onSubscribe.call(observer);
                 if (s == null) {
                     // this generally shouldn't be the case on a 'trusted' onSubscribe but in case it happens
@@ -565,7 +558,7 @@ public class Observable<T> {
                     return Subscriptions.empty();
                 }
 
-            }, true);
+            });
         }
     }
 
@@ -593,7 +586,7 @@ public class Observable<T> {
                     return Subscriptions.empty();
                 }
 
-            }, true);
+            });
         }
 
     }
@@ -617,13 +610,6 @@ public class Observable<T> {
      */
     public static <T> Observable<T> create(Func1<Observer<T>, Subscription> func) {
         return new Observable<T>(func);
-    }
-
-    /*
-     * Private version that creates a 'trusted' Observable to allow performance optimizations.
-     */
-    private static <T> Observable<T> _create(Func1<Observer<T>, Subscription> func) {
-        return new Observable<T>(func, true);
     }
 
     /**
@@ -697,7 +683,7 @@ public class Observable<T> {
      * @return an Observable that emits only those items in the original Observable that the filter evaluates as true
      */
     public static <T> Observable<T> filter(Observable<T> that, Func1<T, Boolean> predicate) {
-        return _create(OperationFilter.filter(that, predicate));
+        return create(OperationFilter.filter(that, predicate));
     }
 
     /**
@@ -729,7 +715,7 @@ public class Observable<T> {
      * Filters an Observable by discarding any of its emissions that do not meet some test.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
-     *
+     * 
      * @param that
      *            the Observable to filter
      * @param predicate
@@ -737,7 +723,7 @@ public class Observable<T> {
      * @return an Observable that emits only those items in the original Observable that the filter evaluates as true
      */
     public static <T> Observable<T> where(Observable<T> that, Func1<T, Boolean> predicate) {
-        return _create(OperationWhere.where(that, predicate));
+        return create(OperationWhere.where(that, predicate));
     }
 
     /**
@@ -797,7 +783,7 @@ public class Observable<T> {
      * @return the observable sequence whose observers trigger an invocation of the given observable factory function.
      */
     public static <T> Observable<T> defer(Func0<Observable<T>> observableFactory) {
-        return _create(OperationDefer.defer(observableFactory));
+        return create(OperationDefer.defer(observableFactory));
     }
 
     /**
@@ -816,7 +802,7 @@ public class Observable<T> {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(observableFactory);
 
-        return _create(OperationDefer.defer(new Func0<Observable<T>>() {
+        return create(OperationDefer.defer(new Func0<Observable<T>>() {
 
             @Override
             @SuppressWarnings("unchecked")
@@ -980,7 +966,7 @@ public class Observable<T> {
      *         in the sequence emitted by the source Observable
      */
     public static <T, R> Observable<R> map(Observable<T> sequence, Func1<T, R> func) {
-        return _create(OperationMap.map(sequence, func));
+        return create(OperationMap.map(sequence, func));
     }
 
     /**
@@ -1036,7 +1022,7 @@ public class Observable<T> {
      *         the Observables obtained from this transformation
      */
     public static <T, R> Observable<R> mapMany(Observable<T> sequence, Func1<T, Observable<R>> func) {
-        return _create(OperationMap.mapMany(sequence, func));
+        return create(OperationMap.mapMany(sequence, func));
     }
 
     /**
@@ -1085,7 +1071,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">MSDN: Observable.Materialize</a>
      */
     public static <T> Observable<Notification<T>> materialize(final Observable<T> sequence) {
-        return _create(OperationMaterialize.materialize(sequence));
+        return create(OperationMaterialize.materialize(sequence));
     }
 
     /**
@@ -1097,7 +1083,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">MSDN: Observable.Dematerialize</a>
      */
     public static <T> Observable<T> dematerialize(final Observable<Notification<T>> sequence) {
-        return _create(OperationDematerialize.dematerialize(sequence));
+        return create(OperationDematerialize.dematerialize(sequence));
     }
 
     /**
@@ -1114,7 +1100,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge</a>
      */
     public static <T> Observable<T> merge(List<Observable<T>> source) {
-        return _create(OperationMerge.merge(source));
+        return create(OperationMerge.merge(source));
     }
 
     /**
@@ -1131,7 +1117,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> merge(Observable<Observable<T>> source) {
-        return _create(OperationMerge.merge(source));
+        return create(OperationMerge.merge(source));
     }
 
     /**
@@ -1148,7 +1134,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> merge(Observable<T>... source) {
-        return _create(OperationMerge.merge(source));
+        return create(OperationMerge.merge(source));
     }
 
     /**
@@ -1181,7 +1167,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
      */
     public static <T> Observable<T> concat(Observable<T>... source) {
-        return _create(OperationConcat.concat(source));
+        return create(OperationConcat.concat(source));
     }
 
     /**
@@ -1202,7 +1188,7 @@ public class Observable<T> {
      * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
      */
     public static <K, T, R> Observable<GroupedObservable<K, R>> groupBy(Observable<T> source, final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
-        return _create(OperatorGroupBy.groupBy(source, keySelector, elementSelector));
+        return create(OperatorGroupBy.groupBy(source, keySelector, elementSelector));
     }
 
     /**
@@ -1219,7 +1205,7 @@ public class Observable<T> {
      * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
      */
     public static <K, T> Observable<GroupedObservable<K, T>> groupBy(Observable<T> source, final Func1<T, K> keySelector) {
-        return _create(OperatorGroupBy.groupBy(source, keySelector));
+        return create(OperatorGroupBy.groupBy(source, keySelector));
     }
 
     /**
@@ -1238,7 +1224,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> mergeDelayError(List<Observable<T>> source) {
-        return _create(OperationMergeDelayError.mergeDelayError(source));
+        return create(OperationMergeDelayError.mergeDelayError(source));
     }
 
     /**
@@ -1257,7 +1243,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> mergeDelayError(Observable<Observable<T>> source) {
-        return _create(OperationMergeDelayError.mergeDelayError(source));
+        return create(OperationMergeDelayError.mergeDelayError(source));
     }
 
     /**
@@ -1276,7 +1262,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
     public static <T> Observable<T> mergeDelayError(Observable<T>... source) {
-        return _create(OperationMergeDelayError.mergeDelayError(source));
+        return create(OperationMergeDelayError.mergeDelayError(source));
     }
 
     /**
@@ -1317,7 +1303,7 @@ public class Observable<T> {
      * @return the source Observable, with its behavior modified as described
      */
     public static <T> Observable<T> onErrorResumeNext(final Observable<T> that, final Func1<Exception, Observable<T>> resumeFunction) {
-        return _create(OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(that, resumeFunction));
+        return create(OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(that, resumeFunction));
     }
 
     /**
@@ -1381,7 +1367,7 @@ public class Observable<T> {
      * @return the source Observable, with its behavior modified as described
      */
     public static <T> Observable<T> onErrorResumeNext(final Observable<T> that, final Observable<T> resumeSequence) {
-        return _create(OperationOnErrorResumeNextViaObservable.onErrorResumeNextViaObservable(that, resumeSequence));
+        return create(OperationOnErrorResumeNextViaObservable.onErrorResumeNextViaObservable(that, resumeSequence));
     }
 
     /**
@@ -1405,7 +1391,7 @@ public class Observable<T> {
      * @return the source Observable, with its behavior modified as described
      */
     public static <T> Observable<T> onErrorReturn(final Observable<T> that, Func1<Exception, T> resumeFunction) {
-        return _create(OperationOnErrorReturn.onErrorReturn(that, resumeFunction));
+        return create(OperationOnErrorReturn.onErrorReturn(that, resumeFunction));
     }
 
     /**
@@ -1435,7 +1421,7 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public static <T> Observable<T> reduce(Observable<T> sequence, Func2<T, T, T> accumulator) {
-        return takeLast(_create(OperationScan.scan(sequence, accumulator)), 1);
+        return takeLast(create(OperationScan.scan(sequence, accumulator)), 1);
     }
 
     /**
@@ -1507,7 +1493,7 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public static <T> Observable<T> reduce(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
-        return takeLast(_create(OperationScan.scan(sequence, initialValue, accumulator)), 1);
+        return takeLast(create(OperationScan.scan(sequence, initialValue, accumulator)), 1);
     }
 
     /**
@@ -1571,7 +1557,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
     public static <T> Observable<T> scan(Observable<T> sequence, Func2<T, T, T> accumulator) {
-        return _create(OperationScan.scan(sequence, accumulator));
+        return create(OperationScan.scan(sequence, accumulator));
     }
 
     /**
@@ -1629,7 +1615,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
     public static <T> Observable<T> scan(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
-        return _create(OperationScan.scan(sequence, initialValue, accumulator));
+        return create(OperationScan.scan(sequence, initialValue, accumulator));
     }
 
     /**
@@ -1669,20 +1655,28 @@ public class Observable<T> {
 
     /**
      * Determines whether all elements of an observable sequence satisfies a condition.
-     * @param sequence an observable sequence whose elements to apply the predicate to.
-     * @param predicate a function to test each element for a condition.
-     * @param <T> the type of observable.
+     * 
+     * @param sequence
+     *            an observable sequence whose elements to apply the predicate to.
+     * @param predicate
+     *            a function to test each element for a condition.
+     * @param <T>
+     *            the type of observable.
      * @return true if all elements of an observable sequence satisfies a condition; otherwise, false.
      */
     public static <T> Observable<Boolean> all(final Observable<T> sequence, final Func1<T, Boolean> predicate) {
-        return _create(OperationAll.all(sequence, predicate));
+        return create(OperationAll.all(sequence, predicate));
     }
 
     /**
      * Determines whether all elements of an observable sequence satisfies a condition.
-     * @param sequence an observable sequence whose elements to apply the predicate to.
-     * @param predicate a function to test each element for a condition.
-     * @param <T> the type of observable.
+     * 
+     * @param sequence
+     *            an observable sequence whose elements to apply the predicate to.
+     * @param predicate
+     *            a function to test each element for a condition.
+     * @param <T>
+     *            the type of observable.
      * @return true if all elements of an observable sequence satisfies a condition; otherwise, false.
      */
     public static <T> Observable<Boolean> all(final Observable<T> sequence, Object predicate) {
@@ -1712,7 +1706,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229847(v=vs.103).aspx">MSDN: Observable.Skip Method</a>
      */
     public static <T> Observable<T> skip(final Observable<T> items, int num) {
-        return _create(OperationSkip.skip(items, num));
+        return create(OperationSkip.skip(items, num));
     }
 
     /**
@@ -1730,7 +1724,7 @@ public class Observable<T> {
      * @return an Observable that is a chronologically well-behaved version of the source Observable
      */
     public static <T> Observable<T> synchronize(Observable<T> observable) {
-        return _create(OperationSynchronize.synchronize(observable));
+        return create(OperationSynchronize.synchronize(observable));
     }
 
     /**
@@ -1752,7 +1746,7 @@ public class Observable<T> {
      *         Observable
      */
     public static <T> Observable<T> take(final Observable<T> items, final int num) {
-        return _create(OperationTake.take(items, num));
+        return create(OperationTake.take(items, num));
     }
 
     /**
@@ -1768,7 +1762,7 @@ public class Observable<T> {
      *         Observable
      */
     public static <T> Observable<T> takeLast(final Observable<T> items, final int count) {
-        return _create(OperationTakeLast.takeLast(items, count));
+        return create(OperationTakeLast.takeLast(items, count));
     }
 
     /**
@@ -1849,7 +1843,7 @@ public class Observable<T> {
      *         items emitted by the source Observable
      */
     public static <T> Observable<List<T>> toList(final Observable<T> that) {
-        return _create(OperationToObservableList.toObservableList(that));
+        return create(OperationToObservableList.toObservableList(that));
     }
 
     /**
@@ -2047,7 +2041,7 @@ public class Observable<T> {
      * @return an Observable that emits each item in the source Iterable sequence
      */
     public static <T> Observable<T> toObservable(Iterable<T> iterable) {
-        return _create(OperationToObservableIterable.toObservableIterable(iterable));
+        return create(OperationToObservableIterable.toObservableIterable(iterable));
     }
 
     /**
@@ -2066,7 +2060,7 @@ public class Observable<T> {
      * @return an Observable that emits the item from the source Future
      */
     public static <T> Observable<T> toObservable(Future<T> future) {
-        return _create(OperationToObservableFuture.toObservableFuture(future));
+        return create(OperationToObservableFuture.toObservableFuture(future));
     }
 
     /**
@@ -2090,7 +2084,7 @@ public class Observable<T> {
      * @return an Observable that emits the item from the source Future
      */
     public static <T> Observable<T> toObservable(Future<T> future, long time, TimeUnit unit) {
-        return _create(OperationToObservableFuture.toObservableFuture(future, time, unit));
+        return create(OperationToObservableFuture.toObservableFuture(future, time, unit));
     }
 
     /**
@@ -2123,7 +2117,7 @@ public class Observable<T> {
      * @return
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence) {
-        return _create(OperationToObservableSortedList.toSortedList(sequence));
+        return create(OperationToObservableSortedList.toSortedList(sequence));
     }
 
     /**
@@ -2136,7 +2130,7 @@ public class Observable<T> {
      * @return
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, Func2<T, T, Integer> sortFunction) {
-        return _create(OperationToObservableSortedList.toSortedList(sequence, sortFunction));
+        return create(OperationToObservableSortedList.toSortedList(sequence, sortFunction));
     }
 
     /**
@@ -2151,7 +2145,7 @@ public class Observable<T> {
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, final Object sortFunction) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(sortFunction);
-        return _create(OperationToObservableSortedList.toSortedList(sequence, new Func2<T, T, Integer>() {
+        return create(OperationToObservableSortedList.toSortedList(sequence, new Func2<T, T, Integer>() {
 
             @Override
             public Integer call(T t1, T t2) {
@@ -2186,7 +2180,7 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      */
     public static <R, T0, T1> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> reduceFunction) {
-        return _create(OperationZip.zip(w0, w1, reduceFunction));
+        return create(OperationZip.zip(w0, w1, reduceFunction));
     }
 
     /**
@@ -2310,7 +2304,7 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      */
     public static <R, T0, T1, T2> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> function) {
-        return _create(OperationZip.zip(w0, w1, w2, function));
+        return create(OperationZip.zip(w0, w1, w2, function));
     }
 
     /**
@@ -2385,7 +2379,7 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      */
     public static <R, T0, T1, T2, T3> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> reduceFunction) {
-        return _create(OperationZip.zip(w0, w1, w2, w3, reduceFunction));
+        return create(OperationZip.zip(w0, w1, w2, w3, reduceFunction));
     }
 
     /**
@@ -2472,7 +2466,7 @@ public class Observable<T> {
      * Filters an Observable by discarding any of its emissions that do not meet some test.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
-     *
+     * 
      * @param predicate
      *            a function that evaluates the items emitted by the source Observable, returning
      *            <code>true</code> if they pass the filter
@@ -2663,7 +2657,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public <T2> Observable<T2> dematerialize() {
-        return dematerialize((Observable<Notification<T2>>)this);
+        return dematerialize((Observable<Notification<T2>>) this);
     }
 
     /**
@@ -3008,7 +3002,9 @@ public class Observable<T> {
 
     /**
      * Determines whether all elements of an observable sequence satisfies a condition.
-     * @param predicate a function to test each element for a condition.
+     * 
+     * @param predicate
+     *            a function to test each element for a condition.
      * @return true if all elements of an observable sequence satisfies a condition; otherwise, false.
      */
     public Observable<Boolean> all(Func1<T, Boolean> predicate) {
@@ -3017,7 +3013,9 @@ public class Observable<T> {
 
     /**
      * Determines whether all elements of an observable sequence satisfies a condition.
-     * @param predicate a function to test each element for a condition.
+     * 
+     * @param predicate
+     *            a function to test each element for a condition.
      * @return true if all elements of an observable sequence satisfies a condition; otherwise, false.
      */
     public Observable<Boolean> all(Object predicate) {
@@ -3554,6 +3552,175 @@ public class Observable<T> {
             verify(observer, times(1)).onNext(1);
             verify(observer, times(1)).onCompleted();
             verify(observer, times(0)).onError(any(Exception.class));
+        }
+
+        /**
+         * The error from the user provided Observer is not handled by the subscribe method try/catch.
+         * 
+         * It is handled by the AtomicObserver that wraps the provided Observer.
+         * 
+         * Result: Passes (if AtomicObserver functionality exists)
+         */
+        @Test
+        public void testCustomObservableWithErrorInObserverAsynchronous() throws InterruptedException {
+            final CountDownLatch latch = new CountDownLatch(1);
+            final AtomicInteger count = new AtomicInteger();
+            final AtomicReference<Exception> error = new AtomicReference<Exception>();
+            Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(final Observer<String> observer) {
+                    final BooleanSubscription s = new BooleanSubscription();
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            try {
+                                if (!s.isUnsubscribed()) {
+                                    observer.onNext("1");
+                                    observer.onNext("2");
+                                    observer.onNext("three");
+                                    observer.onNext("4");
+                                    observer.onCompleted();
+                                }
+                            } finally {
+                                latch.countDown();
+                            }
+                        }
+                    }).start();
+                    return s;
+                }
+            }).subscribe(new AtomicObserver<String>(new AtomicObservableSubscription(), new Observer<String>() {
+                // we are manually wrapping in AtomicObserver here to simulate
+                // what will happen when a user provided Observer implementation is passed in
+                // since the subscribe method will wrap it in AtomicObserver if it's not in an rx.* package
+
+                @Override
+                public void onCompleted() {
+                    System.out.println("completed");
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    error.set(e);
+                    System.out.println("error");
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onNext(String v) {
+                    int num = Integer.parseInt(v);
+                    System.out.println(num);
+                    // doSomething(num);
+                    count.incrementAndGet();
+                }
+
+            }));
+
+            // wait for async sequence to complete
+            latch.await();
+
+            assertEquals(2, count.get());
+            assertNotNull(error.get());
+            if (!(error.get() instanceof NumberFormatException)) {
+                fail("It should be a NumberFormatException");
+            }
+        }
+
+        /**
+         * The error from the user provided Observer is handled by the subscribe try/catch because this is synchronous
+         * 
+         * Result: Passes
+         */
+        @Test
+        public void testCustomObservableWithErrorInObserverSynchronous() {
+            final AtomicInteger count = new AtomicInteger();
+            final AtomicReference<Exception> error = new AtomicReference<Exception>();
+            Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(Observer<String> observer) {
+                    observer.onNext("1");
+                    observer.onNext("2");
+                    observer.onNext("three");
+                    observer.onNext("4");
+                    observer.onCompleted();
+                    return Subscriptions.empty();
+                }
+            }).subscribe(new Observer<String>() {
+
+                @Override
+                public void onCompleted() {
+                    System.out.println("completed");
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    error.set(e);
+                    System.out.println("error");
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onNext(String v) {
+                    int num = Integer.parseInt(v);
+                    System.out.println(num);
+                    // doSomething(num);
+                    count.incrementAndGet();
+                }
+
+            });
+            assertEquals(2, count.get());
+            assertNotNull(error.get());
+            if (!(error.get() instanceof NumberFormatException)) {
+                fail("It should be a NumberFormatException");
+            }
+        }
+
+        /**
+         * The error from the user provided Observable is handled by the subscribe try/catch because this is synchronous
+         * 
+         * 
+         * Result: Passes
+         */
+        @Test
+        public void testCustomObservableWithErrorInObservableSynchronous() {
+            final AtomicInteger count = new AtomicInteger();
+            final AtomicReference<Exception> error = new AtomicReference<Exception>();
+            Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(Observer<String> observer) {
+                    observer.onNext("1");
+                    observer.onNext("2");
+                    throw new NumberFormatException();
+                }
+            }).subscribe(new Observer<String>() {
+
+                @Override
+                public void onCompleted() {
+                    System.out.println("completed");
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    error.set(e);
+                    System.out.println("error");
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onNext(String v) {
+                    System.out.println(v);
+                    count.incrementAndGet();
+                }
+
+            });
+            assertEquals(2, count.get());
+            assertNotNull(error.get());
+            if (!(error.get() instanceof NumberFormatException)) {
+                fail("It should be a NumberFormatException");
+            }
         }
 
         private static class TestException extends RuntimeException {
