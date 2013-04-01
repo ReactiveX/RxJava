@@ -123,7 +123,15 @@ public final class OperationTakeWhile {
 
             @Override
             public void onNext(T args) {
-                if (predicate.call(args, counter.getAndIncrement())) {
+                Boolean isSelected;
+                try {
+                    isSelected = predicate.call(args, counter.getAndIncrement());
+                }
+                catch (Exception e) {
+                    observer.onError(e);
+                    return;
+                }
+                if (isSelected) {
                     observer.onNext(args);
                 } else {
                     observer.onCompleted();
@@ -236,6 +244,35 @@ public final class OperationTakeWhile {
                     return false;
                 }
             })).last();
+        }
+
+        @Test
+        public void testTakeWhileProtectsPredicateCall() {
+            TestObservable source = new TestObservable(mock(Subscription.class), "one");
+            final RuntimeException testException = new RuntimeException("test exception");
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+            Observable<String> take = Observable.create(takeWhile(source, new Func1<String, Boolean>()
+            {
+                @Override
+                public Boolean call(String s)
+                {
+                    throw testException;
+                }
+            }));
+            take.subscribe(aObserver);
+
+            // wait for the Observable to complete
+            try {
+                source.t.join();
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail(e.getMessage());
+            }
+
+            verify(aObserver, never()).onNext(any(String.class));
+            verify(aObserver, times(1)).onError(testException);
         }
 
         @Test
