@@ -3325,7 +3325,11 @@ public class Observable<T> {
         if (o == null) {
             return true;
         }
-        return (o.getClass().getPackage().getName().startsWith("rx."));
+        // prevent double-wrapping (yeah it happens)
+        if (o instanceof AtomicObserver)
+            return true;
+        // we treat the following package as "internal" and don't wrap it
+        return o.getClass().getPackage().getName().startsWith("rx.operators");
     }
 
     public static class UnitTest {
@@ -3658,11 +3662,7 @@ public class Observable<T> {
                     }).start();
                     return s;
                 }
-            }).subscribe(new AtomicObserver<String>(new AtomicObservableSubscription(), new Observer<String>() {
-                // we are manually wrapping in AtomicObserver here to simulate
-                // what will happen when a user provided Observer implementation is passed in
-                // since the subscribe method will wrap it in AtomicObserver if it's not in an rx.* package
-
+            }).subscribe(new Observer<String>() {
                 @Override
                 public void onCompleted() {
                     System.out.println("completed");
@@ -3683,7 +3683,7 @@ public class Observable<T> {
                     count.incrementAndGet();
                 }
 
-            }));
+            });
 
             // wait for async sequence to complete
             latch.await();
