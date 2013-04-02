@@ -38,9 +38,7 @@ public final class ImmediateScheduler extends AbstractScheduler {
 
     @Override
     public Subscription schedule(Func0<Subscription> action) {
-        DiscardableAction discardableAction = new DiscardableAction(action);
-        discardableAction.call();
-        return discardableAction;
+        return action.call();
     }
 
     public static class UnitTest {
