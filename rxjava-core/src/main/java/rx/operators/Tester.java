@@ -17,11 +17,16 @@ import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
 /**
- * Common utility functions for operator implementations and tests.
+ * Common utility functions for testing operator implementations.
  */
-/* package */class AbstractOperation
-{
-    private AbstractOperation() {
+/* package */class Tester {
+    /*
+     * This is purposefully package-only so it does not leak into the public API outside of this package.
+     * 
+     * This package is implementation details and not part of the Javadocs and thus can change without breaking backwards compatibility.
+     */
+
+    private Tester() {
     }
 
     public static class UnitTest {
