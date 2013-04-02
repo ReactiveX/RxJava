@@ -26,11 +26,13 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 import rx.util.AtomicObservableSubscription;
+import rx.util.AtomicObserver;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
-import rx.subjects.Subject;
+
 /**
  * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
  */
@@ -45,7 +47,7 @@ public final class OperationTakeWhile {
      * @return
      */
     public static <T> Func1<Observer<T>, Subscription> takeWhile(final Observable<T> items, final Func1<T, Boolean> predicate) {
-        return takeWhileWithIndex(items, OperationTakeWhile.<T>skipIndex(predicate));
+        return takeWhileWithIndex(items, OperationTakeWhile.<T> skipIndex(predicate));
     }
 
     /**
@@ -108,7 +110,10 @@ public final class OperationTakeWhile {
             private final Observer<T> observer;
 
             public ItemObserver(Observer<T> observer) {
-                this.observer = observer;
+                // Using AtomicObserver because the unsubscribe, onCompleted, onError and error handling behavior
+                // needs "isFinished" logic to not send duplicated events
+                // The 'testTakeWhile1' and 'testTakeWhile2' tests fail without this.
+                this.observer = new AtomicObserver<T>(subscription, observer);
             }
 
             @Override
@@ -126,8 +131,7 @@ public final class OperationTakeWhile {
                 Boolean isSelected;
                 try {
                     isSelected = predicate.call(args, counter.getAndIncrement());
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     observer.onError(e);
                     return;
                 }
@@ -171,7 +175,7 @@ public final class OperationTakeWhile {
         @Test
         public void testTakeWhileOnSubject1() {
             Subject<Integer> s = Subject.create();
-            Observable<Integer> w = (Observable<Integer>)s;
+            Observable<Integer> w = (Observable<Integer>) s;
             Observable<Integer> take = Observable.create(takeWhile(w, new Func1<Integer, Boolean>()
             {
                 @Override

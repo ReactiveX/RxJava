@@ -1,8 +1,10 @@
 package rx.util;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observer;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Wrapper around Observer to ensure compliance with Rx contract.
@@ -32,7 +34,7 @@ import rx.Observer;
  * <li>When onError or onComplete occur it will unsubscribe from the Observable (if executing asynchronously).</li>
  * </ul>
  * <p>
- * It will not synchronized onNext execution. Use the {@link SynchronizedObserver} to do that.
+ * It will not synchronize onNext execution. Use the {@link SynchronizedObserver} to do that.
  * 
  * @param <T>
  */
@@ -50,7 +52,12 @@ public class AtomicObserver<T> implements Observer<T> {
     @Override
     public void onCompleted() {
         if (isFinished.compareAndSet(false, true)) {
-            actual.onCompleted();
+            try {
+                actual.onCompleted();
+            } catch (Exception e) {
+                // handle errors if the onCompleted implementation fails, not just if the Observable fails
+                onError(e);
+            }
             // auto-unsubscribe
             subscription.unsubscribe();
         }
@@ -59,7 +66,17 @@ public class AtomicObserver<T> implements Observer<T> {
     @Override
     public void onError(Exception e) {
         if (isFinished.compareAndSet(false, true)) {
-            actual.onError(e);
+            try {
+                actual.onError(e);
+            } catch (Exception e2) {
+                // if the onError itself fails then pass to the plugin
+                // see https://github.com/Netflix/RxJava/issues/216 for further discussion
+                RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                RxJavaPlugins.getInstance().getErrorHandler().handleError(e2);
+                // and throw exception despite that not being proper for Rx
+                // https://github.com/Netflix/RxJava/issues/198
+                throw new RuntimeException("Error occurred when trying to propagate error to Observer.onError", new CompositeException(Arrays.asList(e, e2)));
+            }
             // auto-unsubscribe
             subscription.unsubscribe();
         }
