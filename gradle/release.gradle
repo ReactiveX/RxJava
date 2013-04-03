@@ -21,6 +21,7 @@ task forceCandidate {
 }
 release.dependsOn(forceCandidate)
 
+task uploadMavenCentral(dependsOn: subprojects.tasks.uploadMavenCentral)
 task releaseSnapshot(dependsOn: [uploadArtifactory, uploadMavenCentral])
 
 // Ensure our versions look like the project status before publishing
