@@ -42,6 +42,7 @@ import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationFilter;
+import rx.operators.OperationFinally;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
@@ -1219,6 +1220,18 @@ public class Observable<T> {
      */
     public static <T> Observable<T> concat(Observable<T>... source) {
         return create(OperationConcat.concat(source));
+    }
+
+    /**
+     * Emits the same objects as the given Observable, calling the given action
+     * when it calls <code>onComplete</code> or <code>onError</code>.
+     * @param source an observable
+     * @param action an action to be called when the source completes or errors.
+     * @return an Observable that emits the same objects, then calls the action.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN: Observable.Finally Method</a>
+     */
+    public static <T> Observable<T> finallyDo(Observable source, Action0 action) {
+        return create(OperationFinally.finallyDo(source, action));
     }
 
     /**
@@ -2489,6 +2502,17 @@ public class Observable<T> {
      */
     public Observable<T> filter(Func1<T, Boolean> predicate) {
         return filter(this, predicate);
+    }
+
+    /**
+     * Registers an action to be called when this observable calls
+     * <code>onComplete</code> or <code>onError</code>.
+     * @param action an action to be called when this observable completes or errors.
+     * @return an Observable that emits the same objects as this observable, then calls the action.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN: Observable.Finally Method</a>
+     */
+    public Observable<T> finallyDo(Action0 action) {
+        return create(OperationFinally.finallyDo(this, action));
     }
 
     /**
