@@ -63,11 +63,34 @@ subprojects { project ->
     }
 }
 
-task aggregateJavadoc(type: Javadoc) {
-    description = 'Aggregate all subproject docs into a single docs directory'
-    source subprojects.collect {project -> project.sourceSets.main.allJava }
-    classpath = files(subprojects.collect {project -> project.sourceSets.main.compileClasspath})
-    destinationDir = new File(projectDir, 'doc')
+apply plugin: 'github-pages' // Used to create publishGhPages task
+
+def docTasks = [:]
+[Javadoc,ScalaDoc,Groovydoc].each{ Class docClass ->
+    def allSources = allprojects.tasks*.withType(docClass).flatten()*.source 
+    if (allSources) {
+        def shortName = docClass.simpleName.toLowerCase()
+        def docTask = task "aggregate${shortName.capitalize()}"(type: docClass, description: "Aggregate subproject ${shortName}s") {
+            source = allSources
+            doFirst {
+                def classpaths = allprojects.findAll { it.plugins.hasPlugin(JavaPlugin) }.collect { it.sourceSets.main.compileClasspath }
+                classpath = files(classpaths)
+            }
+        }
+        docTasks[shortName] = docTask
+        processGhPages.dependsOn(docTask)
+    }
+}
+
+githubPages {
+    repoUri = "git@github.com:quidryan/${rootProject.githubProjectName}.git"
+    pages {
+        docTasks.each { shortName, docTask ->
+            from(docTask.outputs.files) {
+                into "docs/${shortName}"
+            }
+        }
+    }
 }
 
 // Generate wrapper, which is distributed as part of source to alleviate the need of installing gradle
