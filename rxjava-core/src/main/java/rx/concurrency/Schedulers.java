@@ -17,10 +17,15 @@ package rx.concurrency;
 
 import rx.Scheduler;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Schedulers {
+    private static final ScheduledExecutorService COMPUTATION_EXECUTOR = createComputationExecutor();
+    private static final ScheduledExecutorService IO_EXECUTOR = createIOExecutor();
+    private static final int DEFAULT_MAX_IO_THREADS = 10;
+    private static final int DEFAULT_KEEP_ALIVE_TIME = 10 * 1000; // 10 seconds
+
     private Schedulers() {
 
     }
@@ -45,7 +50,43 @@ public class Schedulers {
         return new ScheduledExecutorServiceScheduler(executor);
     }
 
+    public static Scheduler threadPoolForComputation() {
+        return fromScheduledExecutorService(COMPUTATION_EXECUTOR);
+    }
+
+    public static Scheduler threadPoolForIO() {
+        return fromScheduledExecutorService(IO_EXECUTOR);
+    }
+
     public static Scheduler forwardingScheduler(Scheduler underlying) {
         return new ForwardingScheduler(underlying);
+    }
+
+    private static ScheduledExecutorService createComputationExecutor() {
+        int cores = Runtime.getRuntime().availableProcessors();
+        return Executors.newScheduledThreadPool(cores, new ThreadFactory() {
+            final AtomicInteger counter = new AtomicInteger();
+
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, "RxComputationThreadPool-" + counter.incrementAndGet());
+            }
+        });
+    }
+
+    private static ScheduledExecutorService createIOExecutor() {
+        ScheduledThreadPoolExecutor result = new ScheduledThreadPoolExecutor(DEFAULT_MAX_IO_THREADS, new ThreadFactory() {
+            final AtomicInteger counter = new AtomicInteger();
+
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, "RxIOThreadPool-" + counter.incrementAndGet());
+            }
+        });
+
+        result.setKeepAliveTime(DEFAULT_KEEP_ALIVE_TIME, TimeUnit.MILLISECONDS);
+        result.allowCoreThreadTimeOut(true);
+
+        return result;
     }
 }
