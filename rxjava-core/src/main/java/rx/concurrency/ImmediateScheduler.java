@@ -18,9 +18,10 @@ package rx.concurrency;
 import org.junit.Test;
 import org.mockito.InOrder;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -39,6 +40,11 @@ public final class ImmediateScheduler extends AbstractScheduler {
     @Override
     public Subscription schedule(Func0<Subscription> action) {
         return action.call();
+    }
+
+    @Override
+    public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
+        return schedule(new SleepingAction(action, this, dueTime, unit));
     }
 
     public static class UnitTest {

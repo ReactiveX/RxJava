@@ -36,11 +36,6 @@ public abstract class AbstractScheduler implements Scheduler {
     }
 
     @Override
-    public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
-        return schedule(new SleepingAction(action, this, dueTime, unit));
-    }
-
-    @Override
     public long now() {
         return System.nanoTime();
     }

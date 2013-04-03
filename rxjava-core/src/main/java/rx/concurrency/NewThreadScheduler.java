@@ -18,6 +18,8 @@ package rx.concurrency;
 import rx.Subscription;
 import rx.util.functions.Func0;
 
+import java.util.concurrent.TimeUnit;
+
 public class NewThreadScheduler extends AbstractScheduler {
     private static final NewThreadScheduler INSTANCE = new NewThreadScheduler();
 
@@ -40,6 +42,11 @@ public class NewThreadScheduler extends AbstractScheduler {
         t.start();
 
         return discardableAction;
+    }
+
+    @Override
+    public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
+        return schedule(new SleepingAction(action, this, dueTime, unit));
     }
 
 }

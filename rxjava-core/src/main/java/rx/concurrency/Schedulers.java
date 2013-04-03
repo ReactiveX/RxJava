@@ -41,7 +41,7 @@ public class Schedulers {
         return new ExecutorScheduler(executor);
     }
 
-    public static Scheduler scheduledExecutor(ScheduledExecutorService executor) {
+    public static Scheduler fromScheduledExecutorService(ScheduledExecutorService executor) {
         return new ScheduledExecutorServiceScheduler(executor);
     }
 

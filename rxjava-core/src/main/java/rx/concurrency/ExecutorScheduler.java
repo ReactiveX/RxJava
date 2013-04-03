@@ -19,6 +19,7 @@ import rx.Subscription;
 import rx.util.functions.Func0;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 public class ExecutorScheduler extends AbstractScheduler {
     private final Executor executor;
@@ -40,5 +41,10 @@ public class ExecutorScheduler extends AbstractScheduler {
 
         return discardableAction;
 
+    }
+
+    @Override
+    public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
+        throw new IllegalStateException("Delayed scheduling is not supported");
     }
 }

@@ -23,6 +23,7 @@ import rx.util.functions.Func0;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.*;
 
@@ -43,6 +44,11 @@ public class CurrentThreadScheduler extends AbstractScheduler {
         DiscardableAction discardableAction = new DiscardableAction(action);
         enqueue(discardableAction);
         return discardableAction;
+    }
+
+    @Override
+    public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
+        return schedule(new SleepingAction(action, this, dueTime, unit));
     }
 
     private void enqueue(DiscardableAction action) {
