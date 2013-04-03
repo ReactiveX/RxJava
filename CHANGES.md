@@ -1,5 +1,19 @@
 # RxJava Releases #
 
+### Version 0.6.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.6.2%22)) ###
+
+* [Issue 101](https://github.com/Netflix/RxJava/issues/101) Operator: Where (alias to filter)
+* [Pull 197](https://github.com/Netflix/RxJava/pull/197) TakeWhile observables do not properly complete
+* [Issue 21](https://github.com/Netflix/RxJava/issues/21) Operator: All
+* [Pull 206](https://github.com/Netflix/RxJava/pull/206) Observable.toList breaks with multiple subscribers
+* [Issue 29](https://github.com/Netflix/RxJava/issues/29) Operator: CombineLatest
+* [Issue 211](https://github.com/Netflix/RxJava/issues/211) Remove use of JSR 305 and dependency on com.google.code.findbugs
+* [Pull 212](https://github.com/Netflix/RxJava/pull/212) Operation take leaks errors
+* [Pull 220](https://github.com/Netflix/RxJava/pull/220) TakeWhile protect calls to predicate
+* [Pull 221](https://github.com/Netflix/RxJava/pull/221) Error Handling Improvements - User Provided Observers/Functions
+* [Pull 201](https://github.com/Netflix/RxJava/pull/201) Synchronize Observer on OperationMerge
+* [Issue 43](https://github.com/Netflix/RxJava/issues/43) Operator: Finally
+
 ### Version 0.6.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.6.1%22)) ###
 
 * [Pull 190](https://github.com/Netflix/RxJava/pull/190) Fix generics issue with materialize() that prevented chaining
