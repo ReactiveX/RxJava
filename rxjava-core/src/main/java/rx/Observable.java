@@ -68,6 +68,7 @@ import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorTakeUntil;
 import rx.operators.OperatorToIterator;
 import rx.plugins.RxJavaErrorHandler;
+import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
@@ -101,6 +102,8 @@ import rx.util.functions.Functions;
  * @param <T>
  */
 public class Observable<T> {
+
+    private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     private final Func1<Observer<T>, Subscription> onSubscribe;
 
@@ -146,7 +149,10 @@ public class Observable<T> {
      *         to stop receiving notifications before the provider has finished sending them
      */
     public Subscription subscribe(Observer<T> observer) {
-        if (onSubscribe == null) {
+        // allow the hook to intercept and/or decorate
+        Func1<Observer<T>, Subscription> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
+        // validate and proceed
+        if (onSubscribeFunction == null) {
             throw new IllegalStateException("onSubscribe function can not be null.");
             // the subscribe function can also be overridden but generally that's not the appropriate approach so I won't mention that in the exception
         }
@@ -155,26 +161,29 @@ public class Observable<T> {
              * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
              */
             if (isInternalImplementation(observer)) {
-                Subscription s = onSubscribe.call(observer);
+                Subscription s = onSubscribeFunction.call(observer);
                 if (s == null) {
                     // this generally shouldn't be the case on a 'trusted' onSubscribe but in case it happens
                     // we want to gracefully handle it the same as AtomicObservableSubscription does
-                    return Subscriptions.empty();
+                    return hook.onSubscribeReturn(this, Subscriptions.empty());
                 } else {
-                    return s;
+                    return hook.onSubscribeReturn(this, s);
                 }
             } else {
                 AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-                return subscription.wrap(onSubscribe.call(new AtomicObserver<T>(subscription, observer)));
+                subscription.wrap(onSubscribeFunction.call(new AtomicObserver<T>(subscription, observer)));
+                return hook.onSubscribeReturn(this, subscription);
             }
         } catch (Exception e) {
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
-                observer.onError(e);
+                observer.onError(hook.onSubscribeError(this, e));
             } catch (Exception e2) {
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
-                throw new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
+                RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
+                hook.onSubscribeError(this, r);
+                throw r;
             }
             return Subscriptions.empty();
         }
@@ -1225,8 +1234,11 @@ public class Observable<T> {
     /**
      * Emits the same objects as the given Observable, calling the given action
      * when it calls <code>onComplete</code> or <code>onError</code>.
-     * @param source an observable
-     * @param action an action to be called when the source completes or errors.
+     * 
+     * @param source
+     *            an observable
+     * @param action
+     *            an action to be called when the source completes or errors.
      * @return an Observable that emits the same objects, then calls the action.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN: Observable.Finally Method</a>
      */
@@ -2507,7 +2519,9 @@ public class Observable<T> {
     /**
      * Registers an action to be called when this observable calls
      * <code>onComplete</code> or <code>onError</code>.
-     * @param action an action to be called when this observable completes or errors.
+     * 
+     * @param action
+     *            an action to be called when this observable completes or errors.
      * @return an Observable that emits the same objects as this observable, then calls the action.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN: Observable.Finally Method</a>
      */
