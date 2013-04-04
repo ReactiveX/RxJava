@@ -35,6 +35,7 @@ public class RxJavaPlugins {
     private final static RxJavaPlugins INSTANCE = new RxJavaPlugins();
 
     private final AtomicReference<RxJavaErrorHandler> errorHandler = new AtomicReference<RxJavaErrorHandler>();
+    private final AtomicReference<RxJavaObservableExecutionHook> observableExecutionHook = new AtomicReference<RxJavaObservableExecutionHook>();
 
     private RxJavaPlugins() {
 
@@ -69,15 +70,53 @@ public class RxJavaPlugins {
     }
 
     /**
-     * Register a {@link HystrixEventNotifier} implementation as a global override of any injected or default implementations.
+     * Register a {@link RxJavaErrorHandler} implementation as a global override of any injected or default implementations.
      * 
      * @param impl
-     *            {@link HystrixEventNotifier} implementation
+     *            {@link RxJavaErrorHandler} implementation
      * @throws IllegalStateException
      *             if called more than once or after the default was initialized (if usage occurs before trying to register)
      */
     public void registerErrorHandler(RxJavaErrorHandler impl) {
         if (!errorHandler.compareAndSet(null, impl)) {
+            throw new IllegalStateException("Another strategy was already registered.");
+        }
+    }
+
+    /**
+     * Retrieve instance of {@link RxJavaObservableExecutionHook} to use based on order of precedence as defined in {@link RxJavaPlugins} class header.
+     * <p>
+     * Override default by using {@link #registerObservableExecutionHook(RxJavaObservableExecutionHook)} or setting property: <code>rxjava.plugin.RxJavaObservableExecutionHook.implementation</code>
+     * with the full classname to load.
+     * 
+     * @return {@link RxJavaObservableExecutionHook} implementation to use
+     */
+    public RxJavaObservableExecutionHook getObservableExecutionHook() {
+        if (observableExecutionHook.get() == null) {
+            // check for an implementation from System.getProperty first
+            Object impl = getPluginImplementationViaProperty(RxJavaObservableExecutionHook.class);
+            if (impl == null) {
+                // nothing set via properties so initialize with default 
+                observableExecutionHook.compareAndSet(null, RxJavaObservableExecutionHookDefault.getInstance());
+                // we don't return from here but call get() again in case of thread-race so the winner will always get returned
+            } else {
+                // we received an implementation from the system property so use it
+                observableExecutionHook.compareAndSet(null, (RxJavaObservableExecutionHook) impl);
+            }
+        }
+        return observableExecutionHook.get();
+    }
+
+    /**
+     * Register a {@link RxJavaObservableExecutionHook} implementation as a global override of any injected or default implementations.
+     * 
+     * @param impl
+     *            {@link RxJavaObservableExecutionHook} implementation
+     * @throws IllegalStateException
+     *             if called more than once or after the default was initialized (if usage occurs before trying to register)
+     */
+    public void registerObservableExecutionHook(RxJavaObservableExecutionHook impl) {
+        if (!observableExecutionHook.compareAndSet(null, impl)) {
             throw new IllegalStateException("Another strategy was already registered.");
         }
     }
@@ -117,23 +156,24 @@ public class RxJavaPlugins {
         public void reset() {
             // use private access to reset so we can test different initializations via the public static flow
             RxJavaPlugins.getInstance().errorHandler.set(null);
+            RxJavaPlugins.getInstance().observableExecutionHook.set(null);
         }
 
         @Test
-        public void testEventNotifierDefaultImpl() {
+        public void testErrorHandlerDefaultImpl() {
             RxJavaErrorHandler impl = RxJavaPlugins.getInstance().getErrorHandler();
             assertTrue(impl instanceof RxJavaErrorHandlerDefault);
         }
 
         @Test
-        public void testEventNotifierViaRegisterMethod() {
+        public void testErrorHandlerViaRegisterMethod() {
             RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandlerTestImpl());
             RxJavaErrorHandler impl = RxJavaPlugins.getInstance().getErrorHandler();
             assertTrue(impl instanceof RxJavaErrorHandlerTestImpl);
         }
 
         @Test
-        public void testEventNotifierViaProperty() {
+        public void testErrorHandlerViaProperty() {
             try {
                 String fullClass = getFullClassNameForTestClass(RxJavaErrorHandlerTestImpl.class);
                 System.setProperty("rxjava.plugin.RxJavaErrorHandler.implementation", fullClass);
@@ -146,6 +186,36 @@ public class RxJavaPlugins {
 
         // inside UnitTest so it is stripped from Javadocs
         public static class RxJavaErrorHandlerTestImpl extends RxJavaErrorHandler {
+            // just use defaults
+        }
+
+        @Test
+        public void testObservableExecutionHookDefaultImpl() {
+            RxJavaObservableExecutionHook impl = RxJavaPlugins.getInstance().getObservableExecutionHook();
+            assertTrue(impl instanceof RxJavaObservableExecutionHookDefault);
+        }
+
+        @Test
+        public void testObservableExecutionHookViaRegisterMethod() {
+            RxJavaPlugins.getInstance().registerObservableExecutionHook(new RxJavaObservableExecutionHookTestImpl());
+            RxJavaObservableExecutionHook impl = RxJavaPlugins.getInstance().getObservableExecutionHook();
+            assertTrue(impl instanceof RxJavaObservableExecutionHookTestImpl);
+        }
+
+        @Test
+        public void testObservableExecutionHookViaProperty() {
+            try {
+                String fullClass = getFullClassNameForTestClass(RxJavaObservableExecutionHookTestImpl.class);
+                System.setProperty("rxjava.plugin.RxJavaObservableExecutionHook.implementation", fullClass);
+                RxJavaObservableExecutionHook impl = RxJavaPlugins.getInstance().getObservableExecutionHook();
+                assertTrue(impl instanceof RxJavaObservableExecutionHookTestImpl);
+            } finally {
+                System.clearProperty("rxjava.plugin.RxJavaErrorHandler.implementation");
+            }
+        }
+
+        // inside UnitTest so it is stripped from Javadocs
+        public static class RxJavaObservableExecutionHookTestImpl extends RxJavaObservableExecutionHook {
             // just use defaults
         }
 
