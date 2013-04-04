@@ -1,5 +1,6 @@
 rx
 rx.observables
+rx.plugins
 rx.subjects
 rx.subscriptions
 rx.util
