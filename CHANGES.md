@@ -1,5 +1,9 @@
 # RxJava Releases #
 
+### Version 0.6.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.6.3%22)) ###
+
+* [Pull 224](https://github.com/Netflix/RxJava/pull/224) RxJavaObservableExecutionHook
+
 ### Version 0.6.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.6.2%22)) ###
 
 * [Issue 101](https://github.com/Netflix/RxJava/issues/101) Operator: Where (alias to filter)
