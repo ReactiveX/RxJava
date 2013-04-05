@@ -17,6 +17,8 @@ package rx.concurrency;
 
 import static org.junit.Assert.*;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Test;
 
 import rx.Observable;
@@ -47,7 +49,6 @@ public class TestSchedulers {
                 System.out.println("t: " + t);
             }
         });
-
     }
 
     @Test
@@ -72,6 +73,147 @@ public class TestSchedulers {
                 System.out.println("t: " + t);
             }
         });
+    }
 
+    @Test
+    public void testMergeWithoutScheduler1() {
+
+        final String currentThreadName = Thread.currentThread().getName();
+
+        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
+        @SuppressWarnings("unchecked")
+        Observable<String> o = Observable.<Integer> merge(o1, o2).map(new Func1<Integer, String>() {
+
+            @Override
+            public String call(Integer t) {
+                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
+                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+            }
+        });
+
+        o.forEach(new Action1<String>() {
+
+            @Override
+            public void call(String t) {
+                System.out.println("t: " + t);
+            }
+        });
+    }
+
+    @Test
+    public void testMergeWithImmediateScheduler1() {
+
+        final String currentThreadName = Thread.currentThread().getName();
+
+        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
+        @SuppressWarnings("unchecked")
+        Observable<String> o = Observable.<Integer> merge(Schedulers.immediate(), o1, o2).map(new Func1<Integer, String>() {
+
+            @Override
+            public String call(Integer t) {
+                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
+                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+            }
+        });
+
+        o.forEach(new Action1<String>() {
+
+            @Override
+            public void call(String t) {
+                System.out.println("t: " + t);
+            }
+        });
+    }
+
+    @Test
+    public void testMergeWithCurrentThreadScheduler1() {
+
+        final String currentThreadName = Thread.currentThread().getName();
+
+        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
+        @SuppressWarnings("unchecked")
+        Observable<String> o = Observable.<Integer> merge(Schedulers.currentThread(), o1, o2).map(new Func1<Integer, String>() {
+
+            @Override
+            public String call(Integer t) {
+                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
+                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+            }
+        });
+
+        o.forEach(new Action1<String>() {
+
+            @Override
+            public void call(String t) {
+                System.out.println("t: " + t);
+            }
+        });
+    }
+
+    @Test
+    public void testMergeWithScheduler1() {
+
+        final String currentThreadName = Thread.currentThread().getName();
+
+        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
+        @SuppressWarnings("unchecked")
+        Observable<String> o = Observable.<Integer> merge(Schedulers.threadPoolForComputation(), o1, o2).map(new Func1<Integer, String>() {
+
+            @Override
+            public String call(Integer t) {
+                assertFalse(Thread.currentThread().getName().equals(currentThreadName));
+                assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
+                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+            }
+        });
+
+        o.forEach(new Action1<String>() {
+
+            @Override
+            public void call(String t) {
+                System.out.println("t: " + t);
+            }
+        });
+    }
+
+    @Test
+    public void testSubscribeWithScheduler1() {
+
+        final AtomicInteger count = new AtomicInteger();
+
+        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+
+        o1.subscribe(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t) {
+                System.out.println("Thread: " + Thread.currentThread().getName());
+                System.out.println("t: " + t);
+                count.incrementAndGet();
+            }
+        });
+
+        // the above should be blocking so we should see a count of 5
+        assertEquals(5, count.get());
+
+        count.set(0);
+
+        // now we'll subscribe with a scheduler and it should be async
+
+        o1.subscribe(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t) {
+                System.out.println("Thread: " + Thread.currentThread().getName());
+                System.out.println("t: " + t);
+                count.incrementAndGet();
+            }
+        }, Schedulers.threadPoolForComputation());
+
+        assertEquals(0, count.get());
     }
 }
