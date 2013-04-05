@@ -63,10 +63,6 @@ public class Schedulers {
         return fromScheduledExecutorService(IO_EXECUTOR);
     }
 
-    public static Scheduler forwardingScheduler(Scheduler underlying) {
-        return new ForwardingScheduler(underlying);
-    }
-
     private static ScheduledExecutorService createComputationExecutor() {
         int cores = Runtime.getRuntime().availableProcessors();
         return Executors.newScheduledThreadPool(cores, new ThreadFactory() {

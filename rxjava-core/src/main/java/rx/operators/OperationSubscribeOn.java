@@ -81,7 +81,7 @@ public class OperationSubscribeOn {
         public void testSubscribeOn() {
             Observable<Integer> w = Observable.toObservable(1, 2, 3);
 
-            Scheduler scheduler = spy(Schedulers.forwardingScheduler(Schedulers.immediate()));
+            Scheduler scheduler = spy(Tester.UnitTest.forwardingScheduler(Schedulers.immediate()));
 
             Observer<Integer> observer = mock(Observer.class);
             Subscription subscription = Observable.create(subscribeOn(w, scheduler)).subscribe(observer);

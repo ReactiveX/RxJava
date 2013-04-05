@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,7 +15,11 @@
  */
 package rx.operators;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 import org.junit.Test;
+
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
@@ -23,11 +27,6 @@ import rx.Subscription;
 import rx.concurrency.Schedulers;
 import rx.util.functions.Action0;
 import rx.util.functions.Func1;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 public class OperationObserveOn {
 
@@ -56,7 +55,7 @@ public class OperationObserveOn {
         @SuppressWarnings("unchecked")
         public void testObserveOn() {
 
-            Scheduler scheduler = spy(Schedulers.forwardingScheduler(Schedulers.immediate()));
+            Scheduler scheduler = spy(Tester.UnitTest.forwardingScheduler(Schedulers.immediate()));
 
             Observer<Integer> observer = mock(Observer.class);
             Observable.create(observeOn(Observable.toObservable(1, 2, 3), scheduler)).subscribe(observer);
