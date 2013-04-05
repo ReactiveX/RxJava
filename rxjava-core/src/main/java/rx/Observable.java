@@ -49,11 +49,13 @@ import rx.operators.OperationMerge;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMostRecent;
 import rx.operators.OperationNext;
+import rx.operators.OperationObserveOn;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
+import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSynchronize;
 import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
@@ -190,6 +192,37 @@ public class Observable<T> {
     }
 
     /**
+     * an {@link Observer} must call an Observable's <code>subscribe</code> method in order to register itself
+     * to receive push-based notifications from the Observable. A typical implementation of the
+     * <code>subscribe</code> method does the following:
+     * <p>
+     * It stores a reference to the Observer in a collection object, such as a <code>List<T></code>
+     * object.
+     * <p>
+     * It returns a reference to the {@link Subscription} interface. This enables
+     * Observers to unsubscribe (that is, to stop receiving notifications) before the Observable has
+     * finished sending them and has called the Observer's {@link Observer#onCompleted()} method.
+     * <p>
+     * At any given time, a particular instance of an <code>Observable<T></code> implementation is
+     * responsible for accepting all subscriptions and notifying all subscribers. Unless the
+     * documentation for a particular <code>Observable<T></code> implementation indicates otherwise,
+     * Observers should make no assumptions about the <code>Observable<T></code> implementation, such
+     * as the order of notifications that multiple Observers will receive.
+     * <p>
+     * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
+     * 
+     * 
+     * @param observer
+     * @param scheduler
+     *            The {@link Scheduler} that the sequence is subscribed to on.
+     * @return a {@link Subscription} reference that allows observers
+     *         to stop receiving notifications before the provider has finished sending them
+     */
+    public Subscription subscribe(Observer<T> observer, Scheduler scheduler) {
+        return subscribeOn(scheduler).subscribe(observer);
+    }
+
+    /**
      * Used for protecting against errors being thrown from Observer implementations and ensuring onNext/onError/onCompleted contract compliance.
      * <p>
      * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
@@ -237,6 +270,10 @@ public class Observable<T> {
         });
     }
 
+    public Subscription subscribe(final Map<String, Object> callbacks, Scheduler scheduler) {
+        return subscribeOn(scheduler).subscribe(callbacks);
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Subscription subscribe(final Object o) {
         if (o instanceof Observer) {
@@ -273,6 +310,10 @@ public class Observable<T> {
         });
     }
 
+    public Subscription subscribe(final Object o, Scheduler scheduler) {
+        return subscribeOn(scheduler).subscribe(o);
+    }
+
     public Subscription subscribe(final Action1<T> onNext) {
 
         /**
@@ -299,6 +340,10 @@ public class Observable<T> {
             }
 
         });
+    }
+
+    public Subscription subscribe(final Action1<T> onNext, Scheduler scheduler) {
+        return subscribeOn(scheduler).subscribe(onNext);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -334,6 +379,10 @@ public class Observable<T> {
         });
     }
 
+    public Subscription subscribe(final Object onNext, final Object onError, Scheduler scheduler) {
+        return subscribeOn(scheduler).subscribe(onNext, onError);
+    }
+
     public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError) {
 
         /**
@@ -362,6 +411,10 @@ public class Observable<T> {
             }
 
         });
+    }
+
+    public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError, Scheduler scheduler) {
+        return subscribeOn(scheduler).subscribe(onNext, onError);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -399,6 +452,10 @@ public class Observable<T> {
         });
     }
 
+    public Subscription subscribe(final Object onNext, final Object onError, final Object onComplete, Scheduler scheduler) {
+        return subscribeOn(scheduler).subscribe(onNext, onError, onComplete);
+    }
+
     public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError, final Action0 onComplete) {
 
         /**
@@ -427,6 +484,10 @@ public class Observable<T> {
             }
 
         });
+    }
+
+    public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError, final Action0 onComplete, Scheduler scheduler) {
+        return subscribeOn(scheduler).subscribe(onNext, onError, onComplete);
     }
 
     /**
@@ -829,6 +890,36 @@ public class Observable<T> {
      */
     public static Observable<Integer> range(int start, int count) {
         return from(Range.createWithCount(start, count));
+    }
+
+    /**
+     * Asynchronously subscribes and unsubscribes observers on the specified scheduler.
+     * 
+     * @param source
+     *            the source observable.
+     * @param scheduler
+     *            the scheduler to perform subscription and unsubscription actions on.
+     * @param <T>
+     *            the type of observable.
+     * @return the source sequence whose subscriptions and unsubscriptions happen on the specified scheduler.
+     */
+    public static <T> Observable<T> subscribeOn(Observable<T> source, Scheduler scheduler) {
+        return create(OperationSubscribeOn.subscribeOn(source, scheduler));
+    }
+
+    /**
+     * Asynchronously notify observers on the specified scheduler.
+     * 
+     * @param source
+     *            the source observable.
+     * @param scheduler
+     *            the scheduler to notify observers on.
+     * @param <T>
+     *            the type of observable.
+     * @return the source sequence whose observations happen on the specified scheduler.
+     */
+    public static <T> Observable<T> observeOn(Observable<T> source, Scheduler scheduler) {
+        return create(OperationObserveOn.observeOn(source, scheduler));
     }
 
     /**
@@ -1242,7 +1333,7 @@ public class Observable<T> {
      * @return an Observable that emits the same objects, then calls the action.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN: Observable.Finally Method</a>
      */
-    public static <T> Observable<T> finallyDo(Observable source, Action0 action) {
+    public static <T> Observable<T> finallyDo(Observable<T> source, Action0 action) {
         return create(OperationFinally.finallyDo(source, action));
     }
 
@@ -1756,6 +1847,7 @@ public class Observable<T> {
      * @return true if all elements of an observable sequence satisfies a condition; otherwise, false.
      */
     public static <T> Observable<Boolean> all(final Observable<T> sequence, Object predicate) {
+        @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(predicate);
 
         return all(sequence, new Func1<T, Boolean>() {
@@ -2150,7 +2242,7 @@ public class Observable<T> {
      * 
      * @param future
      *            the source {@link Future}
-     * @param time
+     * @param timeout
      *            the maximum time to wait
      * @param unit
      *            the time unit of the time argument
@@ -2159,8 +2251,8 @@ public class Observable<T> {
      *            Observable
      * @return an Observable that emits the item from the source Future
      */
-    public static <T> Observable<T> toObservable(Future<T> future, long time, TimeUnit unit) {
-        return create(OperationToObservableFuture.toObservableFuture(future, time, unit));
+    public static <T> Observable<T> toObservable(Future<T> future, long timeout, TimeUnit unit) {
+        return create(OperationToObservableFuture.toObservableFuture(future, timeout, unit));
     }
 
     /**
@@ -2734,6 +2826,28 @@ public class Observable<T> {
      */
     public Observable<Notification<T>> materialize() {
         return materialize(this);
+    }
+
+    /**
+     * Asynchronously subscribes and unsubscribes observers on the specified scheduler.
+     * 
+     * @param scheduler
+     *            the scheduler to perform subscription and unsubscription actions on.
+     * @return the source sequence whose subscriptions and unsubscriptions happen on the specified scheduler.
+     */
+    public Observable<T> subscribeOn(Scheduler scheduler) {
+        return subscribeOn(this, scheduler);
+    }
+
+    /**
+     * Asynchronously notify observers on the specified scheduler.
+     * 
+     * @param scheduler
+     *            the scheduler to notify observers on.
+     * @return the source sequence whose observations happen on the specified scheduler.
+     */
+    public Observable<T> observeOn(Scheduler scheduler) {
+        return observeOn(this, scheduler);
     }
 
     /**
@@ -3656,6 +3770,7 @@ public class Observable<T> {
             Observable<Integer> obs = Observable.just(1);
             Observable<Integer> chained = obs.materialize().dematerialize();
 
+            @SuppressWarnings("unchecked")
             Observer<Integer> observer = mock(Observer.class);
             chained.subscribe(observer);
 
