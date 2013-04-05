@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -12,8 +13,11 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
+import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 /**
@@ -41,6 +45,16 @@ import rx.util.functions.Func1;
                     return source.call(new TestingObserver<T>(observer));
                 }
             };
+        }
+
+        /**
+         * Used for mocking of Schedulers since many Scheduler implementations are static/final.
+         * 
+         * @param underlying
+         * @return
+         */
+        public static Scheduler forwardingScheduler(Scheduler underlying) {
+            return new ForwardingScheduler(underlying);
         }
 
         public static class TestingObserver<T> implements Observer<T> {
@@ -255,6 +269,39 @@ import rx.util.functions.Func1;
                     Thread.sleep(10);
                 } catch (InterruptedException ignored) {
                 }
+            }
+        }
+
+        public static class ForwardingScheduler implements Scheduler {
+            private final Scheduler underlying;
+
+            public ForwardingScheduler(Scheduler underlying) {
+                this.underlying = underlying;
+            }
+
+            @Override
+            public Subscription schedule(Action0 action) {
+                return underlying.schedule(action);
+            }
+
+            @Override
+            public Subscription schedule(Func0<Subscription> action) {
+                return underlying.schedule(action);
+            }
+
+            @Override
+            public Subscription schedule(Action0 action, long dueTime, TimeUnit unit) {
+                return underlying.schedule(action, dueTime, unit);
+            }
+
+            @Override
+            public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
+                return underlying.schedule(action, dueTime, unit);
+            }
+
+            @Override
+            public long now() {
+                return underlying.now();
             }
         }
     }
