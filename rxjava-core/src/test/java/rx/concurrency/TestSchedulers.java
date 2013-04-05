@@ -17,11 +17,17 @@ package rx.concurrency;
 
 import static org.junit.Assert.*;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
@@ -181,7 +187,7 @@ public class TestSchedulers {
     }
 
     @Test
-    public void testSubscribeWithScheduler1() {
+    public void testSubscribeWithScheduler1() throws InterruptedException {
 
         final AtomicInteger count = new AtomicInteger();
 
@@ -204,16 +210,39 @@ public class TestSchedulers {
 
         // now we'll subscribe with a scheduler and it should be async
 
+        final String currentThreadName = Thread.currentThread().getName();
+
+        // latches for deterministically controlling the test below across threads
+        final CountDownLatch latch = new CountDownLatch(5);
+        final CountDownLatch first = new CountDownLatch(1);
+
         o1.subscribe(new Action1<Integer>() {
 
             @Override
             public void call(Integer t) {
+                try {
+                    // we block the first one so we can assert this executes asynchronously with a count
+                    first.await(1000, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException("The latch should have released if we are async.", e);
+                }
+                assertFalse(Thread.currentThread().getName().equals(currentThreadName));
+                assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
                 System.out.println("Thread: " + Thread.currentThread().getName());
                 System.out.println("t: " + t);
                 count.incrementAndGet();
+                latch.countDown();
             }
         }, Schedulers.threadPoolForComputation());
 
+        // assert we are async
         assertEquals(0, count.get());
+        // release the latch so it can go forward
+        first.countDown();
+
+        // wait for all 5 responses
+        latch.await();
+        assertEquals(5, count.get());
     }
+
 }
