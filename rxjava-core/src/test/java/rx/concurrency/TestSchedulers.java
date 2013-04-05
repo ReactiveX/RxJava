@@ -245,4 +245,72 @@ public class TestSchedulers {
         assertEquals(5, count.get());
     }
 
+    @Test
+    public void testMixedSchedulers() throws InterruptedException {
+        final String mainThreadName = Thread.currentThread().getName();
+
+        Observable<String> o = Observable.<String> create(new Func1<Observer<String>, Subscription>() {
+
+            @Override
+            public Subscription call(Observer<String> observer) {
+
+                System.out.println("Origin observable is running on: " + Thread.currentThread().getName());
+
+                assertFalse(Thread.currentThread().getName().equals(mainThreadName));
+                assertTrue("Actually: " + Thread.currentThread().getName(), Thread.currentThread().getName().startsWith("RxIOThreadPool"));
+
+                observer.onNext("one");
+                observer.onNext("two");
+                observer.onNext("three");
+                observer.onCompleted();
+
+                return Subscriptions.empty();
+            }
+        }).subscribeOn(Schedulers.threadPoolForIO()); // subscribe to the source on the IO thread pool
+
+        // now merge on the CPU threadpool
+        o = Observable.<String> merge(o, Observable.<String> from("four", "five"))
+                .subscribeOn(Schedulers.threadPoolForComputation())
+                .map(new Func1<String, String>() {
+
+                    @Override
+                    public String call(String v) {
+                        // opportunity to see what thread the merge is running on
+                        System.out.println("Merge is running on: " + Thread.currentThread().getName());
+                        return v;
+                    }
+
+                });
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        final AtomicReference<RuntimeException> onError = new AtomicReference<RuntimeException>();
+
+        // subscribe on a new thread
+        o.subscribe(new Observer<String>() {
+
+            @Override
+            public void onCompleted() {
+                System.out.println("==> received onCompleted");
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                System.out.println("==> received onError: " + e.getMessage());
+                onError.set((RuntimeException) e);
+                latch.countDown();
+            }
+
+            @Override
+            public void onNext(String v) {
+                System.out.println("==> Final subscribe is running on: " + Thread.currentThread().getName());
+                System.out.println("==> onNext: " + v);
+
+            }
+        }, Schedulers.newThread());
+
+        // wait for the above to finish or blow up if it's blocked
+        latch.await(5, TimeUnit.SECONDS);
+    }
 }
