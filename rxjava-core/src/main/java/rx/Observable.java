@@ -49,11 +49,13 @@ import rx.operators.OperationMerge;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMostRecent;
 import rx.operators.OperationNext;
+import rx.operators.OperationObserveOn;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
+import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSynchronize;
 import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
@@ -832,6 +834,36 @@ public class Observable<T> {
     }
 
     /**
+     * Asynchronously subscribes and unsubscribes observers on the specified scheduler.
+     * 
+     * @param source
+     *            the source observable.
+     * @param scheduler
+     *            the scheduler to perform subscription and unsubscription actions on.
+     * @param <T>
+     *            the type of observable.
+     * @return the source sequence whose subscriptions and unsubscriptions happen on the specified scheduler.
+     */
+    public static <T> Observable<T> subscribeOn(Observable<T> source, Scheduler scheduler) {
+        return create(OperationSubscribeOn.subscribeOn(source, scheduler));
+    }
+
+    /**
+     * Asynchronously notify observers on the specified scheduler.
+     * 
+     * @param source
+     *            the source observable.
+     * @param scheduler
+     *            the scheduler to notify observers on.
+     * @param <T>
+     *            the type of observable.
+     * @return the source sequence whose observations happen on the specified scheduler.
+     */
+    public static <T> Observable<T> observeOn(Observable<T> source, Scheduler scheduler) {
+        return create(OperationObserveOn.observeOn(source, scheduler));
+    }
+
+    /**
      * Returns an observable sequence that invokes the observable factory whenever a new observer subscribes.
      * The Defer operator allows you to defer or delay the creation of the sequence until the time when an observer
      * subscribes to the sequence. This is useful to allow an observer to easily obtain an updates or refreshed version
@@ -1242,7 +1274,7 @@ public class Observable<T> {
      * @return an Observable that emits the same objects, then calls the action.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN: Observable.Finally Method</a>
      */
-    public static <T> Observable<T> finallyDo(Observable source, Action0 action) {
+    public static <T> Observable<T> finallyDo(Observable<T> source, Action0 action) {
         return create(OperationFinally.finallyDo(source, action));
     }
 
@@ -1756,6 +1788,7 @@ public class Observable<T> {
      * @return true if all elements of an observable sequence satisfies a condition; otherwise, false.
      */
     public static <T> Observable<Boolean> all(final Observable<T> sequence, Object predicate) {
+        @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(predicate);
 
         return all(sequence, new Func1<T, Boolean>() {
@@ -2737,6 +2770,28 @@ public class Observable<T> {
     }
 
     /**
+     * Asynchronously subscribes and unsubscribes observers on the specified scheduler.
+     * 
+     * @param scheduler
+     *            the scheduler to perform subscription and unsubscription actions on.
+     * @return the source sequence whose subscriptions and unsubscriptions happen on the specified scheduler.
+     */
+    public Observable<T> subscribeOn(Scheduler scheduler) {
+        return subscribeOn(this, scheduler);
+    }
+
+    /**
+     * Asynchronously notify observers on the specified scheduler.
+     * 
+     * @param scheduler
+     *            the scheduler to notify observers on.
+     * @return the source sequence whose observations happen on the specified scheduler.
+     */
+    public Observable<T> observeOn(Scheduler scheduler) {
+        return observeOn(this, scheduler);
+    }
+
+    /**
      * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
      * 
      * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
@@ -3656,6 +3711,7 @@ public class Observable<T> {
             Observable<Integer> obs = Observable.just(1);
             Observable<Integer> chained = obs.materialize().dematerialize();
 
+            @SuppressWarnings("unchecked")
             Observer<Integer> observer = mock(Observer.class);
             chained.subscribe(observer);
 
