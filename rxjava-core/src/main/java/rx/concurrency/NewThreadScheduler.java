@@ -15,11 +15,14 @@
  */
 package rx.concurrency;
 
+import java.util.concurrent.TimeUnit;
+
 import rx.Subscription;
 import rx.util.functions.Func0;
 
-import java.util.concurrent.TimeUnit;
-
+/**
+ * Schedules work on a new thread.
+ */
 public class NewThreadScheduler extends AbstractScheduler {
     private static final NewThreadScheduler INSTANCE = new NewThreadScheduler();
 

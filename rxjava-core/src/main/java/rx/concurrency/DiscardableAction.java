@@ -15,13 +15,16 @@
  */
 package rx.concurrency;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func0;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-public class DiscardableAction implements Func0<Subscription>, Subscription {
+/**
+ * Combines standard {@link Subscription#unsubscribe()} functionality with ability to skip execution if an unsubscribe occurs before the {@link #call()} method is invoked.
+ */
+/* package */class DiscardableAction implements Func0<Subscription>, Subscription {
     private final Func0<Subscription> underlying;
 
     private final AtomicObservableSubscription wrapper = new AtomicObservableSubscription();

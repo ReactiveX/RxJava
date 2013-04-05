@@ -15,18 +15,20 @@
  */
 package rx.concurrency;
 
+import static org.mockito.Mockito.*;
+
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Test;
 import org.mockito.InOrder;
+
 import rx.Subscription;
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;
 
-import java.util.concurrent.TimeUnit;
-
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-
+/**
+ * Executes work immediately on the current thread.
+ */
 public final class ImmediateScheduler extends AbstractScheduler {
     private static final ImmediateScheduler INSTANCE = new ImmediateScheduler();
 

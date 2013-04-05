@@ -15,14 +15,13 @@
  */
 package rx.concurrency;
 
-import rx.Scheduler;
-import rx.Subscription;
-import rx.util.functions.Action0;
-import rx.util.functions.Func0;
-
 import java.util.concurrent.TimeUnit;
 
-public class SleepingAction implements Func0<Subscription> {
+import rx.Scheduler;
+import rx.Subscription;
+import rx.util.functions.Func0;
+
+/* package */class SleepingAction implements Func0<Subscription> {
     private final Func0<Subscription> underlying;
     private final Scheduler scheduler;
     private final long execTime;

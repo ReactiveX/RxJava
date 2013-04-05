@@ -23,7 +23,7 @@ import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;
 
-public abstract class AbstractScheduler implements Scheduler {
+/* package */abstract class AbstractScheduler implements Scheduler {
 
     @Override
     public Subscription schedule(Action0 action) {

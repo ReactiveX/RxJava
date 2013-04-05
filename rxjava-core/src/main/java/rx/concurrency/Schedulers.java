@@ -18,49 +18,97 @@ package rx.concurrency;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Scheduler;
 
+/**
+ * Static factory methods for creating Schedulers.
+ */
 public class Schedulers {
     private static final ScheduledExecutorService COMPUTATION_EXECUTOR = createComputationExecutor();
-    private static final ScheduledExecutorService IO_EXECUTOR = createIOExecutor();
-    private static final int DEFAULT_MAX_IO_THREADS = 10;
-    private static final int DEFAULT_KEEP_ALIVE_TIME = 10 * 1000; // 10 seconds
+    private static final Executor IO_EXECUTOR = createIOExecutor();
 
     private Schedulers() {
 
     }
 
+    /**
+     * {@link Scheduler} that executes work immediately on the current thread.
+     * 
+     * @return {@link ImmediateScheduler} instance
+     */
     public static Scheduler immediate() {
         return ImmediateScheduler.getInstance();
     }
 
+    /**
+     * {@link Scheduler} that queues work on the current thread to be executed after the current work completes.
+     * 
+     * @return {@link CurrentThreadScheduler} instance
+     */
     public static Scheduler currentThread() {
         return CurrentThreadScheduler.getInstance();
     }
 
+    /**
+     * {@link Scheduler} that creates a new {@link Thread} for each unit of work.
+     * 
+     * @return {@link NewThreadScheduler} instance
+     */
     public static Scheduler newThread() {
         return NewThreadScheduler.getInstance();
     }
 
+    /**
+     * {@link Scheduler} that queues work on an {@link Executor}.
+     * <p>
+     * Note that this does not support scheduled actions with a delay.
+     * 
+     * @return {@link ExecutorScheduler} instance
+     */
     public static Scheduler executor(Executor executor) {
         return new ExecutorScheduler(executor);
     }
 
-    public static Scheduler fromScheduledExecutorService(ScheduledExecutorService executor) {
+    /**
+     * {@link Scheduler} that queues work on an {@link ScheduledExecutorService}.
+     * 
+     * @return {@link ExecutorScheduler} instance
+     */
+    public static Scheduler executor(ScheduledExecutorService executor) {
         return new ExecutorScheduler(executor);
     }
 
+    /**
+     * {@link Scheduler} intended for computational work.
+     * <p>
+     * The implementation is backed by a {@link ScheduledExecutorService} thread-pool sized to the number of CPU cores.
+     * <p>
+     * This can be used for event-loops, processing callbacks and other computational work.
+     * <p>
+     * Do not perform IO-bound work on this scheduler. Use {@link #threadPoolForComputation()} instead.
+     * 
+     * @return {@link ExecutorScheduler} for computation-bound work.
+     */
     public static Scheduler threadPoolForComputation() {
-        return fromScheduledExecutorService(COMPUTATION_EXECUTOR);
+        return executor(COMPUTATION_EXECUTOR);
     }
 
+    /**
+     * {@link Scheduler} intended for IO-bound work.
+     * <p>
+     * The implementation is backed by an {@link Executor} thread-pool that will grow as needed.
+     * <p>
+     * This can be used for asynchronously performing blocking IO.
+     * <p>
+     * Do not perform computational work on this scheduler. Use {@link #threadPoolForComputation()} instead.
+     * 
+     * @return {@link ExecutorScheduler} for IO-bound work.
+     */
     public static Scheduler threadPoolForIO() {
-        return fromScheduledExecutorService(IO_EXECUTOR);
+        return executor(IO_EXECUTOR);
     }
 
     private static ScheduledExecutorService createComputationExecutor() {
@@ -75,8 +123,8 @@ public class Schedulers {
         });
     }
 
-    private static ScheduledExecutorService createIOExecutor() {
-        ScheduledThreadPoolExecutor result = new ScheduledThreadPoolExecutor(DEFAULT_MAX_IO_THREADS, new ThreadFactory() {
+    private static Executor createIOExecutor() {
+        Executor result = Executors.newCachedThreadPool(new ThreadFactory() {
             final AtomicInteger counter = new AtomicInteger();
 
             @Override
@@ -84,9 +132,6 @@ public class Schedulers {
                 return new Thread(r, "RxIOThreadPool-" + counter.incrementAndGet());
             }
         });
-
-        result.setKeepAliveTime(DEFAULT_KEEP_ALIVE_TIME, TimeUnit.MILLISECONDS);
-        result.allowCoreThreadTimeOut(true);
 
         return result;
     }

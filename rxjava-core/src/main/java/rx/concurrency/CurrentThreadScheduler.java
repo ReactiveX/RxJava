@@ -15,18 +15,22 @@
  */
 package rx.concurrency;
 
-import org.junit.Test;
-import org.mockito.InOrder;
-import rx.Subscription;
-import rx.util.functions.Action0;
-import rx.util.functions.Func0;
+import static org.mockito.Mockito.*;
 
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+import org.mockito.InOrder;
 
+import rx.Subscription;
+import rx.util.functions.Action0;
+import rx.util.functions.Func0;
+
+/**
+ * Schedules work on the current thread but does not execute immediately. Work is put in a queue and executed after the current unit of work is completed.
+ */
 public class CurrentThreadScheduler extends AbstractScheduler {
     private static final CurrentThreadScheduler INSTANCE = new CurrentThreadScheduler();
 
