@@ -53,7 +53,9 @@ public class ExecutorScheduler extends AbstractScheduler {
 
             @Override
             public Thread newThread(Runnable r) {
-                return new Thread(r, "RxScheduledExecutorPool-" + counter.incrementAndGet());
+                Thread t = new Thread(r, "RxScheduledExecutorPool-" + counter.incrementAndGet());
+                t.setDaemon(true);
+                return t;
             }
 
         });

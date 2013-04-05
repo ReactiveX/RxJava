@@ -118,7 +118,9 @@ public class Schedulers {
 
             @Override
             public Thread newThread(Runnable r) {
-                return new Thread(r, "RxComputationThreadPool-" + counter.incrementAndGet());
+                Thread t = new Thread(r, "RxComputationThreadPool-" + counter.incrementAndGet());
+                t.setDaemon(true);
+                return t;
             }
         });
     }
@@ -129,7 +131,9 @@ public class Schedulers {
 
             @Override
             public Thread newThread(Runnable r) {
-                return new Thread(r, "RxIOThreadPool-" + counter.incrementAndGet());
+                Thread t = new Thread(r, "RxIOThreadPool-" + counter.incrementAndGet());
+                t.setDaemon(true);
+                return t;
             }
         });
 
