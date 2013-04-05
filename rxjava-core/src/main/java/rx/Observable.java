@@ -780,21 +780,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that returns no data to the {@link Observer} and immediately invokes its <code>onCompleted</code> method on the given {@link Scheduler}.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/empty.png">
-     * 
-     * @param <T>
-     *            the type of item emitted by the Observable
-     * @param {@link Scheduler} The scheduler to send the termination ({@link Observer#onCompleted()} call.
-     * @return an Observable that returns no data to the {@link Observer} and immediately invokes the {@link Observer}'s <code>onCompleted</code> method
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> Observable<T> empty(Scheduler scheduler) {
-        return (Observable<T>) empty().subscribeOn(scheduler);
-    }
-
-    /**
      * Returns an Observable that calls <code>onError</code> when an {@link Observer} subscribes to it.
      * <p>
      * 
@@ -878,22 +863,6 @@ public class Observable<T> {
     }
 
     /**
-     * Converts an {@link Iterable} sequence to an Observable sequence that is subscribed to on the given {@link Scheduler}.
-     * 
-     * @param iterable
-     *            the source {@link Iterable} sequence
-     * @param scheduler
-     *            The {@link Scheduler} that the sequence is subscribed to on.
-     * @param <T>
-     *            the type of items in the {@link Iterable} sequence and the type emitted by the resulting Observable
-     * @return an Observable that emits each item in the source {@link Iterable} sequence
-     * @see {@link #toObservable(Iterable)}
-     */
-    public static <T> Observable<T> from(Iterable<T> iterable, Scheduler scheduler) {
-        return toObservable(iterable, scheduler);
-    }
-
-    /**
      * Converts an Array to an Observable sequence.
      * 
      * @param items
@@ -905,22 +874,6 @@ public class Observable<T> {
      */
     public static <T> Observable<T> from(T... items) {
         return toObservable(items);
-    }
-
-    /**
-     * Converts an Array to an Observable sequence that is subscribed to on the given {@link Scheduler}.
-     * 
-     * @param scheduler
-     *            The {@link Scheduler} that the sequence is subscribed to on.
-     * @param items
-     *            the source Array
-     * @param <T>
-     *            the type of items in the Array, and the type of items emitted by the resulting Observable
-     * @return an Observable that emits each item in the source Array
-     * @see {@link #toObservable(Object...)}
-     */
-    public static <T> Observable<T> from(Scheduler scheduler, T... items) {
-        return toObservable(scheduler, items);
     }
 
     /**
@@ -1303,25 +1256,6 @@ public class Observable<T> {
     }
 
     /**
-     * Flattens the Observable sequences from a list of Observables into one Observable sequence
-     * without any transformation. You can combine the output of multiple Observables so that they
-     * act like a single Observable, by using the <code>merge</code> method.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
-     * 
-     * @param source
-     *            a list of Observables that emit sequences of items
-     * @param scheduler
-     *            The {@link Scheduler} that the sequence is subscribed to on.
-     * @return an Observable that emits a sequence of elements that are the result of flattening the
-     *         output from the <code>source</code> list of Observables
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge</a>
-     */
-    public static <T> Observable<T> merge(List<Observable<T>> source, Scheduler scheduler) {
-        return merge(source).subscribeOn(scheduler);
-    }
-
-    /**
      * Flattens the Observable sequences emitted by a sequence of Observables that are emitted by a
      * Observable into one Observable sequence without any transformation. You can combine the output
      * of multiple Observables so that they act like a single Observable, by using the <code>merge</code> method.
@@ -1339,25 +1273,6 @@ public class Observable<T> {
     }
 
     /**
-     * Flattens the Observable sequences emitted by a sequence of Observables that are emitted by a
-     * Observable into one Observable sequence without any transformation. You can combine the output
-     * of multiple Observables so that they act like a single Observable, by using the <code>merge</code> method.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
-     * 
-     * @param source
-     *            an Observable that emits Observables
-     * @param scheduler
-     *            The {@link Scheduler} that the sequence is subscribed to on.
-     * @return an Observable that emits a sequence of elements that are the result of flattening the
-     *         output from the Observables emitted by the <code>source</code> Observable
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
-     */
-    public static <T> Observable<T> merge(Observable<Observable<T>> source, Scheduler scheduler) {
-        return merge(source).subscribeOn(scheduler);
-    }
-
-    /**
      * Flattens the Observable sequences from a series of Observables into one Observable sequence
      * without any transformation. You can combine the output of multiple Observables so that they
      * act like a single Observable, by using the <code>merge</code> method.
@@ -1372,25 +1287,6 @@ public class Observable<T> {
      */
     public static <T> Observable<T> merge(Observable<T>... source) {
         return create(OperationMerge.merge(source));
-    }
-
-    /**
-     * Flattens the Observable sequences from a series of Observables into one Observable sequence
-     * without any transformation. You can combine the output of multiple Observables so that they
-     * act like a single Observable, by using the <code>merge</code> method.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
-     * 
-     * @param scheduler
-     *            The {@link Scheduler} that the sequence is subscribed to on.
-     * @param source
-     *            a series of Observables that emit sequences of items
-     * @return an Observable that emits a sequence of elements that are the result of flattening the
-     *         output from the <code>source</code> Observables
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
-     */
-    public static <T> Observable<T> merge(Scheduler scheduler, Observable<T>... source) {
-        return merge(source).subscribeOn(scheduler);
     }
 
     /**
@@ -2317,27 +2213,6 @@ public class Observable<T> {
     }
 
     /**
-     * Converts an Iterable sequence to an Observable sequence which is subscribed to on the given {@link Scheduler}.
-     * 
-     * Any object that supports the Iterable interface can be converted into an Observable that emits
-     * each iterable item in the object, by passing the object into the <code>toObservable</code> method.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toObservable.png">
-     * 
-     * @param iterable
-     *            the source Iterable sequence
-     * @param scheduler
-     *            The {@link Scheduler} that the sequence is subscribed to on.
-     * @param <T>
-     *            the type of items in the iterable sequence and the type emitted by the resulting
-     *            Observable
-     * @return an Observable that emits each item in the source Iterable sequence
-     */
-    public static <T> Observable<T> toObservable(Iterable<T> iterable, Scheduler scheduler) {
-        return toObservable(iterable).subscribeOn(scheduler);
-    }
-
-    /**
      * Converts an Future to an Observable sequence.
      * 
      * Any object that supports the {@link Future} interface can be converted into an Observable that emits
@@ -2354,27 +2229,6 @@ public class Observable<T> {
      */
     public static <T> Observable<T> toObservable(Future<T> future) {
         return create(OperationToObservableFuture.toObservableFuture(future));
-    }
-
-    /**
-     * Converts an Future to an Observable sequence that is subscribed to on the given {@link Scheduler}.
-     * 
-     * Any object that supports the {@link Future} interface can be converted into an Observable that emits
-     * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
-     * <p>
-     * This is blocking so the Subscription returned when calling {@link #subscribe(Observer)} does nothing.
-     * 
-     * @param future
-     *            the source {@link Future}
-     * @param scheduler
-     *            The {@link Scheduler} to wait for the future on.
-     * @param <T>
-     *            the type of of object that the future's returns and the type emitted by the resulting
-     *            Observable
-     * @return an Observable that emits the item from the source Future
-     */
-    public static <T> Observable<T> toObservable(Future<T> future, Scheduler scheduler) {
-        return toObservable(future).subscribeOn(scheduler);
     }
 
     /**
@@ -2402,32 +2256,6 @@ public class Observable<T> {
     }
 
     /**
-     * Converts an Future to an Observable sequence that is subscribed to on the given {@link Scheduler}.
-     * 
-     * Any object that supports the {@link Future} interface can be converted into an Observable that emits
-     * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
-     * The subscribe method on this synchronously so the Subscription returned doesn't nothing.
-     * <p>
-     * This is blocking so the Subscription returned when calling {@link #subscribe(Observer)} does nothing.
-     * 
-     * @param future
-     *            the source {@link Future}
-     * @param timeout
-     *            the maximum time to wait
-     * @param unit
-     *            the time unit of the time argument
-     * @param scheduler
-     *            The {@link Scheduler} to wait for the future on.
-     * @param <T>
-     *            the type of of object that the future's returns and the type emitted by the resulting
-     *            Observable
-     * @return an Observable that emits the item from the source Future
-     */
-    public static <T> Observable<T> toObservable(Future<T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
-        return toObservable(future, timeout, unit).subscribeOn(scheduler);
-    }
-
-    /**
      * Converts an Array sequence to an Observable sequence.
      * 
      * An Array can be converted into an Observable that emits each item in the Array, by passing the
@@ -2444,27 +2272,6 @@ public class Observable<T> {
      */
     public static <T> Observable<T> toObservable(T... items) {
         return toObservable(Arrays.asList(items));
-    }
-
-    /**
-     * Converts an Array sequence to an Observable sequence which is subscribed to on the given {@link Scheduler}.
-     * 
-     * An Array can be converted into an Observable that emits each item in the Array, by passing the
-     * Array into the <code>toObservable</code> method.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toObservable.png">
-     * 
-     * @param scheduler
-     *            The {@link Scheduler} that the sequence is subscribed to on.
-     * @param items
-     *            the source Array
-     * @param <T>
-     *            the type of items in the Array, and the type of items emitted by the resulting
-     *            Observable
-     * @return an Observable that emits each item in the source Array
-     */
-    public static <T> Observable<T> toObservable(Scheduler scheduler, T... items) {
-        return toObservable(items).subscribeOn(scheduler);
     }
 
     /**
