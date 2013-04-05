@@ -1256,6 +1256,25 @@ public class Observable<T> {
     }
 
     /**
+     * Flattens the Observable sequences from a list of Observables into one Observable sequence
+     * without any transformation. You can combine the output of multiple Observables so that they
+     * act like a single Observable, by using the <code>merge</code> method.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * 
+     * @param source
+     *            a list of Observables that emit sequences of items
+     * @param scheduler
+     *            The {@link Scheduler} that the sequence is subscribed to on.
+     * @return an Observable that emits a sequence of elements that are the result of flattening the
+     *         output from the <code>source</code> list of Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge</a>
+     */
+    public static <T> Observable<T> merge(List<Observable<T>> source, Scheduler scheduler) {
+        return create(OperationMerge.merge(source, scheduler));
+    }
+
+    /**
      * Flattens the Observable sequences emitted by a sequence of Observables that are emitted by a
      * Observable into one Observable sequence without any transformation. You can combine the output
      * of multiple Observables so that they act like a single Observable, by using the <code>merge</code> method.
@@ -1273,6 +1292,25 @@ public class Observable<T> {
     }
 
     /**
+     * Flattens the Observable sequences emitted by a sequence of Observables that are emitted by a
+     * Observable into one Observable sequence without any transformation. You can combine the output
+     * of multiple Observables so that they act like a single Observable, by using the <code>merge</code> method.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * 
+     * @param source
+     *            an Observable that emits Observables
+     * @param scheduler
+     *            The {@link Scheduler} that the sequence is subscribed to on.
+     * @return an Observable that emits a sequence of elements that are the result of flattening the
+     *         output from the Observables emitted by the <code>source</code> Observable
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    public static <T> Observable<T> merge(Observable<Observable<T>> source, Scheduler scheduler) {
+        return create(OperationMerge.merge(source, scheduler));
+    }
+
+    /**
      * Flattens the Observable sequences from a series of Observables into one Observable sequence
      * without any transformation. You can combine the output of multiple Observables so that they
      * act like a single Observable, by using the <code>merge</code> method.
@@ -1287,6 +1325,25 @@ public class Observable<T> {
      */
     public static <T> Observable<T> merge(Observable<T>... source) {
         return create(OperationMerge.merge(source));
+    }
+
+    /**
+     * Flattens the Observable sequences from a series of Observables into one Observable sequence
+     * without any transformation. You can combine the output of multiple Observables so that they
+     * act like a single Observable, by using the <code>merge</code> method.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * 
+     * @param scheduler
+     *            The {@link Scheduler} that the sequence is subscribed to on.
+     * @param source
+     *            a series of Observables that emit sequences of items
+     * @return an Observable that emits a sequence of elements that are the result of flattening the
+     *         output from the <code>source</code> Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    public static <T> Observable<T> merge(Scheduler scheduler, Observable<T>... source) {
+        return create(OperationMerge.merge(scheduler, source));
     }
 
     /**

@@ -34,9 +34,11 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
 import rx.util.SynchronizedObserver;
+import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 public final class OperationMerge {
@@ -60,12 +62,59 @@ public final class OperationMerge {
         };
     }
 
+    /**
+     * Flattens the observable sequences from the list of Observables into one observable sequence without any transformation.
+     * 
+     * @param source
+     *            An observable sequence of elements to project.
+     * @param scheduler
+     *            The {@link Scheduler} that the sequence is subscribed to on.
+     * @return An observable sequence whose elements are the result of flattening the output from the list of Observables.
+     * @see http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx
+     */
+    public static <T> Func1<Observer<T>, Subscription> merge(final Observable<Observable<T>> o, final Scheduler scheduler) {
+        return new Func1<Observer<T>, Subscription>() {
+
+            @Override
+            public Subscription call(final Observer<T> observer) {
+                return scheduler.schedule(new Func0<Subscription>() {
+
+                    @Override
+                    public Subscription call() {
+                        return new MergeObservable<T>(o).call(observer);
+                    }
+                });
+            }
+        };
+
+    }
+
     public static <T> Func1<Observer<T>, Subscription> merge(final Observable<T>... sequences) {
         return merge(Arrays.asList(sequences));
     }
 
+    public static <T> Func1<Observer<T>, Subscription> merge(Scheduler scheduler, final Observable<T>... sequences) {
+        return merge(Arrays.asList(sequences), scheduler);
+    }
+
     public static <T> Func1<Observer<T>, Subscription> merge(final List<Observable<T>> sequences) {
-        return merge(Observable.create(new Func1<Observer<Observable<T>>, Subscription>() {
+        /*
+         * https://github.com/Netflix/RxJava/issues/19
+         * 
+         * Schedulers.immedate() or NULL?
+         * 
+         * Right now I see no reason to add yet more layers of wrapping on the stack to pass in 'immediate' when that
+         * is what happens by default without schedulers.
+         * 
+         * In testing I see the exact same behavior with or without ... just more on the stack.
+         * 
+         * If someone has a unit test that demonstrates why we should always go via a scheduler I'll gladly change this.
+         */
+        return merge(sequences, null);
+    }
+
+    public static <T> Func1<Observer<T>, Subscription> merge(final List<Observable<T>> sequences, Scheduler scheduler) {
+        Observable<Observable<T>> o = Observable.create(new Func1<Observer<Observable<T>>, Subscription>() {
 
             private volatile boolean unsubscribed = false;
 
@@ -92,7 +141,12 @@ public final class OperationMerge {
 
                 };
             }
-        }));
+        });
+        if (scheduler == null) {
+            return merge(o);
+        } else {
+            return merge(o, scheduler);
+        }
     }
 
     /**
@@ -447,9 +501,9 @@ public final class OperationMerge {
             // so I'm unfortunately reverting to using a Thread.sleep to allow the process scheduler time
             // to make sure after o1.onNextBeingSent and o2.onNextBeingSent are hit that the following
             // onNext is invoked.
-            
+
             Thread.sleep(300);
-            
+
             try { // in try/finally so threads are released via latch countDown even if assertion fails
                 assertEquals(1, concurrentCounter.get());
             } finally {
