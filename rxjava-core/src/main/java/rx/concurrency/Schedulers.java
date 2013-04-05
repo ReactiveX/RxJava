@@ -15,10 +15,15 @@
  */
 package rx.concurrency;
 
-import rx.Scheduler;
-
-import java.util.concurrent.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import rx.Scheduler;
 
 public class Schedulers {
     private static final ScheduledExecutorService COMPUTATION_EXECUTOR = createComputationExecutor();
@@ -47,7 +52,7 @@ public class Schedulers {
     }
 
     public static Scheduler fromScheduledExecutorService(ScheduledExecutorService executor) {
-        return new ScheduledExecutorServiceScheduler(executor);
+        return new ExecutorScheduler(executor);
     }
 
     public static Scheduler threadPoolForComputation() {
