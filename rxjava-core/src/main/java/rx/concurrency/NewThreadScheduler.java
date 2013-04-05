@@ -39,7 +39,7 @@ public class NewThreadScheduler extends AbstractScheduler {
             public void run() {
                 discardableAction.call();
             }
-        });
+        }, "RxNewThreadScheduler");
 
         t.start();
 
