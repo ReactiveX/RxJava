@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Scheduler;
 
@@ -127,7 +128,7 @@ public class Schedulers {
 
     private static Executor createIOExecutor() {
         Executor result = Executors.newCachedThreadPool(new ThreadFactory() {
-            final AtomicInteger counter = new AtomicInteger();
+            final AtomicLong counter = new AtomicLong();
 
             @Override
             public Thread newThread(Runnable r) {
