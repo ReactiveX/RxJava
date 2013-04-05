@@ -1,4 +1,5 @@
 rx
+rx.concurrency
 rx.observables
 rx.plugins
 rx.subjects
