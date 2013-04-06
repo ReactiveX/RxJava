@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -125,17 +126,13 @@ public class OperationCombineLatest {
 
         private final FuncN<R> combineLatestFunction;
         private final AtomicBoolean running = new AtomicBoolean(true);
-
-        // used as an internal lock for handling the latest values and the completed state of each observer
+        
+        // Stores how many observers have already completed
+        private final AtomicInteger numCompleted = new AtomicInteger(0);
+        
+        // Used as an internal lock for handling the latest values of each observer
         private final Object lockObject = new Object();
         
-        /**
-         * Store when an observer completes.
-         * <p>
-         * Note that access to this set MUST BE SYNCHRONIZED via 'lockObject' above.
-         * */
-        private final Set<CombineObserver<R, ?>> completed = new HashSet<CombineObserver<R, ?>>();
-
         /**
          * The latest value from each observer
          * <p>
@@ -175,17 +172,14 @@ public class OperationCombineLatest {
          * @param w The observer that has completed.
          */
         <T> void complete(CombineObserver<R, T> w) {
-            synchronized(lockObject) {
-                // store that this CombineLatestObserver is completed
-                completed.add(w);
-                // if all CombineObservers are completed, we mark the whole thing as completed
-                if (completed.size() == observers.size()) {
-                    if (running.get()) {
-                        // mark ourselves as done
-                        observer.onCompleted();
-                        // just to ensure we stop processing in case we receive more onNext/complete/error calls after this
-                        running.set(false);
-                    }
+            int completed = numCompleted.incrementAndGet();
+            // if all CombineObservers are completed, we mark the whole thing as completed
+            if (completed == observers.size()) {
+                if (running.get()) {
+                    // mark ourselves as done
+                    observer.onCompleted();
+                    // just to ensure we stop processing in case we receive more onNext/complete/error calls after this
+                    running.set(false);
                 }
             }
         }
@@ -228,14 +222,12 @@ public class OperationCombineLatest {
                 // remember that this observer now has a latest value set
                 hasLatestValue.add(w);
 
-                // if all observers in the 'observers' list have a value, invoke the combineLatestFunction
-                for (CombineObserver<R, ?> rw : observers) {
-                    if (!hasLatestValue.contains(rw)) {
-                        // we don't have a value yet for each observer to combine, so we don't have a combined value yet either
-                        return;
-                    }
+                if (hasLatestValue.size() < observers.size()) {
+                  // we don't have a value yet for each observer to combine, so we don't have a combined value yet either
+                  return;
                 }
-                // if we get to here this means all the queues have data
+                
+                // if we get to here this means all the observers have a latest value
                 int i = 0;
                 for (CombineObserver<R, ?> _w : observers) {
                     argsToCombineLatest[i++] = latestValue.get(_w);
