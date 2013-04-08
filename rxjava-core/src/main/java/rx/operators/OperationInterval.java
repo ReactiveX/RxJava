@@ -18,6 +18,7 @@ package rx.operators;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -45,7 +46,7 @@ public final class OperationInterval {
      * Creates an event each time interval.
      */
     public static Func1<Observer<Long>, Subscription> interval(long interval, TimeUnit unit) {
-        return new Interval(interval, unit, Schedulers.currentThread());
+        return new Interval(interval, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
     }
 
     /**
