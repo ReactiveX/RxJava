@@ -15,20 +15,24 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.Tester.UnitTest.*;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 
+import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
-import rx.util.functions.Func0;
+import rx.concurrency.TestScheduler;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
 /**
@@ -57,6 +61,7 @@ public final class OperationInterval {
         private final Scheduler scheduler;
         
         private long currentValue;
+        private final AtomicBoolean complete = new AtomicBoolean();
 
         private Interval(long interval, TimeUnit unit, Scheduler scheduler) {
             this.interval = interval;
@@ -66,18 +71,69 @@ public final class OperationInterval {
 
         @Override
         public Subscription call(final Observer<Long> observer) {
-            return scheduler.schedule(new Func0<Subscription>() {
-                @Override
-                public Subscription call() {
+            scheduler.schedule(new IntervalAction(observer), interval, unit);
+            return Subscriptions.create(new Action0() {
+              @Override
+              public void call() {
+                complete.set(true);
+              }
+            });
+        }
+        
+        private class IntervalAction implements Action0 {
+            private final Observer<Long> observer;
+            
+            private IntervalAction(Observer<Long> observer) {
+                this.observer = observer;
+            }
+            
+            @Override
+            public void call() {
+                if (complete.get()) {
+                    observer.onCompleted();
+                } else {
                     observer.onNext(currentValue);
                     currentValue++;
-                    return Interval.this.call(observer);
+                    scheduler.schedule(this, interval, unit);
                 }
-            }, interval, unit);
+            }
         }
     }
     
     public static class UnitTest {
-        // TODO
+        private TestScheduler scheduler;
+        private Observer<Long> observer;
+        
+        @Before
+        @SuppressWarnings("unchecked") // due to mocking
+        public void before() {
+            scheduler = new TestScheduler();
+            observer = mock(Observer.class);
+        }
+        
+        @Test
+        public void testInterval() {
+            Observable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler));
+            Subscription sub = w.subscribe(observer);
+            
+            verify(observer, never()).onNext(0L);
+            verify(observer, never()).onCompleted();
+            verify(observer, never()).onError(any(Exception.class));
+            
+            scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
+
+            InOrder inOrder = inOrder(observer);
+            inOrder.verify(observer, times(1)).onNext(0L);
+            inOrder.verify(observer, times(1)).onNext(1L);
+            inOrder.verify(observer, never()).onNext(2L);
+            verify(observer, never()).onCompleted();
+            verify(observer, never()).onError(any(Exception.class));
+            
+            sub.unsubscribe();
+            scheduler.advanceTimeTo(4, TimeUnit.SECONDS);
+            verify(observer, never()).onNext(2L);
+            verify(observer, times(1)).onCompleted();
+            verify(observer, never()).onError(any(Exception.class));
+        }
     }
 }

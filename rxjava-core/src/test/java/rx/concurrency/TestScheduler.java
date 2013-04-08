@@ -35,6 +35,11 @@ public class TestScheduler extends AbstractScheduler {
             this.time = time;
             this.action = action;
         }
+        
+        @Override
+        public String toString() {
+            return String.format("TimedAction(time = %d, action = %s)", time, action.toString());
+        }
     }
     
     private static class CompareActionsByTime implements Comparator<TimedAction> {
