@@ -74,10 +74,10 @@ public final class OperationInterval {
         public Subscription call(final Observer<Long> observer) {
             scheduler.schedule(new IntervalAction(observer), interval, unit);
             return Subscriptions.create(new Action0() {
-              @Override
-              public void call() {
-                complete.set(true);
-              }
+                @Override
+                public void call() {
+                    complete.set(true);
+                }
             });
         }
         
