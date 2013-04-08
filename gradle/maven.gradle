@@ -22,12 +22,15 @@ task uploadMavenCentral(type:Upload, dependsOn: signArchives) {
                 // To test deployment locally, use the following instead of oss.sonatype.org
                 //repository(url: "file://localhost/${rootProject.rootDir}/repo")
 
+            def sonatypeUsername = rootProject.hasProperty('sonatypeUsername')?rootProject.sonatypeUsername:''
+            def sonatypePassword = rootProject.hasProperty('sonatypePassword')?rootProject.sonatypePassword:''
+
                 repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
-                    authentication(userName: rootProject.sonatypeUsername, password: rootProject.sonatypePassword)
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
                 }
 
                 snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
-                    authentication(userName: rootProject.sonatypeUsername, password: rootProject.sonatypePassword)
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
                 }
 
                 // Prevent datastamp from being appending to artifacts during deployment
