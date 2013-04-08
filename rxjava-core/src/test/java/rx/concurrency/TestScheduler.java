@@ -45,7 +45,7 @@ public class TestScheduler extends AbstractScheduler {
     private static class CompareActionsByTime implements Comparator<TimedAction> {
       @Override
       public int compare(TimedAction action1, TimedAction action2) {
-        return Long.valueOf(action1.time).compareTo(Long.valueOf(action2.time));
+          return Long.valueOf(action1.time).compareTo(Long.valueOf(action2.time));
       }
     }
     
@@ -53,13 +53,13 @@ public class TestScheduler extends AbstractScheduler {
     
     @Override
     public Subscription schedule(Func0<Subscription> action) {
-      return schedule(action, 0L, TimeUnit.NANOSECONDS);
+        return schedule(action, 0L, TimeUnit.NANOSECONDS);
     }
 
     @Override
     public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
-      queue.add(new TimedAction(now() + unit.toNanos(dueTime), action));
-      return Subscriptions.empty();
+        queue.add(new TimedAction(now() + unit.toNanos(dueTime), action));
+        return Subscriptions.empty();
     }
     
     @Override
@@ -68,7 +68,7 @@ public class TestScheduler extends AbstractScheduler {
     }
 
     public void advanceTimeBy(long dueTime, TimeUnit unit) {
-      advanceTimeTo(time + unit.toNanos(dueTime), TimeUnit.NANOSECONDS);
+        advanceTimeTo(time + unit.toNanos(dueTime), TimeUnit.NANOSECONDS);
     }
     
     public void advanceTimeTo(long dueTime, TimeUnit unit) {
