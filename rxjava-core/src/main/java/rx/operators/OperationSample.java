@@ -20,6 +20,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import static rx.operators.Tester.UnitTest.*;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -33,7 +34,6 @@ import rx.Subscription;
 import rx.concurrency.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 /**
@@ -45,28 +45,35 @@ public final class OperationSample {
      * Samples the observable sequence at each interval.
      */
     public static <T> Func1<Observer<T>, Subscription> sample(final Observable<T> source, long interval, TimeUnit unit) {
-        return new Sample<T>(source, interval, unit);
+        return new Sample<T>(source, interval, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
     }
 
+    /**
+     * Samples the observable sequence at each interval.
+     */
+    public static <T> Func1<Observer<T>, Subscription> sample(final Observable<T> source, long interval, TimeUnit unit, Scheduler scheduler) {
+        return new Sample<T>(source, interval, unit, scheduler);
+    }
     private static class Sample<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> source;
         private final long interval;
         private final TimeUnit unit;
+        private final Scheduler scheduler;
         
         private final AtomicBoolean hasValue = new AtomicBoolean();
         private final AtomicReference<T> latestValue = new AtomicReference<T>();
-        private final AtomicBoolean sourceCompleted = new AtomicBoolean();
         
-        private Sample(Observable<T> source, long interval, TimeUnit unit) {
+        private Sample(Observable<T> source, long interval, TimeUnit unit, Scheduler scheduler) {
             this.source = source;
             this.interval = interval;
             this.unit = unit;
+            this.scheduler = scheduler;
         }
 
         @Override
         public Subscription call(final Observer<T> observer) {
-            Clock clock = new Clock(Schedulers.currentThread(), interval, unit);
-            final Subscription clockSubscription = Observable.create(clock).subscribe(new Observer<Long>() {
+            Observable<Long> clock = Observable.create(OperationInterval.interval(interval, unit, scheduler));
+            final Subscription clockSubscription = clock.subscribe(new Observer<Long>() {
                 @Override
                 public void onCompleted() { /* the clock never completes */ }
                 
@@ -74,25 +81,23 @@ public final class OperationSample {
                 public void onError(Exception e) { /* the clock has no errors */ }
                 
                 @Override
-                public void onNext(Long totalTimePassed) {
+                public void onNext(@SuppressWarnings("unused") Long tick) {
                     if (hasValue.get()) {
                         observer.onNext(latestValue.get());
                     }
                 }
             });
       
-            Subscription sourceSubscription = source.subscribe(new Observer<T>() {
+            final Subscription sourceSubscription = source.subscribe(new Observer<T>() {
                 @Override
                 public void onCompleted() {
                     clockSubscription.unsubscribe();
-                    sourceCompleted.set(true);
                     observer.onCompleted();
                 }
         
                 @Override
                 public void onError(Exception e) {
                     clockSubscription.unsubscribe();
-                    sourceCompleted.set(true);
                     observer.onError(e);
                 }
         
@@ -103,41 +108,13 @@ public final class OperationSample {
                 }
             });
             
-            return clockSubscription;
-        }
-
-        private class Clock implements Func1<Observer<Long>, Subscription> {
-            private final Scheduler scheduler;
-            private final long interval;
-            private final TimeUnit unit;
-            
-            private long timePassed;
-            
-            private Clock(Scheduler scheduler, long interval, TimeUnit unit) {
-              this.scheduler = scheduler;
-              this.interval = interval;
-              this.unit = unit;
-            }
-            
-            @Override
-            public Subscription call(final Observer<Long> observer) {
-                return scheduler.schedule(new Func0<Subscription>() {
-                    @Override
-                    public Subscription call() {
-                        if (! sourceCompleted.get()) {
-                            timePassed += interval;
-                            observer.onNext(timePassed);
-                            return Clock.this.call(observer);
-                        }
-                        return Subscriptions.create(new Action0() {
-                            @Override
-                            public void call() {
-                              // TODO Auto-generated method stub
-                            }
-                        });
-                    }
-                }, interval, unit);
-            }
+            return Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    clockSubscription.unsubscribe();
+                    sourceSubscription.unsubscribe();
+                }
+            });
         }
     }
     
