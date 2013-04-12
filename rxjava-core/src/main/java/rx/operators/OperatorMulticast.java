@@ -24,8 +24,6 @@ import rx.subjects.DefaultSubject;
 import rx.subjects.Subject;
 import rx.util.functions.Func1;
 
-import javax.annotation.concurrent.GuardedBy;
-
 import static org.mockito.Mockito.*;
 
 public class OperatorMulticast {
@@ -39,7 +37,6 @@ public class OperatorMulticast {
         private final Observable<T> source;
         private final Subject<T, R> subject;
 
-        @GuardedBy("lock")
         private Subscription subscription;
 
         public MulticastConnectableObservable(Observable<T> source, final Subject<T, R> subject) {
