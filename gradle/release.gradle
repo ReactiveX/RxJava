@@ -5,7 +5,7 @@ apply plugin: 'release'
     task "${key}"(type: GradleBuild) {
         startParameter = project.gradle.startParameter.newInstance()
         doFirst {
-            startParameter.projectProperties = [status: project.status]
+            startParameter.projectProperties = [status: project.status, preferredStatus: project.status]
         }
         startParameter.addInitScript( file('gradle/netflix-oss.gradle') )
         startParameter.getExcludedTaskNames().add('check')
