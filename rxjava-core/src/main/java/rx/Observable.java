@@ -36,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.operators.OperationAll;
 import rx.operators.OperationConcat;
@@ -48,6 +49,7 @@ import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMostRecent;
+import rx.operators.OperatorMulticast;
 import rx.operators.OperationNext;
 import rx.operators.OperationObserveOn;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
@@ -72,6 +74,7 @@ import rx.operators.OperatorToIterator;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
+import rx.subjects.Subject;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.AtomicObservableSubscription;
@@ -583,6 +586,17 @@ public class Observable<T> {
             }
 
         });
+    }
+
+    /**
+     * Returns a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     *
+     * @param subject the subject to push source elements into.
+     * @param <R> result type
+     * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     */
+    public <R> ConnectableObservable<R> multicast(Subject<T, R> subject) {
+        return multicast(this, subject);
     }
 
     /**
@@ -2073,8 +2087,21 @@ public class Observable<T> {
     }
 
     /**
+     * Returns a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     *
+     * @param source the source sequence whose elements will be pushed into the specified subject.
+     * @param subject the subject to push source elements into.
+     * @param <T> source type
+     * @param <R> result type
+     * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     */
+    public static <T, R> ConnectableObservable<R> multicast(Observable<T> source, final Subject<T, R> subject) {
+        return OperatorMulticast.multicast(source, subject);
+    }
+
+    /**
      * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
-     * 
+     *
      * @param that
      *            the source Observable
      * @return The single element in the observable sequence.
