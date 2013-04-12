@@ -19,7 +19,11 @@ task forceCandidate {
     onlyIf { gradle.taskGraph.hasTask(releaseCandidate) }
     doFirst { project.status = 'candidate' }
 }
-release.dependsOn(forceCandidate)
+task forceRelease {
+    onlyIf { !gradle.taskGraph.hasTask(releaseCandidate) }
+    doFirst { project.status = 'release' }
+}
+release.dependsOn([forceCandidate, forceRelease])
 
 task uploadMavenCentral(dependsOn: subprojects.tasks.uploadMavenCentral)
 task releaseSnapshot(dependsOn: [uploadArtifactory, uploadMavenCentral])
@@ -34,8 +38,9 @@ task verifyStatus << {
 uploadArtifactory.dependsOn(verifyStatus)
 uploadMavenCentral.dependsOn(verifyStatus)
 
-// Ensure upload happens before taggging but after all pre-checks
-createReleaseTag.dependsOn([uploadArtifactory, uploadMavenCentral])
+// Ensure upload happens before taggging, hence upload failures will leave repo in a revertable state
+preTagCommit.dependsOn([uploadArtifactory, uploadMavenCentral])
+
 
 gradle.taskGraph.whenReady { taskGraph ->
     def hasRelease = taskGraph.hasTask('commitNewVersion')

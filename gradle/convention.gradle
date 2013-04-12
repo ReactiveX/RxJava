@@ -1,4 +1,5 @@
-status = version.contains('SNAPSHOT')?'snapshot':status
+// GRADLE-2087 workaround, perform after java plugin
+status = project.hasProperty('preferredStatus')?project.preferredStatus:(version.contains('SNAPSHOT')?'snapshot':'release')
 
 subprojects { project ->
     apply plugin: 'java' // Plugin as major conventions
