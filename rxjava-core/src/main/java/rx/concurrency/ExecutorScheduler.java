@@ -15,15 +15,20 @@
  */
 package rx.concurrency;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import rx.util.functions.Func0;
 
 /**
@@ -123,4 +128,30 @@ public class ExecutorScheduler extends AbstractScheduler {
 
     }
 
+    @Override
+    public Subscription schedulePeriodically(final Func0<Subscription> action, long initialDelay, long period, TimeUnit unit) {
+        final Queue<Subscription> subscriptions = new ConcurrentLinkedQueue<Subscription>();
+        if (executor instanceof ScheduledExecutorService) {
+            final ScheduledFuture<?> future = ((ScheduledExecutorService) executor).scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    subscriptions.add(action.call());
+                }
+            }, initialDelay, period, unit);
+            
+            return Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    future.cancel(false);
+                    Subscription next = subscriptions.poll();
+                    while (next != null) {
+                        next.unsubscribe();
+                        next = subscriptions.poll();
+                    }
+                }
+            });
+        }
+        // not a scheduled executor service, so we fall back to the recursive implementation
+        return super.schedulePeriodically(action, initialDelay, period, unit);
+    }
 }

@@ -102,6 +102,51 @@ public interface Scheduler {
     Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit);
 
     /**
+     * Schedules an action to be executed periodically.
+     * 
+     * @param action The action to execute periodically.
+     * @param initialDelay Time to wait before executing the action for the first time.
+     * @param period The time interval to wait each time in between executing the action.
+     * @param unit The time unit the interval above is given in.
+     * @return A subscription to be able to unsubscribe from action.
+     */
+    Subscription schedulePeriodically(Action0 action, long initialDelay, long period, TimeUnit unit);
+
+    /**
+     * Schedules a cancelable action to be executed periodically.
+     * 
+     * @param action The action to execute periodically.
+     * @param initialDelay Time to wait before executing the action for the first time.
+     * @param period The time interval to wait each time in between executing the action.
+     * @param unit The time unit the interval above is given in.
+     * @return A subscription to be able to unsubscribe from action.
+     */
+    Subscription schedulePeriodically(Func0<Subscription> action, long initialDelay, long period, TimeUnit unit);
+
+    /**
+     * Schedules a cancelable action to be executed periodically.
+     * 
+     * @param action The action to execute periodically.
+     * @param initialDelay Time to wait before executing the action for the first time.
+     * @param period The time interval to wait each time in between executing the action.
+     * @param unit The time unit the interval above is given in.
+     * @return A subscription to be able to unsubscribe from action.
+     */
+    Subscription schedulePeriodically(Func1<Scheduler, Subscription> action, long initialDelay, long period, TimeUnit unit);
+
+    /**
+     * Schedules a cancelable action to be executed periodically.
+     *
+     * @param state State to pass into the action.
+     * @param action The action to execute periodically.
+     * @param initialDelay Time to wait before executing the action for the first time.
+     * @param period The time interval to wait each time in between executing the action.
+     * @param unit The time unit the interval above is given in.
+     * @return A subscription to be able to unsubscribe from action.
+     */
+    <T> Subscription schedulePeriodically(T state, Func2<Scheduler, T, Subscription> action, long initialDelay, long period, TimeUnit unit);
+
+    /**
      * Returns the scheduler's notion of current time.
      */
     long now();
