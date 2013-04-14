@@ -91,7 +91,6 @@ public final class OperationTakeWhile {
      * @param <T>
      */
     private static class TakeWhile<T> implements Func1<Observer<T>, Subscription> {
-        private final AtomicInteger counter = new AtomicInteger();
         private final Observable<T> items;
         private final Func2<T, Integer, Boolean> predicate;
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
@@ -108,6 +107,8 @@ public final class OperationTakeWhile {
 
         private class ItemObserver implements Observer<T> {
             private final Observer<T> observer;
+
+            private final AtomicInteger counter = new AtomicInteger();
 
             public ItemObserver(Observer<T> observer) {
                 // Using AtomicObserver because the unsubscribe, onCompleted, onError and error handling behavior

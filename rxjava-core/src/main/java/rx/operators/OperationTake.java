@@ -68,7 +68,6 @@ public final class OperationTake {
      * @param <T>
      */
     private static class Take<T> implements Func1<Observer<T>, Subscription> {
-        private final AtomicInteger counter = new AtomicInteger();
         private final Observable<T> items;
         private final int num;
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
@@ -107,6 +106,8 @@ public final class OperationTake {
 
         private class ItemObserver implements Observer<T> {
             private final Observer<T> observer;
+
+            private final AtomicInteger counter = new AtomicInteger();
 
             public ItemObserver(Observer<T> observer) {
                 this.observer = observer;
