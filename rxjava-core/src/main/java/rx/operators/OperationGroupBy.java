@@ -33,7 +33,7 @@ import rx.observables.GroupedObservable;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
 
-public final class OperatorGroupBy {
+public final class OperationGroupBy {
 
     public static <K, T, R> Func1<Observer<GroupedObservable<K, R>>, Subscription> groupBy(Observable<T> source, final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
 
