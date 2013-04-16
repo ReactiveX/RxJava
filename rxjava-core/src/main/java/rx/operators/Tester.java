@@ -19,6 +19,7 @@ import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 /**
  * Common utility functions for testing operator implementations.
@@ -290,6 +291,16 @@ import rx.util.functions.Func1;
             }
 
             @Override
+            public Subscription schedule(Func1<Scheduler, Subscription> action) {
+                return underlying.schedule(action);
+            }
+
+            @Override
+            public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action) {
+                return underlying.schedule(state, action);
+            }
+
+            @Override
             public Subscription schedule(Action0 action, long dueTime, TimeUnit unit) {
                 return underlying.schedule(action, dueTime, unit);
             }
@@ -297,6 +308,16 @@ import rx.util.functions.Func1;
             @Override
             public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
                 return underlying.schedule(action, dueTime, unit);
+            }
+
+            @Override
+            public Subscription schedule(Func1<Scheduler, Subscription> action, long dueTime, TimeUnit unit) {
+                return underlying.schedule(action, dueTime, unit);
+            }
+            
+            @Override
+            public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
+                return underlying.schedule(state, action, dueTime, unit);
             }
 
             @Override
