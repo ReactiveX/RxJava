@@ -64,8 +64,6 @@ import java.util.concurrent.atomic.AtomicInteger;
         scheduler.schedule(new Action0() {
             @Override
             public void call() {
-                int count = counter.decrementAndGet();
-
                 Notification<T> not = queue.poll();
 
                 switch (not.getKind()) {
@@ -83,6 +81,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
                 }
 
+                int count = counter.decrementAndGet();
                 if (count > 0) {
                     scheduler.schedule(this);
                 }
