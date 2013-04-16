@@ -21,13 +21,14 @@ import rx.Scheduler;
 import rx.util.functions.Action0;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /* package */class ScheduledObserver<T> implements Observer<T> {
     private final Observer<T> underlying;
     private final Scheduler scheduler;
 
     private final ConcurrentLinkedQueue<Notification<T>> queue = new ConcurrentLinkedQueue<Notification<T>>();
-    private final Object lock = new Object();
+    private final AtomicInteger counter = new AtomicInteger(0);
 
     public ScheduledObserver(Observer<T> underlying, Scheduler scheduler) {
         this.underlying = underlying;
@@ -50,48 +51,43 @@ import java.util.concurrent.ConcurrentLinkedQueue;
     }
 
     private void enqueue(Notification<T> notification) {
-        boolean schedule;
-        synchronized (lock) {
-            schedule = queue.isEmpty();
+        int count = counter.getAndIncrement();
 
-            queue.offer(notification);
-        }
+        queue.offer(notification);
 
-        if (schedule) {
-            scheduler.schedule(new Action0() {
-                @Override
-                public void call() {
-                    Notification<T> not = dequeue();
-
-                    if (not == null) {
-                        return;
-                    }
-
-                    switch (not.getKind()) {
-                        case OnNext:
-                            underlying.onNext(not.getValue());
-                            break;
-                        case OnError:
-                            underlying.onError(not.getException());
-                            break;
-                        case OnCompleted:
-                            underlying.onCompleted();
-                            break;
-                        default:
-                            throw new IllegalStateException("Unknown kind of notification " + not);
-
-                    }
-
-                    scheduler.schedule(this);
-
-                }
-            });
+        if (count == 0) {
+            processQueue();
         }
     }
 
-    private Notification<T> dequeue() {
-        synchronized (lock) {
-            return queue.poll();
-        }
+    private void processQueue() {
+        scheduler.schedule(new Action0() {
+            @Override
+            public void call() {
+                int count = counter.decrementAndGet();
+
+                Notification<T> not = queue.poll();
+
+                switch (not.getKind()) {
+                    case OnNext:
+                        underlying.onNext(not.getValue());
+                        break;
+                    case OnError:
+                        underlying.onError(not.getException());
+                        break;
+                    case OnCompleted:
+                        underlying.onCompleted();
+                        break;
+                    default:
+                        throw new IllegalStateException("Unknown kind of notification " + not);
+
+                }
+
+                if (count > 0) {
+                    scheduler.schedule(this);
+                }
+
+            }
+        });
     }
 }
