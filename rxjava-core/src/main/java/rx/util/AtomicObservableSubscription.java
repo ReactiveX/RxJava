@@ -15,10 +15,14 @@
  */
 package rx.util;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.junit.Test;
+import rx.Subscription;
+
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Subscription;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Thread-safe wrapper around Observable Subscription that ensures unsubscribe can be called only once.
@@ -32,11 +36,16 @@ import rx.Subscription;
  */
 public final class AtomicObservableSubscription implements Subscription {
 
-    private AtomicReference<Subscription> actualSubscription = new AtomicReference<Subscription>();
-    private AtomicBoolean unsubscribed = new AtomicBoolean(false);
+    private static final Subscription UNSUBSCRIBED = new Subscription()
+    {
+        @Override
+        public void unsubscribe()
+        {
+        }
+    };
+    private final AtomicReference<Subscription> actualSubscription = new AtomicReference<Subscription>();
 
     public AtomicObservableSubscription() {
-
     }
 
     public AtomicObservableSubscription(Subscription actualSubscription) {
@@ -46,12 +55,16 @@ public final class AtomicObservableSubscription implements Subscription {
     /**
      * Wraps the actual subscription once it exists (if it wasn't available when constructed)
      * 
-     * @param actualSubscription
+     * @param actualSubscription the wrapped subscription
      * @throws IllegalStateException
      *             if trying to set more than once (or use this method after setting via constructor)
      */
     public AtomicObservableSubscription wrap(Subscription actualSubscription) {
         if (!this.actualSubscription.compareAndSet(null, actualSubscription)) {
+            if (this.actualSubscription.get() == UNSUBSCRIBED) {
+                actualSubscription.unsubscribe();
+                return this;
+            }
             throw new IllegalStateException("Can not set subscription more than once.");
         }
         return this;
@@ -60,15 +73,25 @@ public final class AtomicObservableSubscription implements Subscription {
     @Override
     public void unsubscribe() {
         // get the real thing and set to null in an atomic operation so we will only ever call unsubscribe once
-        Subscription actual = actualSubscription.getAndSet(null);
+        Subscription actual = actualSubscription.getAndSet(UNSUBSCRIBED);
         // if it's not null we will unsubscribe
         if (actual != null) {
             actual.unsubscribe();
-            unsubscribed.set(true);
         }
     }
 
     public boolean isUnsubscribed() {
-        return unsubscribed.get();
+        return actualSubscription.get() == UNSUBSCRIBED;
+    }
+
+    public static class UnitTest {
+        @Test
+        public void testWrapAfterUnsubscribe() {
+            AtomicObservableSubscription atomicObservableSubscription = new AtomicObservableSubscription();
+            atomicObservableSubscription.unsubscribe();
+            Subscription innerSubscription = mock(Subscription.class);
+            atomicObservableSubscription.wrap(innerSubscription);
+            verify(innerSubscription, times(1)).unsubscribe();
+        }
     }
 }
