@@ -19,12 +19,31 @@ import java.util.concurrent.TimeUnit;
 
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;
+import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 /**
  * Represents an object that schedules units of work.
  */
 public interface Scheduler {
 
+    /**
+     * Schedules a cancelable action to be executed.
+     * 
+     * @param state State to pass into the action.
+     * @param action Action to schedule.
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action);
+
+    /**
+     * Schedules a cancelable action to be executed.
+     * 
+     * @param action Action to schedule.
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    Subscription schedule(Func1<Scheduler, Subscription> action);
+    
     /**
      * Schedules a cancelable action to be executed.
      * 
@@ -43,6 +62,27 @@ public interface Scheduler {
      */
     Subscription schedule(Action0 action);
 
+    /**
+     * Schedules a cancelable action to be executed in dueTime.
+     * 
+     * @param state State to pass into the action.
+     * @param action Action to schedule.
+     * @param dueTime Time the action is due for executing.
+     * @param unit Time unit of the due time.
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit);
+
+    /**
+     * Schedules a cancelable action to be executed in dueTime.
+     * 
+     * @param action Action to schedule.
+     * @param dueTime Time the action is due for executing.
+     * @param unit Time unit of the due time.
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    Subscription schedule(Func1<Scheduler, Subscription> action, long dueTime, TimeUnit unit);
+    
     /**
      * Schedules an action to be executed in dueTime.
      * 

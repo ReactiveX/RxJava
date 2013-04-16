@@ -22,6 +22,8 @@ import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;
+import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 /* package */abstract class AbstractScheduler implements Scheduler {
 
@@ -31,10 +33,50 @@ import rx.util.functions.Func0;
     }
 
     @Override
+    public Subscription schedule(final Func1<Scheduler, Subscription> action) {
+        return schedule(new Func0<Subscription>() {
+            @Override
+            public Subscription call() {
+                return action.call(AbstractScheduler.this);
+            }
+        });
+    }
+
+    @Override
+    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action) {
+      return schedule(new Func0<Subscription>() {
+          @Override
+          public Subscription call() {
+              return action.call(AbstractScheduler.this, state);
+          }
+      });
+    }
+
+    @Override
     public Subscription schedule(Action0 action, long dueTime, TimeUnit unit) {
         return schedule(asFunc0(action), dueTime, unit);
     }
 
+    @Override
+    public Subscription schedule(final Func1<Scheduler, Subscription> action, long dueTime, TimeUnit unit) {
+      return schedule(new Func0<Subscription>() {
+          @Override
+          public Subscription call() {
+              return action.call(AbstractScheduler.this);
+          }
+    }, dueTime, unit);
+    }
+
+    @Override
+    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
+        return schedule(new Func0<Subscription>() {
+            @Override
+            public Subscription call() {
+                return action.call(AbstractScheduler.this, state);
+            }
+        }, dueTime, unit);
+    }
+    
     @Override
     public long now() {
         return System.nanoTime();
