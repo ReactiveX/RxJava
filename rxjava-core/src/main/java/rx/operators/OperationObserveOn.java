@@ -69,7 +69,7 @@ public class OperationObserveOn {
 
         @Test
         @SuppressWarnings("unchecked")
-        public void testOrdering() {
+        public void testOrdering() throws InterruptedException {
             Observable<String> obs = Observable.from("one", null, "two", "three", "four");
 
             Observer<String> observer = mock(Observer.class);
@@ -77,6 +77,9 @@ public class OperationObserveOn {
             InOrder inOrder = inOrder(observer);
 
             obs.observeOn(Schedulers.threadPoolForComputation()).subscribe(observer);
+
+            Thread.sleep(500); // !!! not a true unit test
+
             inOrder.verify(observer, times(1)).onNext("one");
             inOrder.verify(observer, times(1)).onNext(null);
             inOrder.verify(observer, times(1)).onNext("two");
