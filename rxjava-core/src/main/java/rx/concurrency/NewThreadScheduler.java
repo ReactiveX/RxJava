@@ -28,7 +28,7 @@ import rx.util.functions.Func2;
 /**
  * Schedules work on a new thread.
  */
-public class NewThreadScheduler extends AbstractScheduler {
+public class NewThreadScheduler extends Scheduler {
     private static final NewThreadScheduler INSTANCE = new NewThreadScheduler();
 
     public static NewThreadScheduler getInstance() {

@@ -30,7 +30,7 @@ import rx.util.functions.Func2;
 /**
  * Executes work immediately on the current thread.
  */
-public final class ImmediateScheduler extends AbstractScheduler {
+public final class ImmediateScheduler extends Scheduler {
     private static final ImmediateScheduler INSTANCE = new ImmediateScheduler();
 
     public static ImmediateScheduler getInstance() {

@@ -32,7 +32,7 @@ import rx.util.functions.Func2;
 /**
  * Schedules work on the current thread but does not execute immediately. Work is put in a queue and executed after the current unit of work is completed.
  */
-public class CurrentThreadScheduler extends AbstractScheduler {
+public class CurrentThreadScheduler extends Scheduler {
     private static final CurrentThreadScheduler INSTANCE = new CurrentThreadScheduler();
 
     public static CurrentThreadScheduler getInstance() {

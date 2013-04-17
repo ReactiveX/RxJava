@@ -33,7 +33,7 @@ import rx.util.functions.Func2;
  * <p>
  * Note that if an {@link Executor} implementation is used instead of {@link ScheduledExecutorService} then a system-wide Timer will be used to handle delayed events.
  */
-public class ExecutorScheduler extends AbstractScheduler {
+public class ExecutorScheduler extends Scheduler {
     private final Executor executor;
 
     public ExecutorScheduler(Executor executor) {

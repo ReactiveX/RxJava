@@ -273,7 +273,7 @@ import rx.util.functions.Func2;
             }
         }
 
-        public static class ForwardingScheduler implements Scheduler {
+        public static class ForwardingScheduler extends Scheduler {
             private final Scheduler underlying;
 
             public ForwardingScheduler(Scheduler underlying) {
