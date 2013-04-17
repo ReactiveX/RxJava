@@ -25,71 +25,90 @@ import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
-/* package */abstract class AbstractScheduler implements Scheduler {
+/**
+ * Default implementations of various convenience overload methods on the Scheduler.
+ * <p>
+ * The methods left to implement are:
+ * <ul>
+ * <li>{@code <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit)}</li>
+ * <li>{@code <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action)}</li>
+ * </ul>
+ * <p>
+ * This is a utility class expected to be used by all {@link Scheduler} implementations since we can't yet rely on Java 8 default methods on the {@link Scheduler}.
+ */
+public abstract class AbstractScheduler implements Scheduler {
 
     @Override
-    public Subscription schedule(Action0 action) {
-        return schedule(asFunc0(action));
-    }
+    public Subscription schedule(final Action0 action) {
+        return schedule(null, new Func2<Scheduler, Void, Subscription>() {
 
-    @Override
-    public Subscription schedule(final Func1<Scheduler, Subscription> action) {
-        return schedule(new Func0<Subscription>() {
             @Override
-            public Subscription call() {
-                return action.call(AbstractScheduler.this);
+            public Subscription call(Scheduler scheduler, Void t2) {
+                action.call();
+                return Subscriptions.empty();
             }
         });
     }
 
     @Override
-    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action) {
-      return schedule(new Func0<Subscription>() {
-          @Override
-          public Subscription call() {
-              return action.call(AbstractScheduler.this, state);
-          }
-      });
-    }
+    public Subscription schedule(final Func1<Scheduler, Subscription> action) {
+        return schedule(null, new Func2<Scheduler, Void, Subscription>() {
 
-    @Override
-    public Subscription schedule(Action0 action, long dueTime, TimeUnit unit) {
-        return schedule(asFunc0(action), dueTime, unit);
-    }
-
-    @Override
-    public Subscription schedule(final Func1<Scheduler, Subscription> action, long dueTime, TimeUnit unit) {
-      return schedule(new Func0<Subscription>() {
-          @Override
-          public Subscription call() {
-              return action.call(AbstractScheduler.this);
-          }
-    }, dueTime, unit);
-    }
-
-    @Override
-    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
-        return schedule(new Func0<Subscription>() {
             @Override
-            public Subscription call() {
-                return action.call(AbstractScheduler.this, state);
+            public Subscription call(Scheduler scheduler, Void t2) {
+                return action.call(scheduler);
             }
-        }, dueTime, unit);
-    }
-    
-    @Override
-    public long now() {
-        return System.nanoTime();
+        });
     }
 
-    private static Func0<Subscription> asFunc0(final Action0 action) {
-        return new Func0<Subscription>() {
+    @Override
+    public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
+        return schedule(null, new Func2<Scheduler, Void, Subscription>() {
+
             @Override
-            public Subscription call() {
+            public Subscription call(Scheduler scheduler, Void t2) {
                 action.call();
                 return Subscriptions.empty();
             }
-        };
+        }, delayTime, unit);
+    }
+
+    @Override
+    public Subscription schedule(final Func1<Scheduler, Subscription> action, long delayTime, TimeUnit unit) {
+        return schedule(null, new Func2<Scheduler, Void, Subscription>() {
+
+            @Override
+            public Subscription call(Scheduler scheduler, Void t2) {
+                return action.call(scheduler);
+            }
+        }, delayTime, unit);
+    }
+
+    @Override
+    public Subscription schedule(final Func0<Subscription> action) {
+        return schedule(null, new Func2<Scheduler, Void, Subscription>() {
+
+            @Override
+            public Subscription call(Scheduler scheduler, Void t2) {
+                return action.call();
+            }
+        });
+    }
+
+    @Override
+    public Subscription schedule(final Func0<Subscription> action, long delayTime, TimeUnit unit) {
+        return schedule(null, new Func2<Scheduler, Void, Subscription>() {
+
+            @Override
+            public Subscription call(Scheduler scheduler, Void t2) {
+                return action.call();
+            }
+        }, delayTime, unit);
+    }
+
+    @Override
+    public long now() {
+        return System.nanoTime();
     }
 
 }

@@ -22,9 +22,10 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.Scheduler;
 import rx.Subscription;
 import rx.util.functions.Action0;
-import rx.util.functions.Func0;
+import rx.util.functions.Func2;
 
 /**
  * Executes work immediately on the current thread.
@@ -40,13 +41,14 @@ public final class ImmediateScheduler extends AbstractScheduler {
     }
 
     @Override
-    public Subscription schedule(Func0<Subscription> action) {
-        return action.call();
+    public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action) {
+        return action.call(this, state);
     }
 
     @Override
-    public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
-        return schedule(new SleepingAction(action, this, dueTime, unit));
+    public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
+        // since we are executing immediately on this thread we must cause this thread to sleep
+        return schedule(state, new SleepingAction<T>(action, this, dueTime, unit));
     }
 
     public static class UnitTest {

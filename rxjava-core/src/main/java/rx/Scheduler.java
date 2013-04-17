@@ -30,20 +30,38 @@ public interface Scheduler {
     /**
      * Schedules a cancelable action to be executed.
      * 
-     * @param state State to pass into the action.
-     * @param action Action to schedule.
+     * @param state
+     *            State to pass into the action.
+     * @param action
+     *            Action to schedule.
      * @return a subscription to be able to unsubscribe from action.
      */
     <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action);
 
     /**
+     * Schedules a cancelable action to be executed in delayTime.
+     * 
+     * @param state
+     *            State to pass into the action.
+     * @param action
+     *            Action to schedule.
+     * @param delayTime
+     *            Time the action is to be delayed before executing.
+     * @param unit
+     *            Time unit of the delay time.
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit);
+
+    /**
      * Schedules a cancelable action to be executed.
      * 
-     * @param action Action to schedule.
+     * @param action
+     *            Action to schedule.
      * @return a subscription to be able to unsubscribe from action.
      */
     Subscription schedule(Func1<Scheduler, Subscription> action);
-    
+
     /**
      * Schedules a cancelable action to be executed.
      * 
@@ -63,43 +81,35 @@ public interface Scheduler {
     Subscription schedule(Action0 action);
 
     /**
-     * Schedules a cancelable action to be executed in dueTime.
+     * Schedules a cancelable action to be executed in delayTime.
      * 
-     * @param state State to pass into the action.
-     * @param action Action to schedule.
-     * @param dueTime Time the action is due for executing.
-     * @param unit Time unit of the due time.
+     * @param action
+     *            Action to schedule.
+     * @param delayTime
+     *            Time the action is to be delayed before executing.
+     * @param unit
+     *            Time unit of the delay time.
      * @return a subscription to be able to unsubscribe from action.
      */
-    <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit);
+    Subscription schedule(Func1<Scheduler, Subscription> action, long delayTime, TimeUnit unit);
 
     /**
-     * Schedules a cancelable action to be executed in dueTime.
-     * 
-     * @param action Action to schedule.
-     * @param dueTime Time the action is due for executing.
-     * @param unit Time unit of the due time.
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    Subscription schedule(Func1<Scheduler, Subscription> action, long dueTime, TimeUnit unit);
-    
-    /**
-     * Schedules an action to be executed in dueTime.
+     * Schedules an action to be executed in delayTime.
      * 
      * @param action
      *            action
      * @return a subscription to be able to unsubscribe from action.
      */
-    Subscription schedule(Action0 action, long dueTime, TimeUnit unit);
+    Subscription schedule(Action0 action, long delayTime, TimeUnit unit);
 
     /**
-     * Schedules a cancelable action to be executed in dueTime.
+     * Schedules a cancelable action to be executed in delayTime.
      * 
      * @param action
      *            action
      * @return a subscription to be able to unsubscribe from action.
      */
-    Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit);
+    Subscription schedule(Func0<Subscription> action, long delayTime, TimeUnit unit);
 
     /**
      * Returns the scheduler's notion of current time.
