@@ -15,6 +15,7 @@
  */
 package rx;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import rx.subscriptions.Subscriptions;
@@ -37,7 +38,8 @@ import rx.util.functions.Func2;
  * <ol>
  * <li>Java doesn't support extension methods and there are many overload methods needing default implementations.</li>
  * <li>Virtual extension methods aren't available until Java8 which RxJava will not set as a minimum target for a long time.</li>
- * <li>If only an interface were used Scheduler implementations would then need to extend from an AbstractScheduler pair that gives all of the functionality unless they intend on copy/pasting the functionality.</li>
+ * <li>If only an interface were used Scheduler implementations would then need to extend from an AbstractScheduler pair that gives all of the functionality unless they intend on copy/pasting the
+ * functionality.</li>
  * <li>Without virtual extension methods even additive changes are breaking and thus severely impede library maintenance.</li>
  * </ol>
  */
@@ -68,6 +70,27 @@ public abstract class Scheduler {
      * @return a subscription to be able to unsubscribe from action.
      */
     public abstract <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit);
+
+    /**
+     * Schedules a cancelable action to be executed at dueTime.
+     * 
+     * @param state
+     *            State to pass into the action.
+     * @param action
+     *            Action to schedule.
+     * @param dueTime
+     *            Time the action is to be executed. If in the past it will be executed immediately.
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, Date dueTime) {
+        long scheduledTime = dueTime.getTime();
+        long timeInFuture = scheduledTime - now();
+        if (timeInFuture <= 0) {
+            return schedule(state, action);
+        } else {
+            return schedule(state, action, timeInFuture, TimeUnit.MILLISECONDS);
+        }
+    }
 
     /**
      * Schedules a cancelable action to be executed.

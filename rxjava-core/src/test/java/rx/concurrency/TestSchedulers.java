@@ -18,6 +18,7 @@ package rx.concurrency;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -357,6 +358,41 @@ public class TestSchedulers {
 
         assertEquals(10, count.get()); // wondering if this could be 11 in a race condition (which would be okay due to how unsubscribe works ... just it would make this test non-deterministic)
         assertTrue(completed.get());
+    }
+
+    @Test
+    public void testSchedulingWithDueTime() throws InterruptedException {
+
+        final CountDownLatch latch = new CountDownLatch(5);
+        final AtomicInteger counter = new AtomicInteger();
+
+        long start = System.currentTimeMillis();
+
+        Schedulers.threadPoolForComputation().schedule(null, new Func2<Scheduler, String, Subscription>() {
+
+            @Override
+            public Subscription call(Scheduler scheduler, String state) {
+                System.out.println("doing work");
+                latch.countDown();
+                counter.incrementAndGet();
+                if (latch.getCount() == 0) {
+                    return Subscriptions.empty();
+                } else {
+                    return scheduler.schedule(state, this, new Date(System.currentTimeMillis() + 50));
+                }
+            }
+        }, new Date(System.currentTimeMillis() + 100));
+
+        if (!latch.await(3000, TimeUnit.MILLISECONDS)) {
+            fail("didn't execute ... timed out");
+        }
+
+        long end = System.currentTimeMillis();
+
+        assertEquals(5, counter.get());
+        if ((end - start) < 250) {
+            fail("it should have taken over 250ms since each step was scheduled 50ms in the future");
+        }
     }
 
 }
