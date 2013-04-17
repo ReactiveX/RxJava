@@ -29,14 +29,18 @@ import rx.util.functions.Func0;
     public SleepingAction(Func0<Subscription> underlying, Scheduler scheduler, long timespan, TimeUnit timeUnit) {
         this.underlying = underlying;
         this.scheduler = scheduler;
-        this.execTime = scheduler.now() + timeUnit.toMillis(timespan);
+        this.execTime = scheduler.now() + timeUnit.toNanos(timespan);
     }
 
     @Override
     public Subscription call() {
-        if (execTime < scheduler.now()) {
+        if (execTime > scheduler.now()) {
             try {
-                Thread.sleep(scheduler.now() - execTime);
+                long nanos = execTime - scheduler.now();
+                long milis = nanos / 1000000;
+                if (milis > 0) {
+                    Thread.sleep(milis);
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
