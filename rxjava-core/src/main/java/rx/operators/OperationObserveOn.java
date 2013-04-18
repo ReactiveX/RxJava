@@ -15,12 +15,17 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.Test;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
+import org.junit.Test;
 import org.mockito.InOrder;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
@@ -66,7 +71,6 @@ public class OperationObserveOn {
             verify(observer, times(1)).onCompleted();
         }
 
-
         @Test
         @SuppressWarnings("unchecked")
         public void testOrdering() throws InterruptedException {
@@ -76,9 +80,21 @@ public class OperationObserveOn {
 
             InOrder inOrder = inOrder(observer);
 
+            final CountDownLatch completedLatch = new CountDownLatch(1);
+            doAnswer(new Answer<Void>() {
+
+                @Override
+                public Void answer(InvocationOnMock invocation) throws Throwable {
+                    completedLatch.countDown();
+                    return null;
+                }
+            }).when(observer).onCompleted();
+
             obs.observeOn(Schedulers.threadPoolForComputation()).subscribe(observer);
 
-            Thread.sleep(500); // !!! not a true unit test
+            if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
+                fail("timed out waiting");
+            }
 
             inOrder.verify(observer, times(1)).onNext("one");
             inOrder.verify(observer, times(1)).onNext(null);
