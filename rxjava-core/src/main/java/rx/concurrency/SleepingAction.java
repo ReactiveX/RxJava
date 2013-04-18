@@ -26,20 +26,25 @@ import rx.util.functions.Func2;
     private final Scheduler scheduler;
     private final long execTime;
 
-    public SleepingAction(Func2<Scheduler, T, Subscription> underlying, Scheduler scheduler, long timespan, TimeUnit timeUnit) {
+    public SleepingAction(Func2<Scheduler, T, Subscription> underlying, Scheduler scheduler, long execTime) {
         this.underlying = underlying;
         this.scheduler = scheduler;
-        this.execTime = scheduler.now() + timeUnit.toMillis(timespan);
+        this.execTime = execTime;
     }
+
 
     @Override
     public Subscription call(Scheduler s, T state) {
-        if (execTime < scheduler.now()) {
-            try {
-                Thread.sleep(scheduler.now() - execTime);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
+        if (execTime > scheduler.now()) {
+            long delay = execTime - scheduler.now();
+            if (delay> 0) {
+                try {
+                    Thread.sleep(delay);
+                }
+                catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(e);
+                }
             }
         }
 

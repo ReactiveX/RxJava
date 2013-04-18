@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,8 +17,7 @@ package rx.concurrency;
 
 import static org.mockito.Mockito.*;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
@@ -39,7 +38,7 @@ public class CurrentThreadScheduler extends Scheduler {
         return INSTANCE;
     }
 
-    private static final ThreadLocal<Queue<DiscardableAction<?>>> QUEUE = new ThreadLocal<Queue<DiscardableAction<?>>>();
+    private static final ThreadLocal<PriorityQueue<TimedAction>> QUEUE = new ThreadLocal<PriorityQueue<TimedAction>>();
 
     private CurrentThreadScheduler() {
     }
@@ -47,35 +46,51 @@ public class CurrentThreadScheduler extends Scheduler {
     @Override
     public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action) {
         DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
-        enqueue(discardableAction);
+        enqueue(discardableAction, now());
         return discardableAction;
     }
 
     @Override
     public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
-        // since we are executing immediately on this thread we must cause this thread to sleep
-        // TODO right now the 'enqueue' does not take delay into account so if another task is enqueued after this it will 
-        // wait behind the sleeping action ... should that be the case or should it be allowed to proceed ahead of the delayed action?
-        return schedule(state, new SleepingAction<T>(action, this, dueTime, unit));
+        long execTime = now() + unit.toMillis(dueTime);
+
+        DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, new SleepingAction<T>(action, this, execTime));
+        enqueue(discardableAction, execTime);
+        return discardableAction;
     }
 
-    private void enqueue(DiscardableAction<?> action) {
-        Queue<DiscardableAction<?>> queue = QUEUE.get();
+    private void enqueue(DiscardableAction<?> action, long execTime) {
+        PriorityQueue<TimedAction> queue = QUEUE.get();
         boolean exec = queue == null;
 
         if (exec) {
-            queue = new LinkedList<DiscardableAction<?>>();
+            queue = new PriorityQueue<TimedAction>();
             QUEUE.set(queue);
         }
 
-        queue.add(action);
+        queue.add(new TimedAction(action, execTime));
 
         if (exec) {
             while (!queue.isEmpty()) {
-                queue.poll().call(this);
+                queue.poll().action.call(this);
             }
 
             QUEUE.set(null);
+        }
+    }
+
+    private static class TimedAction implements Comparable<TimedAction> {
+        final DiscardableAction<?> action;
+        final Long execTime;
+
+        private TimedAction(DiscardableAction<?> action, Long execTime) {
+            this.action = action;
+            this.execTime = execTime;
+        }
+
+        @Override
+        public int compareTo(TimedAction timedAction) {
+            return execTime.compareTo(timedAction.execTime);
         }
     }
 
@@ -143,6 +158,29 @@ public class CurrentThreadScheduler extends Scheduler {
 
             verify(first, times(1)).call();
             verify(second, times(1)).call();
+
+        }
+
+        @Test
+        public void testSequenceOfDelayedActions() {
+            final CurrentThreadScheduler scheduler = new CurrentThreadScheduler();
+
+            final Action0 first = mock(Action0.class);
+            final Action0 second = mock(Action0.class);
+
+            scheduler.schedule(new Action0() {
+                @Override
+                public void call() {
+                    scheduler.schedule(first, 30, TimeUnit.MILLISECONDS);
+                    scheduler.schedule(second, 10, TimeUnit.MILLISECONDS);
+                }
+            });
+
+            InOrder inOrder = inOrder(first, second);
+
+            inOrder.verify(second, times(1)).call();
+            inOrder.verify(first, times(1)).call();
+
 
         }
 
