@@ -16,20 +16,25 @@
 package rx.concurrency;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscription;
+import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 public class TestSchedulers {
 
@@ -243,6 +248,151 @@ public class TestSchedulers {
         // wait for all 5 responses
         latch.await();
         assertEquals(5, count.get());
+    }
+
+    @Test
+    public void testRecursiveScheduler1() {
+        Observable<Integer> obs = Observable.create(new Func1<Observer<Integer>, Subscription>() {
+            @Override
+            public Subscription call(final Observer<Integer> observer) {
+                return Schedulers.currentThread().schedule(0, new Func2<Scheduler, Integer, Subscription>() {
+                    @Override
+                    public Subscription call(Scheduler scheduler, Integer i) {
+                        if (i > 42) {
+                            observer.onCompleted();
+                            return Subscriptions.empty();
+                        }
+
+                        observer.onNext(i);
+
+                        return scheduler.schedule(i + 1, this);
+                    }
+                });
+            }
+        });
+
+        final AtomicInteger lastValue = new AtomicInteger();
+        obs.forEach(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer v) {
+                System.out.println("Value: " + v);
+                lastValue.set(v);
+            }
+        });
+
+        assertEquals(42, lastValue.get());
+    }
+
+    @Test
+    public void testRecursiveScheduler2() throws InterruptedException {
+        // use latches instead of Thread.sleep
+        final CountDownLatch latch = new CountDownLatch(10);
+        final CountDownLatch completionLatch = new CountDownLatch(1);
+
+        Observable<Integer> obs = Observable.create(new Func1<Observer<Integer>, Subscription>() {
+            @Override
+            public Subscription call(final Observer<Integer> observer) {
+
+                return Schedulers.threadPoolForComputation().schedule(new BooleanSubscription(), new Func2<Scheduler, BooleanSubscription, Subscription>() {
+                    @Override
+                    public Subscription call(Scheduler scheduler, BooleanSubscription cancel) {
+                        if (cancel.isUnsubscribed()) {
+                            observer.onCompleted();
+                            completionLatch.countDown();
+                            return Subscriptions.empty();
+                        }
+
+                        observer.onNext(42);
+                        latch.countDown();
+
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        scheduler.schedule(cancel, this);
+
+                        return cancel;
+                    }
+                });
+            }
+        });
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> o = mock(Observer.class);
+
+        final AtomicInteger count = new AtomicInteger();
+        final AtomicBoolean completed = new AtomicBoolean(false);
+        Subscription subscribe = obs.subscribe(new Observer<Integer>() {
+            @Override
+            public void onCompleted() {
+                System.out.println("Completed");
+                completed.set(true);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                System.out.println("Error");
+            }
+
+            @Override
+            public void onNext(Integer args) {
+                count.incrementAndGet();
+                System.out.println(args);
+            }
+        });
+
+        if (!latch.await(5000, TimeUnit.MILLISECONDS)) {
+            fail("Timed out waiting on onNext latch");
+        }
+
+        // now unsubscribe and ensure it stops the recursive loop
+        subscribe.unsubscribe();
+        System.out.println("unsubscribe");
+
+        if (!completionLatch.await(5000, TimeUnit.MILLISECONDS)) {
+            fail("Timed out waiting on completion latch");
+        }
+
+        assertEquals(10, count.get()); // wondering if this could be 11 in a race condition (which would be okay due to how unsubscribe works ... just it would make this test non-deterministic)
+        assertTrue(completed.get());
+    }
+
+    @Test
+    public void testSchedulingWithDueTime() throws InterruptedException {
+
+        final CountDownLatch latch = new CountDownLatch(5);
+        final AtomicInteger counter = new AtomicInteger();
+
+        long start = System.currentTimeMillis();
+
+        Schedulers.threadPoolForComputation().schedule(null, new Func2<Scheduler, String, Subscription>() {
+
+            @Override
+            public Subscription call(Scheduler scheduler, String state) {
+                System.out.println("doing work");
+                latch.countDown();
+                counter.incrementAndGet();
+                if (latch.getCount() == 0) {
+                    return Subscriptions.empty();
+                } else {
+                    return scheduler.schedule(state, this, new Date(System.currentTimeMillis() + 50));
+                }
+            }
+        }, new Date(System.currentTimeMillis() + 100));
+
+        if (!latch.await(3000, TimeUnit.MILLISECONDS)) {
+            fail("didn't execute ... timed out");
+        }
+
+        long end = System.currentTimeMillis();
+
+        assertEquals(5, counter.get());
+        if ((end - start) < 250) {
+            fail("it should have taken over 250ms since each step was scheduled 50ms in the future");
+        }
     }
 
 }

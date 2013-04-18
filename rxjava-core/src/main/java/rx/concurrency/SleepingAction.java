@@ -19,21 +19,21 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.util.functions.Func0;
+import rx.util.functions.Func2;
 
-/* package */class SleepingAction implements Func0<Subscription> {
-    private final Func0<Subscription> underlying;
+/* package */class SleepingAction<T> implements Func2<Scheduler, T, Subscription> {
+    private final Func2<Scheduler, T, Subscription> underlying;
     private final Scheduler scheduler;
     private final long execTime;
 
-    public SleepingAction(Func0<Subscription> underlying, Scheduler scheduler, long timespan, TimeUnit timeUnit) {
+    public SleepingAction(Func2<Scheduler, T, Subscription> underlying, Scheduler scheduler, long timespan, TimeUnit timeUnit) {
         this.underlying = underlying;
         this.scheduler = scheduler;
         this.execTime = scheduler.now() + timeUnit.toMillis(timespan);
     }
 
     @Override
-    public Subscription call() {
+    public Subscription call(Scheduler s, T state) {
         if (execTime < scheduler.now()) {
             try {
                 Thread.sleep(scheduler.now() - execTime);
@@ -43,7 +43,6 @@ import rx.util.functions.Func0;
             }
         }
 
-        return underlying.call();
-
+        return underlying.call(s, state);
     }
 }

@@ -24,43 +24,47 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.Scheduler;
 import rx.Subscription;
 import rx.util.functions.Action0;
-import rx.util.functions.Func0;
+import rx.util.functions.Func2;
 
 /**
  * Schedules work on the current thread but does not execute immediately. Work is put in a queue and executed after the current unit of work is completed.
  */
-public class CurrentThreadScheduler extends AbstractScheduler {
+public class CurrentThreadScheduler extends Scheduler {
     private static final CurrentThreadScheduler INSTANCE = new CurrentThreadScheduler();
 
     public static CurrentThreadScheduler getInstance() {
         return INSTANCE;
     }
 
-    private static final ThreadLocal<Queue<DiscardableAction>> QUEUE = new ThreadLocal<Queue<DiscardableAction>>();
+    private static final ThreadLocal<Queue<DiscardableAction<?>>> QUEUE = new ThreadLocal<Queue<DiscardableAction<?>>>();
 
     private CurrentThreadScheduler() {
     }
 
     @Override
-    public Subscription schedule(Func0<Subscription> action) {
-        DiscardableAction discardableAction = new DiscardableAction(action);
+    public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action) {
+        DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
         enqueue(discardableAction);
         return discardableAction;
     }
 
     @Override
-    public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
-        return schedule(new SleepingAction(action, this, dueTime, unit));
+    public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
+        // since we are executing immediately on this thread we must cause this thread to sleep
+        // TODO right now the 'enqueue' does not take delay into account so if another task is enqueued after this it will 
+        // wait behind the sleeping action ... should that be the case or should it be allowed to proceed ahead of the delayed action?
+        return schedule(state, new SleepingAction<T>(action, this, dueTime, unit));
     }
 
-    private void enqueue(DiscardableAction action) {
-        Queue<DiscardableAction> queue = QUEUE.get();
+    private void enqueue(DiscardableAction<?> action) {
+        Queue<DiscardableAction<?>> queue = QUEUE.get();
         boolean exec = queue == null;
 
         if (exec) {
-            queue = new LinkedList<DiscardableAction>();
+            queue = new LinkedList<DiscardableAction<?>>();
             QUEUE.set(queue);
         }
 
@@ -68,7 +72,7 @@ public class CurrentThreadScheduler extends AbstractScheduler {
 
         if (exec) {
             while (!queue.isEmpty()) {
-                queue.poll().call();
+                queue.poll().call(this);
             }
 
             QUEUE.set(null);
@@ -143,4 +147,5 @@ public class CurrentThreadScheduler extends AbstractScheduler {
         }
 
     }
+
 }
