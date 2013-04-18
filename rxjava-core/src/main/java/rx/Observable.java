@@ -41,6 +41,7 @@ import rx.operators.OperationAll;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
+import rx.operators.OperationGroupBy;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationMap;
@@ -59,16 +60,15 @@ import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSynchronize;
 import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
+import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
+import rx.operators.OperationToIterator;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
 import rx.operators.OperationToObservableList;
 import rx.operators.OperationToObservableSortedList;
 import rx.operators.OperationWhere;
 import rx.operators.OperationZip;
-import rx.operators.OperatorGroupBy;
-import rx.operators.OperatorTakeUntil;
-import rx.operators.OperatorToIterator;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
@@ -1303,7 +1303,7 @@ public class Observable<T> {
      * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
      */
     public static <T, E> Observable<T> takeUntil(final Observable<T> source, final Observable<E> other) {
-        return OperatorTakeUntil.takeUntil(source, other);
+        return OperationTakeUntil.takeUntil(source, other);
     }
 
     /**
@@ -1355,7 +1355,7 @@ public class Observable<T> {
      * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
      */
     public static <K, T, R> Observable<GroupedObservable<K, R>> groupBy(Observable<T> source, final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
-        return create(OperatorGroupBy.groupBy(source, keySelector, elementSelector));
+        return create(OperationGroupBy.groupBy(source, keySelector, elementSelector));
     }
 
     /**
@@ -1372,7 +1372,7 @@ public class Observable<T> {
      * @return an observable of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
      */
     public static <K, T> Observable<GroupedObservable<K, T>> groupBy(Observable<T> source, final Func1<T, K> keySelector) {
-        return create(OperatorGroupBy.groupBy(source, keySelector));
+        return create(OperationGroupBy.groupBy(source, keySelector));
     }
 
     /**
@@ -2041,7 +2041,7 @@ public class Observable<T> {
      * @return the iterator that could be used to iterate over the elements of the observable.
      */
     public static <T> Iterator<T> getIterator(Observable<T> that) {
-        return OperatorToIterator.toIterator(that);
+        return OperationToIterator.toIterator(that);
     }
 
     /**

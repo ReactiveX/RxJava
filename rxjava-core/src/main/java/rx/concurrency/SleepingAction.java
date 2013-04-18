@@ -19,35 +19,34 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.util.functions.Func0;
+import rx.util.functions.Func2;
 
-/* package */class SleepingAction implements Func0<Subscription> {
-    private final Func0<Subscription> underlying;
+/* package */class SleepingAction<T> implements Func2<Scheduler, T, Subscription> {
+    private final Func2<Scheduler, T, Subscription> underlying;
     private final Scheduler scheduler;
     private final long execTime;
 
-    public SleepingAction(Func0<Subscription> underlying, Scheduler scheduler, long timespan, TimeUnit timeUnit) {
+    public SleepingAction(Func2<Scheduler, T, Subscription> underlying, Scheduler scheduler, long timespan, TimeUnit timeUnit) {
         this.underlying = underlying;
         this.scheduler = scheduler;
-        this.execTime = scheduler.now() + timeUnit.toNanos(timespan);
+        this.execTime = scheduler.now() + timeUnit.toMillis(timespan);
     }
 
     @Override
-    public Subscription call() {
+    public Subscription call(Scheduler s, T state) {
         if (execTime > scheduler.now()) {
+            long delay = execTime - scheduler.now();
+            if (delay> 0) {
             try {
-                long nanos = execTime - scheduler.now();
-                long milis = nanos / 1000000;
-                if (milis > 0) {
-                    Thread.sleep(milis);
+                    Thread.sleep(delay);
                 }
-            } catch (InterruptedException e) {
+             catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             }
+            }
         }
 
-        return underlying.call();
-
+        return underlying.call(s, state);
     }
 }
