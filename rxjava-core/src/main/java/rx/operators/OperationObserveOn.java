@@ -60,7 +60,7 @@ public class OperationObserveOn {
         @SuppressWarnings("unchecked")
         public void testObserveOn() {
 
-            Scheduler scheduler = spy(Tester.UnitTest.forwardingScheduler(Schedulers.immediate()));
+            Scheduler scheduler = spy(OperatorTester.UnitTest.forwardingScheduler(Schedulers.immediate()));
 
             Observer<Integer> observer = mock(Observer.class);
             Observable.create(observeOn(Observable.toObservable(1, 2, 3), scheduler)).subscribe(observer);

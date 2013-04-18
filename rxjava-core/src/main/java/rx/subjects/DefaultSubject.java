@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 package rx.subjects;
+
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import rx.Notification;
 import rx.Observable;
@@ -32,6 +36,7 @@ import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
 import rx.util.SynchronizedObserver;
 import rx.util.functions.Action1;
+import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 public class DefaultSubject<T> extends Subject<T, T> {
@@ -136,6 +141,184 @@ public class DefaultSubject<T> extends Subject<T, T> {
             Assert.assertTrue(actualRef.get().containsAll(expected));
 
             sub.unsubscribe();
+        }
+
+        private final Exception testException = new Exception();
+
+        @Test
+        public void testCompleted() {
+            DefaultSubject<Object> subject = DefaultSubject.create();
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+            subject.subscribe(aObserver);
+
+            subject.onNext("one");
+            subject.onNext("two");
+            subject.onNext("three");
+            subject.onCompleted();
+
+            @SuppressWarnings("unchecked")
+            Observer<String> anotherObserver = mock(Observer.class);
+            subject.subscribe(anotherObserver);
+
+            subject.onNext("four");
+            subject.onCompleted();
+            subject.onError(new Exception());
+
+            assertCompletedObserver(aObserver);
+            // todo bug?            assertNeverObserver(anotherObserver);
+        }
+
+        private void assertCompletedObserver(Observer<String> aObserver)
+        {
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+            verify(aObserver, times(1)).onNext("three");
+            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
+        }
+
+        private void assertNeverObserver(Observer<String> aObserver)
+        {
+            verify(aObserver, Mockito.never()).onNext(any(String.class));
+            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onCompleted();
+        }
+
+        @Test
+        public void testError() {
+            DefaultSubject<Object> subject = DefaultSubject.create();
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+            subject.subscribe(aObserver);
+
+            subject.onNext("one");
+            subject.onNext("two");
+            subject.onNext("three");
+            subject.onError(testException);
+
+            @SuppressWarnings("unchecked")
+            Observer<String> anotherObserver = mock(Observer.class);
+            subject.subscribe(anotherObserver);
+
+            subject.onNext("four");
+            subject.onError(new Exception());
+            subject.onCompleted();
+
+            assertErrorObserver(aObserver);
+            // todo bug?            assertNeverObserver(anotherObserver);
+        }
+
+        private void assertErrorObserver(Observer<String> aObserver)
+        {
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+            verify(aObserver, times(1)).onNext("three");
+            verify(aObserver, times(1)).onError(testException);
+            verify(aObserver, Mockito.never()).onCompleted();
+        }
+
+        @Test
+        public void testSubscribeMidSequence() {
+            DefaultSubject<Object> subject = DefaultSubject.create();
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+            subject.subscribe(aObserver);
+
+            subject.onNext("one");
+            subject.onNext("two");
+
+            assertObservedUntilTwo(aObserver);
+
+            @SuppressWarnings("unchecked")
+            Observer<String> anotherObserver = mock(Observer.class);
+            subject.subscribe(anotherObserver);
+
+            subject.onNext("three");
+            subject.onCompleted();
+
+            assertCompletedObserver(aObserver);
+            assertCompletedStartingWithThreeObserver(anotherObserver);
+        }
+
+        private void assertCompletedStartingWithThreeObserver(Observer<String> aObserver)
+        {
+            verify(aObserver, Mockito.never()).onNext("one");
+            verify(aObserver, Mockito.never()).onNext("two");
+            verify(aObserver, times(1)).onNext("three");
+            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
+        }
+
+        @Test
+        public void testUnsubscribeFirstObserver() {
+            DefaultSubject<Object> subject = DefaultSubject.create();
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+            Subscription subscription = subject.subscribe(aObserver);
+
+            subject.onNext("one");
+            subject.onNext("two");
+
+            subscription.unsubscribe();
+            assertObservedUntilTwo(aObserver);
+
+            @SuppressWarnings("unchecked")
+            Observer<String> anotherObserver = mock(Observer.class);
+            subject.subscribe(anotherObserver);
+
+            subject.onNext("three");
+            subject.onCompleted();
+
+            assertObservedUntilTwo(aObserver);
+            assertCompletedStartingWithThreeObserver(anotherObserver);
+        }
+
+        private void assertObservedUntilTwo(Observer<String> aObserver)
+        {
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+            verify(aObserver, Mockito.never()).onNext("three");
+            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onCompleted();
+        }
+
+        @Test
+        public void testUnsubscribe()
+        {
+            UnsubscribeTester.test(new Func0<DefaultSubject<Object>>()
+            {
+                @Override
+                public DefaultSubject<Object> call()
+                {
+                    return DefaultSubject.create();
+                }
+            }, new Action1<DefaultSubject<Object>>()
+            {
+                @Override
+                public void call(DefaultSubject<Object> DefaultSubject)
+                {
+                    DefaultSubject.onCompleted();
+                }
+            }, new Action1<DefaultSubject<Object>>()
+            {
+                @Override
+                public void call(DefaultSubject<Object> DefaultSubject)
+                {
+                    DefaultSubject.onError(new Exception());
+                }
+            }, new Action1<DefaultSubject<Object>>()
+            {
+                @Override
+                public void call(DefaultSubject<Object> DefaultSubject)
+                {
+                    DefaultSubject.onNext("one");
+                }
+            });
         }
     }
 }
