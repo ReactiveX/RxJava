@@ -48,7 +48,9 @@ public final class ImmediateScheduler extends Scheduler {
     @Override
     public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
         // since we are executing immediately on this thread we must cause this thread to sleep
-        return schedule(state, new SleepingAction<T>(action, this, dueTime, unit));
+        long execTime = now() + unit.toMillis(dueTime);
+
+        return schedule(state, new SleepingAction<T>(action, this, execTime));
     }
 
     public static class UnitTest {
