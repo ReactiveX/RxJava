@@ -20,12 +20,12 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 
+import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
-import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
 public class OperationObserveOn {
@@ -60,13 +60,33 @@ public class OperationObserveOn {
             Observer<Integer> observer = mock(Observer.class);
             Observable.create(observeOn(Observable.toObservable(1, 2, 3), scheduler)).subscribe(observer);
 
-            verify(scheduler, times(4)).schedule(any(Action0.class));
-            verifyNoMoreInteractions(scheduler);
-
             verify(observer, times(1)).onNext(1);
             verify(observer, times(1)).onNext(2);
             verify(observer, times(1)).onNext(3);
             verify(observer, times(1)).onCompleted();
+        }
+
+
+        @Test
+        @SuppressWarnings("unchecked")
+        public void testOrdering() throws InterruptedException {
+            Observable<String> obs = Observable.from("one", null, "two", "three", "four");
+
+            Observer<String> observer = mock(Observer.class);
+
+            InOrder inOrder = inOrder(observer);
+
+            obs.observeOn(Schedulers.threadPoolForComputation()).subscribe(observer);
+
+            Thread.sleep(500); // !!! not a true unit test
+
+            inOrder.verify(observer, times(1)).onNext("one");
+            inOrder.verify(observer, times(1)).onNext(null);
+            inOrder.verify(observer, times(1)).onNext("two");
+            inOrder.verify(observer, times(1)).onNext("three");
+            inOrder.verify(observer, times(1)).onNext("four");
+            inOrder.verify(observer, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
         }
 
     }
