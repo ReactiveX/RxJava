@@ -39,6 +39,7 @@ import org.mockito.MockitoAnnotations;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.operators.OperationAll;
+import rx.operators.OperationCache;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
@@ -2618,6 +2619,28 @@ public class Observable<T> {
             }
 
         });
+    }
+
+    /**
+     * Returns an Observable that repeats the original Observable sequence to all subscribers.
+     * The source Observable is subscribed to at most once.
+     *
+     * @param source
+     *            the source Observable
+     * @return an Observable that repeats the original Observable sequence to all subscribers.
+     */
+    public static <T> Observable<T> cache(Observable<T> source) {
+        return _create(OperationCache.cache(source));
+    }
+
+    /**
+     * Returns an Observable that repeats the original Observable sequence to all subscribers.
+     * The source Observable is subscribed to at most once.
+     *
+     * @return an Observable that repeats the original Observable sequence to all subscribers.
+     */
+    public Observable<T> cache() {
+        return cache(this);
     }
 
     /**
