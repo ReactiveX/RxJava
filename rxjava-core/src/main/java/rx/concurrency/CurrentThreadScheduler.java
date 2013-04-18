@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -42,6 +43,8 @@ public class CurrentThreadScheduler extends Scheduler {
 
     private CurrentThreadScheduler() {
     }
+
+    private final AtomicInteger counter = new AtomicInteger(0);
 
     @Override
     public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action) {
@@ -68,7 +71,7 @@ public class CurrentThreadScheduler extends Scheduler {
             QUEUE.set(queue);
         }
 
-        queue.add(new TimedAction(action, execTime));
+        queue.add(new TimedAction(action, execTime, counter.incrementAndGet()));
 
         if (exec) {
             while (!queue.isEmpty()) {
@@ -82,15 +85,21 @@ public class CurrentThreadScheduler extends Scheduler {
     private static class TimedAction implements Comparable<TimedAction> {
         final DiscardableAction<?> action;
         final Long execTime;
+        final Integer count; // In case if time between enqueueing took less than 1ms
 
-        private TimedAction(DiscardableAction<?> action, Long execTime) {
+        private TimedAction(DiscardableAction<?> action, Long execTime, Integer count) {
             this.action = action;
             this.execTime = execTime;
+            this.count = count;
         }
 
         @Override
-        public int compareTo(TimedAction timedAction) {
-            return execTime.compareTo(timedAction.execTime);
+        public int compareTo(TimedAction that) {
+            int result = execTime.compareTo(that.execTime);
+            if (result == 0) {
+                return count.compareTo(that.count);
+            }
+            return result;
         }
     }
 
@@ -180,6 +189,35 @@ public class CurrentThreadScheduler extends Scheduler {
 
             inOrder.verify(second, times(1)).call();
             inOrder.verify(first, times(1)).call();
+
+
+        }
+
+        @Test
+        public void testMixOfDelayedAndNonDelayedActions() {
+            final CurrentThreadScheduler scheduler = new CurrentThreadScheduler();
+
+            final Action0 first = mock(Action0.class);
+            final Action0 second = mock(Action0.class);
+            final Action0 third = mock(Action0.class);
+            final Action0 fourth = mock(Action0.class);
+
+            scheduler.schedule(new Action0() {
+                @Override
+                public void call() {
+                    scheduler.schedule(first);
+                    scheduler.schedule(second, 300, TimeUnit.MILLISECONDS);
+                    scheduler.schedule(third, 100, TimeUnit.MILLISECONDS);
+                    scheduler.schedule(fourth);
+                }
+            });
+
+            InOrder inOrder = inOrder(first, second, third, fourth);
+
+            inOrder.verify(first, times(1)).call();
+            inOrder.verify(fourth, times(1)).call();
+            inOrder.verify(third, times(1)).call();
+            inOrder.verify(second, times(1)).call();
 
 
         }
