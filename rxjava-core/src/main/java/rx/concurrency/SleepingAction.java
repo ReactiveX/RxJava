@@ -34,12 +34,16 @@ import rx.util.functions.Func2;
 
     @Override
     public Subscription call(Scheduler s, T state) {
-        if (execTime < scheduler.now()) {
+        if (execTime > scheduler.now()) {
+            long delay = execTime - scheduler.now();
+            if (delay> 0) {
             try {
-                Thread.sleep(scheduler.now() - execTime);
-            } catch (InterruptedException e) {
+                    Thread.sleep(delay);
+                }
+             catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
+            }
             }
         }
 
