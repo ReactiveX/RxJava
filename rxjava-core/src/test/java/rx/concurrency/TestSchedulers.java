@@ -23,6 +23,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
@@ -395,4 +396,137 @@ public class TestSchedulers {
         }
     }
 
+    @Test
+    public void testConcurrentOnNextFailsValidation() throws InterruptedException {
+
+        final int count = 10;
+        final CountDownLatch latch = new CountDownLatch(count);
+        Observable<String> o = Observable.create(new Func1<Observer<String>, Subscription>() {
+
+            @Override
+            public Subscription call(final Observer<String> observer) {
+                for (int i = 0; i < count; i++) {
+                    final int v = i;
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            observer.onNext("v: " + v);
+
+                            latch.countDown();
+                        }
+                    }).start();
+                }
+                return Subscriptions.empty();
+            }
+        });
+
+        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
+        // this should call onNext concurrently
+        o.subscribe(observer);
+
+        if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
+            fail("timed out");
+        }
+
+        if (observer.error.get() == null) {
+            fail("We expected error messages due to concurrency");
+        }
+    }
+
+    @Test
+    public void testObserveOn() throws InterruptedException {
+
+        Observable<String> o = Observable.from("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten");
+
+        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
+
+        o.observeOn(Schedulers.threadPoolForComputation()).subscribe(observer);
+
+        if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
+            fail("timed out");
+        }
+
+        if (observer.error.get() != null) {
+            observer.error.get().printStackTrace();
+            fail("Error: " + observer.error.get().getMessage());
+        }
+    }
+
+    @Test
+    public void testSubscribeOnNestedConcurrency() throws InterruptedException {
+
+        Observable<String> o = Observable.from("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
+                .mapMany(new Func1<String, Observable<String>>() {
+
+                    @Override
+                    public Observable<String> call(final String v) {
+                        return Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                            @Override
+                            public Subscription call(final Observer<String> observer) {
+                                observer.onNext("value_after_map-" + v);
+                                observer.onCompleted();
+                                return Subscriptions.empty();
+                            }
+                        }).subscribeOn(Schedulers.newThread()); // subscribe on a new thread
+                    }
+                });
+
+        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
+
+        o.subscribe(observer);
+
+        if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
+            fail("timed out");
+        }
+
+        if (observer.error.get() != null) {
+            observer.error.get().printStackTrace();
+            fail("Error: " + observer.error.get().getMessage());
+        }
+    }
+
+    /**
+     * Used to determine if onNext is being invoked concurrently.
+     * 
+     * @param <T>
+     */
+    private static class ConcurrentObserverValidator<T> implements Observer<T> {
+
+        final AtomicInteger concurrentCounter = new AtomicInteger();
+        final AtomicReference<Exception> error = new AtomicReference<Exception>();
+        final CountDownLatch completed = new CountDownLatch(1);
+
+        @Override
+        public void onCompleted() {
+            completed.countDown();
+        }
+
+        @Override
+        public void onError(Exception e) {
+            completed.countDown();
+            error.set(e);
+        }
+
+        @Override
+        public void onNext(T args) {
+            int count = concurrentCounter.incrementAndGet();
+            System.out.println("ConcurrentObserverValidator.onNext: " + args);
+            if (count > 1) {
+                onError(new RuntimeException("we should not have concurrent execution of onNext"));
+            }
+            try {
+                try {
+                    // take some time so other onNext calls could pile up (I haven't yet thought of a way to do this without sleeping)
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    // ignore
+                }
+            } finally {
+                concurrentCounter.decrementAndGet();
+            }
+        }
+
+    }
 }
