@@ -50,7 +50,7 @@ import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMostRecent;
-import rx.operators.OperatorMulticast;
+import rx.operators.OperationMulticast;
 import rx.operators.OperationNext;
 import rx.operators.OperationObserveOn;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
@@ -2096,7 +2096,7 @@ public class Observable<T> {
      * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
      */
     public static <T, R> ConnectableObservable<R> multicast(Observable<T> source, final Subject<T, R> subject) {
-        return OperatorMulticast.multicast(source, subject);
+        return OperationMulticast.multicast(source, subject);
     }
 
     /**

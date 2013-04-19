@@ -26,7 +26,7 @@ import rx.util.functions.Func1;
 
 import static org.mockito.Mockito.*;
 
-public class OperatorMulticast {
+public class OperationMulticast {
     public static <T, R> ConnectableObservable<R> multicast(Observable<T> source, final Subject<T, R> subject) {
         return new MulticastConnectableObservable<T, R>(source, subject);
     }
@@ -95,7 +95,7 @@ public class OperatorMulticast {
         public void testMulticast() {
             TestObservable source = new TestObservable();
 
-            ConnectableObservable<String> multicasted = OperatorMulticast.multicast(source,
+            ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
                     PublishSubject.<String>create());
 
             Observer<String> observer = mock(Observer.class);
@@ -122,7 +122,7 @@ public class OperatorMulticast {
         public void testMulticastConnectTwice() {
             TestObservable source = new TestObservable();
 
-            ConnectableObservable<String> multicasted = OperatorMulticast.multicast(source,
+            ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
                     PublishSubject.<String>create());
 
             Observer<String> observer = mock(Observer.class);
@@ -146,7 +146,7 @@ public class OperatorMulticast {
         public void testMulticastDisconnect() {
             TestObservable source = new TestObservable();
 
-            ConnectableObservable<String> multicasted = OperatorMulticast.multicast(source,
+            ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
                     PublishSubject.<String>create());
 
             Observer<String> observer = mock(Observer.class);
