@@ -39,8 +39,29 @@ import rx.util.functions.Action1;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
-public class DefaultSubject<T> extends Subject<T, T> {
-    public static <T> DefaultSubject<T> create() {
+/**
+ * Subject that publishes a single event to each {@link Observer} that has subscribed. 
+ * <p>
+ * Example usage:
+ * <p>
+ * <pre> {@code
+ 
+  PublishSubject<Object> subject = PublishSubject.create();
+  // observer1 will receive all onNext events
+  subject.subscribe(observer1);
+  subject.onNext("one");
+  subject.onNext("two");
+  // observer2 will only receive "three" and onCompleted
+  subject.subscribe(observer2);
+  subject.onNext("three");
+  subject.onCompleted();
+ 
+  } </pre>
+ * 
+ * @param <T>
+ */
+public class PublishSubject<T> extends Subject<T, T> {
+    public static <T> PublishSubject<T> create() {
         final ConcurrentHashMap<Subscription, Observer<T>> observers = new ConcurrentHashMap<Subscription, Observer<T>>();
 
         Func1<Observer<T>, Subscription> onSubscribe = new Func1<Observer<T>, Subscription>() {
@@ -62,12 +83,12 @@ public class DefaultSubject<T> extends Subject<T, T> {
             }
         };
 
-        return new DefaultSubject<T>(onSubscribe, observers);
+        return new PublishSubject<T>(onSubscribe, observers);
     }
 
     private final ConcurrentHashMap<Subscription, Observer<T>> observers;
 
-    protected DefaultSubject(Func1<Observer<T>, Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
+    protected PublishSubject(Func1<Observer<T>, Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
         super(onSubscribe);
         this.observers = observers;
     }
@@ -96,7 +117,7 @@ public class DefaultSubject<T> extends Subject<T, T> {
     public static class UnitTest {
         @Test
         public void test() {
-            DefaultSubject<Integer> subject = DefaultSubject.create();
+            PublishSubject<Integer> subject = PublishSubject.create();
             final AtomicReference<List<Notification<String>>> actualRef = new AtomicReference<List<Notification<String>>>();
 
             Observable<List<Notification<Integer>>> wNotificationsList = subject.materialize().toList();
@@ -147,7 +168,7 @@ public class DefaultSubject<T> extends Subject<T, T> {
 
         @Test
         public void testCompleted() {
-            DefaultSubject<Object> subject = DefaultSubject.create();
+            PublishSubject<Object> subject = PublishSubject.create();
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -188,7 +209,7 @@ public class DefaultSubject<T> extends Subject<T, T> {
 
         @Test
         public void testError() {
-            DefaultSubject<Object> subject = DefaultSubject.create();
+            PublishSubject<Object> subject = PublishSubject.create();
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -222,7 +243,7 @@ public class DefaultSubject<T> extends Subject<T, T> {
 
         @Test
         public void testSubscribeMidSequence() {
-            DefaultSubject<Object> subject = DefaultSubject.create();
+            PublishSubject<Object> subject = PublishSubject.create();
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -255,7 +276,7 @@ public class DefaultSubject<T> extends Subject<T, T> {
 
         @Test
         public void testUnsubscribeFirstObserver() {
-            DefaultSubject<Object> subject = DefaultSubject.create();
+            PublishSubject<Object> subject = PublishSubject.create();
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -290,31 +311,31 @@ public class DefaultSubject<T> extends Subject<T, T> {
         @Test
         public void testUnsubscribe()
         {
-            UnsubscribeTester.test(new Func0<DefaultSubject<Object>>()
+            UnsubscribeTester.test(new Func0<PublishSubject<Object>>()
             {
                 @Override
-                public DefaultSubject<Object> call()
+                public PublishSubject<Object> call()
                 {
-                    return DefaultSubject.create();
+                    return PublishSubject.create();
                 }
-            }, new Action1<DefaultSubject<Object>>()
+            }, new Action1<PublishSubject<Object>>()
             {
                 @Override
-                public void call(DefaultSubject<Object> DefaultSubject)
+                public void call(PublishSubject<Object> DefaultSubject)
                 {
                     DefaultSubject.onCompleted();
                 }
-            }, new Action1<DefaultSubject<Object>>()
+            }, new Action1<PublishSubject<Object>>()
             {
                 @Override
-                public void call(DefaultSubject<Object> DefaultSubject)
+                public void call(PublishSubject<Object> DefaultSubject)
                 {
                     DefaultSubject.onError(new Exception());
                 }
-            }, new Action1<DefaultSubject<Object>>()
+            }, new Action1<PublishSubject<Object>>()
             {
                 @Override
-                public void call(DefaultSubject<Object> DefaultSubject)
+                public void call(PublishSubject<Object> DefaultSubject)
                 {
                     DefaultSubject.onNext("one");
                 }
