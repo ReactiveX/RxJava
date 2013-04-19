@@ -20,7 +20,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
-import rx.subjects.DefaultSubject;
+import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.util.functions.Func1;
 
@@ -96,7 +96,7 @@ public class OperatorMulticast {
             TestObservable source = new TestObservable();
 
             ConnectableObservable<String> multicasted = OperatorMulticast.multicast(source,
-                    DefaultSubject.<String>create());
+                    PublishSubject.<String>create());
 
             Observer<String> observer = mock(Observer.class);
             multicasted.subscribe(observer);
@@ -123,7 +123,7 @@ public class OperatorMulticast {
             TestObservable source = new TestObservable();
 
             ConnectableObservable<String> multicasted = OperatorMulticast.multicast(source,
-                    DefaultSubject.<String>create());
+                    PublishSubject.<String>create());
 
             Observer<String> observer = mock(Observer.class);
             multicasted.subscribe(observer);
@@ -147,7 +147,7 @@ public class OperatorMulticast {
             TestObservable source = new TestObservable();
 
             ConnectableObservable<String> multicasted = OperatorMulticast.multicast(source,
-                    DefaultSubject.<String>create());
+                    PublishSubject.<String>create());
 
             Observer<String> observer = mock(Observer.class);
             multicasted.subscribe(observer);
