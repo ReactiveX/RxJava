@@ -77,6 +77,7 @@ import rx.plugins.RxJavaPlugins;
 import rx.subjects.Subject;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.subjects.ConnectableObservable;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
 import rx.util.Range;
@@ -1576,6 +1577,13 @@ public class Observable<T> {
     }
 
     /**
+     * Returns a {@link ConnectableObservable} that publishes the source Observable to any number of Observers.
+     */
+    public static <T> ConnectableObservable<T> publish(Observable<T> observable) {
+        return new ConnectableObservable<T>(observable);
+    }
+
+    /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
      * by an Observable into the same function, and so on until all items have been emitted by the
@@ -3030,6 +3038,13 @@ public class Observable<T> {
                 return (T) _f.call(e);
             }
         });
+    }
+
+    /**
+     * Returns a {@link ConnectableObservable} that publishes the source Observable to any number of Observers.
+     */
+    public ConnectableObservable<T> publish() {
+        return publish(this);
     }
 
     /**
