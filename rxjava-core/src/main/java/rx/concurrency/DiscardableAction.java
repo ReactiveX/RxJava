@@ -17,27 +17,31 @@ package rx.concurrency;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import rx.Scheduler;
 import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
-import rx.util.functions.Func0;
+import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 /**
  * Combines standard {@link Subscription#unsubscribe()} functionality with ability to skip execution if an unsubscribe occurs before the {@link #call()} method is invoked.
  */
-/* package */class DiscardableAction implements Func0<Subscription>, Subscription {
-    private final Func0<Subscription> underlying;
+/* package */class DiscardableAction<T> implements Func1<Scheduler, Subscription>, Subscription {
+    private final Func2<Scheduler, T, Subscription> underlying;
+    private final T state;
 
     private final AtomicObservableSubscription wrapper = new AtomicObservableSubscription();
     private final AtomicBoolean ready = new AtomicBoolean(true);
 
-    public DiscardableAction(Func0<Subscription> underlying) {
+    public DiscardableAction(T state, Func2<Scheduler, T, Subscription> underlying) {
+        this.state = state;
         this.underlying = underlying;
     }
 
     @Override
-    public Subscription call() {
+    public Subscription call(Scheduler scheduler) {
         if (ready.compareAndSet(true, false)) {
-            Subscription subscription = underlying.call();
+            Subscription subscription = underlying.call(scheduler, state);
             wrapper.wrap(subscription);
             return subscription;
         }
@@ -49,4 +53,5 @@ import rx.util.functions.Func0;
         ready.set(false);
         wrapper.unsubscribe();
     }
+
 }

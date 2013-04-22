@@ -19,7 +19,7 @@ import rx.util.functions.Func1;
 /**
  * @see https://github.com/Netflix/RxJava/issues/50
  */
-public class OperatorToIterator {
+public class OperationToIterator {
 
     /**
      * Returns an iterator that iterates all values of the observable.
