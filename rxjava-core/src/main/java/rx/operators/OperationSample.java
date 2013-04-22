@@ -55,6 +55,7 @@ public final class OperationSample {
     public static <T> Func1<Observer<T>, Subscription> sample(final Observable<T> source, long interval, TimeUnit unit, Scheduler scheduler) {
         return new Sample<T>(source, interval, unit, scheduler);
     }
+    
     private static class Sample<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> source;
         private final long interval;
