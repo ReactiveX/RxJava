@@ -29,16 +29,17 @@ import javax.swing.Timer;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-import rx.util.functions.Func0;
+import rx.util.functions.Func2;
 
 /**
  * Executes work on the Swing UI thread. 
  * This scheduler should only be used with actions that execute quickly.
  */
-public final class SwingScheduler extends AbstractScheduler {
+public final class SwingScheduler extends Scheduler {
     private static final SwingScheduler INSTANCE = new SwingScheduler();
 
     public static SwingScheduler getInstance() {
@@ -49,12 +50,12 @@ public final class SwingScheduler extends AbstractScheduler {
     }
 
     @Override
-    public Subscription schedule(final Func0<Subscription> action) {
+    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action) {
         final AtomicReference<Subscription> sub = new AtomicReference<Subscription>();
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                sub.set(action.call());
+                sub.set(action.call(SwingScheduler.this, state));
             }
         });
         return Subscriptions.create(new Action0() {
@@ -69,7 +70,7 @@ public final class SwingScheduler extends AbstractScheduler {
     }
 
     @Override
-    public Subscription schedule(final Func0<Subscription> action, long dueTime, TimeUnit unit) {
+    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
         final AtomicReference<Subscription> sub = new AtomicReference<Subscription>();
         long delay = unit.toMillis(dueTime); 
         
@@ -90,7 +91,7 @@ public final class SwingScheduler extends AbstractScheduler {
                 if (timer != null) {
                     timer.stop();
                 }
-                sub.set(action.call());
+                sub.set(action.call(SwingScheduler.this, state));
             }
         }
         
@@ -169,5 +170,4 @@ public final class SwingScheduler extends AbstractScheduler {
         }
 
     }
-
 }
