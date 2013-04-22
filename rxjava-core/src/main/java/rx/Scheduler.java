@@ -77,11 +77,16 @@ public abstract class Scheduler {
      * This default implementation schedules recursively and waits for actions to complete (instead of potentially executing
      * long-running actions concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
      *
-     * @param state State to pass into the action.
-     * @param action The action to execute periodically.
-     * @param initialDelay Time to wait before executing the action for the first time.
-     * @param period The time interval to wait each time in between executing the action.
-     * @param unit The time unit the interval above is given in.
+     * @param state 
+     *            State to pass into the action.
+     * @param action 
+     *            The action to execute periodically.
+     * @param initialDelay 
+     *            Time to wait before executing the action for the first time.
+     * @param period 
+     *            The time interval to wait each time in between executing the action.
+     * @param unit 
+     *            The time unit the interval above is given in.
      * @return A subscription to be able to unsubscribe from action.
      */
     public <T> Subscription schedulePeriodically(T state, final Func2<Scheduler, T, Subscription> action, long initialDelay, long period, TimeUnit unit) {
@@ -249,10 +254,14 @@ public abstract class Scheduler {
     /**
      * Schedules a cancelable action to be executed periodically.
      * 
-     * @param action The action to execute periodically.
-     * @param initialDelay Time to wait before executing the action for the first time.
-     * @param period The time interval to wait each time in between executing the action.
-     * @param unit The time unit the interval above is given in.
+     * @param action 
+     *            The action to execute periodically.
+     * @param initialDelay 
+     *            Time to wait before executing the action for the first time.
+     * @param period 
+     *            The time interval to wait each time in between executing the action.
+     * @param unit 
+     *            The time unit the interval above is given in.
      * @return A subscription to be able to unsubscribe from action.
      */
     public Subscription schedulePeriodically(final Func1<Scheduler, Subscription> action, long initialDelay, long period, TimeUnit unit) {
@@ -267,10 +276,14 @@ public abstract class Scheduler {
     /**
      * Schedules a cancelable action to be executed periodically.
      * 
-     * @param action The action to execute periodically.
-     * @param initialDelay Time to wait before executing the action for the first time.
-     * @param period The time interval to wait each time in between executing the action.
-     * @param unit The time unit the interval above is given in.
+     * @param action 
+     *            The action to execute periodically.
+     * @param initialDelay 
+     *            Time to wait before executing the action for the first time.
+     * @param period 
+     *            The time interval to wait each time in between executing the action.
+     * @param unit 
+     *            The time unit the interval above is given in.
      * @return A subscription to be able to unsubscribe from action.
      */
     public Subscription schedulePeriodically(final Func0<Subscription> action, long initialDelay, long period, TimeUnit unit) {
@@ -285,10 +298,14 @@ public abstract class Scheduler {
     /**
      * Schedules an action to be executed periodically.
      * 
-     * @param action The action to execute periodically.
-     * @param initialDelay Time to wait before executing the action for the first time.
-     * @param period The time interval to wait each time in between executing the action.
-     * @param unit The time unit the interval above is given in.
+     * @param action 
+     *            The action to execute periodically.
+     * @param initialDelay 
+     *            Time to wait before executing the action for the first time.
+     * @param period 
+     *            The time interval to wait each time in between executing the action.
+     * @param unit 
+     *            The time unit the interval above is given in.
      * @return A subscription to be able to unsubscribe from action.
      */
     public Subscription schedulePeriodically(final Action0 action, long initialDelay, long period, TimeUnit unit) {
