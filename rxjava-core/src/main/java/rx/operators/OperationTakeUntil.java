@@ -24,7 +24,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
-public class OperatorTakeUntil {
+public class OperationTakeUntil {
 
     /**
      * Returns the values from the source observable sequence until the other observable sequence produces a value.

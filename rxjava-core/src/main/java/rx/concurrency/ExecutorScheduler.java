@@ -15,57 +15,26 @@
  */
 package rx.concurrency;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Func0;
+import rx.util.functions.Func2;
 
 /**
  * A {@link Scheduler} implementation that uses an {@link Executor} or {@link ScheduledExecutorService} implementation.
  * <p>
  * Note that if an {@link Executor} implementation is used instead of {@link ScheduledExecutorService} then a system-wide Timer will be used to handle delayed events.
  */
-public class ExecutorScheduler extends AbstractScheduler {
+public class ExecutorScheduler extends Scheduler {
     private final Executor executor;
-
-    /**
-     * Setup a ScheduledExecutorService that we can use if someone provides an Executor instead of ScheduledExecutorService.
-     */
-    private final static ScheduledExecutorService SYSTEM_SCHEDULED_EXECUTOR;
-    static {
-        int count = Runtime.getRuntime().availableProcessors();
-        if (count > 8) {
-            count = count / 2;
-        }
-        // we don't need more than 8 to handle just scheduling and doing no work
-        if (count > 8) {
-            count = 8;
-        }
-        SYSTEM_SCHEDULED_EXECUTOR = Executors.newScheduledThreadPool(count, new ThreadFactory() {
-
-            final AtomicInteger counter = new AtomicInteger();
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r, "RxScheduledExecutorPool-" + counter.incrementAndGet());
-                t.setDaemon(true);
-                return t;
-            }
-
-        });
-
-    }
 
     public ExecutorScheduler(Executor executor) {
         this.executor = executor;
@@ -76,82 +45,82 @@ public class ExecutorScheduler extends AbstractScheduler {
     }
 
     @Override
-    public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
-        final DiscardableAction discardableAction = new DiscardableAction(action);
+    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit) {
+        final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
+        final Scheduler _scheduler = this;
+        // all subscriptions that may need to be unsubscribed
+        final CompositeSubscription subscription = new CompositeSubscription(discardableAction);
 
         if (executor instanceof ScheduledExecutorService) {
-            ((ScheduledExecutorService) executor).schedule(new Runnable() {
+            // we are a ScheduledExecutorService so can do proper scheduling
+            ScheduledFuture<?> f = ((ScheduledExecutorService) executor).schedule(new Runnable() {
                 @Override
                 public void run() {
-                    discardableAction.call();
+                    // when the delay has passed we now do the work on the actual scheduler
+                    Subscription s = discardableAction.call(_scheduler);
+                    // add the subscription to the CompositeSubscription so it is unsubscribed
+                    subscription.add(s);
                 }
-            }, dueTime, unit);
+            }, delayTime, unit);
+            // add the ScheduledFuture as a subscription so we can cancel the scheduled action if an unsubscribe happens
+            subscription.add(Subscriptions.create(f));
         } else {
-            if (dueTime == 0) {
+            // we are not a ScheduledExecutorService so can't directly schedule
+            if (delayTime == 0) {
                 // no delay so put on the thread-pool right now
-                return (schedule(action));
+                Subscription s = schedule(state, action);
+                // add the subscription to the CompositeSubscription so it is unsubscribed
+                subscription.add(s);
             } else {
                 // there is a delay and this isn't a ScheduledExecutorService so we'll use a system-wide ScheduledExecutorService
                 // to handle the scheduling and once it's ready then execute on this Executor
-                SYSTEM_SCHEDULED_EXECUTOR.schedule(new Runnable() {
+                ScheduledFuture<?> f = GenericScheduledExecutorService.getInstance().schedule(new Runnable() {
 
                     @Override
                     public void run() {
-                        // now execute on the real Executor
-                        executor.execute(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                discardableAction.call();
-                            }
-
-                        });
+                        // now execute on the real Executor (by using the other overload that schedules for immediate execution)
+                        Subscription s = _scheduler.schedule(state, action);
+                        // add the subscription to the CompositeSubscription so it is unsubscribed
+                        subscription.add(s);
                     }
-                }, dueTime, unit);
+                }, delayTime, unit);
+                // add the ScheduledFuture as a subscription so we can cancel the scheduled action if an unsubscribe happens
+                subscription.add(Subscriptions.create(f));
             }
         }
-        return discardableAction;
+        return subscription;
     }
 
     @Override
-    public Subscription schedule(Func0<Subscription> action) {
-        final DiscardableAction discardableAction = new DiscardableAction(action);
+    public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action) {
+        final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
+        final Scheduler _scheduler = this;
+        // all subscriptions that may need to be unsubscribed
+        final CompositeSubscription subscription = new CompositeSubscription(discardableAction);
 
-        executor.execute(new Runnable() {
+        // work to be done on a thread
+        Runnable r = new Runnable() {
             @Override
             public void run() {
-                discardableAction.call();
+                Subscription s = discardableAction.call(_scheduler);
+                // add the subscription to the CompositeSubscription so it is unsubscribed
+                subscription.add(s);
             }
-        });
+        };
 
-        return discardableAction;
-
-    }
-
-    @Override
-    public Subscription schedulePeriodically(final Func0<Subscription> action, long initialDelay, long period, TimeUnit unit) {
-        final Queue<Subscription> subscriptions = new ConcurrentLinkedQueue<Subscription>();
-        if (executor instanceof ScheduledExecutorService) {
-            final ScheduledFuture<?> future = ((ScheduledExecutorService) executor).scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    subscriptions.add(action.call());
-                }
-            }, initialDelay, period, unit);
-            
-            return Subscriptions.create(new Action0() {
-                @Override
-                public void call() {
-                    future.cancel(false);
-                    Subscription next = subscriptions.poll();
-                    while (next != null) {
-                        next.unsubscribe();
-                        next = subscriptions.poll();
-                    }
-                }
-            });
+        // submit for immediate execution
+        if (executor instanceof ExecutorService) {
+            // we are an ExecutorService so get a Future back that supports unsubscribe
+            Future<?> f = ((ExecutorService) executor).submit(r);
+            // add the Future as a subscription so we can cancel the scheduled action if an unsubscribe happens
+            subscription.add(Subscriptions.create(f));
+        } else {
+            // we are the lowest common denominator so can't unsubscribe once we execute
+            executor.execute(r);
         }
-        // not a scheduled executor service, so we fall back to the recursive implementation
-        return super.schedulePeriodically(action, initialDelay, period, unit);
+
+        return subscription;
+
     }
+
 }
