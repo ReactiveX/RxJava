@@ -17,6 +17,7 @@ package rx;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -73,6 +74,8 @@ public abstract class Scheduler {
 
     /**
      * Schedules a cancelable action to be executed periodically.
+     * This default implementation schedules recursively and waits for actions to complete (instead of potentially executing
+     * long-running actions concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
      *
      * @param state State to pass into the action.
      * @param action The action to execute periodically.
@@ -81,7 +84,38 @@ public abstract class Scheduler {
      * @param unit The time unit the interval above is given in.
      * @return A subscription to be able to unsubscribe from action.
      */
-    public abstract <T> Subscription schedulePeriodically(T state, Func2<Scheduler, T, Subscription> action, long initialDelay, long period, TimeUnit unit);
+    public <T> Subscription schedulePeriodically(T state, final Func2<Scheduler, T, Subscription> action, long initialDelay, long period, TimeUnit unit) {
+        final long periodInNanos = unit.toNanos(period);
+        final AtomicBoolean complete = new AtomicBoolean();
+  
+        final Func2<Scheduler, T, Subscription> recursiveAction = new Func2<Scheduler, T, Subscription>() {
+            @Override
+            public Subscription call(Scheduler scheduler, T state0) {
+                if (! complete.get()) {
+                    long startedAt = System.nanoTime();
+                    final Subscription sub1 = action.call(scheduler, state0);
+                    long timeTakenByActionInNanos = System.nanoTime() - startedAt;
+                    final Subscription sub2 = schedule(state0, this, periodInNanos - timeTakenByActionInNanos, TimeUnit.NANOSECONDS);
+                    return Subscriptions.create(new Action0() {
+                        @Override
+                        public void call() {
+                            sub1.unsubscribe();
+                            sub2.unsubscribe();
+                        }
+                    });
+                }
+                return Subscriptions.empty();
+            }
+        };
+        final Subscription sub = schedule(state, recursiveAction, initialDelay, unit);
+        return Subscriptions.create(new Action0() {
+            @Override
+            public void call() {
+                complete.set(true);
+                sub.unsubscribe();
+            }
+        });
+    }
     
     /**
      * Schedules a cancelable action to be executed at dueTime.
