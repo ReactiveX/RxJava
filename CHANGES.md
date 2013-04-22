@@ -1,5 +1,18 @@
 # RxJava Releases #
 
+### Version 0.8.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.8.0%22)) ###
+
+This is a breaking (non-backwards compatible) release that updates the Scheduler implementation released in 0.7.0.
+
+See See https://github.com/Netflix/RxJava/issues/19 for background, discussion and status of Schedulers.
+
+It is believed that the public signatures of Scheduler and related objects is now stabilized but ongoing feedback and review by the community could still result in changes.
+
+* [Issue 19](https://github.com/Netflix/RxJava/issues/19) Schedulers improvements, changes and additions
+* [Issue 202](https://github.com/Netflix/RxJava/issues/202) Fix Concat bugs
+* [Issue 65](https://github.com/Netflix/RxJava/issues/65) Multicast
+* [Pull 218](https://github.com/Netflix/RxJava/pull/218) ReplaySubject
+
 ### Version 0.7.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.7.0%22)) ###
 
 This release adds the foundations of Rx Schedulers.

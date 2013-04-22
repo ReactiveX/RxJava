@@ -1,3 +1,18 @@
+/**
+ * Copyright 2013 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.operators;
 
 import static org.junit.Assert.*;
@@ -19,18 +34,23 @@ import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 /**
  * Common utility functions for testing operator implementations.
  */
-/* package */class Tester {
+/* package */class OperatorTester {
     /*
      * This is purposefully package-only so it does not leak into the public API outside of this package.
      * 
      * This package is implementation details and not part of the Javadocs and thus can change without breaking backwards compatibility.
+     * 
+     * benjchristensen => I'm procrastinating the decision of where and how these types of classes (see rx.subjects.UnsubscribeTester) should exist.
+     * If they are only for internal implementations then I don't want them as part of the API.
+     * If they are truly useful for everyone to use then an "rx.testing" package may make sense.
      */
 
-    private Tester() {
+    private OperatorTester() {
     }
 
     public static class UnitTest {
@@ -272,7 +292,7 @@ import rx.util.functions.Func1;
             }
         }
 
-        public static class ForwardingScheduler implements Scheduler {
+        public static class ForwardingScheduler extends Scheduler {
             private final Scheduler underlying;
 
             public ForwardingScheduler(Scheduler underlying) {
@@ -290,6 +310,16 @@ import rx.util.functions.Func1;
             }
 
             @Override
+            public Subscription schedule(Func1<Scheduler, Subscription> action) {
+                return underlying.schedule(action);
+            }
+
+            @Override
+            public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action) {
+                return underlying.schedule(state, action);
+            }
+
+            @Override
             public Subscription schedule(Action0 action, long dueTime, TimeUnit unit) {
                 return underlying.schedule(action, dueTime, unit);
             }
@@ -297,6 +327,16 @@ import rx.util.functions.Func1;
             @Override
             public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
                 return underlying.schedule(action, dueTime, unit);
+            }
+
+            @Override
+            public Subscription schedule(Func1<Scheduler, Subscription> action, long dueTime, TimeUnit unit) {
+                return underlying.schedule(action, dueTime, unit);
+            }
+            
+            @Override
+            public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
+                return underlying.schedule(state, action, dueTime, unit);
             }
 
             @Override
