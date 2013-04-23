@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.subjects;
+package rx.observables;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
-public abstract class Subject<T, R> extends Observable<R> implements Observer<T> {
-    protected Subject(Func1<Observer<R>, Subscription> onSubscribe) {
+public abstract class ConnectableObservable<T> extends Observable<T> {
+
+    protected ConnectableObservable(Func1<Observer<T>, Subscription> onSubscribe) {
         super(onSubscribe);
     }
+
+    public abstract Subscription connect();
+
 }

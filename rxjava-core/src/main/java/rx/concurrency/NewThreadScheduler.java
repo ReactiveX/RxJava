@@ -15,15 +15,20 @@
  */
 package rx.concurrency;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import rx.Scheduler;
 import rx.Subscription;
-import rx.util.functions.Func0;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.AtomicObservableSubscription;
+import rx.util.functions.Func2;
 
 /**
  * Schedules work on a new thread.
  */
-public class NewThreadScheduler extends AbstractScheduler {
+public class NewThreadScheduler extends Scheduler {
     private static final NewThreadScheduler INSTANCE = new NewThreadScheduler();
 
     public static NewThreadScheduler getInstance() {
@@ -31,24 +36,44 @@ public class NewThreadScheduler extends AbstractScheduler {
     }
 
     @Override
-    public Subscription schedule(Func0<Subscription> action) {
-        final DiscardableAction discardableAction = new DiscardableAction(action);
+    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action) {
+        final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        final Scheduler _scheduler = this;
 
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                discardableAction.call();
+                subscription.wrap(action.call(_scheduler, state));
             }
         }, "RxNewThreadScheduler");
 
         t.start();
 
-        return discardableAction;
+        return subscription;
     }
 
     @Override
-    public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
-        return schedule(new SleepingAction(action, this, dueTime, unit));
-    }
+    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long delay, TimeUnit unit) {
+        // we will use the system scheduler since it doesn't make sense to launch a new Thread and then sleep
+        // we will instead schedule the event then launch the thread after the delay has passed
+        final Scheduler _scheduler = this;
+        final CompositeSubscription subscription = new CompositeSubscription();
+        ScheduledFuture<?> f = GenericScheduledExecutorService.getInstance().schedule(new Runnable() {
 
+            @Override
+            public void run() {
+                if (!subscription.isUnsubscribed()) {
+                    // when the delay has passed we now do the work on the actual scheduler
+                    Subscription s = _scheduler.schedule(state, action);
+                    // add the subscription to the CompositeSubscription so it is unsubscribed
+                    subscription.add(s);
+                }
+            }
+        }, delay, unit);
+
+        // add the ScheduledFuture as a subscription so we can cancel the scheduled action if an unsubscribe happens
+        subscription.add(Subscriptions.create(f));
+
+        return subscription;
+    }
 }

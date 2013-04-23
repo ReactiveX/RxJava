@@ -33,7 +33,7 @@ import rx.observables.GroupedObservable;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
 
-public final class OperatorGroupBy {
+public final class OperationGroupBy {
 
     public static <K, T, R> Func1<Observer<GroupedObservable<K, R>>, Subscription> groupBy(Observable<T> source, final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
 
@@ -56,6 +56,7 @@ public final class OperatorGroupBy {
 
     private static class GroupBy<K, V> implements Func1<Observer<GroupedObservable<K, V>>, Subscription> {
         private final Observable<KeyValue<K, V>> source;
+        private final ConcurrentHashMap<K, Boolean> keys = new ConcurrentHashMap<K, Boolean>();
 
         private GroupBy(Observable<KeyValue<K, V>> source) {
             this.source = source;
@@ -63,36 +64,29 @@ public final class OperatorGroupBy {
 
         @Override
         public Subscription call(final Observer<GroupedObservable<K, V>> observer) {
-            return source.subscribe(new GroupByObserver(observer));
-        }
 
-        private class GroupByObserver implements Observer<KeyValue<K, V>> {
-            private final Observer<GroupedObservable<K, V>> underlying;
+            return source.subscribe(new Observer<KeyValue<K, V>>() {
 
-            private final ConcurrentHashMap<K, Boolean> keys = new ConcurrentHashMap<K, Boolean>();
-
-            private GroupByObserver(Observer<GroupedObservable<K, V>> underlying) {
-                this.underlying = underlying;
-            }
-
-            @Override
-            public void onCompleted() {
-                underlying.onCompleted();
-            }
-
-            @Override
-            public void onError(Exception e) {
-                underlying.onError(e);
-            }
-
-            @Override
-            public void onNext(final KeyValue<K, V> args) {
-                K key = args.key;
-                boolean newGroup = keys.putIfAbsent(key, true) == null;
-                if (newGroup) {
-                    underlying.onNext(buildObservableFor(source, key));
+                @Override
+                public void onCompleted() {
+                    observer.onCompleted();
                 }
-            }
+
+                @Override
+                public void onError(Exception e) {
+                    observer.onError(e);
+                }
+
+                @Override
+                public void onNext(final KeyValue<K, V> args) {
+                    K key = args.key;
+                    boolean newGroup = keys.putIfAbsent(key, true) == null;
+                    if (newGroup) {
+                        observer.onNext(buildObservableFor(source, key));
+                    }
+                }
+
+            });
         }
     }
 
