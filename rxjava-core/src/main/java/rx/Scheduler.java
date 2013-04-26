@@ -107,7 +107,7 @@ public abstract class Scheduler {
         final Func2<Scheduler, T, Subscription> recursiveAction = new Func2<Scheduler, T, Subscription>() {
             @Override
             public Subscription call(Scheduler scheduler, T state0) {
-                if (! complete.get()) {
+                if (!complete.get()) {
                     long startedAt = now();
                     final Subscription sub1 = action.call(scheduler, state0);
                     long timeTakenByActionInNanos = TimeUnit.MILLISECONDS.toNanos(now() - startedAt);
@@ -343,7 +343,7 @@ public abstract class Scheduler {
             final Func1<Long, Void> calledOp = mock(Func1.class);
             
             final TestScheduler scheduler = new TestScheduler();
-            scheduler.schedulePeriodically(new Action0() {
+            Subscription subscription = scheduler.schedulePeriodically(new Action0() {
                 @Override public void call() {
                     System.out.println(scheduler.now());
                     calledOp.call(scheduler.now());
@@ -369,6 +369,10 @@ public abstract class Scheduler {
             scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
             inOrder.verify(calledOp, times(1)).call(5000L);
             inOrder.verify(calledOp, times(1)).call(7000L);
+            
+            subscription.unsubscribe();
+            scheduler.advanceTimeBy(11L, TimeUnit.SECONDS);
+            inOrder.verify(calledOp, never()).call(anyLong());
         }
     }
 }
