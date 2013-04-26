@@ -19,7 +19,6 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Date;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -27,7 +26,6 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import rx.concurrency.Schedulers;
 import rx.concurrency.TestScheduler;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
