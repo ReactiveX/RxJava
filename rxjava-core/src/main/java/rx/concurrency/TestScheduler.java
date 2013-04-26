@@ -54,11 +54,12 @@ public class TestScheduler extends Scheduler {
         }
     }
 
+    // Storing time in nanoseconds internally.
     private long time;
 
     @Override
     public long now() {
-        return time;
+        return TimeUnit.NANOSECONDS.toMillis(time);
     }
 
     public void advanceTimeBy(long delayTime, TimeUnit unit) {
@@ -96,7 +97,7 @@ public class TestScheduler extends Scheduler {
 
     @Override
     public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit) {
-        queue.add(new TimedAction<T>(this, now() + unit.toNanos(delayTime), action, state));
+        queue.add(new TimedAction<T>(this, time + unit.toNanos(delayTime), action, state));
         return Subscriptions.empty();
     }
 }

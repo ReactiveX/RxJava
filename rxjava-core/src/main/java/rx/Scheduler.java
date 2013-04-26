@@ -15,10 +15,21 @@
  */
 package rx;
 
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+
+import rx.concurrency.TestScheduler;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;
@@ -97,9 +108,9 @@ public abstract class Scheduler {
             @Override
             public Subscription call(Scheduler scheduler, T state0) {
                 if (! complete.get()) {
-                    long startedAt = System.nanoTime();
+                    long startedAt = now();
                     final Subscription sub1 = action.call(scheduler, state0);
-                    long timeTakenByActionInNanos = System.nanoTime() - startedAt;
+                    long timeTakenByActionInNanos = TimeUnit.MILLISECONDS.toNanos(now() - startedAt);
                     final Subscription sub2 = schedule(state0, this, periodInNanos - timeTakenByActionInNanos, TimeUnit.NANOSECONDS);
                     return Subscriptions.create(new Action0() {
                         @Override
@@ -325,4 +336,39 @@ public abstract class Scheduler {
         return System.currentTimeMillis();
     }
 
+    public static class UnitTest {
+        @SuppressWarnings("unchecked") // mocking is unchecked, unfortunately
+        @Test
+        public void testPeriodicScheduling() {
+            final Func1<Long, Void> calledOp = mock(Func1.class);
+            
+            final TestScheduler scheduler = new TestScheduler();
+            scheduler.schedulePeriodically(new Action0() {
+                @Override public void call() {
+                    System.out.println(scheduler.now());
+                    calledOp.call(scheduler.now());
+                }
+            }, 1, 2, TimeUnit.SECONDS);
+            
+            verify(calledOp, never()).call(anyLong());
+
+            InOrder inOrder = Mockito.inOrder(calledOp);
+            
+            scheduler.advanceTimeBy(999L, TimeUnit.MILLISECONDS);
+            inOrder.verify(calledOp, never()).call(anyLong());
+
+            scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
+            inOrder.verify(calledOp, times(1)).call(1000L);
+            
+            scheduler.advanceTimeBy(1999L, TimeUnit.MILLISECONDS);
+            inOrder.verify(calledOp, never()).call(3000L);
+            
+            scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
+            inOrder.verify(calledOp, times(1)).call(3000L);
+            
+            scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
+            inOrder.verify(calledOp, times(1)).call(5000L);
+            inOrder.verify(calledOp, times(1)).call(7000L);
+        }
+    }
 }
