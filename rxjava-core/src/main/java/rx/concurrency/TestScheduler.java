@@ -79,6 +79,7 @@ public class TestScheduler extends Scheduler {
         while (!queue.isEmpty()) {
             TimedAction<?> current = queue.peek();
             if (current.time > targetTimeInNanos) {
+                time = targetTimeInNanos;
                 break;
             }
             time = current.time;
