@@ -87,10 +87,8 @@ public final class SwingScheduler extends Scheduler {
             }
             
             @Override
-            public void actionPerformed(@SuppressWarnings("unused") ActionEvent e) {
-                if (timer != null) {
-                    timer.stop();
-                }
+            public void actionPerformed(ActionEvent e) {
+                timer.stop();
                 sub.set(action.call(SwingScheduler.this, state));
             }
         }
@@ -112,7 +110,7 @@ public final class SwingScheduler extends Scheduler {
             }
         });
     }
-
+    
     public static class UnitTest {
         @Test
         public void testNestedActions() throws InterruptedException, InvocationTargetException {
@@ -155,10 +153,10 @@ public final class SwingScheduler extends Scheduler {
 
             scheduler.schedule(thirdAction);
             EventQueue.invokeAndWait(new Runnable() {
-              @Override
-              public void run() {
-                // nothing to do, we're just waiting here for the event queue to be emptied
-              }
+                @Override
+                public void run() {
+                    // nothing to do, we're just waiting here for the event queue to be emptied
+                }
             });
 
             inOrder.verify(thirdStepStart, times(1)).call();
