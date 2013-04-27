@@ -45,20 +45,20 @@ public final class OperationSample {
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> Func1<Observer<T>, Subscription> sample(final Observable<T> source, long interval, TimeUnit unit) {
-        return new Sample<T>(source, interval, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
+    public static <T> Func1<Observer<T>, Subscription> sample(final Observable<T> source, long period, TimeUnit unit) {
+        return new Sample<T>(source, period, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
     }
 
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> Func1<Observer<T>, Subscription> sample(final Observable<T> source, long interval, TimeUnit unit, Scheduler scheduler) {
-        return new Sample<T>(source, interval, unit, scheduler);
+    public static <T> Func1<Observer<T>, Subscription> sample(final Observable<T> source, long period, TimeUnit unit, Scheduler scheduler) {
+        return new Sample<T>(source, period, unit, scheduler);
     }
     
     private static class Sample<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> source;
-        private final long interval;
+        private final long period;
         private final TimeUnit unit;
         private final Scheduler scheduler;
         
@@ -67,23 +67,23 @@ public final class OperationSample {
         
         private Sample(Observable<T> source, long interval, TimeUnit unit, Scheduler scheduler) {
             this.source = source;
-            this.interval = interval;
+            this.period = interval;
             this.unit = unit;
             this.scheduler = scheduler;
         }
 
         @Override
         public Subscription call(final Observer<T> observer) {
-            Observable<Long> clock = Observable.create(OperationInterval.interval(interval, unit, scheduler));
+            Observable<Long> clock = Observable.create(OperationInterval.interval(period, unit, scheduler));
             final Subscription clockSubscription = clock.subscribe(new Observer<Long>() {
                 @Override
                 public void onCompleted() { /* the clock never completes */ }
                 
                 @Override
-                public void onError(@SuppressWarnings("unused") Exception e) { /* the clock has no errors */ }
+                public void onError(Exception e) { /* the clock has no errors */ }
                 
                 @Override
-                public void onNext(@SuppressWarnings("unused") Long tick) {
+                public void onNext(Long tick) {
                     if (hasValue.get()) {
                         observer.onNext(latestValue.get());
                     }
