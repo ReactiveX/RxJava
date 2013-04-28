@@ -53,4 +53,9 @@ public final class Timestamped<T> {
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("Timestamped(timestampMillis = %d, value = %s)", timestampMillis, value.toString());
+    }
 }
