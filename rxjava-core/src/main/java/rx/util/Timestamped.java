@@ -40,9 +40,6 @@ public final class Timestamped<T> {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
-        }
         if (!(obj instanceof Timestamped)) {
             return false;
         }
