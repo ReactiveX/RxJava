@@ -42,9 +42,9 @@ import rx.operators.OperationAll;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
-import rx.operators.OperationGroupBy;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
+import rx.operators.OperationGroupBy;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
@@ -590,9 +590,11 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
-     *
-     * @param subject the subject to push source elements into.
-     * @param <R> result type
+     * 
+     * @param subject
+     *            the subject to push source elements into.
+     * @param <R>
+     *            result type
      * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
      */
     public <R> ConnectableObservable<R> multicast(Subject<T, R> subject) {
@@ -1172,6 +1174,8 @@ public class Observable<T> {
      * and then merges the results of that function applied to every item emitted by the original
      * Observable, emitting these merged results as its own sequence.
      * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
      * 
      * @param sequence
@@ -1186,6 +1190,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item emitted by the source Observable and merging the results of
      *         the Observables obtained from this transformation
+     * @see {@link #flatMap(Observable, Func1)}
      */
     public static <T, R> Observable<R> mapMany(Observable<T> sequence, Func1<T, Observable<R>> func) {
         return create(OperationMap.mapMany(sequence, func));
@@ -1349,6 +1354,62 @@ public class Observable<T> {
      */
     public static <T> Observable<T> finallyDo(Observable<T> source, Action0 action) {
         return create(OperationFinally.finallyDo(source, action));
+    }
+
+    /**
+     * Creates a new Observable sequence by applying a function that you supply to each object in the
+     * original Observable sequence, where that function is itself an Observable that emits objects,
+     * and then merges the results of that function applied to every item emitted by the original
+     * Observable, emitting these merged results as its own sequence.
+     * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
+     * 
+     * @param sequence
+     *            the source Observable
+     * @param func
+     *            a function to apply to each item emitted by the source Observable, generating a
+     *            Observable
+     * @param <T>
+     *            the type emitted by the source Observable
+     * @param <R>
+     *            the type emitted by the Observables emitted by <code>func</code>
+     * @return an Observable that emits a sequence that is the result of applying the transformation
+     *         function to each item emitted by the source Observable and merging the results of
+     *         the Observables obtained from this transformation
+     * @see {@link #mapMany(Observable, Func1)}
+     */
+    public static <T, R> Observable<R> flatMap(Observable<T> sequence, Func1<T, Observable<R>> func) {
+        return mapMany(sequence, func);
+    }
+
+    /**
+     * Creates a new Observable sequence by applying a function that you supply to each object in the
+     * original Observable sequence, where that function is itself an Observable that emits objects,
+     * and then merges the results of that function applied to every item emitted by the original
+     * Observable, emitting these merged results as its own sequence.
+     * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
+     * 
+     * @param sequence
+     *            the source Observable
+     * @param func
+     *            a function to apply to each item emitted by the source Observable, generating a
+     *            Observable
+     * @param <T>
+     *            the type emitted by the source Observable
+     * @param <R>
+     *            the type emitted by the Observables emitted by <code>func</code>
+     * @return an Observable that emits a sequence that is the result of applying the transformation
+     *         function to each item emitted by the source Observable and merging the results of
+     *         the Observables obtained from this transformation
+     * @see {@link #mapMany(Observable, Func1)}
+     */
+    public static <T, R> Observable<R> flatMap(Observable<T> sequence, final Object func) {
+        return mapMany(sequence, func);
     }
 
     /**
@@ -2088,11 +2149,15 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
-     *
-     * @param source the source sequence whose elements will be pushed into the specified subject.
-     * @param subject the subject to push source elements into.
-     * @param <T> source type
-     * @param <R> result type
+     * 
+     * @param source
+     *            the source sequence whose elements will be pushed into the specified subject.
+     * @param subject
+     *            the subject to push source elements into.
+     * @param <T>
+     *            source type
+     * @param <R>
+     *            result type
      * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
      */
     public static <T, R> ConnectableObservable<R> multicast(Observable<T> source, final Subject<T, R> subject) {
@@ -2101,7 +2166,7 @@ public class Observable<T> {
 
     /**
      * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
-     *
+     * 
      * @param that
      *            the source Observable
      * @return The single element in the observable sequence.
@@ -2671,6 +2736,48 @@ public class Observable<T> {
     }
 
     /**
+     * Creates a new Observable sequence by applying a function that you supply to each item in the
+     * original Observable sequence, where that function is itself an Observable that emits items, and
+     * then merges the results of that function applied to every item emitted by the original
+     * Observable, emitting these merged results as its own sequence.
+     * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
+     * 
+     * @param func
+     *            a function to apply to each item in the sequence, that returns an Observable.
+     * @return an Observable that emits a sequence that is the result of applying the transformation
+     *         function to each item in the input sequence and merging the results of the
+     *         Observables obtained from this transformation.
+     * @see {@link #mapMany(Func1)}
+     */
+    public <R> Observable<R> flatMap(Func1<T, Observable<R>> func) {
+        return mapMany(func);
+    }
+
+    /**
+     * Creates a new Observable sequence by applying a function that you supply to each item in the
+     * original Observable sequence, where that function is itself an Observable that emits items, and
+     * then merges the results of that function applied to every item emitted by the original
+     * Observable, emitting these merged results as its own sequence.
+     * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
+     * 
+     * @param callback
+     *            a function to apply to each item in the sequence that returns an Observable.
+     * @return an Observable that emits a sequence that is the result of applying the transformation'
+     *         function to each item in the input sequence and merging the results of the
+     *         Observables obtained from this transformation.
+     * @see {@link #mapMany(Object)}
+     */
+    public <R> Observable<R> flatMap(final Object callback) {
+        return mapMany(callback);
+    }
+
+    /**
      * Filters an Observable by discarding any of its emissions that do not meet some test.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
@@ -2805,6 +2912,8 @@ public class Observable<T> {
      * then merges the results of that function applied to every item emitted by the original
      * Observable, emitting these merged results as its own sequence.
      * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
      * 
      * @param func
@@ -2812,6 +2921,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item in the input sequence and merging the results of the
      *         Observables obtained from this transformation.
+     * @see {@link #flatMap(Func1)}
      */
     public <R> Observable<R> mapMany(Func1<T, Observable<R>> func) {
         return mapMany(this, func);
@@ -2823,6 +2933,8 @@ public class Observable<T> {
      * then merges the results of that function applied to every item emitted by the original
      * Observable, emitting these merged results as its own sequence.
      * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
      * 
      * @param callback
@@ -2830,6 +2942,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation'
      *         function to each item in the input sequence and merging the results of the
      *         Observables obtained from this transformation.
+     * @see {@link #flatMap(Object))}
      */
     public <R> Observable<R> mapMany(final Object callback) {
         @SuppressWarnings("rawtypes")
