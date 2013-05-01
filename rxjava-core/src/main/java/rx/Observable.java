@@ -42,9 +42,9 @@ import rx.operators.OperationAll;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
-import rx.operators.OperationGroupBy;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
+import rx.operators.OperationGroupBy;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
@@ -64,6 +64,7 @@ import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
+import rx.operators.OperationToFuture;
 import rx.operators.OperationToIterator;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
@@ -590,9 +591,11 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
-     *
-     * @param subject the subject to push source elements into.
-     * @param <R> result type
+     * 
+     * @param subject
+     *            the subject to push source elements into.
+     * @param <R>
+     *            result type
      * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
      */
     public <R> ConnectableObservable<R> multicast(Subject<T, R> subject) {
@@ -2006,6 +2009,19 @@ public class Observable<T> {
     }
 
     /**
+     * Return a Future representing a single value of the Observable.
+     * <p>
+     * This will throw an exception if the Observable emits more than 1 value. If more than 1 are expected then use <code>toList().toFuture()</code>.
+     * 
+     * @param that
+     *            the source Observable
+     * @returna Future that expects a single item emitted by the source Observable
+     */
+    public static <T> Future<T> toFuture(final Observable<T> that) {
+        return OperationToFuture.toFuture(that);
+    }
+
+    /**
      * Returns an Observable that emits a single item, a list composed of all the items emitted by
      * the source Observable.
      * <p>
@@ -2088,11 +2104,15 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
-     *
-     * @param source the source sequence whose elements will be pushed into the specified subject.
-     * @param subject the subject to push source elements into.
-     * @param <T> source type
-     * @param <R> result type
+     * 
+     * @param source
+     *            the source sequence whose elements will be pushed into the specified subject.
+     * @param subject
+     *            the subject to push source elements into.
+     * @param <T>
+     *            source type
+     * @param <R>
+     *            result type
      * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
      */
     public static <T, R> ConnectableObservable<R> multicast(Observable<T> source, final Subject<T, R> subject) {
@@ -2101,7 +2121,7 @@ public class Observable<T> {
 
     /**
      * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
-     *
+     * 
      * @param that
      *            the source Observable
      * @return The single element in the observable sequence.
@@ -3358,6 +3378,17 @@ public class Observable<T> {
      */
     public <E> Observable<T> takeUntil(Observable<E> other) {
         return takeUntil(this, other);
+    }
+
+    /**
+     * Return a Future representing a single value of the Observable.
+     * <p>
+     * This will throw an exception if the Observable emits more than 1 value. If more than 1 are expected then use <code>toList().toFuture()</code>.
+     * 
+     * @returna Future that expects a single item emitted by the source Observable
+     */
+    public Future<T> toFuture() {
+        return toFuture(this);
     }
 
     /**
