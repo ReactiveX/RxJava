@@ -1,5 +1,12 @@
 # RxJava Releases #
 
+### Version 0.8.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.8.1%22)) ###
+
+* [Pull 250](https://github.com/Netflix/RxJava/pull/250) AsyncSubject
+* [Pull 252](https://github.com/Netflix/RxJava/pull/252) ToFuture
+* [Pull 246](https://github.com/Netflix/RxJava/pull/246) Scheduler.schedulePeriodically
+* [Pull 247](https://github.com/Netflix/RxJava/pull/247) flatMap aliased to mapMany
+
 ### Version 0.8.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.8.0%22)) ###
 
 This is a breaking (non-backwards compatible) release that updates the Scheduler implementation released in 0.7.0.
