@@ -340,6 +340,26 @@ import rx.util.functions.Func2;
             }
 
             @Override
+            public Subscription schedulePeriodically(Action0 action, long initialDelay, long period, TimeUnit unit) {
+                return underlying.schedulePeriodically(action, initialDelay, period, unit);
+            }
+
+            @Override
+            public Subscription schedulePeriodically(Func0<Subscription> action, long initialDelay, long period, TimeUnit unit) {
+                return underlying.schedulePeriodically(action, initialDelay, period, unit);
+            }
+
+            @Override
+            public Subscription schedulePeriodically(Func1<Scheduler, Subscription> action, long initialDelay, long period, TimeUnit unit) {
+                return underlying.schedulePeriodically(action, initialDelay, period, unit);
+            }
+
+            @Override
+            public <T> Subscription schedulePeriodically(T state, Func2<Scheduler, T, Subscription> action, long initialDelay, long period, TimeUnit unit) {
+                return underlying.schedulePeriodically(state, action, initialDelay, period, unit);
+            }
+
+            @Override
             public long now() {
                 return underlying.now();
             }
