@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,47 +56,35 @@ public final class OperationInterval {
     }
 
     private static class Interval implements Func1<Observer<Long>, Subscription> {
-        private final long interval;
+        private final long period;
         private final TimeUnit unit;
         private final Scheduler scheduler;
         
         private long currentValue;
-        private final AtomicBoolean complete = new AtomicBoolean();
 
-        private Interval(long interval, TimeUnit unit, Scheduler scheduler) {
-            this.interval = interval;
+        private Interval(long period, TimeUnit unit, Scheduler scheduler) {
+            this.period = period;
             this.unit = unit;
             this.scheduler = scheduler;
         }
 
         @Override
         public Subscription call(final Observer<Long> observer) {
-            scheduler.schedule(new IntervalAction(observer), interval, unit);
+            final Subscription wrapped = scheduler.schedulePeriodically(new Action0() {
+                @Override
+                public void call() {
+                    observer.onNext(currentValue);
+                    currentValue++;
+                }
+            }, period, period, unit);
+            
             return Subscriptions.create(new Action0() {
                 @Override
                 public void call() {
-                    complete.set(true);
+                    wrapped.unsubscribe();
+                    observer.onCompleted();
                 }
             });
-        }
-        
-        private class IntervalAction implements Action0 {
-            private final Observer<Long> observer;
-            
-            private IntervalAction(Observer<Long> observer) {
-                this.observer = observer;
-            }
-            
-            @Override
-            public void call() {
-                if (complete.get()) {
-                    observer.onCompleted();
-                } else {
-                    observer.onNext(currentValue);
-                    currentValue++;
-                    scheduler.schedule(this, interval, unit);
-                }
-            }
         }
     }
     
