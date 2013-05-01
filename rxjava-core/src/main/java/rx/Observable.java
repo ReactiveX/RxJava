@@ -64,6 +64,7 @@ import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
+import rx.operators.OperationToFuture;
 import rx.operators.OperationToIterator;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
@@ -2067,6 +2068,19 @@ public class Observable<T> {
     }
 
     /**
+     * Return a Future representing a single value of the Observable.
+     * <p>
+     * This will throw an exception if the Observable emits more than 1 value. If more than 1 are expected then use <code>toList().toFuture()</code>.
+     * 
+     * @param that
+     *            the source Observable
+     * @returna Future that expects a single item emitted by the source Observable
+     */
+    public static <T> Future<T> toFuture(final Observable<T> that) {
+        return OperationToFuture.toFuture(that);
+    }
+
+    /**
      * Returns an Observable that emits a single item, a list composed of all the items emitted by
      * the source Observable.
      * <p>
@@ -3471,6 +3485,17 @@ public class Observable<T> {
      */
     public <E> Observable<T> takeUntil(Observable<E> other) {
         return takeUntil(this, other);
+    }
+
+    /**
+     * Return a Future representing a single value of the Observable.
+     * <p>
+     * This will throw an exception if the Observable emits more than 1 value. If more than 1 are expected then use <code>toList().toFuture()</code>.
+     * 
+     * @returna Future that expects a single item emitted by the source Observable
+     */
+    public Future<T> toFuture() {
+        return toFuture(this);
     }
 
     /**
