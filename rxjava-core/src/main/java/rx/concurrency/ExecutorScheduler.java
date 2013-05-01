@@ -45,6 +45,27 @@ public class ExecutorScheduler extends Scheduler {
     }
 
     @Override
+    public <T> Subscription schedulePeriodically(final T state, final Func2<Scheduler, T, Subscription> action, long initialDelay, long period, TimeUnit unit) {
+        if (executor instanceof ScheduledExecutorService) {
+            final CompositeSubscription subscriptions = new CompositeSubscription();
+            
+            ScheduledFuture<?> f = ((ScheduledExecutorService) executor).scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    Subscription s = action.call(ExecutorScheduler.this, state);
+                    subscriptions.add(s);
+                }
+            }, initialDelay, period, unit);
+            
+            subscriptions.add(Subscriptions.create(f));
+            return subscriptions;
+            
+        } else {
+            return super.schedulePeriodically(state, action, initialDelay, period, unit);
+        }
+    }
+    
+    @Override
     public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit) {
         final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
         final Scheduler _scheduler = this;
