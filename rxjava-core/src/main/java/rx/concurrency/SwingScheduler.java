@@ -31,6 +31,7 @@ import org.mockito.InOrder;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Func2;
@@ -73,11 +74,7 @@ public final class SwingScheduler extends Scheduler {
     public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
         final AtomicReference<Subscription> sub = new AtomicReference<Subscription>();
         long delay = unit.toMillis(dueTime); 
-        
-        if (delay > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException(String.format(
-                    "The swing timer only accepts delays up to %d milliseconds.", Integer.MAX_VALUE));
-        }
+        assertThatTheDelayIsValidForTheSwingTimer(delay);
         
         class ExecuteOnceAction implements ActionListener {
             private Timer timer;
@@ -109,6 +106,52 @@ public final class SwingScheduler extends Scheduler {
                 }
             }
         });
+    }
+
+    @Override
+    public <T> Subscription schedulePeriodically(T state, final Func2<Scheduler, T, Subscription> action, long initialDelay, long period, TimeUnit unit) {
+        // FIXME test this!
+        final AtomicReference<Timer> timer = new AtomicReference<Timer>();
+        
+        final long delay = unit.toMillis(period); 
+        assertThatTheDelayIsValidForTheSwingTimer(delay);
+        
+        final CompositeSubscription subscriptions = new CompositeSubscription();
+        final Func2<Scheduler, T, Subscription> initialAction = new Func2<Scheduler, T, Subscription>() {
+              @Override
+              public Subscription call(final Scheduler scheduler, final T state) {
+                  // call the action once initially
+                  subscriptions.add(action.call(scheduler, state));
+                  
+                  // start timer for periodic execution, collect subscriptions
+                  timer.set(new Timer((int) delay, new ActionListener() {
+                      @Override
+                      public void actionPerformed(ActionEvent e) {
+                          subscriptions.add(action.call(scheduler,  state));
+                      }
+                  }));
+                  timer.get().start();
+                  
+                  return action.call(scheduler, state);
+              }
+        };
+        subscriptions.add(schedule(state, initialAction, initialDelay, unit));
+        
+        subscriptions.add(Subscriptions.create(new Action0() {
+            @Override
+            public void call() {
+                // in addition to all the individual unsubscriptions, stop the timer on unsubscribing
+                timer.get().stop();
+            }
+        }));
+        
+        return subscriptions;
+    }
+
+    private static void assertThatTheDelayIsValidForTheSwingTimer(long delay) {
+        if (delay > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException(String.format("The swing timer only accepts delays up to %d milliseconds.", Integer.MAX_VALUE));
+        }
     }
     
     public static class UnitTest {
