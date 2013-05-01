@@ -64,6 +64,7 @@ import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
+import rx.operators.OperationTimestamp;
 import rx.operators.OperationToFuture;
 import rx.operators.OperationToIterator;
 import rx.operators.OperationToObservableFuture;
@@ -2093,6 +2094,14 @@ public class Observable<T> {
         }));
     }
 
+    /**
+     * Adds a timestamp to each item emitted by this observable.
+     * @return An observable sequence of timestamped items.
+     */
+    public Observable<Timestamped<T>> timestamp() {
+        return create(OperationTimestamp.timestamp(this));
+    }
+    
     /**
      * Return a Future representing a single value of the Observable.
      * <p>
