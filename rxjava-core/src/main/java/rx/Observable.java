@@ -56,6 +56,7 @@ import rx.operators.OperationObserveOn;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
+import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSubscribeOn;
@@ -252,6 +253,7 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer() {
 
+            @Override
             public void onCompleted() {
                 Object onComplete = callbacks.get("onCompleted");
                 if (onComplete != null) {
@@ -259,6 +261,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 Object onError = callbacks.get("onError");
@@ -267,6 +270,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(Object args) {
                 onNext.call(args);
             }
@@ -298,15 +302,18 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer() {
 
+            @Override
             public void onCompleted() {
                 // do nothing
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 // no callback defined
             }
 
+            @Override
             public void onNext(Object args) {
                 onNext.call(args);
             }
@@ -327,15 +334,18 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer<T>() {
 
+            @Override
             public void onCompleted() {
                 // do nothing
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 // no callback defined
             }
 
+            @Override
             public void onNext(T args) {
                 if (onNext == null) {
                     throw new RuntimeException("onNext must be implemented");
@@ -365,10 +375,12 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer() {
 
+            @Override
             public void onCompleted() {
                 // do nothing
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 if (onError != null) {
@@ -376,6 +388,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(Object args) {
                 onNextFunction.call(args);
             }
@@ -396,10 +409,12 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer<T>() {
 
+            @Override
             public void onCompleted() {
                 // do nothing
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 if (onError != null) {
@@ -407,6 +422,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(T args) {
                 if (onNext == null) {
                     throw new RuntimeException("onNext must be implemented");
@@ -436,12 +452,14 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer() {
 
+            @Override
             public void onCompleted() {
                 if (onComplete != null) {
                     Functions.from(onComplete).call();
                 }
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 if (onError != null) {
@@ -449,6 +467,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(Object args) {
                 onNextFunction.call(args);
             }
@@ -469,10 +488,12 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer<T>() {
 
+            @Override
             public void onCompleted() {
                 onComplete.call();
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 if (onError != null) {
@@ -480,6 +501,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(T args) {
                 if (onNext == null) {
                     throw new RuntimeException("onNext must be implemented");
@@ -516,10 +538,12 @@ public class Observable<T> {
          * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
          */
         protectivelyWrapAndSubscribe(new Observer<T>() {
+            @Override
             public void onCompleted() {
                 latch.countDown();
             }
 
+            @Override
             public void onError(Exception e) {
                 /*
                  * If we receive an onError event we set the reference on the outer thread
@@ -531,6 +555,7 @@ public class Observable<T> {
                 latch.countDown();
             }
 
+            @Override
             public void onNext(T args) {
                 onNext.call(args);
             }
@@ -582,6 +607,7 @@ public class Observable<T> {
 
         forEach(new Action1() {
 
+            @Override
             public void call(Object args) {
                 onNext.call(args);
             }
@@ -2743,6 +2769,7 @@ public class Observable<T> {
         final FuncN _f = Functions.from(callback);
         return filter(this, new Func1<T, Boolean>() {
 
+            @Override
             public Boolean call(T t1) {
                 return (Boolean) _f.call(t1);
             }
@@ -2913,6 +2940,7 @@ public class Observable<T> {
         final FuncN _f = Functions.from(callback);
         return map(this, new Func1<T, R>() {
 
+            @Override
             @SuppressWarnings("unchecked")
             public R call(T t1) {
                 return (R) _f.call(t1);
@@ -2963,6 +2991,7 @@ public class Observable<T> {
         final FuncN _f = Functions.from(callback);
         return mapMany(this, new Func1<T, Observable<R>>() {
 
+            @Override
             @SuppressWarnings("unchecked")
             public Observable<R> call(T t1) {
                 return (Observable<R>) _f.call(t1);
@@ -3071,6 +3100,7 @@ public class Observable<T> {
         final FuncN _f = Functions.from(resumeFunction);
         return onErrorResumeNext(this, new Func1<Exception, Observable<T>>() {
 
+            @Override
             @SuppressWarnings("unchecked")
             public Observable<T> call(Exception e) {
                 return (Observable<T>) _f.call(e);
@@ -3152,6 +3182,7 @@ public class Observable<T> {
         final FuncN _f = Functions.from(resumeFunction);
         return onErrorReturn(this, new Func1<Exception, T>() {
 
+            @Override
             @SuppressWarnings("unchecked")
             public T call(Exception e) {
                 return (T) _f.call(e);
@@ -3288,6 +3319,34 @@ public class Observable<T> {
         return scan(this, accumulator);
     }
 
+    /**
+     * Samples the observable sequence at each interval.
+     * 
+     * @param period
+     *            The period of time that defines the sampling rate.
+     * @param unit
+     *            The time unit for the sampling rate time period.
+     * @return An observable sequence whose elements are the results of sampling the current observable sequence.
+     */
+    public Observable<T> sample(long period, TimeUnit unit) {
+        return create(OperationSample.sample(this, period, unit));
+    }
+  
+    /**
+     * Samples the observable sequence at each interval.
+     * 
+     * @param period
+     *            The period of time that defines the sampling rate.
+     * @param unit
+     *            The time unit for the sampling rate time period.
+     * @param scheduler
+     *            The scheduler to use for sampling.
+     * @return An observable sequence whose elements are the results of sampling the current observable sequence.
+     */
+    public Observable<T> sample(long period, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationSample.sample(this, period, unit, scheduler));
+    }
+    
     /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
