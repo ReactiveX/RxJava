@@ -194,8 +194,8 @@ public final class SwingScheduler extends Scheduler {
                 }
             };
             
-            Subscription sub = scheduler.schedulePeriodically(action, 20, 100, TimeUnit.MILLISECONDS);
-            Thread.sleep(400);
+            Subscription sub = scheduler.schedulePeriodically(action, 50, 200, TimeUnit.MILLISECONDS);
+            Thread.sleep(840);
             sub.unsubscribe();
             waitForEmptyEventQueue();
             verify(innerAction, times(4)).call();
