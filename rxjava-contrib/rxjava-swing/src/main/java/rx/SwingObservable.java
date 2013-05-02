@@ -15,14 +15,18 @@
  */
 package rx;
 
+import static rx.Observable.filter;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.Set;
 
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 
 import rx.swing.sources.AbstractButtonSource;
 import rx.swing.sources.KeyEventSource;
+import rx.util.functions.Func1;
 
 /**
  * Allows creating observables from various sources specific to Swing. 
@@ -49,5 +53,21 @@ public enum SwingObservable { ; // no instances
      */
     public static Observable<KeyEvent> fromKeyEvents(JComponent component) {
         return KeyEventSource.fromKeyEventsOf(component);
+    }
+
+    /**
+     * Creates an observable corresponding to raw key events, restricted a set of given key codes.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of key events.
+     */
+    public static Observable<KeyEvent> fromKeyEvents(JComponent component, final Set<Integer> keyCodes) {
+        return filter(fromKeyEvents(component), new Func1<KeyEvent, Boolean>() {
+            @Override
+            public Boolean call(KeyEvent event) {
+                return keyCodes.contains(event.getKeyCode());
+            }
+        });
     }
 }
