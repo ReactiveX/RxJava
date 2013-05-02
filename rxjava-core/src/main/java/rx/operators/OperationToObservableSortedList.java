@@ -47,7 +47,7 @@ public final class OperationToObservableSortedList<T> {
      * @param sequence
      * @throws ClassCastException
      *             if T objects do not implement Comparable
-     * @return
+     * @return an observable containing the sorted list
      */
     public static <T> Func1<Observer<List<T>>, Subscription> toSortedList(Observable<T> sequence) {
         return new ToObservableSortedList<T>(sequence);
@@ -58,7 +58,7 @@ public final class OperationToObservableSortedList<T> {
      * 
      * @param sequence
      * @param sortFunction
-     * @return
+     * @return an observable containing the sorted list
      */
     public static <T> Func1<Observer<List<T>>, Subscription> toSortedList(Observable<T> sequence, Func2<T, T, Integer> sortFunction) {
         return new ToObservableSortedList<T>(sequence, sortFunction);

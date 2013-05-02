@@ -52,7 +52,7 @@ public final class OperationSynchronize<T> {
      * 
      * @param observable
      * @param <T>
-     * @return
+     * @return the wrapped synchronized observable sequence
      */
     public static <T> Func1<Observer<T>, Subscription> synchronize(Observable<T> observable) {
         return new Synchronize<T>(observable);

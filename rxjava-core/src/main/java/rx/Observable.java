@@ -2010,24 +2010,24 @@ public class Observable<T> {
     }
 
     /**
-     * Returns a specified number of contiguous values from the start of an observable sequence.
+     * Returns the values from the start of an observable sequence while a given predicate remains true.
      * 
      * @param items
      * @param predicate
      *            a function to test each source element for a condition
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public static <T> Observable<T> takeWhile(final Observable<T> items, Func1<T, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhile(items, predicate));
     }
 
     /**
-     * Returns a specified number of contiguous values from the start of an observable sequence.
+     * Returns the values from the start of an observable sequence while a given predicate remains true.
      * 
      * @param items
      * @param predicate
      *            a function to test each source element for a condition
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public static <T> Observable<T> takeWhile(final Observable<T> items, Object predicate) {
         @SuppressWarnings("rawtypes")
@@ -2047,7 +2047,7 @@ public class Observable<T> {
      * @param items
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public static <T> Observable<T> takeWhileWithIndex(final Observable<T> items, Func2<T, Integer, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhileWithIndex(items, predicate));
@@ -2388,7 +2388,7 @@ public class Observable<T> {
      * @param sequence
      * @throws ClassCastException
      *             if T objects do not implement Comparable
-     * @return
+     * @return an observable containing the sorted list 
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence) {
         return create(OperationToObservableSortedList.toSortedList(sequence));
@@ -2401,7 +2401,7 @@ public class Observable<T> {
      * 
      * @param sequence
      * @param sortFunction
-     * @return
+     * @return an observable containing the sorted list 
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, Func2<T, T, Integer> sortFunction) {
         return create(OperationToObservableSortedList.toSortedList(sequence, sortFunction));
@@ -2414,7 +2414,7 @@ public class Observable<T> {
      * 
      * @param sequence
      * @param sortFunction
-     * @return
+     * @return an observable containing the sorted list 
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, final Object sortFunction) {
         @SuppressWarnings("rawtypes")
@@ -3421,18 +3421,18 @@ public class Observable<T> {
      * 
      * @param predicate
      *            a function to test each source element for a condition
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public Observable<T> takeWhile(final Func1<T, Boolean> predicate) {
         return takeWhile(this, predicate);
     }
 
     /**
-     * Returns a specified number of contiguous values from the start of an observable sequence.
+     * Returns an Observable that items emitted by the source Observable as long as a specified condition is true.
      * 
      * @param predicate
      *            a function to test each source element for a condition
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public Observable<T> takeWhile(final Object predicate) {
         return takeWhile(this, predicate);
@@ -3443,7 +3443,7 @@ public class Observable<T> {
      * 
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public Observable<T> takeWhileWithIndex(final Func2<T, Integer, Boolean> predicate) {
         return takeWhileWithIndex(this, predicate);
@@ -3454,7 +3454,7 @@ public class Observable<T> {
      * 
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public Observable<T> takeWhileWithIndex(final Object predicate) {
         return takeWhileWithIndex(this, predicate);
@@ -3525,7 +3525,7 @@ public class Observable<T> {
      * 
      * @throws ClassCastException
      *             if T objects do not implement Comparable
-     * @return
+     * @return an observable containing the sorted list 
      */
     public Observable<List<T>> toSortedList() {
         return toSortedList(this);
@@ -3537,7 +3537,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
      * 
      * @param sortFunction
-     * @return
+     * @return an observable containing the sorted list 
      */
     public Observable<List<T>> toSortedList(Func2<T, T, Integer> sortFunction) {
         return toSortedList(this, sortFunction);
@@ -3549,7 +3549,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
      * 
      * @param sortFunction
-     * @return
+     * @return an observable containing the sorted list 
      */
     public Observable<List<T>> toSortedList(final Object sortFunction) {
         return toSortedList(this, sortFunction);
@@ -3636,7 +3636,7 @@ public class Observable<T> {
      * NOTE: If strong reasons for not depending on package names comes up then the implementation of this method can change to looking for a marker interface.
      * 
      * @param f
-     * @return
+     * @return {@code true} if the given function is an internal implementation, and {@code false} otherwise.
      */
     private boolean isInternalImplementation(Object o) {
         if (o == null) {

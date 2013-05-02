@@ -37,7 +37,7 @@ public final class OperationSkip {
      * 
      * @param items
      * @param num
-     * @return
+     * @return the observable sequence starting after a number of skipped values
      * 
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229847(v=vs.103).aspx">Observable.Skip(TSource) Method</a>
      */
