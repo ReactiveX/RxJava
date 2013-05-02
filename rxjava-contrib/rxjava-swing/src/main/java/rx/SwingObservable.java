@@ -16,10 +16,13 @@
 package rx;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractButton;
+import javax.swing.JComponent;
 
 import rx.swing.sources.AbstractButtonSource;
+import rx.swing.sources.KeyEventSource;
 
 /**
  * Allows creating observables from various sources specific to Swing. 
@@ -35,5 +38,16 @@ public enum SwingObservable { ; // no instances
      */
     public static Observable<ActionEvent> fromButtonAction(AbstractButton button) {
         return AbstractButtonSource.fromActionOf(button);
+    }
+
+    /**
+     * Creates an observable corresponding to raw key events.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of key events.
+     */
+    public static Observable<KeyEvent> fromKeyEvents(JComponent component) {
+        return KeyEventSource.fromKeyEventsOf(component);
     }
 }

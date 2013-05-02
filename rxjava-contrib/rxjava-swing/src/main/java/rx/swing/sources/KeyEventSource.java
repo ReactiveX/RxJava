@@ -1,14 +1,13 @@
 package rx.swing.sources;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-import javax.swing.AbstractButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -21,24 +20,34 @@ import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
-public enum AbstractButtonSource { ; // no instances
+public enum KeyEventSource { ; // no instances
 
-    public static Observable<ActionEvent> fromActionOf(final AbstractButton button) {
-        return Observable.create(new Func1<Observer<ActionEvent>, Subscription>() {
+    public static Observable<KeyEvent> fromKeyEventsOf(final JComponent component) {
+        return Observable.create(new Func1<Observer<KeyEvent>, Subscription>() {
             @Override
-            public Subscription call(final Observer<ActionEvent> observer) {
-                final ActionListener listener = new ActionListener() {
+            public Subscription call(final Observer<KeyEvent> observer) {
+                final KeyListener listener = new KeyListener() {
                     @Override
-                    public void actionPerformed(ActionEvent e) {
-                        observer.onNext(e);
+                    public void keyPressed(KeyEvent event) {
+                        observer.onNext(event);
+                    }
+  
+                    @Override
+                    public void keyReleased(KeyEvent event) {
+                        observer.onNext(event);
+                    }
+  
+                    @Override
+                    public void keyTyped(KeyEvent event) {
+                        observer.onNext(event);
                     }
                 };
-                button.addActionListener(listener);
+                component.addKeyListener(listener);
                 
                 return Subscriptions.create(new Action0() {
                     @Override
                     public void call() {
-                        button.removeActionListener(listener);
+                        component.removeKeyListener(listener);
                     }
                 });
             }
@@ -54,33 +63,33 @@ public enum AbstractButtonSource { ; // no instances
             Action1<Exception> error = mock(Action1.class);
             Action0 complete = mock(Action0.class);
             
-            final ActionEvent event = new ActionEvent(this, 1, "command");
+            final KeyEvent event = mock(KeyEvent.class);
             
-            @SuppressWarnings("serial")
-            class TestButton extends AbstractButton {
-                void testAction() {
-                    fireActionPerformed(event);
-                }
-            }
+            JComponent comp = new JPanel();
             
-            TestButton button = new TestButton();
-            Subscription sub = fromActionOf(button).subscribe(action, error, complete);
+            Subscription sub = fromKeyEventsOf(comp).subscribe(action, error, complete);
             
             verify(action, never()).call(Matchers.<ActionEvent>any());
             verify(error, never()).call(Matchers.<Exception>any());
             verify(complete, never()).call();
             
-            button.testAction();
+            fireKeyEvent(comp, event);
             verify(action, times(1)).call(Matchers.<ActionEvent>any());
             
-            button.testAction();
+            fireKeyEvent(comp, event);
             verify(action, times(2)).call(Matchers.<ActionEvent>any());
             
             sub.unsubscribe();
-            button.testAction();
+            fireKeyEvent(comp, event);
             verify(action, times(2)).call(Matchers.<ActionEvent>any());
             verify(error, never()).call(Matchers.<Exception>any());
             verify(complete, never()).call();
+        }
+        
+        private static void fireKeyEvent(JComponent component, KeyEvent event) {
+            for (KeyListener listener: component.getKeyListeners()) {
+                listener.keyTyped(event);
+            }
         }
     }
 }
