@@ -40,7 +40,7 @@ public final class OperationMaterialize {
     /**
      * Materializes the implicit notifications of an observable sequence as explicit notification values.
      * 
-     * @param source
+     * @param sequence
      *            An observable sequence of elements to project.
      * @return An observable sequence whose elements are the result of materializing the notifications of the given sequence.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">Observable.Materialize(TSource) Method </a>

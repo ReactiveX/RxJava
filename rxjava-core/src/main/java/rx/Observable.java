@@ -562,8 +562,8 @@ public class Observable<T> {
      * <p>
      * This is similar to {@link #subscribe(Observer)} but blocks. Because it blocks it does not need the {@link Observer#onCompleted()} or {@link Observer#onError(Exception)} methods.
      * 
-     * @param onNext
-     *            {@link Action1}
+     * @param o
+     *            onNext {@link Action1 action}
      * @throws RuntimeException
      *             if error occurs
      */

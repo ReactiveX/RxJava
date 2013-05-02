@@ -51,7 +51,7 @@ public final class OperationMergeDelayError {
      * onError or onComplete so as to allow all successful
      * onNext calls to be received.
      * 
-     * @param source
+     * @param sequences
      *            An observable sequence of elements to project.
      * @return An observable sequence whose elements are the result of flattening the output from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">Observable.Merge(TSource) Method (IObservable(TSource)[])</a>

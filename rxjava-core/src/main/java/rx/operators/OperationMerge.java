@@ -44,7 +44,7 @@ public final class OperationMerge {
     /**
      * Flattens the observable sequences from the list of Observables into one observable sequence without any transformation.
      * 
-     * @param source
+     * @param o
      *            An observable sequence of elements to project.
      * @return An observable sequence whose elements are the result of flattening the output from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">Observable.Merge(TSource) Method (IObservable(TSource)[])</a>
