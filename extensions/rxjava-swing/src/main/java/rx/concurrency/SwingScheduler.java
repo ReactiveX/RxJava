@@ -15,6 +15,7 @@
  */
 package rx.concurrency;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 import java.awt.EventQueue;
@@ -23,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.junit.Rule;
@@ -187,6 +189,7 @@ public final class SwingScheduler extends Scheduler {
                 @Override
                 public Subscription call() {
                     innerAction.call();
+                    assertTrue(SwingUtilities.isEventDispatchThread());
                     return Subscriptions.create(unsubscribe);
                 }
             };
@@ -215,6 +218,7 @@ public final class SwingScheduler extends Scheduler {
             final Action0 firstAction = new Action0() {
                 @Override
                 public void call() {
+                    assertTrue(SwingUtilities.isEventDispatchThread());
                     firstStepStart.call();
                     firstStepEnd.call();
                 }
@@ -222,6 +226,7 @@ public final class SwingScheduler extends Scheduler {
             final Action0 secondAction = new Action0() {
                 @Override
                 public void call() {
+                    assertTrue(SwingUtilities.isEventDispatchThread());
                     secondStepStart.call();
                     scheduler.schedule(firstAction);
                     secondStepEnd.call();
@@ -230,6 +235,7 @@ public final class SwingScheduler extends Scheduler {
             final Action0 thirdAction = new Action0() {
                 @Override
                 public void call() {
+                    assertTrue(SwingUtilities.isEventDispatchThread());
                     thirdStepStart.call();
                     scheduler.schedule(secondAction);
                     thirdStepEnd.call();
