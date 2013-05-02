@@ -873,7 +873,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of items in the {@link Iterable} sequence and the type emitted by the resulting Observable
      * @return an Observable that emits each item in the source {@link Iterable} sequence
-     * @see {@link #toObservable(Iterable)}
+     * @see #toObservable(Iterable)
      */
     public static <T> Observable<T> from(Iterable<T> iterable) {
         return toObservable(iterable);
@@ -887,7 +887,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of items in the Array, and the type of items emitted by the resulting Observable
      * @return an Observable that emits each item in the source Array
-     * @see {@link #toObservable(Object...)}
+     * @see #toObservable(Object...)
      */
     public static <T> Observable<T> from(T... items) {
         return toObservable(items);
@@ -1191,7 +1191,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item emitted by the source Observable and merging the results of
      *         the Observables obtained from this transformation
-     * @see {@link #flatMap(Observable, Func1)}
+     * @see #flatMap(Observable, Func1)
      */
     public static <T, R> Observable<R> mapMany(Observable<T> sequence, Func1<T, Observable<R>> func) {
         return create(OperationMap.mapMany(sequence, func));
@@ -1379,7 +1379,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item emitted by the source Observable and merging the results of
      *         the Observables obtained from this transformation
-     * @see {@link #mapMany(Observable, Func1)}
+     * @see #mapMany(Observable, Func1)
      */
     public static <T, R> Observable<R> flatMap(Observable<T> sequence, Func1<T, Observable<R>> func) {
         return mapMany(sequence, func);
@@ -1407,7 +1407,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item emitted by the source Observable and merging the results of
      *         the Observables obtained from this transformation
-     * @see {@link #mapMany(Observable, Func1)}
+     * @see #mapMany(Observable, Func1)
      */
     public static <T, R> Observable<R> flatMap(Observable<T> sequence, final Object func) {
         return mapMany(sequence, func);
@@ -2074,7 +2074,7 @@ public class Observable<T> {
      * 
      * @param that
      *            the source Observable
-     * @returna Future that expects a single item emitted by the source Observable
+     * @return a Future that expects a single item emitted by the source Observable
      */
     public static <T> Future<T> toFuture(final Observable<T> that) {
         return OperationToFuture.toFuture(that);
@@ -2764,7 +2764,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item in the input sequence and merging the results of the
      *         Observables obtained from this transformation.
-     * @see {@link #mapMany(Func1)}
+     * @see #mapMany(Func1)
      */
     public <R> Observable<R> flatMap(Func1<T, Observable<R>> func) {
         return mapMany(func);
@@ -2785,7 +2785,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation'
      *         function to each item in the input sequence and merging the results of the
      *         Observables obtained from this transformation.
-     * @see {@link #mapMany(Object)}
+     * @see #mapMany(Object)
      */
     public <R> Observable<R> flatMap(final Object callback) {
         return mapMany(callback);
@@ -2935,7 +2935,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item in the input sequence and merging the results of the
      *         Observables obtained from this transformation.
-     * @see {@link #flatMap(Func1)}
+     * @see #flatMap(Func1)
      */
     public <R> Observable<R> mapMany(Func1<T, Observable<R>> func) {
         return mapMany(this, func);
@@ -2956,7 +2956,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation'
      *         function to each item in the input sequence and merging the results of the
      *         Observables obtained from this transformation.
-     * @see {@link #flatMap(Object))}
+     * @see #flatMap(Object)
      */
     public <R> Observable<R> mapMany(final Object callback) {
         @SuppressWarnings("rawtypes")
@@ -3492,7 +3492,7 @@ public class Observable<T> {
      * <p>
      * This will throw an exception if the Observable emits more than 1 value. If more than 1 are expected then use <code>toList().toFuture()</code>.
      * 
-     * @returna Future that expects a single item emitted by the source Observable
+     * @return a Future that expects a single item emitted by the source Observable
      */
     public Future<T> toFuture() {
         return toFuture(this);

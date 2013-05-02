@@ -33,7 +33,7 @@ import rx.util.functions.Func1;
  * <p>
  * In other words, converts a sequence of OnNext, OnError and OnCompleted events into a sequence of ObservableNotifications containing the OnNext, OnError and OnCompleted values.
  * <p>
- * See http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx for the Microsoft Rx equivalent.
+ * See <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">here</a> for the Microsoft Rx equivalent.
  */
 public final class OperationMaterialize {
 
@@ -43,7 +43,7 @@ public final class OperationMaterialize {
      * @param source
      *            An observable sequence of elements to project.
      * @return An observable sequence whose elements are the result of materializing the notifications of the given sequence.
-     * @see http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">Observable.Materialize(TSource) Method </a>
      */
     public static <T> Func1<Observer<Notification<T>>, Subscription> materialize(final Observable<T> sequence) {
         return new MaterializeObservable<T>(sequence);

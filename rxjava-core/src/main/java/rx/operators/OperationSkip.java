@@ -29,8 +29,6 @@ import rx.util.functions.Func1;
 
 /**
  * Skips a specified number of contiguous values from the start of a Observable sequence and then returns the remaining values.
- * 
- * @param <T>
  */
 public final class OperationSkip {
 
@@ -41,7 +39,7 @@ public final class OperationSkip {
      * @param num
      * @return
      * 
-     * @see http://msdn.microsoft.com/en-us/library/hh229847(v=vs.103).aspx
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229847(v=vs.103).aspx">Observable.Skip(TSource) Method</a>
      */
     public static <T> Func1<Observer<T>, Subscription> skip(final Observable<T> items, final int num) {
         // wrap in a Observable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
