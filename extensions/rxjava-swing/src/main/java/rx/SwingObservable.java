@@ -21,8 +21,18 @@ import javax.swing.AbstractButton;
 
 import rx.swing.sources.AbstractButtonSource;
 
+/**
+ * Allows creating observables from various sources specific to Swing. 
+ */
 public enum SwingObservable { ; // no instances
 
+    /**
+     * Creates an observable corresponding to a Swing button action.
+     * 
+     * @param button 
+     *            The button to register the observable for.
+     * @return Observable of action events.
+     */
     public static Observable<ActionEvent> fromButtonAction(AbstractButton button) {
         return AbstractButtonSource.fromActionOf(button);
     }
