@@ -15,80 +15,15 @@
  */
 package rx;
 
-import static org.mockito.Mockito.*;
-
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.AbstractButton;
 
-import org.junit.Test;
-import org.mockito.Matchers;
-
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
+import rx.swing.sources.AbstractButtonSource;
 
 public enum SwingObservable { ; // no instances
 
-    public static Observable<ActionEvent> fromButtonAction(final AbstractButton button) {
-        return Observable.create(new Func1<Observer<ActionEvent>, Subscription>() {
-            @Override
-            public Subscription call(final Observer<ActionEvent> observer) {
-                final ActionListener listener = new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        observer.onNext(e);
-                    }
-                };
-                button.addActionListener(listener);
-                
-                return Subscriptions.create(new Action0() {
-                    @Override
-                    public void call() {
-                        button.removeActionListener(listener);
-                    }
-                });
-            }
-        });
-    }
-    
-    public static class UnitTest {
-        @Test
-        public void testObservingActionEvents() {
-            @SuppressWarnings("unchecked")
-            Action1<ActionEvent> action = mock(Action1.class);
-            @SuppressWarnings("unchecked")
-            Action1<Exception> error = mock(Action1.class);
-            Action0 complete = mock(Action0.class);
-            
-            final ActionEvent event = new ActionEvent(this, 1, "command");
-            
-            class TestButton extends AbstractButton {
-                void testAction() {
-                    fireActionPerformed(event);
-                }
-            }
-            
-            TestButton button = new TestButton();
-            Subscription sub = fromButtonAction(button).subscribe(action, error, complete);
-            
-            verify(action, never()).call(Matchers.<ActionEvent>any());
-            verify(error, never()).call(Matchers.<Exception>any());
-            verify(complete, never()).call();
-            
-            button.testAction();
-            verify(action, times(1)).call(Matchers.<ActionEvent>any());
-            
-            button.testAction();
-            verify(action, times(2)).call(Matchers.<ActionEvent>any());
-            
-            sub.unsubscribe();
-            button.testAction();
-            verify(action, times(2)).call(Matchers.<ActionEvent>any());
-            verify(error, never()).call(Matchers.<Exception>any());
-            verify(complete, never()).call();
-        }
+    public static Observable<ActionEvent> fromButtonAction(AbstractButton button) {
+        return AbstractButtonSource.fromActionOf(button);
     }
 }
