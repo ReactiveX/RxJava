@@ -16,7 +16,6 @@
 package rx.concurrency;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
@@ -320,9 +319,6 @@ public class TestSchedulers {
                 });
             }
         });
-
-        @SuppressWarnings("unchecked")
-        Observer<Integer> o = mock(Observer.class);
 
         final AtomicInteger count = new AtomicInteger();
         final AtomicBoolean completed = new AtomicBoolean(false);
