@@ -3221,6 +3221,13 @@ public class Observable<T> {
     }
 
     /**
+     * @see #reduce(Func2)
+     */
+    public Observable<T> aggregate(Func2<T, T, T> accumulator) {
+        return reduce(accumulator);
+    }
+    
+    /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
      * by an Observable into the same function, and so on until all items have been emitted by the
@@ -3247,6 +3254,13 @@ public class Observable<T> {
     }
 
     /**
+     * @see #reduce(Object)
+     */
+    public Observable<T> aggregate(Object accumulator) {
+        return reduce(accumulator);
+    }
+    
+    /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
      * by an Observable into the same function, and so on until all items have been emitted by the
@@ -3270,8 +3284,15 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public Observable<T> reduce(T initialValue, Func2<T, T, T> accumulator) {
+    public <R> Observable<R> reduce(R initialValue, Func2<R, T, R> accumulator) {
         return reduce(this, initialValue, accumulator);
+    }
+
+    /**
+     * @see #reduce(R, Func2)
+     */
+    public <R> Observable<R> aggregate(R initialValue, Func2<R, T, R> accumulator) {
+        return reduce(initialValue, accumulator);
     }
 
     /**
@@ -3297,10 +3318,17 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public Observable<T> reduce(T initialValue, Object accumulator) {
+    public <R> Observable<R> reduce(R initialValue, Object accumulator) {
         return reduce(this, initialValue, accumulator);
     }
 
+    /**
+     * @see #reduce(R, Object)
+     */
+    public <R> Observable<R> aggregate(R initialValue, Object accumulator) {
+        return reduce(initialValue, accumulator);
+    }
+    
     /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
