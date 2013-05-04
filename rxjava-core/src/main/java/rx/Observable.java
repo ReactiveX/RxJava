@@ -1746,6 +1746,8 @@ public class Observable<T> {
      * 
      * @param <T>
      *            the type item emitted by the source Observable
+     * @param <R>
+     *            the type returned for each item of the target observable
      * @param sequence
      *            the source Observable
      * @param initialValue
@@ -1760,7 +1762,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public static <T> Observable<T> reduce(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
+    public static <T, R> Observable<R> reduce(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
         return takeLast(create(OperationScan.scan(sequence, initialValue, accumulator)), 1);
     }
 
@@ -1778,6 +1780,8 @@ public class Observable<T> {
      * 
      * @param <T>
      *            the type item emitted by the source Observable
+     * @param <R>
+     *            the type returned for each item of the target observable
      * @param sequence
      *            the source Observable
      * @param initialValue
@@ -1791,17 +1795,15 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public static <T> Observable<T> reduce(final Observable<T> sequence, final T initialValue, final Object accumulator) {
+    public static <T, R> Observable<R> reduce(final Observable<T> sequence, final R initialValue, final Object accumulator) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(accumulator);
-        return reduce(sequence, initialValue, new Func2<T, T, T>() {
-
+        return reduce(sequence, initialValue, new Func2<R, T, R>() {
             @SuppressWarnings("unchecked")
             @Override
-            public T call(T t1, T t2) {
-                return (T) _f.call(t1, t2);
+            public R call(R r, T t) {
+                return (R) _f.call(r, t);
             }
-
         });
     }
 
