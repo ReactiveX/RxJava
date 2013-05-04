@@ -26,6 +26,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
+import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -43,8 +44,8 @@ public final class OperationScan {
      * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
      * @see http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx
      */
-    public static <T> Func1<Observer<T>, Subscription> scan(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
-        return new Accumulator<T>(sequence, initialValue, accumulator);
+    public static <T, R> Func1<Observer<R>, Subscription> scan(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
+        return new Accumulator<T, R>(sequence, initialValue, accumulator);
     }
 
     /**
@@ -59,26 +60,49 @@ public final class OperationScan {
      * @see http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx
      */
     public static <T> Func1<Observer<T>, Subscription> scan(Observable<T> sequence, Func2<T, T, T> accumulator) {
-        return new Accumulator<T>(sequence, null, accumulator);
+        return new AccuWithoutInitialValue<T>(sequence, accumulator);
     }
 
-    private static class Accumulator<T> implements Func1<Observer<T>, Subscription> {
+    private static class AccuWithoutInitialValue<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> sequence;
-        private final T initialValue;
-        private Func2<T, T, T> accumlatorFunction;
+        private final Func2<T, T, T> accumlatorFunction;
+        private T initialValue;
+
+        private AccuWithoutInitialValue(Observable<T> sequence, Func2<T, T, T> accumulator) {
+            this.sequence = sequence;
+            this.accumlatorFunction = accumulator;
+        }
+        
+        @Override
+        public Subscription call(final Observer<T> observer) {
+            sequence.take(1).subscribe(new Action1<T>() {
+                @Override
+                public void call(T value) {
+                    initialValue = value;
+                    observer.onNext(value);
+                }
+            });
+            Accumulator<T, T> scan = new Accumulator<T, T>(sequence /* FIXME .drop(1) */, initialValue, accumlatorFunction);
+            return scan.call(observer);
+        }
+    }
+    
+    private static class Accumulator<T, R> implements Func1<Observer<R>, Subscription> {
+        private final Observable<T> sequence;
+        private final R initialValue;
+        private final Func2<R, T, R> accumlatorFunction;
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
-        private Accumulator(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
+        private Accumulator(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
             this.sequence = sequence;
             this.initialValue = initialValue;
             this.accumlatorFunction = accumulator;
         }
 
-        public Subscription call(final Observer<T> observer) {
-
+        @Override
+        public Subscription call(final Observer<R> observer) {
             return subscription.wrap(sequence.subscribe(new Observer<T>() {
-                private T acc = initialValue;
-                private boolean hasSentInitialValue = false;
+                private R acc = initialValue;
 
                 /**
                  * We must synchronize this because we can't allow
@@ -87,26 +111,11 @@ public final class OperationScan {
                  * 
                  * Because it's synchronized it's using non-atomic variables since everything in this method is single-threaded
                  */
+                @Override
                 public synchronized void onNext(T value) {
-                    if (acc == null) {
-                        // we assume that acc is not allowed to be returned from accumulatorValue
-                        // so it's okay to check null as being the state we initialize on
-                        acc = value;
-                        // this is all we do for this first value if we didn't have an initialValue
-                        return;
-                    }
-                    if (!hasSentInitialValue) {
-                        hasSentInitialValue = true;
-                        observer.onNext(acc);
-                    }
-
                     try {
 
                         acc = accumlatorFunction.call(acc, value);
-                        if (acc == null) {
-                            onError(new IllegalArgumentException("Null is an unsupported return value for an accumulator."));
-                            return;
-                        }
                         observer.onNext(acc);
                     } catch (Exception ex) {
                         observer.onError(ex);
@@ -115,16 +124,13 @@ public final class OperationScan {
                     }
                 }
 
+                @Override
                 public void onError(Exception ex) {
                     observer.onError(ex);
                 }
 
-                // synchronized because we access 'hasSentInitialValue'
-                public synchronized void onCompleted() {
-                    // if only one sequence value existed, we send it without any accumulation
-                    if (!hasSentInitialValue) {
-                        observer.onNext(acc);
-                    }
+                @Override
+                public void onCompleted() {
                     observer.onCompleted();
                 }
             }));
