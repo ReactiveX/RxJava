@@ -252,6 +252,7 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer() {
 
+            @Override
             public void onCompleted() {
                 Object onComplete = callbacks.get("onCompleted");
                 if (onComplete != null) {
@@ -259,6 +260,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 Object onError = callbacks.get("onError");
@@ -267,6 +269,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(Object args) {
                 onNext.call(args);
             }
@@ -298,15 +301,18 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer() {
 
+            @Override
             public void onCompleted() {
                 // do nothing
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 // no callback defined
             }
 
+            @Override
             public void onNext(Object args) {
                 onNext.call(args);
             }
@@ -327,15 +333,18 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer<T>() {
 
+            @Override
             public void onCompleted() {
                 // do nothing
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 // no callback defined
             }
 
+            @Override
             public void onNext(T args) {
                 if (onNext == null) {
                     throw new RuntimeException("onNext must be implemented");
@@ -365,10 +374,12 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer() {
 
+            @Override
             public void onCompleted() {
                 // do nothing
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 if (onError != null) {
@@ -376,6 +387,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(Object args) {
                 onNextFunction.call(args);
             }
@@ -396,10 +408,12 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer<T>() {
 
+            @Override
             public void onCompleted() {
                 // do nothing
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 if (onError != null) {
@@ -407,6 +421,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(T args) {
                 if (onNext == null) {
                     throw new RuntimeException("onNext must be implemented");
@@ -436,12 +451,14 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer() {
 
+            @Override
             public void onCompleted() {
                 if (onComplete != null) {
                     Functions.from(onComplete).call();
                 }
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 if (onError != null) {
@@ -449,6 +466,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(Object args) {
                 onNextFunction.call(args);
             }
@@ -469,10 +487,12 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer<T>() {
 
+            @Override
             public void onCompleted() {
                 onComplete.call();
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 if (onError != null) {
@@ -480,6 +500,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(T args) {
                 if (onNext == null) {
                     throw new RuntimeException("onNext must be implemented");
@@ -516,10 +537,12 @@ public class Observable<T> {
          * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
          */
         protectivelyWrapAndSubscribe(new Observer<T>() {
+            @Override
             public void onCompleted() {
                 latch.countDown();
             }
 
+            @Override
             public void onError(Exception e) {
                 /*
                  * If we receive an onError event we set the reference on the outer thread
@@ -531,6 +554,7 @@ public class Observable<T> {
                 latch.countDown();
             }
 
+            @Override
             public void onNext(T args) {
                 onNext.call(args);
             }
@@ -582,6 +606,7 @@ public class Observable<T> {
 
         forEach(new Action1() {
 
+            @Override
             public void call(Object args) {
                 onNext.call(args);
             }
@@ -1846,6 +1871,8 @@ public class Observable<T> {
      * 
      * @param <T>
      *            the type item emitted by the source Observable
+     * @param <R>
+     *            the type returned for each item of the target observable
      * @param sequence
      *            the source Observable
      * @param initialValue
@@ -1857,7 +1884,7 @@ public class Observable<T> {
      *         output from the sequence emitted by the source Observable
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public static <T> Observable<T> scan(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
+    public static <T, R> Observable<R> scan(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
         return create(OperationScan.scan(sequence, initialValue, accumulator));
     }
 
@@ -1871,6 +1898,8 @@ public class Observable<T> {
      * 
      * @param <T>
      *            the type item emitted by the source Observable
+     * @param <R>
+     *            the type returned for each item of the target observable
      * @param sequence
      *            the source Observable
      * @param initialValue
@@ -1882,17 +1911,16 @@ public class Observable<T> {
      *         output from the sequence emitted by the source Observable
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public static <T> Observable<T> scan(final Observable<T> sequence, final T initialValue, final Object accumulator) {
+    public static <T, R> Observable<R> scan(final Observable<T> sequence, final R initialValue, final Object accumulator) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(accumulator);
-        return scan(sequence, initialValue, new Func2<T, T, T>() {
+        return scan(sequence, initialValue, new Func2<R, T, R>() {
 
             @SuppressWarnings("unchecked")
             @Override
-            public T call(T t1, T t2) {
-                return (T) _f.call(t1, t2);
+            public R call(R r, T t) {
+                return (R) _f.call(r, t);
             }
-
         });
     }
 
@@ -2743,6 +2771,7 @@ public class Observable<T> {
         final FuncN _f = Functions.from(callback);
         return filter(this, new Func1<T, Boolean>() {
 
+            @Override
             public Boolean call(T t1) {
                 return (Boolean) _f.call(t1);
             }
@@ -2913,6 +2942,7 @@ public class Observable<T> {
         final FuncN _f = Functions.from(callback);
         return map(this, new Func1<T, R>() {
 
+            @Override
             @SuppressWarnings("unchecked")
             public R call(T t1) {
                 return (R) _f.call(t1);
@@ -2963,6 +2993,7 @@ public class Observable<T> {
         final FuncN _f = Functions.from(callback);
         return mapMany(this, new Func1<T, Observable<R>>() {
 
+            @Override
             @SuppressWarnings("unchecked")
             public Observable<R> call(T t1) {
                 return (Observable<R>) _f.call(t1);
@@ -3071,6 +3102,7 @@ public class Observable<T> {
         final FuncN _f = Functions.from(resumeFunction);
         return onErrorResumeNext(this, new Func1<Exception, Observable<T>>() {
 
+            @Override
             @SuppressWarnings("unchecked")
             public Observable<T> call(Exception e) {
                 return (Observable<T>) _f.call(e);
@@ -3152,6 +3184,7 @@ public class Observable<T> {
         final FuncN _f = Functions.from(resumeFunction);
         return onErrorReturn(this, new Func1<Exception, T>() {
 
+            @Override
             @SuppressWarnings("unchecked")
             public T call(Exception e) {
                 return (T) _f.call(e);
@@ -3330,7 +3363,7 @@ public class Observable<T> {
      *         the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public Observable<T> scan(T initialValue, Func2<T, T, T> accumulator) {
+    public <R> Observable<R> scan(R initialValue, Func2<R, T, R> accumulator) {
         return scan(this, initialValue, accumulator);
     }
 
@@ -3353,7 +3386,7 @@ public class Observable<T> {
      *         the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public Observable<T> scan(final T initialValue, final Object accumulator) {
+    public <R> Observable<R> scan(final R initialValue, final Object accumulator) {
         return scan(this, initialValue, accumulator);
     }
 

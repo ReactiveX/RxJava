@@ -79,10 +79,9 @@ public final class OperationScan {
                 @Override
                 public void call(T value) {
                     initialValue = value;
-                    observer.onNext(value);
                 }
             });
-            Accumulator<T, T> scan = new Accumulator<T, T>(sequence /* FIXME .drop(1) */, initialValue, accumlatorFunction);
+            Accumulator<T, T> scan = new Accumulator<T, T>(sequence.skip(1), initialValue, accumlatorFunction);
             return scan.call(observer);
         }
     }
@@ -101,6 +100,8 @@ public final class OperationScan {
 
         @Override
         public Subscription call(final Observer<R> observer) {
+            observer.onNext(initialValue);
+            
             return subscription.wrap(sequence.subscribe(new Observer<T>() {
                 private R acc = initialValue;
 
@@ -114,7 +115,6 @@ public final class OperationScan {
                 @Override
                 public synchronized void onNext(T value) {
                     try {
-
                         acc = accumlatorFunction.call(acc, value);
                         observer.onNext(acc);
                     } catch (Exception ex) {
@@ -147,28 +147,28 @@ public final class OperationScan {
         @Test
         public void testScanIntegersWithInitialValue() {
             @SuppressWarnings("unchecked")
-            Observer<Integer> Observer = mock(Observer.class);
+            Observer<String> observer = mock(Observer.class);
 
             Observable<Integer> observable = Observable.toObservable(1, 2, 3);
 
-            Observable<Integer> m = Observable.create(scan(observable, 0, new Func2<Integer, Integer, Integer>() {
+            Observable<String> m = Observable.create(scan(observable, "", new Func2<String, Integer, String>() {
 
                 @Override
-                public Integer call(Integer t1, Integer t2) {
-                    return t1 + t2;
+                public String call(String s, Integer n) {
+                    return s + n.toString();
                 }
 
             }));
-            m.subscribe(Observer);
+            m.subscribe(observer);
 
-            verify(Observer, never()).onError(any(Exception.class));
-            verify(Observer, times(1)).onNext(0);
-            verify(Observer, times(1)).onNext(1);
-            verify(Observer, times(1)).onNext(3);
-            verify(Observer, times(1)).onNext(6);
-            verify(Observer, times(4)).onNext(anyInt());
-            verify(Observer, times(1)).onCompleted();
-            verify(Observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, times(1)).onNext("");
+            verify(observer, times(1)).onNext("1");
+            verify(observer, times(1)).onNext("12");
+            verify(observer, times(1)).onNext("123");
+            verify(observer, times(4)).onNext(anyString());
+            verify(observer, times(1)).onCompleted();
+            verify(observer, never()).onError(any(Exception.class));
         }
 
         @Test
