@@ -15,9 +15,16 @@
  */
 package rx;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,6 +72,7 @@ import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
+import rx.operators.OperationThrottle;
 import rx.operators.OperationTimestamp;
 import rx.operators.OperationToFuture;
 import rx.operators.OperationToIterator;
@@ -2093,6 +2101,29 @@ public class Observable<T> {
                 return (Boolean) _f.call(t, integer);
             }
         }));
+    }
+
+    /**
+     * Throttles the {@link Observable} by dropping values which are followed by newer values before the timer has expired.
+     * 
+     * @param timeout    The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * @param unit       The {@link TimeUnit} for the timeout.
+     * @return An {@link Observable} which filters out values which are too quickly followed up with never values.
+     */
+    public Observable<T> throttle(long timeout, TimeUnit unit) {
+        return create(OperationThrottle.throttle(this, timeout, unit));
+    }
+
+    /**
+     * Throttles the {@link Observable} by dropping values which are followed by newer values before the timer has expired.
+     * 
+     * @param timeout    The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * @param unit       The {@link TimeUnit} for the timeout.
+     * @param scheduler  The {@link Scheduler} to use when timing incoming values.
+     * @return An {@link Observable} which filters out values which are too quickly followed up with never values.
+     */
+    public Observable<T> throttle(long timeout, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationThrottle.throttle(this, timeout, unit, scheduler));
     }
 
     /**
