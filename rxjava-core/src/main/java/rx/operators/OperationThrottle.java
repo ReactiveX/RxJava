@@ -15,13 +15,8 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +55,7 @@ public final class OperationThrottle {
      * @param unit       The unit of time for the specified timeout.
      * @return A {@link Func1} which performs the throttle operation.
      */
-    public static <T> Func1<Observer<T>, Subscription> throttle(final Observable<T> items, long timeout, TimeUnit unit) {
+    public static <T> Func1<Observer<T>, Subscription> throttle(Observable<T> items, long timeout, TimeUnit unit) {
         return throttle(items, timeout, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
     }
 
@@ -132,7 +127,7 @@ public final class OperationThrottle {
         }
 
         @Override
-        public void onNext(final T args) {
+        public void onNext(T args) {
             throttle(new ThrottledOnNext<T>(observer, args));
         }
 
@@ -215,7 +210,7 @@ public final class OperationThrottle {
         public void testThrottlingWithCompleted() {
             Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>() {
                 @Override
-                public Subscription call(final Observer<String> observser) {
+                public Subscription call(Observer<String> observser) {
                     publishNext(observser, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
                     publishNext(observser, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
                     publishNext(observser, 900, "four");   // Should be skipped since onCompleted will arrive before the timeout expires.
@@ -250,7 +245,7 @@ public final class OperationThrottle {
         public void testThrottlingWithError() {
             Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>() {
                 @Override
-                public Subscription call(final Observer<String> observser) {
+                public Subscription call(Observer<String> observser) {
                     Exception error = new TestException();
                     publishNext(observser, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
                     publishNext(observser, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.
@@ -281,7 +276,7 @@ public final class OperationThrottle {
             verify(observer, times(1)).onError(any(TestException.class));
         }
 
-        private void publishCompleted(final Observer<String> observer, long delay) {
+        private <T> void publishCompleted(final Observer<T> observer, long delay) {
             scheduler.schedule(new Action0() {
                 @Override
                 public void call() {
@@ -290,7 +285,7 @@ public final class OperationThrottle {
             }, delay, TimeUnit.MILLISECONDS);
         }
 
-        private void publishError(final Observer<String> observer, long delay, final Exception error) {
+        private <T> void publishError(final Observer<T> observer, long delay, final Exception error) {
             scheduler.schedule(new Action0() {
                 @Override
                 public void call() {
@@ -299,7 +294,7 @@ public final class OperationThrottle {
             }, delay, TimeUnit.MILLISECONDS);
         }
 
-        private void publishNext(final Observer<String> observer, long delay, final String value) {
+        private <T> void publishNext(final Observer<T> observer, long delay, final T value) {
             scheduler.schedule(new Action0() {
                 @Override
                 public void call() {
