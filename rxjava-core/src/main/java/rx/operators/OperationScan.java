@@ -25,9 +25,6 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -67,8 +64,9 @@ public final class OperationScan {
     private static class AccuWithoutInitialValue<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> sequence;
         private final Func2<T, T, T> accumulatorFunction;
-        private T initialValue;
-
+        
+        private AccumulatingObserver<T, T> accumulatingObserver;
+        
         private AccuWithoutInitialValue(Observable<T> sequence, Func2<T, T, T> accumulator) {
             this.sequence = sequence;
             this.accumulatorFunction = accumulator;
@@ -76,24 +74,29 @@ public final class OperationScan {
         
         @Override
         public Subscription call(final Observer<T> observer) {
-            sequence.take(1).subscribe(new Action1<T>() {
+            return sequence.subscribe(new Observer<T>() {
+                
+                // has to be synchronized so that the initial value is always sent only once.
                 @Override
-                public void call(T value) {
-                    initialValue = value;
+                public synchronized void onNext(T value) {
+                    if (accumulatingObserver == null) {
+                        observer.onNext(value);
+                        accumulatingObserver = new AccumulatingObserver<T, T>(observer, value, accumulatorFunction);
+                    } else {
+                        accumulatingObserver.onNext(value);
+                    }
                 }
-            }, new Action1<Exception>() {
+                
                 @Override
-                public void call(Exception e) {
+                public void onError(Exception e) {
                     observer.onError(e);
                 }
-            }, new Action0() {
+
                 @Override
-                public void call() {
+                public void onCompleted() {
                     observer.onCompleted();
                 }
             });
-            Accumulator<T, T> scan = new Accumulator<T, T>(sequence.skip(1), initialValue, accumulatorFunction);
-            return scan.call(observer);
         }
     }
     
@@ -101,7 +104,6 @@ public final class OperationScan {
         private final Observable<T> sequence;
         private final R initialValue;
         private final Func2<R, T, R> accumulatorFunction;
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
         private Accumulator(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
             this.sequence = sequence;
@@ -112,42 +114,51 @@ public final class OperationScan {
         @Override
         public Subscription call(final Observer<R> observer) {
             observer.onNext(initialValue);
-            
-            return subscription.wrap(sequence.subscribe(new Observer<T>() {
-                private R acc = initialValue;
-
-                /**
-                 * We must synchronize this because we can't allow
-                 * multiple threads to execute the 'accumulatorFunction' at the same time because
-                 * the accumulator code very often will be doing mutation of the 'acc' object such as a non-threadsafe HashMap
-                 * 
-                 * Because it's synchronized it's using non-atomic variables since everything in this method is single-threaded
-                 */
-                @Override
-                public synchronized void onNext(T value) {
-                    try {
-                        acc = accumulatorFunction.call(acc, value);
-                        observer.onNext(acc);
-                    } catch (Exception ex) {
-                        observer.onError(ex);
-                        // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
-                        subscription.unsubscribe();
-                    }
-                }
-
-                @Override
-                public void onError(Exception ex) {
-                    observer.onError(ex);
-                }
-
-                @Override
-                public void onCompleted() {
-                    observer.onCompleted();
-                }
-            }));
+            return sequence.subscribe(new AccumulatingObserver<T, R>(observer, initialValue, accumulatorFunction));
         }
     }
 
+    private static class AccumulatingObserver<T, R> implements Observer<T> {
+        private final Observer<R> observer;
+        private final Func2<R, T, R> accumulatorFunction;
+
+        private R acc;
+
+        private AccumulatingObserver(Observer<R> observer, R initialValue, Func2<R, T, R> accumulator) {
+            this.observer = observer;
+            this.accumulatorFunction = accumulator;
+            
+            this.acc = initialValue;
+        }
+
+        /**
+         * We must synchronize this because we can't allow
+         * multiple threads to execute the 'accumulatorFunction' at the same time because
+         * the accumulator code very often will be doing mutation of the 'acc' object such as a non-threadsafe HashMap
+         * 
+         * Because it's synchronized it's using non-atomic variables since everything in this method is single-threaded
+         */
+        @Override
+        public synchronized void onNext(T value) {
+            try {
+                acc = accumulatorFunction.call(acc, value);
+                observer.onNext(acc);
+            } catch (Exception ex) {
+                observer.onError(ex);
+            }
+        }
+        
+        @Override
+        public void onError(Exception e) {
+            observer.onError(e);
+        }
+        
+        @Override
+        public void onCompleted() {
+            observer.onCompleted();
+        }
+    }
+    
     public static class UnitTest {
 
         @Before
