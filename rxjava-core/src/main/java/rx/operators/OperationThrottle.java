@@ -210,11 +210,11 @@ public final class OperationThrottle {
         public void testThrottlingWithCompleted() {
             Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>() {
                 @Override
-                public Subscription call(Observer<String> observser) {
-                    publishNext(observser, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
-                    publishNext(observser, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
-                    publishNext(observser, 900, "four");   // Should be skipped since onCompleted will arrive before the timeout expires.
-                    publishCompleted(observser, 1000);     // Should be published as soon as the timeout expires.
+                public Subscription call(Observer<String> observer) {
+                    publishNext(observer, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
+                    publishNext(observer, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
+                    publishNext(observer, 900, "four");   // Should be skipped since onCompleted will arrive before the timeout expires.
+                    publishCompleted(observer, 1000);     // Should be published as soon as the timeout expires.
 
                     return Subscriptions.empty();
                 }
