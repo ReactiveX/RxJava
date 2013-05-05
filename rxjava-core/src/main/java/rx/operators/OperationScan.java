@@ -26,6 +26,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
+import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -65,12 +66,12 @@ public final class OperationScan {
 
     private static class AccuWithoutInitialValue<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> sequence;
-        private final Func2<T, T, T> accumlatorFunction;
+        private final Func2<T, T, T> accumulatorFunction;
         private T initialValue;
 
         private AccuWithoutInitialValue(Observable<T> sequence, Func2<T, T, T> accumulator) {
             this.sequence = sequence;
-            this.accumlatorFunction = accumulator;
+            this.accumulatorFunction = accumulator;
         }
         
         @Override
@@ -80,8 +81,18 @@ public final class OperationScan {
                 public void call(T value) {
                     initialValue = value;
                 }
+            }, new Action1<Exception>() {
+                @Override
+                public void call(Exception e) {
+                    observer.onError(e);
+                }
+            }, new Action0() {
+                @Override
+                public void call() {
+                    observer.onCompleted();
+                }
             });
-            Accumulator<T, T> scan = new Accumulator<T, T>(sequence.skip(1), initialValue, accumlatorFunction);
+            Accumulator<T, T> scan = new Accumulator<T, T>(sequence.skip(1), initialValue, accumulatorFunction);
             return scan.call(observer);
         }
     }
@@ -89,13 +100,13 @@ public final class OperationScan {
     private static class Accumulator<T, R> implements Func1<Observer<R>, Subscription> {
         private final Observable<T> sequence;
         private final R initialValue;
-        private final Func2<R, T, R> accumlatorFunction;
+        private final Func2<R, T, R> accumulatorFunction;
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
         private Accumulator(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
             this.sequence = sequence;
             this.initialValue = initialValue;
-            this.accumlatorFunction = accumulator;
+            this.accumulatorFunction = accumulator;
         }
 
         @Override
@@ -115,7 +126,7 @@ public final class OperationScan {
                 @Override
                 public synchronized void onNext(T value) {
                     try {
-                        acc = accumlatorFunction.call(acc, value);
+                        acc = accumulatorFunction.call(acc, value);
                         observer.onNext(acc);
                     } catch (Exception ex) {
                         observer.onError(ex);
