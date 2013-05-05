@@ -15,8 +15,13 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +32,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
@@ -119,25 +123,25 @@ public final class OperationThrottle {
 
         @Override
         public void onCompleted() {
-            throttle(new Notification<T>());
+            throttle(new ThrottledOnComplete<T>(observer));
         }
 
         @Override
         public void onError(Exception e) {
-            throttle(new Notification<T>(e));
+            throttle(new ThrottledOnError<T>(observer, e));
         }
 
         @Override
         public void onNext(final T args) {
-            throttle(new Notification<T>(args));
+            throttle(new ThrottledOnNext<T>(observer, args));
         }
 
-        private void throttle(final Notification<T> args) {
+        private void throttle(Action0 action) {
             synchronized (subscription) {
                 if (!timerHasExpired()) {
                     subscription.get().unsubscribe();
                 }
-                subscription.set(scheduler.schedule(new ThrottleAction<T>(observer, args), timeout, unit));
+                subscription.set(scheduler.schedule(action, timeout, unit));
             }
         }
 
@@ -149,27 +153,49 @@ public final class OperationThrottle {
         }
     }
 
-    private static final class ThrottleAction<T> implements Action0 {
+    private static final class ThrottledOnNext<T> implements Action0 {
 
         private final Observer<T> observer;
-        private final Notification<T> notification;
+        private final T value;
 
-        public ThrottleAction(Observer<T> observer, Notification<T> notification) {
+        public ThrottledOnNext(Observer<T> observer, T value) {
             this.observer = observer;
-            this.notification = notification;
+            this.value = value;
         }
 
         @Override
         public void call() {
-            if (notification.isOnNext()) {
-                observer.onNext(notification.getValue());
-            }
-            else if (notification.isOnError()) {
-                observer.onError(notification.getException());
-            }
-            else if (notification.isOnCompleted()) {
-                observer.onCompleted();
-            }
+            observer.onNext(value);
+        }
+    }
+
+    private static final class ThrottledOnError<T> implements Action0 {
+
+        private final Observer<T> observer;
+        private final Exception error;
+
+        public ThrottledOnError(Observer<T> observer, Exception error) {
+            this.observer = observer;
+            this.error = error;
+        }
+
+        @Override
+        public void call() {
+            observer.onError(error);
+        }
+    }
+
+    private static final class ThrottledOnComplete<T> implements Action0 {
+
+        private final Observer<T> observer;
+
+        public ThrottledOnComplete(Observer<T> observer) {
+            this.observer = observer;
+        }
+
+        @Override
+        public void call() {
+            observer.onCompleted();
         }
     }
 
