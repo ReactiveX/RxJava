@@ -23,7 +23,7 @@ import rx.Subscription;
 /**
  * Subscription that can be checked for status such as in a loop inside an {@link Observable} to exit the loop if unsubscribed.
  * 
- * @see Rx.Net equivalent BooleanDisposable at http://msdn.microsoft.com/en-us/library/system.reactive.disposables.booleandisposable(v=vs.103).aspx
+ * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.booleandisposable(v=vs.103).aspx">Rx.Net equivalent BooleanDisposable</a>
  */
 public class BooleanSubscription implements Subscription {
 

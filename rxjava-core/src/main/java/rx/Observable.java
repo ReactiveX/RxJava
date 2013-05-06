@@ -589,8 +589,8 @@ public class Observable<T> {
      * <p>
      * This is similar to {@link #subscribe(Observer)} but blocks. Because it blocks it does not need the {@link Observer#onCompleted()} or {@link Observer#onError(Exception)} methods.
      * 
-     * @param onNext
-     *            {@link Action1}
+     * @param o
+     *            onNext {@link Action1 action}
      * @throws RuntimeException
      *             if error occurs
      */
@@ -901,7 +901,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of items in the {@link Iterable} sequence and the type emitted by the resulting Observable
      * @return an Observable that emits each item in the source {@link Iterable} sequence
-     * @see {@link #toObservable(Iterable)}
+     * @see #toObservable(Iterable)
      */
     public static <T> Observable<T> from(Iterable<T> iterable) {
         return toObservable(iterable);
@@ -915,7 +915,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of items in the Array, and the type of items emitted by the resulting Observable
      * @return an Observable that emits each item in the source Array
-     * @see {@link #toObservable(Object...)}
+     * @see #toObservable(Object...)
      */
     public static <T> Observable<T> from(T... items) {
         return toObservable(items);
@@ -1219,7 +1219,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item emitted by the source Observable and merging the results of
      *         the Observables obtained from this transformation
-     * @see {@link #flatMap(Observable, Func1)}
+     * @see #flatMap(Observable, Func1)
      */
     public static <T, R> Observable<R> mapMany(Observable<T> sequence, Func1<T, Observable<R>> func) {
         return create(OperationMap.mapMany(sequence, func));
@@ -1407,7 +1407,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item emitted by the source Observable and merging the results of
      *         the Observables obtained from this transformation
-     * @see {@link #mapMany(Observable, Func1)}
+     * @see #mapMany(Observable, Func1)
      */
     public static <T, R> Observable<R> flatMap(Observable<T> sequence, Func1<T, Observable<R>> func) {
         return mapMany(sequence, func);
@@ -1435,7 +1435,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item emitted by the source Observable and merging the results of
      *         the Observables obtained from this transformation
-     * @see {@link #mapMany(Observable, Func1)}
+     * @see #mapMany(Observable, Func1)
      */
     public static <T, R> Observable<R> flatMap(Observable<T> sequence, final Object func) {
         return mapMany(sequence, func);
@@ -2038,24 +2038,24 @@ public class Observable<T> {
     }
 
     /**
-     * Returns a specified number of contiguous values from the start of an observable sequence.
+     * Returns the values from the start of an observable sequence while a given predicate remains true.
      * 
      * @param items
      * @param predicate
      *            a function to test each source element for a condition
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public static <T> Observable<T> takeWhile(final Observable<T> items, Func1<T, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhile(items, predicate));
     }
 
     /**
-     * Returns a specified number of contiguous values from the start of an observable sequence.
+     * Returns the values from the start of an observable sequence while a given predicate remains true.
      * 
      * @param items
      * @param predicate
      *            a function to test each source element for a condition
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public static <T> Observable<T> takeWhile(final Observable<T> items, Object predicate) {
         @SuppressWarnings("rawtypes")
@@ -2075,7 +2075,7 @@ public class Observable<T> {
      * @param items
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public static <T> Observable<T> takeWhileWithIndex(final Observable<T> items, Func2<T, Integer, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhileWithIndex(items, predicate));
@@ -2110,7 +2110,7 @@ public class Observable<T> {
      * 
      * @param that
      *            the source Observable
-     * @returna Future that expects a single item emitted by the source Observable
+     * @return a Future that expects a single item emitted by the source Observable
      */
     public static <T> Future<T> toFuture(final Observable<T> that) {
         return OperationToFuture.toFuture(that);
@@ -2424,7 +2424,7 @@ public class Observable<T> {
      * @param sequence
      * @throws ClassCastException
      *             if T objects do not implement Comparable
-     * @return
+     * @return an observable containing the sorted list 
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence) {
         return create(OperationToObservableSortedList.toSortedList(sequence));
@@ -2437,7 +2437,7 @@ public class Observable<T> {
      * 
      * @param sequence
      * @param sortFunction
-     * @return
+     * @return an observable containing the sorted list 
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, Func2<T, T, Integer> sortFunction) {
         return create(OperationToObservableSortedList.toSortedList(sequence, sortFunction));
@@ -2450,7 +2450,7 @@ public class Observable<T> {
      * 
      * @param sequence
      * @param sortFunction
-     * @return
+     * @return an observable containing the sorted list 
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, final Object sortFunction) {
         @SuppressWarnings("rawtypes")
@@ -2801,7 +2801,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item in the input sequence and merging the results of the
      *         Observables obtained from this transformation.
-     * @see {@link #mapMany(Func1)}
+     * @see #mapMany(Func1)
      */
     public <R> Observable<R> flatMap(Func1<T, Observable<R>> func) {
         return mapMany(func);
@@ -2822,7 +2822,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation'
      *         function to each item in the input sequence and merging the results of the
      *         Observables obtained from this transformation.
-     * @see {@link #mapMany(Object)}
+     * @see #mapMany(Object)
      */
     public <R> Observable<R> flatMap(final Object callback) {
         return mapMany(callback);
@@ -2973,7 +2973,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item in the input sequence and merging the results of the
      *         Observables obtained from this transformation.
-     * @see {@link #flatMap(Func1)}
+     * @see #flatMap(Func1)
      */
     public <R> Observable<R> mapMany(Func1<T, Observable<R>> func) {
         return mapMany(this, func);
@@ -2994,7 +2994,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation'
      *         function to each item in the input sequence and merging the results of the
      *         Observables obtained from this transformation.
-     * @see {@link #flatMap(Object))}
+     * @see #flatMap(Object)
      */
     public <R> Observable<R> mapMany(final Object callback) {
         @SuppressWarnings("rawtypes")
@@ -3490,18 +3490,18 @@ public class Observable<T> {
      * 
      * @param predicate
      *            a function to test each source element for a condition
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public Observable<T> takeWhile(final Func1<T, Boolean> predicate) {
         return takeWhile(this, predicate);
     }
 
     /**
-     * Returns a specified number of contiguous values from the start of an observable sequence.
+     * Returns an Observable that items emitted by the source Observable as long as a specified condition is true.
      * 
      * @param predicate
      *            a function to test each source element for a condition
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public Observable<T> takeWhile(final Object predicate) {
         return takeWhile(this, predicate);
@@ -3512,7 +3512,7 @@ public class Observable<T> {
      * 
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public Observable<T> takeWhileWithIndex(final Func2<T, Integer, Boolean> predicate) {
         return takeWhileWithIndex(this, predicate);
@@ -3523,7 +3523,7 @@ public class Observable<T> {
      * 
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return
+     * @return the values from the start of the given sequence 
      */
     public Observable<T> takeWhileWithIndex(final Object predicate) {
         return takeWhileWithIndex(this, predicate);
@@ -3561,7 +3561,7 @@ public class Observable<T> {
      * <p>
      * This will throw an exception if the Observable emits more than 1 value. If more than 1 are expected then use <code>toList().toFuture()</code>.
      * 
-     * @returna Future that expects a single item emitted by the source Observable
+     * @return a Future that expects a single item emitted by the source Observable
      */
     public Future<T> toFuture() {
         return toFuture(this);
@@ -3594,7 +3594,7 @@ public class Observable<T> {
      * 
      * @throws ClassCastException
      *             if T objects do not implement Comparable
-     * @return
+     * @return an observable containing the sorted list 
      */
     public Observable<List<T>> toSortedList() {
         return toSortedList(this);
@@ -3606,7 +3606,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
      * 
      * @param sortFunction
-     * @return
+     * @return an observable containing the sorted list 
      */
     public Observable<List<T>> toSortedList(Func2<T, T, Integer> sortFunction) {
         return toSortedList(this, sortFunction);
@@ -3618,7 +3618,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
      * 
      * @param sortFunction
-     * @return
+     * @return an observable containing the sorted list 
      */
     public Observable<List<T>> toSortedList(final Object sortFunction) {
         return toSortedList(this, sortFunction);
@@ -3705,7 +3705,7 @@ public class Observable<T> {
      * NOTE: If strong reasons for not depending on package names comes up then the implementation of this method can change to looking for a marker interface.
      * 
      * @param f
-     * @return
+     * @return {@code true} if the given function is an internal implementation, and {@code false} otherwise.
      */
     private boolean isInternalImplementation(Object o) {
         if (o == null) {

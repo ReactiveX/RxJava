@@ -23,7 +23,7 @@ import rx.util.functions.Func1;
 /**
  * An {@link Observable} that has been grouped by a key whose value can be obtained using {@link #getKey()} <p>
  * 
- * @see {@link Observable#groupBy(Observable, Func1)}
+ * @see Observable#groupBy(Observable, Func1)
  * 
  * @param <K>
  * @param <T>

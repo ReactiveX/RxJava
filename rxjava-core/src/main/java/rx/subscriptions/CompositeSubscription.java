@@ -28,7 +28,7 @@ import rx.util.functions.Functions;
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed together.
  * 
- * @see Rx.Net equivalent CompositeDisposable at http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx
+ * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net equivalent CompositeDisposable</a>
  */
 public class CompositeSubscription implements Subscription {
 

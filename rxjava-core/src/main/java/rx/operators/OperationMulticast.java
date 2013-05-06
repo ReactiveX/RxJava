@@ -98,6 +98,7 @@ public class OperationMulticast {
             ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
                     PublishSubject.<String>create());
 
+            @SuppressWarnings("unchecked")
             Observer<String> observer = mock(Observer.class);
             multicasted.subscribe(observer);
 
@@ -125,6 +126,7 @@ public class OperationMulticast {
             ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
                     PublishSubject.<String>create());
 
+            @SuppressWarnings("unchecked")
             Observer<String> observer = mock(Observer.class);
             multicasted.subscribe(observer);
 
@@ -149,6 +151,7 @@ public class OperationMulticast {
             ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
                     PublishSubject.<String>create());
 
+            @SuppressWarnings("unchecked")
             Observer<String> observer = mock(Observer.class);
             multicasted.subscribe(observer);
 
@@ -224,11 +227,6 @@ public class OperationMulticast {
             /* used to simulate subscription */
             public void sendOnNext(String value) {
                 observer.onNext(value);
-            }
-
-            /* used to simulate subscription */
-            public void sendOnError(Exception e) {
-                observer.onError(e);
             }
 
             @Override
