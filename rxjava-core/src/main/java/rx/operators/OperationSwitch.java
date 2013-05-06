@@ -93,29 +93,27 @@ public final class OperationSwitch {
 
         @Override
         public void onNext(Observable<T> args) {
-            synchronized (subscription) {
-                Subscription previousSubscription = subscription.get();
-                if (previousSubscription != null) {
-                    previousSubscription.unsubscribe();
-                }
-                
-                subscription.set(args.subscribe(new Observer<T>() {
-                    @Override
-                    public void onCompleted() {
-                        // Do nothing.
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        // Do nothing.
-                    }
-
-                    @Override
-                    public void onNext(T args) {
-                        observer.onNext(args);
-                    }
-                }));
+            Subscription previousSubscription = subscription.get();
+            if (previousSubscription != null) {
+                previousSubscription.unsubscribe();
             }
+            
+            subscription.set(args.subscribe(new Observer<T>() {
+                @Override
+                public void onCompleted() {
+                    // Do nothing.
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    // Do nothing.
+                }
+
+                @Override
+                public void onNext(T args) {
+                    observer.onNext(args);
+                }
+            }));
         }
     }
     
