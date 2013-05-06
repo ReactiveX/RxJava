@@ -15,10 +15,8 @@
  */
 package rx.subjects;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -35,7 +33,7 @@ import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 /**
- * Subject that publishes the previous and all subsequent events to each {@link Observer} that subscribes. 
+ * Subject that publishes the last and all subsequent events to each {@link Observer} that subscribes. 
  * <p>
  * Example usage:
  * <p>
@@ -61,6 +59,15 @@ import rx.util.functions.Func1;
  */
 public class BehaviorSubject<T> extends Subject<T, T> {
 
+    /**
+     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each 
+     * {@link Observer} that subscribes to it.
+     *  
+     * @param defaultValue
+     *            The value which will be published to any {@link Observer} as long as the 
+     *            {@link BehaviorSubject} has not yet received any events.
+     * @return the constructed {@link BehaviorSubject}.
+     */
     public static <T> BehaviorSubject<T> createWithDefaultValue(T defaultValue) {
         final ConcurrentHashMap<Subscription, Observer<T>> observers = new ConcurrentHashMap<Subscription, Observer<T>>();
 
