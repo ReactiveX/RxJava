@@ -15,8 +15,6 @@
  */
 package rx.concurrency;
 
-import java.util.concurrent.TimeUnit;
-
 import rx.Scheduler;
 import rx.Subscription;
 import rx.util.functions.Func2;

@@ -42,7 +42,7 @@ public final class OperationTake {
      * 
      * @param items
      * @param num
-     * @return
+     * @return the specified number of contiguous values from the start of the given observable sequence
      */
     public static <T> Func1<Observer<T>, Subscription> take(final Observable<T> items, final int num) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.

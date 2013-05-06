@@ -96,9 +96,9 @@ public class Notification<T> {
     }
 
     /**
-     * The kind of notification: OnNext, OnError, OnCompleted
+     * Retrieves the kind of the notification: OnNext, OnError, OnCompleted
      * 
-     * @return
+     * @return the kind of the notification: OnNext, OnError, OnCompleted
      */
     public Kind getKind() {
         return kind;
