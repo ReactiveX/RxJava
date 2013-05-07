@@ -4229,7 +4229,6 @@ public class Observable<T> {
                         @Override
                         public void run() {
                             counter.incrementAndGet();
-                            System.out.println("published observable being executed");
                             observer.onNext("one");
                             observer.onCompleted();
                         }
@@ -4246,7 +4245,6 @@ public class Observable<T> {
                 @Override
                 public void call(String v) {
                     assertEquals("one", v);
-                    System.out.println("v: " + v);
                     latch.countDown();
                 }
             });
@@ -4257,7 +4255,6 @@ public class Observable<T> {
                 @Override
                 public void call(String v) {
                     assertEquals("one", v);
-                    System.out.println("v: " + v);
                     latch.countDown();
                 }
             });
@@ -4286,7 +4283,6 @@ public class Observable<T> {
                         @Override
                         public void run() {
                             counter.incrementAndGet();
-                            System.out.println("published observable being executed");
                             observer.onNext("one");
                             observer.onCompleted();
                         }
@@ -4308,7 +4304,6 @@ public class Observable<T> {
                     @Override
                     public void call(String v) {
                         assertEquals("one", v);
-                        System.out.println("v: " + v);
                         latch.countDown();
                     }
                 });
@@ -4319,7 +4314,6 @@ public class Observable<T> {
                     @Override
                     public void call(String v) {
                         assertEquals("one", v);
-                        System.out.println("v: " + v);
                         latch.countDown();
                     }
                 });
@@ -4346,7 +4340,6 @@ public class Observable<T> {
                         @Override
                         public void run() {
                             counter.incrementAndGet();
-                            System.out.println("published observable being executed");
                             observer.onNext("one");
                             observer.onCompleted();
                         }
@@ -4364,7 +4357,6 @@ public class Observable<T> {
                 @Override
                 public void call(String v) {
                     assertEquals("one", v);
-                    System.out.println("v: " + v);
                     latch.countDown();
                 }
             });
@@ -4375,7 +4367,6 @@ public class Observable<T> {
                 @Override
                 public void call(String v) {
                     assertEquals("one", v);
-                    System.out.println("v: " + v);
                     latch.countDown();
                 }
             });
