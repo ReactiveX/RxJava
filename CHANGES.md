@@ -11,7 +11,7 @@
 
 This is a breaking (non-backwards compatible) release that updates the Scheduler implementation released in 0.7.0.
 
-See See https://github.com/Netflix/RxJava/issues/19 for background, discussion and status of Schedulers.
+See https://github.com/Netflix/RxJava/issues/19 for background, discussion and status of Schedulers.
 
 It is believed that the public signatures of Scheduler and related objects is now stabilized but ongoing feedback and review by the community could still result in changes.
 

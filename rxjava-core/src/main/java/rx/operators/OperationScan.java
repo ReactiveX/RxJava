@@ -40,7 +40,7 @@ public final class OperationScan {
      *            An accumulator function to be invoked on each element from the sequence.
      * 
      * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
-     * @see http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212007%28v=vs.103%29.aspx">Observable.Scan(TSource, TAccumulate) Method (IObservable(TSource), TAccumulate, Func(TAccumulate, TSource, TAccumulate))</a>
      */
     public static <T, R> Func1<Observer<R>, Subscription> scan(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
         return new Accumulator<T, R>(sequence, initialValue, accumulator);
@@ -55,7 +55,7 @@ public final class OperationScan {
      *            An accumulator function to be invoked on each element from the sequence.
      * 
      * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
-     * @see http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx">Observable.Scan(TSource) Method (IObservable(TSource), Func(TSource, TSource, TSource))</a>
      */
     public static <T> Func1<Observer<T>, Subscription> scan(Observable<T> sequence, Func2<T, T, T> accumulator) {
         return new AccuWithoutInitialValue<T>(sequence, accumulator);

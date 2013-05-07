@@ -44,8 +44,8 @@ public abstract class RxJavaObservableExecutionHook {
      * @param observableInstance
      *            The executing {@link Observable} instance.
      * @param onSubscribe
-     *            original {@link Func1}<{@link Observer}{@code<T>}, {@link Subscription}> to be executed
-     * @return {@link Func1}<{@link Observer}{@code<T>}, {@link Subscription}> function that can be modified, decorated, replaced or just returned as a pass-thru.
+     *            original {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}> to be executed
+     * @return {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}> function that can be modified, decorated, replaced or just returned as a pass-thru.
      */
     public <T> Func1<Observer<T>, Subscription> onSubscribeStart(Observable<T> observableInstance, Func1<Observer<T>, Subscription> onSubscribe) {
         // pass-thru by default
@@ -72,7 +72,7 @@ public abstract class RxJavaObservableExecutionHook {
      * Invoked after failed execution of {@link Observable#subscribe(Observer)} with thrown Exception.
      * <p>
      * This is NOT errors emitted via {@link Observer#onError(Exception)} but exceptions thrown when attempting
-     * to subscribe to a {@link Func1}<{@link Observer}{@code<T>}, {@link Subscription}>.
+     * to subscribe to a {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}>.
      * 
      * @param observableInstance
      *            The executing {@link Observable} instance.

@@ -104,6 +104,7 @@ public final class OperationToObservableList<T> {
             Observer<List<String>> o1 = mock(Observer.class);
             observable.subscribe(o1);
 
+            @SuppressWarnings("unchecked")
             Observer<List<String>> o2 = mock(Observer.class);
             observable.subscribe(o2);
 
