@@ -27,7 +27,6 @@ import org.mockito.Mockito;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
-import rx.util.SynchronizedObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
@@ -86,11 +85,10 @@ public class BehaviorSubject<T> extends Subject<T, T> {
                     }
                 });
 
-                SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(observer, subscription);
-                synchronizedObserver.onNext(currentValue.get());
+                observer.onNext(currentValue.get());
 
                 // on subscribe add it to the map of outbound observers to notify
-                observers.put(subscription, synchronizedObserver);
+                observers.put(subscription, observer);
                 return subscription;
             }
         };

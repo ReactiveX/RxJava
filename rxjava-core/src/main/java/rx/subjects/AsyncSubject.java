@@ -15,11 +15,8 @@
  */
 package rx.subjects;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,7 +27,6 @@ import org.mockito.Mockito;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.AtomicObservableSubscription;
-import rx.util.SynchronizedObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
@@ -80,7 +76,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
                 });
 
                 // on subscribe add it to the map of outbound observers to notify
-                observers.put(subscription, new SynchronizedObserver<T>(observer, subscription));
+                observers.put(subscription, observer);
                 return subscription;
             }
         };
