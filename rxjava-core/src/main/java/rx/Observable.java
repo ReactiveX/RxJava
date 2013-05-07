@@ -2202,7 +2202,7 @@ public class Observable<T> {
      * Returns a connectable observable sequence that upon connection causes the source sequence to push results to any connected subscribers.
      * 
      * @param source
-     *            the source sequence whose elements will be pushed into the specified subject.
+     *            the source sequence whose elements will be pushed to all connected subscribers.
      * @param <T>
      *            source (and result) type
      * @return a connectable observable sequence that upon connection causes the source sequence to push results to any connected subscribers.
