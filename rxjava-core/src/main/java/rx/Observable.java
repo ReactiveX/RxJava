@@ -78,6 +78,7 @@ import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
 import rx.subjects.PublishSubject;
+import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
@@ -1667,6 +1668,17 @@ public class Observable<T> {
     }
 
     /**
+     * Returns a connectable observable sequence that shares a single subscription to the underlying sequence replaying all notifications.
+     * 
+     * @param that
+     *            the source Observable
+     * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     */
+    public static <T> ConnectableObservable<T> replay(final Observable<T> that) {
+        return OperationMulticast.multicast(that, ReplaySubject.<T> create());
+    }
+
+    /**
      * Returns a connectable observable sequence that shares a single subscription to the underlying sequence.
      * 
      * @param that
@@ -3240,12 +3252,21 @@ public class Observable<T> {
     }
 
     /**
+     * Returns a connectable observable sequence that shares a single subscription to the underlying sequence replaying all notifications.
+     * 
+     * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     */
+    public ConnectableObservable<T> replay() {
+        return replay(this);
+    }
+
+    /**
      * Returns a connectable observable sequence that shares a single subscription to the underlying sequence.
      * 
      * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
      */
     public ConnectableObservable<T> publish() {
-        return OperationMulticast.multicast(this, PublishSubject.<T> create());
+        return publish(this);
     }
 
     /**
@@ -4245,10 +4266,10 @@ public class Observable<T> {
 
                         @Override
                         public void run() {
+                            counter.incrementAndGet();
                             System.out.println("published observable being executed");
                             observer.onNext("one");
                             observer.onCompleted();
-                            counter.incrementAndGet();
                         }
                     }).start();
                     return subscription;
@@ -4281,6 +4302,66 @@ public class Observable<T> {
 
             Subscription s = o.connect();
             try {
+                if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
+                    fail("subscriptions did not receive values");
+                }
+                assertEquals(1, counter.get());
+            } finally {
+                s.unsubscribe();
+            }
+        }
+
+        @Test
+        public void testReplay() throws InterruptedException {
+            final AtomicInteger counter = new AtomicInteger();
+            ConnectableObservable<String> o = Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(final Observer<String> observer) {
+                    final BooleanSubscription subscription = new BooleanSubscription();
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            System.out.println("published observable being executed");
+                            observer.onNext("one");
+                            observer.onCompleted();
+                            counter.incrementAndGet();
+                        }
+                    }).start();
+                    return subscription;
+                }
+            }).replay();
+
+            // we connect immediately and it will emit the value
+            Subscription s = o.connect();
+            try {
+
+                // we then expect the following 2 subscriptions to get that same value
+                final CountDownLatch latch = new CountDownLatch(2);
+
+                // subscribe once
+                o.subscribe(new Action1<String>() {
+
+                    @Override
+                    public void call(String v) {
+                        assertEquals("one", v);
+                        System.out.println("v: " + v);
+                        latch.countDown();
+                    }
+                });
+
+                // subscribe again
+                o.subscribe(new Action1<String>() {
+
+                    @Override
+                    public void call(String v) {
+                        assertEquals("one", v);
+                        System.out.println("v: " + v);
+                        latch.countDown();
+                    }
+                });
+
                 if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
                     fail("subscriptions did not receive values");
                 }
