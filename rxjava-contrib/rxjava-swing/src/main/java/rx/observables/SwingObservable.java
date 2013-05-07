@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx;
+package rx.observables;
 
 import static rx.Observable.filter;
 
@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 
+import rx.Observable;
 import rx.swing.sources.AbstractButtonSource;
 import rx.swing.sources.KeyEventSource;
 import rx.swing.sources.MouseEventSource;
