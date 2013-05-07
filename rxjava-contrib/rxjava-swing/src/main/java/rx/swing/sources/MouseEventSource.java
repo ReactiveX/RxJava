@@ -15,11 +15,10 @@
  */
 package rx.swing.sources;
 
+import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-
-import javax.swing.JComponent;
 
 import rx.Observable;
 import rx.Observer;
@@ -30,7 +29,10 @@ import rx.util.functions.Func1;
 
 public enum MouseEventSource { ; // no instances
 
-    public static Observable<MouseEvent> fromMouseEventsOf(final JComponent component) {
+    /**
+     * @see SwingObservable.fromMouseEvents
+     */
+    public static Observable<MouseEvent> fromMouseEventsOf(final Component component) {
         return Observable.create(new Func1<Observer<MouseEvent>, Subscription>() {
             @Override
             public Subscription call(final Observer<MouseEvent> observer) {
@@ -72,7 +74,10 @@ public enum MouseEventSource { ; // no instances
         });
     }
     
-    public static Observable<MouseEvent> fromMouseMotionEventsOf(final JComponent component) {
+    /**
+     * @see SwingObservable.fromMouseMotionEvents
+     */
+    public static Observable<MouseEvent> fromMouseMotionEventsOf(final Component component) {
         return Observable.create(new Func1<Observer<MouseEvent>, Subscription>() {
             @Override
             public Subscription call(final Observer<MouseEvent> observer) {
