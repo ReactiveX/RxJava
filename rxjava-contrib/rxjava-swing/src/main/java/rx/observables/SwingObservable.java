@@ -17,7 +17,9 @@ package rx.observables;
 
 import static rx.Observable.filter;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Set;
@@ -27,6 +29,7 @@ import javax.swing.JComponent;
 
 import rx.Observable;
 import rx.swing.sources.AbstractButtonSource;
+import rx.swing.sources.ComponentEventSource;
 import rx.swing.sources.KeyEventSource;
 import rx.swing.sources.MouseEventSource;
 import rx.util.functions.Func1;
@@ -105,5 +108,27 @@ public enum SwingObservable { ; // no instances
      */
     public static Observable<MouseEvent> fromMouseMotionEvents(JComponent component) {
         return MouseEventSource.fromMouseMotionEventsOf(component);
+    }
+    
+    /**
+     * Creates an observable corresponding to raw component events.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of component events.
+     */
+    public static Observable<ComponentEvent> fromComponentEvents(JComponent component) {
+        return ComponentEventSource.fromComponentEventsOf(component);
+    }
+
+    /**
+     * Creates an observable corresponding to component resize events.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable emitting the current size of the given component after each resize event.
+     */
+    public static Observable<Dimension> fromResizing(JComponent component) {
+        return ComponentEventSource.fromResizing(component);
     }
 }
