@@ -28,7 +28,7 @@ import rx.util.functions.Func1;
 
 /**
  * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
- * See http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx for the Microsoft Rx equivalent.
+ * See <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">here</a> for the Microsoft Rx equivalent.
  */
 public final class OperationDematerialize {
 
@@ -38,7 +38,7 @@ public final class OperationDematerialize {
      * @param sequence
      *            An observable sequence containing explicit notification values which have to be turned into implicit notifications.
      * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
-     * @see http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">Observable.Dematerialize(TSource) Method </a>
      */
     public static <T> Func1<Observer<T>, Subscription> dematerialize(final Observable<Notification<T>> sequence) {
         return new DematerializeObservable<T>(sequence);

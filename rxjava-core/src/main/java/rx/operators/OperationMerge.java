@@ -44,10 +44,10 @@ public final class OperationMerge {
     /**
      * Flattens the observable sequences from the list of Observables into one observable sequence without any transformation.
      * 
-     * @param source
+     * @param o
      *            An observable sequence of elements to project.
      * @return An observable sequence whose elements are the result of flattening the output from the list of Observables.
-     * @see http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">Observable.Merge(TSource) Method (IObservable(TSource)[])</a>
      */
     public static <T> Func1<Observer<T>, Subscription> merge(final Observable<Observable<T>> o) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
