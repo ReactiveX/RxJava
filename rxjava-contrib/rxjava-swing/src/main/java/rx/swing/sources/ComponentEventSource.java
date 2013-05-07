@@ -87,7 +87,7 @@ public enum ComponentEventSource { ; // no instances
     /**
      * Predicates that help with filtering observables for specific component events. 
      */
-    public enum Predicate implements Func1<ComponentEvent, Boolean> { 
+    public enum Predicate implements rx.util.functions.Func1<java.awt.event.ComponentEvent, Boolean> { 
         RESIZED(ComponentEvent.COMPONENT_RESIZED),
         HIDDEN(ComponentEvent.COMPONENT_HIDDEN),
         MOVED(ComponentEvent.COMPONENT_MOVED),
