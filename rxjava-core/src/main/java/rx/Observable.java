@@ -4285,10 +4285,10 @@ public class Observable<T> {
 
                         @Override
                         public void run() {
+                            counter.incrementAndGet();
                             System.out.println("published observable being executed");
                             observer.onNext("one");
                             observer.onCompleted();
-                            counter.incrementAndGet();
                         }
                     }).start();
                     return subscription;
@@ -4345,10 +4345,10 @@ public class Observable<T> {
 
                         @Override
                         public void run() {
+                            counter.incrementAndGet();
                             System.out.println("published observable being executed");
                             observer.onNext("one");
                             observer.onCompleted();
-                            counter.incrementAndGet();
                         }
                     }).start();
                     return subscription;

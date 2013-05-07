@@ -83,10 +83,10 @@ public class OperationCache {
 
                         @Override
                         public void run() {
+                            counter.incrementAndGet();
                             System.out.println("published observable being executed");
                             observer.onNext("one");
                             observer.onCompleted();
-                            counter.incrementAndGet();
                         }
                     }).start();
                     return subscription;
