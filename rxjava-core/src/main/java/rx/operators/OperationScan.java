@@ -25,7 +25,6 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -43,8 +42,8 @@ public final class OperationScan {
      * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212007%28v=vs.103%29.aspx">Observable.Scan(TSource, TAccumulate) Method (IObservable(TSource), TAccumulate, Func(TAccumulate, TSource, TAccumulate))</a>
      */
-    public static <T> Func1<Observer<T>, Subscription> scan(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
-        return new Accumulator<T>(sequence, initialValue, accumulator);
+    public static <T, R> Func1<Observer<R>, Subscription> scan(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
+        return new Accumulator<T, R>(sequence, initialValue, accumulator);
     }
 
     /**
@@ -59,78 +58,107 @@ public final class OperationScan {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx">Observable.Scan(TSource) Method (IObservable(TSource), Func(TSource, TSource, TSource))</a>
      */
     public static <T> Func1<Observer<T>, Subscription> scan(Observable<T> sequence, Func2<T, T, T> accumulator) {
-        return new Accumulator<T>(sequence, null, accumulator);
+        return new AccuWithoutInitialValue<T>(sequence, accumulator);
     }
 
-    private static class Accumulator<T> implements Func1<Observer<T>, Subscription> {
+    private static class AccuWithoutInitialValue<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> sequence;
-        private final T initialValue;
-        private Func2<T, T, T> accumlatorFunction;
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-
-        private Accumulator(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
+        private final Func2<T, T, T> accumulatorFunction;
+        
+        private AccumulatingObserver<T, T> accumulatingObserver;
+        
+        private AccuWithoutInitialValue(Observable<T> sequence, Func2<T, T, T> accumulator) {
             this.sequence = sequence;
-            this.initialValue = initialValue;
-            this.accumlatorFunction = accumulator;
+            this.accumulatorFunction = accumulator;
         }
-
+        
+        @Override
         public Subscription call(final Observer<T> observer) {
-
-            return subscription.wrap(sequence.subscribe(new Observer<T>() {
-                private T acc = initialValue;
-                private boolean hasSentInitialValue = false;
-
-                /**
-                 * We must synchronize this because we can't allow
-                 * multiple threads to execute the 'accumulatorFunction' at the same time because
-                 * the accumulator code very often will be doing mutation of the 'acc' object such as a non-threadsafe HashMap
-                 * 
-                 * Because it's synchronized it's using non-atomic variables since everything in this method is single-threaded
-                 */
+            return sequence.subscribe(new Observer<T>() {
+                
+                // has to be synchronized so that the initial value is always sent only once.
+                @Override
                 public synchronized void onNext(T value) {
-                    if (acc == null) {
-                        // we assume that acc is not allowed to be returned from accumulatorValue
-                        // so it's okay to check null as being the state we initialize on
-                        acc = value;
-                        // this is all we do for this first value if we didn't have an initialValue
-                        return;
-                    }
-                    if (!hasSentInitialValue) {
-                        hasSentInitialValue = true;
-                        observer.onNext(acc);
-                    }
-
-                    try {
-
-                        acc = accumlatorFunction.call(acc, value);
-                        if (acc == null) {
-                            onError(new IllegalArgumentException("Null is an unsupported return value for an accumulator."));
-                            return;
-                        }
-                        observer.onNext(acc);
-                    } catch (Exception ex) {
-                        observer.onError(ex);
-                        // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
-                        subscription.unsubscribe();
+                    if (accumulatingObserver == null) {
+                        observer.onNext(value);
+                        accumulatingObserver = new AccumulatingObserver<T, T>(observer, value, accumulatorFunction);
+                    } else {
+                        accumulatingObserver.onNext(value);
                     }
                 }
-
-                public void onError(Exception ex) {
-                    observer.onError(ex);
+                
+                @Override
+                public void onError(Exception e) {
+                    observer.onError(e);
                 }
 
-                // synchronized because we access 'hasSentInitialValue'
-                public synchronized void onCompleted() {
-                    // if only one sequence value existed, we send it without any accumulation
-                    if (!hasSentInitialValue) {
-                        observer.onNext(acc);
-                    }
+                @Override
+                public void onCompleted() {
                     observer.onCompleted();
                 }
-            }));
+            });
+        }
+    }
+    
+    private static class Accumulator<T, R> implements Func1<Observer<R>, Subscription> {
+        private final Observable<T> sequence;
+        private final R initialValue;
+        private final Func2<R, T, R> accumulatorFunction;
+
+        private Accumulator(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
+            this.sequence = sequence;
+            this.initialValue = initialValue;
+            this.accumulatorFunction = accumulator;
+        }
+
+        @Override
+        public Subscription call(final Observer<R> observer) {
+            observer.onNext(initialValue);
+            return sequence.subscribe(new AccumulatingObserver<T, R>(observer, initialValue, accumulatorFunction));
         }
     }
 
+    private static class AccumulatingObserver<T, R> implements Observer<T> {
+        private final Observer<R> observer;
+        private final Func2<R, T, R> accumulatorFunction;
+
+        private R acc;
+
+        private AccumulatingObserver(Observer<R> observer, R initialValue, Func2<R, T, R> accumulator) {
+            this.observer = observer;
+            this.accumulatorFunction = accumulator;
+            
+            this.acc = initialValue;
+        }
+
+        /**
+         * We must synchronize this because we can't allow
+         * multiple threads to execute the 'accumulatorFunction' at the same time because
+         * the accumulator code very often will be doing mutation of the 'acc' object such as a non-threadsafe HashMap
+         * 
+         * Because it's synchronized it's using non-atomic variables since everything in this method is single-threaded
+         */
+        @Override
+        public synchronized void onNext(T value) {
+            try {
+                acc = accumulatorFunction.call(acc, value);
+                observer.onNext(acc);
+            } catch (Exception ex) {
+                observer.onError(ex);
+            }
+        }
+        
+        @Override
+        public void onError(Exception e) {
+            observer.onError(e);
+        }
+        
+        @Override
+        public void onCompleted() {
+            observer.onCompleted();
+        }
+    }
+    
     public static class UnitTest {
 
         @Before
@@ -141,28 +169,28 @@ public final class OperationScan {
         @Test
         public void testScanIntegersWithInitialValue() {
             @SuppressWarnings("unchecked")
-            Observer<Integer> Observer = mock(Observer.class);
+            Observer<String> observer = mock(Observer.class);
 
             Observable<Integer> observable = Observable.toObservable(1, 2, 3);
 
-            Observable<Integer> m = Observable.create(scan(observable, 0, new Func2<Integer, Integer, Integer>() {
+            Observable<String> m = Observable.create(scan(observable, "", new Func2<String, Integer, String>() {
 
                 @Override
-                public Integer call(Integer t1, Integer t2) {
-                    return t1 + t2;
+                public String call(String s, Integer n) {
+                    return s + n.toString();
                 }
 
             }));
-            m.subscribe(Observer);
+            m.subscribe(observer);
 
-            verify(Observer, never()).onError(any(Exception.class));
-            verify(Observer, times(1)).onNext(0);
-            verify(Observer, times(1)).onNext(1);
-            verify(Observer, times(1)).onNext(3);
-            verify(Observer, times(1)).onNext(6);
-            verify(Observer, times(4)).onNext(anyInt());
-            verify(Observer, times(1)).onCompleted();
-            verify(Observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, times(1)).onNext("");
+            verify(observer, times(1)).onNext("1");
+            verify(observer, times(1)).onNext("12");
+            verify(observer, times(1)).onNext("123");
+            verify(observer, times(4)).onNext(anyString());
+            verify(observer, times(1)).onCompleted();
+            verify(observer, never()).onError(any(Exception.class));
         }
 
         @Test
