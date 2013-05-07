@@ -39,6 +39,7 @@ import org.mockito.MockitoAnnotations;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.operators.OperationAll;
+import rx.operators.OperationCache;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
@@ -1679,6 +1680,22 @@ public class Observable<T> {
     }
 
     /**
+     * Similar to {@link #replay()} except that this auto-subscribes to the source sequence.
+     * <p>
+     * This is useful when returning an Observable that you wish to cache responses but can't control the
+     * subscribe/unsubscribe behavior of all the Observers.
+     * <p>
+     * NOTE: You sacrifice the ability to unsubscribe from the origin with this operator so be careful to not
+     * use this on infinite or very large sequences that will use up memory. This is similar to
+     * the {@link Observable#toList()} operator in this caution.
+     * 
+     * @return an observable sequence that upon first subscription caches all events for subsequent subscriptions.
+     */
+    public static <T> Observable<T> cache(final Observable<T> that) {
+        return create(OperationCache.cache(that));
+    }
+
+    /**
      * Returns a connectable observable sequence that shares a single subscription to the underlying sequence.
      * 
      * @param that
@@ -3221,6 +3238,22 @@ public class Observable<T> {
     }
 
     /**
+     * Similar to {@link #replay()} except that this auto-subscribes to the source sequence.
+     * <p>
+     * This is useful when returning an Observable that you wish to cache responses but can't control the
+     * subscribe/unsubscribe behavior of all the Observers.
+     * <p>
+     * NOTE: You sacrifice the ability to unsubscribe from the origin with this operator so be careful to not
+     * use this on infinite or very large sequences that will use up memory. This is similar to
+     * the {@link Observable#toList()} operator in this caution.
+     * 
+     * @return an observable sequence that upon first subscription caches all events for subsequent subscriptions.
+     */
+    public Observable<T> cache() {
+        return cache(this);
+    }
+
+    /**
      * Returns a connectable observable sequence that shares a single subscription to the underlying sequence.
      * 
      * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
@@ -4298,6 +4331,59 @@ public class Observable<T> {
             } finally {
                 s.unsubscribe();
             }
+        }
+
+        @Test
+        public void testCache() throws InterruptedException {
+            final AtomicInteger counter = new AtomicInteger();
+            Observable<String> o = Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(final Observer<String> observer) {
+                    final BooleanSubscription subscription = new BooleanSubscription();
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            System.out.println("published observable being executed");
+                            observer.onNext("one");
+                            observer.onCompleted();
+                            counter.incrementAndGet();
+                        }
+                    }).start();
+                    return subscription;
+                }
+            }).cache();
+
+            // we then expect the following 2 subscriptions to get that same value
+            final CountDownLatch latch = new CountDownLatch(2);
+
+            // subscribe once
+            o.subscribe(new Action1<String>() {
+
+                @Override
+                public void call(String v) {
+                    assertEquals("one", v);
+                    System.out.println("v: " + v);
+                    latch.countDown();
+                }
+            });
+
+            // subscribe again
+            o.subscribe(new Action1<String>() {
+
+                @Override
+                public void call(String v) {
+                    assertEquals("one", v);
+                    System.out.println("v: " + v);
+                    latch.countDown();
+                }
+            });
+
+            if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
+                fail("subscriptions did not receive values");
+            }
+            assertEquals(1, counter.get());
         }
 
         private static class TestException extends RuntimeException {
