@@ -19,6 +19,7 @@ import static rx.Observable.filter;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.Set;
 
 import javax.swing.AbstractButton;
@@ -26,6 +27,7 @@ import javax.swing.JComponent;
 
 import rx.swing.sources.AbstractButtonSource;
 import rx.swing.sources.KeyEventSource;
+import rx.swing.sources.MouseEventSource;
 import rx.util.functions.Func1;
 
 /**
@@ -80,5 +82,27 @@ public enum SwingObservable { ; // no instances
      */
     public static Observable<Set<Integer>> currentlyPressedKeys(JComponent component) {
         return KeyEventSource.currentlyPressedKeysOf(component);
+    }
+
+    /**
+     * Creates an observable corresponding to raw mouse events (excluding mouse motion events).
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of mouse events.
+     */
+    public static Observable<MouseEvent> fromMouseEvents(JComponent component) {
+        return MouseEventSource.fromMouseEventsOf(component);
+    }
+
+    /**
+     * Creates an observable corresponding to raw mouse motion events.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of mouse motion events.
+     */
+    public static Observable<MouseEvent> fromMouseMotionEvents(JComponent component) {
+        return MouseEventSource.fromMouseMotionEventsOf(component);
     }
 }
