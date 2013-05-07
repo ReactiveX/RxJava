@@ -1696,30 +1696,9 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the final result from the final call to your function as its sole
-     * output.
-     * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code>
-     * method that does a similar operation on lists.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
+     * Used by dynamic languages.
      * 
-     * @param <T>
-     *            the type item emitted by the source Observable
-     * @param sequence
-     *            the source Observable
-     * @param accumulator
-     *            an accumulator function to be invoked on each element from the sequence, whose
-     *            result will be used in the next accumulator call (if applicable)
-     * 
-     * @return an Observable that emits a single element that is the result of accumulating the
-     *         output from applying the accumulator to the sequence of items emitted by the source
-     *         Observable
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+     * @see #reduce(Observable, Func2)
      */
     public static <T> Observable<T> reduce(final Observable<T> sequence, final Object accumulator) {
         @SuppressWarnings("rawtypes")
@@ -1736,37 +1715,21 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the final result from the final call to your function as its sole
-     * output.
-     * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code>
-     * method that does a similar operation on lists.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
-     * 
-     * @param <T>
-     *            the type item emitted by the source Observable
-     * @param sequence
-     *            the source Observable
-     * @param initialValue
-     *            a seed passed into the first execution of the accumulator function
-     * @param accumulator
-     *            an accumulator function to be invoked on each element from the sequence, whose
-     *            result will be used in the next accumulator call (if applicable)
-     * 
-     * @return an Observable that emits a single element that is the result of accumulating the
-     *         output from applying the accumulator to the sequence of items emitted by the source
-     *         Observable
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+     * @see #reduce(Observable, Func2)
      */
-    public static <T> Observable<T> reduce(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
-        return takeLast(create(OperationScan.scan(sequence, initialValue, accumulator)), 1);
+    public static <T> Observable<T> aggregate(Observable<T> sequence, Func2<T, T, T> accumulator) {
+        return reduce(sequence, accumulator);
     }
-
+    
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #reduce(Observable, Func2)
+     */
+    public static <T> Observable<T> aggregate(Observable<T> sequence, Object accumulator) {
+        return reduce(sequence, accumulator);
+    }
+    
     /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
@@ -1781,6 +1744,8 @@ public class Observable<T> {
      * 
      * @param <T>
      *            the type item emitted by the source Observable
+     * @param <R>
+     *            the type returned for each item of the target observable
      * @param sequence
      *            the source Observable
      * @param initialValue
@@ -1788,26 +1753,50 @@ public class Observable<T> {
      * @param accumulator
      *            an accumulator function to be invoked on each element from the sequence, whose
      *            result will be used in the next accumulator call (if applicable)
+     * 
      * @return an Observable that emits a single element that is the result of accumulating the
      *         output from applying the accumulator to the sequence of items emitted by the source
      *         Observable
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public static <T> Observable<T> reduce(final Observable<T> sequence, final T initialValue, final Object accumulator) {
+    public static <T, R> Observable<R> reduce(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
+        return takeLast(create(OperationScan.scan(sequence, initialValue, accumulator)), 1);
+    }
+
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #reduce(Observable, Object, Func2)
+     */
+    public static <T, R> Observable<R> reduce(final Observable<T> sequence, final R initialValue, final Object accumulator) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(accumulator);
-        return reduce(sequence, initialValue, new Func2<T, T, T>() {
-
+        return reduce(sequence, initialValue, new Func2<R, T, R>() {
             @SuppressWarnings("unchecked")
             @Override
-            public T call(T t1, T t2) {
-                return (T) _f.call(t1, t2);
+            public R call(R r, T t) {
+                return (R) _f.call(r, t);
             }
-
         });
     }
 
+    /**
+     * @see #reduce(Observable, Object, Func2)
+     */
+    public static <T, R> Observable<R> aggregate(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
+        return reduce(sequence, initialValue, accumulator);
+    }
+    
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #reduce(Observable, Object, Func2)
+     */
+    public static <T, R> Observable<R> aggregate(Observable<T> sequence, R initialValue, Object accumulator) {
+        return reduce(sequence, initialValue, accumulator);
+    }
+    
     /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
@@ -1832,23 +1821,9 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the result of each of these iterations as its own sequence.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
+     * Used by dynamic languages.
      * 
-     * @param <T>
-     *            the type item emitted by the source Observable
-     * @param sequence
-     *            the source Observable
-     * @param accumulator
-     *            an accumulator function to be invoked on each element from the sequence, whose
-     *            result will be emitted and used in the next accumulator call (if applicable)
-     * @return an Observable that emits a sequence of items that are the result of accumulating the
-     *         output from the sequence emitted by the source Observable
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
+     * @see #scan(Observable, Func2)
      */
     public static <T> Observable<T> scan(final Observable<T> sequence, final Object accumulator) {
         @SuppressWarnings("rawtypes")
@@ -1874,6 +1849,8 @@ public class Observable<T> {
      * 
      * @param <T>
      *            the type item emitted by the source Observable
+     * @param <R>
+     *            the type returned for each item of the target observable
      * @param sequence
      *            the source Observable
      * @param initialValue
@@ -1885,42 +1862,25 @@ public class Observable<T> {
      *         output from the sequence emitted by the source Observable
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public static <T> Observable<T> scan(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
+    public static <T, R> Observable<R> scan(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
         return create(OperationScan.scan(sequence, initialValue, accumulator));
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the result of each of these iterations as its own sequence.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
+     * Used by dynamic languages.
      * 
-     * @param <T>
-     *            the type item emitted by the source Observable
-     * @param sequence
-     *            the source Observable
-     * @param initialValue
-     *            the initial (seed) accumulator value
-     * @param accumulator
-     *            an accumulator function to be invoked on each element from the sequence, whose
-     *            result will be emitted and used in the next accumulator call (if applicable)
-     * @return an Observable that emits a sequence of items that are the result of accumulating the
-     *         output from the sequence emitted by the source Observable
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
+     * @see #scan(Observable, Object, Func2)
      */
-    public static <T> Observable<T> scan(final Observable<T> sequence, final T initialValue, final Object accumulator) {
+    public static <T, R> Observable<R> scan(final Observable<T> sequence, final R initialValue, final Object accumulator) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(accumulator);
-        return scan(sequence, initialValue, new Func2<T, T, T>() {
+        return scan(sequence, initialValue, new Func2<R, T, R>() {
 
             @SuppressWarnings("unchecked")
             @Override
-            public T call(T t1, T t2) {
-                return (T) _f.call(t1, t2);
+            public R call(R r, T t) {
+                return (R) _f.call(r, t);
             }
-
         });
     }
 
@@ -3227,59 +3187,30 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the final result from the final call to your function as its sole
-     * output.
-     * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate,"
-     * "compress," or "inject" in other programming contexts. Groovy, for instance, has an
-     * <code>inject</code> method that does a similar operation on lists.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
+     * Used by dynamic languages.
      * 
-     * @param accumulator
-     *            An accumulator function to be invoked on each element from the sequence, whose result
-     *            will be used in the next accumulator call (if applicable).
-     * 
-     * @return an Observable that emits a single element from the result of accumulating the output
-     *         from the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+     * @see #reduce(Func2)
      */
     public Observable<T> reduce(Object accumulator) {
         return reduce(this, accumulator);
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the final result from the final call to your function as its sole
-     * output.
-     * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate,"
-     * "compress," or "inject" in other programming contexts. Groovy, for instance, has an
-     * <code>inject</code> method that does a similar operation on lists.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
-     * 
-     * @param initialValue
-     *            The initial (seed) accumulator value.
-     * @param accumulator
-     *            An accumulator function to be invoked on each element from the sequence, whose
-     *            result will be used in the next accumulator call (if applicable).
-     * 
-     * @return an Observable that emits a single element from the result of accumulating the output
-     *         from the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+     * @see #reduce(Func2)
      */
-    public Observable<T> reduce(T initialValue, Func2<T, T, T> accumulator) {
-        return reduce(this, initialValue, accumulator);
+    public Observable<T> aggregate(Func2<T, T, T> accumulator) {
+        return aggregate(this, accumulator);
     }
-
+    
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #reduce(Func2)
+     */
+    public Observable<T> aggregate(Object accumulator) {
+        return aggregate(this, accumulator);
+    }
+    
     /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
@@ -3298,15 +3229,41 @@ public class Observable<T> {
      * @param accumulator
      *            An accumulator function to be invoked on each element from the sequence, whose
      *            result will be used in the next accumulator call (if applicable).
+     * 
      * @return an Observable that emits a single element from the result of accumulating the output
      *         from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public Observable<T> reduce(T initialValue, Object accumulator) {
+    public <R> Observable<R> reduce(R initialValue, Func2<R, T, R> accumulator) {
         return reduce(this, initialValue, accumulator);
     }
 
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #reduce(Object, Func2)
+     */
+    public <R> Observable<R> reduce(R initialValue, Object accumulator) {
+        return reduce(this, initialValue, accumulator);
+    }
+
+    /**
+     * @see #reduce(Object, Func2)
+     */
+    public <R> Observable<R> aggregate(R initialValue, Func2<R, T, R> accumulator) {
+        return aggregate(this, initialValue, accumulator);
+    }
+
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #reduce(Object, Func2)
+     */
+    public <R> Observable<R> aggregate(R initialValue, Object accumulator) {
+        return aggregate(this, initialValue, accumulator);
+    }
+    
     /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
@@ -3358,23 +3315,9 @@ public class Observable<T> {
     }
     
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the result of each of these iterations. It emits the result of
-     * each of these iterations as a sequence from the returned Observable. This sort of function is
-     * sometimes called an accumulator.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
-     * 
-     * @param accumulator
-     *            An accumulator function to be invoked on each element from the sequence whose
-     *            result will be sent via <code>onNext</code> and used in the next accumulator call
-     *            (if applicable).
-     * 
-     * @return an Observable sequence whose elements are the result of accumulating the output from
-     *         the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
+     * Used by dynamic languages.
+     *
+     * @see #scan(Func2)
      */
     public Observable<T> scan(final Object accumulator) {
         return scan(this, accumulator);
@@ -3399,30 +3342,16 @@ public class Observable<T> {
      *         the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public Observable<T> scan(T initialValue, Func2<T, T, T> accumulator) {
+    public <R> Observable<R> scan(R initialValue, Func2<R, T, R> accumulator) {
         return scan(this, initialValue, accumulator);
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, then feeds the result of that function along with the
-     * third item into the same function, and so on, emitting the result of each of these
-     * iterations. This sort of function is sometimes called an accumulator.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
-     * 
-     * @param initialValue
-     *            The initial (seed) accumulator value.
-     * @param accumulator
-     *            An accumulator function to be invoked on each element from the sequence whose result
-     *            will be sent via <code>onNext</code> and used in the next accumulator call (if
-     *            applicable).
-     * @return an Observable sequence whose elements are the result of accumulating the output from
-     *         the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
+     * Used by dynamic languages.
+     *
+     * @see #scan(Object, Func2)
      */
-    public Observable<T> scan(final T initialValue, final Object accumulator) {
+    public <R> Observable<R> scan(final R initialValue, final Object accumulator) {
         return scan(this, initialValue, accumulator);
     }
 
