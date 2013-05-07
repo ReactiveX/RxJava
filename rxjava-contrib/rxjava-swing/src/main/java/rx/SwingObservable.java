@@ -70,4 +70,15 @@ public enum SwingObservable { ; // no instances
             }
         });
     }
+
+    /**
+     * Creates an observable that emits the set of all currently pressed keys each time
+     * this set changes. 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of currently pressed keys.
+     */
+    public static Observable<Set<Integer>> currentlyPressedKeys(JComponent component) {
+        return KeyEventSource.currentlyPressedKeysOf(component);
+    }
 }
