@@ -17,16 +17,19 @@ package rx.observables;
 
 import static rx.Observable.filter;
 
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Set;
 
 import javax.swing.AbstractButton;
-import javax.swing.JComponent;
 
 import rx.Observable;
 import rx.swing.sources.AbstractButtonSource;
+import rx.swing.sources.ComponentEventSource;
 import rx.swing.sources.KeyEventSource;
 import rx.swing.sources.MouseEventSource;
 import rx.util.functions.Func1;
@@ -54,7 +57,7 @@ public enum SwingObservable { ; // no instances
      *            The component to register the observable for.
      * @return Observable of key events.
      */
-    public static Observable<KeyEvent> fromKeyEvents(JComponent component) {
+    public static Observable<KeyEvent> fromKeyEvents(Component component) {
         return KeyEventSource.fromKeyEventsOf(component);
     }
 
@@ -65,7 +68,7 @@ public enum SwingObservable { ; // no instances
      *            The component to register the observable for.
      * @return Observable of key events.
      */
-    public static Observable<KeyEvent> fromKeyEvents(JComponent component, final Set<Integer> keyCodes) {
+    public static Observable<KeyEvent> fromKeyEvents(Component component, final Set<Integer> keyCodes) {
         return filter(fromKeyEvents(component), new Func1<KeyEvent, Boolean>() {
             @Override
             public Boolean call(KeyEvent event) {
@@ -81,7 +84,7 @@ public enum SwingObservable { ; // no instances
      *            The component to register the observable for.
      * @return Observable of currently pressed keys.
      */
-    public static Observable<Set<Integer>> currentlyPressedKeys(JComponent component) {
+    public static Observable<Set<Integer>> fromPressedKeys(Component component) {
         return KeyEventSource.currentlyPressedKeysOf(component);
     }
 
@@ -92,7 +95,7 @@ public enum SwingObservable { ; // no instances
      *            The component to register the observable for.
      * @return Observable of mouse events.
      */
-    public static Observable<MouseEvent> fromMouseEvents(JComponent component) {
+    public static Observable<MouseEvent> fromMouseEvents(Component component) {
         return MouseEventSource.fromMouseEventsOf(component);
     }
 
@@ -103,7 +106,29 @@ public enum SwingObservable { ; // no instances
      *            The component to register the observable for.
      * @return Observable of mouse motion events.
      */
-    public static Observable<MouseEvent> fromMouseMotionEvents(JComponent component) {
+    public static Observable<MouseEvent> fromMouseMotionEvents(Component component) {
         return MouseEventSource.fromMouseMotionEventsOf(component);
+    }
+    
+    /**
+     * Creates an observable corresponding to raw component events.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of component events.
+     */
+    public static Observable<ComponentEvent> fromComponentEvents(Component component) {
+        return ComponentEventSource.fromComponentEventsOf(component);
+    }
+
+    /**
+     * Creates an observable corresponding to component resize events.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable emitting the current size of the given component after each resize event.
+     */
+    public static Observable<Dimension> fromResizing(Component component) {
+        return ComponentEventSource.fromResizing(component);
     }
 }

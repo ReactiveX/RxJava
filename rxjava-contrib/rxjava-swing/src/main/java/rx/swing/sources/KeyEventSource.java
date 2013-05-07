@@ -16,15 +16,19 @@
 package rx.swing.sources;
 
 import static java.util.Arrays.asList;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.junit.Test;
@@ -42,7 +46,10 @@ import rx.util.functions.Func2;
 
 public enum KeyEventSource { ; // no instances
 
-    public static Observable<KeyEvent> fromKeyEventsOf(final JComponent component) {
+    /**
+     * @see SwingObservable.fromKeyEvents(Component)
+     */
+    public static Observable<KeyEvent> fromKeyEventsOf(final Component component) {
         return Observable.create(new Func1<Observer<KeyEvent>, Subscription>() {
             @Override
             public Subscription call(final Observer<KeyEvent> observer) {
@@ -74,7 +81,10 @@ public enum KeyEventSource { ; // no instances
         });
     }
 
-    public static Observable<Set<Integer>> currentlyPressedKeysOf(JComponent component) {
+    /**
+     * @see SwingObservable.fromKeyEvents(Component, Set)
+     */
+    public static Observable<Set<Integer>> currentlyPressedKeysOf(Component component) {
         return Observable.<KeyEvent, Set<Integer>>scan(fromKeyEventsOf(component), new HashSet<Integer>(), new Func2<Set<Integer>, KeyEvent, Set<Integer>>() {
             @Override
             public Set<Integer> call(Set<Integer> pressedKeys, KeyEvent event) {
@@ -96,7 +106,7 @@ public enum KeyEventSource { ; // no instances
     }
     
     public static class UnitTest {
-        private JComponent comp = new JPanel();
+        private Component comp = new JPanel();
         
         @Test
         public void testObservingKeyEvents() {
