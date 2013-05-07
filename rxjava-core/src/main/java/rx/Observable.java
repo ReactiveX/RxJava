@@ -77,6 +77,7 @@ import rx.operators.OperationZip;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
+import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
@@ -2197,6 +2198,19 @@ public class Observable<T> {
         return OperationMostRecent.mostRecent(source, initialValue);
     }
 
+    /**
+     * Returns a connectable observable sequence that upon connection causes the source sequence to push results to any connected subscribers.
+     * 
+     * @param source
+     *            the source sequence whose elements will be pushed into the specified subject.
+     * @param <T>
+     *            source (and result) type
+     * @return a connectable observable sequence that upon connection causes the source sequence to push results to any connected subscribers.
+     */
+    public static <T> ConnectableObservable<T> publish(Observable<T> source) {
+        return OperationMulticast.multicast(source, PublishSubject.<T>create());
+    }
+    
     /**
      * Returns a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
      * 
