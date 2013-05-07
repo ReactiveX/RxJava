@@ -32,36 +32,46 @@ import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 /**
- * Subject that publishes only the last event to each {@link Observer} that has subscribed when the completes. 
+ * Subject that publishes the last and all subsequent events to each {@link Observer} that subscribes. 
  * <p>
  * Example usage:
  * <p>
  * <pre> {@code
  
-  // observer will receive no onNext events.
-  AsyncSubject<Object> subject = AsyncSubject.create();
+  // observer will receive all events.
+  BehaviorSubject<Object> subject = BehaviorSubject.createWithDefaultValue("default");
   subject.subscribe(observer);
   subject.onNext("one");
   subject.onNext("two");
   subject.onNext("three");
  
-  // observer will receive "three" as the only onNext event.
-  AsyncSubject<Object> subject = AsyncSubject.create();
-  subject.subscribe(observer);
+  // observer will receive the "one", "two" and "three" events.
+  BehaviorSubject<Object> subject = BehaviorSubject.createWithDefaultValue("default");
   subject.onNext("one");
+  subject.subscribe(observer);
   subject.onNext("two");
   subject.onNext("three");
-  subject.onCompleted();
  
   } </pre>
  * 
  * @param <T>
  */
-public class AsyncSubject<T> extends Subject<T, T> {
-	
-    public static <T> AsyncSubject<T> create() {
+public class BehaviorSubject<T> extends Subject<T, T> {
+
+    /**
+     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each 
+     * {@link Observer} that subscribes to it.
+     *  
+     * @param defaultValue
+     *            The value which will be published to any {@link Observer} as long as the 
+     *            {@link BehaviorSubject} has not yet received any events.
+     * @return the constructed {@link BehaviorSubject}.
+     */
+    public static <T> BehaviorSubject<T> createWithDefaultValue(T defaultValue) {
         final ConcurrentHashMap<Subscription, Observer<T>> observers = new ConcurrentHashMap<Subscription, Observer<T>>();
 
+        final AtomicReference<T> currentValue = new AtomicReference<T>(defaultValue);
+        
         Func1<Observer<T>, Subscription> onSubscribe = new Func1<Observer<T>, Subscription>() {
             @Override
             public Subscription call(Observer<T> observer) {
@@ -75,30 +85,28 @@ public class AsyncSubject<T> extends Subject<T, T> {
                     }
                 });
 
+                observer.onNext(currentValue.get());
+
                 // on subscribe add it to the map of outbound observers to notify
                 observers.put(subscription, observer);
                 return subscription;
             }
         };
 
-        return new AsyncSubject<T>(onSubscribe, observers);
+        return new BehaviorSubject<T>(currentValue, onSubscribe, observers);
     }
 
     private final ConcurrentHashMap<Subscription, Observer<T>> observers;
     private final AtomicReference<T> currentValue;
 
-    protected AsyncSubject(Func1<Observer<T>, Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
+    protected BehaviorSubject(AtomicReference<T> currentValue, Func1<Observer<T>, Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
         super(onSubscribe);
+        this.currentValue = currentValue;
         this.observers = observers;
-        this.currentValue = new AtomicReference<T>();
     }
-
+    
     @Override
     public void onCompleted() {
-    	T finalValue = currentValue.get();
-    	for (Observer<T> observer : observers.values()) {
-			observer.onNext(finalValue);
-    	}
         for (Observer<T> observer : observers.values()) {
             observer.onCompleted();
         }
@@ -114,6 +122,9 @@ public class AsyncSubject<T> extends Subject<T, T> {
     @Override
     public void onNext(T args) {
         currentValue.set(args);
+        for (Observer<T> observer : observers.values()) {
+            observer.onNext(args);
+        }
     }
 
     public static class UnitTest {
@@ -121,8 +132,8 @@ public class AsyncSubject<T> extends Subject<T, T> {
         private final Exception testException = new Exception();
 
         @Test
-        public void testNeverCompleted() {
-        	AsyncSubject<Object> subject = AsyncSubject.create();
+        public void testThatObserverReceivesDefaultValueIfNothingWasPublished() {
+            BehaviorSubject<String> subject = BehaviorSubject.createWithDefaultValue("default");
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -132,27 +143,52 @@ public class AsyncSubject<T> extends Subject<T, T> {
             subject.onNext("two");
             subject.onNext("three");
 
-            assertNeverCompletedObserver(aObserver);
+            assertReceivedAllEvents(aObserver);
         }
 
-        private void assertNeverCompletedObserver(Observer<String> aObserver)
-        {
-            verify(aObserver, Mockito.never()).onNext(anyString());
+        private void assertReceivedAllEvents(Observer<String> aObserver) {
+            verify(aObserver, times(1)).onNext("default");
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+            verify(aObserver, times(1)).onNext("three");
             verify(aObserver, Mockito.never()).onError(testException);
             verify(aObserver, Mockito.never()).onCompleted();
         }
-        
+
+        @Test
+        public void testThatObserverDoesNotReceiveDefaultValueIfSomethingWasPublished() {
+            BehaviorSubject<String> subject = BehaviorSubject.createWithDefaultValue("default");
+
+            subject.onNext("one");
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+            subject.subscribe(aObserver);
+
+            subject.onNext("two");
+            subject.onNext("three");
+
+            assertDidNotReceiveTheDefaultValue(aObserver);
+        }
+
+        private void assertDidNotReceiveTheDefaultValue(Observer<String> aObserver) {
+            verify(aObserver, Mockito.never()).onNext("default");
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+            verify(aObserver, times(1)).onNext("three");
+            verify(aObserver, Mockito.never()).onError(testException);
+            verify(aObserver, Mockito.never()).onCompleted();
+        }
+
         @Test
         public void testCompleted() {
-        	AsyncSubject<Object> subject = AsyncSubject.create();
+            BehaviorSubject<String> subject = BehaviorSubject.createWithDefaultValue("default");
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
             subject.onNext("one");
-            subject.onNext("two");
-            subject.onNext("three");
             subject.onCompleted();
 
             assertCompletedObserver(aObserver);
@@ -160,25 +196,23 @@ public class AsyncSubject<T> extends Subject<T, T> {
 
         private void assertCompletedObserver(Observer<String> aObserver)
         {
-            verify(aObserver, times(1)).onNext("three");
+            verify(aObserver, times(1)).onNext("default");
+            verify(aObserver, times(1)).onNext("one");
             verify(aObserver, Mockito.never()).onError(any(Exception.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
         @Test
-        public void testError() {
-        	AsyncSubject<Object> subject = AsyncSubject.create();
+        public void testCompletedAfterError() {
+            BehaviorSubject<String> subject = BehaviorSubject.createWithDefaultValue("default");
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
             subject.onNext("one");
-            subject.onNext("two");
-            subject.onNext("three");
             subject.onError(testException);
-            subject.onNext("four");
-            subject.onError(new Exception());
+            subject.onNext("two");
             subject.onCompleted();
 
             assertErrorObserver(aObserver);
@@ -186,64 +220,43 @@ public class AsyncSubject<T> extends Subject<T, T> {
 
         private void assertErrorObserver(Observer<String> aObserver)
         {
-            verify(aObserver, Mockito.never()).onNext(anyString());
+            verify(aObserver, times(1)).onNext("default");
+            verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onError(testException);
-            verify(aObserver, Mockito.never()).onCompleted();
         }
-
-        @Test
-        public void testUnsubscribeBeforeCompleted() {
-        	AsyncSubject<Object> subject = AsyncSubject.create();
-
-            @SuppressWarnings("unchecked")
-            Observer<String> aObserver = mock(Observer.class);
-            Subscription subscription = subject.subscribe(aObserver);
-
-            subject.onNext("one");
-            subject.onNext("two");
-
-            subscription.unsubscribe();
-            assertNoOnNextEventsReceived(aObserver);
-
-            subject.onNext("three");
-            subject.onCompleted();
-
-            assertNoOnNextEventsReceived(aObserver);
-        }
-
-        private void assertNoOnNextEventsReceived(Observer<String> aObserver)
-        {
-            verify(aObserver, Mockito.never()).onNext(anyString());
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
-            verify(aObserver, Mockito.never()).onCompleted();
-        }
-
+        
         @Test
         public void testUnsubscribe()
         {
-            UnsubscribeTester.test(new Func0<AsyncSubject<Object>>()
+            UnsubscribeTester.test(new Func0<BehaviorSubject<String>>()
             {
                 @Override
-                public AsyncSubject<Object> call()
+                public BehaviorSubject<String> call()
                 {
-                    return AsyncSubject.create();
+                    return BehaviorSubject.createWithDefaultValue("default");
                 }
-            }, new Action1<AsyncSubject<Object>>()
+            }, new Action1<BehaviorSubject<String>>()
             {
                 @Override
-                public void call(AsyncSubject<Object> DefaultSubject)
+                public void call(BehaviorSubject<String> DefaultSubject)
                 {
                     DefaultSubject.onCompleted();
                 }
-            }, new Action1<AsyncSubject<Object>>()
+            }, new Action1<BehaviorSubject<String>>()
             {
                 @Override
-                public void call(AsyncSubject<Object> DefaultSubject)
+                public void call(BehaviorSubject<String> DefaultSubject)
                 {
                     DefaultSubject.onError(new Exception());
                 }
-            }, 
-            null);
+            }, new Action1<BehaviorSubject<String>>()
+            {
+                @Override
+                public void call(BehaviorSubject<String> DefaultSubject)
+                {
+                    DefaultSubject.onNext("one");
+                }
+            });
         }
     }
 }
