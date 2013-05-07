@@ -39,6 +39,7 @@ import org.mockito.MockitoAnnotations;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.operators.OperationAll;
+import rx.operators.OperationCache;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
@@ -77,6 +78,8 @@ import rx.operators.OperationZip;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
+import rx.subjects.PublishSubject;
+import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
@@ -1666,6 +1669,44 @@ public class Observable<T> {
     }
 
     /**
+     * Returns a connectable observable sequence that shares a single subscription to the underlying sequence replaying all notifications.
+     * 
+     * @param that
+     *            the source Observable
+     * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     */
+    public static <T> ConnectableObservable<T> replay(final Observable<T> that) {
+        return OperationMulticast.multicast(that, ReplaySubject.<T> create());
+    }
+
+    /**
+     * Similar to {@link #replay()} except that this auto-subscribes to the source sequence.
+     * <p>
+     * This is useful when returning an Observable that you wish to cache responses but can't control the
+     * subscribe/unsubscribe behavior of all the Observers.
+     * <p>
+     * NOTE: You sacrifice the ability to unsubscribe from the origin with this operator so be careful to not
+     * use this on infinite or very large sequences that will use up memory. This is similar to
+     * the {@link Observable#toList()} operator in this caution.
+     * 
+     * @return an observable sequence that upon first subscription caches all events for subsequent subscriptions.
+     */
+    public static <T> Observable<T> cache(final Observable<T> that) {
+        return create(OperationCache.cache(that));
+    }
+
+    /**
+     * Returns a connectable observable sequence that shares a single subscription to the underlying sequence.
+     * 
+     * @param that
+     *            the source Observable
+     * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     */
+    public static <T> ConnectableObservable<T> publish(final Observable<T> that) {
+        return OperationMulticast.multicast(that, PublishSubject.<T> create());
+    }
+
+    /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
      * by an Observable into the same function, and so on until all items have been emitted by the
@@ -1720,7 +1761,7 @@ public class Observable<T> {
     public static <T> Observable<T> aggregate(Observable<T> sequence, Func2<T, T, T> accumulator) {
         return reduce(sequence, accumulator);
     }
-    
+
     /**
      * Used by dynamic languages.
      * 
@@ -1729,7 +1770,7 @@ public class Observable<T> {
     public static <T> Observable<T> aggregate(Observable<T> sequence, Object accumulator) {
         return reduce(sequence, accumulator);
     }
-    
+
     /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
@@ -1787,7 +1828,7 @@ public class Observable<T> {
     public static <T, R> Observable<R> aggregate(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
         return reduce(sequence, initialValue, accumulator);
     }
-    
+
     /**
      * Used by dynamic languages.
      * 
@@ -1796,7 +1837,7 @@ public class Observable<T> {
     public static <T, R> Observable<R> aggregate(Observable<T> sequence, R initialValue, Object accumulator) {
         return reduce(sequence, initialValue, accumulator);
     }
-    
+
     /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
@@ -2003,7 +2044,7 @@ public class Observable<T> {
      * @param items
      * @param predicate
      *            a function to test each source element for a condition
-     * @return the values from the start of the given sequence 
+     * @return the values from the start of the given sequence
      */
     public static <T> Observable<T> takeWhile(final Observable<T> items, Func1<T, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhile(items, predicate));
@@ -2015,7 +2056,7 @@ public class Observable<T> {
      * @param items
      * @param predicate
      *            a function to test each source element for a condition
-     * @return the values from the start of the given sequence 
+     * @return the values from the start of the given sequence
      */
     public static <T> Observable<T> takeWhile(final Observable<T> items, Object predicate) {
         @SuppressWarnings("rawtypes")
@@ -2035,7 +2076,7 @@ public class Observable<T> {
      * @param items
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return the values from the start of the given sequence 
+     * @return the values from the start of the given sequence
      */
     public static <T> Observable<T> takeWhileWithIndex(final Observable<T> items, Func2<T, Integer, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhileWithIndex(items, predicate));
@@ -2057,12 +2098,13 @@ public class Observable<T> {
 
     /**
      * Adds a timestamp to each item emitted by this observable.
+     * 
      * @return An observable sequence of timestamped items.
      */
     public Observable<Timestamped<T>> timestamp() {
         return create(OperationTimestamp.timestamp(this));
     }
-    
+
     /**
      * Return a Future representing a single value of the Observable.
      * <p>
@@ -2384,7 +2426,7 @@ public class Observable<T> {
      * @param sequence
      * @throws ClassCastException
      *             if T objects do not implement Comparable
-     * @return an observable containing the sorted list 
+     * @return an observable containing the sorted list
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence) {
         return create(OperationToObservableSortedList.toSortedList(sequence));
@@ -2397,7 +2439,7 @@ public class Observable<T> {
      * 
      * @param sequence
      * @param sortFunction
-     * @return an observable containing the sorted list 
+     * @return an observable containing the sorted list
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, Func2<T, T, Integer> sortFunction) {
         return create(OperationToObservableSortedList.toSortedList(sequence, sortFunction));
@@ -2410,7 +2452,7 @@ public class Observable<T> {
      * 
      * @param sequence
      * @param sortFunction
-     * @return an observable containing the sorted list 
+     * @return an observable containing the sorted list
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, final Object sortFunction) {
         @SuppressWarnings("rawtypes")
@@ -3187,6 +3229,40 @@ public class Observable<T> {
     }
 
     /**
+     * Returns a connectable observable sequence that shares a single subscription to the underlying sequence replaying all notifications.
+     * 
+     * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     */
+    public ConnectableObservable<T> replay() {
+        return replay(this);
+    }
+
+    /**
+     * Similar to {@link #replay()} except that this auto-subscribes to the source sequence.
+     * <p>
+     * This is useful when returning an Observable that you wish to cache responses but can't control the
+     * subscribe/unsubscribe behavior of all the Observers.
+     * <p>
+     * NOTE: You sacrifice the ability to unsubscribe from the origin with this operator so be careful to not
+     * use this on infinite or very large sequences that will use up memory. This is similar to
+     * the {@link Observable#toList()} operator in this caution.
+     * 
+     * @return an observable sequence that upon first subscription caches all events for subsequent subscriptions.
+     */
+    public Observable<T> cache() {
+        return cache(this);
+    }
+
+    /**
+     * Returns a connectable observable sequence that shares a single subscription to the underlying sequence.
+     * 
+     * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     */
+    public ConnectableObservable<T> publish() {
+        return publish(this);
+    }
+
+    /**
      * Used by dynamic languages.
      * 
      * @see #reduce(Func2)
@@ -3201,7 +3277,7 @@ public class Observable<T> {
     public Observable<T> aggregate(Func2<T, T, T> accumulator) {
         return aggregate(this, accumulator);
     }
-    
+
     /**
      * Used by dynamic languages.
      * 
@@ -3210,7 +3286,7 @@ public class Observable<T> {
     public Observable<T> aggregate(Object accumulator) {
         return aggregate(this, accumulator);
     }
-    
+
     /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
@@ -3263,7 +3339,7 @@ public class Observable<T> {
     public <R> Observable<R> aggregate(R initialValue, Object accumulator) {
         return aggregate(this, initialValue, accumulator);
     }
-    
+
     /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
@@ -3298,7 +3374,7 @@ public class Observable<T> {
     public Observable<T> sample(long period, TimeUnit unit) {
         return create(OperationSample.sample(this, period, unit));
     }
-  
+
     /**
      * Samples the observable sequence at each interval.
      * 
@@ -3313,10 +3389,10 @@ public class Observable<T> {
     public Observable<T> sample(long period, TimeUnit unit, Scheduler scheduler) {
         return create(OperationSample.sample(this, period, unit, scheduler));
     }
-    
+
     /**
      * Used by dynamic languages.
-     *
+     * 
      * @see #scan(Func2)
      */
     public Observable<T> scan(final Object accumulator) {
@@ -3348,7 +3424,7 @@ public class Observable<T> {
 
     /**
      * Used by dynamic languages.
-     *
+     * 
      * @see #scan(Object, Func2)
      */
     public <R> Observable<R> scan(final R initialValue, final Object accumulator) {
@@ -3419,7 +3495,7 @@ public class Observable<T> {
      * 
      * @param predicate
      *            a function to test each source element for a condition
-     * @return the values from the start of the given sequence 
+     * @return the values from the start of the given sequence
      */
     public Observable<T> takeWhile(final Func1<T, Boolean> predicate) {
         return takeWhile(this, predicate);
@@ -3430,7 +3506,7 @@ public class Observable<T> {
      * 
      * @param predicate
      *            a function to test each source element for a condition
-     * @return the values from the start of the given sequence 
+     * @return the values from the start of the given sequence
      */
     public Observable<T> takeWhile(final Object predicate) {
         return takeWhile(this, predicate);
@@ -3441,7 +3517,7 @@ public class Observable<T> {
      * 
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return the values from the start of the given sequence 
+     * @return the values from the start of the given sequence
      */
     public Observable<T> takeWhileWithIndex(final Func2<T, Integer, Boolean> predicate) {
         return takeWhileWithIndex(this, predicate);
@@ -3452,7 +3528,7 @@ public class Observable<T> {
      * 
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return the values from the start of the given sequence 
+     * @return the values from the start of the given sequence
      */
     public Observable<T> takeWhileWithIndex(final Object predicate) {
         return takeWhileWithIndex(this, predicate);
@@ -3523,7 +3599,7 @@ public class Observable<T> {
      * 
      * @throws ClassCastException
      *             if T objects do not implement Comparable
-     * @return an observable containing the sorted list 
+     * @return an observable containing the sorted list
      */
     public Observable<List<T>> toSortedList() {
         return toSortedList(this);
@@ -3535,7 +3611,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
      * 
      * @param sortFunction
-     * @return an observable containing the sorted list 
+     * @return an observable containing the sorted list
      */
     public Observable<List<T>> toSortedList(Func2<T, T, Integer> sortFunction) {
         return toSortedList(this, sortFunction);
@@ -3547,7 +3623,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
      * 
      * @param sortFunction
-     * @return an observable containing the sorted list 
+     * @return an observable containing the sorted list
      */
     public Observable<List<T>> toSortedList(final Object sortFunction) {
         return toSortedList(this, sortFunction);
@@ -4138,6 +4214,167 @@ public class Observable<T> {
             } catch (Exception e) {
                 // do nothing as we expect this
             }
+        }
+
+        @Test
+        public void testPublish() throws InterruptedException {
+            final AtomicInteger counter = new AtomicInteger();
+            ConnectableObservable<String> o = Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(final Observer<String> observer) {
+                    final BooleanSubscription subscription = new BooleanSubscription();
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            counter.incrementAndGet();
+                            observer.onNext("one");
+                            observer.onCompleted();
+                        }
+                    }).start();
+                    return subscription;
+                }
+            }).publish();
+
+            final CountDownLatch latch = new CountDownLatch(2);
+
+            // subscribe once
+            o.subscribe(new Action1<String>() {
+
+                @Override
+                public void call(String v) {
+                    assertEquals("one", v);
+                    latch.countDown();
+                }
+            });
+
+            // subscribe again
+            o.subscribe(new Action1<String>() {
+
+                @Override
+                public void call(String v) {
+                    assertEquals("one", v);
+                    latch.countDown();
+                }
+            });
+
+            Subscription s = o.connect();
+            try {
+                if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
+                    fail("subscriptions did not receive values");
+                }
+                assertEquals(1, counter.get());
+            } finally {
+                s.unsubscribe();
+            }
+        }
+
+        @Test
+        public void testReplay() throws InterruptedException {
+            final AtomicInteger counter = new AtomicInteger();
+            ConnectableObservable<String> o = Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(final Observer<String> observer) {
+                    final BooleanSubscription subscription = new BooleanSubscription();
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            counter.incrementAndGet();
+                            observer.onNext("one");
+                            observer.onCompleted();
+                        }
+                    }).start();
+                    return subscription;
+                }
+            }).replay();
+
+            // we connect immediately and it will emit the value
+            Subscription s = o.connect();
+            try {
+
+                // we then expect the following 2 subscriptions to get that same value
+                final CountDownLatch latch = new CountDownLatch(2);
+
+                // subscribe once
+                o.subscribe(new Action1<String>() {
+
+                    @Override
+                    public void call(String v) {
+                        assertEquals("one", v);
+                        latch.countDown();
+                    }
+                });
+
+                // subscribe again
+                o.subscribe(new Action1<String>() {
+
+                    @Override
+                    public void call(String v) {
+                        assertEquals("one", v);
+                        latch.countDown();
+                    }
+                });
+
+                if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
+                    fail("subscriptions did not receive values");
+                }
+                assertEquals(1, counter.get());
+            } finally {
+                s.unsubscribe();
+            }
+        }
+
+        @Test
+        public void testCache() throws InterruptedException {
+            final AtomicInteger counter = new AtomicInteger();
+            Observable<String> o = Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(final Observer<String> observer) {
+                    final BooleanSubscription subscription = new BooleanSubscription();
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            counter.incrementAndGet();
+                            observer.onNext("one");
+                            observer.onCompleted();
+                        }
+                    }).start();
+                    return subscription;
+                }
+            }).cache();
+
+            // we then expect the following 2 subscriptions to get that same value
+            final CountDownLatch latch = new CountDownLatch(2);
+
+            // subscribe once
+            o.subscribe(new Action1<String>() {
+
+                @Override
+                public void call(String v) {
+                    assertEquals("one", v);
+                    latch.countDown();
+                }
+            });
+
+            // subscribe again
+            o.subscribe(new Action1<String>() {
+
+                @Override
+                public void call(String v) {
+                    assertEquals("one", v);
+                    latch.countDown();
+                }
+            });
+
+            if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
+                fail("subscriptions did not receive values");
+            }
+            assertEquals(1, counter.get());
         }
 
         private static class TestException extends RuntimeException {
