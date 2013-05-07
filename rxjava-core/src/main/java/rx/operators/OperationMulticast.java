@@ -50,6 +50,7 @@ public class OperationMulticast {
             this.subject = subject;
         }
 
+        @Override
         public Subscription connect() {
             synchronized (lock) {
                 if (subscription == null) {
