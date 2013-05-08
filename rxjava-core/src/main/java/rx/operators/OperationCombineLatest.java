@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.mockito.Matchers;
 
 import rx.Observable;
 import rx.Observer;
@@ -47,9 +48,12 @@ public class OperationCombineLatest {
     /**
      * Combines the two given observables, emitting an event containing an aggregation of the latest values of each of the source observables
      * each time an event is received from one of the source observables, where the aggregation is defined by the given function.
-     * @param w0 The first source observable.
-     * @param w1 The second source observable.
-     * @param combineLatestFunction The aggregation function used to combine the source observable values.
+     * @param w0 
+     *          The first source observable.
+     * @param w1 
+     *          The second source observable.
+     * @param combineLatestFunction 
+     *          The aggregation function used to combine the source observable values.
      * @return A function from an observer to a subscription. This can be used to create an observable from.
      */
     public static <T0, T1, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> combineLatestFunction) {
@@ -236,7 +240,12 @@ public class OperationCombineLatest {
             // if we did not return above from the synchronized block we can now invoke the combineLatestFunction with all of the args
             // we do this outside the synchronized block as it is now safe to call this concurrently and don't need to block other threads from calling
             // this 'next' method while another thread finishes calling this combineLatestFunction
-            observer.onNext(combineLatestFunction.call(argsToCombineLatest));
+            try {
+                R combinedValue = combineLatestFunction.call(argsToCombineLatest);
+                observer.onNext(combinedValue);
+            } catch(Exception ex) {
+                observer.onError(ex);
+            }
         }
 
         @Override
@@ -273,10 +282,33 @@ public class OperationCombineLatest {
 
     public static class UnitTest {
 
-        @SuppressWarnings("unchecked")
-        /* mock calls don't do generics */
+        @Test
+        public void testCombineLatestWithFunctionThatThrowsAnException() {
+            @SuppressWarnings("unchecked") // mock calls don't do generics
+            Observer<String> w = mock(Observer.class);
+            
+            TestObservable w1 = new TestObservable();
+            TestObservable w2 = new TestObservable();
+            
+            Observable<String> combined = Observable.create(combineLatest(w1, w2, new Func2<String, String, String>() {
+                @Override
+                public String call(String v1, String v2) {
+                    throw new RuntimeException("I don't work.");
+                }
+            }));
+            combined.subscribe(w);
+            
+            w1.Observer.onNext("first value of w1");
+            w2.Observer.onNext("first value of w2");
+            
+            verify(w, never()).onNext(anyString());
+            verify(w, never()).onCompleted();
+            verify(w, times(1)).onError(Matchers.<RuntimeException>any());
+        }
+        
         @Test
         public void testCombineLatestDifferentLengthObservableSequences1() {
+            @SuppressWarnings("unchecked") // mock calls don't do generics
             Observer<String> w = mock(Observer.class);
 
             TestObservable w1 = new TestObservable();
