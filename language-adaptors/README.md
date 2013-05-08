@@ -7,3 +7,7 @@ If there is a language you'd like supported please look at the existing adaptors
 If you feel it would be valuable for the community submit a pull request and we'll accept it into the main project.
 
 Please comply with the conventions established by the existing language adaptors if you intend to submit a pull request.
+
+NOTE: Changes are coming in regards to static and dynamic typing and how language adaptors are used.
+
+See https://github.com/Netflix/RxJava/issues/208 and https://github.com/Netflix/RxJava/issues/204
