@@ -85,7 +85,7 @@ public enum KeyEventSource { ; // no instances
      * @see SwingObservable.fromKeyEvents(Component, Set)
      */
     public static Observable<Set<Integer>> currentlyPressedKeysOf(Component component) {
-        return Observable.<KeyEvent, Set<Integer>>scan(fromKeyEventsOf(component), new HashSet<Integer>(), new Func2<Set<Integer>, KeyEvent, Set<Integer>>() {
+        class CollectKeys implements Func2<Set<Integer>, KeyEvent, Set<Integer>>{
             @Override
             public Set<Integer> call(Set<Integer> pressedKeys, KeyEvent event) {
                 Set<Integer> afterEvent = new HashSet<Integer>(pressedKeys);
@@ -102,7 +102,16 @@ public enum KeyEventSource { ; // no instances
                 }
                 return afterEvent;
             }
+        }
+        
+        Observable<KeyEvent> filteredKeyEvents = fromKeyEventsOf(component).filter(new Func1<KeyEvent, Boolean>() {
+            @Override
+            public Boolean call(KeyEvent event) {
+                return event.getID() == KeyEvent.KEY_PRESSED || event.getID() == KeyEvent.KEY_RELEASED;
+            }
         });
+        
+        return Observable.<KeyEvent, Set<Integer>>scan(filteredKeyEvents, Collections.<Integer>emptySet(), new CollectKeys());
     }
     
     public static class UnitTest {
@@ -158,6 +167,7 @@ public enum KeyEventSource { ; // no instances
             verify(complete, never()).call();
 
             fireKeyEvent(keyEvent(2, KeyEvent.KEY_PRESSED));
+            fireKeyEvent(keyEvent(KeyEvent.VK_UNDEFINED, KeyEvent.KEY_TYPED));
             inOrder.verify(action, times(1)).call(new HashSet<Integer>(asList(1, 2)));
 
             fireKeyEvent(keyEvent(2, KeyEvent.KEY_RELEASED));

@@ -103,6 +103,5 @@ public enum ComponentEventSource { ; // no instances
         public Boolean call(ComponentEvent event) {
             return event.getID() == id;
         }
-        
     }
 }
