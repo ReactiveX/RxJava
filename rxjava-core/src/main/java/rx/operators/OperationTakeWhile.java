@@ -27,6 +27,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
@@ -39,12 +40,12 @@ import rx.util.functions.Func2;
 public final class OperationTakeWhile {
 
     /**
-     * Returns a specified number of contiguous values from the start of an observable sequence.
+     * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
      * 
      * @param items
      * @param predicate
      *            a function to test each source element for a condition
-     * @return
+     * @return sequence of observable values from the start as long as the predicate is true
      */
     public static <T> Func1<Observer<T>, Subscription> takeWhile(final Observable<T> items, final Func1<T, Boolean> predicate) {
         return takeWhileWithIndex(items, OperationTakeWhile.<T> skipIndex(predicate));
@@ -56,7 +57,7 @@ public final class OperationTakeWhile {
      * @param items
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return
+     * @return sequence of observable values from the start as long as the predicate is true
      */
     public static <T> Func1<Observer<T>, Subscription> takeWhileWithIndex(final Observable<T> items, final Func2<T, Integer, Boolean> predicate) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
@@ -91,7 +92,6 @@ public final class OperationTakeWhile {
      * @param <T>
      */
     private static class TakeWhile<T> implements Func1<Observer<T>, Subscription> {
-        private final AtomicInteger counter = new AtomicInteger();
         private final Observable<T> items;
         private final Func2<T, Integer, Boolean> predicate;
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
@@ -108,6 +108,8 @@ public final class OperationTakeWhile {
 
         private class ItemObserver implements Observer<T> {
             private final Observer<T> observer;
+
+            private final AtomicInteger counter = new AtomicInteger();
 
             public ItemObserver(Observer<T> observer) {
                 // Using AtomicObserver because the unsubscribe, onCompleted, onError and error handling behavior
@@ -174,9 +176,8 @@ public final class OperationTakeWhile {
 
         @Test
         public void testTakeWhileOnSubject1() {
-            PublishSubject<Integer> s = PublishSubject.create();
-            Observable<Integer> w = (Observable<Integer>) s;
-            Observable<Integer> take = Observable.create(takeWhile(w, new Func1<Integer, Boolean>()
+            Subject<Integer, Integer> s = PublishSubject.create();
+            Observable<Integer> take = Observable.create(takeWhile(s, new Func1<Integer, Boolean>()
             {
                 @Override
                 public Boolean call(Integer input)

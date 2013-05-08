@@ -39,12 +39,13 @@ import org.mockito.MockitoAnnotations;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.operators.OperationAll;
+import rx.operators.OperationCache;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
-import rx.operators.OperationGroupBy;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
+import rx.operators.OperationGroupBy;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
@@ -56,6 +57,7 @@ import rx.operators.OperationObserveOn;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
+import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSubscribeOn;
@@ -64,6 +66,8 @@ import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
+import rx.operators.OperationTimestamp;
+import rx.operators.OperationToFuture;
 import rx.operators.OperationToIterator;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
@@ -74,12 +78,15 @@ import rx.operators.OperationZip;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
+import rx.subjects.PublishSubject;
+import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.AtomicObservableSubscription;
 import rx.util.AtomicObserver;
 import rx.util.Range;
+import rx.util.Timestamped;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
@@ -251,6 +258,7 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer() {
 
+            @Override
             public void onCompleted() {
                 Object onComplete = callbacks.get("onCompleted");
                 if (onComplete != null) {
@@ -258,6 +266,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 Object onError = callbacks.get("onError");
@@ -266,6 +275,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(Object args) {
                 onNext.call(args);
             }
@@ -297,15 +307,18 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer() {
 
+            @Override
             public void onCompleted() {
                 // do nothing
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 // no callback defined
             }
 
+            @Override
             public void onNext(Object args) {
                 onNext.call(args);
             }
@@ -326,15 +339,18 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer<T>() {
 
+            @Override
             public void onCompleted() {
                 // do nothing
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 // no callback defined
             }
 
+            @Override
             public void onNext(T args) {
                 if (onNext == null) {
                     throw new RuntimeException("onNext must be implemented");
@@ -364,10 +380,12 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer() {
 
+            @Override
             public void onCompleted() {
                 // do nothing
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 if (onError != null) {
@@ -375,6 +393,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(Object args) {
                 onNextFunction.call(args);
             }
@@ -395,10 +414,12 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer<T>() {
 
+            @Override
             public void onCompleted() {
                 // do nothing
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 if (onError != null) {
@@ -406,6 +427,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(T args) {
                 if (onNext == null) {
                     throw new RuntimeException("onNext must be implemented");
@@ -435,12 +457,14 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer() {
 
+            @Override
             public void onCompleted() {
                 if (onComplete != null) {
                     Functions.from(onComplete).call();
                 }
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 if (onError != null) {
@@ -448,6 +472,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(Object args) {
                 onNextFunction.call(args);
             }
@@ -468,10 +493,12 @@ public class Observable<T> {
          */
         return protectivelyWrapAndSubscribe(new Observer<T>() {
 
+            @Override
             public void onCompleted() {
                 onComplete.call();
             }
 
+            @Override
             public void onError(Exception e) {
                 handleError(e);
                 if (onError != null) {
@@ -479,6 +506,7 @@ public class Observable<T> {
                 }
             }
 
+            @Override
             public void onNext(T args) {
                 if (onNext == null) {
                     throw new RuntimeException("onNext must be implemented");
@@ -515,10 +543,12 @@ public class Observable<T> {
          * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
          */
         protectivelyWrapAndSubscribe(new Observer<T>() {
+            @Override
             public void onCompleted() {
                 latch.countDown();
             }
 
+            @Override
             public void onError(Exception e) {
                 /*
                  * If we receive an onError event we set the reference on the outer thread
@@ -530,6 +560,7 @@ public class Observable<T> {
                 latch.countDown();
             }
 
+            @Override
             public void onNext(T args) {
                 onNext.call(args);
             }
@@ -561,8 +592,8 @@ public class Observable<T> {
      * <p>
      * This is similar to {@link #subscribe(Observer)} but blocks. Because it blocks it does not need the {@link Observer#onCompleted()} or {@link Observer#onError(Exception)} methods.
      * 
-     * @param onNext
-     *            {@link Action1}
+     * @param o
+     *            onNext {@link Action1 action}
      * @throws RuntimeException
      *             if error occurs
      */
@@ -581,6 +612,7 @@ public class Observable<T> {
 
         forEach(new Action1() {
 
+            @Override
             public void call(Object args) {
                 onNext.call(args);
             }
@@ -590,9 +622,11 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
-     *
-     * @param subject the subject to push source elements into.
-     * @param <R> result type
+     * 
+     * @param subject
+     *            the subject to push source elements into.
+     * @param <R>
+     *            result type
      * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
      */
     public <R> ConnectableObservable<R> multicast(Subject<T, R> subject) {
@@ -870,7 +904,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of items in the {@link Iterable} sequence and the type emitted by the resulting Observable
      * @return an Observable that emits each item in the source {@link Iterable} sequence
-     * @see {@link #toObservable(Iterable)}
+     * @see #toObservable(Iterable)
      */
     public static <T> Observable<T> from(Iterable<T> iterable) {
         return toObservable(iterable);
@@ -884,7 +918,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of items in the Array, and the type of items emitted by the resulting Observable
      * @return an Observable that emits each item in the source Array
-     * @see {@link #toObservable(Object...)}
+     * @see #toObservable(Object...)
      */
     public static <T> Observable<T> from(T... items) {
         return toObservable(items);
@@ -1172,6 +1206,8 @@ public class Observable<T> {
      * and then merges the results of that function applied to every item emitted by the original
      * Observable, emitting these merged results as its own sequence.
      * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
      * 
      * @param sequence
@@ -1186,6 +1222,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item emitted by the source Observable and merging the results of
      *         the Observables obtained from this transformation
+     * @see #flatMap(Observable, Func1)
      */
     public static <T, R> Observable<R> mapMany(Observable<T> sequence, Func1<T, Observable<R>> func) {
         return create(OperationMap.mapMany(sequence, func));
@@ -1349,6 +1386,62 @@ public class Observable<T> {
      */
     public static <T> Observable<T> finallyDo(Observable<T> source, Action0 action) {
         return create(OperationFinally.finallyDo(source, action));
+    }
+
+    /**
+     * Creates a new Observable sequence by applying a function that you supply to each object in the
+     * original Observable sequence, where that function is itself an Observable that emits objects,
+     * and then merges the results of that function applied to every item emitted by the original
+     * Observable, emitting these merged results as its own sequence.
+     * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
+     * 
+     * @param sequence
+     *            the source Observable
+     * @param func
+     *            a function to apply to each item emitted by the source Observable, generating a
+     *            Observable
+     * @param <T>
+     *            the type emitted by the source Observable
+     * @param <R>
+     *            the type emitted by the Observables emitted by <code>func</code>
+     * @return an Observable that emits a sequence that is the result of applying the transformation
+     *         function to each item emitted by the source Observable and merging the results of
+     *         the Observables obtained from this transformation
+     * @see #mapMany(Observable, Func1)
+     */
+    public static <T, R> Observable<R> flatMap(Observable<T> sequence, Func1<T, Observable<R>> func) {
+        return mapMany(sequence, func);
+    }
+
+    /**
+     * Creates a new Observable sequence by applying a function that you supply to each object in the
+     * original Observable sequence, where that function is itself an Observable that emits objects,
+     * and then merges the results of that function applied to every item emitted by the original
+     * Observable, emitting these merged results as its own sequence.
+     * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
+     * 
+     * @param sequence
+     *            the source Observable
+     * @param func
+     *            a function to apply to each item emitted by the source Observable, generating a
+     *            Observable
+     * @param <T>
+     *            the type emitted by the source Observable
+     * @param <R>
+     *            the type emitted by the Observables emitted by <code>func</code>
+     * @return an Observable that emits a sequence that is the result of applying the transformation
+     *         function to each item emitted by the source Observable and merging the results of
+     *         the Observables obtained from this transformation
+     * @see #mapMany(Observable, Func1)
+     */
+    public static <T, R> Observable<R> flatMap(Observable<T> sequence, final Object func) {
+        return mapMany(sequence, func);
     }
 
     /**
@@ -1576,6 +1669,44 @@ public class Observable<T> {
     }
 
     /**
+     * Returns a connectable observable sequence that shares a single subscription to the underlying sequence replaying all notifications.
+     * 
+     * @param that
+     *            the source Observable
+     * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     */
+    public static <T> ConnectableObservable<T> replay(final Observable<T> that) {
+        return OperationMulticast.multicast(that, ReplaySubject.<T> create());
+    }
+
+    /**
+     * Similar to {@link #replay()} except that this auto-subscribes to the source sequence.
+     * <p>
+     * This is useful when returning an Observable that you wish to cache responses but can't control the
+     * subscribe/unsubscribe behavior of all the Observers.
+     * <p>
+     * NOTE: You sacrifice the ability to unsubscribe from the origin with this operator so be careful to not
+     * use this on infinite or very large sequences that will use up memory. This is similar to
+     * the {@link Observable#toList()} operator in this caution.
+     * 
+     * @return an observable sequence that upon first subscription caches all events for subsequent subscriptions.
+     */
+    public static <T> Observable<T> cache(final Observable<T> that) {
+        return create(OperationCache.cache(that));
+    }
+
+    /**
+     * Returns a connectable observable sequence that shares a single subscription to the underlying sequence.
+     * 
+     * @param that
+     *            the source Observable
+     * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     */
+    public static <T> ConnectableObservable<T> publish(final Observable<T> that) {
+        return OperationMulticast.multicast(that, PublishSubject.<T> create());
+    }
+
+    /**
      * Returns an Observable that applies a function of your choosing to the first item emitted by a
      * source Observable, then feeds the result of that function along with the second item emitted
      * by an Observable into the same function, and so on until all items have been emitted by the
@@ -1606,30 +1737,9 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the final result from the final call to your function as its sole
-     * output.
-     * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code>
-     * method that does a similar operation on lists.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
+     * Used by dynamic languages.
      * 
-     * @param <T>
-     *            the type item emitted by the source Observable
-     * @param sequence
-     *            the source Observable
-     * @param accumulator
-     *            an accumulator function to be invoked on each element from the sequence, whose
-     *            result will be used in the next accumulator call (if applicable)
-     * 
-     * @return an Observable that emits a single element that is the result of accumulating the
-     *         output from applying the accumulator to the sequence of items emitted by the source
-     *         Observable
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+     * @see #reduce(Observable, Func2)
      */
     public static <T> Observable<T> reduce(final Observable<T> sequence, final Object accumulator) {
         @SuppressWarnings("rawtypes")
@@ -1646,35 +1756,19 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the final result from the final call to your function as its sole
-     * output.
-     * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code>
-     * method that does a similar operation on lists.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
-     * 
-     * @param <T>
-     *            the type item emitted by the source Observable
-     * @param sequence
-     *            the source Observable
-     * @param initialValue
-     *            a seed passed into the first execution of the accumulator function
-     * @param accumulator
-     *            an accumulator function to be invoked on each element from the sequence, whose
-     *            result will be used in the next accumulator call (if applicable)
-     * 
-     * @return an Observable that emits a single element that is the result of accumulating the
-     *         output from applying the accumulator to the sequence of items emitted by the source
-     *         Observable
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+     * @see #reduce(Observable, Func2)
      */
-    public static <T> Observable<T> reduce(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
-        return takeLast(create(OperationScan.scan(sequence, initialValue, accumulator)), 1);
+    public static <T> Observable<T> aggregate(Observable<T> sequence, Func2<T, T, T> accumulator) {
+        return reduce(sequence, accumulator);
+    }
+
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #reduce(Observable, Func2)
+     */
+    public static <T> Observable<T> aggregate(Observable<T> sequence, Object accumulator) {
+        return reduce(sequence, accumulator);
     }
 
     /**
@@ -1691,6 +1785,8 @@ public class Observable<T> {
      * 
      * @param <T>
      *            the type item emitted by the source Observable
+     * @param <R>
+     *            the type returned for each item of the target observable
      * @param sequence
      *            the source Observable
      * @param initialValue
@@ -1698,24 +1794,48 @@ public class Observable<T> {
      * @param accumulator
      *            an accumulator function to be invoked on each element from the sequence, whose
      *            result will be used in the next accumulator call (if applicable)
+     * 
      * @return an Observable that emits a single element that is the result of accumulating the
      *         output from applying the accumulator to the sequence of items emitted by the source
      *         Observable
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public static <T> Observable<T> reduce(final Observable<T> sequence, final T initialValue, final Object accumulator) {
+    public static <T, R> Observable<R> reduce(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
+        return takeLast(create(OperationScan.scan(sequence, initialValue, accumulator)), 1);
+    }
+
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #reduce(Observable, Object, Func2)
+     */
+    public static <T, R> Observable<R> reduce(final Observable<T> sequence, final R initialValue, final Object accumulator) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(accumulator);
-        return reduce(sequence, initialValue, new Func2<T, T, T>() {
-
+        return reduce(sequence, initialValue, new Func2<R, T, R>() {
             @SuppressWarnings("unchecked")
             @Override
-            public T call(T t1, T t2) {
-                return (T) _f.call(t1, t2);
+            public R call(R r, T t) {
+                return (R) _f.call(r, t);
             }
-
         });
+    }
+
+    /**
+     * @see #reduce(Observable, Object, Func2)
+     */
+    public static <T, R> Observable<R> aggregate(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
+        return reduce(sequence, initialValue, accumulator);
+    }
+
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #reduce(Observable, Object, Func2)
+     */
+    public static <T, R> Observable<R> aggregate(Observable<T> sequence, R initialValue, Object accumulator) {
+        return reduce(sequence, initialValue, accumulator);
     }
 
     /**
@@ -1742,23 +1862,9 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the result of each of these iterations as its own sequence.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
+     * Used by dynamic languages.
      * 
-     * @param <T>
-     *            the type item emitted by the source Observable
-     * @param sequence
-     *            the source Observable
-     * @param accumulator
-     *            an accumulator function to be invoked on each element from the sequence, whose
-     *            result will be emitted and used in the next accumulator call (if applicable)
-     * @return an Observable that emits a sequence of items that are the result of accumulating the
-     *         output from the sequence emitted by the source Observable
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
+     * @see #scan(Observable, Func2)
      */
     public static <T> Observable<T> scan(final Observable<T> sequence, final Object accumulator) {
         @SuppressWarnings("rawtypes")
@@ -1784,6 +1890,8 @@ public class Observable<T> {
      * 
      * @param <T>
      *            the type item emitted by the source Observable
+     * @param <R>
+     *            the type returned for each item of the target observable
      * @param sequence
      *            the source Observable
      * @param initialValue
@@ -1795,42 +1903,25 @@ public class Observable<T> {
      *         output from the sequence emitted by the source Observable
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public static <T> Observable<T> scan(Observable<T> sequence, T initialValue, Func2<T, T, T> accumulator) {
+    public static <T, R> Observable<R> scan(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
         return create(OperationScan.scan(sequence, initialValue, accumulator));
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the result of each of these iterations as its own sequence.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
+     * Used by dynamic languages.
      * 
-     * @param <T>
-     *            the type item emitted by the source Observable
-     * @param sequence
-     *            the source Observable
-     * @param initialValue
-     *            the initial (seed) accumulator value
-     * @param accumulator
-     *            an accumulator function to be invoked on each element from the sequence, whose
-     *            result will be emitted and used in the next accumulator call (if applicable)
-     * @return an Observable that emits a sequence of items that are the result of accumulating the
-     *         output from the sequence emitted by the source Observable
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
+     * @see #scan(Observable, Object, Func2)
      */
-    public static <T> Observable<T> scan(final Observable<T> sequence, final T initialValue, final Object accumulator) {
+    public static <T, R> Observable<R> scan(final Observable<T> sequence, final R initialValue, final Object accumulator) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(accumulator);
-        return scan(sequence, initialValue, new Func2<T, T, T>() {
+        return scan(sequence, initialValue, new Func2<R, T, R>() {
 
             @SuppressWarnings("unchecked")
             @Override
-            public T call(T t1, T t2) {
-                return (T) _f.call(t1, t2);
+            public R call(R r, T t) {
+                return (R) _f.call(r, t);
             }
-
         });
     }
 
@@ -1948,24 +2039,24 @@ public class Observable<T> {
     }
 
     /**
-     * Returns a specified number of contiguous values from the start of an observable sequence.
+     * Returns the values from the start of an observable sequence while a given predicate remains true.
      * 
      * @param items
      * @param predicate
      *            a function to test each source element for a condition
-     * @return
+     * @return the values from the start of the given sequence
      */
     public static <T> Observable<T> takeWhile(final Observable<T> items, Func1<T, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhile(items, predicate));
     }
 
     /**
-     * Returns a specified number of contiguous values from the start of an observable sequence.
+     * Returns the values from the start of an observable sequence while a given predicate remains true.
      * 
      * @param items
      * @param predicate
      *            a function to test each source element for a condition
-     * @return
+     * @return the values from the start of the given sequence
      */
     public static <T> Observable<T> takeWhile(final Observable<T> items, Object predicate) {
         @SuppressWarnings("rawtypes")
@@ -1985,7 +2076,7 @@ public class Observable<T> {
      * @param items
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return
+     * @return the values from the start of the given sequence
      */
     public static <T> Observable<T> takeWhileWithIndex(final Observable<T> items, Func2<T, Integer, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhileWithIndex(items, predicate));
@@ -2003,6 +2094,28 @@ public class Observable<T> {
                 return (Boolean) _f.call(t, integer);
             }
         }));
+    }
+
+    /**
+     * Adds a timestamp to each item emitted by this observable.
+     * 
+     * @return An observable sequence of timestamped items.
+     */
+    public Observable<Timestamped<T>> timestamp() {
+        return create(OperationTimestamp.timestamp(this));
+    }
+
+    /**
+     * Return a Future representing a single value of the Observable.
+     * <p>
+     * This will throw an exception if the Observable emits more than 1 value. If more than 1 are expected then use <code>toList().toFuture()</code>.
+     * 
+     * @param that
+     *            the source Observable
+     * @return a Future that expects a single item emitted by the source Observable
+     */
+    public static <T> Future<T> toFuture(final Observable<T> that) {
+        return OperationToFuture.toFuture(that);
     }
 
     /**
@@ -2088,11 +2201,15 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
-     *
-     * @param source the source sequence whose elements will be pushed into the specified subject.
-     * @param subject the subject to push source elements into.
-     * @param <T> source type
-     * @param <R> result type
+     * 
+     * @param source
+     *            the source sequence whose elements will be pushed into the specified subject.
+     * @param subject
+     *            the subject to push source elements into.
+     * @param <T>
+     *            source type
+     * @param <R>
+     *            result type
      * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
      */
     public static <T, R> ConnectableObservable<R> multicast(Observable<T> source, final Subject<T, R> subject) {
@@ -2101,7 +2218,7 @@ public class Observable<T> {
 
     /**
      * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
-     *
+     * 
      * @param that
      *            the source Observable
      * @return The single element in the observable sequence.
@@ -2309,7 +2426,7 @@ public class Observable<T> {
      * @param sequence
      * @throws ClassCastException
      *             if T objects do not implement Comparable
-     * @return
+     * @return an observable containing the sorted list
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence) {
         return create(OperationToObservableSortedList.toSortedList(sequence));
@@ -2322,7 +2439,7 @@ public class Observable<T> {
      * 
      * @param sequence
      * @param sortFunction
-     * @return
+     * @return an observable containing the sorted list
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, Func2<T, T, Integer> sortFunction) {
         return create(OperationToObservableSortedList.toSortedList(sequence, sortFunction));
@@ -2335,7 +2452,7 @@ public class Observable<T> {
      * 
      * @param sequence
      * @param sortFunction
-     * @return
+     * @return an observable containing the sorted list
      */
     public static <T> Observable<List<T>> toSortedList(Observable<T> sequence, final Object sortFunction) {
         @SuppressWarnings("rawtypes")
@@ -2664,10 +2781,53 @@ public class Observable<T> {
         final FuncN _f = Functions.from(callback);
         return filter(this, new Func1<T, Boolean>() {
 
+            @Override
             public Boolean call(T t1) {
                 return (Boolean) _f.call(t1);
             }
         });
+    }
+
+    /**
+     * Creates a new Observable sequence by applying a function that you supply to each item in the
+     * original Observable sequence, where that function is itself an Observable that emits items, and
+     * then merges the results of that function applied to every item emitted by the original
+     * Observable, emitting these merged results as its own sequence.
+     * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
+     * 
+     * @param func
+     *            a function to apply to each item in the sequence, that returns an Observable.
+     * @return an Observable that emits a sequence that is the result of applying the transformation
+     *         function to each item in the input sequence and merging the results of the
+     *         Observables obtained from this transformation.
+     * @see #mapMany(Func1)
+     */
+    public <R> Observable<R> flatMap(Func1<T, Observable<R>> func) {
+        return mapMany(func);
+    }
+
+    /**
+     * Creates a new Observable sequence by applying a function that you supply to each item in the
+     * original Observable sequence, where that function is itself an Observable that emits items, and
+     * then merges the results of that function applied to every item emitted by the original
+     * Observable, emitting these merged results as its own sequence.
+     * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
+     * 
+     * @param callback
+     *            a function to apply to each item in the sequence that returns an Observable.
+     * @return an Observable that emits a sequence that is the result of applying the transformation'
+     *         function to each item in the input sequence and merging the results of the
+     *         Observables obtained from this transformation.
+     * @see #mapMany(Object)
+     */
+    public <R> Observable<R> flatMap(final Object callback) {
+        return mapMany(callback);
     }
 
     /**
@@ -2792,6 +2952,7 @@ public class Observable<T> {
         final FuncN _f = Functions.from(callback);
         return map(this, new Func1<T, R>() {
 
+            @Override
             @SuppressWarnings("unchecked")
             public R call(T t1) {
                 return (R) _f.call(t1);
@@ -2805,6 +2966,8 @@ public class Observable<T> {
      * then merges the results of that function applied to every item emitted by the original
      * Observable, emitting these merged results as its own sequence.
      * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
      * 
      * @param func
@@ -2812,6 +2975,7 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation
      *         function to each item in the input sequence and merging the results of the
      *         Observables obtained from this transformation.
+     * @see #flatMap(Func1)
      */
     public <R> Observable<R> mapMany(Func1<T, Observable<R>> func) {
         return mapMany(this, func);
@@ -2823,6 +2987,8 @@ public class Observable<T> {
      * then merges the results of that function applied to every item emitted by the original
      * Observable, emitting these merged results as its own sequence.
      * <p>
+     * Note: mapMany and flatMap are equivalent.
+     * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
      * 
      * @param callback
@@ -2830,12 +2996,14 @@ public class Observable<T> {
      * @return an Observable that emits a sequence that is the result of applying the transformation'
      *         function to each item in the input sequence and merging the results of the
      *         Observables obtained from this transformation.
+     * @see #flatMap(Object)
      */
     public <R> Observable<R> mapMany(final Object callback) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(callback);
         return mapMany(this, new Func1<T, Observable<R>>() {
 
+            @Override
             @SuppressWarnings("unchecked")
             public Observable<R> call(T t1) {
                 return (Observable<R>) _f.call(t1);
@@ -2944,6 +3112,7 @@ public class Observable<T> {
         final FuncN _f = Functions.from(resumeFunction);
         return onErrorResumeNext(this, new Func1<Exception, Observable<T>>() {
 
+            @Override
             @SuppressWarnings("unchecked")
             public Observable<T> call(Exception e) {
                 return (Observable<T>) _f.call(e);
@@ -3025,6 +3194,7 @@ public class Observable<T> {
         final FuncN _f = Functions.from(resumeFunction);
         return onErrorReturn(this, new Func1<Exception, T>() {
 
+            @Override
             @SuppressWarnings("unchecked")
             public T call(Exception e) {
                 return (T) _f.call(e);
@@ -3059,57 +3229,62 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the final result from the final call to your function as its sole
-     * output.
-     * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate,"
-     * "compress," or "inject" in other programming contexts. Groovy, for instance, has an
-     * <code>inject</code> method that does a similar operation on lists.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
+     * Returns a connectable observable sequence that shares a single subscription to the underlying sequence replaying all notifications.
      * 
-     * @param accumulator
-     *            An accumulator function to be invoked on each element from the sequence, whose result
-     *            will be used in the next accumulator call (if applicable).
+     * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     */
+    public ConnectableObservable<T> replay() {
+        return replay(this);
+    }
+
+    /**
+     * Similar to {@link #replay()} except that this auto-subscribes to the source sequence.
+     * <p>
+     * This is useful when returning an Observable that you wish to cache responses but can't control the
+     * subscribe/unsubscribe behavior of all the Observers.
+     * <p>
+     * NOTE: You sacrifice the ability to unsubscribe from the origin with this operator so be careful to not
+     * use this on infinite or very large sequences that will use up memory. This is similar to
+     * the {@link Observable#toList()} operator in this caution.
      * 
-     * @return an Observable that emits a single element from the result of accumulating the output
-     *         from the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+     * @return an observable sequence that upon first subscription caches all events for subsequent subscriptions.
+     */
+    public Observable<T> cache() {
+        return cache(this);
+    }
+
+    /**
+     * Returns a connectable observable sequence that shares a single subscription to the underlying sequence.
+     * 
+     * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
+     */
+    public ConnectableObservable<T> publish() {
+        return publish(this);
+    }
+
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #reduce(Func2)
      */
     public Observable<T> reduce(Object accumulator) {
         return reduce(this, accumulator);
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the final result from the final call to your function as its sole
-     * output.
-     * <p>
-     * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate,"
-     * "compress," or "inject" in other programming contexts. Groovy, for instance, has an
-     * <code>inject</code> method that does a similar operation on lists.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
-     * 
-     * @param initialValue
-     *            The initial (seed) accumulator value.
-     * @param accumulator
-     *            An accumulator function to be invoked on each element from the sequence, whose
-     *            result will be used in the next accumulator call (if applicable).
-     * 
-     * @return an Observable that emits a single element from the result of accumulating the output
-     *         from the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+     * @see #reduce(Func2)
      */
-    public Observable<T> reduce(T initialValue, Func2<T, T, T> accumulator) {
-        return reduce(this, initialValue, accumulator);
+    public Observable<T> aggregate(Func2<T, T, T> accumulator) {
+        return aggregate(this, accumulator);
+    }
+
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #reduce(Func2)
+     */
+    public Observable<T> aggregate(Object accumulator) {
+        return aggregate(this, accumulator);
     }
 
     /**
@@ -3130,13 +3305,39 @@ public class Observable<T> {
      * @param accumulator
      *            An accumulator function to be invoked on each element from the sequence, whose
      *            result will be used in the next accumulator call (if applicable).
+     * 
      * @return an Observable that emits a single element from the result of accumulating the output
      *         from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public Observable<T> reduce(T initialValue, Object accumulator) {
+    public <R> Observable<R> reduce(R initialValue, Func2<R, T, R> accumulator) {
         return reduce(this, initialValue, accumulator);
+    }
+
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #reduce(Object, Func2)
+     */
+    public <R> Observable<R> reduce(R initialValue, Object accumulator) {
+        return reduce(this, initialValue, accumulator);
+    }
+
+    /**
+     * @see #reduce(Object, Func2)
+     */
+    public <R> Observable<R> aggregate(R initialValue, Func2<R, T, R> accumulator) {
+        return aggregate(this, initialValue, accumulator);
+    }
+
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #reduce(Object, Func2)
+     */
+    public <R> Observable<R> aggregate(R initialValue, Object accumulator) {
+        return aggregate(this, initialValue, accumulator);
     }
 
     /**
@@ -3162,23 +3363,37 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the result of each of these iterations. It emits the result of
-     * each of these iterations as a sequence from the returned Observable. This sort of function is
-     * sometimes called an accumulator.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
+     * Samples the observable sequence at each interval.
      * 
-     * @param accumulator
-     *            An accumulator function to be invoked on each element from the sequence whose
-     *            result will be sent via <code>onNext</code> and used in the next accumulator call
-     *            (if applicable).
+     * @param period
+     *            The period of time that defines the sampling rate.
+     * @param unit
+     *            The time unit for the sampling rate time period.
+     * @return An observable sequence whose elements are the results of sampling the current observable sequence.
+     */
+    public Observable<T> sample(long period, TimeUnit unit) {
+        return create(OperationSample.sample(this, period, unit));
+    }
+
+    /**
+     * Samples the observable sequence at each interval.
      * 
-     * @return an Observable sequence whose elements are the result of accumulating the output from
-     *         the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
+     * @param period
+     *            The period of time that defines the sampling rate.
+     * @param unit
+     *            The time unit for the sampling rate time period.
+     * @param scheduler
+     *            The scheduler to use for sampling.
+     * @return An observable sequence whose elements are the results of sampling the current observable sequence.
+     */
+    public Observable<T> sample(long period, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationSample.sample(this, period, unit, scheduler));
+    }
+
+    /**
+     * Used by dynamic languages.
+     * 
+     * @see #scan(Func2)
      */
     public Observable<T> scan(final Object accumulator) {
         return scan(this, accumulator);
@@ -3203,30 +3418,16 @@ public class Observable<T> {
      *         the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public Observable<T> scan(T initialValue, Func2<T, T, T> accumulator) {
+    public <R> Observable<R> scan(R initialValue, Func2<R, T, R> accumulator) {
         return scan(this, initialValue, accumulator);
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a
-     * source Observable, then feeds the result of that function along with the second item emitted
-     * by an Observable into the same function, then feeds the result of that function along with the
-     * third item into the same function, and so on, emitting the result of each of these
-     * iterations. This sort of function is sometimes called an accumulator.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
+     * Used by dynamic languages.
      * 
-     * @param initialValue
-     *            The initial (seed) accumulator value.
-     * @param accumulator
-     *            An accumulator function to be invoked on each element from the sequence whose result
-     *            will be sent via <code>onNext</code> and used in the next accumulator call (if
-     *            applicable).
-     * @return an Observable sequence whose elements are the result of accumulating the output from
-     *         the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
+     * @see #scan(Object, Func2)
      */
-    public Observable<T> scan(final T initialValue, final Object accumulator) {
+    public <R> Observable<R> scan(final R initialValue, final Object accumulator) {
         return scan(this, initialValue, accumulator);
     }
 
@@ -3294,18 +3495,18 @@ public class Observable<T> {
      * 
      * @param predicate
      *            a function to test each source element for a condition
-     * @return
+     * @return the values from the start of the given sequence
      */
     public Observable<T> takeWhile(final Func1<T, Boolean> predicate) {
         return takeWhile(this, predicate);
     }
 
     /**
-     * Returns a specified number of contiguous values from the start of an observable sequence.
+     * Returns an Observable that items emitted by the source Observable as long as a specified condition is true.
      * 
      * @param predicate
      *            a function to test each source element for a condition
-     * @return
+     * @return the values from the start of the given sequence
      */
     public Observable<T> takeWhile(final Object predicate) {
         return takeWhile(this, predicate);
@@ -3316,7 +3517,7 @@ public class Observable<T> {
      * 
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return
+     * @return the values from the start of the given sequence
      */
     public Observable<T> takeWhileWithIndex(final Func2<T, Integer, Boolean> predicate) {
         return takeWhileWithIndex(this, predicate);
@@ -3327,7 +3528,7 @@ public class Observable<T> {
      * 
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
-     * @return
+     * @return the values from the start of the given sequence
      */
     public Observable<T> takeWhileWithIndex(final Object predicate) {
         return takeWhileWithIndex(this, predicate);
@@ -3361,6 +3562,17 @@ public class Observable<T> {
     }
 
     /**
+     * Return a Future representing a single value of the Observable.
+     * <p>
+     * This will throw an exception if the Observable emits more than 1 value. If more than 1 are expected then use <code>toList().toFuture()</code>.
+     * 
+     * @return a Future that expects a single item emitted by the source Observable
+     */
+    public Future<T> toFuture() {
+        return toFuture(this);
+    }
+
+    /**
      * Returns an Observable that emits a single item, a list composed of all the items emitted by
      * the source Observable.
      * 
@@ -3387,7 +3599,7 @@ public class Observable<T> {
      * 
      * @throws ClassCastException
      *             if T objects do not implement Comparable
-     * @return
+     * @return an observable containing the sorted list
      */
     public Observable<List<T>> toSortedList() {
         return toSortedList(this);
@@ -3399,7 +3611,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
      * 
      * @param sortFunction
-     * @return
+     * @return an observable containing the sorted list
      */
     public Observable<List<T>> toSortedList(Func2<T, T, Integer> sortFunction) {
         return toSortedList(this, sortFunction);
@@ -3411,7 +3623,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
      * 
      * @param sortFunction
-     * @return
+     * @return an observable containing the sorted list
      */
     public Observable<List<T>> toSortedList(final Object sortFunction) {
         return toSortedList(this, sortFunction);
@@ -3498,7 +3710,7 @@ public class Observable<T> {
      * NOTE: If strong reasons for not depending on package names comes up then the implementation of this method can change to looking for a marker interface.
      * 
      * @param f
-     * @return
+     * @return {@code true} if the given function is an internal implementation, and {@code false} otherwise.
      */
     private boolean isInternalImplementation(Object o) {
         if (o == null) {
@@ -4002,6 +4214,167 @@ public class Observable<T> {
             } catch (Exception e) {
                 // do nothing as we expect this
             }
+        }
+
+        @Test
+        public void testPublish() throws InterruptedException {
+            final AtomicInteger counter = new AtomicInteger();
+            ConnectableObservable<String> o = Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(final Observer<String> observer) {
+                    final BooleanSubscription subscription = new BooleanSubscription();
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            counter.incrementAndGet();
+                            observer.onNext("one");
+                            observer.onCompleted();
+                        }
+                    }).start();
+                    return subscription;
+                }
+            }).publish();
+
+            final CountDownLatch latch = new CountDownLatch(2);
+
+            // subscribe once
+            o.subscribe(new Action1<String>() {
+
+                @Override
+                public void call(String v) {
+                    assertEquals("one", v);
+                    latch.countDown();
+                }
+            });
+
+            // subscribe again
+            o.subscribe(new Action1<String>() {
+
+                @Override
+                public void call(String v) {
+                    assertEquals("one", v);
+                    latch.countDown();
+                }
+            });
+
+            Subscription s = o.connect();
+            try {
+                if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
+                    fail("subscriptions did not receive values");
+                }
+                assertEquals(1, counter.get());
+            } finally {
+                s.unsubscribe();
+            }
+        }
+
+        @Test
+        public void testReplay() throws InterruptedException {
+            final AtomicInteger counter = new AtomicInteger();
+            ConnectableObservable<String> o = Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(final Observer<String> observer) {
+                    final BooleanSubscription subscription = new BooleanSubscription();
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            counter.incrementAndGet();
+                            observer.onNext("one");
+                            observer.onCompleted();
+                        }
+                    }).start();
+                    return subscription;
+                }
+            }).replay();
+
+            // we connect immediately and it will emit the value
+            Subscription s = o.connect();
+            try {
+
+                // we then expect the following 2 subscriptions to get that same value
+                final CountDownLatch latch = new CountDownLatch(2);
+
+                // subscribe once
+                o.subscribe(new Action1<String>() {
+
+                    @Override
+                    public void call(String v) {
+                        assertEquals("one", v);
+                        latch.countDown();
+                    }
+                });
+
+                // subscribe again
+                o.subscribe(new Action1<String>() {
+
+                    @Override
+                    public void call(String v) {
+                        assertEquals("one", v);
+                        latch.countDown();
+                    }
+                });
+
+                if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
+                    fail("subscriptions did not receive values");
+                }
+                assertEquals(1, counter.get());
+            } finally {
+                s.unsubscribe();
+            }
+        }
+
+        @Test
+        public void testCache() throws InterruptedException {
+            final AtomicInteger counter = new AtomicInteger();
+            Observable<String> o = Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(final Observer<String> observer) {
+                    final BooleanSubscription subscription = new BooleanSubscription();
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            counter.incrementAndGet();
+                            observer.onNext("one");
+                            observer.onCompleted();
+                        }
+                    }).start();
+                    return subscription;
+                }
+            }).cache();
+
+            // we then expect the following 2 subscriptions to get that same value
+            final CountDownLatch latch = new CountDownLatch(2);
+
+            // subscribe once
+            o.subscribe(new Action1<String>() {
+
+                @Override
+                public void call(String v) {
+                    assertEquals("one", v);
+                    latch.countDown();
+                }
+            });
+
+            // subscribe again
+            o.subscribe(new Action1<String>() {
+
+                @Override
+                public void call(String v) {
+                    assertEquals("one", v);
+                    latch.countDown();
+                }
+            });
+
+            if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
+                fail("subscriptions did not receive values");
+            }
+            assertEquals(1, counter.get());
         }
 
         private static class TestException extends RuntimeException {

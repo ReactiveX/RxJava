@@ -37,7 +37,6 @@ public final class OperationFilter<T> {
 
         private final Observable<T> that;
         private final Func1<T, Boolean> predicate;
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
         public Filter(Observable<T> that, Func1<T, Boolean> predicate) {
             this.that = that;
@@ -45,6 +44,7 @@ public final class OperationFilter<T> {
         }
 
         public Subscription call(final Observer<T> observer) {
+            final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
             return subscription.wrap(that.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     try {

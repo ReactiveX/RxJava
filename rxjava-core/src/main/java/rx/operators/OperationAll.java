@@ -23,7 +23,6 @@ public class OperationAll {
         private final Observable<T> sequence;
         private final Func1<T, Boolean> predicate;
 
-        private final AtomicBoolean status = new AtomicBoolean(true);
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
 
@@ -35,33 +34,45 @@ public class OperationAll {
 
         @Override
         public Subscription call(final Observer<Boolean> observer) {
-            return subscription.wrap(sequence.subscribe(new Observer<T>() {
-                @Override
-                public void onCompleted() {
-                    if (status.get()) {
-                        observer.onNext(true);
-                        observer.onCompleted();
-                    }
-                }
+            return subscription.wrap(sequence.subscribe(new AllObserver(observer)));
 
-                @Override
-                public void onError(Exception e) {
-                    observer.onError(e);
-                }
-
-                @Override
-                public void onNext(T args) {
-                    boolean result = predicate.call(args);
-                    boolean changed = status.compareAndSet(true, result);
-
-                    if (changed && !result) {
-                        observer.onNext(false);
-                        observer.onCompleted();
-                        subscription.unsubscribe();
-                    }
-                }
-            }));
         }
+
+        private class AllObserver implements Observer<T> {
+            private final Observer<Boolean> underlying;
+
+            private final AtomicBoolean status = new AtomicBoolean(true);
+
+            public AllObserver(Observer<Boolean> underlying) {
+                this.underlying = underlying;
+            }
+
+            @Override
+            public void onCompleted() {
+                if (status.get()) {
+                    underlying.onNext(true);
+                    underlying.onCompleted();
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                underlying.onError(e);
+            }
+
+            @Override
+            public void onNext(T args) {
+                boolean result = predicate.call(args);
+                boolean changed = status.compareAndSet(true, result);
+
+                if (changed && !result) {
+                    underlying.onNext(false);
+                    underlying.onCompleted();
+                    subscription.unsubscribe();
+                }
+            }
+        }
+
     }
 
     public static class UnitTest {

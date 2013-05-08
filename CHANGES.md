@@ -1,10 +1,28 @@
 # RxJava Releases #
 
+### Version 0.8.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.8.2%22)) ###
+
+* [Issue 74](https://github.com/Netflix/RxJava/issues/74) Operator: Sample
+* [Issue 93](https://github.com/Netflix/RxJava/issues/93) Operator: Timestamp
+* [Pull 253](https://github.com/Netflix/RxJava/pull/253) Fix multiple subscription bug on operation filter
+* [Pull 254](https://github.com/Netflix/RxJava/pull/254) SwingScheduler (new rxjava-swing module)
+* [Pull 256](https://github.com/Netflix/RxJava/pull/256) BehaviorSubject
+* [Pull 257](https://github.com/Netflix/RxJava/pull/257) Improved scan, reduce, aggregate
+* [Pull 262](https://github.com/Netflix/RxJava/pull/262) SwingObservable (new rxjava-swing module)
+* [Pull 264](https://github.com/Netflix/RxJava/pull/263) Publish, Replay and Cache Operators
+* 
+### Version 0.8.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.8.1%22)) ###
+
+* [Pull 250](https://github.com/Netflix/RxJava/pull/250) AsyncSubject
+* [Pull 252](https://github.com/Netflix/RxJava/pull/252) ToFuture
+* [Pull 246](https://github.com/Netflix/RxJava/pull/246) Scheduler.schedulePeriodically
+* [Pull 247](https://github.com/Netflix/RxJava/pull/247) flatMap aliased to mapMany
+
 ### Version 0.8.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.8.0%22)) ###
 
 This is a breaking (non-backwards compatible) release that updates the Scheduler implementation released in 0.7.0.
 
-See See https://github.com/Netflix/RxJava/issues/19 for background, discussion and status of Schedulers.
+See https://github.com/Netflix/RxJava/issues/19 for background, discussion and status of Schedulers.
 
 It is believed that the public signatures of Scheduler and related objects is now stabilized but ongoing feedback and review by the community could still result in changes.
 

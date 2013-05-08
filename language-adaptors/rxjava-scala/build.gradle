@@ -20,7 +20,7 @@ dependencies {
     provided 'org.scalatest:scalatest_2.10:1.9.1'
 
     compile project(':rxjava-core')
-    provided 'junit:junit:4.10'
+    provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
 
     testCompile 'org.scalatest:scalatest_2.10:1.9.1'
