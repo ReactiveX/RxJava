@@ -19,12 +19,10 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -96,7 +94,7 @@ public class OperationCombineLatest {
             this.w = w;
         }
 
-        public synchronized void startWatching() {
+        private void startWatching() {
             if (subscription != null) {
                 throw new RuntimeException("This should only be called once.");
             }
@@ -134,23 +132,11 @@ public class OperationCombineLatest {
         // Stores how many observers have already completed
         private final AtomicInteger numCompleted = new AtomicInteger(0);
         
-        // Used as an internal lock for handling the latest values of each observer
-        private final Object lockObject = new Object();
-        
         /**
-         * The latest value from each observer
-         * <p>
-         * Note that access to this set MUST BE SYNCHRONIZED via 'lockObject' above.
-         * */
-        private final Map<CombineObserver<R, ?>, Object> latestValue = new HashMap<CombineObserver<R, ?>, Object>();
+         * The latest value from each observer.
+         */
+        private final Map<CombineObserver<R, ?>, Object> latestValue = new ConcurrentHashMap<CombineObserver<R, ?>, Object>();
         
-        /**
-         * Whether each observer has a latest value at all.
-         * <p>
-         * Note that access to this set MUST BE SYNCHRONIZED via 'lockObject' above.
-         * */
-        private final Set<CombineObserver<R, ?>> hasLatestValue = new HashSet<CombineObserver<R, ?>>();
-
         /**
          * Ordered list of observers to combine.
          * No synchronization is necessary as these can not be added or changed asynchronously.
@@ -215,31 +201,20 @@ public class OperationCombineLatest {
                 return;
             }
 
-            // define here so the variable is out of the synchronized scope
-            Object[] argsToCombineLatest = new Object[observers.size()];
-
-            // we synchronize everything that touches latest values
-            synchronized (lockObject) {
-                // remember this as the latest value for this observer
-                latestValue.put(w, arg);
-                
-                // remember that this observer now has a latest value set
-                hasLatestValue.add(w);
-
-                if (hasLatestValue.size() < observers.size()) {
-                  // we don't have a value yet for each observer to combine, so we don't have a combined value yet either
-                  return;
-                }
-                
-                // if we get to here this means all the observers have a latest value
-                int i = 0;
-                for (CombineObserver<R, ?> _w : observers) {
-                    argsToCombineLatest[i++] = latestValue.get(_w);
-                }
+            // remember this as the latest value for this observer
+            latestValue.put(w, arg);
+            
+            if (latestValue.size() < observers.size()) {
+              // we don't have a value yet for each observer to combine, so we don't have a combined value yet either
+              return;
             }
-            // if we did not return above from the synchronized block we can now invoke the combineLatestFunction with all of the args
-            // we do this outside the synchronized block as it is now safe to call this concurrently and don't need to block other threads from calling
-            // this 'next' method while another thread finishes calling this combineLatestFunction
+            
+            Object[] argsToCombineLatest = new Object[observers.size()];
+            int i = 0;
+            for (CombineObserver<R, ?> _w : observers) {
+                argsToCombineLatest[i++] = latestValue.get(_w);
+            }
+            
             try {
                 R combinedValue = combineLatestFunction.call(argsToCombineLatest);
                 observer.onNext(combinedValue);
