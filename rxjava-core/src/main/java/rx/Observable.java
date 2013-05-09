@@ -2745,7 +2745,7 @@ public class Observable<T> {
      *          The first source observable.
      * @param w1 
      *          The second source observable.
-     * @param combineLatestFunction 
+     * @param combineFunction 
      *          The aggregation function used to combine the source observable values.
      * @return A function from an observer to a subscription. This can be used to create an observable from.
      */
