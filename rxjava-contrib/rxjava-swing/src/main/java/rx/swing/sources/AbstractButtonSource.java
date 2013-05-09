@@ -39,7 +39,7 @@ import rx.util.functions.Func1;
 public enum AbstractButtonSource { ; // no instances
 
     /**
-     * @see SwingObservable.fromButtonAction
+     * @see rx.observables.SwingObservable#fromButtonAction
      */
     public static Observable<ActionEvent> fromActionOf(final AbstractButton button) {
         return Observable.create(new Func1<Observer<ActionEvent>, Subscription>() {

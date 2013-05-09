@@ -30,7 +30,7 @@ import rx.util.functions.Func1;
 public enum MouseEventSource { ; // no instances
 
     /**
-     * @see SwingObservable.fromMouseEvents
+     * @see rx.observables.SwingObservable#fromMouseEvents
      */
     public static Observable<MouseEvent> fromMouseEventsOf(final Component component) {
         return Observable.create(new Func1<Observer<MouseEvent>, Subscription>() {
@@ -75,7 +75,7 @@ public enum MouseEventSource { ; // no instances
     }
     
     /**
-     * @see SwingObservable.fromMouseMotionEvents
+     * @see rx.observables.SwingObservable#fromMouseMotionEvents
      */
     public static Observable<MouseEvent> fromMouseMotionEventsOf(final Component component) {
         return Observable.create(new Func1<Observer<MouseEvent>, Subscription>() {

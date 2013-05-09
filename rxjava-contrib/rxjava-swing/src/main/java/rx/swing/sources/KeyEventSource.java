@@ -47,7 +47,7 @@ import rx.util.functions.Func2;
 public enum KeyEventSource { ; // no instances
 
     /**
-     * @see SwingObservable.fromKeyEvents(Component)
+     * @see rx.observables.SwingObservable#fromKeyEvents(Component)
      */
     public static Observable<KeyEvent> fromKeyEventsOf(final Component component) {
         return Observable.create(new Func1<Observer<KeyEvent>, Subscription>() {
@@ -82,7 +82,7 @@ public enum KeyEventSource { ; // no instances
     }
 
     /**
-     * @see SwingObservable.fromKeyEvents(Component, Set)
+     * @see rx.observables.SwingObservable#fromPressedKeys(Component)
      */
     public static Observable<Set<Integer>> currentlyPressedKeysOf(Component component) {
         class CollectKeys implements Func2<Set<Integer>, KeyEvent, Set<Integer>>{
