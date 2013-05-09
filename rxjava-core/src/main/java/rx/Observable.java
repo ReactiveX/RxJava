@@ -2749,21 +2749,21 @@ public class Observable<T> {
      *          The aggregation function used to combine the source observable values.
      * @return A function from an observer to a subscription. This can be used to create an observable from.
      */
-    public static <R, T0, T1> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> combineFunction) {
+    public static <R, T0, T1> Observable<R> combineLatest(Observable<? super T0> w0, Observable<? super T1> w1, Func2<? super T0, ? super T1, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(w0, w1, combineFunction));
     }
     
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <R, T0, T1, T2> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> combineFunction) {
+    public static <R, T0, T1, T2> Observable<R> combineLatest(Observable<? super T0> w0, Observable<? super T1> w1, Observable<? super T2> w2, Func3<? super T0, ? super T1, ? super T2, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(w0, w1, w2, combineFunction));
     }
 
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <R, T0, T1, T2, T3> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> combineFunction) {
+    public static <R, T0, T1, T2, T3> Observable<R> combineLatest(Observable<? super T0> w0, Observable<? super T1> w1, Observable<? super T2> w2, Observable<? super T3> w3, Func4<? super T0, ? super T1, ? super T2, ? super T3, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(w0, w1, w2, w3, combineFunction));
     }
     
