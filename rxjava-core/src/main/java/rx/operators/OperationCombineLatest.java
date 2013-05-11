@@ -34,6 +34,8 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.AtomicObservableSubscription;
+import rx.util.SynchronizedObserver;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 import rx.util.functions.Func3;
@@ -124,7 +126,7 @@ public class OperationCombineLatest {
      */
     private static class Aggregator<R> implements Func1<Observer<? super R>, Subscription> {
 
-        private Observer<? super R> observer;
+        private volatile Observer<? super R> observer;
 
         private final FuncN<? extends R> combineLatestFunction;
         private final AtomicBoolean running = new AtomicBoolean(true);
@@ -228,19 +230,21 @@ public class OperationCombineLatest {
             if (this.observer != null) {
                 throw new IllegalStateException("Only one Observer can subscribe to this Observable.");
             }
-            this.observer = observer;
+            
+            AtomicObservableSubscription subscription = new AtomicObservableSubscription(new Subscription() {
+                @Override
+                public void unsubscribe() {
+                    stop();
+                }
+            });
+            this.observer = new SynchronizedObserver<R>(observer, subscription);
 
             /* start the observers */
             for (CombineObserver<R, ?> rw : observers) {
                 rw.startWatching();
             }
 
-            return new Subscription() {
-                @Override
-                public void unsubscribe() {
-                    stop();
-                }
-            };
+            return subscription;
         }
 
         private void stop() {
