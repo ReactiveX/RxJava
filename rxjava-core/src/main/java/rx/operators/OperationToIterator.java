@@ -107,7 +107,7 @@ public class OperationToIterator {
 
     @Test
     public void testToIterator() {
-        Observable<String> obs = Observable.toObservable("one", "two", "three");
+        Observable<String> obs = Observable.from("one", "two", "three");
 
         Iterator<String> it = toIterator(obs);
 

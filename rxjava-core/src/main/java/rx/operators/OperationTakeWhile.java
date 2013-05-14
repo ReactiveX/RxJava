@@ -29,8 +29,6 @@ import rx.Subscription;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
-import rx.util.AtomicObservableSubscription;
-import rx.util.AtomicObserver;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -154,7 +152,7 @@ public final class OperationTakeWhile {
 
         @Test
         public void testTakeWhile1() {
-            Observable<Integer> w = Observable.toObservable(1, 2, 3);
+            Observable<Integer> w = Observable.from(1, 2, 3);
             Observable<Integer> take = Observable.create(takeWhile(w, new Func1<Integer, Boolean>()
             {
                 @Override
@@ -208,7 +206,7 @@ public final class OperationTakeWhile {
 
         @Test
         public void testTakeWhile2() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> take = Observable.create(takeWhileWithIndex(w, new Func2<String, Integer, Boolean>()
             {
                 @Override
@@ -248,7 +246,7 @@ public final class OperationTakeWhile {
                 {
                     return false;
                 }
-            })).last();
+            })).toBlockingObservable().last();
         }
 
         @Test

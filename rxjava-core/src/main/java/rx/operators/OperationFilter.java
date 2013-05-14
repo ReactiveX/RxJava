@@ -24,7 +24,6 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
 public final class OperationFilter<T> {
@@ -74,7 +73,7 @@ public final class OperationFilter<T> {
 
         @Test
         public void testFilter() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> observable = Observable.create(filter(w, new Func1<String, Boolean>() {
 
                 @Override

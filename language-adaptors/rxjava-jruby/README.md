@@ -6,7 +6,7 @@ This adaptor allows `org.jruby.RubyProc` lambda functions to be used and RxJava 
 This enables code such as:
 
 ```ruby
-  Observable.toObservable("one", "two", "three")
+  Observable.from("one", "two", "three")
     .take(2) 
     .subscribe(lambda { |arg| puts arg })
 ```

@@ -111,7 +111,7 @@ public final class OperationSkip {
 
         @Test
         public void testSkip1() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> skip = Observable.create(skip(w, 2));
 
             @SuppressWarnings("unchecked")
@@ -126,7 +126,7 @@ public final class OperationSkip {
 
         @Test
         public void testSkip2() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> skip = Observable.create(skip(w, 1));
 
             @SuppressWarnings("unchecked")

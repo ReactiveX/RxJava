@@ -27,7 +27,6 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
 public final class OperationOnErrorResumeNextViaObservable<T> {
@@ -102,7 +101,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
         public void testResumeNext() {
             Subscription s = mock(Subscription.class);
             TestObservable w = new TestObservable(s, "one");
-            Observable<String> resume = Observable.toObservable("twoResume", "threeResume");
+            Observable<String> resume = Observable.from("twoResume", "threeResume");
             Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
 
             @SuppressWarnings("unchecked")

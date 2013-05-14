@@ -29,7 +29,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
 /**
@@ -150,7 +149,7 @@ public final class OperationTake {
 
         @Test
         public void testTake1() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> take = Observable.create(assertTrustedObservable(take(w, 2)));
 
             @SuppressWarnings("unchecked")
@@ -165,7 +164,7 @@ public final class OperationTake {
 
         @Test
         public void testTake2() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> take = Observable.create(assertTrustedObservable(take(w, 1)));
 
             @SuppressWarnings("unchecked")
@@ -190,7 +189,7 @@ public final class OperationTake {
                     return Subscriptions.empty();
                 }
             });
-            Observable.create(assertTrustedObservable(take(source, 1))).last();
+            Observable.create(assertTrustedObservable(take(source, 1))).toBlockingObservable().last();
         }
 
         @Test
@@ -214,7 +213,7 @@ public final class OperationTake {
                     };
                 }
             });
-            Observable.create(assertTrustedObservable(take(source, 0))).lastOrDefault("ok");
+            Observable.create(assertTrustedObservable(take(source, 0))).toBlockingObservable().lastOrDefault("ok");
             assertTrue("source subscribed", subscribed.get());
             assertTrue("source unsubscribed", unSubscribed.get());
         }

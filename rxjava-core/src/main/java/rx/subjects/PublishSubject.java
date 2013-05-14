@@ -33,7 +33,7 @@ import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
+import rx.operators.AtomicObservableSubscription;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
@@ -151,7 +151,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             }).subscribe(subject);
             // the subject has received an onComplete from the first subscribe because
             // it is synchronous and the next subscribe won't do anything.
-            Observable.toObservable(-1, -2, -3).subscribe(subject);
+            Observable.from(-1, -2, -3).subscribe(subject);
 
             List<Notification<Integer>> expected = new ArrayList<Notification<Integer>>();
             expected.add(new Notification<Integer>(-1));

@@ -143,7 +143,7 @@ public final class OperationToObservableSortedList<T> {
 
         @Test
         public void testSortedList() {
-            Observable<Integer> w = Observable.toObservable(1, 3, 2, 5, 4);
+            Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
             Observable<List<Integer>> observable = Observable.create(toSortedList(w));
 
             @SuppressWarnings("unchecked")
@@ -156,7 +156,7 @@ public final class OperationToObservableSortedList<T> {
 
         @Test
         public void testSortedListWithCustomFunction() {
-            Observable<Integer> w = Observable.toObservable(1, 3, 2, 5, 4);
+            Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
             Observable<List<Integer>> observable = Observable.create(toSortedList(w, new Func2<Integer, Integer, Integer>() {
 
                 @Override

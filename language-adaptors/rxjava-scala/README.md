@@ -6,7 +6,7 @@ This adaptor allows 'fn' functions to be used and RxJava will know how to invoke
 This enables code such as:
 
 ```scala
-Observable.toObservable("1", "2", "3")
+Observable.from("1", "2", "3")
   .take(2)
   .subscribe((callback: String) => {
       println(callback)
