@@ -1996,8 +1996,28 @@ public class Observable<T> {
      *            the type of of object that the future's returns and the type emitted by the resulting
      *            Observable
      * @return an Observable that emits the item from the source Future
+     * @deprecated Replaced by {@link #from(Future)}
      */
     public static <T> Observable<T> toObservable(Future<T> future) {
+        return create(OperationToObservableFuture.toObservableFuture(future));
+    }
+
+    /**
+     * Converts an Future to an Observable sequence.
+     * 
+     * Any object that supports the {@link Future} interface can be converted into an Observable that emits
+     * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
+     * <p>
+     * This is blocking so the Subscription returned when calling {@link #subscribe(Observer)} does nothing.
+     * 
+     * @param future
+     *            the source {@link Future}
+     * @param <T>
+     *            the type of of object that the future's returns and the type emitted by the resulting
+     *            Observable
+     * @return an Observable that emits the item from the source Future
+     */
+    public static <T> Observable<T> from(Future<T> future) {
         return create(OperationToObservableFuture.toObservableFuture(future));
     }
 
@@ -2020,8 +2040,33 @@ public class Observable<T> {
      *            the type of of object that the future's returns and the type emitted by the resulting
      *            Observable
      * @return an Observable that emits the item from the source Future
+     * @deprecated Replaced by {@link #from(Future, long, TimeUnit)}
      */
     public static <T> Observable<T> toObservable(Future<T> future, long timeout, TimeUnit unit) {
+        return create(OperationToObservableFuture.toObservableFuture(future, timeout, unit));
+    }
+
+    /**
+     * Converts an Future to an Observable sequence.
+     * 
+     * Any object that supports the {@link Future} interface can be converted into an Observable that emits
+     * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
+     * The subscribe method on this synchronously so the Subscription returned doesn't nothing.
+     * <p>
+     * This is blocking so the Subscription returned when calling {@link #subscribe(Observer)} does nothing.
+     * 
+     * @param future
+     *            the source {@link Future}
+     * @param timeout
+     *            the maximum time to wait
+     * @param unit
+     *            the time unit of the time argument
+     * @param <T>
+     *            the type of of object that the future's returns and the type emitted by the resulting
+     *            Observable
+     * @return an Observable that emits the item from the source Future
+     */
+    public static <T> Observable<T> from(Future<T> future, long timeout, TimeUnit unit) {
         return create(OperationToObservableFuture.toObservableFuture(future, timeout, unit));
     }
 
@@ -2039,6 +2084,7 @@ public class Observable<T> {
      *            the type of items in the Array, and the type of items emitted by the resulting
      *            Observable
      * @return an Observable that emits each item in the source Array
+     * @deprecated Use {@link #from(Object...)}
      */
     public static <T> Observable<T> toObservable(T... items) {
         return toObservable(Arrays.asList(items));
