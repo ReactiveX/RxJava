@@ -30,8 +30,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.AtomicObservableSubscription;
-import rx.util.SynchronizedObserver;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 import rx.util.functions.Func3;

@@ -29,8 +29,6 @@ import rx.Subscription;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
-import rx.util.AtomicObservableSubscription;
-import rx.util.AtomicObserver;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 

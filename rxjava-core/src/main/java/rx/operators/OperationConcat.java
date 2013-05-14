@@ -33,7 +33,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.BooleanSubscription;
-import rx.util.AtomicObservableSubscription;
 import rx.util.Exceptions;
 import rx.util.functions.Func1;
 

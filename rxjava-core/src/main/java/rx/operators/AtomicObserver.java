@@ -1,10 +1,11 @@
-package rx.util;
+package rx.operators;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observer;
 import rx.plugins.RxJavaPlugins;
+import rx.util.CompositeException;
 
 /**
  * Wrapper around Observer to ensure compliance with Rx contract.

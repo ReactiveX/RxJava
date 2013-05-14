@@ -4,7 +4,6 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
 import java.util.concurrent.atomic.AtomicBoolean;
