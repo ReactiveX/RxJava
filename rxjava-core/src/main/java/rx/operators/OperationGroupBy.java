@@ -162,10 +162,10 @@ public final class OperationGroupBy {
 
         private static <K, V> Map<K, List<V>> toMap(Observable<GroupedObservable<K, V>> observable) {
             Map<K, List<V>> result = new HashMap<K, List<V>>();
-            for (GroupedObservable<K, V> g : observable.toIterable()) {
+            for (GroupedObservable<K, V> g : observable.toBlockingObservable().toIterable()) {
                 K key = g.getKey();
 
-                for (V value : g.toIterable()) {
+                for (V value : g.toBlockingObservable().toIterable()) {
                     List<V> values = result.get(key);
                     if (values == null) {
                         values = new ArrayList<V>();

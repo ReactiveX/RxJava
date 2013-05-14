@@ -189,7 +189,7 @@ public final class OperationTake {
                     return Subscriptions.empty();
                 }
             });
-            Observable.create(assertTrustedObservable(take(source, 1))).last();
+            Observable.create(assertTrustedObservable(take(source, 1))).toBlockingObservable().last();
         }
 
         @Test
@@ -213,7 +213,7 @@ public final class OperationTake {
                     };
                 }
             });
-            Observable.create(assertTrustedObservable(take(source, 0))).lastOrDefault("ok");
+            Observable.create(assertTrustedObservable(take(source, 0))).toBlockingObservable().lastOrDefault("ok");
             assertTrue("source subscribed", subscribed.get());
             assertTrue("source unsubscribed", unSubscribed.get());
         }

@@ -246,7 +246,7 @@ public final class OperationTakeWhile {
                 {
                     return false;
                 }
-            })).last();
+            })).toBlockingObservable().last();
         }
 
         @Test
