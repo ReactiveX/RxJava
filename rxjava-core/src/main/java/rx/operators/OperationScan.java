@@ -171,7 +171,7 @@ public final class OperationScan {
             @SuppressWarnings("unchecked")
             Observer<String> observer = mock(Observer.class);
 
-            Observable<Integer> observable = Observable.toObservable(1, 2, 3);
+            Observable<Integer> observable = Observable.from(1, 2, 3);
 
             Observable<String> m = Observable.create(scan(observable, "", new Func2<String, Integer, String>() {
 
@@ -198,7 +198,7 @@ public final class OperationScan {
             @SuppressWarnings("unchecked")
             Observer<Integer> Observer = mock(Observer.class);
 
-            Observable<Integer> observable = Observable.toObservable(1, 2, 3);
+            Observable<Integer> observable = Observable.from(1, 2, 3);
 
             Observable<Integer> m = Observable.create(scan(observable, new Func2<Integer, Integer, Integer>() {
 
@@ -225,7 +225,7 @@ public final class OperationScan {
             @SuppressWarnings("unchecked")
             Observer<Integer> Observer = mock(Observer.class);
 
-            Observable<Integer> observable = Observable.toObservable(1);
+            Observable<Integer> observable = Observable.from(1);
 
             Observable<Integer> m = Observable.create(scan(observable, new Func2<Integer, Integer, Integer>() {
 

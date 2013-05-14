@@ -123,7 +123,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
                 @Override
                 public Observable<String> call(Exception t1) {
                     receivedException.set(t1);
-                    return Observable.toObservable("twoResume", "threeResume");
+                    return Observable.from("twoResume", "threeResume");
                 }
 
             };
@@ -153,7 +153,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
                 @Override
                 public Observable<String> call(Exception t1) {
                     receivedException.set(t1);
-                    return Observable.toObservable("twoResume", "threeResume");
+                    return Observable.from("twoResume", "threeResume");
                 }
 
             };

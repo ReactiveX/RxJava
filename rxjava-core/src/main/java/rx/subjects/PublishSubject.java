@@ -151,7 +151,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             }).subscribe(subject);
             // the subject has received an onComplete from the first subscribe because
             // it is synchronous and the next subscribe won't do anything.
-            Observable.toObservable(-1, -2, -3).subscribe(subject);
+            Observable.from(-1, -2, -3).subscribe(subject);
 
             List<Notification<Integer>> expected = new ArrayList<Notification<Integer>>();
             expected.add(new Notification<Integer>(-1));

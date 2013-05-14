@@ -84,7 +84,7 @@ public final class OperationToObservableList<T> {
 
         @Test
         public void testList() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<List<String>> observable = Observable.create(toObservableList(w));
 
             @SuppressWarnings("unchecked")
@@ -97,7 +97,7 @@ public final class OperationToObservableList<T> {
 
         @Test
         public void testListMultipleObservers() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<List<String>> observable = Observable.create(toObservableList(w));
 
             @SuppressWarnings("unchecked")

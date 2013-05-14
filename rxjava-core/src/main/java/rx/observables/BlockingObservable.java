@@ -551,14 +551,14 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test
         public void testLast() {
-            BlockingObservable<String> obs = BlockingObservable.from(Observable.toObservable("one", "two", "three"));
+            BlockingObservable<String> obs = BlockingObservable.from(Observable.from("one", "two", "three"));
 
             assertEquals("three", obs.last());
         }
 
         @Test
         public void testLastEmptyObservable() {
-            BlockingObservable<Object> obs = BlockingObservable.from(Observable.toObservable());
+            BlockingObservable<Object> obs = BlockingObservable.from(Observable.from());
 
             assertNull(obs.last());
         }
@@ -614,7 +614,7 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test
         public void testLastWithPredicate() {
-            BlockingObservable<String> obs = BlockingObservable.from(Observable.toObservable("one", "two", "three"));
+            BlockingObservable<String> obs = BlockingObservable.from(Observable.from("one", "two", "three"));
 
             assertEquals("two", obs.last(new Func1<String, Boolean>() {
                 @Override

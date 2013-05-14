@@ -97,7 +97,7 @@ public final class OperationTakeLast {
 
         @Test
         public void testTakeLastEmpty() {
-            Observable<String> w = Observable.toObservable();
+            Observable<String> w = Observable.from();
             Observable<String> take = Observable.create(takeLast(w, 2));
 
             @SuppressWarnings("unchecked")
@@ -110,7 +110,7 @@ public final class OperationTakeLast {
 
         @Test
         public void testTakeLast1() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> take = Observable.create(takeLast(w, 2));
 
             @SuppressWarnings("unchecked")
@@ -126,7 +126,7 @@ public final class OperationTakeLast {
 
         @Test
         public void testTakeLast2() {
-            Observable<String> w = Observable.toObservable("one");
+            Observable<String> w = Observable.from("one");
             Observable<String> take = Observable.create(takeLast(w, 10));
 
             @SuppressWarnings("unchecked")

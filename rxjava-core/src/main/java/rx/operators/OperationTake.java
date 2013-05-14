@@ -149,7 +149,7 @@ public final class OperationTake {
 
         @Test
         public void testTake1() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> take = Observable.create(assertTrustedObservable(take(w, 2)));
 
             @SuppressWarnings("unchecked")
@@ -164,7 +164,7 @@ public final class OperationTake {
 
         @Test
         public void testTake2() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> take = Observable.create(assertTrustedObservable(take(w, 1)));
 
             @SuppressWarnings("unchecked")

@@ -73,7 +73,7 @@ public final class OperationFilter<T> {
 
         @Test
         public void testFilter() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> observable = Observable.create(filter(w, new Func1<String, Boolean>() {
 
                 @Override

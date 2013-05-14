@@ -61,11 +61,11 @@ public final class OperationConcat {
      * @return An observable sequence whose elements are the result of combining the output from the list of Observables.
      */
     public static <T> Func1<Observer<T>, Subscription> concat(final Observable<T>... sequences) {
-        return concat(Observable.toObservable(sequences));
+        return concat(Observable.from(sequences));
     }
 
     public static <T> Func1<Observer<T>, Subscription> concat(final List<Observable<T>> sequences) {
-        return concat(Observable.toObservable(sequences));
+        return concat(Observable.from(sequences));
     }
 
     public static <T> Func1<Observer<T>, Subscription> concat(final Observable<Observable<T>> sequences) {
@@ -149,8 +149,8 @@ public final class OperationConcat {
             final String[] o = { "1", "3", "5", "7" };
             final String[] e = { "2", "4", "6" };
 
-            final Observable<String> odds = Observable.toObservable(o);
-            final Observable<String> even = Observable.toObservable(e);
+            final Observable<String> odds = Observable.from(o);
+            final Observable<String> even = Observable.from(e);
 
             @SuppressWarnings("unchecked")
             Observable<String> concat = Observable.create(concat(odds, even));
@@ -167,8 +167,8 @@ public final class OperationConcat {
             final String[] o = { "1", "3", "5", "7" };
             final String[] e = { "2", "4", "6" };
 
-            final Observable<String> odds = Observable.toObservable(o);
-            final Observable<String> even = Observable.toObservable(e);
+            final Observable<String> odds = Observable.from(o);
+            final Observable<String> even = Observable.from(e);
             final List<Observable<String>> list = new ArrayList<Observable<String>>();
             list.add(odds);
             list.add(even);
@@ -186,8 +186,8 @@ public final class OperationConcat {
             final String[] o = { "1", "3", "5", "7" };
             final String[] e = { "2", "4", "6" };
 
-            final Observable<String> odds = Observable.toObservable(o);
-            final Observable<String> even = Observable.toObservable(e);
+            final Observable<String> odds = Observable.from(o);
+            final Observable<String> even = Observable.from(e);
 
             Observable<Observable<String>> observableOfObservables = Observable.create(new Func1<Observer<Observable<String>>, Subscription>() {
 
@@ -371,8 +371,8 @@ public final class OperationConcat {
 
             final String[] o = { "1", "3", "5", "7" };
             final String[] e = { "2", "4", "6" };
-            final Observable<String> odds = Observable.toObservable(o);
-            final Observable<String> even = Observable.toObservable(e);
+            final Observable<String> odds = Observable.from(o);
+            final Observable<String> even = Observable.from(e);
             final CountDownLatch callOnce = new CountDownLatch(1);
             final CountDownLatch okToContinue = new CountDownLatch(1);
             TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(callOnce, okToContinue, odds, even);

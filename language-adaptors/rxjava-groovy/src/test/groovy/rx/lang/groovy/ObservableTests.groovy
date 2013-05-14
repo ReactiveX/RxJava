@@ -54,7 +54,7 @@ def class ObservableTests {
 
     @Test
     public void testFilter() {
-        Observable.filter(Observable.toObservable(1, 2, 3), {it >= 2}).subscribe({ result -> a.received(result)});
+        Observable.filter(Observable.from(1, 2, 3), {it >= 2}).subscribe({ result -> a.received(result)});
         verify(a, times(0)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(1)).received(3);
@@ -62,12 +62,12 @@ def class ObservableTests {
 
     @Test
     public void testLast() {
-        assertEquals("three", Observable.toObservable("one", "two", "three").last())
+        assertEquals("three", Observable.from("one", "two", "three").toBlockingObservable().last())
     }
 
     @Test
     public void testLastWithPredicate() {
-        assertEquals("two", Observable.toObservable("one", "two", "three").last({ x -> x.length() == 3}))
+        assertEquals("two", Observable.from("one", "two", "three").toBlockingObservable().last({ x -> x.length() == 3}))
     }
 
     @Test
@@ -78,7 +78,7 @@ def class ObservableTests {
 
     @Test
     public void testMap2() {
-        Observable.map(Observable.toObservable(1, 2, 3), {'hello_' + it}).subscribe({ result -> a.received(result)});
+        Observable.map(Observable.from(1, 2, 3), {'hello_' + it}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received("hello_" + 1);
         verify(a, times(1)).received("hello_" + 2);
         verify(a, times(1)).received("hello_" + 3);
@@ -86,7 +86,7 @@ def class ObservableTests {
 
     @Test
     public void testMaterialize() {
-        Observable.materialize(Observable.toObservable(1, 2, 3)).subscribe({ result -> a.received(result)});
+        Observable.materialize(Observable.from(1, 2, 3)).subscribe({ result -> a.received(result)});
         // we expect 4 onNext calls: 3 for 1, 2, 3 ObservableNotification.OnNext and 1 for ObservableNotification.OnCompleted
         verify(a, times(4)).received(any(Notification.class));
         verify(a, times(0)).error(any(Exception.class));
@@ -95,12 +95,12 @@ def class ObservableTests {
     @Test
     public void testMergeDelayError() {
         Observable.mergeDelayError(
-                Observable.toObservable(1, 2, 3),
+                Observable.from(1, 2, 3),
                 Observable.merge(
-                Observable.toObservable(6),
+                Observable.from(6),
                 Observable.error(new NullPointerException()),
-                Observable.toObservable(7)),
-                Observable.toObservable(4, 5))
+                Observable.from(7)),
+                Observable.from(4, 5))
                 .subscribe( { result -> a.received(result)}, { exception -> a.error(exception)});
 
         verify(a, times(1)).received(1);
@@ -116,12 +116,12 @@ def class ObservableTests {
     @Test
     public void testMerge() {
         Observable.merge(
-                Observable.toObservable(1, 2, 3),
+                Observable.from(1, 2, 3),
                 Observable.merge(
-                Observable.toObservable(6),
+                Observable.from(6),
                 Observable.error(new NullPointerException()),
-                Observable.toObservable(7)),
-                Observable.toObservable(4, 5))
+                Observable.from(7)),
+                Observable.from(4, 5))
                 .subscribe({ result -> a.received(result)}, { exception -> a.error(exception)});
 
         // executing synchronously so we can deterministically know what order things will come
@@ -158,7 +158,7 @@ def class ObservableTests {
 
     @Test
     public void testSkipTake() {
-        Observable.skip(Observable.toObservable(1, 2, 3), 1).take(1).subscribe({ result -> a.received(result)});
+        Observable.skip(Observable.from(1, 2, 3), 1).take(1).subscribe({ result -> a.received(result)});
         verify(a, times(0)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(0)).received(3);
@@ -166,7 +166,7 @@ def class ObservableTests {
 
     @Test
     public void testSkip() {
-        Observable.skip(Observable.toObservable(1, 2, 3), 2).subscribe({ result -> a.received(result)});
+        Observable.skip(Observable.from(1, 2, 3), 2).subscribe({ result -> a.received(result)});
         verify(a, times(0)).received(1);
         verify(a, times(0)).received(2);
         verify(a, times(1)).received(3);
@@ -174,7 +174,7 @@ def class ObservableTests {
 
     @Test
     public void testTake() {
-        Observable.take(Observable.toObservable(1, 2, 3), 2).subscribe({ result -> a.received(result)});
+        Observable.take(Observable.from(1, 2, 3), 2).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(0)).received(3);
@@ -188,7 +188,7 @@ def class ObservableTests {
 
     @Test
     public void testTakeWhileViaGroovy() {
-        Observable.takeWhile(Observable.toObservable(1, 2, 3), { x -> x < 3}).subscribe({ result -> a.received(result)});
+        Observable.takeWhile(Observable.from(1, 2, 3), { x -> x < 3}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(0)).received(3);
@@ -196,7 +196,7 @@ def class ObservableTests {
 
     @Test
     public void testTakeWhileWithIndexViaGroovy() {
-        Observable.takeWhileWithIndex(Observable.toObservable(1, 2, 3), { x, i -> i < 2}).subscribe({ result -> a.received(result)});
+        Observable.takeWhileWithIndex(Observable.from(1, 2, 3), { x, i -> i < 2}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(0)).received(3);
@@ -210,7 +210,7 @@ def class ObservableTests {
 
     @Test
     public void testToSortedListStatic() {
-        Observable.toSortedList(Observable.toObservable(1, 3, 2, 5, 4)).subscribe({ result -> a.received(result)});
+        Observable.toSortedList(Observable.from(1, 3, 2, 5, 4)).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
     }
 
@@ -222,7 +222,7 @@ def class ObservableTests {
 
     @Test
     public void testToSortedListWithFunctionStatic() {
-        Observable.toSortedList(Observable.toObservable(1, 3, 2, 5, 4), {a, b -> a - b}).subscribe({ result -> a.received(result)});
+        Observable.toSortedList(Observable.from(1, 3, 2, 5, 4), {a, b -> a - b}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
     }
     
@@ -246,29 +246,29 @@ def class ObservableTests {
 
     @Test
     public void testLastOrDefault() {
-        def val = Observable.toObservable("one", "two").lastOrDefault("default", { x -> x.length() == 3})
+        def val = Observable.from("one", "two").toBlockingObservable().lastOrDefault("default", { x -> x.length() == 3})
         assertEquals("two", val)
     }
 
     @Test
     public void testLastOrDefault2() {
-        def val = Observable.toObservable("one", "two").lastOrDefault("default", { x -> x.length() > 3})
+        def val = Observable.from("one", "two").toBlockingObservable().lastOrDefault("default", { x -> x.length() > 3})
         assertEquals("default", val)
     }
     
     public void testSingle1() {
-        def s = Observable.toObservable("one").single({ x -> x.length() == 3})
+        def s = Observable.from("one").toBlockingObservable().single({ x -> x.length() == 3})
         assertEquals("one", s)
     }
 
     @Test(expected = IllegalStateException.class)
     public void testSingle2() {
-        Observable.toObservable("one", "two").single({ x -> x.length() == 3})
+        Observable.from("one", "two").toBlockingObservable().single({ x -> x.length() == 3})
     }
 
     @Test
     public void testDefer() {
-        def obs = Observable.toObservable(1, 2)
+        def obs = Observable.from(1, 2)
         Observable.defer({-> obs }).subscribe({ result -> a.received(result)})
         verify(a, times(1)).received(1);
         verify(a, times(1)).received(2);
@@ -277,7 +277,7 @@ def class ObservableTests {
 
     @Test
     public void testAll() {
-        Observable.toObservable(1, 2, 3).all({ x -> x > 0 }).subscribe({ result -> a.received(result) });
+        Observable.from(1, 2, 3).all({ x -> x > 0 }).subscribe({ result -> a.received(result) });
         verify(a, times(1)).received(true);
     }
 
@@ -305,7 +305,7 @@ def class ObservableTests {
         int counter = 1;
 
         public Observable<Integer> getNumbers() {
-            return Observable.toObservable(1, 3, 2, 5, 4);
+            return Observable.from(1, 3, 2, 5, 4);
         }
 
         public TestObservable getObservable() {

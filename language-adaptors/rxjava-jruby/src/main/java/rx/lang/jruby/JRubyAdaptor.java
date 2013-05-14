@@ -76,7 +76,7 @@ public class JRubyAdaptor implements FunctionLanguageAdaptor {
 
         @Test
         public void testFilterViaGroovy() {
-            runGroovyScript("Observable.filter(Observable.toObservable(1, 2, 3), lambda{|it| it >= 2}).subscribe(lambda{|result| a.received(result)});");
+            runGroovyScript("Observable.filter(Observable.from(1, 2, 3), lambda{|it| it >= 2}).subscribe(lambda{|result| a.received(result)});");
             verify(assertion, times(0)).received(1L);
             verify(assertion, times(1)).received(2L);
             verify(assertion, times(1)).received(3L);
@@ -98,7 +98,7 @@ public class JRubyAdaptor implements FunctionLanguageAdaptor {
 
         @Test
         public void testMaterializeViaGroovy() {
-            runGroovyScript("Observable.materialize(Observable.toObservable(1, 2, 3)).subscribe(lambda{|result| a.received(result)});");
+            runGroovyScript("Observable.materialize(Observable.from(1, 2, 3)).subscribe(lambda{|result| a.received(result)});");
             // we expect 4 onNext calls: 3 for 1, 2, 3 ObservableNotification.OnNext and 1 for ObservableNotification.OnCompleted
             verify(assertion, times(4)).received(any(Notification.class));
             verify(assertion, times(0)).error(any(Exception.class));
@@ -129,7 +129,7 @@ public class JRubyAdaptor implements FunctionLanguageAdaptor {
 
         @Test
         public void testSkipTakeViaGroovy() {
-            runGroovyScript("Observable.skip(Observable.toObservable(1, 2, 3), 1).take(1).subscribe(lambda{|result| a.received(result)});");
+            runGroovyScript("Observable.skip(Observable.from(1, 2, 3), 1).take(1).subscribe(lambda{|result| a.received(result)});");
             verify(assertion, times(0)).received(1);
             verify(assertion, times(1)).received(2L);
             verify(assertion, times(0)).received(3);
@@ -137,7 +137,7 @@ public class JRubyAdaptor implements FunctionLanguageAdaptor {
 
         @Test
         public void testSkipViaGroovy() {
-            runGroovyScript("Observable.skip(Observable.toObservable(1, 2, 3), 2).subscribe(lambda{|result| a.received(result)});");
+            runGroovyScript("Observable.skip(Observable.from(1, 2, 3), 2).subscribe(lambda{|result| a.received(result)});");
             verify(assertion, times(0)).received(1);
             verify(assertion, times(0)).received(2);
             verify(assertion, times(1)).received(3L);
@@ -145,7 +145,7 @@ public class JRubyAdaptor implements FunctionLanguageAdaptor {
 
         @Test
         public void testTakeViaGroovy() {
-            runGroovyScript("Observable.take(Observable.toObservable(1, 2, 3), 2).subscribe(lambda{|result| a.received(result)});");
+            runGroovyScript("Observable.take(Observable.from(1, 2, 3), 2).subscribe(lambda{|result| a.received(result)});");
             verify(assertion, times(1)).received(1L);
             verify(assertion, times(1)).received(2L);
             verify(assertion, times(0)).received(3);
@@ -183,7 +183,7 @@ public class JRubyAdaptor implements FunctionLanguageAdaptor {
             int counter = 1;
 
             public Observable<Integer> getNumbers() {
-                return Observable.toObservable(1, 3, 2, 5, 4);
+                return Observable.from(1, 3, 2, 5, 4);
             }
 
             public TestObservable getObservable() {

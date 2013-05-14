@@ -79,7 +79,7 @@ public class OperationSubscribeOn {
         @Test
         @SuppressWarnings("unchecked")
         public void testSubscribeOn() {
-            Observable<Integer> w = Observable.toObservable(1, 2, 3);
+            Observable<Integer> w = Observable.from(1, 2, 3);
 
             Scheduler scheduler = spy(OperatorTester.UnitTest.forwardingScheduler(Schedulers.immediate()));
 

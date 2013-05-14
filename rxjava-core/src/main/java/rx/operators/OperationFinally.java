@@ -116,7 +116,7 @@ public final class OperationFinally {
         
         @Test
         public void testFinallyCalledOnComplete() {
-            checkActionCalled(Observable.toObservable(new String[] {"1", "2", "3"}));
+            checkActionCalled(Observable.from(new String[] {"1", "2", "3"}));
         }
         
         @Test
