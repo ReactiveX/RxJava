@@ -40,7 +40,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 
-
 /**
  * This operation transforms an {@link Observable} sequence of {@link Observable} sequences into a single 
  * {@link Observable} sequence which only produces values from the most recently published {@link Observable} 
@@ -74,32 +73,32 @@ public final class OperationSwitch {
 
         @Override
         public Subscription call(Observer<T> observer) {
-        	AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-        	subscription.wrap(sequences.subscribe(new SwitchObserver<T>(observer, subscription)));
-        	return subscription;
+            AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+            subscription.wrap(sequences.subscribe(new SwitchObserver<T>(observer, subscription)));
+            return subscription;
         }
     }
 
     private static class SwitchObserver<T> implements Observer<Observable<T>> {
 
         private final Observer<T> observer;
-		private final AtomicObservableSubscription parent;
-		private final AtomicReference<Subscription> subsequence = new AtomicReference<Subscription>();
+        private final AtomicObservableSubscription parent;
+        private final AtomicReference<Subscription> subsequence = new AtomicReference<Subscription>();
 
         public SwitchObserver(Observer<T> observer, AtomicObservableSubscription parent) {
             this.observer = observer;
-			this.parent = parent;
+            this.parent = parent;
         }
 
         @Override
         public void onCompleted() {
-        	unsubscribeFromSubSequence();
+            unsubscribeFromSubSequence();
             observer.onCompleted();
         }
 
         @Override
         public void onError(Exception e) {
-        	unsubscribeFromSubSequence();
+            unsubscribeFromSubSequence();
             observer.onError(e);
         }
 
@@ -110,28 +109,28 @@ public final class OperationSwitch {
             subsequence.set(args.subscribe(new Observer<T>() {
                 @Override
                 public void onCompleted() {
-                	// Do nothing.
+                    // Do nothing.
                 }
 
                 @Override
                 public void onError(Exception e) {
-                	parent.unsubscribe();
-                	observer.onError(e);
+                    parent.unsubscribe();
+                    observer.onError(e);
                 }
 
-				@Override
+                @Override
                 public void onNext(T args) {
                     observer.onNext(args);
                 }
             }));
         }
 
-		private void unsubscribeFromSubSequence() {
-			Subscription previousSubscription = subsequence.get();
+        private void unsubscribeFromSubSequence() {
+            Subscription previousSubscription = subsequence.get();
             if (previousSubscription != null) {
                 previousSubscription.unsubscribe();
             }
-		}
+        }
     }
     
     public static class UnitTest {
