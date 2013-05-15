@@ -15,11 +15,11 @@
  */
 package rx.util.functions;
 
-import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Allows execution of functions from multiple different languages.
@@ -40,6 +40,7 @@ public class Functions {
         loadLanguageAdaptor("JRuby");
         loadLanguageAdaptor("Clojure");
         loadLanguageAdaptor("Scala");
+        loadLanguageAdaptor("Kotlin");
         // as new languages arise we can add them here but this does not prevent someone from using 'registerLanguageAdaptor' directly
     }
 
