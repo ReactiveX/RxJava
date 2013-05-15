@@ -36,7 +36,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.BooleanSubscription;
 import rx.util.AtomicObservableSubscription;
-
+import rx.util.Exceptions;
 import rx.util.functions.Func1;
 
 public final class OperationConcat {
@@ -459,38 +459,6 @@ public final class OperationConcat {
             verify(aObserver, never()).onError(any(Exception.class));
             
  		}
-        
-        @Test
- 		public void testConcatConcurrentWithInfinityFirstSequence() {
-             final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
-             //This observable will send "hello" MAX_VALUE time.
-             final TestObservable<String> w2 = new TestObservable<String>("hello", Integer.MAX_VALUE);
-
-             @SuppressWarnings("unchecked")
-             Observer<String> aObserver = mock(Observer.class);
-             @SuppressWarnings("unchecked")
-  			 TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(w2, w1);
-             Func1<Observer<String>, Subscription> concatF = concat(observableOfObservables);
-             
-             Observable<String> concat = Observable.create(concatF);
-             
-             concat.take(50).subscribe(aObserver);
-
-             //Wait for the thread to start up.
-             try {
- 				Thread.sleep(25);
- 				w2.t.join();
-			} catch (InterruptedException e) {
- 				// TODO Auto-generated catch block
- 				e.printStackTrace();
- 			}
-             
-             InOrder inOrder = inOrder(aObserver);
-             inOrder.verify(aObserver, times(50)).onNext("hello");
-             verify(aObserver, times(1)).onCompleted();
-             verify(aObserver, never()).onError(any(Exception.class));
-             
-  		}
         
         
         /**
