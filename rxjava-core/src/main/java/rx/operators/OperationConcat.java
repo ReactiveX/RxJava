@@ -23,10 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.mockito.InOrder;
@@ -460,6 +462,69 @@ public final class OperationConcat {
             
  		}
         
+      
+       
+        @Test
+ 		public void testConcatUnSubscribeNotBlockingObservables() {
+ 
+        	final CountDownLatch okToContinueW1 = new CountDownLatch(1);
+        	final CountDownLatch okToContinueW2 = new CountDownLatch(1);
+        	
+           	final TestObservable<String> w1 = new TestObservable<String>(null, okToContinueW1, "one", "two", "three");
+           	final TestObservable<String> w2 = new TestObservable<String>(null, okToContinueW2, "four", "five", "six");
+
+             @SuppressWarnings("unchecked")
+             Observer<String> aObserver = mock(Observer.class);
+             Observable<Observable<String>> observableOfObservables = Observable.create(new Func1<Observer<Observable<String>>, Subscription>() {
+
+                 @Override
+                 public Subscription call(Observer<Observable<String>> observer) {
+                     // simulate what would happen in an observable
+                     observer.onNext(w1);
+                     observer.onNext(w2);
+                     observer.onCompleted();
+
+                     return new Subscription() {
+
+                         @Override
+                         public void unsubscribe() {
+                         }
+
+                     };
+                 }
+
+             });
+             Observable<String> concat = Observable.create(concat(observableOfObservables));           
+         
+             concat.subscribe(aObserver);
+             
+             verify(aObserver, times(0)).onCompleted();
+
+             
+             //Wait for the thread to start up.
+             try {
+ 				Thread.sleep(25);
+ 				w1.t.join();
+ 				w2.t.join();
+ 				okToContinueW1.countDown();
+ 				okToContinueW2.countDown();
+			} catch (InterruptedException e) {
+ 				// TODO Auto-generated catch block
+ 				e.printStackTrace();
+ 			}
+             
+            InOrder inOrder = inOrder(aObserver);
+            inOrder.verify(aObserver, times(1)).onNext("one");   
+            inOrder.verify(aObserver, times(1)).onNext("two");
+            inOrder.verify(aObserver, times(1)).onNext("three");
+            inOrder.verify(aObserver, times(1)).onNext("four");   
+            inOrder.verify(aObserver, times(1)).onNext("five");
+            inOrder.verify(aObserver, times(1)).onNext("six");
+            verify(aObserver, times(1)).onCompleted();
+          
+             
+  		}
+        
         
         /**
          * Test unsubscribing the concatenated Observable in a single thread.
@@ -608,7 +673,7 @@ public final class OperationConcat {
                                         once.countDown();
                                     //Block until the main thread has called unsubscribe.
                                     if (null != okToContinue)
-                                        okToContinue.await();
+                                        okToContinue.await(1, TimeUnit.SECONDS);
                                 }
                                 if (subscribed)
                                     observer.onCompleted();
