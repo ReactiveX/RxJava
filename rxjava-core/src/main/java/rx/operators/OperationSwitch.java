@@ -15,9 +15,6 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -30,8 +27,18 @@ import rx.Observer;
 import rx.Subscription;
 import rx.concurrency.TestScheduler;
 import rx.subscriptions.Subscriptions;
+import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Action0;
 import rx.util.functions.Func1;
+
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 
 
 /**
@@ -67,54 +74,64 @@ public final class OperationSwitch {
 
         @Override
         public Subscription call(Observer<T> observer) {
-            return sequences.subscribe(new SwitchObserver<T>(observer));
+        	AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        	subscription.wrap(sequences.subscribe(new SwitchObserver<T>(observer, subscription)));
+        	return subscription;
         }
     }
 
     private static class SwitchObserver<T> implements Observer<Observable<T>> {
 
-        private final AtomicReference<Subscription> subscription = new AtomicReference<Subscription>();
-        
         private final Observer<T> observer;
+		private final AtomicObservableSubscription parent;
+		private final AtomicReference<Subscription> subsequence = new AtomicReference<Subscription>();
 
-        public SwitchObserver(Observer<T> observer) {
+        public SwitchObserver(Observer<T> observer, AtomicObservableSubscription parent) {
             this.observer = observer;
+			this.parent = parent;
         }
 
         @Override
         public void onCompleted() {
+        	unsubscribeFromSubSequence();
             observer.onCompleted();
         }
 
         @Override
         public void onError(Exception e) {
+        	unsubscribeFromSubSequence();
             observer.onError(e);
         }
 
         @Override
         public void onNext(Observable<T> args) {
-            Subscription previousSubscription = subscription.get();
-            if (previousSubscription != null) {
-                previousSubscription.unsubscribe();
-            }
+            unsubscribeFromSubSequence();
             
-            subscription.set(args.subscribe(new Observer<T>() {
+            subsequence.set(args.subscribe(new Observer<T>() {
                 @Override
                 public void onCompleted() {
-                    // Do nothing.
+                	// Do nothing.
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    // Do nothing.
+                	parent.unsubscribe();
+                	observer.onError(e);
                 }
 
-                @Override
+				@Override
                 public void onNext(T args) {
                     observer.onNext(args);
                 }
             }));
         }
+
+		private void unsubscribeFromSubSequence() {
+			Subscription previousSubscription = subsequence.get();
+            if (previousSubscription != null) {
+                previousSubscription.unsubscribe();
+            }
+		}
     }
     
     public static class UnitTest {
@@ -299,7 +316,6 @@ public final class OperationSwitch {
             verify(observer, never()).onError(any(Exception.class));
             
             scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
-            inOrder.verify(observer, times(1)).onNext("two");
             inOrder.verify(observer, times(1)).onNext("three");
             verify(observer, never()).onCompleted();
             verify(observer, never()).onError(any(Exception.class));
@@ -355,10 +371,9 @@ public final class OperationSwitch {
             verify(observer, never()).onError(any(Exception.class));
             
             scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
-            inOrder.verify(observer, times(1)).onNext("two");
-            inOrder.verify(observer, times(1)).onNext("three");
+            inOrder.verify(observer, never()).onNext("three");
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, times(1)).onError(any(TestException.class));
         }
 
         private <T> void publishCompleted(final Observer<T> observer, long delay) {
