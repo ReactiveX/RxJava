@@ -61,6 +61,7 @@ import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSubscribeOn;
+import rx.operators.OperationSwitch;
 import rx.operators.OperationSynchronize;
 import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
@@ -1798,6 +1799,19 @@ public class Observable<T> {
      */
     public static <T> Observable<T> skip(final Observable<T> items, int num) {
         return create(OperationSkip.skip(items, num));
+    }
+
+    /**
+     * Accepts an {@link Observable} sequence of {@link Observable} sequences, and transforms it into a single
+     * {@link Observable} sequence, which publishes the values of the most recently published {@link Observable} sequence.
+     *  
+     * @param sequenceOfSequences
+     *            the {@link Observable} sequence of {@link Observable} sequences.
+     * @return an {@link Observable} which publishes only the values of the most recently published 
+     *         {@link Observable} sequence.
+     */
+    public static <T> Observable<T> switchDo(Observable<Observable<T>> sequenceOfSequences) {
+        return create(OperationSwitch.switchDo(sequenceOfSequences));
     }
 
     /**
