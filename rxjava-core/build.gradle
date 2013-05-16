@@ -48,6 +48,7 @@ jar {
         instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
         instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
     }
-    exclude('**/*$UnitTest*')
+    // commenting out for now as it's breaking the rxjava-scala build and I can't figure out why
+    // exclude('**/*$UnitTest*')
 }
 
