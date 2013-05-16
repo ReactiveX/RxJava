@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,13 +15,13 @@
  */
 package rx.operators;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rx.Notification;
 import rx.Observer;
 import rx.Scheduler;
 import rx.util.functions.Action0;
-
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /* package */class ScheduledObserver<T> implements Observer<T> {
     private final Observer<T> underlying;
@@ -51,11 +51,13 @@ import java.util.concurrent.atomic.AtomicInteger;
     }
 
     private void enqueue(Notification<T> notification) {
-        int count = counter.getAndIncrement();
-
+        // this must happen before 'counter' is used to provide synchronization between threads
         queue.offer(notification);
 
-        if (count == 0) {
+        // we now use counter to atomically determine if we need to start processing or not
+        // it will be 0 if it's the first notification or the scheduler has finished processing work
+        // and we need to start doing it again
+        if (counter.getAndIncrement() == 0) {
             processQueue();
         }
     }
@@ -67,22 +69,23 @@ import java.util.concurrent.atomic.AtomicInteger;
                 Notification<T> not = queue.poll();
 
                 switch (not.getKind()) {
-                    case OnNext:
-                        underlying.onNext(not.getValue());
-                        break;
-                    case OnError:
-                        underlying.onError(not.getException());
-                        break;
-                    case OnCompleted:
-                        underlying.onCompleted();
-                        break;
-                    default:
-                        throw new IllegalStateException("Unknown kind of notification " + not);
+                case OnNext:
+                    underlying.onNext(not.getValue());
+                    break;
+                case OnError:
+                    underlying.onError(not.getException());
+                    break;
+                case OnCompleted:
+                    underlying.onCompleted();
+                    break;
+                default:
+                    throw new IllegalStateException("Unknown kind of notification " + not);
 
                 }
 
-                int count = counter.decrementAndGet();
-                if (count > 0) {
+                // decrement count and if we still have work to do
+                // recursively schedule ourselves to process again
+                if (counter.decrementAndGet() > 0) {
                     scheduler.schedule(this);
                 }
 

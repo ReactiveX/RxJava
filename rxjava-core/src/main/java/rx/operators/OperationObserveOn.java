@@ -30,6 +30,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
+import rx.concurrency.ImmediateScheduler;
 import rx.concurrency.Schedulers;
 import rx.util.functions.Func1;
 
@@ -50,7 +51,12 @@ public class OperationObserveOn {
 
         @Override
         public Subscription call(final Observer<T> observer) {
-            return source.subscribe(new ScheduledObserver<T>(observer, scheduler));
+            if (scheduler instanceof ImmediateScheduler) {
+                // do nothing if we request ImmediateScheduler so we don't invoke overhead
+                return source.subscribe(observer);
+            } else {
+                return source.subscribe(new ScheduledObserver<T>(observer, scheduler));
+            }
         }
     }
 
