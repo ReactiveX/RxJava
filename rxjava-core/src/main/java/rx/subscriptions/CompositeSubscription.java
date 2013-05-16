@@ -15,15 +15,19 @@
  */
 package rx.subscriptions;
 
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.Test;
 
 import rx.Subscription;
-import rx.util.functions.Functions;
+import rx.util.CompositeException;
 
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed together.
@@ -31,8 +35,6 @@ import rx.util.functions.Functions;
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net equivalent CompositeDisposable</a>
  */
 public class CompositeSubscription implements Subscription {
-
-    private static final Logger logger = LoggerFactory.getLogger(Functions.class);
 
     /*
      * The reason 'synchronized' is used on 'add' and 'unsubscribe' is because AtomicBoolean/ConcurrentLinkedQueue are both being modified so it needs to be done atomically.
@@ -67,13 +69,80 @@ public class CompositeSubscription implements Subscription {
     @Override
     public synchronized void unsubscribe() {
         if (unsubscribed.compareAndSet(false, true)) {
+            Collection<Exception> es = null;
             for (Subscription s : subscriptions) {
                 try {
                     s.unsubscribe();
                 } catch (Exception e) {
-                    logger.error("Failed to unsubscribe.", e);
+                    if (es == null) {
+                        es = new ArrayList<Exception>();
+                    }
+                    es.add(e);
                 }
             }
+            if (es != null) {
+                throw new CompositeException("Failed to unsubscribe to 1 or more subscriptions.", es);
+            }
+        }
+    }
+
+    public static class UnitTest {
+
+        @Test
+        public void testSuccess() {
+            final AtomicInteger counter = new AtomicInteger();
+            CompositeSubscription s = new CompositeSubscription();
+            s.add(new Subscription() {
+
+                @Override
+                public void unsubscribe() {
+                    counter.incrementAndGet();
+                }
+            });
+
+            s.add(new Subscription() {
+
+                @Override
+                public void unsubscribe() {
+                    counter.incrementAndGet();
+                }
+            });
+
+            s.unsubscribe();
+
+            assertEquals(2, counter.get());
+        }
+
+        @Test
+        public void testException() {
+            final AtomicInteger counter = new AtomicInteger();
+            CompositeSubscription s = new CompositeSubscription();
+            s.add(new Subscription() {
+
+                @Override
+                public void unsubscribe() {
+                    throw new RuntimeException("failed on first one");
+                }
+            });
+
+            s.add(new Subscription() {
+
+                @Override
+                public void unsubscribe() {
+                    counter.incrementAndGet();
+                }
+            });
+
+            try {
+                s.unsubscribe();
+                fail("Expecting an exception");
+            } catch (CompositeException e) {
+                // we expect this
+                assertEquals(1, e.getExceptions().size());
+            }
+
+            // we should still have unsubscribed to the second one
+            assertEquals(1, counter.get());
         }
     }
 

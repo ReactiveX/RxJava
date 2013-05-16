@@ -15,7 +15,11 @@
  */
 package rx.operators;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
@@ -27,31 +31,21 @@ import rx.Observer;
 import rx.Subscription;
 import rx.concurrency.TestScheduler;
 import rx.subscriptions.Subscriptions;
-import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-
 /**
- * This operation transforms an {@link Observable} sequence of {@link Observable} sequences into a single 
- * {@link Observable} sequence which only produces values from the most recently published {@link Observable} 
- * sequence in the sequence. 
+ * This operation transforms an {@link Observable} sequence of {@link Observable} sequences into a single {@link Observable} sequence which only produces values from the most recently published
+ * {@link Observable} sequence in the sequence.
  */
 public final class OperationSwitch {
 
     /**
-     * This function transforms an {@link Observable} sequence of {@link Observable} sequences into a single 
-     * {@link Observable} sequence which produces values from the most recently published {@link Observable}.
+     * This function transforms an {@link Observable} sequence of {@link Observable} sequences into a single {@link Observable} sequence which produces values from the most recently published
+     * {@link Observable}.
      * 
-     * @param sequences   The {@link Observable} sequence consisting of {@link Observable} sequences.
+     * @param sequences
+     *            The {@link Observable} sequence consisting of {@link Observable} sequences.
      * @return A {@link Func1} which does this transformation.
      */
     public static <T> Func1<Observer<T>, Subscription> switchDo(final Observable<Observable<T>> sequences) {
@@ -105,7 +99,7 @@ public final class OperationSwitch {
         @Override
         public void onNext(Observable<T> args) {
             unsubscribeFromSubSequence();
-            
+
             subsequence.set(args.subscribe(new Observer<T>() {
                 @Override
                 public void onCompleted() {
@@ -132,7 +126,7 @@ public final class OperationSwitch {
             }
         }
     }
-    
+
     public static class UnitTest {
 
         private TestScheduler scheduler;
@@ -158,7 +152,7 @@ public final class OperationSwitch {
                             return Subscriptions.empty();
                         }
                     }));
-                    
+
                     publishNext(observer, 200, Observable.create(new Func1<Observer<String>, Subscription>() {
                         @Override
                         public Subscription call(Observer<String> observer) {
@@ -167,7 +161,7 @@ public final class OperationSwitch {
                             return Subscriptions.empty();
                         }
                     }));
-                    
+
                     publishCompleted(observer, 250);
 
                     return Subscriptions.empty();
@@ -188,7 +182,7 @@ public final class OperationSwitch {
             inOrder.verify(observer, times(1)).onNext("one");
             verify(observer, never()).onCompleted();
             verify(observer, never()).onError(any(Exception.class));
-            
+
             scheduler.advanceTimeTo(175, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext("two");
             verify(observer, never()).onCompleted();
@@ -198,7 +192,7 @@ public final class OperationSwitch {
             inOrder.verify(observer, times(1)).onNext("three");
             verify(observer, never()).onCompleted();
             verify(observer, never()).onError(any(Exception.class));
-            
+
             scheduler.advanceTimeTo(350, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, never()).onNext(anyString());
             verify(observer, times(1)).onCompleted();
@@ -218,7 +212,7 @@ public final class OperationSwitch {
                             return Subscriptions.empty();
                         }
                     }));
-                    
+
                     publishNext(observer, 200, Observable.create(new Func1<Observer<String>, Subscription>() {
                         @Override
                         public Subscription call(Observer<String> observer) {
@@ -227,7 +221,7 @@ public final class OperationSwitch {
                             return Subscriptions.empty();
                         }
                     }));
-                    
+
                     publishError(observer, 250, new TestException());
 
                     return Subscriptions.empty();
@@ -248,7 +242,7 @@ public final class OperationSwitch {
             inOrder.verify(observer, times(1)).onNext("one");
             verify(observer, never()).onCompleted();
             verify(observer, never()).onError(any(Exception.class));
-            
+
             scheduler.advanceTimeTo(175, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext("two");
             verify(observer, never()).onCompleted();
@@ -258,7 +252,7 @@ public final class OperationSwitch {
             inOrder.verify(observer, times(1)).onNext("three");
             verify(observer, never()).onCompleted();
             verify(observer, never()).onError(any(Exception.class));
-            
+
             scheduler.advanceTimeTo(350, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, never()).onNext(anyString());
             verify(observer, never()).onCompleted();
@@ -278,7 +272,7 @@ public final class OperationSwitch {
                             return Subscriptions.empty();
                         }
                     }));
-                    
+
                     publishNext(observer, 130, Observable.create(new Func1<Observer<String>, Subscription>() {
                         @Override
                         public Subscription call(Observer<String> observer) {
@@ -286,7 +280,7 @@ public final class OperationSwitch {
                             return Subscriptions.empty();
                         }
                     }));
-                    
+
                     publishNext(observer, 150, Observable.create(new Func1<Observer<String>, Subscription>() {
                         @Override
                         public Subscription call(Observer<String> observer) {
@@ -313,7 +307,7 @@ public final class OperationSwitch {
             inOrder.verify(observer, times(1)).onNext("one");
             verify(observer, never()).onCompleted();
             verify(observer, never()).onError(any(Exception.class));
-            
+
             scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext("three");
             verify(observer, never()).onCompleted();
@@ -333,7 +327,7 @@ public final class OperationSwitch {
                             return Subscriptions.empty();
                         }
                     }));
-                    
+
                     publishNext(observer, 130, Observable.create(new Func1<Observer<String>, Subscription>() {
                         @Override
                         public Subscription call(Observer<String> observer) {
@@ -341,7 +335,7 @@ public final class OperationSwitch {
                             return Subscriptions.empty();
                         }
                     }));
-                    
+
                     publishNext(observer, 150, Observable.create(new Func1<Observer<String>, Subscription>() {
                         @Override
                         public Subscription call(Observer<String> observer) {
@@ -368,7 +362,7 @@ public final class OperationSwitch {
             inOrder.verify(observer, times(1)).onNext("one");
             verify(observer, never()).onCompleted();
             verify(observer, never()).onError(any(Exception.class));
-            
+
             scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, never()).onNext("three");
             verify(observer, never()).onCompleted();
@@ -392,7 +386,7 @@ public final class OperationSwitch {
                 }
             }, delay, TimeUnit.MILLISECONDS);
         }
-        
+
         private <T> void publishNext(final Observer<T> observer, long delay, final T value) {
             scheduler.schedule(new Action0() {
                 @Override
@@ -403,6 +397,7 @@ public final class OperationSwitch {
         }
 
         @SuppressWarnings("serial")
-        private class TestException extends Exception { }
+        private class TestException extends Exception {
+        }
     }
 }
