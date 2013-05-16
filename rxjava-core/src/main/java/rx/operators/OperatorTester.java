@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -124,7 +124,7 @@ import rx.util.functions.Func2;
                     observer.onCompleted();
                     return Subscriptions.empty();
                 }
-            })).lastOrDefault("end");
+            })).toBlockingObservable().lastOrDefault("end");
 
         }
 
@@ -139,7 +139,7 @@ import rx.util.functions.Func2;
                     observer.onError(new Exception());
                     return Subscriptions.empty();
                 }
-            })).lastOrDefault("end");
+            })).toBlockingObservable().lastOrDefault("end");
         }
 
         @Test(expected = AssertionError.class)
@@ -153,7 +153,7 @@ import rx.util.functions.Func2;
                     observer.onNext("one");
                     return Subscriptions.empty();
                 }
-            })).lastOrDefault("end");
+            })).toBlockingObservable().lastOrDefault("end");
         }
 
         @Test(expected = AssertionError.class)
@@ -167,7 +167,7 @@ import rx.util.functions.Func2;
                     observer.onCompleted();
                     return Subscriptions.empty();
                 }
-            })).lastOrDefault("end");
+            })).toBlockingObservable().lastOrDefault("end");
         }
 
         @Test(expected = AssertionError.class)
@@ -181,7 +181,7 @@ import rx.util.functions.Func2;
                     observer.onError(new Exception());
                     return Subscriptions.empty();
                 }
-            })).lastOrDefault("end");
+            })).toBlockingObservable().lastOrDefault("end");
         }
 
         @Test(expected = AssertionError.class)
@@ -195,7 +195,7 @@ import rx.util.functions.Func2;
                     observer.onNext("one");
                     return Subscriptions.empty();
                 }
-            })).lastOrDefault("end");
+            })).toBlockingObservable().lastOrDefault("end");
         }
 
         @Test
@@ -209,7 +209,7 @@ import rx.util.functions.Func2;
                     observer.onCompleted();
                     return Subscriptions.empty();
                 }
-            })).lastOrDefault("end");
+            })).toBlockingObservable().lastOrDefault("end");
         }
 
         @Test
@@ -333,7 +333,7 @@ import rx.util.functions.Func2;
             public Subscription schedule(Func1<Scheduler, Subscription> action, long dueTime, TimeUnit unit) {
                 return underlying.schedule(action, dueTime, unit);
             }
-            
+
             @Override
             public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
                 return underlying.schedule(state, action, dueTime, unit);

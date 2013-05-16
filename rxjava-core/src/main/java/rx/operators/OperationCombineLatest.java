@@ -719,7 +719,7 @@ public class OperationCombineLatest {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = Observable.create(combineLatest(Observable.toObservable("one", "two"), Observable.toObservable(2, 3, 4), combineLatestFunction));
+            Observable<String> w = Observable.create(combineLatest(Observable.from("one", "two"), Observable.from(2, 3, 4), combineLatestFunction));
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -738,7 +738,7 @@ public class OperationCombineLatest {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = Observable.create(combineLatest(Observable.toObservable("one", "two"), Observable.toObservable(2), Observable.toObservable(new int[] { 4, 5, 6 }), combineLatestFunction));
+            Observable<String> w = Observable.create(combineLatest(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), combineLatestFunction));
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -755,7 +755,7 @@ public class OperationCombineLatest {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = Observable.create(combineLatest(Observable.toObservable("one"), Observable.toObservable(2), Observable.toObservable(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction));
+            Observable<String> w = Observable.create(combineLatest(Observable.from("one"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction));
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));

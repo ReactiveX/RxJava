@@ -35,8 +35,6 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
-import rx.util.SynchronizedObserver;
 import rx.util.functions.Func1;
 
 public final class OperationMerge {

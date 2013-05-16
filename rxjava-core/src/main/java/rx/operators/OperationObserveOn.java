@@ -69,7 +69,7 @@ public class OperationObserveOn {
             Scheduler scheduler = spy(OperatorTester.UnitTest.forwardingScheduler(Schedulers.immediate()));
 
             Observer<Integer> observer = mock(Observer.class);
-            Observable.create(observeOn(Observable.toObservable(1, 2, 3), scheduler)).subscribe(observer);
+            Observable.create(observeOn(Observable.from(1, 2, 3), scheduler)).subscribe(observer);
 
             verify(observer, times(1)).onNext(1);
             verify(observer, times(1)).onNext(2);

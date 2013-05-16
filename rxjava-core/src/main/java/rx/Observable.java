@@ -21,7 +21,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -36,8 +35,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
+import rx.operators.AtomicObservableSubscription;
+import rx.operators.AtomicObserver;
 import rx.operators.OperationAll;
 import rx.operators.OperationCache;
 import rx.operators.OperationConcat;
@@ -50,9 +52,7 @@ import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
 import rx.operators.OperationMergeDelayError;
-import rx.operators.OperationMostRecent;
 import rx.operators.OperationMulticast;
-import rx.operators.OperationNext;
 import rx.operators.OperationObserveOn;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
@@ -67,8 +67,6 @@ import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
 import rx.operators.OperationTimestamp;
-import rx.operators.OperationToFuture;
-import rx.operators.OperationToIterator;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
 import rx.operators.OperationToObservableList;
@@ -83,8 +81,6 @@ import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.AtomicObservableSubscription;
-import rx.util.AtomicObserver;
 import rx.util.Range;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
@@ -634,74 +630,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
-     * 
-     * @return The single element in the observable sequence.
-     */
-    public T single() {
-        return single(this);
-    }
-
-    /**
-     * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
-     * 
-     * @param predicate
-     *            A predicate function to evaluate for elements in the sequence.
-     * @return The single element in the observable sequence.
-     */
-    public T single(Func1<T, Boolean> predicate) {
-        return single(this, predicate);
-    }
-
-    /**
-     * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
-     * 
-     * @param predicate
-     *            A predicate function to evaluate for elements in the sequence.
-     * @return The single element in the observable sequence.
-     */
-    public T single(Object predicate) {
-        return single(this, predicate);
-    }
-
-    /**
-     * Returns the only element of an observable sequence, or a default value if the observable sequence is empty.
-     * 
-     * @param defaultValue
-     *            default value for a sequence.
-     * @return The single element in the observable sequence, or a default value if no value is found.
-     */
-    public T singleOrDefault(T defaultValue) {
-        return singleOrDefault(this, defaultValue);
-    }
-
-    /**
-     * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
-     * 
-     * @param defaultValue
-     *            default value for a sequence.
-     * @param predicate
-     *            A predicate function to evaluate for elements in the sequence.
-     * @return The single element in the observable sequence, or a default value if no value is found.
-     */
-    public T singleOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
-        return singleOrDefault(this, defaultValue, predicate);
-    }
-
-    /**
-     * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
-     * 
-     * @param defaultValue
-     *            default value for a sequence.
-     * @param predicate
-     *            A predicate function to evaluate for elements in the sequence.
-     * @return The single element in the observable sequence, or a default value if no value is found.
-     */
-    public T singleOrDefault(T defaultValue, Object predicate) {
-        return singleOrDefault(this, defaultValue, predicate);
-    }
-
-    /**
      * Allow the {@link RxJavaErrorHandler} to receive the exception from onError.
      * 
      * @param e
@@ -1036,116 +964,6 @@ public class Observable<T> {
         list.add(value);
 
         return toObservable(list);
-    }
-
-    /**
-     * Returns the last element of an observable sequence with a specified source.
-     * 
-     * @param that
-     *            the source Observable
-     * @return the last element in the observable sequence.
-     */
-    public static <T> T last(final Observable<T> that) {
-        T result = null;
-        for (T value : that.toIterable()) {
-            result = value;
-        }
-        return result;
-    }
-
-    /**
-     * Returns the last element of an observable sequence that matches the predicate.
-     * 
-     * @param that
-     *            the source Observable
-     * @param predicate
-     *            a predicate function to evaluate for elements in the sequence.
-     * @return the last element in the observable sequence.
-     */
-    public static <T> T last(final Observable<T> that, final Func1<T, Boolean> predicate) {
-        return last(that.filter(predicate));
-    }
-
-    /**
-     * Returns the last element of an observable sequence that matches the predicate.
-     * 
-     * @param that
-     *            the source Observable
-     * @param predicate
-     *            a predicate function to evaluate for elements in the sequence.
-     * @return the last element in the observable sequence.
-     */
-    public static <T> T last(final Observable<T> that, final Object predicate) {
-        return last(that.filter(predicate));
-    }
-
-    /**
-     * Returns the last element of an observable sequence, or a default value if no value is found.
-     * 
-     * @param source
-     *            the source observable.
-     * @param defaultValue
-     *            a default value that would be returned if observable is empty.
-     * @param <T>
-     *            the type of source.
-     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
-     */
-    public static <T> T lastOrDefault(Observable<T> source, T defaultValue) {
-        boolean found = false;
-        T result = null;
-
-        for (T value : source.toIterable()) {
-            found = true;
-            result = value;
-        }
-
-        if (!found) {
-            return defaultValue;
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the last element of an observable sequence that matches the predicate, or a default value if no value is found.
-     * 
-     * @param source
-     *            the source observable.
-     * @param defaultValue
-     *            a default value that would be returned if observable is empty.
-     * @param predicate
-     *            a predicate function to evaluate for elements in the sequence.
-     * @param <T>
-     *            the type of source.
-     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
-     */
-    public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Func1<T, Boolean> predicate) {
-        return lastOrDefault(source.filter(predicate), defaultValue);
-    }
-
-    /**
-     * Returns the last element of an observable sequence that matches the predicate, or a default value if no value is found.
-     * 
-     * @param source
-     *            the source observable.
-     * @param defaultValue
-     *            a default value that would be returned if observable is empty.
-     * @param predicate
-     *            a predicate function to evaluate for elements in the sequence.
-     * @param <T>
-     *            the type of source.
-     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
-     */
-    public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Object predicate) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(predicate);
-
-        return lastOrDefault(source, defaultValue, new Func1<T, Boolean>() {
-            @Override
-            public Boolean call(T args) {
-                return (Boolean) _f.call(args);
-            }
-        });
     }
 
     /**
@@ -2106,19 +1924,6 @@ public class Observable<T> {
     }
 
     /**
-     * Return a Future representing a single value of the Observable.
-     * <p>
-     * This will throw an exception if the Observable emits more than 1 value. If more than 1 are expected then use <code>toList().toFuture()</code>.
-     * 
-     * @param that
-     *            the source Observable
-     * @return a Future that expects a single item emitted by the source Observable
-     */
-    public static <T> Future<T> toFuture(final Observable<T> that) {
-        return OperationToFuture.toFuture(that);
-    }
-
-    /**
      * Returns an Observable that emits a single item, a list composed of all the items emitted by
      * the source Observable.
      * <p>
@@ -2142,64 +1947,6 @@ public class Observable<T> {
     }
 
     /**
-     * Converts an observable sequence to an Iterable.
-     * 
-     * @param that
-     *            the source Observable
-     * @return Observable converted to Iterable.
-     */
-    public static <T> Iterable<T> toIterable(final Observable<T> that) {
-
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return getIterator(that);
-            }
-        };
-    }
-
-    /**
-     * Returns an iterator that iterates all values of the observable.
-     * 
-     * @param that
-     *            an observable sequence to get an iterator for.
-     * @param <T>
-     *            the type of source.
-     * @return the iterator that could be used to iterate over the elements of the observable.
-     */
-    public static <T> Iterator<T> getIterator(Observable<T> that) {
-        return OperationToIterator.toIterator(that);
-    }
-
-    /**
-     * Samples the next value (blocking without buffering) from in an observable sequence.
-     * 
-     * @param items
-     *            the source observable sequence.
-     * @param <T>
-     *            the type of observable.
-     * @return iterable that blocks upon each iteration until the next element in the observable source sequence becomes available.
-     */
-    public static <T> Iterable<T> next(Observable<T> items) {
-        return OperationNext.next(items);
-    }
-
-    /**
-     * Samples the most recent value in an observable sequence.
-     * 
-     * @param source
-     *            the source observable sequence.
-     * @param <T>
-     *            the type of observable.
-     * @param initialValue
-     *            the initial value that will be yielded by the enumerable sequence if no element has been sampled yet.
-     * @return the iterable that returns the last sampled element upon each iteration.
-     */
-    public static <T> Iterable<T> mostRecent(Observable<T> source, T initialValue) {
-        return OperationMostRecent.mostRecent(source, initialValue);
-    }
-
-    /**
      * Returns a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
      * 
      * @param source
@@ -2214,127 +1961,6 @@ public class Observable<T> {
      */
     public static <T, R> ConnectableObservable<R> multicast(Observable<T> source, final Subject<T, R> subject) {
         return OperationMulticast.multicast(source, subject);
-    }
-
-    /**
-     * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
-     * 
-     * @param that
-     *            the source Observable
-     * @return The single element in the observable sequence.
-     * @throws IllegalStateException
-     *             if there is not exactly one element in the observable sequence
-     */
-    public static <T> T single(Observable<T> that) {
-        return singleOrDefault(that, false, null);
-    }
-
-    /**
-     * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
-     * 
-     * @param that
-     *            the source Observable
-     * @param predicate
-     *            A predicate function to evaluate for elements in the sequence.
-     * @return The single element in the observable sequence.
-     * @throws IllegalStateException
-     *             if there is not exactly one element in the observable sequence that matches the predicate
-     */
-    public static <T> T single(Observable<T> that, Func1<T, Boolean> predicate) {
-        return single(that.filter(predicate));
-    }
-
-    /**
-     * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
-     * 
-     * @param that
-     *            the source Observable
-     * @param predicate
-     *            A predicate function to evaluate for elements in the sequence.
-     * @return The single element in the observable sequence.
-     * @throws IllegalStateException
-     *             if there is not exactly one element in the observable sequence that matches the predicate
-     */
-    public static <T> T single(Observable<T> that, Object predicate) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(predicate);
-
-        return single(that, new Func1<T, Boolean>() {
-            @Override
-            public Boolean call(T t) {
-                return (Boolean) _f.call(t);
-            }
-        });
-    }
-
-    /**
-     * Returns the only element of an observable sequence, or a default value if the observable sequence is empty.
-     * 
-     * @param that
-     *            the source Observable
-     * @param defaultValue
-     *            default value for a sequence.
-     * @return The single element in the observable sequence, or a default value if no value is found.
-     */
-    public static <T> T singleOrDefault(Observable<T> that, T defaultValue) {
-        return singleOrDefault(that, true, defaultValue);
-    }
-
-    /**
-     * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
-     * 
-     * @param that
-     *            the source Observable
-     * @param defaultValue
-     *            default value for a sequence.
-     * @param predicate
-     *            A predicate function to evaluate for elements in the sequence.
-     * @return The single element in the observable sequence, or a default value if no value is found.
-     */
-    public static <T> T singleOrDefault(Observable<T> that, T defaultValue, Func1<T, Boolean> predicate) {
-        return singleOrDefault(that.filter(predicate), defaultValue);
-    }
-
-    /**
-     * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
-     * 
-     * @param that
-     *            the source Observable
-     * @param defaultValue
-     *            default value for a sequence.
-     * @param predicate
-     *            A predicate function to evaluate for elements in the sequence.
-     * @return The single element in the observable sequence, or a default value if no value is found.
-     */
-    public static <T> T singleOrDefault(Observable<T> that, T defaultValue, Object predicate) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(predicate);
-
-        return singleOrDefault(that, defaultValue, new Func1<T, Boolean>() {
-            @Override
-            public Boolean call(T t) {
-                return (Boolean) _f.call(t);
-            }
-        });
-    }
-
-    private static <T> T singleOrDefault(Observable<T> that, boolean hasDefault, T defaultVal) {
-        Iterator<T> it = that.toIterable().iterator();
-
-        if (!it.hasNext()) {
-            if (hasDefault) {
-                return defaultVal;
-            }
-            throw new IllegalStateException("Expected single entry. Actually empty stream.");
-        }
-
-        T result = it.next();
-
-        if (it.hasNext()) {
-            throw new IllegalStateException("Expected single entry. Actually more than one entry.");
-        }
-
-        return result;
     }
 
     /**
@@ -2370,8 +1996,28 @@ public class Observable<T> {
      *            the type of of object that the future's returns and the type emitted by the resulting
      *            Observable
      * @return an Observable that emits the item from the source Future
+     * @deprecated Replaced by {@link #from(Future)}
      */
     public static <T> Observable<T> toObservable(Future<T> future) {
+        return create(OperationToObservableFuture.toObservableFuture(future));
+    }
+
+    /**
+     * Converts an Future to an Observable sequence.
+     * 
+     * Any object that supports the {@link Future} interface can be converted into an Observable that emits
+     * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
+     * <p>
+     * This is blocking so the Subscription returned when calling {@link #subscribe(Observer)} does nothing.
+     * 
+     * @param future
+     *            the source {@link Future}
+     * @param <T>
+     *            the type of of object that the future's returns and the type emitted by the resulting
+     *            Observable
+     * @return an Observable that emits the item from the source Future
+     */
+    public static <T> Observable<T> from(Future<T> future) {
         return create(OperationToObservableFuture.toObservableFuture(future));
     }
 
@@ -2394,8 +2040,33 @@ public class Observable<T> {
      *            the type of of object that the future's returns and the type emitted by the resulting
      *            Observable
      * @return an Observable that emits the item from the source Future
+     * @deprecated Replaced by {@link #from(Future, long, TimeUnit)}
      */
     public static <T> Observable<T> toObservable(Future<T> future, long timeout, TimeUnit unit) {
+        return create(OperationToObservableFuture.toObservableFuture(future, timeout, unit));
+    }
+
+    /**
+     * Converts an Future to an Observable sequence.
+     * 
+     * Any object that supports the {@link Future} interface can be converted into an Observable that emits
+     * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
+     * The subscribe method on this synchronously so the Subscription returned doesn't nothing.
+     * <p>
+     * This is blocking so the Subscription returned when calling {@link #subscribe(Observer)} does nothing.
+     * 
+     * @param future
+     *            the source {@link Future}
+     * @param timeout
+     *            the maximum time to wait
+     * @param unit
+     *            the time unit of the time argument
+     * @param <T>
+     *            the type of of object that the future's returns and the type emitted by the resulting
+     *            Observable
+     * @return an Observable that emits the item from the source Future
+     */
+    public static <T> Observable<T> from(Future<T> future, long timeout, TimeUnit unit) {
         return create(OperationToObservableFuture.toObservableFuture(future, timeout, unit));
     }
 
@@ -2413,6 +2084,7 @@ public class Observable<T> {
      *            the type of items in the Array, and the type of items emitted by the resulting
      *            Observable
      * @return an Observable that emits each item in the source Array
+     * @deprecated Use {@link #from(Object...)}
      */
     public static <T> Observable<T> toObservable(T... items) {
         return toObservable(Arrays.asList(items));
@@ -2843,82 +2515,6 @@ public class Observable<T> {
      */
     public Observable<T> where(Func1<T, Boolean> predicate) {
         return where(this, predicate);
-    }
-
-    /**
-     * Returns the last element of an observable sequence with a specified source.
-     * 
-     * @return the last element in the observable sequence.
-     */
-    public T last() {
-        return last(this);
-    }
-
-    /**
-     * Returns the last element of an observable sequence that matches the predicate.
-     * 
-     * @param predicate
-     *            a predicate function to evaluate for elements in the sequence.
-     * @return the last element in the observable sequence.
-     */
-    public T last(final Func1<T, Boolean> predicate) {
-        return last(this, predicate);
-    }
-
-    /**
-     * Returns the last element of an observable sequence that matches the predicate.
-     * 
-     * @param predicate
-     *            a predicate function to evaluate for elements in the sequence.
-     * @return the last element in the observable sequence.
-     */
-    public T last(final Object predicate) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(predicate);
-
-        return last(this, new Func1<T, Boolean>() {
-            @Override
-            public Boolean call(T args) {
-                return (Boolean) _f.call(args);
-            }
-        });
-    }
-
-    /**
-     * Returns the last element, or a default value if no value is found.
-     * 
-     * @param defaultValue
-     *            a default value that would be returned if observable is empty.
-     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
-     */
-    public T lastOrDefault(T defaultValue) {
-        return lastOrDefault(this, defaultValue);
-    }
-
-    /**
-     * Returns the last element that matches the predicate, or a default value if no value is found.
-     * 
-     * @param defaultValue
-     *            a default value that would be returned if observable is empty.
-     * @param predicate
-     *            a predicate function to evaluate for elements in the sequence.
-     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
-     */
-    public T lastOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
-        return lastOrDefault(this, defaultValue, predicate);
-    }
-
-    /**
-     * Returns the last element that matches the predicate, or a default value if no value is found.
-     * 
-     * @param defaultValue
-     *            a default value that would be returned if observable is empty.
-     * @param predicate
-     *            a predicate function to evaluate for elements in the sequence.
-     * @return the last element of an observable sequence that matches the predicate, or a default value if no value is found.
-     */
-    public T lastOrDefault(T defaultValue, Object predicate) {
-        return lastOrDefault(this, defaultValue, predicate);
     }
 
     /**
@@ -3562,17 +3158,6 @@ public class Observable<T> {
     }
 
     /**
-     * Return a Future representing a single value of the Observable.
-     * <p>
-     * This will throw an exception if the Observable emits more than 1 value. If more than 1 are expected then use <code>toList().toFuture()</code>.
-     * 
-     * @return a Future that expects a single item emitted by the source Observable
-     */
-    public Future<T> toFuture() {
-        return toFuture(this);
-    }
-
-    /**
      * Returns an Observable that emits a single item, a list composed of all the items emitted by
      * the source Observable.
      * 
@@ -3629,15 +3214,6 @@ public class Observable<T> {
         return toSortedList(this, sortFunction);
     }
 
-    /**
-     * Converts an observable sequence to an Iterable.
-     * 
-     * @return Observable converted to Iterable.
-     */
-    public Iterable<T> toIterable() {
-        return toIterable(this);
-    }
-
     @SuppressWarnings("unchecked")
     public Observable<T> startWith(T... values) {
         return concat(Observable.<T> from(values), this);
@@ -3673,33 +3249,8 @@ public class Observable<T> {
         return groupBy(this, keySelector);
     }
 
-    /**
-     * Returns an iterator that iterates all values of the observable.
-     * 
-     * @return the iterator that could be used to iterate over the elements of the observable.
-     */
-    public Iterator<T> getIterator() {
-        return getIterator(this);
-    }
-
-    /**
-     * Samples the next value (blocking without buffering) from in an observable sequence.
-     * 
-     * @return iterable that blocks upon each iteration until the next element in the observable source sequence becomes available.
-     */
-    public Iterable<T> next() {
-        return next(this);
-    }
-
-    /**
-     * Samples the most recent value in an observable sequence.
-     * 
-     * @param initialValue
-     *            the initial value that will be yielded by the enumerable sequence if no element has been sampled yet.
-     * @return the iterable that returns the last sampled element upon each iteration.
-     */
-    public Iterable<T> mostRecent(T initialValue) {
-        return mostRecent(this, initialValue);
+    public BlockingObservable<T> toBlockingObservable() {
+        return BlockingObservable.from(this);
     }
 
     /**
@@ -3803,182 +3354,6 @@ public class Observable<T> {
         }
 
         @Test
-        public void testToIterable() {
-            Observable<String> obs = toObservable("one", "two", "three");
-
-            Iterator<String> it = obs.toIterable().iterator();
-
-            assertEquals(true, it.hasNext());
-            assertEquals("one", it.next());
-
-            assertEquals(true, it.hasNext());
-            assertEquals("two", it.next());
-
-            assertEquals(true, it.hasNext());
-            assertEquals("three", it.next());
-
-            assertEquals(false, it.hasNext());
-
-        }
-
-        @Test(expected = TestException.class)
-        public void testToIterableWithException() {
-            Observable<String> obs = create(new Func1<Observer<String>, Subscription>() {
-
-                @Override
-                public Subscription call(Observer<String> observer) {
-                    observer.onNext("one");
-                    observer.onError(new TestException());
-                    return Subscriptions.empty();
-                }
-            });
-
-            Iterator<String> it = obs.toIterable().iterator();
-
-            assertEquals(true, it.hasNext());
-            assertEquals("one", it.next());
-
-            assertEquals(true, it.hasNext());
-            it.next();
-
-        }
-
-        @Test
-        public void testLastOrDefault1() {
-            Observable<String> observable = toObservable("one", "two", "three");
-            assertEquals("three", observable.lastOrDefault("default"));
-        }
-
-        @Test
-        public void testLastOrDefault2() {
-            Observable<String> observable = toObservable();
-            assertEquals("default", observable.lastOrDefault("default"));
-        }
-
-        @Test
-        public void testLastOrDefault() {
-            Observable<Integer> observable = toObservable(1, 0, -1);
-            int last = observable.lastOrDefault(-100, new Func1<Integer, Boolean>() {
-                @Override
-                public Boolean call(Integer args) {
-                    return args >= 0;
-                }
-            });
-            assertEquals(0, last);
-        }
-
-        @Test
-        public void testLastOrDefaultWrongPredicate() {
-            Observable<Integer> observable = toObservable(-1, -2, -3);
-            int last = observable.lastOrDefault(0, new Func1<Integer, Boolean>() {
-                @Override
-                public Boolean call(Integer args) {
-                    return args >= 0;
-                }
-            });
-            assertEquals(0, last);
-        }
-
-        @Test
-        public void testLastOrDefaultWithPredicate() {
-            Observable<Integer> observable = toObservable(1, 0, -1);
-            int last = observable.lastOrDefault(0, new Func1<Integer, Boolean>() {
-                @Override
-                public Boolean call(Integer args) {
-                    return args < 0;
-                }
-            });
-
-            assertEquals(-1, last);
-        }
-
-        public void testSingle() {
-            Observable<String> observable = toObservable("one");
-            assertEquals("one", observable.single());
-        }
-
-        @Test
-        public void testSingleDefault() {
-            Observable<String> observable = toObservable();
-            assertEquals("default", observable.singleOrDefault("default"));
-        }
-
-        @Test(expected = IllegalStateException.class)
-        public void testSingleDefaultWithMoreThanOne() {
-            Observable<String> observable = toObservable("one", "two", "three");
-            observable.singleOrDefault("default");
-        }
-
-        @Test
-        public void testSingleWithPredicateDefault() {
-            Observable<String> observable = toObservable("one", "two", "four");
-            assertEquals("four", observable.single(new Func1<String, Boolean>() {
-                @Override
-                public Boolean call(String s) {
-                    return s.length() == 4;
-                }
-            }));
-        }
-
-        @Test(expected = IllegalStateException.class)
-        public void testSingleWrong() {
-            Observable<Integer> observable = toObservable(1, 2);
-            observable.single();
-        }
-
-        @Test(expected = IllegalStateException.class)
-        public void testSingleWrongPredicate() {
-            Observable<Integer> observable = toObservable(-1);
-            observable.single(new Func1<Integer, Boolean>() {
-                @Override
-                public Boolean call(Integer args) {
-                    return args > 0;
-                }
-            });
-        }
-
-        @Test
-        public void testSingleDefaultPredicateMatchesNothing() {
-            Observable<String> observable = toObservable("one", "two");
-            String result = observable.singleOrDefault("default", new Func1<String, Boolean>() {
-                @Override
-                public Boolean call(String args) {
-                    return args.length() == 4;
-                }
-            });
-            assertEquals("default", result);
-        }
-
-        @Test(expected = IllegalStateException.class)
-        public void testSingleDefaultPredicateMatchesMoreThanOne() {
-            toObservable("one", "two").singleOrDefault("default", new Func1<String, Boolean>() {
-                @Override
-                public Boolean call(String args) {
-                    return args.length() == 3;
-                }
-            });
-        }
-
-        @Test
-        public void testLast() {
-            Observable<String> obs = Observable.toObservable("one", "two", "three");
-
-            assertEquals("three", obs.last());
-        }
-
-        @Test
-        public void testLastWithPredicate() {
-            Observable<String> obs = Observable.toObservable("one", "two", "three");
-
-            assertEquals("two", obs.last(new Func1<String, Boolean>() {
-                @Override
-                public Boolean call(String s) {
-                    return s.length() == 3;
-                }
-            }));
-        }
-
-        @Test
         public void testOnSubscribeFails() {
             @SuppressWarnings("unchecked")
             Observer<String> observer = mock(Observer.class);
@@ -3995,13 +3370,6 @@ public class Observable<T> {
             verify(observer, times(0)).onNext(anyString());
             verify(observer, times(0)).onCompleted();
             verify(observer, times(1)).onError(re);
-        }
-
-        @Test
-        public void testLastEmptyObservable() {
-            Observable<String> obs = Observable.toObservable();
-
-            assertNull(obs.last());
         }
 
         @Test
@@ -4375,10 +3743,6 @@ public class Observable<T> {
                 fail("subscriptions did not receive values");
             }
             assertEquals(1, counter.get());
-        }
-
-        private static class TestException extends RuntimeException {
-            private static final long serialVersionUID = 1L;
         }
 
     }

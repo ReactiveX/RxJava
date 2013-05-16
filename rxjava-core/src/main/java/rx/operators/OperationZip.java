@@ -30,8 +30,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.AtomicObservableSubscription;
-import rx.util.SynchronizedObserver;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 import rx.util.functions.Func3;
@@ -670,7 +668,7 @@ public final class OperationZip {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = Observable.create(zip(Observable.toObservable("one", "two"), Observable.toObservable(2, 3, 4), zipr));
+            Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2, 3, 4), zipr));
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -689,7 +687,7 @@ public final class OperationZip {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = Observable.create(zip(Observable.toObservable("one", "two"), Observable.toObservable(2), Observable.toObservable(new int[] { 4, 5, 6 }), zipr));
+            Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), zipr));
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -705,7 +703,7 @@ public final class OperationZip {
             @SuppressWarnings("unchecked")
             Observer<Integer> aObserver = mock(Observer.class);
 
-            Observable<Integer> w = Observable.create(zip(Observable.toObservable(10, 20, 30), Observable.toObservable(0, 1, 2), zipr));
+            Observable<Integer> w = Observable.create(zip(Observable.from(10, 20, 30), Observable.from(0, 1, 2), zipr));
             w.subscribe(aObserver);
 
             verify(aObserver, times(1)).onError(any(Exception.class));

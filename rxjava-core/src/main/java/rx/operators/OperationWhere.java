@@ -38,7 +38,7 @@ public final class OperationWhere {
 
         @Test
         public void testWhere() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> observable = Observable.create(where(w, new Func1<String, Boolean>() {
 
                 @Override
