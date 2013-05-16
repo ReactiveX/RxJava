@@ -3,7 +3,9 @@ package rx.observables;
 import static org.junit.Assert.*;
 
 import java.util.Iterator;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,11 +15,15 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.operators.AtomicObservableSubscription;
+import rx.operators.AtomicObserver;
 import rx.operators.OperationMostRecent;
 import rx.operators.OperationNext;
 import rx.operators.OperationToFuture;
 import rx.operators.OperationToIterator;
+import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.FuncN;
 import rx.util.functions.Functions;
@@ -309,6 +315,115 @@ public class BlockingObservable<T> extends Observable<T> {
         super(onSubscribe);
     }
 
+    /**
+     * Used for protecting against errors being thrown from Observer implementations and ensuring onNext/onError/onCompleted contract compliance.
+     * <p>
+     * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
+     */
+    private Subscription protectivelyWrapAndSubscribe(Observer<T> o) {
+        AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        return subscription.wrap(subscribe(new AtomicObserver<T>(subscription, o)));
+    }
+    
+    /**
+     * Invokes an action for each element in the observable sequence, and blocks until the sequence is terminated.
+     * <p>
+     * NOTE: This will block even if the Observable is asynchronous.
+     * <p>
+     * This is similar to {@link #subscribe(Observer)} but blocks. Because it blocks it does not need the {@link Observer#onCompleted()} or {@link Observer#onError(Exception)} methods.
+     * 
+     * @param onNext
+     *            {@link Action1}
+     * @throws RuntimeException
+     *             if error occurs
+     */
+    public void forEach(final Action1<T> onNext) {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicReference<Exception> exceptionFromOnError = new AtomicReference<Exception>();
+
+        /**
+         * Wrapping since raw functions provided by the user are being invoked.
+         * 
+         * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
+         */
+        protectivelyWrapAndSubscribe(new Observer<T>() {
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                /*
+                 * If we receive an onError event we set the reference on the outer thread
+                 * so we can git it and throw after the latch.await().
+                 * 
+                 * We do this instead of throwing directly since this may be on a different thread and the latch is still waiting.
+                 */
+                exceptionFromOnError.set(e);
+                latch.countDown();
+            }
+
+            @Override
+            public void onNext(T args) {
+                onNext.call(args);
+            }
+        });
+        // block until the subscription completes and then return
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            // set the interrupted flag again so callers can still get it
+            // for more information see https://github.com/Netflix/RxJava/pull/147#issuecomment-13624780
+            Thread.currentThread().interrupt();
+            // using Runtime so it is not checked
+            throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
+        }
+
+        if (exceptionFromOnError.get() != null) {
+            if (exceptionFromOnError.get() instanceof RuntimeException) {
+                throw (RuntimeException) exceptionFromOnError.get();
+            } else {
+                throw new RuntimeException(exceptionFromOnError.get());
+            }
+        }
+    }
+
+    /**
+     * Invokes an action for each element in the observable sequence, and blocks until the sequence is terminated.
+     * <p>
+     * NOTE: This will block even if the Observable is asynchronous.
+     * <p>
+     * This is similar to {@link #subscribe(Observer)} but blocks. Because it blocks it does not need the {@link Observer#onCompleted()} or {@link Observer#onError(Exception)} methods.
+     * 
+     * @param o
+     *            onNext {@link Action1 action}
+     * @throws RuntimeException
+     *             if error occurs
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void forEach(final Object o) {
+        if (o instanceof Action1) {
+            // in case a dynamic language is not correctly handling the overloaded methods and we receive an Action1 just forward to the correct method.
+            forEach((Action1) o);
+        }
+
+        // lookup and memoize onNext
+        if (o == null) {
+            throw new RuntimeException("onNext must be implemented");
+        }
+        final FuncN onNext = Functions.from(o);
+
+        forEach(new Action1() {
+
+            @Override
+            public void call(Object args) {
+                onNext.call(args);
+            }
+
+        });
+    }
+    
     /**
      * Returns an iterator that iterates all values of the observable.
      * 
@@ -730,6 +845,39 @@ public class BlockingObservable<T> extends Observable<T> {
             assertEquals(true, it.hasNext());
             it.next();
 
+        }
+        
+        @Test
+        public void testForEachWithError() {
+            try {
+                BlockingObservable.from(Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                    @Override
+                    public Subscription call(final Observer<String> observer) {
+                        final BooleanSubscription subscription = new BooleanSubscription();
+                        new Thread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                observer.onNext("one");
+                                observer.onNext("two");
+                                observer.onNext("three");
+                                observer.onCompleted();
+                            }
+                        }).start();
+                        return subscription;
+                    }
+                })).forEach(new Action1<String>() {
+
+                    @Override
+                    public void call(String t1) {
+                        throw new RuntimeException("fail");
+                    }
+                });
+                fail("we expect an exception to be thrown");
+            } catch (Exception e) {
+                // do nothing as we expect this
+            }
         }
 
         private static class TestException extends RuntimeException {
