@@ -565,7 +565,7 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test
         public void testLastOrDefault() {
-            BlockingObservable<Integer> observable = BlockingObservable.from(toObservable(1, 0, -1));
+            BlockingObservable<Integer> observable = BlockingObservable.from(from(1, 0, -1));
             int last = observable.lastOrDefault(-100, new Func1<Integer, Boolean>() {
                 @Override
                 public Boolean call(Integer args) {
@@ -577,19 +577,19 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test
         public void testLastOrDefault1() {
-            BlockingObservable<String> observable = BlockingObservable.from(toObservable("one", "two", "three"));
+            BlockingObservable<String> observable = BlockingObservable.from(from("one", "two", "three"));
             assertEquals("three", observable.lastOrDefault("default"));
         }
 
         @Test
         public void testLastOrDefault2() {
-            BlockingObservable<Object> observable = BlockingObservable.from(toObservable());
+            BlockingObservable<Object> observable = BlockingObservable.from(from());
             assertEquals("default", observable.lastOrDefault("default"));
         }
 
         @Test
         public void testLastOrDefaultWithPredicate() {
-            BlockingObservable<Integer> observable = BlockingObservable.from(toObservable(1, 0, -1));
+            BlockingObservable<Integer> observable = BlockingObservable.from(from(1, 0, -1));
             int last = observable.lastOrDefault(0, new Func1<Integer, Boolean>() {
                 @Override
                 public Boolean call(Integer args) {
@@ -602,7 +602,7 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test
         public void testLastOrDefaultWrongPredicate() {
-            BlockingObservable<Integer> observable = BlockingObservable.from(toObservable(-1, -2, -3));
+            BlockingObservable<Integer> observable = BlockingObservable.from(from(-1, -2, -3));
             int last = observable.lastOrDefault(0, new Func1<Integer, Boolean>() {
                 @Override
                 public Boolean call(Integer args) {
@@ -625,19 +625,19 @@ public class BlockingObservable<T> extends Observable<T> {
         }
 
         public void testSingle() {
-            BlockingObservable<String> observable = BlockingObservable.from(toObservable("one"));
+            BlockingObservable<String> observable = BlockingObservable.from(from("one"));
             assertEquals("one", observable.single());
         }
 
         @Test
         public void testSingleDefault() {
-            BlockingObservable<Object> observable = BlockingObservable.from(toObservable());
+            BlockingObservable<Object> observable = BlockingObservable.from(from());
             assertEquals("default", observable.singleOrDefault("default"));
         }
 
         @Test(expected = IllegalStateException.class)
         public void testSingleDefaultPredicateMatchesMoreThanOne() {
-            BlockingObservable.from(toObservable("one", "two")).singleOrDefault("default", new Func1<String, Boolean>() {
+            BlockingObservable.from(from("one", "two")).singleOrDefault("default", new Func1<String, Boolean>() {
                 @Override
                 public Boolean call(String args) {
                     return args.length() == 3;
@@ -647,7 +647,7 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test
         public void testSingleDefaultPredicateMatchesNothing() {
-            BlockingObservable<String> observable = BlockingObservable.from(toObservable("one", "two"));
+            BlockingObservable<String> observable = BlockingObservable.from(from("one", "two"));
             String result = observable.singleOrDefault("default", new Func1<String, Boolean>() {
                 @Override
                 public Boolean call(String args) {
@@ -659,13 +659,13 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test(expected = IllegalStateException.class)
         public void testSingleDefaultWithMoreThanOne() {
-            BlockingObservable<String> observable = BlockingObservable.from(toObservable("one", "two", "three"));
+            BlockingObservable<String> observable = BlockingObservable.from(from("one", "two", "three"));
             observable.singleOrDefault("default");
         }
 
         @Test
         public void testSingleWithPredicateDefault() {
-            BlockingObservable<String> observable = BlockingObservable.from(toObservable("one", "two", "four"));
+            BlockingObservable<String> observable = BlockingObservable.from(from("one", "two", "four"));
             assertEquals("four", observable.single(new Func1<String, Boolean>() {
                 @Override
                 public Boolean call(String s) {
@@ -676,13 +676,13 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test(expected = IllegalStateException.class)
         public void testSingleWrong() {
-            BlockingObservable<Integer> observable = BlockingObservable.from(toObservable(1, 2));
+            BlockingObservable<Integer> observable = BlockingObservable.from(from(1, 2));
             observable.single();
         }
 
         @Test(expected = IllegalStateException.class)
         public void testSingleWrongPredicate() {
-            BlockingObservable<Integer> observable = BlockingObservable.from(toObservable(-1));
+            BlockingObservable<Integer> observable = BlockingObservable.from(from(-1));
             observable.single(new Func1<Integer, Boolean>() {
                 @Override
                 public Boolean call(Integer args) {
@@ -693,7 +693,7 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test
         public void testToIterable() {
-            BlockingObservable<String> obs = BlockingObservable.from(toObservable("one", "two", "three"));
+            BlockingObservable<String> obs = BlockingObservable.from(from("one", "two", "three"));
 
             Iterator<String> it = obs.toIterable().iterator();
 
