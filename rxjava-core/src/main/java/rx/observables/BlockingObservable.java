@@ -44,7 +44,7 @@ public class BlockingObservable<T> extends Observable<T> {
     /**
      * Returns an iterator that iterates all values of the observable.
      * 
-     * @param that
+     * @param source
      *            an observable sequence to get an iterator for.
      * @param <T>
      *            the type of source.
@@ -57,7 +57,7 @@ public class BlockingObservable<T> extends Observable<T> {
     /**
      * Returns the last element of an observable sequence with a specified source.
      * 
-     * @param that
+     * @param source
      *            the source Observable
      * @return the last element in the observable sequence.
      */
@@ -68,7 +68,7 @@ public class BlockingObservable<T> extends Observable<T> {
     /**
      * Returns the last element of an observable sequence that matches the predicate.
      * 
-     * @param that
+     * @param source
      *            the source Observable
      * @param predicate
      *            a predicate function to evaluate for elements in the sequence.
@@ -81,7 +81,7 @@ public class BlockingObservable<T> extends Observable<T> {
     /**
      * Returns the last element of an observable sequence that matches the predicate.
      * 
-     * @param that
+     * @param source
      *            the source Observable
      * @param predicate
      *            a predicate function to evaluate for elements in the sequence.
@@ -198,7 +198,7 @@ public class BlockingObservable<T> extends Observable<T> {
     /**
      * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
      * 
-     * @param that
+     * @param source
      *            the source Observable
      * @return The single element in the observable sequence.
      * @throws IllegalStateException
@@ -211,7 +211,7 @@ public class BlockingObservable<T> extends Observable<T> {
     /**
      * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
      * 
-     * @param that
+     * @param source
      *            the source Observable
      * @param predicate
      *            A predicate function to evaluate for elements in the sequence.
@@ -226,7 +226,7 @@ public class BlockingObservable<T> extends Observable<T> {
     /**
      * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
      * 
-     * @param that
+     * @param source
      *            the source Observable
      * @param predicate
      *            A predicate function to evaluate for elements in the sequence.
@@ -241,7 +241,7 @@ public class BlockingObservable<T> extends Observable<T> {
     /**
      * Returns the only element of an observable sequence, or a default value if the observable sequence is empty.
      * 
-     * @param that
+     * @param source
      *            the source Observable
      * @param defaultValue
      *            default value for a sequence.
@@ -254,7 +254,7 @@ public class BlockingObservable<T> extends Observable<T> {
     /**
      * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
      * 
-     * @param that
+     * @param source
      *            the source Observable
      * @param defaultValue
      *            default value for a sequence.
@@ -269,7 +269,7 @@ public class BlockingObservable<T> extends Observable<T> {
     /**
      * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
      * 
-     * @param that
+     * @param source
      *            the source Observable
      * @param defaultValue
      *            default value for a sequence.
@@ -286,7 +286,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * <p>
      * This will throw an exception if the Observable emits more than 1 value. If more than 1 are expected then use <code>toList().toFuture()</code>.
      * 
-     * @param that
+     * @param source
      *            the source Observable
      * @return a Future that expects a single item emitted by the source Observable
      */
@@ -297,7 +297,7 @@ public class BlockingObservable<T> extends Observable<T> {
     /**
      * Converts an observable sequence to an Iterable.
      * 
-     * @param that
+     * @param source
      *            the source Observable
      * @return Observable converted to Iterable.
      */
