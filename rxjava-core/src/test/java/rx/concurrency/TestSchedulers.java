@@ -53,7 +53,7 @@ public class TestSchedulers {
             }
         });
 
-        o.subscribeOn(Schedulers.threadPoolForComputation()).forEach(new Action1<String>() {
+        o.subscribeOn(Schedulers.threadPoolForComputation()).toBlockingObservable().forEach(new Action1<String>() {
 
             @Override
             public void call(String t) {
@@ -77,7 +77,7 @@ public class TestSchedulers {
             }
         });
 
-        o.subscribeOn(Schedulers.threadPoolForIO()).forEach(new Action1<String>() {
+        o.subscribeOn(Schedulers.threadPoolForIO()).toBlockingObservable().forEach(new Action1<String>() {
 
             @Override
             public void call(String t) {
@@ -103,7 +103,7 @@ public class TestSchedulers {
             }
         });
 
-        o.forEach(new Action1<String>() {
+        o.toBlockingObservable().forEach(new Action1<String>() {
 
             @Override
             public void call(String t) {
@@ -129,7 +129,7 @@ public class TestSchedulers {
             }
         });
 
-        o.forEach(new Action1<String>() {
+        o.toBlockingObservable().forEach(new Action1<String>() {
 
             @Override
             public void call(String t) {
@@ -155,7 +155,7 @@ public class TestSchedulers {
             }
         });
 
-        o.forEach(new Action1<String>() {
+        o.toBlockingObservable().forEach(new Action1<String>() {
 
             @Override
             public void call(String t) {
@@ -182,7 +182,7 @@ public class TestSchedulers {
             }
         });
 
-        o.forEach(new Action1<String>() {
+        o.toBlockingObservable().forEach(new Action1<String>() {
 
             @Override
             public void call(String t) {
@@ -272,7 +272,7 @@ public class TestSchedulers {
         });
 
         final AtomicInteger lastValue = new AtomicInteger();
-        obs.forEach(new Action1<Integer>() {
+        obs.toBlockingObservable().forEach(new Action1<Integer>() {
 
             @Override
             public void call(Integer v) {
