@@ -72,8 +72,8 @@ def class ObservableTests {
 
     @Test
     public void testMap1() {
-        new TestFactory().getObservable().map({v -> 'say' + v}).subscribe({ result -> a.received(result)});
-        verify(a, times(1)).received("sayhello_1");
+        Observable.from(1).map({v -> 'hello_' + v}).subscribe({ result -> a.received(result)});
+        verify(a, times(1)).received("hello_1");
     }
 
     @Test
