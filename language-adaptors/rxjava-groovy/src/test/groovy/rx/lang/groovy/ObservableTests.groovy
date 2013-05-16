@@ -228,7 +228,7 @@ def class ObservableTests {
     
     @Test
     public void testForEach() {
-        Observable.create(new AsyncObservable()).forEach({ result -> a.received(result)});
+        Observable.create(new AsyncObservable()).toBlockingObservable().forEach({ result -> a.received(result)});
         verify(a, times(1)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(1)).received(3);
@@ -237,7 +237,7 @@ def class ObservableTests {
     @Test
     public void testForEachWithError() {
         try {
-            Observable.create(new AsyncObservable()).forEach({ result -> throw new RuntimeException('err')});
+            Observable.create(new AsyncObservable()).toBlockingObservable().forEach({ result -> throw new RuntimeException('err')});
             fail("we expect an exception to be thrown");
         }catch(Exception e) {
             // do nothing as we expect this
