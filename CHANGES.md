@@ -4,7 +4,7 @@
 
 This release includes breaking changes that move all blocking operators (such as `single`, `last`, `forEach`) to `BlockingObservable`.
 
-This means `Observable` has only non-blocking operators on it. The blocking operators can now be access via `.toBlockingObservable()` or `BlockingObservable.from(observable)`.
+This means `Observable` has only non-blocking operators on it. The blocking operators can now be accessed via `.toBlockingObservable()` or `BlockingObservable.from(observable)`.
 
 Notes and link to the discussion of this change can be found at https://github.com/Netflix/RxJava/pull/272.
 
