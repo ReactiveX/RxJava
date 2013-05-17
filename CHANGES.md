@@ -1,5 +1,26 @@
 # RxJava Releases #
 
+### Version 0.9.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.9.0%22)) ###
+
+This release includes breaking changes that move all blocking operators (such as `single`, `last`, `forEach`) to `BlockingObservable`.
+
+This means `Observable` has only non-blocking operators on it. The blocking operators can now be access via `.toBlockingObservable()` or `BlockingObservable.from(observable)`.
+
+Notes and link to the discussion of this change can be found at https://github.com/Netflix/RxJava/pull/272.
+
+* [Pull 272](https://github.com/Netflix/RxJava/pull/272) Move blocking operators into BlockingObservable
+* [Pull 273](https://github.com/Netflix/RxJava/pull/273) Fix Concat (make non-blocking)
+* [Issue 13](https://github.com/Netflix/RxJava/issues/13) Operator: Switch
+* [Pull 274](https://github.com/Netflix/RxJava/pull/274) Remove SLF4J dependency (RxJava is now a single jar with no dependencies)
+
+### Version 0.8.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.8.4%22)) ###
+
+* [Pull 269](https://github.com/Netflix/RxJava/pull/269) (Really) Fix concurrency bug in ScheduledObserver
+
+### Version 0.8.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.8.3%22)) ###
+
+* [Pull 268](https://github.com/Netflix/RxJava/pull/268) Fix concurrency bug in ScheduledObserver
+
 ### Version 0.8.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.8.2%22)) ###
 
 * [Issue 74](https://github.com/Netflix/RxJava/issues/74) Operator: Sample
