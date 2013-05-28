@@ -218,7 +218,6 @@ public class Observable<T> {
      * <p>
      * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
      * 
-     * 
      * @param observer
      * @param scheduler
      *            The {@link Scheduler} that the sequence is subscribed to on.
@@ -594,6 +593,8 @@ public class Observable<T> {
     /**
      * Creates an Observable that will execute the given function when a {@link Observer} subscribes to it.
      * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/create.png">
+     * <p>
      * Write the function you pass to <code>create</code> so that it behaves as an Observable - calling the passed-in
      * <code>onNext</code>, <code>onError</code>, and <code>onCompleted</code> methods appropriately.
      * <p>
@@ -614,6 +615,8 @@ public class Observable<T> {
 
     /**
      * Creates an Observable that will execute the given function when a {@link Observer} subscribes to it.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/create.png">
      * <p>
      * This method accept {@link Object} to allow different languages to pass in closures using {@link FunctionLanguageAdaptor}.
      * <p>
@@ -660,6 +663,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that calls <code>onError</code> when an {@link Observer} subscribes to it.
      * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.png">
      * 
      * @param exception
      *            the error to throw
@@ -728,6 +732,8 @@ public class Observable<T> {
 
     /**
      * Converts an {@link Iterable} sequence to an Observable sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/toObservable.png">
      * 
      * @param iterable
      *            the source {@link Iterable} sequence
@@ -742,6 +748,8 @@ public class Observable<T> {
 
     /**
      * Converts an Array to an Observable sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/toObservable.png">
      * 
      * @param items
      *            the source Array
@@ -756,6 +764,8 @@ public class Observable<T> {
 
     /**
      * Generates an observable sequence of integral numbers within a specified range.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/range.png">
      * 
      * @param start
      *            The value of the first integer in the sequence
@@ -772,6 +782,8 @@ public class Observable<T> {
 
     /**
      * Asynchronously subscribes and unsubscribes observers on the specified scheduler.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/subscribeOn.png">
      * 
      * @param source
      *            the source observable.
@@ -787,6 +799,8 @@ public class Observable<T> {
 
     /**
      * Asynchronously notify observers on the specified scheduler.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
      * 
      * @param source
      *            the source observable.
@@ -999,6 +1013,8 @@ public class Observable<T> {
 
     /**
      * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/dematerialize.png">
      * 
      * @param sequence
      *            An observable sequence containing explicit notification values which have to be turned into implicit notifications.
@@ -1062,6 +1078,8 @@ public class Observable<T> {
 
     /**
      * Returns the values from the source observable sequence until the other observable sequence produces a value.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeUntil.png">
      * 
      * @param source
      *            the source sequence to propagate elements for.
@@ -1096,6 +1114,8 @@ public class Observable<T> {
     /**
      * Emits the same objects as the given Observable, calling the given action
      * when it calls <code>onComplete</code> or <code>onError</code>.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/finallyDo.png">
      * 
      * @param source
      *            an observable
@@ -1166,6 +1186,8 @@ public class Observable<T> {
 
     /**
      * Groups the elements of an observable and selects the resulting elements by using a specified function.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/groupBy.png">
      * 
      * @param source
      *            an observable whose elements to group.
@@ -1187,6 +1209,8 @@ public class Observable<T> {
 
     /**
      * Groups the elements of an observable according to a specified key selector function and
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/groupBy.png">
      * 
      * @param source
      *            an observable whose elements to group.
@@ -1261,7 +1285,9 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that never sends any information to an {@link Observer}.
-     * 
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/never.png">
+     * <p> 
      * This observable is useful primarily for testing purposes.
      * 
      * @param <T>
@@ -1376,6 +1402,8 @@ public class Observable<T> {
      * <code>onError</code> function, it will instead pass the return value of <code>resumeFunction</code> to the {@link Observer}'s <code>onNext</code> method.
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be encountered.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/onErrorReturn.png">
      * 
      * @param that
      *            the source Observable
@@ -1408,6 +1436,8 @@ public class Observable<T> {
      * NOTE: You sacrifice the ability to unsubscribe from the origin with this operator so be careful to not
      * use this on infinite or very large sequences that will use up memory. This is similar to
      * the {@link Observable#toList()} operator in this caution.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/cache.png">
      * 
      * @return an observable sequence that upon first subscription caches all events for subsequent subscriptions.
      */
@@ -1417,6 +1447,8 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that shares a single subscription to the underlying sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/publishConnect.png">
      * 
      * @param that
      *            the source Observable
@@ -1647,6 +1679,8 @@ public class Observable<T> {
 
     /**
      * Determines whether all elements of an observable sequence satisfies a condition.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/all.png">
      * 
      * @param sequence
      *            an observable sequence whose elements to apply the predicate to.
@@ -1662,6 +1696,8 @@ public class Observable<T> {
 
     /**
      * Determines whether all elements of an observable sequence satisfies a condition.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/all.png">
      * 
      * @param sequence
      *            an observable sequence whose elements to apply the predicate to.
@@ -1705,6 +1741,8 @@ public class Observable<T> {
     /**
      * Accepts an {@link Observable} sequence of {@link Observable} sequences, and transforms it into a single
      * {@link Observable} sequence, which publishes the values of the most recently published {@link Observable} sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/switchDo.png">
      *  
      * @param sequenceOfSequences
      *            the {@link Observable} sequence of {@link Observable} sequences.
@@ -1722,6 +1760,8 @@ public class Observable<T> {
      * A well-behaved observable ensures <code>onNext</code>, <code>onCompleted</code>, or <code>onError</code> calls to its subscribers are not interleaved, <code>onCompleted</code> and
      * <code>onError</code> are only called once respectively, and no
      * <code>onNext</code> calls follow <code>onCompleted</code> and <code>onError</code> calls.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/synchronize.png">
      * 
      * @param observable
      *            the source Observable
@@ -1758,6 +1798,8 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the last <code>count</code> items emitted by the source
      * Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/last.png">
      * 
      * @param items
      *            the source Observable
@@ -1773,6 +1815,8 @@ public class Observable<T> {
 
     /**
      * Returns the values from the start of an observable sequence while a given predicate remains true.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhile.png">
      * 
      * @param items
      * @param predicate
@@ -1785,6 +1829,8 @@ public class Observable<T> {
 
     /**
      * Returns the values from the start of an observable sequence while a given predicate remains true.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhile.png">
      * 
      * @param items
      * @param predicate
@@ -1831,6 +1877,8 @@ public class Observable<T> {
 
     /**
      * Adds a timestamp to each item emitted by this observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/timestamp.png">
      * 
      * @return An observable sequence of timestamped items.
      */
@@ -2084,6 +2132,8 @@ public class Observable<T> {
 
     /**
      * Determines whether two sequences are equal by comparing the elements pairwise.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/sequenceEqual.png">
      * 
      * @param first
      *            observable to compare
@@ -2104,6 +2154,8 @@ public class Observable<T> {
 
     /**
      * Determines whether two sequences are equal by comparing the elements pairwise using a specified equality function.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/sequenceEqual.png">
      * 
      * @param first
      *            observable sequence to compare
@@ -2121,6 +2173,8 @@ public class Observable<T> {
 
     /**
      * Determines whether two sequences are equal by comparing the elements pairwise using a specified equality function.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/sequenceEqual.png">
      * 
      * @param first
      *            observable sequence to compare
@@ -2342,6 +2396,8 @@ public class Observable<T> {
     /**
      * Registers an action to be called when this observable calls
      * <code>onComplete</code> or <code>onError</code>.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/finallyDok.png">
      * 
      * @param action
      *            an action to be called when this observable completes or errors.
@@ -2536,6 +2592,8 @@ public class Observable<T> {
 
     /**
      * Asynchronously subscribes and unsubscribes observers on the specified scheduler.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/subscribeOn.png">
      * 
      * @param scheduler
      *            the scheduler to perform subscription and unsubscription actions on.
@@ -2547,6 +2605,8 @@ public class Observable<T> {
 
     /**
      * Asynchronously notify observers on the specified scheduler.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
      * 
      * @param scheduler
      *            the scheduler to notify observers on.
@@ -2558,6 +2618,8 @@ public class Observable<T> {
 
     /**
      * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/dematerialized.png">
      * 
      * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">MSDN: Observable.dematerialize</a>
@@ -2673,6 +2735,8 @@ public class Observable<T> {
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors
      * be encountered.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/onErrorReturn.png">
      * 
      * @param resumeFunction
      * @return the original Observable with appropriately modified behavior
@@ -2696,6 +2760,8 @@ public class Observable<T> {
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors
      * be encountered.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/onErrorReturn.png">
      * 
      * @param resumeFunction
      * @return the original Observable with appropriately modified behavior
@@ -2757,6 +2823,8 @@ public class Observable<T> {
      * NOTE: You sacrifice the ability to unsubscribe from the origin with this operator so be careful to not
      * use this on infinite or very large sequences that will use up memory. This is similar to
      * the {@link Observable#toList()} operator in this caution.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/cache.png">
      * 
      * @return an observable sequence that upon first subscription caches all events for subsequent subscriptions.
      */
@@ -2766,6 +2834,8 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that shares a single subscription to the underlying sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/publishConnect.png">
      * 
      * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
      */
@@ -2875,6 +2945,8 @@ public class Observable<T> {
 
     /**
      * Samples the observable sequence at each interval.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/sample.png">
      * 
      * @param period
      *            The period of time that defines the sampling rate.
@@ -2888,6 +2960,8 @@ public class Observable<T> {
 
     /**
      * Samples the observable sequence at each interval.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/sample.png">
      * 
      * @param period
      *            The period of time that defines the sampling rate.
@@ -2944,6 +3018,8 @@ public class Observable<T> {
 
     /**
      * Determines whether all elements of an observable sequence satisfies a condition.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/all.png">
      * 
      * @param predicate
      *            a function to test each element for a condition.
@@ -2955,6 +3031,8 @@ public class Observable<T> {
 
     /**
      * Determines whether all elements of an observable sequence satisfies a condition.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/all.png">
      * 
      * @param predicate
      *            a function to test each element for a condition.
@@ -3003,6 +3081,8 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that items emitted by the source Observable as long as a specified condition is true.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhile.png">
      * 
      * @param predicate
      *            a function to test each source element for a condition
@@ -3014,6 +3094,8 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that items emitted by the source Observable as long as a specified condition is true.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhile.png">
      * 
      * @param predicate
      *            a function to test each source element for a condition
@@ -3048,6 +3130,8 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the last <code>count</code> items emitted by the source
      * Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/last.png">
      * 
      * @param count
      *            the number of items from the end of the sequence emitted by the source
@@ -3061,6 +3145,8 @@ public class Observable<T> {
 
     /**
      * Returns the values from the source observable sequence until the other observable sequence produces a value.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeUntil.png">
      * 
      * @param other
      *            the observable sequence that terminates propagation of elements of the source sequence.
@@ -3136,6 +3222,8 @@ public class Observable<T> {
 
     /**
      * Groups the elements of an observable and selects the resulting elements by using a specified function.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/groupBy.png">
      * 
      * @param keySelector
      *            a function to extract the key for each element.
@@ -3153,6 +3241,8 @@ public class Observable<T> {
 
     /**
      * Groups the elements of an observable according to a specified key selector function and
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/groupBy.png">
      * 
      * @param keySelector
      *            a function to extract the key for each element.
