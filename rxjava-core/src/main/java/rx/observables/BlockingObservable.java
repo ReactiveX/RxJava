@@ -32,6 +32,13 @@ import rx.util.functions.Functions;
  * Extension of {@link Observable} that provides blocking operators.
  * <p>
  * Constructud via {@link #from(Observable)} or {@link Observable#toBlockingObservable()}
+ * <p>
+ * The documentation for this interface makes use of a form of marble diagram that has been
+ * modified to illustrate blocking operators. The following legend explains marble diagrams:
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/legend.png">
+ * <p>
+ * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
  * 
  * @param <T>
  */
@@ -49,6 +56,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns an iterator that iterates all values of the observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterator.png">
      * 
      * @param source
      *            an observable sequence to get an iterator for.
@@ -62,6 +71,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the last element of an observable sequence with a specified source.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.png">
      * 
      * @param source
      *            the source Observable
@@ -156,6 +167,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Samples the most recent value in an observable sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.mostRecent.png">
      * 
      * @param source
      *            the source observable sequence.
@@ -171,6 +184,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Samples the next value (blocking without buffering) from in an observable sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.next.png">
      * 
      * @param items
      *            the source observable sequence.
@@ -203,6 +218,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.png">
      * 
      * @param source
      *            the source Observable
@@ -302,6 +319,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Converts an observable sequence to an Iterable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterable.png">
      * 
      * @param source
      *            the source Observable
@@ -331,6 +350,8 @@ public class BlockingObservable<T> extends Observable<T> {
      * NOTE: This will block even if the Observable is asynchronous.
      * <p>
      * This is similar to {@link #subscribe(Observer)} but blocks. Because it blocks it does not need the {@link Observer#onCompleted()} or {@link Observer#onError(Exception)} methods.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
      * 
      * @param onNext
      *            {@link Action1}
@@ -395,6 +416,8 @@ public class BlockingObservable<T> extends Observable<T> {
      * NOTE: This will block even if the Observable is asynchronous.
      * <p>
      * This is similar to {@link #subscribe(Observer)} but blocks. Because it blocks it does not need the {@link Observer#onCompleted()} or {@link Observer#onError(Exception)} methods.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
      * 
      * @param o
      *            onNext {@link Action1 action}
@@ -426,6 +449,8 @@ public class BlockingObservable<T> extends Observable<T> {
     
     /**
      * Returns an iterator that iterates all values of the observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.getIterator.png">
      * 
      * @return the iterator that could be used to iterate over the elements of the observable.
      */
@@ -435,6 +460,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the last element of an observable sequence with a specified source.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.png">
      * 
      * @return the last element in the observable sequence.
      */
@@ -527,6 +554,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Samples the most recent value in an observable sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.mostRecent.png">
      * 
      * @param initialValue
      *            the initial value that will be yielded by the enumerable sequence if no element has been sampled yet.
@@ -538,6 +567,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Samples the next value (blocking without buffering) from in an observable sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.next.png">
      * 
      * @return iterable that blocks upon each iteration until the next element in the observable source sequence becomes available.
      */
@@ -547,6 +578,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the only element of an observable sequence and throws an exception if there is not exactly one element in the observable sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.png">
      * 
      * @return The single element in the observable sequence.
      */
@@ -642,6 +675,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Converts an observable sequence to an Iterable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterable.png">
      * 
      * @return Observable converted to Iterable.
      */
