@@ -15,6 +15,10 @@
  */
 package rx;
 
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -94,17 +98,6 @@ import rx.util.functions.FuncN;
 import rx.util.functions.Function;
 import rx.util.functions.FunctionLanguageAdaptor;
 import rx.util.functions.Functions;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
 
 /**
  * The Observable interface that implements the Reactive Pattern.
