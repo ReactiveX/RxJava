@@ -722,11 +722,25 @@ public final class OperationBuffer {
         // Tagging interface for objects which can close buffers.
     }
 
-    public static class BufferOpenings implements BufferOpening {
-        // Simple class implementing BufferOpening for conveniance.
+    public static class BufferOpenings {
+
+        public static BufferOpening create() {
+            return new BufferOpening() {};
+        }
+
+        private BufferOpenings() {
+            // Prevent instantation.
+        }
     }
-    public static class BufferClosings implements BufferClosing {
-        // Simple class implementing BufferClosing for conveniance.
+    public static class BufferClosings {
+
+        public static BufferClosing create() {
+            return new BufferClosing() {};
+        }
+
+        private BufferClosings() {
+            // Prevent instantation.
+        }
     }
 
     public static class UnitTest {
