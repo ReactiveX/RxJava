@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -33,6 +34,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
+import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
@@ -63,6 +65,9 @@ public final class OperationGroupBy {
 
         private final Observable<KeyValue<K, V>> source;
         private final ConcurrentHashMap<K, GroupedSubject<K, V>> groupedObservables = new ConcurrentHashMap<K, GroupedSubject<K, V>>();
+        private final AtomicObservableSubscription actualParentSubscription = new AtomicObservableSubscription();
+        private final AtomicInteger numGroupSubscriptions = new AtomicInteger();
+        private final AtomicBoolean unsubscribeRequested = new AtomicBoolean(false);
 
         private GroupBy(Observable<KeyValue<K, V>> source) {
             this.source = source;
@@ -70,7 +75,8 @@ public final class OperationGroupBy {
 
         @Override
         public Subscription call(final Observer<GroupedObservable<K, V>> observer) {
-            return source.subscribe(new Observer<KeyValue<K, V>>() {
+            final GroupBy<K, V> _this = this;
+            actualParentSubscription.wrap(source.subscribe(new Observer<KeyValue<K, V>>() {
 
                 @Override
                 public void onCompleted() {
@@ -96,12 +102,17 @@ public final class OperationGroupBy {
                 public void onNext(KeyValue<K, V> value) {
                     GroupedSubject<K, V> gs = groupedObservables.get(value.key);
                     if (gs == null) {
+                        if (unsubscribeRequested.get()) {
+                            // unsubscribe has been requested so don't create new groups
+                            // only send data to groups already created
+                            return;
+                        }
                         /*
                          * Technically the source should be single-threaded so we shouldn't need to do this but I am
                          * programming defensively as most operators are so this can work with a concurrent sequence
                          * if it ends up receiving one.
                          */
-                        GroupedSubject<K, V> newGs = GroupedSubject.<K, V> create(value.key);
+                        GroupedSubject<K, V> newGs = GroupedSubject.<K, V> create(value.key, _this);
                         GroupedSubject<K, V> existing = groupedObservables.putIfAbsent(value.key, newGs);
                         if (existing == null) {
                             // we won so use the one we created
@@ -115,34 +126,72 @@ public final class OperationGroupBy {
                     }
                     gs.onNext(value.value);
                 }
-            });
+            }));
+
+            return new Subscription() {
+
+                @Override
+                public void unsubscribe() {
+                    if (numGroupSubscriptions.get() == 0) {
+                        // if we have no group subscriptions we will unsubscribe
+                        actualParentSubscription.unsubscribe();
+                        // otherwise we mark to not send any more groups (waiting on existing groups to finish)
+                        unsubscribeRequested.set(true);
+                    }
+                }
+            };
+        }
+
+        /**
+         * Children notify of being subscribed to.
+         * 
+         * @param key
+         */
+        private void subscribeKey(K key) {
+            numGroupSubscriptions.incrementAndGet();
+        }
+
+        /**
+         * Children notify of being unsubscribed from.
+         * 
+         * @param key
+         */
+        private void unsubscribeKey(K key) {
+            int c = numGroupSubscriptions.decrementAndGet();
+            if (c == 0) {
+                actualParentSubscription.unsubscribe();
+            }
         }
     }
 
     private static class GroupedSubject<K, T> extends GroupedObservable<K, T> implements Observer<T> {
 
-        static <K, T> GroupedSubject<K, T> create(K key) {
+        static <K, T> GroupedSubject<K, T> create(final K key, final GroupBy<K, T> parent) {
             @SuppressWarnings("unchecked")
             final AtomicReference<Observer<T>> subscribedObserver = new AtomicReference<Observer<T>>(EMPTY_OBSERVER);
 
             return new GroupedSubject<K, T>(key, new Func1<Observer<T>, Subscription>() {
+
+                private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
                 @Override
                 public Subscription call(Observer<T> observer) {
                     // register Observer
                     subscribedObserver.set(observer);
 
-                    return new Subscription() {
+                    parent.subscribeKey(key);
+
+                    return subscription.wrap(new Subscription() {
 
                         @SuppressWarnings("unchecked")
                         @Override
                         public void unsubscribe() {
                             // we remove the Observer so we stop emitting further events (they will be ignored if parent continues to send)
                             subscribedObserver.set(EMPTY_OBSERVER);
-                            // I don't believe we need to worry about the parent here as it's a separate sequence that would
-                            // be unsubscribed to directly if that needs to happen.
+                            // now we need to notify the parent that we're unsubscribed
+                            parent.unsubscribeKey(key);
                         }
-                    };
+                    });
                 }
             }, subscribedObserver);
         }
@@ -232,11 +281,63 @@ public final class OperationGroupBy {
             assertTrue(map.isEmpty());
         }
 
+        @Test
+        public void testError() {
+            Observable<String> sourceStrings = Observable.from("one", "two", "three", "four", "five", "six");
+            Observable<String> errorSource = Observable.error(new RuntimeException("forced failure"));
+            @SuppressWarnings("unchecked")
+            Observable<String> source = Observable.concat(sourceStrings, errorSource);
+
+            Observable<GroupedObservable<Integer, String>> grouped = Observable.create(groupBy(source, length));
+
+            final AtomicInteger groupCounter = new AtomicInteger();
+            final AtomicInteger eventCounter = new AtomicInteger();
+            final AtomicReference<Exception> error = new AtomicReference<Exception>();
+
+            grouped.mapMany(new Func1<GroupedObservable<Integer, String>, Observable<String>>() {
+
+                @Override
+                public Observable<String> call(final GroupedObservable<Integer, String> o) {
+                    groupCounter.incrementAndGet();
+                    return o.map(new Func1<String, String>() {
+
+                        @Override
+                        public String call(String v) {
+                            return "Event => key: " + o.getKey() + " value: " + v;
+                        }
+                    });
+                }
+            }).subscribe(new Observer<String>() {
+
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    e.printStackTrace();
+                    error.set(e);
+                }
+
+                @Override
+                public void onNext(String v) {
+                    eventCounter.incrementAndGet();
+                    System.out.println(v);
+
+                }
+            });
+
+            assertEquals(3, groupCounter.get());
+            assertEquals(6, eventCounter.get());
+            assertNotNull(error.get());
+        }
+
         private static <K, V> Map<K, Collection<V>> toMap(Observable<GroupedObservable<K, V>> observable) {
 
             final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
 
-            observable.forEach(new Action1<GroupedObservable<K, V>>() {
+            observable.toBlockingObservable().forEach(new Action1<GroupedObservable<K, V>>() {
 
                 @Override
                 public void call(final GroupedObservable<K, V> o) {
@@ -341,6 +442,107 @@ public final class OperationGroupBy {
             assertEquals(1, subscribeCounter.get());
             assertEquals(groupCount, groupCounter.get());
             assertEquals(count, eventCounter.get());
+
+        }
+
+        /*
+         * We will only take 1 group with 20 events from it and then unsubscribe.
+         */
+        @Test
+        public void testUnsubscribe() throws InterruptedException {
+
+            final AtomicInteger eventCounter = new AtomicInteger();
+            final AtomicInteger subscribeCounter = new AtomicInteger();
+            final AtomicInteger groupCounter = new AtomicInteger();
+            final AtomicInteger sentEventCounter = new AtomicInteger();
+            final CountDownLatch latch = new CountDownLatch(1);
+            final int count = 100;
+            final int groupCount = 2;
+
+            Observable<Event> es = Observable.create(new Func1<Observer<Event>, Subscription>() {
+
+                @Override
+                public Subscription call(final Observer<Event> observer) {
+                    final BooleanSubscription s = new BooleanSubscription();
+                    System.out.println("*** Subscribing to EventStream ***");
+                    subscribeCounter.incrementAndGet();
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            for (int i = 0; i < count; i++) {
+                                if (s.isUnsubscribed()) {
+                                    break;
+                                }
+                                Event e = new Event();
+                                e.source = i % groupCount;
+                                e.message = "Event-" + i;
+                                observer.onNext(e);
+                                sentEventCounter.incrementAndGet();
+                            }
+                            observer.onCompleted();
+                        }
+
+                    }).start();
+                    return s;
+                }
+
+            });
+
+            es.groupBy(new Func1<Event, Integer>() {
+
+                @Override
+                public Integer call(Event e) {
+                    return e.source;
+                }
+            })
+                    .take(1) // we want only the first group
+                    .mapMany(new Func1<GroupedObservable<Integer, Event>, Observable<String>>() {
+
+                        @Override
+                        public Observable<String> call(GroupedObservable<Integer, Event> eventGroupedObservable) {
+                            System.out.println("GroupedObservable Key: " + eventGroupedObservable.getKey());
+                            groupCounter.incrementAndGet();
+
+                            return eventGroupedObservable
+                                    .take(20) // limit to only 20 events on this group
+                                    .map(new Func1<Event, String>() {
+
+                                        @Override
+                                        public String call(Event event) {
+                                            return "Source: " + event.source + "  Message: " + event.message;
+                                        }
+                                    });
+
+                        };
+                    }).subscribe(new Observer<String>() {
+
+                        @Override
+                        public void onCompleted() {
+                            latch.countDown();
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            e.printStackTrace();
+                            latch.countDown();
+                        }
+
+                        @Override
+                        public void onNext(String outputMessage) {
+                            System.out.println(outputMessage);
+                            eventCounter.incrementAndGet();
+                        }
+                    });
+
+            latch.await(5000, TimeUnit.MILLISECONDS);
+            assertEquals(1, subscribeCounter.get());
+            assertEquals(1, groupCounter.get());
+            assertEquals(20, eventCounter.get());
+            // sentEvents will go until 'eventCounter' hits 20 and then unsubscribes
+            // which means it will also send (but ignore) the 19 events for the other group
+            // It will not however send all 100 events.
+            assertEquals(39, sentEventCounter.get());
 
         }
 
