@@ -157,11 +157,16 @@ public class Observable<T> {
      * @param observer
      * @return a {@link Subscription} reference that allows observers
      *         to stop receiving notifications before the provider has finished sending them
+     * @throws IllegalArgumentException
+     *             if null argument provided
      */
     public Subscription subscribe(Observer<T> observer) {
         // allow the hook to intercept and/or decorate
         Func1<Observer<T>, Subscription> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
         // validate and proceed
+        if (observer == null) {
+            throw new IllegalArgumentException("observer can not be null");
+        }
         if (onSubscribeFunction == null) {
             throw new IllegalStateException("onSubscribe function can not be null.");
             // the subscribe function can also be overridden but generally that's not the appropriate approach so I won't mention that in the exception
@@ -224,6 +229,8 @@ public class Observable<T> {
      *            The {@link Scheduler} that the sequence is subscribed to on.
      * @return a {@link Subscription} reference that allows observers
      *         to stop receiving notifications before the provider has finished sending them
+     * @throws IllegalArgumentException
+     *             if null argument provided
      */
     public Subscription subscribe(Observer<T> observer, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(observer);
@@ -241,11 +248,14 @@ public class Observable<T> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Subscription subscribe(final Map<String, Object> callbacks) {
-        // lookup and memoize onNext
+        if (callbacks == null) {
+            throw new RuntimeException("callbacks map can not be null");
+        }
         Object _onNext = callbacks.get("onNext");
         if (_onNext == null) {
-            throw new RuntimeException("onNext must be implemented");
+            throw new RuntimeException("'onNext' key must contain an implementation");
         }
+        // lookup and memoize onNext
         final FuncN onNext = Functions.from(_onNext);
 
         /**
@@ -291,10 +301,11 @@ public class Observable<T> {
             return subscribe((Observer) o);
         }
 
-        // lookup and memoize onNext
         if (o == null) {
-            throw new RuntimeException("onNext must be implemented");
+            throw new IllegalArgumentException("onNext can not be null");
         }
+
+        // lookup and memoize onNext
         final FuncN onNext = Functions.from(o);
 
         /**
@@ -328,6 +339,9 @@ public class Observable<T> {
     }
 
     public Subscription subscribe(final Action1<T> onNext) {
+        if (onNext == null) {
+            throw new IllegalArgumentException("onNext can not be null");
+        }
 
         /**
          * Wrapping since raw functions provided by the user are being invoked.
@@ -349,9 +363,6 @@ public class Observable<T> {
 
             @Override
             public void onNext(T args) {
-                if (onNext == null) {
-                    throw new RuntimeException("onNext must be implemented");
-                }
                 onNext.call(args);
             }
 
@@ -364,10 +375,14 @@ public class Observable<T> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Subscription subscribe(final Object onNext, final Object onError) {
-        // lookup and memoize onNext
         if (onNext == null) {
-            throw new RuntimeException("onNext must be implemented");
+            throw new IllegalArgumentException("onNext can not be null");
         }
+        if (onError == null) {
+            throw new IllegalArgumentException("onError can not be null");
+        }
+
+        // lookup and memoize onNext
         final FuncN onNextFunction = Functions.from(onNext);
 
         /**
@@ -385,9 +400,7 @@ public class Observable<T> {
             @Override
             public void onError(Exception e) {
                 handleError(e);
-                if (onError != null) {
-                    Functions.from(onError).call(e);
-                }
+                Functions.from(onError).call(e);
             }
 
             @Override
@@ -403,6 +416,12 @@ public class Observable<T> {
     }
 
     public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError) {
+        if (onNext == null) {
+            throw new IllegalArgumentException("onNext can not be null");
+        }
+        if (onError == null) {
+            throw new IllegalArgumentException("onError can not be null");
+        }
 
         /**
          * Wrapping since raw functions provided by the user are being invoked.
@@ -419,16 +438,11 @@ public class Observable<T> {
             @Override
             public void onError(Exception e) {
                 handleError(e);
-                if (onError != null) {
-                    onError.call(e);
-                }
+                onError.call(e);
             }
 
             @Override
             public void onNext(T args) {
-                if (onNext == null) {
-                    throw new RuntimeException("onNext must be implemented");
-                }
                 onNext.call(args);
             }
 
@@ -441,10 +455,17 @@ public class Observable<T> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Subscription subscribe(final Object onNext, final Object onError, final Object onComplete) {
-        // lookup and memoize onNext
         if (onNext == null) {
-            throw new RuntimeException("onNext must be implemented");
+            throw new IllegalArgumentException("onNext can not be null");
         }
+        if (onError == null) {
+            throw new IllegalArgumentException("onError can not be null");
+        }
+        if (onComplete == null) {
+            throw new IllegalArgumentException("onComplete can not be null");
+        }
+
+        // lookup and memoize onNext        
         final FuncN onNextFunction = Functions.from(onNext);
 
         /**
@@ -456,17 +477,13 @@ public class Observable<T> {
 
             @Override
             public void onCompleted() {
-                if (onComplete != null) {
-                    Functions.from(onComplete).call();
-                }
+                Functions.from(onComplete).call();
             }
 
             @Override
             public void onError(Exception e) {
                 handleError(e);
-                if (onError != null) {
-                    Functions.from(onError).call(e);
-                }
+                Functions.from(onError).call(e);
             }
 
             @Override
@@ -482,6 +499,15 @@ public class Observable<T> {
     }
 
     public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError, final Action0 onComplete) {
+        if (onNext == null) {
+            throw new IllegalArgumentException("onNext can not be null");
+        }
+        if (onError == null) {
+            throw new IllegalArgumentException("onError can not be null");
+        }
+        if (onComplete == null) {
+            throw new IllegalArgumentException("onComplete can not be null");
+        }
 
         /**
          * Wrapping since raw functions provided by the user are being invoked.
@@ -498,16 +524,11 @@ public class Observable<T> {
             @Override
             public void onError(Exception e) {
                 handleError(e);
-                if (onError != null) {
-                    onError.call(e);
-                }
+                onError.call(e);
             }
 
             @Override
             public void onNext(T args) {
-                if (onNext == null) {
-                    throw new RuntimeException("onNext must be implemented");
-                }
                 onNext.call(args);
             }
 
