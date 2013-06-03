@@ -46,6 +46,18 @@ import rx.util.functions.Functions;
  */
 public class BlockingObservable<T> extends Observable<T> {
 
+    protected BlockingObservable(Func1<Observer<T>, Subscription> onSubscribe) {
+        super(onSubscribe);
+    }
+    
+    /**
+     * Used to prevent public instantiation
+     */
+    @SuppressWarnings("unused")
+    private BlockingObservable() {
+        // prevent public instantiation
+    }
+    
     public static <T> BlockingObservable<T> from(final Observable<T> o) {
         return new BlockingObservable<T>(new Func1<Observer<T>, Subscription>() {
 
@@ -352,10 +364,6 @@ public class BlockingObservable<T> extends Observable<T> {
      */
     public static <T> Iterable<T> toIterable(final Observable<T> source) {
         return from(source).toIterable();
-    }
-
-    protected BlockingObservable(Func1<Observer<T>, Subscription> onSubscribe) {
-        super(onSubscribe);
     }
 
     /**
