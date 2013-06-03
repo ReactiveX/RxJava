@@ -29,16 +29,18 @@ import rx.util.functions.FuncN;
 import rx.util.functions.Functions;
 
 /**
- * Extension of {@link Observable} that provides blocking operators.
+ * An extension of {@link Observable} that provides blocking operators.
  * <p>
- * Constructud via {@link #from(Observable)} or {@link Observable#toBlockingObservable()}
+ * You construct a BlockingObservable from an Observable with {@link #from(Observable)} or
+ * {@link Observable#toBlockingObservable()}
  * <p>
  * The documentation for this interface makes use of a form of marble diagram that has been
  * modified to illustrate blocking operators. The following legend explains marble diagrams:
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/legend.png">
  * <p>
- * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
+ * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava
+ * Wiki</a>
  * 
  * @param <T>
  */
@@ -84,6 +86,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the last element of an observable sequence that matches the predicate.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
      * 
      * @param source
      *            the source Observable
@@ -97,6 +101,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the last element of an observable sequence that matches the predicate.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
      * 
      * @param source
      *            the source Observable
@@ -110,6 +116,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the last element of an observable sequence, or a default value if no value is found.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.png">
      * 
      * @param source
      *            the source observable.
@@ -125,6 +133,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the last element of an observable sequence that matches the predicate, or a default value if no value is found.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png">
      * 
      * @param source
      *            the source observable.
@@ -142,6 +152,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the last element of an observable sequence that matches the predicate, or a default value if no value is found.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png">
      * 
      * @param source
      *            the source observable.
@@ -233,6 +245,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
      * 
      * @param source
      *            the source Observable
@@ -248,6 +262,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
      * 
      * @param source
      *            the source Observable
@@ -263,6 +279,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the only element of an observable sequence, or a default value if the observable sequence is empty.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.png">
      * 
      * @param source
      *            the source Observable
@@ -276,6 +294,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png">
      * 
      * @param source
      *            the source Observable
@@ -291,6 +311,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png">
      * 
      * @param source
      *            the source Observable
@@ -308,6 +330,8 @@ public class BlockingObservable<T> extends Observable<T> {
      * Return a Future representing a single value of the Observable.
      * <p>
      * This will throw an exception if the Observable emits more than 1 value. If more than 1 are expected then use <code>toList().toFuture()</code>.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
      * 
      * @param source
      *            the source Observable
@@ -475,6 +499,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the last element of an observable sequence that matches the predicate.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
      * 
      * @param predicate
      *            a predicate function to evaluate for elements in the sequence.
@@ -486,6 +512,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the last element of an observable sequence that matches the predicate.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
      * 
      * @param predicate
      *            a predicate function to evaluate for elements in the sequence.
@@ -505,6 +533,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the last element, or a default value if no value is found.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.png">
      * 
      * @param defaultValue
      *            a default value that would be returned if observable is empty.
@@ -528,6 +558,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the last element that matches the predicate, or a default value if no value is found.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png">
      * 
      * @param defaultValue
      *            a default value that would be returned if observable is empty.
@@ -541,6 +573,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the last element that matches the predicate, or a default value if no value is found.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png">
      * 
      * @param defaultValue
      *            a default value that would be returned if observable is empty.
@@ -589,6 +623,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
      * 
      * @param predicate
      *            A predicate function to evaluate for elements in the sequence.
@@ -600,6 +636,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the only element of an observable sequence that matches the predicate and throws an exception if there is not exactly one element in the observable sequence.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
      * 
      * @param predicate
      *            A predicate function to evaluate for elements in the sequence.
@@ -619,6 +657,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the only element of an observable sequence, or a default value if the observable sequence is empty.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.png">
      * 
      * @param defaultValue
      *            default value for a sequence.
@@ -630,6 +670,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png">
      * 
      * @param defaultValue
      *            default value for a sequence.
@@ -643,6 +685,8 @@ public class BlockingObservable<T> extends Observable<T> {
 
     /**
      * Returns the only element of an observable sequence that matches the predicate, or a default value if no value is found.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png">
      * 
      * @param defaultValue
      *            default value for a sequence.
@@ -666,6 +710,8 @@ public class BlockingObservable<T> extends Observable<T> {
      * Return a Future representing a single value of the Observable.
      * <p>
      * This will throw an exception if the Observable emits more than 1 value. If more than 1 are expected then use <code>toList().toFuture()</code>.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
      * 
      * @return a Future that expects a single item emitted by the source Observable
      */
