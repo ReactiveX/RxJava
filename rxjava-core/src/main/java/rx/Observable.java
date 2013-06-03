@@ -116,20 +116,21 @@ public class Observable<T> {
 
     private final Func1<Observer<T>, Subscription> onSubscribe;
 
-    protected Observable() {
-        this(null);
-    }
-
     /**
-     * Construct an Observable with Function to execute when subscribed to.
+     * Observable with Function to execute when subscribed to.
      * <p>
-     * NOTE: Generally you're better off using {@link #create(Func1)} to create an Observable instead of using inheritance.
+     * NOTE: Use {@link #create(Func1)} to create an Observable instead of this method unless you specifically have a need for inheritance.
      * 
      * @param onSubscribe
      *            {@link Func1} to be executed when {@link #subscribe(Observer)} is called.
      */
     protected Observable(Func1<Observer<T>, Subscription> onSubscribe) {
         this.onSubscribe = onSubscribe;
+    }
+
+    protected Observable() {
+        this(null);
+        //TODO should this be made private to prevent it? It really serves no good purpose and only confuses things. Unit tests are incorrectly using it today
     }
 
     /**
