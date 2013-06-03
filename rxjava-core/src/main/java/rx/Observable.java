@@ -718,7 +718,7 @@ public class Observable<T> {
     /**
      * Filters an Observable by discarding any of its emissions that do not meet some test.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/where.png">
      * 
      * @param that
      *            the Observable to filter
@@ -733,7 +733,7 @@ public class Observable<T> {
     /**
      * Converts an {@link Iterable} sequence to an Observable sequence.
      * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/toObservable.png">
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
      * 
      * @param iterable
      *            the source {@link Iterable} sequence
@@ -749,7 +749,7 @@ public class Observable<T> {
     /**
      * Converts an Array to an Observable sequence.
      * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/toObservable.png">
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
      * 
      * @param items
      *            the source Array
@@ -1136,7 +1136,7 @@ public class Observable<T> {
      * <p>
      * Note: mapMany and flatMap are equivalent.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/flatMap.png">
      * 
      * @param sequence
      *            the source Observable
@@ -1164,7 +1164,7 @@ public class Observable<T> {
      * <p>
      * Note: mapMany and flatMap are equivalent.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/flatMap.png">
      * 
      * @param sequence
      *            the source Observable
@@ -1418,7 +1418,8 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that shares a single subscription to the underlying sequence replaying all notifications.
-     * 
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.png">
      * @param that
      *            the source Observable
      * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
@@ -1490,6 +1491,8 @@ public class Observable<T> {
 
     /**
      * Used by dynamic languages.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
      * 
      * @see #reduce(Observable, Func2)
      */
@@ -1508,6 +1511,10 @@ public class Observable<T> {
     }
 
     /**
+     * Synonymous for reduce()
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/aggregate.png">
+     *
      * @see #reduce(Observable, Func2)
      */
     public static <T> Observable<T> aggregate(Observable<T> sequence, Func2<T, T, T> accumulator) {
@@ -1516,6 +1523,8 @@ public class Observable<T> {
 
     /**
      * Used by dynamic languages.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/aggregate.png">
      * 
      * @see #reduce(Observable, Func2)
      */
@@ -1533,7 +1542,7 @@ public class Observable<T> {
      * This technique, which is called "reduce" here, is sometimes called "fold," "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance, has an <code>inject</code>
      * method that does a similar operation on lists.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduceSeed.png">
      * 
      * @param <T>
      *            the type item emitted by the source Observable
@@ -1559,6 +1568,8 @@ public class Observable<T> {
 
     /**
      * Used by dynamic languages.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduceSeed.png">
      * 
      * @see #reduce(Observable, Object, Func2)
      */
@@ -1575,6 +1586,10 @@ public class Observable<T> {
     }
 
     /**
+     * Synonymous for reduce()
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/aggregateSeed.png">
+     *
      * @see #reduce(Observable, Object, Func2)
      */
     public static <T, R> Observable<R> aggregate(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
@@ -1583,6 +1598,8 @@ public class Observable<T> {
 
     /**
      * Used by dynamic languages.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/aggregateSeed.png">
      * 
      * @see #reduce(Observable, Object, Func2)
      */
@@ -1615,6 +1632,8 @@ public class Observable<T> {
 
     /**
      * Used by dynamic languages.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
      * 
      * @see #scan(Observable, Func2)
      */
@@ -1638,7 +1657,7 @@ public class Observable<T> {
      * by an Observable into the same function, and so on until all items have been emitted by the
      * source Observable, emitting the result of each of these iterations as its own sequence.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scanSeed.png">
      * 
      * @param <T>
      *            the type item emitted by the source Observable
@@ -1661,6 +1680,8 @@ public class Observable<T> {
 
     /**
      * Used by dynamic languages.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scanSeed.png">
      * 
      * @see #scan(Observable, Object, Func2)
      */
@@ -1678,7 +1699,7 @@ public class Observable<T> {
     }
 
     /**
-     * Determines whether all elements of an observable sequence satisfies a condition.
+     * Determines whether all elements of an observable sequence satisfy a condition.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/all.png">
      * 
@@ -1695,7 +1716,7 @@ public class Observable<T> {
     }
 
     /**
-     * Determines whether all elements of an observable sequence satisfies a condition.
+     * Determines whether all elements of an observable sequence satisfy a condition.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/all.png">
      * 
@@ -1851,6 +1872,8 @@ public class Observable<T> {
 
     /**
      * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhileWithIndex.png">
      * 
      * @param items
      * @param predicate
@@ -1972,6 +1995,8 @@ public class Observable<T> {
      * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
      * <p>
      * This is blocking so the Subscription returned when calling {@link #subscribe(Observer)} does nothing.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.Future.png">
      * 
      * @param future
      *            the source {@link Future}
@@ -1985,7 +2010,7 @@ public class Observable<T> {
     }
 
     /**
-     * Converts an Future to an Observable sequence.
+     * Converts a Future to an Observable sequence.
      * 
      * Any object that supports the {@link Future} interface can be converted into an Observable that emits
      * the return value of the get() method in the object, by passing the object into the <code>toObservable</code> method.
@@ -2017,6 +2042,8 @@ public class Observable<T> {
      * The subscribe method on this synchronously so the Subscription returned doesn't nothing.
      * <p>
      * This is blocking so the Subscription returned when calling {@link #subscribe(Observer)} does nothing.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.Future.png">
      * 
      * @param future
      *            the source {@link Future}
@@ -2038,8 +2065,6 @@ public class Observable<T> {
      * 
      * An Array can be converted into an Observable that emits each item in the Array, by passing the
      * Array into the <code>toObservable</code> method.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toObservable.png">
      * 
      * @param items
      *            the source Array
@@ -2070,7 +2095,7 @@ public class Observable<T> {
     /**
      * Sort T objects using the defined sort function.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.f.png">
      * 
      * @param sequence
      * @param sortFunction
@@ -2083,7 +2108,7 @@ public class Observable<T> {
     /**
      * Sort T objects using the defined sort function.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.f.png">
      * 
      * @param sequence
      * @param sortFunction
@@ -2397,7 +2422,7 @@ public class Observable<T> {
      * Registers an action to be called when this observable calls
      * <code>onComplete</code> or <code>onError</code>.
      * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/finallyDok.png">
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/finallyDo.png">
      * 
      * @param action
      *            an action to be called when this observable completes or errors.
@@ -2439,7 +2464,7 @@ public class Observable<T> {
      * <p>
      * Note: mapMany and flatMap are equivalent.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/flatMap.png">
      * 
      * @param func
      *            a function to apply to each item in the sequence, that returns an Observable.
@@ -2460,7 +2485,7 @@ public class Observable<T> {
      * <p>
      * Note: mapMany and flatMap are equivalent.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapMany.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/flatMap.png">
      * 
      * @param callback
      *            a function to apply to each item in the sequence that returns an Observable.
@@ -2476,7 +2501,7 @@ public class Observable<T> {
     /**
      * Filters an Observable by discarding any of its emissions that do not meet some test.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/where.png">
      * 
      * @param predicate
      *            a function that evaluates the items emitted by the source Observable, returning
@@ -2619,7 +2644,7 @@ public class Observable<T> {
     /**
      * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
      * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/dematerialized.png">
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/dematerialize.png">
      * 
      * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">MSDN: Observable.dematerialize</a>
@@ -2807,6 +2832,8 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that shares a single subscription to the underlying sequence replaying all notifications.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.png">
      * 
      * @return a connectable observable sequence that upon connection causes the source sequence to push results into the specified subject.
      */
@@ -2845,6 +2872,8 @@ public class Observable<T> {
 
     /**
      * Used by dynamic languages.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
      * 
      * @see #reduce(Func2)
      */
@@ -2853,6 +2882,10 @@ public class Observable<T> {
     }
 
     /**
+     * Synonymous for reduce()
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/aggregate.png">
+     *
      * @see #reduce(Func2)
      */
     public Observable<T> aggregate(Func2<T, T, T> accumulator) {
@@ -2861,6 +2894,8 @@ public class Observable<T> {
 
     /**
      * Used by dynamic languages.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/aggregate.png">
      * 
      * @see #reduce(Func2)
      */
@@ -2879,7 +2914,7 @@ public class Observable<T> {
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an
      * <code>inject</code> method that does a similar operation on lists.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduceSeed.png">
      * 
      * @param initialValue
      *            The initial (seed) accumulator value.
@@ -2898,6 +2933,8 @@ public class Observable<T> {
 
     /**
      * Used by dynamic languages.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduceSeed.png">
      * 
      * @see #reduce(Object, Func2)
      */
@@ -2906,6 +2943,10 @@ public class Observable<T> {
     }
 
     /**
+     * Synonymous for reduce()
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/aggregateSeed.png">
+     *
      * @see #reduce(Object, Func2)
      */
     public <R> Observable<R> aggregate(R initialValue, Func2<R, T, R> accumulator) {
@@ -2914,6 +2955,8 @@ public class Observable<T> {
 
     /**
      * Used by dynamic languages.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/aggregateSeed.png">
      * 
      * @see #reduce(Object, Func2)
      */
@@ -2977,6 +3020,8 @@ public class Observable<T> {
 
     /**
      * Used by dynamic languages.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
      * 
      * @see #scan(Func2)
      */
@@ -2991,7 +3036,7 @@ public class Observable<T> {
      * source Observable, emitting the result of each of these iterations. This sort of function is
      * sometimes called an accumulator.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scanSeed.png">
      * 
      * @param initialValue
      *            The initial (seed) accumulator value.
@@ -3009,6 +3054,8 @@ public class Observable<T> {
 
     /**
      * Used by dynamic languages.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scanSeed.png">
      * 
      * @see #scan(Object, Func2)
      */
@@ -3017,7 +3064,7 @@ public class Observable<T> {
     }
 
     /**
-     * Determines whether all elements of an observable sequence satisfies a condition.
+     * Determines whether all elements of an observable sequence satisfy a condition.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/all.png">
      * 
@@ -3030,7 +3077,7 @@ public class Observable<T> {
     }
 
     /**
-     * Determines whether all elements of an observable sequence satisfies a condition.
+     * Determines whether all elements of an observable sequence satisfy a condition.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/all.png">
      * 
@@ -3107,6 +3154,8 @@ public class Observable<T> {
 
     /**
      * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhileWithIndex.png">
      * 
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
@@ -3118,6 +3167,8 @@ public class Observable<T> {
 
     /**
      * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhileWithIndex.png">
      * 
      * @param predicate
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
@@ -3194,7 +3245,7 @@ public class Observable<T> {
     /**
      * Sort T objects using the defined sort function.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.f.png">
      * 
      * @param sortFunction
      * @return an observable containing the sorted list
@@ -3206,7 +3257,7 @@ public class Observable<T> {
     /**
      * Sort T objects using the defined sort function.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.f.png">
      * 
      * @param sortFunction
      * @return an observable containing the sorted list
