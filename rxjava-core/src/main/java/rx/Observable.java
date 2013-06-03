@@ -82,6 +82,7 @@ import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.OnErrorNotImplementedException;
 import rx.util.Range;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
@@ -189,10 +190,16 @@ public class Observable<T> {
                 subscription.wrap(onSubscribeFunction.call(new AtomicObserver<T>(subscription, observer)));
                 return hook.onSubscribeReturn(this, subscription);
             }
+        } catch (OnErrorNotImplementedException e) {
+            // special handling when onError is not implemented ... we just rethrow
+            throw e;
         } catch (Exception e) {
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
                 observer.onError(hook.onSubscribeError(this, e));
+            } catch (OnErrorNotImplementedException e2) {
+                // special handling when onError is not implemented ... we just rethrow
+                throw e2;
             } catch (Exception e2) {
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
@@ -279,6 +286,8 @@ public class Observable<T> {
                 Object onError = callbacks.get("onError");
                 if (onError != null) {
                     Functions.from(onError).call(e);
+                } else {
+                    throw new OnErrorNotImplementedException(e);
                 }
             }
 
@@ -323,7 +332,7 @@ public class Observable<T> {
             @Override
             public void onError(Exception e) {
                 handleError(e);
-                // no callback defined
+                throw new OnErrorNotImplementedException(e);
             }
 
             @Override
@@ -358,7 +367,7 @@ public class Observable<T> {
             @Override
             public void onError(Exception e) {
                 handleError(e);
-                // no callback defined
+                throw new OnErrorNotImplementedException(e);
             }
 
             @Override
@@ -3739,6 +3748,79 @@ public class Observable<T> {
             assertEquals(1, counter.get());
         }
 
+        /**
+         * https://github.com/Netflix/RxJava/issues/198
+         * 
+         * Rx Design Guidelines 5.2
+         * 
+         * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
+         * to rethrow the exception on the thread that the message comes out from the observable sequence.
+         * The OnCompleted behavior in this case is to do nothing."
+         */
+        @Test
+        public void testErrorThrownWithoutErrorHandlerSynchronous() {
+            try {
+                error(new RuntimeException("failure")).subscribe(new Action1<Object>() {
+
+                    @Override
+                    public void call(Object t1) {
+                        // won't get anything
+                    }
+
+                });
+                fail("expected exception");
+            } catch (Exception e) {
+                assertEquals("failure", e.getMessage());
+            }
+        }
+
+        /**
+         * https://github.com/Netflix/RxJava/issues/198
+         * 
+         * Rx Design Guidelines 5.2
+         * 
+         * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
+         * to rethrow the exception on the thread that the message comes out from the observable sequence.
+         * The OnCompleted behavior in this case is to do nothing."
+         * 
+         * @throws InterruptedException
+         */
+        @Test
+        public void testErrorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
+            final CountDownLatch latch = new CountDownLatch(1);
+            final AtomicReference<Exception> exception = new AtomicReference<Exception>();
+            Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(final Observer<String> observer) {
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            try {
+                                observer.onError(new RuntimeException("failure"));
+                            } catch (Exception e) {
+                                // without an onError handler it has to just throw on whatever thread invokes it
+                                exception.set(e);
+                            }
+                            latch.countDown();
+                        }
+                    }).start();
+                    return Subscriptions.empty();
+                }
+            }).subscribe(new Action1<Object>() {
+
+                @Override
+                public void call(Object t1) {
+
+                }
+
+            });
+            // wait for exception
+            latch.await(3000, TimeUnit.MILLISECONDS);
+            assertNotNull(exception.get());
+            assertEquals("failure", exception.get().getMessage());
+        }
     }
 
 }
