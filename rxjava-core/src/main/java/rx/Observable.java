@@ -82,6 +82,7 @@ import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.OnErrorNotImplementedException;
 import rx.util.Range;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
@@ -116,20 +117,21 @@ public class Observable<T> {
 
     private final Func1<Observer<T>, Subscription> onSubscribe;
 
-    protected Observable() {
-        this(null);
-    }
-
     /**
-     * Construct an Observable with Function to execute when subscribed to.
+     * Observable with Function to execute when subscribed to.
      * <p>
-     * NOTE: Generally you're better off using {@link #create(Func1)} to create an Observable instead of using inheritance.
+     * NOTE: Use {@link #create(Func1)} to create an Observable instead of this method unless you specifically have a need for inheritance.
      * 
      * @param onSubscribe
      *            {@link Func1} to be executed when {@link #subscribe(Observer)} is called.
      */
     protected Observable(Func1<Observer<T>, Subscription> onSubscribe) {
         this.onSubscribe = onSubscribe;
+    }
+
+    protected Observable() {
+        this(null);
+        //TODO should this be made private to prevent it? It really serves no good purpose and only confuses things. Unit tests are incorrectly using it today
     }
 
     /**
@@ -156,11 +158,16 @@ public class Observable<T> {
      * @param observer
      * @return a {@link Subscription} reference that allows observers
      *         to stop receiving notifications before the provider has finished sending them
+     * @throws IllegalArgumentException
+     *             if null argument provided
      */
     public Subscription subscribe(Observer<T> observer) {
         // allow the hook to intercept and/or decorate
         Func1<Observer<T>, Subscription> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
         // validate and proceed
+        if (observer == null) {
+            throw new IllegalArgumentException("observer can not be null");
+        }
         if (onSubscribeFunction == null) {
             throw new IllegalStateException("onSubscribe function can not be null.");
             // the subscribe function can also be overridden but generally that's not the appropriate approach so I won't mention that in the exception
@@ -183,10 +190,16 @@ public class Observable<T> {
                 subscription.wrap(onSubscribeFunction.call(new AtomicObserver<T>(subscription, observer)));
                 return hook.onSubscribeReturn(this, subscription);
             }
+        } catch (OnErrorNotImplementedException e) {
+            // special handling when onError is not implemented ... we just rethrow
+            throw e;
         } catch (Exception e) {
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
                 observer.onError(hook.onSubscribeError(this, e));
+            } catch (OnErrorNotImplementedException e2) {
+                // special handling when onError is not implemented ... we just rethrow
+                throw e2;
             } catch (Exception e2) {
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
@@ -223,6 +236,8 @@ public class Observable<T> {
      *            The {@link Scheduler} that the sequence is subscribed to on.
      * @return a {@link Subscription} reference that allows observers
      *         to stop receiving notifications before the provider has finished sending them
+     * @throws IllegalArgumentException
+     *             if null argument provided
      */
     public Subscription subscribe(Observer<T> observer, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(observer);
@@ -240,11 +255,14 @@ public class Observable<T> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Subscription subscribe(final Map<String, Object> callbacks) {
-        // lookup and memoize onNext
+        if (callbacks == null) {
+            throw new RuntimeException("callbacks map can not be null");
+        }
         Object _onNext = callbacks.get("onNext");
         if (_onNext == null) {
-            throw new RuntimeException("onNext must be implemented");
+            throw new RuntimeException("'onNext' key must contain an implementation");
         }
+        // lookup and memoize onNext
         final FuncN onNext = Functions.from(_onNext);
 
         /**
@@ -268,6 +286,8 @@ public class Observable<T> {
                 Object onError = callbacks.get("onError");
                 if (onError != null) {
                     Functions.from(onError).call(e);
+                } else {
+                    throw new OnErrorNotImplementedException(e);
                 }
             }
 
@@ -290,10 +310,11 @@ public class Observable<T> {
             return subscribe((Observer) o);
         }
 
-        // lookup and memoize onNext
         if (o == null) {
-            throw new RuntimeException("onNext must be implemented");
+            throw new IllegalArgumentException("onNext can not be null");
         }
+
+        // lookup and memoize onNext
         final FuncN onNext = Functions.from(o);
 
         /**
@@ -311,7 +332,7 @@ public class Observable<T> {
             @Override
             public void onError(Exception e) {
                 handleError(e);
-                // no callback defined
+                throw new OnErrorNotImplementedException(e);
             }
 
             @Override
@@ -327,6 +348,9 @@ public class Observable<T> {
     }
 
     public Subscription subscribe(final Action1<T> onNext) {
+        if (onNext == null) {
+            throw new IllegalArgumentException("onNext can not be null");
+        }
 
         /**
          * Wrapping since raw functions provided by the user are being invoked.
@@ -343,14 +367,11 @@ public class Observable<T> {
             @Override
             public void onError(Exception e) {
                 handleError(e);
-                // no callback defined
+                throw new OnErrorNotImplementedException(e);
             }
 
             @Override
             public void onNext(T args) {
-                if (onNext == null) {
-                    throw new RuntimeException("onNext must be implemented");
-                }
                 onNext.call(args);
             }
 
@@ -363,10 +384,14 @@ public class Observable<T> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Subscription subscribe(final Object onNext, final Object onError) {
-        // lookup and memoize onNext
         if (onNext == null) {
-            throw new RuntimeException("onNext must be implemented");
+            throw new IllegalArgumentException("onNext can not be null");
         }
+        if (onError == null) {
+            throw new IllegalArgumentException("onError can not be null");
+        }
+
+        // lookup and memoize onNext
         final FuncN onNextFunction = Functions.from(onNext);
 
         /**
@@ -384,9 +409,7 @@ public class Observable<T> {
             @Override
             public void onError(Exception e) {
                 handleError(e);
-                if (onError != null) {
-                    Functions.from(onError).call(e);
-                }
+                Functions.from(onError).call(e);
             }
 
             @Override
@@ -402,6 +425,12 @@ public class Observable<T> {
     }
 
     public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError) {
+        if (onNext == null) {
+            throw new IllegalArgumentException("onNext can not be null");
+        }
+        if (onError == null) {
+            throw new IllegalArgumentException("onError can not be null");
+        }
 
         /**
          * Wrapping since raw functions provided by the user are being invoked.
@@ -418,16 +447,11 @@ public class Observable<T> {
             @Override
             public void onError(Exception e) {
                 handleError(e);
-                if (onError != null) {
-                    onError.call(e);
-                }
+                onError.call(e);
             }
 
             @Override
             public void onNext(T args) {
-                if (onNext == null) {
-                    throw new RuntimeException("onNext must be implemented");
-                }
                 onNext.call(args);
             }
 
@@ -440,10 +464,17 @@ public class Observable<T> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Subscription subscribe(final Object onNext, final Object onError, final Object onComplete) {
-        // lookup and memoize onNext
         if (onNext == null) {
-            throw new RuntimeException("onNext must be implemented");
+            throw new IllegalArgumentException("onNext can not be null");
         }
+        if (onError == null) {
+            throw new IllegalArgumentException("onError can not be null");
+        }
+        if (onComplete == null) {
+            throw new IllegalArgumentException("onComplete can not be null");
+        }
+
+        // lookup and memoize onNext        
         final FuncN onNextFunction = Functions.from(onNext);
 
         /**
@@ -455,17 +486,13 @@ public class Observable<T> {
 
             @Override
             public void onCompleted() {
-                if (onComplete != null) {
-                    Functions.from(onComplete).call();
-                }
+                Functions.from(onComplete).call();
             }
 
             @Override
             public void onError(Exception e) {
                 handleError(e);
-                if (onError != null) {
-                    Functions.from(onError).call(e);
-                }
+                Functions.from(onError).call(e);
             }
 
             @Override
@@ -481,6 +508,15 @@ public class Observable<T> {
     }
 
     public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError, final Action0 onComplete) {
+        if (onNext == null) {
+            throw new IllegalArgumentException("onNext can not be null");
+        }
+        if (onError == null) {
+            throw new IllegalArgumentException("onError can not be null");
+        }
+        if (onComplete == null) {
+            throw new IllegalArgumentException("onComplete can not be null");
+        }
 
         /**
          * Wrapping since raw functions provided by the user are being invoked.
@@ -497,16 +533,11 @@ public class Observable<T> {
             @Override
             public void onError(Exception e) {
                 handleError(e);
-                if (onError != null) {
-                    onError.call(e);
-                }
+                onError.call(e);
             }
 
             @Override
             public void onNext(T args) {
-                if (onNext == null) {
-                    throw new RuntimeException("onNext must be implemented");
-                }
                 onNext.call(args);
             }
 
@@ -3768,6 +3799,79 @@ public class Observable<T> {
             assertEquals(1, counter.get());
         }
 
+        /**
+         * https://github.com/Netflix/RxJava/issues/198
+         * 
+         * Rx Design Guidelines 5.2
+         * 
+         * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
+         * to rethrow the exception on the thread that the message comes out from the observable sequence.
+         * The OnCompleted behavior in this case is to do nothing."
+         */
+        @Test
+        public void testErrorThrownWithoutErrorHandlerSynchronous() {
+            try {
+                error(new RuntimeException("failure")).subscribe(new Action1<Object>() {
+
+                    @Override
+                    public void call(Object t1) {
+                        // won't get anything
+                    }
+
+                });
+                fail("expected exception");
+            } catch (Exception e) {
+                assertEquals("failure", e.getMessage());
+            }
+        }
+
+        /**
+         * https://github.com/Netflix/RxJava/issues/198
+         * 
+         * Rx Design Guidelines 5.2
+         * 
+         * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
+         * to rethrow the exception on the thread that the message comes out from the observable sequence.
+         * The OnCompleted behavior in this case is to do nothing."
+         * 
+         * @throws InterruptedException
+         */
+        @Test
+        public void testErrorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
+            final CountDownLatch latch = new CountDownLatch(1);
+            final AtomicReference<Exception> exception = new AtomicReference<Exception>();
+            Observable.create(new Func1<Observer<String>, Subscription>() {
+
+                @Override
+                public Subscription call(final Observer<String> observer) {
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            try {
+                                observer.onError(new RuntimeException("failure"));
+                            } catch (Exception e) {
+                                // without an onError handler it has to just throw on whatever thread invokes it
+                                exception.set(e);
+                            }
+                            latch.countDown();
+                        }
+                    }).start();
+                    return Subscriptions.empty();
+                }
+            }).subscribe(new Action1<Object>() {
+
+                @Override
+                public void call(Object t1) {
+
+                }
+
+            });
+            // wait for exception
+            latch.await(3000, TimeUnit.MILLISECONDS);
+            assertNotNull(exception.get());
+            assertEquals("failure", exception.get().getMessage());
+        }
     }
 
 }
