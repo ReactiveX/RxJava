@@ -19,10 +19,13 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -30,6 +33,7 @@ import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observables.GroupedObservable;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
@@ -280,6 +284,29 @@ def class ObservableTests {
         Observable.from(1, 2, 3).all({ x -> x > 0 }).subscribe({ result -> a.received(result) });
         verify(a, times(1)).received(true);
     }
+    
+    @Test
+    public void testGroupBy() {
+        int count=0;
+        
+        Observable.from("one", "two", "three", "four", "five", "six")
+        .groupBy({String s -> s.length()})
+        .mapMany({
+            groupObservable ->
+            
+            return groupObservable.map({
+                s ->
+                return "Value: " + s + " Group: " + groupObservable.getKey(); 
+            });
+          }).toBlockingObservable().forEach({
+            s ->
+            println(s);
+            count++;
+          })
+          
+          assertEquals(6, count);
+    }
+    
 
     def class AsyncObservable implements Func1<Observer<Integer>, Subscription> {
 

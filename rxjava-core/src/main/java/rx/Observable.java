@@ -1294,6 +1294,28 @@ public class Observable<T> {
         return create(OperationGroupBy.groupBy(source, keySelector, elementSelector));
     }
 
+    @SuppressWarnings("rawtypes")
+    public static <K, T, R> Observable<GroupedObservable<K, R>> groupBy(Observable<T> source, final Object keySelector, final Object elementSelector) {
+        final FuncN _k = Functions.from(keySelector);
+        final FuncN _e = Functions.from(elementSelector);
+
+        return groupBy(source, new Func1<T, K>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public K call(T t1) {
+                return (K) _k.call(t1);
+            }
+        }, new Func1<T, R>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public R call(T t1) {
+                return (R) _e.call(t1);
+            }
+        });
+    }
+
     /**
      * Groups the items emitted by an Observable according to a specified criteria, and emits these
      * grouped items as Observables, one Observable per group.
@@ -1313,6 +1335,20 @@ public class Observable<T> {
      */
     public static <K, T> Observable<GroupedObservable<K, T>> groupBy(Observable<T> source, final Func1<T, K> keySelector) {
         return create(OperationGroupBy.groupBy(source, keySelector));
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static <K, T> Observable<GroupedObservable<K, T>> groupBy(Observable<T> source, final Object keySelector) {
+        final FuncN _k = Functions.from(keySelector);
+
+        return groupBy(source, new Func1<T, K>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public K call(T t1) {
+                return (K) _k.call(t1);
+            }
+        });
     }
 
     /**
@@ -3560,6 +3596,10 @@ public class Observable<T> {
     public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
         return groupBy(this, keySelector, elementSelector);
     }
+    
+    public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Object keySelector, final Object elementSelector) {
+        return groupBy(this, keySelector, elementSelector);
+    }
 
     /**
      * Groups the items emitted by an Observable according to a specified criteria, and emits these
@@ -3576,6 +3616,10 @@ public class Observable<T> {
      *         that key value
      */
     public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<T, K> keySelector) {
+        return groupBy(this, keySelector);
+    }
+    
+    public <K> Observable<GroupedObservable<K, T>> groupBy(final Object keySelector) {
         return groupBy(this, keySelector);
     }
 
