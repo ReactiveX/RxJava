@@ -67,7 +67,7 @@ public final class OperationZip {
     @SuppressWarnings("unchecked")
     public static <R> Func1<Observer<R>, Subscription> zip(Collection<Observable<?>> ws, FuncN<R> zipFunction) {
         Aggregator a = new Aggregator(zipFunction);
-        for (Observable<?> w : ws) {
+        for (Observable w : ws) {
             ZipObserver zipObserver = new ZipObserver(a, w);
             a.addObserver(zipObserver);
         }
@@ -281,6 +281,23 @@ public final class OperationZip {
     }
 
     public static class UnitTest {
+        
+        @SuppressWarnings("unchecked")
+        @Test
+        public void testCollectionSizeDifferentThanFunction() {
+            FuncN<String> zipr = Functions.from(getConcatStringIntegerIntArrayZipr());
+
+            /* define a Observer to receive aggregated events */
+            Observer<String> aObserver = mock(Observer.class);
+
+            Collection ws = java.util.Collections.singleton(Observable.from("one", "two"));
+            Observable<String> w = Observable.create(zip(ws, zipr));
+            w.subscribe(aObserver);
+
+            verify(aObserver, times(1)).onError(any(Exception.class));
+            verify(aObserver, never()).onCompleted();
+            verify(aObserver, never()).onNext(any(String.class));
+        }
 
         @SuppressWarnings("unchecked")
         /* mock calls don't do generics */
