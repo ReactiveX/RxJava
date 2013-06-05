@@ -68,10 +68,6 @@ public final class OperationGroupBy {
     private static class GroupBy<K, V> implements Func1<Observer<GroupedObservable<K, V>>, Subscription> {
 
         private final Observable<KeyValue<K, V>> source;
-        private final ConcurrentHashMap<K, GroupedSubject<K, V>> groupedObservables = new ConcurrentHashMap<K, GroupedSubject<K, V>>();
-        private final AtomicObservableSubscription actualParentSubscription = new AtomicObservableSubscription();
-        private final AtomicInteger numGroupSubscriptions = new AtomicInteger();
-        private final AtomicBoolean unsubscribeRequested = new AtomicBoolean(false);
 
         private GroupBy(Observable<KeyValue<K, V>> source) {
             this.source = source;
@@ -79,78 +75,89 @@ public final class OperationGroupBy {
 
         @Override
         public Subscription call(final Observer<GroupedObservable<K, V>> observer) {
-            final GroupBy<K, V> _this = this;
-            actualParentSubscription.wrap(source.subscribe(new Observer<KeyValue<K, V>>() {
-
-                @Override
-                public void onCompleted() {
-                    // we need to propagate to all children I imagine ... we can't just leave all of those Observable/Observers hanging
-                    for (GroupedSubject<K, V> o : groupedObservables.values()) {
-                        o.onCompleted();
-                    }
-                    // now the parent
-                    observer.onCompleted();
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    // we need to propagate to all children I imagine ... we can't just leave all of those Observable/Observers hanging 
-                    for (GroupedSubject<K, V> o : groupedObservables.values()) {
-                        o.onError(e);
-                    }
-                    // now the parent
-                    observer.onError(e);
-                }
-
-                @Override
-                public void onNext(KeyValue<K, V> value) {
-                    GroupedSubject<K, V> gs = groupedObservables.get(value.key);
-                    if (gs == null) {
-                        if (unsubscribeRequested.get()) {
-                            // unsubscribe has been requested so don't create new groups
-                            // only send data to groups already created
-                            return;
-                        }
-                        /*
-                         * Technically the source should be single-threaded so we shouldn't need to do this but I am
-                         * programming defensively as most operators are so this can work with a concurrent sequence
-                         * if it ends up receiving one.
-                         */
-                        GroupedSubject<K, V> newGs = GroupedSubject.<K, V> create(value.key, _this);
-                        GroupedSubject<K, V> existing = groupedObservables.putIfAbsent(value.key, newGs);
-                        if (existing == null) {
-                            // we won so use the one we created
-                            gs = newGs;
-                            // since we won the creation we emit this new GroupedObservable
-                            observer.onNext(gs);
-                        } else {
-                            // another thread beat us so use the existing one
-                            gs = existing;
-                        }
-                    }
-                    gs.onNext(value.value);
-                }
-            }));
+            final AtomicObservableSubscription actualParentSubscription = new AtomicObservableSubscription();
+            final GroupByObserver<K,V> internalObserver = new GroupByObserver<K, V>(observer, actualParentSubscription);
+            actualParentSubscription.wrap(source.subscribe(internalObserver));
 
             return new Subscription() {
 
                 @Override
                 public void unsubscribe() {
-                    if (numGroupSubscriptions.get() == 0) {
+                    if (internalObserver.numGroupSubscriptions.get() == 0) {
                         // if we have no group subscriptions we will unsubscribe
                         actualParentSubscription.unsubscribe();
                     } else {
                         // otherwise we mark to not send any more groups (waiting on existing groups to finish)
-                        unsubscribeRequested.set(true);
+                        internalObserver.unsubscribeRequested.set(true);
                     }
                 }
             };
         }
+    }
+
+    private static class GroupByObserver<K, V> implements Observer<KeyValue<K, V>> {
+        private final ConcurrentHashMap<K, GroupedSubject<K, V>> groupedObservables = new ConcurrentHashMap<K, GroupedSubject<K, V>>();
+        private final AtomicInteger numGroupSubscriptions = new AtomicInteger();
+        private final AtomicBoolean unsubscribeRequested = new AtomicBoolean(false);
+        private final Observer<GroupedObservable<K, V>> observer;
+        private final Subscription actualParentSubscription;
+
+        private GroupByObserver(Observer<GroupedObservable<K, V>> observer, Subscription actualParentSubscription) {
+            this.observer = observer;
+            this.actualParentSubscription = actualParentSubscription;
+        }
+
+        @Override
+        public void onCompleted() {
+            // we need to propagate to all children I imagine ... we can't just leave all of those Observable/Observers hanging
+            for (GroupedSubject<K, V> o : groupedObservables.values()) {
+                o.onCompleted();
+            }
+            // now the parent
+            observer.onCompleted();
+        }
+
+        @Override
+        public void onError(Exception e) {
+            // we need to propagate to all children I imagine ... we can't just leave all of those Observable/Observers hanging
+            for (GroupedSubject<K, V> o : groupedObservables.values()) {
+                o.onError(e);
+            }
+            // now the parent
+            observer.onError(e);
+        }
+
+        @Override
+        public void onNext(KeyValue<K, V> value) {
+            GroupedSubject<K, V> gs = groupedObservables.get(value.key);
+            if (gs == null) {
+                if (unsubscribeRequested.get()) {
+                    // unsubscribe has been requested so don't create new groups
+                    // only send data to groups already created
+                    return;
+                }
+                /*
+                    * Technically the source should be single-threaded so we shouldn't need to do this but I am
+                    * programming defensively as most operators are so this can work with a concurrent sequence
+                    * if it ends up receiving one.
+                    */
+                GroupedSubject<K, V> newGs = GroupedSubject.<K, V> create(value.key, this);
+                GroupedSubject<K, V> existing = groupedObservables.putIfAbsent(value.key, newGs);
+                if (existing == null) {
+                    // we won so use the one we created
+                    gs = newGs;
+                    // since we won the creation we emit this new GroupedObservable
+                    observer.onNext(gs);
+                } else {
+                    // another thread beat us so use the existing one
+                    gs = existing;
+                }
+            }
+            gs.onNext(value.value);
+        }
 
         /**
          * Children notify of being subscribed to.
-         * 
-         * @param key
          */
         private void subscribeKey(K key) {
             numGroupSubscriptions.incrementAndGet();
@@ -158,8 +165,6 @@ public final class OperationGroupBy {
 
         /**
          * Children notify of being unsubscribed from.
-         * 
-         * @param key
          */
         private void unsubscribeKey(K key) {
             int c = numGroupSubscriptions.decrementAndGet();
@@ -171,7 +176,7 @@ public final class OperationGroupBy {
 
     private static class GroupedSubject<K, T> extends GroupedObservable<K, T> implements Observer<T> {
 
-        static <K, T> GroupedSubject<K, T> create(final K key, final GroupBy<K, T> parent) {
+        static <K, T> GroupedSubject<K, T> create(final K key, final GroupByObserver<K, T> parent) {
             @SuppressWarnings("unchecked")
             final AtomicReference<Observer<T>> subscribedObserver = new AtomicReference<Observer<T>>(EMPTY_OBSERVER);
 
