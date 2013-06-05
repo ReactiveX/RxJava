@@ -19,6 +19,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -60,6 +61,16 @@ public final class OperationZip {
         a.addObserver(new ZipObserver<R, T1>(a, w1));
         a.addObserver(new ZipObserver<R, T2>(a, w2));
         a.addObserver(new ZipObserver<R, T3>(a, w3));
+        return a;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <R> Func1<Observer<R>, Subscription> zip(Collection<Observable<?>> ws, FuncN<R> zipFunction) {
+        Aggregator a = new Aggregator(zipFunction);
+        for (Observable<?> w : ws) {
+            ZipObserver zipObserver = new ZipObserver(a, w);
+            a.addObserver(zipObserver);
+        }
         return a;
     }
 
