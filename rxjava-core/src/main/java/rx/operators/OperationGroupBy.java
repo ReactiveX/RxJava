@@ -19,7 +19,9 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -587,7 +589,9 @@ public final class OperationGroupBy {
                 }
             });
             try {
-                source.thread.join();
+                for (Thread t : source.threads) {
+                    t.join();
+                }
             } catch (InterruptedException ex) {
             }
 
@@ -605,11 +609,72 @@ public final class OperationGroupBy {
             o.verify(observer).onNext(9);
         }
 
+        @Test
+        public void testSubscribeTwoTimesToGroupBy() {
+            CounterSource source = new CounterSource();
+            @SuppressWarnings("unchecked")
+            final Observer<Integer> observer1 = mock(Observer.class);
+            @SuppressWarnings("unchecked")
+            final Observer<Integer> observer2 = mock(Observer.class);
+
+            Func1<Integer, Integer> modulo2 = new Func1<Integer, Integer>() {
+                @Override
+                public Integer call(Integer x) {
+                    return x % 2;
+                }
+            };
+
+            Observable<GroupedObservable<Integer, Integer>> groups = source.groupBy(modulo2);
+
+            Subscription outerSubscription1 = groups.subscribe(new Action1<GroupedObservable<Integer, Integer>>() {
+                @Override
+                public void call(GroupedObservable<Integer, Integer> group) {
+                    group.subscribe(observer1);
+                }
+            });
+            Subscription outerSubscription2 = groups.subscribe(new Action1<GroupedObservable<Integer, Integer>>() {
+                @Override
+                public void call(GroupedObservable<Integer, Integer> group) {
+                    group.subscribe(observer2);
+                }
+            });
+            try {
+                for (Thread t : source.threads) {
+                    t.join();
+                }
+            } catch (InterruptedException ex) {
+            }
+
+            // Receival of values by observer1 and observer2 can be interleaved, so use inOrder on them separately
+            InOrder o1 = inOrder(observer1);
+            o1.verify(observer1).onNext(0);
+            o1.verify(observer1).onNext(1);
+            o1.verify(observer1).onNext(2);
+            o1.verify(observer1).onNext(3);
+            o1.verify(observer1).onNext(4);
+            o1.verify(observer1).onNext(5);
+            o1.verify(observer1).onNext(6);
+            o1.verify(observer1).onNext(7);
+            o1.verify(observer1).onNext(8);
+            o1.verify(observer1).onNext(9);
+            InOrder o2 = inOrder(observer2);
+            o2.verify(observer2).onNext(0);
+            o2.verify(observer2).onNext(1);
+            o2.verify(observer2).onNext(2);
+            o2.verify(observer2).onNext(3);
+            o2.verify(observer2).onNext(4);
+            o2.verify(observer2).onNext(5);
+            o2.verify(observer2).onNext(6);
+            o2.verify(observer2).onNext(7);
+            o2.verify(observer2).onNext(8);
+            o2.verify(observer2).onNext(9);
+        }
+
         private class CounterSource extends Observable<Integer> {
-            public Thread thread = null;
+            public List<Thread> threads = new ArrayList<Thread>();
             @Override
             public Subscription subscribe(final Observer<Integer> observer) {
-                thread = new Thread(new Runnable() {
+                final Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         int i = 0;
@@ -622,6 +687,7 @@ public final class OperationGroupBy {
                     }
                 });
                 thread.start();
+                threads.add(thread);
                 return new Subscription() {
                     @Override
                     public void unsubscribe() {
