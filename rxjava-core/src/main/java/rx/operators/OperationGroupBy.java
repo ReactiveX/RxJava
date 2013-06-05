@@ -137,6 +137,7 @@ public final class OperationGroupBy {
                     if (numGroupSubscriptions.get() == 0) {
                         // if we have no group subscriptions we will unsubscribe
                         actualParentSubscription.unsubscribe();
+                    } else {
                         // otherwise we mark to not send any more groups (waiting on existing groups to finish)
                         unsubscribeRequested.set(true);
                     }
@@ -160,7 +161,7 @@ public final class OperationGroupBy {
          */
         private void unsubscribeKey(K key) {
             int c = numGroupSubscriptions.decrementAndGet();
-            if (c == 0) {
+            if (c == 0 && unsubscribeRequested.get()) {
                 actualParentSubscription.unsubscribe();
             }
         }
