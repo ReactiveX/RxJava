@@ -35,9 +35,9 @@ import rx.util.functions.Functions;
  * {@link Observable#toBlockingObservable()}
  * <p>
  * The documentation for this interface makes use of a form of marble diagram that has been
- * modified to illustrate blocking operators. The following legend explains marble diagrams:
+ * modified to illustrate blocking operators. The following legend explains these marble diagrams:
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/legend.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.legend.png">
  * <p>
  * For more information see the
  * <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">Blocking
