@@ -35,7 +35,11 @@ import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 /**
- * Similar to toList in that it converts a sequence<T> into a List<T> except that it accepts a Function that will provide an implementation of Comparator.
+ * Return an Observable that emits the items emitted by the source Observable, in a sorted order
+ * (each item emitted by the Observable must implement Comparable with respect to all other items
+ * in the sequence, or you must pass in a sort function).
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/toSortedList.png">
  * 
  * @param <T>
  */

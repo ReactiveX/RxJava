@@ -26,6 +26,11 @@ import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
+/**
+ * Filters an Observable by discarding any items it emits that do not meet some test.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/filter.png">
+ */
 public final class OperationFilter<T> {
 
     public static <T> Func1<Observer<T>, Subscription> filter(Observable<T> that, Func1<T, Boolean> predicate) {

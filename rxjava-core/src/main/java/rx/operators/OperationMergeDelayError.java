@@ -37,19 +37,27 @@ import rx.util.CompositeException;
 import rx.util.functions.Func1;
 
 /**
- * Same functionality as OperationMerge except that onError events will be skipped so that all onNext calls are passed on until all sequences finish with onComplete or onError, and then the first
- * onError received (if any) will be passed on.
+ * This behaves like {@link OperationMerge} except that if any of the merged Observables notify of
+ * an error via <code>onError</code>, mergeDelayError will refrain from propagating that error
+ * notification until all of the merged Observables have finished emitting items.
  * <p>
- * This allows retrieving all successful onNext calls without being blocked by an onError early in a sequence.
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/mergeDelayError.png">
  * <p>
- * NOTE: If this is used on an infinite stream it will never call onError and effectively will swallow errors.
+ * Even if multiple merged Observables send <code>onError</code> notifications, mergeDelayError will
+ * only invoke the <code>onError</code> method of its Observers once.
+ * <p>
+ * This operation allows an Observer to receive all successfully emitted items from all of the
+ * source Observables without being interrupted by an error notification from one of them.
+ * <p>
+ * NOTE: If this is used on an Observable that never completes, it will never call
+ * <code>onError</code> and will effectively swallow errors.
  */
 public final class OperationMergeDelayError {
 
     /**
-     * Flattens the observable sequences from the list of Observables into one observable sequence without any transformation and delays any onError calls until after all sequences have called
-     * onError or onComplete so as to allow all successful
-     * onNext calls to be received.
+     * Flattens the observable sequences from the list of Observables into one observable sequence
+     * without any transformation and delays any onError calls until after all sequences have called
+     * onError or onComplete so as to allow all successful onNext calls to be received.
      * 
      * @param sequences
      *            An observable sequence of elements to project.

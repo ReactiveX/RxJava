@@ -32,6 +32,25 @@ import rx.subscriptions.Subscriptions;
 import rx.util.CompositeException;
 import rx.util.functions.Func1;
 
+/**
+ * Instruct an Observable to pass control to another Observable (the return value of a function)
+ * rather than invoking <code>onError</code> if it encounters an error.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/onErrorResumeNext.png">
+ * <p>
+ * By default, when an Observable encounters an error that prevents it from emitting the expected
+ * item to its Observer, the Observable invokes its Observer's <code>onError</code> method, and
+ * then quits without invoking any more of its Observer's methods. The onErrorResumeNext operation
+ * changes this behavior. If you pass a function that returns an Observable (resumeFunction) to
+ * onErrorResumeNext, if the source Observable encounters an error, instead of invoking its
+ * Observer's <code>onError</code> method, it will instead relinquish control to this new
+ * Observable, which will invoke the Observer's <code>onNext</code> method if it is able to do so.
+ * In such a case, because no Observable necessarily invokes <code>onError</code>, the Observer may
+ * never know that an error happened.
+ * <p>
+ * You can use this to prevent errors from propagating or to supply fallback data should errors be
+ * encountered.
+ */
 public final class OperationOnErrorResumeNextViaFunction<T> {
 
     public static <T> Func1<Observer<T>, Subscription> onErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<Exception, Observable<T>> resumeFunction) {

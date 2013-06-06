@@ -33,7 +33,10 @@ import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 /**
- * Returns values from an observable sequence as long as a specified condition is true, and then skips the remaining values.
+ * Returns an Observable that emits items emitted by the source Observable as long as a specified
+ * condition is true.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhile.png">
  */
 public final class OperationTakeWhile {
 

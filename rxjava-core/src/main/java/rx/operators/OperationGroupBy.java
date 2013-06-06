@@ -40,6 +40,12 @@ import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
 
+/**
+ * Groups the items emitted by an Observable according to a specified criterion, and emits these
+ * grouped items as Observables, one Observable per group.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/groupBy.png">
+ */
 public final class OperationGroupBy {
 
     public static <K, T, R> Func1<Observer<GroupedObservable<K, R>>, Subscription> groupBy(Observable<T> source, final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {

@@ -28,6 +28,19 @@ import rx.Subscription;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
+/**
+ * Returns an Observable that applies a function to the first item emitted by a source Observable,
+ * then feeds the result of that function along with the second item emitted by an Observable into
+ * the same function, and so on until all items have been emitted by the source Observable,
+ * emitting the result of each of these iterations.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/scan.png">
+ * <p>
+ * This sort of function is sometimes called an accumulator.
+ * <p>
+ * Note that when you pass a seed to <code>scan()</code> the resulting Observable will emit that
+ * seed as its first emitted item.
+ */
 public final class OperationScan {
     /**
      * Applies an accumulator function over an observable sequence and returns each intermediate result with the specified source and accumulator.

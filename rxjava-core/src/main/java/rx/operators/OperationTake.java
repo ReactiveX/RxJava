@@ -32,7 +32,15 @@ import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
 /**
- * Returns a specified number of contiguous values from the start of an observable sequence.
+ * Returns an Observable that emits the first <code>num</code> items emitted by the source
+ * Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/take.png">
+ * <p>
+ * You can choose to pay attention only to the first <code>num</code> items emitted by an
+ * Observable by using the take operation. This operation returns an Observable that will invoke a
+ * subscribing Observer's <code>onNext</code> function a maximum of <code>num</code> times before
+ * invoking <code>onCompleted</code>.
  */
 public final class OperationTake {
 

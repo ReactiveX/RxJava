@@ -40,6 +40,12 @@ import rx.subscriptions.BooleanSubscription;
 import rx.util.Exceptions;
 import rx.util.functions.Func1;
 
+/**
+ * Returns an Observable that emits the items emitted by two or more Observables, one after the
+ * other.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/concat.png">
+ */
 public final class OperationConcat {
 
     /**

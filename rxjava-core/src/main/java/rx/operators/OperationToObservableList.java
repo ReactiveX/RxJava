@@ -31,6 +31,20 @@ import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
+/**
+ * Returns an Observable that emits a single item, a list composed of all the items emitted by the
+ * source Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/toList.png">
+ * <p>
+ * Normally, an Observable that returns multiple items will do so by invoking its Observer's
+ * <code>onNext</code> method for each such item. You can change this behavior, instructing the
+ * Observable to compose a list of all of these multiple items and then to invoke the Observer's
+ * <code>onNext</code> method once, passing it the entire list, by using the toList operator.
+ * <p>
+ * Be careful not to use this operator on Observables that emit infinite or very large numbers of
+ * items, as you do not have the option to unsubscribe.
+ */
 public final class OperationToObservableList<T> {
 
     public static <T> Func1<Observer<List<T>>, Subscription> toObservableList(Observable<T> that) {

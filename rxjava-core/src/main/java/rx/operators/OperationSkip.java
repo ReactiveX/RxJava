@@ -28,7 +28,13 @@ import rx.Subscription;
 import rx.util.functions.Func1;
 
 /**
- * Skips a specified number of contiguous values from the start of a Observable sequence and then returns the remaining values.
+ * Returns an Observable that skips the first <code>num</code> items emitted by the source
+ * Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/skip.png">
+ * <p>
+ * You can ignore the first <code>num</code> items emitted by an Observable and attend only to
+ * those items that come after, by modifying the Observable with the skip operation.
  */
 public final class OperationSkip {
 

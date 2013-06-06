@@ -34,6 +34,11 @@ import rx.concurrency.ImmediateScheduler;
 import rx.concurrency.Schedulers;
 import rx.util.functions.Func1;
 
+/**
+ * Asynchronously notify Observers on the specified Scheduler.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
+ */
 public class OperationObserveOn {
 
     public static <T> Func1<Observer<T>, Subscription> observeOn(Observable<T> source, Scheduler scheduler) {
