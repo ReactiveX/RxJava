@@ -73,119 +73,122 @@ public class BlockingObservable<T> extends Observable<T> {
     }
 
     /**
-     * Returns an Iterator that iterates over all items emitted by a specified Observable.
+     * Returns an {@link Iterator} that iterates over all items emitted by a specified
+     * {@link Observable}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterator.png">
      * 
      * @param source
-     *            the source Observable
+     *            the source {@link Observable}
      * @param <T>
-     *            the type of items emitted by the source Observable
-     * @return an iterator that can iterate over the items emitted by the Observable
+     *            the type of items emitted by the source {@link Observable}
+     * @return an {@link Iterator} that can iterate over the items emitted by the {@link Observable}
      */
     public static <T> Iterator<T> toIterator(Observable<T> source) {
         return OperationToIterator.toIterator(source);
     }
 
     /**
-     * Returns the last item emitted by a specified Observable.
+     * Returns the last item emitted by a specified {@link Observable}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.png">
      * 
      * @param source
-     *            the source Observable
-     * @return the last item emitted by the source Observable
+     *            the source {@link Observable}
+     * @return the last item emitted by the source {@link Observable}
      */
     public static <T> T last(final Observable<T> source) {
         return from(source).last();
     }
 
     /**
-     * Returns the last item emitted by an Observable that matches a given predicate.
+     * Returns the last item emitted by an {@link Observable} that matches a given predicate.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
      * 
      * @param source
-     *            the source Observable
+     *            the source {@link Observable}
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the last item emitted by the Observable for which the predicate function returns
-     *         <code>true</code>
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the last item emitted by the {@link Observable} for which the predicate function
+     *         returns <code>true</code>
      */
     public static <T> T last(final Observable<T> source, final Func1<T, Boolean> predicate) {
         return last(source.filter(predicate));
     }
 
     /**
-     * Returns the last item emitted by an Observable that matches a given predicate.
+     * Returns the last item emitted by an {@link Observable} that matches a given predicate.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
      * 
      * @param source
-     *            the source Observable
+     *            the source {@link Observable}
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the last item emitted by the Observable for which the predicate function returns
-     *         <code>true</code>
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the last item emitted by the {@link Observable} for which the predicate function
+     *         returns <code>true</code>
      */
     public static <T> T last(final Observable<T> source, final Object predicate) {
         return last(source.filter(predicate));
     }
 
     /**
-     * Returns the last item emitted by an Observable, or a default value if no item is emitted.
+     * Returns the last item emitted by an {@link Observable}, or a default value if no item is
+     * emitted.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.png">
      * 
      * @param source
-     *            the source Observable
+     *            the source {@link Observable}
      * @param defaultValue
-     *            a default value to return if the Observable emits no items
+     *            a default value to return if the {@link Observable} emits no items
      * @param <T>
-     *            the type of items emitted by the Observable
-     * @return the last item emitted by an Observable, or the default value if no item is emitted
+     *            the type of items emitted by the {@link Observable}
+     * @return the last item emitted by an {@link Observable}, or the default value if no item is
+     *         emitted
      */
     public static <T> T lastOrDefault(Observable<T> source, T defaultValue) {
         return from(source).lastOrDefault(defaultValue);
     }
 
     /**
-     * Returns the last item emitted by an Observable that matches a given predicate, or a default
-     * value if no such item is emitted.
+     * Returns the last item emitted by an {@link Observable} that matches a given predicate, or a
+     * default value if no such item is emitted.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png">
      * 
      * @param source
-     *            the source Observable
+     *            the source {@link Observable}
      * @param defaultValue
-     *            a default value to return if the Observable emits no matching items
+     *            a default value to return if the {@link Observable} emits no matching items
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
+     *            a predicate function to evaluate items emitted by the {@link Observable}
      * @param <T>
-     *            the type of items emitted by the Observable
-     * @return the last item emitted by an Observable that matches the predicate, or the default
-     *         value if no matching item is emitted
+     *            the type of items emitted by the {@link Observable}
+     * @return the last item emitted by an {@link Observable} that matches the predicate, or the
+     *         default value if no matching item is emitted
      */
     public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Func1<T, Boolean> predicate) {
         return lastOrDefault(source.filter(predicate), defaultValue);
     }
 
     /**
-     * Returns the last item emitted by an Observable that matches a given predicate, or a default
-     * value if no such item is emitted.
+     * Returns the last item emitted by an {@link Observable} that matches a given predicate, or a
+     * default value if no such item is emitted.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png">
      * 
      * @param source
-     *            the source Observable
+     *            the source {@link Observable}
      * @param defaultValue
-     *            a default value to return if the Observable emits no matching items
+     *            a default value to return if the {@link Observable} emits no matching items
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
+     *            a predicate function to evaluate items emitted by the {@link Observable}
      * @param <T>
-     *            the type of items emitted by the Observable
-     * @return the last item emitted by an Observable that matches the predicate, or the default
-     *         value if no matching item is emitted
+     *            the type of items emitted by the {@link Observable}
+     * @return the last item emitted by an {@link Observable} that matches the predicate, or the
+     *         default value if no matching item is emitted
      */
     public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Object predicate) {
         @SuppressWarnings("rawtypes")
@@ -200,36 +203,37 @@ public class BlockingObservable<T> extends Observable<T> {
     }
 
     /**
-     * Returns an Iterable that always returns the item most recently emitted by an Observable.
+     * Returns an {@link Iterable} that always returns the item most recently emitted by an
+     * {@link Observable}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.mostRecent.png">
      * 
      * @param source
-     *            the source Observable
+     *            the source {@link Observable}
      * @param <T>
-     *            the type of items emitted by the Observable
+     *            the type of items emitted by the {@link Observable}
      * @param initialValue
-     *            the initial value that will be yielded by the Iterable sequence if the Observable
-     *            has not yet emitted an item
-     * @return an Iterable that on each iteration returns the item that the Observable has most
-     *         recently emitted
+     *            the initial value that will be yielded by the {@link Iterable} sequence if the
+     *            {@link Observable} has not yet emitted an item
+     * @return an {@link Iterable} that on each iteration returns the item that the
+     *         {@link Observable} has most recently emitted
      */
     public static <T> Iterable<T> mostRecent(Observable<T> source, T initialValue) {
         return OperationMostRecent.mostRecent(source, initialValue);
     }
 
     /**
-     * Returns an Iterable that blocks until the Observable emits another item, then returns that
-     * item.
+     * Returns an {@link Iterable} that blocks until the {@link Observable} emits another item,
+     * then returns that item.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.next.png">
      * 
      * @param items
-     *            the source Observable
+     *            the source {@link Observable}
      * @param <T>
-     *            the type of items emitted by the Observable
-     * @return an Iterable that blocks upon each iteration until the Observable emits a new item,
-     *         whereupon the Iterable returns that item
+     *            the type of items emitted by the {@link Observable}
+     * @return an {@link Iterable} that blocks upon each iteration until the {@link Observable}
+     *         emits a new item, whereupon the Iterable returns that item
      */
     public static <T> Iterable<T> next(Observable<T> items) {
         return OperationNext.next(items);
@@ -255,144 +259,149 @@ public class BlockingObservable<T> extends Observable<T> {
     }
 
     /**
-     * If the Observable completes after emitting a single item, return that item, otherwise throw
-     * an exception.
+     * If the {@link Observable} completes after emitting a single item, return that item,
+     * otherwise throw an exception.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.png">
      * 
      * @param source
-     *            the source Observable
-     * @return the single item emitted by the Observable
+     *            the source {@link Observable}
+     * @return the single item emitted by the {@link Observable}
      * @throws IllegalStateException
-     *             if the Observable does not emit exactly one item
+     *             if the {@link Observable} does not emit exactly one item
      */
     public static <T> T single(Observable<T> source) {
         return from(source).single();
     }
 
     /**
-     * If the Observable completes after emitting a single item that matches a given predicate,
-     * return that item, otherwise throw an exception.
+     * If the {@link Observable} completes after emitting a single item that matches a given
+     * predicate, return that item, otherwise throw an exception.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
      * 
      * @param source
-     *            the source Observable
+     *            the source {@link Observable}
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the single item emitted by the source Observable that matches the predicate
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the single item emitted by the source {@link Observable} that matches the predicate
      * @throws IllegalStateException
-     *             if the Observable does not emit exactly one item that matches the predicate
+     *             if the {@link Observable} does not emit exactly one item that matches the
+     *             predicate
      */
     public static <T> T single(Observable<T> source, Func1<T, Boolean> predicate) {
         return from(source).single(predicate);
     }
 
     /**
-     * If the Observable completes after emitting a single item that matches a given predicate,
-     * return that item, otherwise throw an exception.
+     * If the {@link Observable} completes after emitting a single item that matches a given
+     * predicate, return that item, otherwise throw an exception.
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
      * 
      * @param source
-     *            the source Observable
+     *            the source {@link Observable}
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the single item emitted by the source Observable that matches the predicate
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the single item emitted by the source {@link Observable} that matches the predicate
      * @throws IllegalStateException
-     *             if the Observable does not emit exactly one item that matches the predicate
+     *             if the {@link Observable} does not emit exactly one item that matches the
+     *             predicate
      */
     public static <T> T single(Observable<T> source, Object predicate) {
         return from(source).single(predicate);
     }
 
     /**
-     * If the Observable completes after emitting a single item, return that item, otherwise return
-     * a default value.
+     * If the {@link Observable} completes after emitting a single item, return that item, otherwise
+     * return a default value.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.png">
      * 
      * @param source
-     *            the source Observable
+     *            the source {@link Observable}
      * @param defaultValue
-     *            a default value to return if the Observable emits no items
-     * @return the single item emitted by the source Observable, or a default value if no value is
-     *         emitted
+     *            a default value to return if the {@link Observable} emits no items
+     * @return the single item emitted by the source {@link Observable}, or a default value if no
+     *         value is emitted
      */
     public static <T> T singleOrDefault(Observable<T> source, T defaultValue) {
         return from(source).singleOrDefault(defaultValue);
     }
 
     /**
-     * If the Observable completes after emitting a single item that matches a given predicate,
-     * return that item, otherwise return a default value.
+     * If the {@link Observable} completes after emitting a single item that matches a given
+     * predicate, return that item, otherwise return a default value.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png">
      * 
      * @param source
-     *            the source Observable
+     *            the source {@link Observable}
      * @param defaultValue
-     *            a default value to return if the Observable emits no matching items
+     *            a default value to return if the {@link Observable} emits no matching items
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the single item emitted by the source Observable that matches the predicate, or a
-     *         default value if no such value is emitted
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the single item emitted by the source {@link Observable} that matches the predicate,
+     *         or a default value if no such value is emitted
      */
     public static <T> T singleOrDefault(Observable<T> source, T defaultValue, Func1<T, Boolean> predicate) {
         return from(source).singleOrDefault(defaultValue, predicate);
     }
 
     /**
-     * If the Observable completes after emitting a single item that matches a given predicate,
-     * return that item, otherwise return a default value.
+     * If the {@link Observable} completes after emitting a single item that matches a given
+     * predicate, return that item, otherwise return a default value.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png">
      * 
      * @param source
-     *            the source Observable
+     *            the source {@link Observable}
      * @param defaultValue
-     *            a default value to return if the Observable emits no matching items
+     *            a default value to return if the {@link Observable} emits no matching items
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the single item emitted by the source Observable that matches the predicate, or a
-     *         default value if no such value is emitted
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the single item emitted by the source {@link Observable} that matches the predicate,
+     *         or a default value if no such value is emitted
      */
     public static <T> T singleOrDefault(Observable<T> source, T defaultValue, Object predicate) {
         return from(source).singleOrDefault(defaultValue, predicate);
     }
 
     /**
-     * Returns a Future representing the single value emitted by an Observable.
+     * Returns a {@link Future} representing the single value emitted by an {@link Observable}.
      * <p>
-     * <code>toFuture()</code> throws an exception if the Observable emits more than one item. If
-     * the Observable may emit more than item, use <code>toList().toFuture()</code>.
+     * <code>toFuture()</code> throws an exception if the {@link Observable} emits more than one
+     * item. If the Observable may emit more than item, use
+     * {@link Observable#toList toList()}.toFuture()</code>.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
      * 
      * @param source
-     *            the source Observable
-     * @return a Future that expects a single item to be emitted by the source Observable
+     *            the source {@link Observable}
+     * @return a Future that expects a single item to be emitted by the source {@link Observable}
      */
     public static <T> Future<T> toFuture(final Observable<T> source) {
         return OperationToFuture.toFuture(source);
     }
 
     /**
-     * Converts an Observable into an Iterable.
+     * Converts an {@link Observable} into an {@link Iterable}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterable.png">
      * 
      * @param source
-     *            the source Observable
-     * @return an Iterable version of the underlying Observable
+     *            the source {@link Observable}
+     * @return an {@link Iterable} version of the underlying {@link Observable}
      */
     public static <T> Iterable<T> toIterable(final Observable<T> source) {
         return from(source).toIterable();
     }
 
     /**
-     * Used for protecting against errors being thrown from Observer implementations and ensuring onNext/onError/onCompleted contract compliance.
+     * Used for protecting against errors being thrown from {@link Observer} implementations and
+     * ensuring onNext/onError/onCompleted contract compliance.
      * <p>
-     * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
+     * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect
+     * calls to user code from within an operator"
      */
     private Subscription protectivelyWrapAndSubscribe(Observer<T> o) {
         AtomicObservableSubscription subscription = new AtomicObservableSubscription();
@@ -400,7 +409,7 @@ public class BlockingObservable<T> extends Observable<T> {
     }
     
     /**
-     * Invoke a method on each item emitted by the Observable; block until the Observable
+     * Invoke a method on each item emitted by the {@link Observable}; block until the Observable
      * completes.
      * <p>
      * NOTE: This will block even if the Observable is asynchronous.
@@ -411,7 +420,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
      * 
      * @param onNext
-     *            the {@link Action1} to invoke for every item emitted by the Observable
+     *            the {@link Action1} to invoke for every item emitted by the {@link Observable}
      * @throws RuntimeException
      *             if an error occurs
      */
@@ -468,7 +477,7 @@ public class BlockingObservable<T> extends Observable<T> {
     }
 
     /**
-     * Invoke a method on each item emitted by the Observable; block until the Observable
+     * Invoke a method on each item emitted by the {@link Observable}; block until the Observable
      * completes.
      * <p>
      * NOTE: This will block even if the Observable is asynchronous.
@@ -479,7 +488,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
      * 
      * @param o
-     *            the {@link Action1} to invoke for every item emitted by the Observable
+     *            the {@link Action1} to invoke for every item emitted by the {@link Observable}
      * @throws RuntimeException
      *             if an error occurs
      */
@@ -507,22 +516,23 @@ public class BlockingObservable<T> extends Observable<T> {
     }
     
     /**
-     * Returns an Iterator that iterates over all items emitted by a specified Observable.
+     * Returns an {@link Iterator} that iterates over all items emitted by a specified
+     * {@link Observable}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.getIterator.png">
      * 
-     * @return an iterator that can iterate over the items emitted by the Observable
+     * @return an {@link Iterator} that can iterate over the items emitted by the {@link Observable}
      */
     public Iterator<T> getIterator() {
         return OperationToIterator.toIterator(this);
     }
 
     /**
-     * Returns the last item emitted by a specified Observable.
+     * Returns the last item emitted by a specified {@link Observable}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.png">
      * 
-     * @return the last item emitted by the source Observable
+     * @return the last item emitted by the source {@link Observable}
      */
     public T last() {
         T result = null;
@@ -533,26 +543,26 @@ public class BlockingObservable<T> extends Observable<T> {
     }
 
     /**
-     * Returns the last item emitted by a specified Observable that matches a predicate.
+     * Returns the last item emitted by a specified {@link Observable} that matches a predicate.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
      * 
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the last item emitted by the Observable that matches the predicate
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the last item emitted by the {@link Observable} that matches the predicate
      */
     public T last(final Func1<T, Boolean> predicate) {
         return last(this, predicate);
     }
 
     /**
-     * Returns the last item emitted by a specified Observable that matches a predicate.
+     * Returns the last item emitted by a specified {@link Observable} that matches a predicate.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
      * 
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the last item emitted by the Observable that matches the predicate
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the last item emitted by the {@link Observable} that matches the predicate
      */
     public T last(final Object predicate) {
         @SuppressWarnings("rawtypes")
@@ -567,14 +577,15 @@ public class BlockingObservable<T> extends Observable<T> {
     }
 
     /**
-     * Returns the last item emitted by a specified Observable, or a default value if no items are
-     * emitted.
+     * Returns the last item emitted by a specified {@link Observable}, or a default value if no
+     * items are emitted.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.png">
      * 
      * @param defaultValue
-     *            a default value to return if the Observable emits no items
-     * @return the last item emitted by the Observable, or the default value if no items are emitted
+     *            a default value to return if the {@link Observable} emits no items
+     * @return the last item emitted by the {@link Observable}, or the default value if no items
+     *         are emitted
      */
     public T lastOrDefault(T defaultValue) {
         boolean found = false;
@@ -593,102 +604,103 @@ public class BlockingObservable<T> extends Observable<T> {
     }
 
     /**
-     * Returns the last item emitted by a specified Observable that matches a predicate, or a
-     * default value if no such items are emitted.
+     * Returns the last item emitted by a specified {@link Observable} that matches a predicate, or
+     * a default value if no such items are emitted.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png">
      * 
      * @param defaultValue
-     *            a default value to return if the Observable emits no matching items
+     *            a default value to return if the {@link Observable} emits no matching items
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the last item emitted by the Observable that matches the predicate, or the default
-     *         value if no matching items are emitted
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the last item emitted by the {@link Observable} that matches the predicate, or the
+     *         default value if no matching items are emitted
      */
     public T lastOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
         return lastOrDefault(this, defaultValue, predicate);
     }
 
     /**
-     * Returns the last item emitted by a specified Observable that matches a predicate, or a
-     * default value if no such items are emitted.
+     * Returns the last item emitted by a specified {@link Observable} that matches a predicate, or
+     * a default value if no such items are emitted.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png">
      * 
      * @param defaultValue
-     *            a default value to return if the Observable emits no matching items
+     *            a default value to return if the {@link Observable} emits no matching items
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the last item emitted by the Observable that matches the predicate, or the default
-     *         value if no matching items are emitted
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the last item emitted by the {@link Observable} that matches the predicate, or the
+     *         default value if no matching items are emitted
      */
     public T lastOrDefault(T defaultValue, Object predicate) {
         return lastOrDefault(this, defaultValue, predicate);
     }
 
     /**
-     * Returns an Iterable that always returns the item most recently emitted by an Observable.
+     * Returns an {@link Iterable} that always returns the item most recently emitted by an
+     * {@link Observable}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.mostRecent.png">
      * 
      * @param initialValue
-     *            the initial value that will be yielded by the Iterable sequence if the Observable
-     *            has not yet emitted an item
-     * @return an Iterable that on each iteration returns the item that the Observable has most
-     *         recently emitted
+     *            the initial value that will be yielded by the {@link Iterable} sequence if the
+     *            {@link Observable} has not yet emitted an item
+     * @return an {@link Iterable} that on each iteration returns the item that the
+     *         {@link Observable} has most recently emitted
      */
     public Iterable<T> mostRecent(T initialValue) {
         return mostRecent(this, initialValue);
     }
 
     /**
-     * Returns an Iterable that blocks until the Observable emits another item, then returns that
-     * item.
+     * Returns an {@link Iterable} that blocks until the {@link Observable} emits another item,
+     * then returns that item.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.next.png">
      * 
-     * @return an Iterable that blocks upon each iteration until the Observable emits a new item,
-     *         whereupon the Iterable returns that item
+     * @return an {@link Iterable} that blocks upon each iteration until the {@link Observable}
+     *         emits a new item, whereupon the Iterable returns that item
      */
     public Iterable<T> next() {
         return next(this);
     }
 
     /**
-     * If the Observable completes after emitting a single item, return that item, otherwise throw
-     * an exception.
+     * If the {@link Observable} completes after emitting a single item, return that item,
+     * otherwise throw an exception.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.png">
      * 
-     * @return the single item emitted by the Observable
+     * @return the single item emitted by the {@link Observable}
      */
     public T single() {
         return _singleOrDefault(this, false, null);
     }
 
     /**
-     * If the Observable completes after emitting a single item that matches a given predicate,
-     * return that item, otherwise throw an exception.
+     * If the {@link Observable} completes after emitting a single item that matches a given
+     * predicate, return that item, otherwise throw an exception.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
      * 
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the single item emitted by the source Observable that matches the predicate
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the single item emitted by the source {@link Observable} that matches the predicate
      */
     public T single(Func1<T, Boolean> predicate) {
         return _singleOrDefault(from(this.filter(predicate)), false, null);
     }
 
     /**
-     * If the Observable completes after emitting a single item that matches a given predicate,
-     * return that item, otherwise throw an exception.
+     * If the {@link Observable} completes after emitting a single item that matches a given
+     * predicate, return that item, otherwise throw an exception.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
      * 
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the single item emitted by the source Observable that matches the predicate
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the single item emitted by the source {@link Observable} that matches the predicate
      */
     public T single(Object predicate) {
         @SuppressWarnings("rawtypes")
@@ -703,51 +715,51 @@ public class BlockingObservable<T> extends Observable<T> {
     }
 
     /**
-     * If the Observable completes after emitting a single item, return that item; if it emits more
-     * than one item, throw an exception; if it emits no items, return a default value.
+     * If the {@link Observable} completes after emitting a single item, return that item; if it
+     * emits more than one item, throw an exception; if it emits no items, return a default value.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.png">
      * 
      * @param defaultValue
-     *            a default value to return if the Observable emits no items
-     * @return the single item emitted by the Observable, or the default value if no items are
-     *         emitted
+     *            a default value to return if the {@link Observable} emits no items
+     * @return the single item emitted by the {@link Observable}, or the default value if no items
+     *         are emitted
      */
     public T singleOrDefault(T defaultValue) {
         return _singleOrDefault(this, true, defaultValue);
     }
 
     /**
-     * If the Observable completes after emitting a single item that matches a predicate, return
-     * that item; if it emits more than one such item, throw an exception; if it emits no items,
-     * return a default value.
+     * If the {@link Observable} completes after emitting a single item that matches a predicate,
+     * return that item; if it emits more than one such item, throw an exception; if it emits no
+     * items, return a default value.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png">
      * 
      * @param defaultValue
-     *            a default value to return if the Observable emits no matching items
+     *            a default value to return if the {@link Observable} emits no matching items
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the single item emitted by the Observable that matches the predicate, or the default
-     *         value if no such items are emitted
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the single item emitted by the {@link Observable} that matches the predicate, or the
+     *         default value if no such items are emitted
      */
     public T singleOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
         return _singleOrDefault(from(this.filter(predicate)), true, defaultValue);
     }
 
     /**
-     * If the Observable completes after emitting a single item that matches a predicate, return
-     * that item; if it emits more than one such item, throw an exception; if it emits no items,
-     * return a default value.
+     * If the {@link Observable} completes after emitting a single item that matches a predicate,
+     * return that item; if it emits more than one such item, throw an exception; if it emits no
+     * items, return a default value.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png">
      * 
      * @param defaultValue
-     *            a default value to return if the Observable emits no matching items
+     *            a default value to return if the {@link Observable} emits no matching items
      * @param predicate
-     *            a predicate function to evaluate items emitted by the Observable
-     * @return the single item emitted by the Observable that matches the predicate, or the default
-     *         value if no such items are emitted
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the single item emitted by the {@link Observable} that matches the predicate, or the
+     *         default value if no such items are emitted
      */
     public T singleOrDefault(T defaultValue, final Object predicate) {
         @SuppressWarnings("rawtypes")
@@ -762,25 +774,27 @@ public class BlockingObservable<T> extends Observable<T> {
     }
 
     /**
-     * Returns a Future representing the single value emitted by an Observable.
+     * Returns a {@link Future} representing the single value emitted by an {@link Observable}.
      * <p>
      * <code>toFuture()</code> throws an exception if the Observable emits more than one item. If
-     * the Observable may emit more than item, use <code>toList().toFuture()</code>.
+     * the Observable may emit more than item, use
+     * {@link Observable#toList toList()}.toFuture()</code>.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
      * 
-     * @return a Future that expects a single item to be emitted by the source Observable
+     * @return a {@link Future} that expects a single item to be emitted by the source
+     *         {@link Observable}
      */
     public Future<T> toFuture() {
         return toFuture(this);
     }
 
     /**
-     * Converts an Observable into an Iterable.
+     * Converts an {@link Observable} into an {@link Iterable}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterable.png">
      * 
-     * @return an Iterable version of the underlying Observable
+     * @return an {@link Iterable} version of the underlying {@link Observable}
      */
     public Iterable<T> toIterable() {
         return new Iterable<T>() {
