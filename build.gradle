@@ -12,7 +12,7 @@ allprojects {
 apply from: file('gradle/convention.gradle')
 apply from: file('gradle/maven.gradle')
 //apply from: file('gradle/check.gradle')
-//apply from: file('gradle/license.gradle')
+apply from: file('gradle/license.gradle')
 apply from: file('gradle/release.gradle')
 
 subprojects {

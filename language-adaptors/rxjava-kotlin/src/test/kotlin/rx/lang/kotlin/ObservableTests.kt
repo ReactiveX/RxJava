@@ -76,11 +76,11 @@ public class ObservableTests {
     }
 
     [Test] public fun testLast() {
-        assertEquals("three", Observable.toObservable("one", "two", "three")!!.last())
+        assertEquals("three", Observable.toObservable("one", "two", "three")!!.toBlockingObservable()!!.last())
     }
 
     [Test] public fun testLastWithPredicate() {
-        assertEquals("two", Observable.toObservable("one", "two", "three")!!.last{(x: String) ->
+        assertEquals("two", Observable.toObservable("one", "two", "three")!!.toBlockingObservable()!!.last{(x: String) ->
             x.length == 3
         })
     }
@@ -224,7 +224,7 @@ public class ObservableTests {
 
     [Test]
     public fun testForEach() {
-        asyncObservable.forEach(receiveInt)
+        asyncObservable.toBlockingObservable()!!.forEach(receiveInt)
         verify(a, times(1))!!.received(1)
         verify(a, times(1))!!.received(2)
         verify(a, times(1))!!.received(3)
@@ -233,7 +233,7 @@ public class ObservableTests {
     [Test]
     public fun testForEachWithError() {
         try {
-            asyncObservable.forEach{(result: Any) -> throw RuntimeException("err") }
+            asyncObservable.toBlockingObservable()!!.forEach{(result: Any) -> throw RuntimeException("err") }
             fail("we expect an exception to be thrown")
         }catch(e: Exception) {
             // do nothing as we expect this
@@ -243,25 +243,25 @@ public class ObservableTests {
     [Test]
     public fun testLastOrDefault() {
 
-        assertEquals("two", Observable.toObservable("one", "two")!!.lastOrDefault("default", lengthEqualsTo3))
+        assertEquals("two", Observable.toObservable("one", "two")!!.toBlockingObservable()!!.lastOrDefault("default", lengthEqualsTo3))
     }
 
     [Test]
     public fun testLastOrDefault2() {
 
-        assertEquals("default", Observable.toObservable("one", "two")!!.lastOrDefault("default") {(x: String) ->
+        assertEquals("default", Observable.toObservable("one", "two")!!.toBlockingObservable()!!.lastOrDefault("default") {(x: String) ->
             x.length() > 3
         })
     }
 
     public fun testSingle1() {
 
-        assertEquals("one", Observable.toObservable("one")!!.single(lengthEqualsTo3))
+        assertEquals("one", Observable.toObservable("one")!!.toBlockingObservable()!!.single(lengthEqualsTo3))
     }
 
     [Test(expected = javaClass<IllegalStateException>())]
     public fun testSingle2() {
-        Observable.toObservable("one", "two")!!.single(lengthEqualsTo3)
+        Observable.toObservable("one", "two")!!.toBlockingObservable()!!.single(lengthEqualsTo3)
     }
 
     [Test]
