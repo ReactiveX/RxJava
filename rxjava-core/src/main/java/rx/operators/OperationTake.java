@@ -29,11 +29,18 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
 /**
- * Returns a specified number of contiguous values from the start of an observable sequence.
+ * Returns an Observable that emits the first <code>num</code> items emitted by the source
+ * Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/take.png">
+ * <p>
+ * You can choose to pay attention only to the first <code>num</code> items emitted by an
+ * Observable by using the take operation. This operation returns an Observable that will invoke a
+ * subscribing Observer's <code>onNext</code> function a maximum of <code>num</code> times before
+ * invoking <code>onCompleted</code>.
  */
 public final class OperationTake {
 
@@ -150,7 +157,7 @@ public final class OperationTake {
 
         @Test
         public void testTake1() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> take = Observable.create(assertTrustedObservable(take(w, 2)));
 
             @SuppressWarnings("unchecked")
@@ -165,7 +172,7 @@ public final class OperationTake {
 
         @Test
         public void testTake2() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> take = Observable.create(assertTrustedObservable(take(w, 1)));
 
             @SuppressWarnings("unchecked")
@@ -190,7 +197,7 @@ public final class OperationTake {
                     return Subscriptions.empty();
                 }
             });
-            Observable.create(assertTrustedObservable(take(source, 1))).last();
+            Observable.create(assertTrustedObservable(take(source, 1))).toBlockingObservable().last();
         }
 
         @Test
@@ -214,7 +221,7 @@ public final class OperationTake {
                     };
                 }
             });
-            Observable.create(assertTrustedObservable(take(source, 0))).lastOrDefault("ok");
+            Observable.create(assertTrustedObservable(take(source, 0))).toBlockingObservable().lastOrDefault("ok");
             assertTrue("source subscribed", subscribed.get());
             assertTrue("source unsubscribed", unSubscribed.get());
         }

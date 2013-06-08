@@ -4,7 +4,6 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,6 +12,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+/**
+ * Returns an Observable that emits a Boolean that indicates whether all items emitted by an
+ * Observable satisfy a condition.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/all.png">
+ */
 public class OperationAll {
 
     public static <T> Func1<Observer<Boolean>, Subscription> all(Observable<T> sequence, Func1<T, Boolean> predicate) {

@@ -27,9 +27,27 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
+/**
+ * Instruct an Observable to pass control to another Observable rather than invoking
+ * <code>onError</code> if it encounters an error.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/onErrorResumeNext.png">
+ * <p>
+ * By default, when an Observable encounters an error that prevents it from emitting the expected
+ * item to its Observer, the Observable invokes its Observer's <code>onError</code> method, and
+ * then quits without invoking any more of its Observer's methods. The onErrorResumeNext operation
+ * changes this behavior. If you pass an Observable (resumeSequence) to onErrorResumeNext, if the
+ * source Observable encounters an error, instead of invoking its Observer's <code>onError</code>
+ * method, it will instead relinquish control to this new Observable, which will invoke the
+ * Observer's <code>onNext</code> method if it is able to do so. In such a case, because no
+ * Observable necessarily invokes <code>onError</code>, the Observer may never know that an error
+ * happened.
+ * <p>
+ * You can use this to prevent errors from propagating or to supply fallback data should errors be
+ * encountered.
+ */
 public final class OperationOnErrorResumeNextViaObservable<T> {
 
     public static <T> Func1<Observer<T>, Subscription> onErrorResumeNextViaObservable(Observable<T> originalSequence, Observable<T> resumeSequence) {
@@ -102,7 +120,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
         public void testResumeNext() {
             Subscription s = mock(Subscription.class);
             TestObservable w = new TestObservable(s, "one");
-            Observable<String> resume = Observable.toObservable("twoResume", "threeResume");
+            Observable<String> resume = Observable.from("twoResume", "threeResume");
             Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
 
             @SuppressWarnings("unchecked")

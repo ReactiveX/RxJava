@@ -34,6 +34,11 @@ import rx.concurrency.ImmediateScheduler;
 import rx.concurrency.Schedulers;
 import rx.util.functions.Func1;
 
+/**
+ * Asynchronously notify Observers on the specified Scheduler.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
+ */
 public class OperationObserveOn {
 
     public static <T> Func1<Observer<T>, Subscription> observeOn(Observable<T> source, Scheduler scheduler) {
@@ -69,7 +74,7 @@ public class OperationObserveOn {
             Scheduler scheduler = spy(OperatorTester.UnitTest.forwardingScheduler(Schedulers.immediate()));
 
             Observer<Integer> observer = mock(Observer.class);
-            Observable.create(observeOn(Observable.toObservable(1, 2, 3), scheduler)).subscribe(observer);
+            Observable.create(observeOn(Observable.from(1, 2, 3), scheduler)).subscribe(observer);
 
             verify(observer, times(1)).onNext(1);
             verify(observer, times(1)).onNext(2);

@@ -38,7 +38,10 @@ import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
 /**
- * Samples the observable sequence at each interval.
+ * Returns an Observable that emits the results of sampling the items emitted by the source
+ * Observable at a specified time interval.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/sample.png">
  */
 public final class OperationSample {
 

@@ -27,11 +27,13 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
 /**
- * Returns a specified number of contiguous elements from the end of an observable sequence.
+ * Returns an Observable that emits the last <code>count</code> items emitted by the source
+ * Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/last.png">
  */
 public final class OperationTakeLast {
 
@@ -98,7 +100,7 @@ public final class OperationTakeLast {
 
         @Test
         public void testTakeLastEmpty() {
-            Observable<String> w = Observable.toObservable();
+            Observable<String> w = Observable.from();
             Observable<String> take = Observable.create(takeLast(w, 2));
 
             @SuppressWarnings("unchecked")
@@ -111,7 +113,7 @@ public final class OperationTakeLast {
 
         @Test
         public void testTakeLast1() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> take = Observable.create(takeLast(w, 2));
 
             @SuppressWarnings("unchecked")
@@ -127,7 +129,7 @@ public final class OperationTakeLast {
 
         @Test
         public void testTakeLast2() {
-            Observable<String> w = Observable.toObservable("one");
+            Observable<String> w = Observable.from("one");
             Observable<String> take = Observable.create(takeLast(w, 10));
 
             @SuppressWarnings("unchecked")

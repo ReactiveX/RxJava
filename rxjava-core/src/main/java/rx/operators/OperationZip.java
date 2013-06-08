@@ -30,8 +30,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.AtomicObservableSubscription;
-import rx.util.SynchronizedObserver;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 import rx.util.functions.Func3;
@@ -39,6 +37,20 @@ import rx.util.functions.Func4;
 import rx.util.functions.FuncN;
 import rx.util.functions.Functions;
 
+/**
+ * Returns an Observable that emits the results of a function applied to sets of items emitted, in
+ * sequence, by two or more other Observables.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/zip.png">
+ * <p>
+ * The zip operation applies this function in strict sequence, so the first item emitted by the new
+ * Observable will be the result of the function applied to the first item emitted by each zipped
+ * Observable; the second item emitted by the new Observable will be the result of the function
+ * applied to the second item emitted by each zipped Observable; and so forth.
+ * <p>
+ * The resulting Observable returned from zip will invoke <code>onNext</code> as many times as the
+ * number of <code>onNext</code> invocations of the source Observable that emits the fewest items.
+ */
 public final class OperationZip {
 
     public static <T0, T1, R> Func1<Observer<R>, Subscription> zip(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> zipFunction) {
@@ -670,7 +682,7 @@ public final class OperationZip {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = Observable.create(zip(Observable.toObservable("one", "two"), Observable.toObservable(2, 3, 4), zipr));
+            Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2, 3, 4), zipr));
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -689,7 +701,7 @@ public final class OperationZip {
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
-            Observable<String> w = Observable.create(zip(Observable.toObservable("one", "two"), Observable.toObservable(2), Observable.toObservable(new int[] { 4, 5, 6 }), zipr));
+            Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), zipr));
             w.subscribe(aObserver);
 
             verify(aObserver, never()).onError(any(Exception.class));
@@ -705,7 +717,7 @@ public final class OperationZip {
             @SuppressWarnings("unchecked")
             Observer<Integer> aObserver = mock(Observer.class);
 
-            Observable<Integer> w = Observable.create(zip(Observable.toObservable(10, 20, 30), Observable.toObservable(0, 1, 2), zipr));
+            Observable<Integer> w = Observable.create(zip(Observable.from(10, 20, 30), Observable.from(0, 1, 2), zipr));
             w.subscribe(aObserver);
 
             verify(aObserver, times(1)).onError(any(Exception.class));

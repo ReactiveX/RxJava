@@ -24,17 +24,20 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
-import rx.util.SynchronizedObserver;
 import rx.util.functions.Func1;
 
 /**
- * An observable that wraps an observable of the same type and then enforces the semantics
- * expected of a well-behaved observable.
+ * Wraps an Observable in another Observable that ensures that the resulting Observable is
+ * chronologically well-behaved.
  * <p>
- * An observable that ensures onNext, onCompleted, or onError calls on its subscribers are
- * not interleaved, onCompleted and onError are only called once respectively, and no
- * onNext calls follow onCompleted and onError calls.
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/synchronize.png">
+ * <p>
+ * A well-behaved Observable does not interleave its invocations of the <code>onNext</code>,
+ * <code>onCompleted</code>, and <code>onError</code> methods of its Observers; it invokes
+ * <code>onCompleted</code> or <code>onError</code> only once; and it never invokes
+ * <code>onNext</code> after invoking either <code>onCompleted</code> or <code>onError</code>. The
+ * synchronize operation enforces this, and the Observable it returns invokes <code>onNext</code>
+ * and <code>onCompleted</code> or <code>onError</code> synchronously.
  * <p>
  * NOTE: {@link Observable#create} already wraps Observables so this is generally redundant.
  * 

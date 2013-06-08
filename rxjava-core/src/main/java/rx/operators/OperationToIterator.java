@@ -32,6 +32,10 @@ import rx.util.Exceptions;
 import rx.util.functions.Func1;
 
 /**
+ * Returns an Iterator that iterates over all items emitted by a specified Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterator.png">
+ * <p>
  * @see <a href="https://github.com/Netflix/RxJava/issues/50">Issue #50</a>
  */
 public class OperationToIterator {
@@ -107,7 +111,7 @@ public class OperationToIterator {
 
     @Test
     public void testToIterator() {
-        Observable<String> obs = Observable.toObservable("one", "two", "three");
+        Observable<String> obs = Observable.from("one", "two", "three");
 
         Iterator<String> it = toIterator(obs);
 

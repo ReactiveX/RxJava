@@ -29,11 +29,13 @@ import rx.Subscription;
 import rx.util.functions.Func1;
 
 /**
- * Materializes the implicit notifications of an observable sequence as explicit notification values.
+ * Turns all of the notifications from an Observable into <code>onNext</code> emissions, and marks
+ * them with their original notification types within {@link Notification} objects.
  * <p>
- * In other words, converts a sequence of OnNext, OnError and OnCompleted events into a sequence of ObservableNotifications containing the OnNext, OnError and OnCompleted values.
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/materialize.png">
  * <p>
- * See <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">here</a> for the Microsoft Rx equivalent.
+ * See <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">here</a> for the
+ * Microsoft Rx equivalent.
  */
 public final class OperationMaterialize {
 

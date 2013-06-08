@@ -12,6 +12,17 @@ import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
+/**
+ * Converts a Future into an Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.Future.png">
+ * <p>
+ * You can convert any object that supports the Future interface into an Observable that emits the
+ * return value of the get() method of that object, by using the from operation.
+ * <p>
+ * This is blocking so the Subscription returned when calling
+ * <code>Observable.subscribe(Observer)</code> does nothing.
+ */
 public class OperationToObservableFuture {
     private static class ToObservableFuture<T> implements Func1<Observer<T>, Subscription> {
         private final Future<T> that;

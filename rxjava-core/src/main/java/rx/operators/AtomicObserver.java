@@ -1,10 +1,12 @@
-package rx.util;
+package rx.operators;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observer;
 import rx.plugins.RxJavaPlugins;
+import rx.util.CompositeException;
+import rx.util.OnErrorNotImplementedException;
 
 /**
  * Wrapper around Observer to ensure compliance with Rx contract.
@@ -69,13 +71,28 @@ public class AtomicObserver<T> implements Observer<T> {
             try {
                 actual.onError(e);
             } catch (Exception e2) {
-                // if the onError itself fails then pass to the plugin
-                // see https://github.com/Netflix/RxJava/issues/216 for further discussion
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(e2);
-                // and throw exception despite that not being proper for Rx
-                // https://github.com/Netflix/RxJava/issues/198
-                throw new RuntimeException("Error occurred when trying to propagate error to Observer.onError", new CompositeException(Arrays.asList(e, e2)));
+                if (e2 instanceof OnErrorNotImplementedException) {
+                    /**
+                     * onError isn't implemented so throw
+                     * 
+                     * https://github.com/Netflix/RxJava/issues/198
+                     * 
+                     * Rx Design Guidelines 5.2
+                     * 
+                     * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
+                     * to rethrow the exception on the thread that the message comes out from the observable sequence.
+                     * The OnCompleted behavior in this case is to do nothing."
+                     */
+                    throw (OnErrorNotImplementedException) e2;
+                } else {
+                    // if the onError itself fails then pass to the plugin
+                    // see https://github.com/Netflix/RxJava/issues/216 for further discussion
+                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e2);
+                    // and throw exception despite that not being proper for Rx
+                    // https://github.com/Netflix/RxJava/issues/198
+                    throw new RuntimeException("Error occurred when trying to propagate error to Observer.onError", new CompositeException(Arrays.asList(e, e2)));
+                }
             }
             // auto-unsubscribe
             subscription.unsubscribe();

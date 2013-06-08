@@ -19,7 +19,12 @@ import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
 /**
- * Convert an Observable into a Future.
+ * Returns a Future representing the single value emitted by an Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
+ * <p>
+ * The toFuture operation throws an exception if the Observable emits more than one item. If the
+ * Observable may emit more than item, use <code>toList().toFuture()</code>.
  */
 public class OperationToFuture {
 
@@ -118,14 +123,14 @@ public class OperationToFuture {
 
     @Test
     public void testToFuture() throws InterruptedException, ExecutionException {
-        Observable<String> obs = Observable.toObservable("one");
+        Observable<String> obs = Observable.from("one");
         Future<String> f = toFuture(obs);
         assertEquals("one", f.get());
     }
 
     @Test
     public void testToFutureList() throws InterruptedException, ExecutionException {
-        Observable<String> obs = Observable.toObservable("one", "two", "three");
+        Observable<String> obs = Observable.from("one", "two", "three");
         Future<List<String>> f = toFuture(obs.toList());
         assertEquals("one", f.get().get(0));
         assertEquals("two", f.get().get(1));
@@ -134,7 +139,7 @@ public class OperationToFuture {
 
     @Test(expected = ExecutionException.class)
     public void testExceptionWithMoreThanOneElement() throws InterruptedException, ExecutionException {
-        Observable<String> obs = Observable.toObservable("one", "two");
+        Observable<String> obs = Observable.from("one", "two");
         Future<String> f = toFuture(obs);
         assertEquals("one", f.get());
         // we expect an exception since there are more than 1 element

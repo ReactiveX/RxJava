@@ -7,7 +7,6 @@ sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
 dependencies {
-    compile 'org.slf4j:slf4j-api:1.7.0'
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
 }
@@ -49,5 +48,7 @@ jar {
         instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
         instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
     }
+    // commenting out for now as it's breaking the rxjava-scala build and I can't figure out why
+    // exclude('**/*$UnitTest*')
 }
 

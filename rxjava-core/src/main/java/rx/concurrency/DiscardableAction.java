@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
+import rx.operators.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 

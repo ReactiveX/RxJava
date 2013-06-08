@@ -15,8 +15,6 @@
  */
 package rx.util.functions;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,8 +27,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * This class will dynamically look for known language adaptors on the classpath at startup or new ones can be registered using {@link #registerLanguageAdaptor(Class[], FunctionLanguageAdaptor)}.
  */
 public class Functions {
-
-    private static final Logger logger = LoggerFactory.getLogger(Functions.class);
 
     private final static ConcurrentHashMap<Class<?>, FunctionLanguageAdaptor> languageAdaptors = new ConcurrentHashMap<Class<?>, FunctionLanguageAdaptor>();
 
@@ -50,12 +46,17 @@ public class Functions {
             Class<?> c = Class.forName(className);
             FunctionLanguageAdaptor a = (FunctionLanguageAdaptor) c.newInstance();
             registerLanguageAdaptor(a.getFunctionClass(), a);
-            logger.info("Successfully loaded function language adaptor: " + name + " with path: " + className);
+            /*
+             * Using System.err/System.out as this is the only place in the library where we do logging and it's only at startup.
+             * I don't want to include SL4J/Log4j just for this and no one uses Java Logging.
+             */
+            System.out.println("RxJava => Successfully loaded function language adaptor: " + name + " with path: " + className);
         } catch (ClassNotFoundException e) {
-            logger.info("Could not find function language adaptor: " + name + " with path: " + className);
+            System.err.println("RxJava => Could not find function language adaptor: " + name + " with path: " + className);
             return false;
         } catch (Exception e) {
-            logger.error("Failed trying to initialize function language adaptor: " + className, e);
+            System.err.println("RxJava => Failed trying to initialize function language adaptor: " + className);
+            e.printStackTrace();
             return false;
         }
         return true;

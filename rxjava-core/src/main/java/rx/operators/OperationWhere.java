@@ -28,6 +28,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+/**
+ * Filters an Observable by discarding any items it emits that do not meet some test.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/where.png">
+ */
 public final class OperationWhere {
 
     public static <T> Func1<Observer<T>, Subscription> where(Observable<T> that, Func1<T, Boolean> predicate) {
@@ -38,7 +43,7 @@ public final class OperationWhere {
 
         @Test
         public void testWhere() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> observable = Observable.create(where(w, new Func1<String, Boolean>() {
 
                 @Override

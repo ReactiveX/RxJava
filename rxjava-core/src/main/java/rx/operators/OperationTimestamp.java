@@ -21,6 +21,11 @@ import rx.Subscription;
 import rx.util.Timestamped;
 import rx.util.functions.Func1;
 
+/**
+ * Wraps each item emitted by a source Observable in a {@link Timestamped} object.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/timestamp.png">
+ */
 public final class OperationTimestamp {
 
     /**

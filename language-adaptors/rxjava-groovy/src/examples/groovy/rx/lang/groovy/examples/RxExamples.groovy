@@ -26,7 +26,7 @@ import rx.util.functions.Func1;
 // --------------------------------------------------
 
 def hello(String[] names) {
-    Observable.toObservable(names)
+    Observable.from(names)
         .subscribe({ println "Hello " + it + "!"})
 }
 
@@ -38,7 +38,7 @@ hello("Ben", "George")
 // --------------------------------------------------
 
 def existingDataFromNumbers() {
-    Observable<Integer> o = Observable.toObservable(1, 2, 3, 4, 5, 6);
+    Observable<Integer> o = Observable.from(1, 2, 3, 4, 5, 6);
 }
 
 def existingDataFromNumbersUsingFrom() {
@@ -46,7 +46,7 @@ def existingDataFromNumbersUsingFrom() {
 }
 
 def existingDataFromObjects() {
-    Observable<String> o = Observable.toObservable("a", "b", "c");
+    Observable<String> o = Observable.from("a", "b", "c");
 }
 
 def existingDataFromObjectsUsingFrom() {
@@ -55,7 +55,7 @@ def existingDataFromObjectsUsingFrom() {
 
 def existingDataFromList() {
     def list = [5, 6, 7, 8]
-    Observable<Integer> o = Observable.toObservable(list);
+    Observable<Integer> o = Observable.from(list);
 }
 
 def existingDataFromListUsingFrom() {

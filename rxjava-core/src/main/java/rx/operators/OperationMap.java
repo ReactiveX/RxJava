@@ -31,6 +31,12 @@ import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
+/**
+ * Applies a function of your choosing to every item emitted by an Observable, and returns this
+ * transformation as a new Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/map.png">
+ */
 public final class OperationMap {
 
     /**
@@ -143,7 +149,7 @@ public final class OperationMap {
             Map<String, String> m1 = getMap("One");
             Map<String, String> m2 = getMap("Two");
             @SuppressWarnings("unchecked")
-            Observable<Map<String, String>> observable = Observable.toObservable(m1, m2);
+            Observable<Map<String, String>> observable = Observable.from(m1, m2);
 
             Observable<String> m = Observable.create(map(observable, new Func1<Map<String, String>, String>() {
 
@@ -165,7 +171,7 @@ public final class OperationMap {
         @Test
         public void testMapMany() {
             /* simulate a top-level async call which returns IDs */
-            Observable<Integer> ids = Observable.toObservable(1, 2);
+            Observable<Integer> ids = Observable.from(1, 2);
 
             /* now simulate the behavior to take those IDs and perform nested async calls based on them */
             Observable<String> m = Observable.create(mapMany(ids, new Func1<Integer, Observable<String>>() {
@@ -178,11 +184,11 @@ public final class OperationMap {
                     if (id == 1) {
                         Map<String, String> m1 = getMap("One");
                         Map<String, String> m2 = getMap("Two");
-                        subObservable = Observable.toObservable(m1, m2);
+                        subObservable = Observable.from(m1, m2);
                     } else {
                         Map<String, String> m3 = getMap("Three");
                         Map<String, String> m4 = getMap("Four");
-                        subObservable = Observable.toObservable(m3, m4);
+                        subObservable = Observable.from(m3, m4);
                     }
 
                     /* simulate kicking off the async call and performing a select on it to transform the data */
@@ -210,15 +216,15 @@ public final class OperationMap {
             Map<String, String> m1 = getMap("One");
             Map<String, String> m2 = getMap("Two");
             @SuppressWarnings("unchecked")
-            Observable<Map<String, String>> observable1 = Observable.toObservable(m1, m2);
+            Observable<Map<String, String>> observable1 = Observable.from(m1, m2);
 
             Map<String, String> m3 = getMap("Three");
             Map<String, String> m4 = getMap("Four");
             @SuppressWarnings("unchecked")
-            Observable<Map<String, String>> observable2 = Observable.toObservable(m3, m4);
+            Observable<Map<String, String>> observable2 = Observable.from(m3, m4);
 
             @SuppressWarnings("unchecked")
-            Observable<Observable<Map<String, String>>> observable = Observable.toObservable(observable1, observable2);
+            Observable<Observable<Map<String, String>>> observable = Observable.from(observable1, observable2);
 
             Observable<String> m = Observable.create(mapMany(observable, new Func1<Observable<Map<String, String>>, Observable<String>>() {
 

@@ -122,7 +122,7 @@ class UnitTestSuite extends JUnitSuite {
     }
 
     @Test def testTake() {
-        Observable.toObservable("1", "2", "3").take(1).subscribe(Map(
+        Observable.from("1", "2", "3").take(1).subscribe(Map(
             "onNext" -> ((callback: String) => {
                 print("testTake: callback = " + callback)
                 assertion.received(callback)
@@ -133,14 +133,14 @@ class UnitTestSuite extends JUnitSuite {
 
   @Test def testClosureVersusMap() {
     // using closure
-    Observable.toObservable("1", "2", "3")
+    Observable.from("1", "2", "3")
       .take(2)
       .subscribe((callback: String) => {
           println(callback)
       })
       
     // using Map of closures
-    Observable.toObservable("1", "2", "3")
+    Observable.from("1", "2", "3")
       .take(2)
       .subscribe(Map(
         "onNext" -> ((callback: String) => {
@@ -149,7 +149,7 @@ class UnitTestSuite extends JUnitSuite {
   }
 
     @Test def testFilterWithToList() {
-        val numbers = Observable.toObservable[Int](1, 2, 3, 4, 5, 6, 7, 8, 9)
+        val numbers = Observable.from[Int](1, 2, 3, 4, 5, 6, 7, 8, 9)
         numbers.filter((x: Int) => 0 == (x % 2)).toList().subscribe(
             (callback: java.util.List[Int]) => {
                 val lst = callback.asScala.toList
@@ -161,7 +161,7 @@ class UnitTestSuite extends JUnitSuite {
     }
 
     @Test def testTakeLast() {
-        val numbers = Observable.toObservable[Int](1, 2, 3, 4, 5, 6, 7, 8, 9)
+        val numbers = Observable.from[Int](1, 2, 3, 4, 5, 6, 7, 8, 9)
         numbers.takeLast(1).subscribe((callback: Int) => {
             println("testTakeLast: onNext -> got " + callback)
             assertion.received(callback)
@@ -170,7 +170,7 @@ class UnitTestSuite extends JUnitSuite {
     }
 
     @Test def testMap() {
-        val numbers = Observable.toObservable(1, 2, 3, 4, 5, 6, 7, 8, 9)
+        val numbers = Observable.from(1, 2, 3, 4, 5, 6, 7, 8, 9)
         val mappedNumbers = new ArrayBuffer[Int]()
         numbers.map(((x: Int)=> { x * x })).subscribe(((squareVal: Int) => {
             println("square is " + squareVal )
@@ -181,9 +181,9 @@ class UnitTestSuite extends JUnitSuite {
     }
 
     @Test def testZip() {
-        val numbers = Observable.toObservable(1, 2, 3)
-        val colors = Observable.toObservable("red", "green", "blue")
-        val characters = Observable.toObservable("lion-o", "cheetara", "panthro")
+        val numbers = Observable.from(1, 2, 3)
+        val colors = Observable.from("red", "green", "blue")
+        val characters = Observable.from("lion-o", "cheetara", "panthro")
 
         Observable.zip(numbers.toList, colors.toList, characters.toList, ((n: java.util.List[Int], c: java.util.List[String], t: java.util.List[String]) => { Map(
             "numbers" -> n,
