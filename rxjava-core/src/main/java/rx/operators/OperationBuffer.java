@@ -189,7 +189,7 @@ public final class OperationBuffer {
      *            the {@link Func1} object representing the specified buffer operation.
      */
     public static <T> Func1<Observer<List<T>>, Subscription> buffer(Observable<T> source, long timespan, TimeUnit unit) {
-        return buffer(source, timespan, unit, Schedulers.newThread());
+        return buffer(source, timespan, unit, Schedulers.threadPoolForComputation());
     }
 
     /**
@@ -247,7 +247,7 @@ public final class OperationBuffer {
      *            the {@link Func1} object representing the specified buffer operation.
      */
     public static <T> Func1<Observer<List<T>>, Subscription> buffer(Observable<T> source, long timespan, TimeUnit unit, int count) {
-        return buffer(source, timespan, unit, count, Schedulers.newThread());
+        return buffer(source, timespan, unit, count, Schedulers.threadPoolForComputation());
     }
 
     /**
@@ -308,7 +308,7 @@ public final class OperationBuffer {
      *            the {@link Func1} object representing the specified buffer operation.
      */
     public static <T> Func1<Observer<List<T>>, Subscription> buffer(Observable<T> source, long timespan, long timeshift, TimeUnit unit) {
-        return buffer(source, timespan, timeshift, unit, Schedulers.newThread());
+        return buffer(source, timespan, timeshift, unit, Schedulers.threadPoolForComputation());
     }
 
     /**
@@ -370,7 +370,6 @@ public final class OperationBuffer {
             creator.stop();
             buffers.emitAllBuffers();
             observer.onError(e);
-            e.printStackTrace();
         }
 
         @Override
