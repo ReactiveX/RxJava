@@ -15,19 +15,9 @@
  */
 package rx.subjects;
 
-import junit.framework.Assert;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
-import rx.Notification;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.operators.AtomicObservableSubscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action1;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,9 +27,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+
+import rx.Notification;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
+import rx.operators.AtomicObservableSubscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action1;
+import rx.util.functions.Func0;
+import rx.util.functions.Func1;
 
 /**
  * Subject that publishes a single event to each {@link Observer} that has subscribed. 
@@ -85,21 +87,21 @@ public class PublishSubject<T> extends Subject<T, T> {
                 });
 
                 /**
-                 * NOTE: We are synchronizing to avoid a race condition between terminalState being set and
+                 * NOTE: We are synchronizing to avoid a race condition between terminalState being set and 
                  * a new observer being added to observers.
-                 *
+                 * 
                  * The synchronization only occurs on subscription and terminal states, it does not affect onNext calls
                  * so a high-volume hot-observable will not pay this cost for emitting data.
-                 *
-                 * Due to the restricted impact of blocking synchronization here I have not pursued more complicated
+                 * 
+                 * Due to the restricted impact of blocking synchronization here I have not pursued more complicated 
                  * approaches to try and stay completely non-blocking.
                  */
                 synchronized (terminalState) {
-                    // check terminal state again
+                    // check terminal state again 
                     s = checkTerminalState(observer);
                     if (s != null)
                         return s;
-
+                    
                     // on subscribe add it to the map of outbound observers to notify
                     observers.put(subscription, observer);
 
