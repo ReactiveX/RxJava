@@ -41,15 +41,25 @@ import rx.util.functions.Func4;
 import rx.util.functions.FuncN;
 import rx.util.functions.Functions;
 
+/**
+ * Returns an Observable that combines the emissions of multiple source observables. Once each
+ * source Observable has emitted at least one item, combineLatest emits an item whenever any of
+ * the source Observables emits an item, by combining the latest emissions from each source
+ * Observable with a specified function.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/combineLatest.png">
+ */
 public class OperationCombineLatest {
 
     /**
-     * Combines the two given observables, emitting an event containing an aggregation of the latest values of each of the source observables
-     * each time an event is received from one of the source observables, where the aggregation is defined by the given function.
-     * @param w0 The first source observable.
-     * @param w1 The second source observable.
-     * @param combineLatestFunction The aggregation function used to combine the source observable values.
-     * @return A function from an observer to a subscription. This can be used to create an observable from.
+     * Combines the two given Observables, emitting an item that aggregates the latest values of
+     * each of the source Observables each time an item is received from either of the source
+     * Observables, where the aggregation is defined by the given function.
+     * @param w0 the first source Observable.
+     * @param w1 the second source Observable.
+     * @param combineLatestFunction the aggregation function that combines the source Observable
+     *                              items.
+     * @return a function from an Observer to a Subscription. This can be used to create an Observable.
      */
     public static <T0, T1, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
