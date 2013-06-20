@@ -73,6 +73,7 @@ def docTasks = [:]
         def shortName = docClass.simpleName.toLowerCase()
         def docTask = task "aggregate${shortName.capitalize()}"(type: docClass, description: "Aggregate subproject ${shortName}s") {
             source = allSources
+            destinationDir = file("${project.buildDir}/docs/${shortName}")
             doFirst {
                 def classpaths = allprojects.findAll { it.plugins.hasPlugin(JavaPlugin) }.collect { it.sourceSets.main.compileClasspath }
                 classpath = files(classpaths)
@@ -84,7 +85,7 @@ def docTasks = [:]
 }
 
 githubPages {
-    repoUri = "git@github.com:quidryan/${rootProject.githubProjectName}.git"
+    repoUri = "git@github.com:Netflix/${rootProject.githubProjectName}.git"
     pages {
         docTasks.each { shortName, docTask ->
             from(docTask.outputs.files) {
