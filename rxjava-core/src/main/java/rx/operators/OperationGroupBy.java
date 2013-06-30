@@ -95,6 +95,17 @@ public final class OperationGroupBy {
         }
     }
 
+    /**
+     * The internal observer that is spawned on a subscription to GroupBy.
+     * Whenever it receives a new KeyValue from the source, it passes the value to the correct GroupedObservable(Subject),
+     * which is determined by the key. If no GroupedObservable existed for this key, a new one is created first and passed
+     * to the primary observer.
+     * When an emitted GroupedObservable is subscribed to, it notifies this internal observer, which keeps count of the
+     * number of these subscriptions. When both the primary observer has unsubscribed (thus no groups are emitted anymore),
+     * and no groups have any observers left, the whole thing is considered done and the upstream subscription is terminated.
+     * Note that to function reliably, this implementation therefore requires that emitted GroupedObservables are subscribed
+     * to immediately, and not stored for later use (after the GroupBy has been unsubscribed from).
+     */
     private static class GroupByObserver<K, V> implements Observer<KeyValue<K, V>> {
         private final ConcurrentHashMap<K, GroupedSubject<K, V>> groupedObservables = new ConcurrentHashMap<K, GroupedSubject<K, V>>();
         private final AtomicInteger numGroupSubscriptions = new AtomicInteger();
@@ -137,10 +148,10 @@ public final class OperationGroupBy {
                     return;
                 }
                 /*
-                    * Technically the source should be single-threaded so we shouldn't need to do this but I am
-                    * programming defensively as most operators are so this can work with a concurrent sequence
-                    * if it ends up receiving one.
-                    */
+                 * Technically the source should be single-threaded so we shouldn't need to do this but I am
+                 * programming defensively as most operators are so this can work with a concurrent sequence
+                 * if it ends up receiving one.
+                 */
                 GroupedSubject<K, V> newGs = GroupedSubject.<K, V> create(value.key, this);
                 GroupedSubject<K, V> existing = groupedObservables.putIfAbsent(value.key, newGs);
                 if (existing == null) {
@@ -174,6 +185,9 @@ public final class OperationGroupBy {
         }
     }
 
+    /**
+     * The GroupedObservables that are passed to the observer.
+     */
     private static class GroupedSubject<K, T> extends GroupedObservable<K, T> implements Observer<T> {
 
         static <K, T> GroupedSubject<K, T> create(final K key, final GroupByObserver<K, T> parent) {
