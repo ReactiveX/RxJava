@@ -36,6 +36,10 @@ import rx.Subscription;
 import rx.concurrency.Schedulers;
 import rx.concurrency.TestScheduler;
 import rx.subscriptions.Subscriptions;
+import rx.util.BufferClosing;
+import rx.util.BufferClosings;
+import rx.util.BufferOpening;
+import rx.util.BufferOpenings;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
@@ -346,6 +350,15 @@ public final class OperationBuffer {
         };
     }
 
+    /**
+     * This {@link BufferObserver} object can be constructed using a {@link Buffers} object,
+     * a {@link Observer} object, and a {@link BufferCreator} object. The {@link BufferCreator}
+     * will manage the creation, and in some rare cases emission of internal {@link Buffer} objects
+     * in the specified {@link Buffers} object. Under normal circumstances the {@link Buffers}
+     * object specifies when a created {@link Buffer} is emitted.
+     *
+     * @param <T> The type of object all internal {@link Buffer} objects record.
+     */
     private static class BufferObserver<T> implements Observer<T> {
 
         private final Buffers<T> buffers;
@@ -379,11 +392,31 @@ public final class OperationBuffer {
         }
     }
 
+    /**
+     * This interface defines a way which specifies when to create a new internal {@link Buffer} object.
+     *
+     * @param <T> The type of object all internal {@link Buffer} objects record.
+     */
     private interface BufferCreator<T> {
+    	/**
+    	 * Signifies a onNext event.
+    	 */
         void onValuePushed();
+        
+        /**
+         * Signifies a onCompleted or onError event. Should be used to clean up open
+         * subscriptions and other still running background tasks.
+         */
         void stop();
     }
 
+    /**
+     * This {@link BufferCreator} creates a new {@link Buffer} when it is initialized, but
+     * provides no additional functionality. This class should primarily be used when the
+     * internal {@link Buffer} is closed externally.
+     *
+     * @param <T> The type of object all internal {@link Buffer} objects record.
+     */
     private static class SingleBufferCreator<T> implements BufferCreator<T> {
 
         public SingleBufferCreator(Buffers<T> buffers) {
@@ -401,6 +434,13 @@ public final class OperationBuffer {
         }
     }
 
+    /**
+     * This {@link BufferCreator} creates a new {@link Buffer} whenever it receives an
+     * object from the provided {@link Observable} created with the
+     * bufferClosingSelector {@link Func0}.
+     *
+     * @param <T> The type of object all internal {@link Buffer} objects record.
+     */
     private static class ObservableBasedSingleBufferCreator<T> implements BufferCreator<T> {
 
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
@@ -437,11 +477,19 @@ public final class OperationBuffer {
         }
     }
 
+    /**
+     * This {@link BufferCreator} creates a new {@link Buffer} whenever it receives
+     * an object from the provided bufferOpenings {@link Observable}, and closes the corresponding
+     * {@link Buffer} object when it receives an object from the provided {@link Observable} created
+     * with the bufferClosingSelector {@link Func1}.
+     *
+     * @param <T> The type of object all internal {@link Buffer} objects record.
+     */
     private static class ObservableBasedMultiBufferCreator<T> implements BufferCreator<T> {
 
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
 
-        public ObservableBasedMultiBufferCreator(final Buffers<T> buffers, Observable<BufferOpening> bufferOpenings, final Func1<BufferOpening, Observable<BufferClosing>> bufferClosingSelector) {
+        public ObservableBasedMultiBufferCreator(final OverlappingBuffers<T> buffers, Observable<BufferOpening> bufferOpenings, final Func1<BufferOpening, Observable<BufferClosing>> bufferClosingSelector) {
             subscription.wrap(bufferOpenings.subscribe(new Action1<BufferOpening>() {
                 @Override
                 public void call(BufferOpening opening) {
@@ -469,6 +517,12 @@ public final class OperationBuffer {
         }
     }
 
+    /**
+     * This {@link BufferCreator} creates a new {@link Buffer} every time after a fixed
+     * period of time has elapsed.
+     *
+     * @param <T> The type of object all internal {@link Buffer} objects record.
+     */
     private static class TimeBasedBufferCreator<T> implements BufferCreator<T> {
 
         private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
@@ -502,6 +556,12 @@ public final class OperationBuffer {
         }
     }
 
+    /**
+     * This {@link BufferCreator} creates a new {@link Buffer} every time after it has
+     * seen a certain amount of elements.
+     *
+     * @param <T> The type of object all internal {@link Buffer} objects record.
+     */
     private static class SkippingBufferCreator<T> implements BufferCreator<T> {
 
         private final AtomicInteger skipped = new AtomicInteger(1);
@@ -527,6 +587,12 @@ public final class OperationBuffer {
         }
     }
 
+    /**
+     * This class is an extension on the {@link Buffers} class which only supports one
+     * active (not yet emitted) internal {@link Buffer} object.
+     *
+     * @param <T> The type of object all internal {@link Buffer} objects record.
+     */
     private static class NonOverlappingBuffers<T> extends Buffers<T> {
 
         private final Object lock = new Object();
@@ -550,13 +616,27 @@ public final class OperationBuffer {
         }
     }
 
+    /**
+     * This class is an extension on the {@link Buffers} class which actually has no additional
+     * behavior than its super class. Classes extending this class, are expected to support
+     * two or more active (not yet emitted) internal {@link Buffer} objects.
+     *
+     * @param <T> The type of object all internal {@link Buffer} objects record.
+     */
     private static class OverlappingBuffers<T> extends Buffers<T> {
-
         public OverlappingBuffers(Observer<List<T>> observer) {
             super(observer);
         }
     }
 
+    /**
+     * This class is an extension on the {@link Buffers} class. Every internal buffer has
+     * a has a maximum time to live and a maximum internal capacity. When the buffer has
+     * reached the end of its life, or reached its maximum internal capacity it is
+     * automatically emitted.
+     *
+     * @param <T> The type of object all internal {@link Buffer} objects record.
+     */
     private static class TimeAndSizeBasedBuffers<T> extends Buffers<T> {
 
         private final ConcurrentMap<Buffer<T>, Subscription> subscriptions = new ConcurrentHashMap<Buffer<T>, Subscription>();
@@ -615,6 +695,13 @@ public final class OperationBuffer {
         }
     }
 
+    /**
+     * This class is an extension on the {@link Buffers} class. Every internal buffer has
+     * a has a maximum time to live. When the buffer has reached the end of its life it is
+     * automatically emitted.
+     *
+     * @param <T> The type of object all internal {@link Buffer} objects record.
+     */
     private static class TimeBasedBuffers<T> extends OverlappingBuffers<T> {
 
         private final ConcurrentMap<Buffer<T>, Subscription> subscriptions = new ConcurrentHashMap<Buffer<T>, Subscription>();
@@ -649,6 +736,13 @@ public final class OperationBuffer {
         }
     }
 
+    /**
+     * This class is an extension on the {@link Buffers} class. Every internal buffer has
+     * a fixed maximum capacity. When the buffer has reached its maximum capacity it is
+     * automatically emitted.
+     *
+     * @param <T> The type of object all internal {@link Buffer} objects record.
+     */
     private static class SizeBasedBuffers<T> extends Buffers<T> {
 
         private final int size;
@@ -674,21 +768,42 @@ public final class OperationBuffer {
         }
     }
 
+    /**
+     * This class represents an object which contains and manages multiple {@link Buffer} objects.
+     * 
+     * @param <T> The type of objects which the internal {@link Buffer} objects record.
+     */
     private static class Buffers<T> {
 
         private final Queue<Buffer<T>> buffers = new ConcurrentLinkedQueue<Buffer<T>>();
         private final Observer<List<T>> observer;
 
+        /**
+         * Constructs a new {@link Buffers} object for the specified {@link Observer}.
+         * 
+         * @param observer
+         *            The {@link Observer} to which this object will emit its internal
+         *            {@link Buffer} objects to when requested.
+         */
         public Buffers(Observer<List<T>> observer) {
             this.observer = observer;
         }
 
+        /**
+         * This method will instantiate a new {@link Buffer} object and register it internally.
+         * 
+         * @return
+         *            The constructed empty {@link Buffer} object.
+         */
         public Buffer<T> createBuffer() {
             Buffer<T> buffer = new Buffer<T>();
             buffers.add(buffer);
             return buffer;
         }
 
+        /**
+         * This method emits all not yet emitted {@link Buffer} objects.
+         */
         public void emitAllBuffers() {
             Buffer<T> buffer;
             while ((buffer = buffers.poll()) != null) {
@@ -696,6 +811,12 @@ public final class OperationBuffer {
             }
         }
 
+        /**
+         * This method emits the specified {@link Buffer} object.
+         * 
+         * @param buffer
+         *            The {@link Buffer} to emit.
+         */
         public void emitBuffer(Buffer<T> buffer) {
             if (!buffers.remove(buffer)) {
                 // Concurrency issue: Buffer is already emitted!
@@ -704,10 +825,20 @@ public final class OperationBuffer {
             observer.onNext(buffer.getContents());
         }
 
+        /**
+         * @return
+         *            The oldest (in case there are multiple) {@link Buffer} object.
+         */
         public Buffer<T> getBuffer() {
             return buffers.peek();
         }
 
+        /**
+         * This method pushes a value to all not yet emitted {@link Buffer} objects.
+         * 
+         * @param value
+         *            The value to push to all not yet emitted {@link Buffer} objects.
+         */
         public void pushValue(T value) {
             List<Buffer<T>> copy = new ArrayList<Buffer<T>>(buffers);
             for (Buffer<T> buffer : copy) {
@@ -716,44 +847,31 @@ public final class OperationBuffer {
         }
     }
 
+    /**
+     * This class represents a single buffer: A sequence of recorded values.
+     * 
+     * @param <T> The type of objects which this {@link Buffer} can hold.
+     */
     private static class Buffer<T> {
         private final List<T> contents = new ArrayList<T>();
 
+        /**
+         * Appends a specified value to the {@link Buffer}.
+         * 
+         * @param value
+         *            The value to append to the {@link Buffer}.
+         */
         public void pushValue(T value) {
             contents.add(value);
         }
 
+        /**
+         * @return
+         *            The mutable underlying {@link List} which contains all the
+         *            recorded values in this {@link Buffer} object.
+         */
         public List<T> getContents() {
             return contents;
-        }
-    }
-
-    public interface BufferOpening {
-        // Tagging interface for objects which can open buffers.
-    }
-
-    public interface BufferClosing {
-        // Tagging interface for objects which can close buffers.
-    }
-
-    public static class BufferOpenings {
-
-        public static BufferOpening create() {
-            return new BufferOpening() {};
-        }
-
-        private BufferOpenings() {
-            // Prevent instantation.
-        }
-    }
-    public static class BufferClosings {
-
-        public static BufferClosing create() {
-            return new BufferClosing() {};
-        }
-
-        private BufferClosings() {
-            // Prevent instantation.
         }
     }
 
