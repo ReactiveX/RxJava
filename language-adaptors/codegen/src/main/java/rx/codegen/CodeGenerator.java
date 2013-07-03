@@ -61,11 +61,6 @@ public class CodeGenerator {
         }
         try {
             rewriteMethodsWithRxArgs(clazz, adaptor);
-
-            for (CtMethod cm: clazz.getMethods()) {
-                System.out.println(cm.getName() + " : " + cm.getSignature() + " : " + cm.getDeclaringClass().getName());
-            }
-
             writeClassFile(clazz, file);
         } catch (Exception e) {
             e.printStackTrace();

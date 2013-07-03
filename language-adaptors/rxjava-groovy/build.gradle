@@ -1,10 +1,7 @@
-apply plugin: 'java'
 apply plugin: 'groovy'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: 'osgi'
 
 dependencies {
+    core project(':rxjava-core')
     compile project(':rxjava-core')
     compile project(':language-adaptors:codegen')
     groovy 'org.codehaus.groovy:groovy-all:2.+'
@@ -12,65 +9,33 @@ dependencies {
     provided 'org.mockito:mockito-core:1.8.5'
 }
 
-// include /src/examples folder
-sourceSets {
-    examples
-}
-
-// make 'examples' use the same classpath
-configurations {
-    examplesCompile.extendsFrom compile
-    examplesRuntime.extendsFrom runtime
-}
-
-// include 'examples' in build task
-build.dependsOn examplesClasses
-test.dependsOn jar
-
 task createAdaptedObservable(type: JavaExec) {  
     main = 'rx.codegen.ClassPathBasedRunner'
     classpath = sourceSets.main.runtimeClasspath
-    args = ["Groovy", sourceSets.main.output.classesDir]
+    args = ["Groovy", outputDir]
+
+    inputs.files(sourceSets.main.runtimeClasspath)
+    outputs.dir(outputDir)
 }
 
-task jar(overwrite: true, type: Jar, dependsOn: "createAdaptedObservable") { 
-    description = 'Copies the RxJava core JAR and replaces Observable with Groovy-friendly versions.'
-    destinationDir = jar.archivePath.getParentFile()
-    archiveName = baseName + "-" + version + "." + extension 
+tasks.test { 
+    dependsOn(createAdaptedObservable)
 
-    from (zipTree(coreJarDir + "/rxjava-core-" + version + ".jar")) { 
+    //Reorders the classpath so that the newly-create Observables win
+    classpath = createAdaptedObservable.outputs.files + sourceSets.test.runtimeClasspath
+}
+
+tasks.jar { 
+    dependsOn(createAdaptedObservable)
+
+    from (zipTree(configurations.core.singleFile)) { 
         exclude "rx/Observable.class"
         exclude "rx/observables/BlockingObservable.class"
-    } 
-    from (sourceSets.main.output.classesDir) { 
-        include "rx/Observable.class"
-        include "rx/observables/BlockingObservable.class"
     }
+    from(outputDir)
 
-    /*    manifest { 
-        name = 'rxjava-core'
-        attributes('Bundle-Vendor': 'Netflix', 'Bundle-DocURL': 'https://github.com/Netflix/RxJava', 'Import-Package': '!org.junit,!junit.framework,!org.mockito.*,*')
-        }*/
-}
+    exclude('**/*$UnitTest*')
 
-eclipse {
-    classpath {
-      // include 'provided' dependencies on the classpath
-      plusConfigurations += configurations.provided
-  
-      downloadSources = true
-      downloadJavadoc = true
-    }
-}
-
-idea {
-	module {
-		// include 'provided' dependencies on the classpath
-		scopes.PROVIDED.plus += configurations.provided
-	}
-}
-
-/*jar {
     manifest {
         name = 'rxjava-groovy'
         instruction 'Bundle-Vendor', 'Netflix'
@@ -78,4 +43,4 @@ idea {
         instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
         instruction 'Fragment-Host', 'com.netflix.rxjava.core'
     }
-}*/
+}
