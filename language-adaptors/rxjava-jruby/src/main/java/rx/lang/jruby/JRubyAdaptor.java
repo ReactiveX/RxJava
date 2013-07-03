@@ -20,7 +20,9 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.jruby.RubyProc;
 import org.jruby.embed.ScriptingContainer;
@@ -50,6 +52,13 @@ public class JRubyAdaptor implements FunctionLanguageAdaptor {
         Map<Class<?>, Class<?>> m = new HashMap<Class<?>, Class<?>>();
         m.put(RubyProc.class, JRubyActionWrapper.class);
         return m;
+    }
+
+    @Override
+    public Set<Class<?>> getAllClassesToRewrite() {
+        Set<Class<?>> classes = new HashSet<Class<?>>();
+        classes.add(RubyProc.class);
+        return classes;
     }
 
     public static class UnitTest {
