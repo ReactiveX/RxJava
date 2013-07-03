@@ -69,7 +69,7 @@ public enum AbstractButtonSource { ; // no instances
             @SuppressWarnings("unchecked")
             Action1<ActionEvent> action = mock(Action1.class);
             @SuppressWarnings("unchecked")
-            Action1<Exception> error = mock(Action1.class);
+            Action1<Throwable> error = mock(Action1.class);
             Action0 complete = mock(Action0.class);
             
             final ActionEvent event = new ActionEvent(this, 1, "command");
@@ -85,7 +85,7 @@ public enum AbstractButtonSource { ; // no instances
             Subscription sub = fromActionOf(button).subscribe(action, error, complete);
             
             verify(action, never()).call(Matchers.<ActionEvent>any());
-            verify(error, never()).call(Matchers.<Exception>any());
+            verify(error, never()).call(Matchers.<Throwable>any());
             verify(complete, never()).call();
             
             button.testAction();
@@ -97,7 +97,7 @@ public enum AbstractButtonSource { ; // no instances
             sub.unsubscribe();
             button.testAction();
             verify(action, times(2)).call(Matchers.<ActionEvent>any());
-            verify(error, never()).call(Matchers.<Exception>any());
+            verify(error, never()).call(Matchers.<Throwable>any());
             verify(complete, never()).call();
         }
     }
