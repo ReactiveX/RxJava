@@ -4,5 +4,6 @@ include 'rxjava-core', \
 'language-adaptors:rxjava-jruby', \
 'language-adaptors:rxjava-clojure', \
 'language-adaptors:rxjava-scala', \
+'language-adaptors:rxjava-dynamic', \
 'language-adaptors:codegen', \
 'rxjava-contrib:rxjava-swing'

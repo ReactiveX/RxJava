@@ -1,0 +1,43 @@
+dependencies {
+    core project(':rxjava-core')
+    compile project(':rxjava-core')
+    compile project(':language-adaptors:codegen')
+    provided 'junit:junit-dep:4.10'
+    provided 'org.mockito:mockito-core:1.8.5'
+}
+
+task createAdaptedObservable(type: JavaExec) {  
+    main = 'rx.codegen.ClassPathBasedRunner'
+    classpath = sourceSets.main.runtimeClasspath
+    args = ["Dynamic", outputDir]
+
+    inputs.files(sourceSets.main.runtimeClasspath)
+    outputs.dir(outputDir)
+}
+
+tasks.test { 
+    dependsOn(createAdaptedObservable)
+
+    //Reorders the classpath so that the newly-create Observables win
+    classpath = createAdaptedObservable.outputs.files + sourceSets.test.runtimeClasspath
+}
+
+tasks.jar { 
+    dependsOn(createAdaptedObservable)
+
+    from (zipTree(configurations.core.singleFile)) { 
+        exclude "rx/Observable.class"
+        exclude "rx/observables/BlockingObservable.class"
+    }
+    from(outputDir)
+
+    exclude('**/*$UnitTest*')
+
+    manifest {
+        name = 'rxjava-dynamic'
+        instruction 'Bundle-Vendor', 'Netflix'
+        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
+        instruction 'Fragment-Host', 'com.netflix.rxjava.core'
+    }
+}
