@@ -16,7 +16,9 @@
 package rx.lang.clojure;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +46,13 @@ public class ClojureAdaptor implements FunctionLanguageAdaptor {
         Map<Class<?>, Class<?>> m = new HashMap<Class<?>, Class<?>>();
         m.put(IFn.class, ClojureActionWrapper.class);
         return m;
+    }
+
+    @Override
+    public Set<Class<?>> getAllClassesToRewrite() {
+        Set<Class<?>> classes = new HashSet<Class<?>>();
+        classes.add(IFn.class);
+        return classes;
     }
 
     public static class UnitTest {
