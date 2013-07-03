@@ -19,12 +19,11 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.jruby.Ruby;
 import org.jruby.RubyProc;
 import org.jruby.embed.ScriptingContainer;
-import org.jruby.javasupport.JavaEmbedUtils;
-import org.jruby.runtime.builtin.IRubyObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -40,19 +39,17 @@ import rx.util.functions.FunctionLanguageAdaptor;
 public class JRubyAdaptor implements FunctionLanguageAdaptor {
 
     @Override
-    public Object call(Object function, Object[] args) {
-        RubyProc rubyProc = ((RubyProc) function);
-        Ruby ruby = rubyProc.getRuntime();
-        IRubyObject rubyArgs[] = new IRubyObject[args.length];
-        for (int i = 0; i < args.length; i++) {
-            rubyArgs[i] = JavaEmbedUtils.javaToRuby(ruby, args[i]);
-        }
-        return rubyProc.getBlock().call(ruby.getCurrentContext(), rubyArgs);
+    public Map<Class<?>, Class<?>> getFunctionClassRewritingMap() {
+        Map<Class<?>, Class<?>> m = new HashMap<Class<?>, Class<?>>();
+        m.put(RubyProc.class, JRubyFunctionWrapper.class);
+        return m;
     }
 
     @Override
-    public Class<?>[] getFunctionClass() {
-        return new Class<?>[] { RubyProc.class };
+    public Map<Class<?>, Class<?>> getActionClassRewritingMap() {
+        Map<Class<?>, Class<?>> m = new HashMap<Class<?>, Class<?>>();
+        m.put(RubyProc.class, JRubyActionWrapper.class);
+        return m;
     }
 
     public static class UnitTest {

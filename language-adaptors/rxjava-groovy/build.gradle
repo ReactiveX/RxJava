@@ -6,6 +6,7 @@ apply plugin: 'osgi'
 
 dependencies {
     compile project(':rxjava-core')
+    compile project(':language-adaptors:codegen')
     groovy 'org.codehaus.groovy:groovy-all:2.+'
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
@@ -24,6 +25,33 @@ configurations {
 
 // include 'examples' in build task
 build.dependsOn examplesClasses
+test.dependsOn jar
+
+task createAdaptedObservable(type: JavaExec) {  
+    main = 'rx.codegen.ClassPathBasedRunner'
+    classpath = sourceSets.main.runtimeClasspath
+    args = ["Groovy", sourceSets.main.output.classesDir]
+}
+
+task jar(overwrite: true, type: Jar, dependsOn: "createAdaptedObservable") { 
+    description = 'Copies the RxJava core JAR and replaces Observable with Groovy-friendly versions.'
+    destinationDir = jar.archivePath.getParentFile()
+    archiveName = baseName + "-" + version + "." + extension 
+
+    from (zipTree(coreJarDir + "/rxjava-core-" + version + ".jar")) { 
+        exclude "rx/Observable.class"
+        exclude "rx/observables/BlockingObservable.class"
+    } 
+    from (sourceSets.main.output.classesDir) { 
+        include "rx/Observable.class"
+        include "rx/observables/BlockingObservable.class"
+    }
+
+    /*    manifest { 
+        name = 'rxjava-core'
+        attributes('Bundle-Vendor': 'Netflix', 'Bundle-DocURL': 'https://github.com/Netflix/RxJava', 'Import-Package': '!org.junit,!junit.framework,!org.mockito.*,*')
+        }*/
+}
 
 eclipse {
     classpath {
@@ -42,7 +70,7 @@ idea {
 	}
 }
 
-jar {
+/*jar {
     manifest {
         name = 'rxjava-groovy'
         instruction 'Bundle-Vendor', 'Netflix'
@@ -50,4 +78,4 @@ jar {
         instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
         instruction 'Fragment-Host', 'com.netflix.rxjava.core'
     }
-}
+}*/

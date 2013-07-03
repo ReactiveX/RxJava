@@ -52,16 +52,6 @@ idea {
 }
 
 
-eclipse {
-  classpath {
-    // include 'provided' dependencies on the classpath
-    plusConfigurations += configurations.provided
-
-    downloadSources = true
-    downloadJavadoc = true
-  }
-}
-
 // include /src/examples folder
 sourceSets {
     examples

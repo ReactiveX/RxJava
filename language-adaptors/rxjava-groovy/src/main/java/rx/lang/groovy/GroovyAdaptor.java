@@ -15,17 +15,36 @@
  */
 package rx.lang.groovy;
 
-import groovy.lang.Closure;
+import java.util.HashMap;
+import java.util.Map;
+
 import rx.util.functions.FunctionLanguageAdaptor;
+
+import groovy.lang.Closure;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class GroovyAdaptor implements FunctionLanguageAdaptor {
 
     @Override
-    public Object call(Object function, Object[] args) {
-        return ((Closure<?>) function).call(args);
+    public Map<Class<?>, Class<?>> getFunctionClassRewritingMap() {
+        Map<Class<?>, Class<?>> m = new HashMap<Class<?>, Class<?>>();
+        m.put(Closure.class, GroovyFunctionWrapper.class);
+        return m;
     }
 
-    public Class<?>[] getFunctionClass() {
-        return new Class<?>[] { Closure.class };
+    @Override
+    public Map<Class<?>, Class<?>> getActionClassRewritingMap() {
+        Map<Class<?>, Class<?>> m = new HashMap<Class<?>, Class<?>>();
+        m.put(Closure.class, GroovyActionWrapper.class);
+        return m;
+    }
+
+    @Override
+    public Set<Class<?>> getAllClassesToRewrite() {
+        Set<Class<?>> groovyClasses = new HashSet<Class<?>>();
+        groovyClasses.add(Closure.class);
+        return groovyClasses;
     }
 }

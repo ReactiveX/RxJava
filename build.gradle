@@ -15,6 +15,8 @@ apply from: file('gradle/maven.gradle')
 apply from: file('gradle/license.gradle')
 apply from: file('gradle/release.gradle')
 
+ext.coreJarDir = new File(rootDir, "/rxjava-core/build/libs").getCanonicalPath()
+
 subprojects {
 
     group = "com.netflix.${githubProjectName}"
