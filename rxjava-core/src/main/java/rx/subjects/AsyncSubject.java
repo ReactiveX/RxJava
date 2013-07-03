@@ -130,9 +130,8 @@ public class AsyncSubject<T> extends Subject<T, T> {
 
         @Test
         public void testNeverCompleted() {
-        	AsyncSubject<Object> subject = AsyncSubject.create();
+        	AsyncSubject<String> subject = AsyncSubject.create();
 
-            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -152,9 +151,8 @@ public class AsyncSubject<T> extends Subject<T, T> {
 
         @Test
         public void testCompleted() {
-        	AsyncSubject<Object> subject = AsyncSubject.create();
+        	AsyncSubject<String> subject = AsyncSubject.create();
 
-            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -175,9 +173,8 @@ public class AsyncSubject<T> extends Subject<T, T> {
 
         @Test
         public void testError() {
-        	AsyncSubject<Object> subject = AsyncSubject.create();
+        	AsyncSubject<String> subject = AsyncSubject.create();
 
-            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -201,7 +198,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
 
         @Test
         public void testUnsubscribeBeforeCompleted() {
-        	AsyncSubject<Object> subject = AsyncSubject.create();
+        	AsyncSubject<String> subject = AsyncSubject.create();
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
