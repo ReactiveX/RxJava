@@ -1,0 +1,47 @@
+Here's the example source of Observable (heavily elided):
+
+public class rx.Observable {
+    public static <T> Observable<T> create(Func1<Observer<T>, Subscription> func) {
+        return new Observable<T>(func);
+    }
+
+    public static <T> Observable<T> create(Object func) {
+        ...
+    }
+
+    public static <T> Observable<T> take(final Observable<T> items, final int num) {
+        return create(OperationTake.take(items, num));
+    }
+
+    public static <T> Observable<T> takeWhile(final Observable<T> items, Func1<T, Boolean> predicate) {
+        return create(OperationTakeWhile.takeWhile(items, predicate));
+    }
+
+    public Observable<T> filter(Func1<T, Boolean> predicate) {
+        return filter(this, predicate);
+    }
+
+    public static <T> Observable<T> filter(Observable<T> that, Func1<T, Boolean> predicate) {
+        return create(OperationFilter.filter(that, predicate));
+    }
+}
+
+Groovy-friendly version adds:
+
+public class rx.Observable {
+    public static <T> rx.Observable<T> create(groovy.lang.Closure func) {
+        return create(new GroovyFunctionAdaptor(func));
+    }
+
+    public static <T> rx.Observable<T> takeWhile(final Observable<T> items, groovy.lang.Closure predicate) {
+        return takeWhile(items, new GroovyFunctionAdaptor(predicate));
+    }
+
+    public rx.Observable<T> filter(groovy.lang.Closure predicate) {
+        return filter(new GroovyFunctionAdaptor(predicate));
+    }
+
+    public static <T> rxObservable<T> filter(Observable<T> that, groovy.lang.Closure predicate) {
+        return filter(that, new GroovyFunctionAdaptor(predicate));
+    }
+}

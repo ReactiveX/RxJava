@@ -1,3 +1,9 @@
+apply from: file('gradle/convention.gradle')
+apply from: file('gradle/maven.gradle')
+//apply from: file('gradle/check.gradle')
+apply from: file('gradle/license.gradle')
+apply from: file('gradle/release.gradle')
+
 ext.githubProjectName = rootProject.name
 
 buildscript {
@@ -9,20 +15,55 @@ allprojects {
     repositories { mavenCentral() }
 }
 
-apply from: file('gradle/convention.gradle')
-apply from: file('gradle/maven.gradle')
-//apply from: file('gradle/check.gradle')
-apply from: file('gradle/license.gradle')
-apply from: file('gradle/release.gradle')
-
 subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'osgi'
 
     group = "com.netflix.${githubProjectName}"
 
-    sourceSets.test.java.srcDir 'src/main/java'
+    ext.coreJarDir = new File(rootDir, "/rxjava-core/build/libs").getCanonicalPath()
+    ext.outputDir = file("build/rewritten_classes")
+
+    // make 'examples' use the same classpath
+    configurations { 
+        core
+        examplesCompile.extendsFrom compile
+        examplesRuntime.extendsFrom runtime
+    }
+
+    sourceSets.test.java.srcDirs.add('src/main/java')
 
     tasks.withType(Javadoc).each {
         it.classpath = sourceSets.main.compileClasspath
+    }
+
+    sourceSets { 
+        //include /src/examples folder
+        examples
+    }
+
+    // include 'examples' in build task
+    tasks.build { 
+        dependsOn(examplesClasses)
+    }
+
+    eclipse { 
+        classpath { 
+            // include 'provided' dependencies on the classpath
+            plusConfigurations += configurations.provided
+            
+            downloadSources = true
+            downloadJavadoc = true
+        }
+    }
+    
+    idea {
+        module {
+            // include 'provided' dependencies on the classpath
+            scopes.PROVIDED.plus += configurations.provided
+        }
     }
 }
 
