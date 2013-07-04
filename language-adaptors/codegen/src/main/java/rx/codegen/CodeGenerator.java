@@ -23,7 +23,9 @@ import java.util.Set;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import javassist.Modifier;
 import javassist.NotFoundException;
+
 import rx.util.functions.Action;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -174,6 +176,11 @@ public class CodeGenerator {
             List<String> argumentList = new ArrayList<String>();
             StringBuffer newBody = new StringBuffer();
             newBody.append("{ return ");
+            if (Modifier.isStatic(method.getModifiers())) {
+                newBody.append(clazz.getName() + ".");
+            } else {
+                newBody.append("this.");                
+            }
             newBody.append(method.getName());
             newBody.append("(");
             for (int i = 0; i < method.getParameterTypes().length; i++) {
@@ -189,6 +196,7 @@ public class CodeGenerator {
             newBody.append(makeArgList(argumentList));
             newBody.append(")");
             newBody.append(";}");
+            //Uncomment these to see all of the rewritten methods
             //System.out.println(method.getReturnType().getName() + " " + method.getName() + "(" + initialArgString + ") --> " + newMethod.getReturnType().getName() + " " + newMethod.getName() + "(" + finalArgString + ")");
             //System.out.println("    " + newBody.toString());
             newMethod.setBody(newBody.toString());
