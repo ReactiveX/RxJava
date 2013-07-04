@@ -19,12 +19,10 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
-    apply plugin: 'osgi'
 
     group = "com.netflix.${githubProjectName}"
 
-    ext.coreJarDir = new File(rootDir, "/rxjava-core/build/libs").getCanonicalPath()
-    ext.outputDir = file("build/rewritten_classes")
+    ext.codeGenOutputDir = file("build/rewritten_classes")
 
     // make 'examples' use the same classpath
     configurations { 
