@@ -1,3 +1,9 @@
+apply from: file('gradle/convention.gradle')
+apply from: file('gradle/maven.gradle')
+//apply from: file('gradle/check.gradle')
+apply from: file('gradle/license.gradle')
+apply from: file('gradle/release.gradle')
+
 ext.githubProjectName = rootProject.name
 
 buildscript {
@@ -9,20 +15,51 @@ allprojects {
     repositories { mavenCentral() }
 }
 
-apply from: file('gradle/convention.gradle')
-apply from: file('gradle/maven.gradle')
-//apply from: file('gradle/check.gradle')
-apply from: file('gradle/license.gradle')
-apply from: file('gradle/release.gradle')
 
 subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
 
     group = "com.netflix.${githubProjectName}"
+
+    // make 'examples' use the same classpath
+    configurations { 
+        examplesCompile.extendsFrom compile
+        examplesRuntime.extendsFrom runtime
+    }
 
     sourceSets.test.java.srcDir 'src/main/java'
 
     tasks.withType(Javadoc).each {
         it.classpath = sourceSets.main.compileClasspath
+    }
+
+    //include /src/examples folder
+    sourceSets { 
+        examples
+    }
+    
+    //include 'examples' in build task
+    tasks.build { 
+        dependsOn(examplesClasses)
+    }
+    
+    eclipse {  
+        classpath {  
+            // include 'provided' dependencies on the classpath
+            plusConfigurations += configurations.provided
+            
+            downloadSources = true
+            downloadJavadoc = true
+        }
+    }
+    
+    idea {
+        module {
+            // include 'provided' dependencies on the classpath
+            scopes.PROVIDED.plus += configurations.provided
+        }
     }
 }
 

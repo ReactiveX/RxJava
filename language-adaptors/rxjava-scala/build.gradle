@@ -1,11 +1,10 @@
 apply plugin: 'scala'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 apply plugin: 'osgi'
 
 tasks.withType(ScalaCompile) {
 	scalaCompileOptions.fork = true
     scalaCompileOptions.unchecked = true
+    scalaCompileOptions.setAdditionalParameters(['-feature'])
 
     configure(scalaCompileOptions.forkOptions) {
         memoryMaximumSize = '1g'
@@ -13,44 +12,36 @@ tasks.withType(ScalaCompile) {
     }
 }
 
+sourceSets { 
+    test { 
+        scala { 
+            srcDir 'src/main/scala'
+        }
+    }
+}
+
 dependencies {
-    // Scala compiler and related tools
-    scalaTools 'org.scala-lang:scala-compiler:2.10+'
-    scalaTools 'org.scala-lang:scala-library:2.10+'
-    provided 'org.scalatest:scalatest_2.10:1.9.1'
+    compile 'org.scala-lang:scala-library:2.10+'
 
     compile project(':rxjava-core')
+    
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
+    provided 'org.scalatest:scalatest_2.10:1.9.1'
+}
 
-    testCompile 'org.scalatest:scalatest_2.10:1.9.1'
+tasks.compileScala {  
+    classpath = classpath + (configurations.compile + configurations.provided)
 }
 
 task test(overwrite: true, dependsOn: testClasses) << {
     ant.taskdef(name: 'scalatest',
             classname: 'org.scalatest.tools.ScalaTestAntTask',
-            classpath: sourceSets.test.runtimeClasspath.asPath
+            classpath: configurations.provided.asPath + ':' + configurations.testRuntime.asPath + ":" + compileScala.destinationDir
     )
-    ant.scalatest(runpath: sourceSets.test.classesDir,
+    ant.scalatest(runpath: sourceSets.test.output.classesDir,
             haltonfailure: 'true',
             fork: 'false') {reporter(type: 'stdout')}
-}
-
-eclipse {
-  classpath {
-    // include 'provided' dependencies on the classpath
-    plusConfigurations += configurations.provided
-
-    downloadSources = true
-    downloadJavadoc = true
-  }
-}
-
-idea {
-	module {
-		// include 'provided' dependencies on the classpath
-		scopes.PROVIDED.plus += configurations.provided
-	}
 }
 
 jar {

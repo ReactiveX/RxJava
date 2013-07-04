@@ -1,6 +1,4 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
+apply plugin: 'maven'
 apply plugin: 'osgi'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
@@ -9,23 +7,6 @@ targetCompatibility = JavaVersion.VERSION_1_6
 dependencies {
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
-}
-
-eclipse {
-  classpath {
-    // include 'provided' dependencies on the classpath
-    plusConfigurations += configurations.provided
-
-    downloadSources = true
-    downloadJavadoc = true
-  }
-}
-
-idea {
-	module {
-		// include 'provided' dependencies on the classpath
-		scopes.PROVIDED.plus += configurations.provided
-	}
 }
 
 javadoc {
@@ -48,7 +29,5 @@ jar {
         instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
         instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
     }
-    // commenting out for now as it's breaking the rxjava-scala build and I can't figure out why
-    // exclude('**/*$UnitTest*')
 }
 
