@@ -185,7 +185,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
         @SuppressWarnings("unchecked")
         @Test
         public void testCompleted() {
-            ReplaySubject<Object> subject = ReplaySubject.create();
+            ReplaySubject<String> subject = ReplaySubject.create();
 
             Observer<String> o1 = mock(Observer.class);
             subject.subscribe(o1);
@@ -222,7 +222,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
         @SuppressWarnings("unchecked")
         @Test
         public void testError() {
-            ReplaySubject<Object> subject = ReplaySubject.create();
+            ReplaySubject<String> subject = ReplaySubject.create();
 
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
@@ -255,7 +255,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
         @SuppressWarnings("unchecked")
         @Test
         public void testSubscribeMidSequence() {
-            ReplaySubject<Object> subject = ReplaySubject.create();
+            ReplaySubject<String> subject = ReplaySubject.create();
 
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
@@ -279,7 +279,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
         @SuppressWarnings("unchecked")
         @Test
         public void testUnsubscribeFirstObserver() {
-            ReplaySubject<Object> subject = ReplaySubject.create();
+            ReplaySubject<String> subject = ReplaySubject.create();
 
             Observer<String> aObserver = mock(Observer.class);
             Subscription subscription = subject.subscribe(aObserver);

@@ -15,16 +15,10 @@
  */
 package rx.util.functions;
 
-public interface FunctionLanguageAdaptor {
+import java.util.Map;
+import java.util.Set;
 
-    /**
-     * Invoke the function and return the results.
-     * 
-     * @param function
-     * @param args
-     * @return Object results from function execution
-     */
-    Object call(Object function, Object[] args);
+public interface FunctionLanguageAdaptor {
 
     /**
      * The Class of the Function that this adaptor serves.
@@ -35,5 +29,13 @@ public interface FunctionLanguageAdaptor {
      * 
      * @return Class[] of classes that this adaptor should be invoked for.
      */
-    public Class<?>[] getFunctionClass();
+    //public Class<?>[] getFunctionClass();
+
+    //TODO MRJ: Add Javadoc
+    public Map<Class<?>, Class<?>> getActionClassRewritingMap();
+
+    //TODO MRJ: Add Javadoc
+    public Map<Class<?>, Class<?>> getFunctionClassRewritingMap();
+
+    public Set<Class<?>> getAllClassesToRewrite();
 }

@@ -1,60 +1,33 @@
-apply plugin: 'clojure'
 apply plugin: 'osgi'
 
 dependencies {
     core project(':rxjava-core')
     compile project(':rxjava-core')
     compile project(':language-adaptors:codegen')
-    compile 'org.clojure:clojure:1.4.+'
-    compile 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http    
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
 }
 
-/*
- * Clojure
- */
-aotCompile = true
-warnOnReflection = true
-
-buildscript {
-  repositories { maven { url "http://clojars.org/repo" } }
-  dependencies { classpath "clojuresque:clojuresque:1.5.4" }
-}
-
-repositories {
-  clojarsRepo()
-}
-
-/*
- * Add Counterclockwise to Eclipse
- */
-eclipse {
-  project {
-    natures "ccw.nature"
-  }
-}
-
-task createAdaptedObservable(type: JavaExec) { 
+task createAdaptedObservable(type: JavaExec) {  
     main = 'rx.codegen.ClassPathBasedRunner'
     classpath = sourceSets.main.runtimeClasspath
-    args = ["Clojure", codeGenOutputDir]
+    args = ["Dynamic", codeGenOutputDir]
 
     inputs.files(sourceSets.main.runtimeClasspath)
     outputs.dir(codeGenOutputDir)
 }
 
-tasks.test {
+tasks.test { 
     dependsOn(createAdaptedObservable)
 
     //Reorders the classpath so that the newly-create Observables win
     classpath = createAdaptedObservable.outputs.files + sourceSets.test.runtimeClasspath
 }
 
-tasks.jar {
+tasks.jar { 
     dependsOn(createAdaptedObservable)
 
-    from (zipTree(configurations.core.singleFile)) {
+    from (zipTree(configurations.core.singleFile)) { 
         exclude "rx/Observable.class"
         exclude "rx/observables/BlockingObservable.class"
     }
@@ -63,7 +36,7 @@ tasks.jar {
     exclude('**/*$UnitTest*')
 
     manifest {
-        name = 'rxjava-clojure'
+        name = 'rxjava-dynamic'
         instruction 'Bundle-Vendor', 'Netflix'
         instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
         instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'

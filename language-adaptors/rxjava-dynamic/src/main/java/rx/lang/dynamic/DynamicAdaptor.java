@@ -13,38 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.lang.groovy;
+package rx.lang.dynamic;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import rx.util.functions.FunctionLanguageAdaptor;
 
-import groovy.lang.Closure;
-
 import java.util.HashSet;
 import java.util.Set;
 
-public class GroovyAdaptor implements FunctionLanguageAdaptor {
+public class DynamicAdaptor implements FunctionLanguageAdaptor {
 
     @Override
     public Map<Class<?>, Class<?>> getFunctionClassRewritingMap() {
         Map<Class<?>, Class<?>> m = new HashMap<Class<?>, Class<?>>();
-        m.put(Closure.class, GroovyFunctionWrapper.class);
+        m.put(Object.class, DynamicFunctionWrapper.class);
         return m;
     }
 
     @Override
     public Map<Class<?>, Class<?>> getActionClassRewritingMap() {
         Map<Class<?>, Class<?>> m = new HashMap<Class<?>, Class<?>>();
-        m.put(Closure.class, GroovyActionWrapper.class);
+        m.put(Object.class, DynamicActionWrapper.class);
         return m;
     }
 
     @Override
     public Set<Class<?>> getAllClassesToRewrite() {
-        Set<Class<?>> groovyClasses = new HashSet<Class<?>>();
-        groovyClasses.add(Closure.class);
-        return groovyClasses;
+        Set<Class<?>> dynamicClasses = new HashSet<Class<?>>();
+        dynamicClasses.add(Object.class);
+        return dynamicClasses;
     }
 }
