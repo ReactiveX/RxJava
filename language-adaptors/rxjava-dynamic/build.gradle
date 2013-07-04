@@ -1,3 +1,5 @@
+apply plugin: 'osgi'
+
 dependencies {
     core project(':rxjava-core')
     compile project(':rxjava-core')
@@ -9,10 +11,10 @@ dependencies {
 task createAdaptedObservable(type: JavaExec) {  
     main = 'rx.codegen.ClassPathBasedRunner'
     classpath = sourceSets.main.runtimeClasspath
-    args = ["Dynamic", outputDir]
+    args = ["Dynamic", codeGenOutputDir]
 
     inputs.files(sourceSets.main.runtimeClasspath)
-    outputs.dir(outputDir)
+    outputs.dir(codeGenOutputDir)
 }
 
 tasks.test { 
@@ -29,7 +31,7 @@ tasks.jar {
         exclude "rx/Observable.class"
         exclude "rx/observables/BlockingObservable.class"
     }
-    from(outputDir)
+    from(codeGenOutputDir)
 
     exclude('**/*$UnitTest*')
 

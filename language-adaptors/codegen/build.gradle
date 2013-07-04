@@ -11,24 +11,9 @@ dependencies {
     provided 'junit:junit:4.10'
 }
 
-eclipse {
-    classpath {
-        // include 'provided' dependencies on the classpath
-      plusConfigurations += configurations.provided
-  
-      downloadSources = true
-      downloadJavadoc = true
-    }
-}
-
-idea {
-    module {
-        // include 'provided' dependencies on the classpath
-        scopes.PROVIDED.plus += configurations.provided
-    }
-}
-
 jar {
+    exclude('**/*$UnitTest*')
+
     manifest {
         name = 'rxjava-codegen'
         instruction 'Bundle-Vendor', 'Netflix'
