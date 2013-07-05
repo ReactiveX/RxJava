@@ -15,6 +15,7 @@
  */
 package rx.util.functions;
 
+
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,6 +36,7 @@ public class Functions {
         loadLanguageAdaptor("JRuby");
         loadLanguageAdaptor("Clojure");
         loadLanguageAdaptor("Scala");
+        loadLanguageAdaptor("Kotlin");
         // as new languages arise we can add them here but this does not prevent someone from using 'registerLanguageAdaptor' directly
     }
 
