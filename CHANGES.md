@@ -1,5 +1,16 @@
 # RxJava Releases #
 
+### Version 0.9.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.9.1%22)) ###
+
+* [Pull 303](https://github.com/Netflix/RxJava/pull/303) CombineLatest
+* [Pull 290](https://github.com/Netflix/RxJava/pull/290) Zip overload with FuncN
+* [Pull 302](https://github.com/Netflix/RxJava/pull/302) NPE fix when no package on class
+* [Pull 284](https://github.com/Netflix/RxJava/pull/284) GroupBy fixes (items still [oustanding](https://github.com/Netflix/RxJava/issues/282))
+* [Pull 288](https://github.com/Netflix/RxJava/pull/288) PublishSubject concurrent modification fixes
+* [Issue 198](https://github.com/Netflix/RxJava/issues/198) Throw if no onError handler specified
+* [Issue 278](https://github.com/Netflix/RxJava/issues/278) Subscribe argument validation
+* Javadoc improvements and many new marble diagrams
+
 ### Version 0.9.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.9.0%22)) ###
 
 This release includes breaking changes that move all blocking operators (such as `single`, `last`, `forEach`) to `BlockingObservable`.
