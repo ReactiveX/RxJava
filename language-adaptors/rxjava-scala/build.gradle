@@ -21,27 +21,33 @@ sourceSets {
 }
 
 dependencies {
-    // Scala compiler and related tools
-    compile 'org.scala-lang:scala-compiler:2.10+'
     compile 'org.scala-lang:scala-library:2.10+'
 
-    compile project(':rxjava-core')
-    compile 'junit:junit-dep:4.10'
-    compile 'org.mockito:mockito-core:1.8.5'
-    compile 'org.scalatest:scalatest_2.10:1.9.1'
+    core project(':rxjava-core')
+    provided project(':rxjava-core')
+
+    provided 'org.scalatest:scalatest_2.10:1.9.1'
+    provided 'junit:junit-dep:4.10'
+    provided 'org.mockito:mockito-core:1.8.5'
 }
 
 task test(overwrite: true, dependsOn: testClasses) << {
     ant.taskdef(name: 'scalatest',
-            classname: 'org.scalatest.tools.ScalaTestAntTask',
-            classpath: configurations.testRuntime.asPath + ':' + compileScala.destinationDir
-    )
+                classname: 'org.scalatest.tools.ScalaTestAntTask',
+                classpath: configurations.testRuntime.asPath + ':' + compileScala.destinationDir + ":" + configurations.provided.asPath
+               )
     ant.scalatest(runpath: sourceSets.test.output.classesDir,
-            haltonfailure: 'true',
-            fork: 'false') {reporter(type: 'stdout')}
+                  haltonfailure: 'true',
+                  fork: 'false') {reporter(type: 'stdout')}
+}
+
+tasks.compileScala { 
+    classpath = classpath + configurations.provided
 }
 
 jar {
+    from (zipTree(configurations.core.singleFile))
+
     manifest {
         name = 'rxjava-scala'
         instruction 'Bundle-Vendor', 'Netflix'

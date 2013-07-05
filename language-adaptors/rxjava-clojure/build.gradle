@@ -3,8 +3,8 @@ apply plugin: 'osgi'
 
 dependencies {
     core project(':rxjava-core')
-    compile project(':rxjava-core')
-    compile project(':language-adaptors:codegen')
+    provided project(':rxjava-core')
+    provided project(':language-adaptors:codegen')
     compile 'org.clojure:clojure:1.4.+'
     compile 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http    
     provided 'junit:junit-dep:4.10'
@@ -35,9 +35,17 @@ eclipse {
   }
 }
 
+tasks.clojureTest { 
+    classpath = classpath + configurations.provided
+}
+
+tasks.compileExamplesClojure { 
+    classpath = classpath + configurations.provided
+}
+
 task createAdaptedObservable(type: JavaExec) { 
     main = 'rx.codegen.ClassPathBasedRunner'
-    classpath = sourceSets.main.runtimeClasspath
+    classpath = sourceSets.main.runtimeClasspath + configurations.provided
     args = ["Clojure", codeGenOutputDir]
 
     inputs.files(sourceSets.main.runtimeClasspath)
@@ -48,7 +56,7 @@ tasks.test {
     dependsOn(createAdaptedObservable)
 
     //Reorders the classpath so that the newly-create Observables win
-    classpath = createAdaptedObservable.outputs.files + sourceSets.test.runtimeClasspath
+    classpath = createAdaptedObservable.outputs.files + configurations.provided + sourceSets.test.runtimeClasspath
 }
 
 tasks.jar {
