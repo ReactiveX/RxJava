@@ -43,6 +43,7 @@ import rx.operators.AtomicObservableSubscription;
 import rx.operators.AtomicObserver;
 import rx.operators.OperationAll;
 import rx.operators.OperationCache;
+import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
@@ -2803,7 +2804,36 @@ public class Observable<T> {
     }
 
     /**
-     * Filters an Observable by discarding any items it emits that do not meet some test.
+     * Combines the given observables, emitting an event containing an aggregation of the latest values of each of the source observables
+     * each time an event is received from one of the source observables, where the aggregation is defined by the given function.
+     * @param w0 
+     *          The first source observable.
+     * @param w1 
+     *          The second source observable.
+     * @param combineFunction 
+     *          The aggregation function used to combine the source observable values.
+     * @return A function from an observer to a subscription. This can be used to create an observable from.
+     */
+    public static <R, T0, T1> Observable<R> combineLatest(Observable<? super T0> w0, Observable<? super T1> w1, Func2<? super T0, ? super T1, ? extends R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(w0, w1, combineFunction));
+    }
+    
+    /**
+     * @see #combineLatest(Observable, Observable, Func2)
+     */
+    public static <R, T0, T1, T2> Observable<R> combineLatest(Observable<? super T0> w0, Observable<? super T1> w1, Observable<? super T2> w2, Func3<? super T0, ? super T1, ? super T2, ? extends R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(w0, w1, w2, combineFunction));
+    }
+
+    /**
+     * @see #combineLatest(Observable, Observable, Func2)
+     */
+    public static <R, T0, T1, T2, T3> Observable<R> combineLatest(Observable<? super T0> w0, Observable<? super T1> w1, Observable<? super T2> w2, Observable<? super T3> w3, Func4<? super T0, ? super T1, ? super T2, ? super T3, ? extends R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(w0, w1, w2, w3, combineFunction));
+    }
+    
+    /**
+     * Filters an Observable by discarding any of its emissions that do not meet some test.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
      * 
