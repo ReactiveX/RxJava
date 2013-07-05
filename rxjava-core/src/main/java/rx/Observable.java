@@ -1859,63 +1859,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a function of your choosing applied to
-     * combinations of four items emitted, in sequence, by four other Observables.
-     * <p>
-     * <code>zip</code> applies this function in strict sequence, so the first item emitted by the
-     * new Observable will be the result of the function applied to the first item emitted by
-     * all of the Observalbes; the second item emitted by the new Observable will be the result of
-     * the function applied to the second item emitted by each of those Observables; and so forth.
-     * <p>
-     * The resulting <code>Observable<R></code> returned from <code>zip</code> will invoke
-     * <code>onNext</code> as many times as the number of <code>onNext</code> invokations of the
-     * source Observable that emits the fewest items.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
-     * 
-     * @param ws
-     *            An Observable of source Observables
-     * @param reduceFunction
-     *            a function that, when applied to an item emitted by each of the source
-     *            Observables, results in an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
-     */
-    public static <R> Observable<R> zip(Observable<Observable<?>> ws, final FuncN<R> reduceFunction) {
-        return ws.toList().mapMany(new Func1<List<Observable<?>>, Observable<R>>() {
-            @Override
-            public Observable<R> call(List<Observable<?>> wsList) {
-                return create(OperationZip.zip(wsList, reduceFunction));
-            }
-        });
-    }
-
-    /**
-     * Returns an Observable that emits the results of a function of your choosing applied to
-     * combinations of four items emitted, in sequence, by four other Observables.
-     * <p>
-     * <code>zip</code> applies this function in strict sequence, so the first item emitted by the
-     * new Observable will be the result of the function applied to the first item emitted by
-     * all of the Observalbes; the second item emitted by the new Observable will be the result of
-     * the function applied to the second item emitted by each of those Observables; and so forth.
-     * <p>
-     * The resulting <code>Observable<R></code> returned from <code>zip</code> will invoke
-     * <code>onNext</code> as many times as the number of <code>onNext</code> invokations of the
-     * source Observable that emits the fewest items.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
-     * 
-     * @param ws
-     *            A collection of source Observables
-     * @param reduceFunction
-     *            a function that, when applied to an item emitted by each of the source
-     *            Observables, results in an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
-     */
-    public static <R> Observable<R> zip(Collection<Observable<?>> ws, FuncN<R> reduceFunction) {
-        return create(OperationZip.zip(ws, reduceFunction));
-    }
-
-    /**
      * Combines the given observables, emitting an event containing an aggregation of the latest values of each of the source observables
      * each time an event is received from one of the source observables, where the aggregation is defined by the given function.
      * 
