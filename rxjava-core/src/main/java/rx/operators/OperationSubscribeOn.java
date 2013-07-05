@@ -21,6 +21,7 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
+import rx.subscriptions.ScheduledSubscription;
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
@@ -54,26 +55,6 @@ public class OperationSubscribeOn {
                 @Override
                 public Subscription call() {
                     return new ScheduledSubscription(source.subscribe(observer), scheduler);
-                }
-            });
-        }
-    }
-
-    private static class ScheduledSubscription implements Subscription {
-        private final Subscription underlying;
-        private final Scheduler scheduler;
-
-        private ScheduledSubscription(Subscription underlying, Scheduler scheduler) {
-            this.underlying = underlying;
-            this.scheduler = scheduler;
-        }
-
-        @Override
-        public void unsubscribe() {
-            scheduler.schedule(new Action0() {
-                @Override
-                public void call() {
-                    underlying.unsubscribe();
                 }
             });
         }
