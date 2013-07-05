@@ -3745,7 +3745,8 @@ public class Observable<T> {
         if (o instanceof AtomicObserver)
             return true;
         // we treat the following package as "internal" and don't wrap it
-        return o.getClass().getPackage().getName().startsWith("rx.operators");
+        Package p = o.getClass().getPackage(); // it can be null
+        return p != null && p.getName().startsWith("rx.operators");
     }
 
     public static class UnitTest {
