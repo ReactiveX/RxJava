@@ -1,48 +1,42 @@
-apply plugin: 'java'
 apply plugin: 'groovy'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 apply plugin: 'osgi'
 
 dependencies {
+    core project(':rxjava-core')
     compile project(':rxjava-core')
+    compile project(':language-adaptors:codegen')
     groovy 'org.codehaus.groovy:groovy-all:2.+'
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
 }
 
-// include /src/examples folder
-sourceSets {
-    examples
+task createAdaptedObservable(type: JavaExec) {  
+    main = 'rx.codegen.ClassPathBasedRunner'
+    classpath = sourceSets.main.runtimeClasspath
+    args = ["Groovy", codeGenOutputDir]
+
+    inputs.files(sourceSets.main.runtimeClasspath)
+    outputs.dir(codeGenOutputDir)
 }
 
-// make 'examples' use the same classpath
-configurations {
-    examplesCompile.extendsFrom compile
-    examplesRuntime.extendsFrom runtime
+tasks.test { 
+    dependsOn(createAdaptedObservable)
+
+    //Reorders the classpath so that the newly-create Observables win
+    classpath = createAdaptedObservable.outputs.files + sourceSets.test.runtimeClasspath
 }
 
-// include 'examples' in build task
-build.dependsOn examplesClasses
+tasks.jar { 
+    dependsOn(createAdaptedObservable)
 
-eclipse {
-    classpath {
-      // include 'provided' dependencies on the classpath
-      plusConfigurations += configurations.provided
-  
-      downloadSources = true
-      downloadJavadoc = true
+    from (zipTree(configurations.core.singleFile)) { 
+        exclude "rx/Observable.class"
+        exclude "rx/observables/BlockingObservable.class"
     }
-}
+    from(codeGenOutputDir)
 
-idea {
-	module {
-		// include 'provided' dependencies on the classpath
-		scopes.PROVIDED.plus += configurations.provided
-	}
-}
+    exclude('**/*$UnitTest*')
 
-jar {
     manifest {
         name = 'rxjava-groovy'
         instruction 'Bundle-Vendor', 'Netflix'
