@@ -2,8 +2,8 @@ apply plugin: 'osgi'
 
 dependencies {
     core project(':rxjava-core')
-    compile project(':rxjava-core')
-    compile project(':language-adaptors:codegen')
+    provided project(':rxjava-core')
+    provided project(':language-adaptors:codegen')
     compile 'org.jruby:jruby:1.6+'
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
@@ -11,7 +11,7 @@ dependencies {
 
 task createAdaptedObservable(type: JavaExec) { 
     main = 'rx.codegen.ClassPathBasedRunner'
-    classpath = sourceSets.main.runtimeClasspath
+    classpath = sourceSets.main.runtimeClasspath + configurations.provided
     args = ["JRuby", codeGenOutputDir]
 
     inputs.files(sourceSets.main.runtimeClasspath)

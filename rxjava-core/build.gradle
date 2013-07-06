@@ -25,10 +25,10 @@ javadoc {
 }
 
 jar {
-    archiveName = "rxjava-" + version + "." + extension
+    baseName = "rxjava"
 
     manifest {
-        name = 'rxjava-core'
+        name = 'rxjava'
         instruction 'Bundle-Vendor', 'Netflix'
         instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
         instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
