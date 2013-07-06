@@ -25,6 +25,8 @@ javadoc {
 }
 
 jar {
+    archiveName = "rxjava-" + version + "." + extension
+
     manifest {
         name = 'rxjava-core'
         instruction 'Bundle-Vendor', 'Netflix'
