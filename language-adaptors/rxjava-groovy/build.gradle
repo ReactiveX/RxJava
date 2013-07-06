@@ -26,6 +26,10 @@ tasks.test {
     classpath = createAdaptedObservable.outputs.files + sourceSets.test.runtimeClasspath
 }
 
+tasks.compileExamplesGroovy { 
+    classpath = classpath + configurations.provided
+}
+
 tasks.jar { 
     dependsOn(createAdaptedObservable)
 

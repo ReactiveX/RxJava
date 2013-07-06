@@ -39,6 +39,10 @@ tasks.clojureTest {
     classpath = classpath + configurations.provided
 }
 
+tasks.compileExamplesClojure { 
+    classpath = classpath + configurations.provided
+}
+
 task createAdaptedObservable(type: JavaExec) { 
     main = 'rx.codegen.ClassPathBasedRunner'
     classpath = sourceSets.main.runtimeClasspath + configurations.provided
