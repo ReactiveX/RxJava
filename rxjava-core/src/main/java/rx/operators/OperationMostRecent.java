@@ -30,7 +30,10 @@ import rx.Subscription;
 import rx.util.Exceptions;
 
 /**
- * Samples the most recent value in an observable sequence.
+ * Returns an Iterable that always returns the item most recently emitted by an Observable, or a
+ * seed value if no item has yet been emitted.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.mostRecent.png">
  */
 public final class OperationMostRecent {
 

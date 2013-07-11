@@ -64,12 +64,12 @@ public final class SynchronizedObserver<T> implements Observer<T> {
      * // TODO composing of this class should rarely happen now with updated design so this decision should be revisited
      */
 
-    private final Observer<T> observer;
+    private final Observer<? super T> observer;
     private final AtomicObservableSubscription subscription;
     private volatile boolean finishRequested = false;
     private volatile boolean finished = false;
 
-    public SynchronizedObserver(Observer<T> Observer, AtomicObservableSubscription subscription) {
+    public SynchronizedObserver(Observer<? super T> Observer, AtomicObservableSubscription subscription) {
         this.observer = Observer;
         this.subscription = subscription;
     }

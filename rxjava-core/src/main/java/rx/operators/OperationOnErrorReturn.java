@@ -32,7 +32,21 @@ import rx.util.CompositeException;
 import rx.util.functions.Func1;
 
 /**
- * When an onError occurs the resumeFunction will be executed and it's response passed to onNext instead of calling onError.
+ * Instruct an Observable to emit a particular item to its Observer's <code>onNext</code> method
+ * rather than invoking <code>onError</code> if it encounters an error.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/onErrorReturn.png">
+ * <p>
+ * By default, when an Observable encounters an error that prevents it from emitting the expected
+ * item to its Observer, the Observable invokes its Observer's <code>onError</code> method, and then
+ * quits without invoking any more of its Observer's methods. The onErrorReturn operation changes
+ * this behavior. If you pass a function (resumeFunction) to onErrorReturn, if the original
+ * Observable encounters an error, instead of invoking its Observer's <code>onError</code> method,
+ * it will instead pass the return value of resumeFunction to the Observer's <code>onNext</code>
+ * method.
+ * <p>
+ * You can use this to prevent errors from propagating or to supply fallback data should errors be
+ * encountered.
  */
 public final class OperationOnErrorReturn<T> {
 

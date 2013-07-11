@@ -24,6 +24,12 @@ import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
+/**
+ * Returns an Observable that emits the items from the source Observable until another Observable
+ * emits an item.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeUntil.png">
+ */
 public class OperationTakeUntil {
 
     /**

@@ -398,9 +398,9 @@ public final class OperationBuffer {
      * @param <T> The type of object all internal {@link Buffer} objects record.
      */
     private interface BufferCreator<T> {
-    	/**
-    	 * Signifies a onNext event.
-    	 */
+        /**
+         * Signifies a onNext event.
+         */
         void onValuePushed();
         
         /**

@@ -26,6 +26,14 @@ import rx.Subscription;
 import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
+/**
+ * Registers an action to be called when an Observable invokes onComplete or onError.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/finallyDo.png">
+ * <p>
+ * See also the <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN
+ * Observable.Finally method</a>
+ */
 public final class OperationFinally {
 
     /**

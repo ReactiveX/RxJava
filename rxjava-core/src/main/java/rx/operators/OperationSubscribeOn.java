@@ -28,6 +28,11 @@ import rx.util.functions.Func1;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Asynchronously subscribes and unsubscribes Observers on the specified Scheduler.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/subscribeOn.png">
+ */
 public class OperationSubscribeOn {
 
     public static <T> Func1<Observer<T>, Subscription> subscribeOn(Observable<T> source, Scheduler scheduler) {

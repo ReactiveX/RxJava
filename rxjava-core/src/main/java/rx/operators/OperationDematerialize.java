@@ -27,8 +27,13 @@ import rx.Subscription;
 import rx.util.functions.Func1;
 
 /**
- * Dematerializes the explicit notification values of an observable sequence as implicit notifications.
- * See <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">here</a> for the Microsoft Rx equivalent.
+ * Reverses the effect of {@link OperationMaterialize} by transforming the Notification objects
+ * emitted by a source Observable into the items or notifications they represent.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/dematerialize.png">
+ * <p>
+ * See <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">here</a> for the
+ * Microsoft Rx equivalent.
  */
 public final class OperationDematerialize {
 

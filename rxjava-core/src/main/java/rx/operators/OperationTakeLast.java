@@ -30,7 +30,10 @@ import rx.Subscription;
 import rx.util.functions.Func1;
 
 /**
- * Returns a specified number of contiguous elements from the end of an observable sequence.
+ * Returns an Observable that emits the last <code>count</code> items emitted by the source
+ * Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/last.png">
  */
 public final class OperationTakeLast {
 

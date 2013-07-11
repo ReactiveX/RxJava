@@ -35,8 +35,10 @@ import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
 /**
- * This operation transforms an {@link Observable} sequence of {@link Observable} sequences into a single {@link Observable} sequence which only produces values from the most recently published
- * {@link Observable} sequence in the sequence.
+ * Transforms an Observable that emits Observables into a single Observable that emits the items
+ * emitted by the most recently published of those Observables.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/switchDo.png">
  */
 public final class OperationSwitch {
 

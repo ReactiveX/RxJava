@@ -30,10 +30,12 @@ import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
 /**
- * Accepts an Iterable object and exposes it as an Observable.
- * 
- * @param <T>
- *            The type of the Iterable sequence.
+ * Converts an Iterable sequence into an Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/toObservable.png">
+ * <p>
+ * You can convert any object that supports the Iterable interface into an Observable that emits
+ * each item in the object, with the toObservable operation.
  */
 public final class OperationToObservableIterable<T> {
 

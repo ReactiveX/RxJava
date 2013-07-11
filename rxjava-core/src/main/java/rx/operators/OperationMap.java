@@ -31,6 +31,12 @@ import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
+/**
+ * Applies a function of your choosing to every item emitted by an Observable, and returns this
+ * transformation as a new Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/map.png">
+ */
 public final class OperationMap {
 
     /**
