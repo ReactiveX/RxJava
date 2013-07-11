@@ -926,6 +926,7 @@ public final class OperationBuffer {
             inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
             inOrder.verify(observer, Mockito.times(1)).onNext(list("two", "three", "four"));
             inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four", "five"));
+            inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
             inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Exception.class));
             inOrder.verify(observer, Mockito.never()).onCompleted();
         }
@@ -951,6 +952,7 @@ public final class OperationBuffer {
             InOrder inOrder = Mockito.inOrder(observer);
             inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
             inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
+            inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
             inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Exception.class));
             inOrder.verify(observer, Mockito.times(1)).onCompleted();
         }
@@ -976,6 +978,7 @@ public final class OperationBuffer {
             InOrder inOrder = Mockito.inOrder(observer);
             inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
             inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
+            inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
             inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Exception.class));
             inOrder.verify(observer, Mockito.times(1)).onCompleted();
         }
@@ -1007,6 +1010,7 @@ public final class OperationBuffer {
 
             scheduler.advanceTimeTo(300, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
+            inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
             inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Exception.class));
             inOrder.verify(observer, Mockito.times(1)).onCompleted();
         }
@@ -1035,6 +1039,7 @@ public final class OperationBuffer {
 
             scheduler.advanceTimeTo(201, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
+            inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
             inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Exception.class));
             inOrder.verify(observer, Mockito.times(1)).onCompleted();
         }
@@ -1085,6 +1090,7 @@ public final class OperationBuffer {
             scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, Mockito.times(1)).onNext(list("two", "three"));
             inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
+            inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
             inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Exception.class));
             inOrder.verify(observer, Mockito.times(1)).onCompleted();
         }
@@ -1099,7 +1105,7 @@ public final class OperationBuffer {
                     push(observer, "three", 110);
                     push(observer, "four", 160);
                     push(observer, "five", 210);
-                    complete(observer, 500);
+                    complete(observer, 250);
                     return Subscriptions.empty();
                 }
             });
@@ -1126,6 +1132,7 @@ public final class OperationBuffer {
             inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
             inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four"));
             inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
+            inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
             inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Exception.class));
             inOrder.verify(observer, Mockito.times(1)).onCompleted();
         }
