@@ -23,7 +23,8 @@ sourceSets {
 dependencies {
     compile 'org.scala-lang:scala-library:2.10+'
 
-    compile project(':rxjava-core')
+    core project(':rxjava-core')
+    provided project(':rxjava-core')
 
     provided 'org.scalatest:scalatest_2.10:1.9.1'
     provided 'junit:junit-dep:4.10'
@@ -40,7 +41,13 @@ task test(overwrite: true, dependsOn: testClasses) << {
                   fork: 'false') {reporter(type: 'stdout')}
 }
 
+tasks.compileScala { 
+    classpath = classpath + configurations.provided
+}
+
 jar {
+    from (zipTree(configurations.core.singleFile))
+
     manifest {
         name = 'rxjava-scala'
         instruction 'Bundle-Vendor', 'Netflix'
