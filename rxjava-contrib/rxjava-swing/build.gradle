@@ -20,8 +20,6 @@ javadoc {
 }
 
 jar {
-    exclude('**/*$UnitTest*')
-
     manifest {
         name = 'rxjava-swing'
         instruction 'Bundle-Vendor', 'Netflix'
