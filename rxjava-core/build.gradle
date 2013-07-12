@@ -1,6 +1,4 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
+apply plugin: 'maven'
 apply plugin: 'osgi'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
@@ -9,6 +7,16 @@ targetCompatibility = JavaVersion.VERSION_1_6
 dependencies {
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
+}
+
+uploadArchives { 
+    repositories { 
+        mavenDeployer { 
+            pom { 
+                artifactId = "rxjava"
+            }
+        }
+    }
 }
 
 javadoc {
