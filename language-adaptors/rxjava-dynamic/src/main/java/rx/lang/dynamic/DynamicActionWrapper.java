@@ -13,8 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.util.functions;
+package rx.lang.dynamic;
 
-public interface Action3<T1, T2, T3> extends Action {
-    public void call(T1 t1, T2 t2, T3 t3);
+import rx.util.functions.Action0;
+import rx.util.functions.Action1;
+import rx.util.functions.Functions;
+
+public class DynamicActionWrapper<T1> implements Action0, Action1<T1> {
+    private Object object;
+
+    public DynamicActionWrapper(Object object) {
+        this.object = object;
+    }
+
+    @Override
+    public void call() {
+        Functions.from(object).call();
+    }
+
+    @Override
+    public void call(T1 t1) {
+        Functions.from(object).call(t1);
+    }
 }
