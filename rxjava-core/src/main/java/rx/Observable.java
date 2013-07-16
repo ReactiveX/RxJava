@@ -2806,6 +2806,9 @@ public class Observable<T> {
     /**
      * Combines the given observables, emitting an event containing an aggregation of the latest values of each of the source observables
      * each time an event is received from one of the source observables, where the aggregation is defined by the given function.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/combineLatest.png">
+     * 
      * @param w0 
      *          The first source observable.
      * @param w1 
