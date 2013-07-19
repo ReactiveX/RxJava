@@ -32,7 +32,9 @@ import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 /**
- * Subject that publishes the last and all subsequent events to each {@link Observer} that subscribes. 
+ * Subject that emits the most recent (or a seed if there is no most recent emission) and all subsequent items to each {@link Observer} that subscribes. 
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/S.BehaviorSubject.png">
  * <p>
  * Example usage:
  * <p>

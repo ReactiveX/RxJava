@@ -39,7 +39,9 @@ import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 /**
- * Subject that publishes a single event to each {@link Observer} that has subscribed. 
+ * Subject that emits to each {@link Observer} only those items that are emitted subsequent to the time of the subscription. 
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/S.PublishSubject.png">
  * <p>
  * Example usage:
  * <p>

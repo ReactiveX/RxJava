@@ -32,7 +32,9 @@ import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 /**
- * Subject that publishes only the last event to each {@link Observer} that has subscribed when the completes. 
+ * Subject that emits to each {@link Observer} only the last item, and only upon completion.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/S.AsyncSubject.png"> 
  * <p>
  * Example usage:
  * <p>

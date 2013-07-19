@@ -36,7 +36,9 @@ import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 /**
- * Subject that retains all events and will replay them to an {@link Observer} that subscribes.
+ * Subject that emits to every {@link Observer} all of the items emitted to any Observer, regardless of when the Observer subscribes.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/S.ReplaySubject.png">
  * <p>
  * Example usage:
  * <p>
