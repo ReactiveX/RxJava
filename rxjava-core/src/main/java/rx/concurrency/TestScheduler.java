@@ -80,7 +80,6 @@ public class TestScheduler extends Scheduler {
         while (!queue.isEmpty()) {
             TimedAction<?> current = queue.peek();
             if (current.time > targetTimeInNanos) {
-                time = targetTimeInNanos;
                 break;
             }
             time = current.time;
@@ -88,6 +87,7 @@ public class TestScheduler extends Scheduler {
             // because the queue can have wildcards we have to ignore the type T for the state
             ((Func2<Scheduler, Object, Subscription>) current.action).call(current.scheduler, current.state);
         }
+        time = targetTimeInNanos;
     }
 
     @Override
