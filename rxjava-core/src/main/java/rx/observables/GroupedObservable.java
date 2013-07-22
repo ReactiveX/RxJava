@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,11 +23,11 @@ import rx.util.functions.Func1;
 /**
  * An {@link Observable} that has been grouped by a key whose value can be obtained using
  * {@link #getKey()} <p>
- * 
+ *
  * @see Observable#groupBy(Observable, Func1)
- * 
- * @param <K>
- * @param <T>
+ *
+ * @param <K> the type of the key
+ * @param <T> the type of the elements in the group
  */
 public class GroupedObservable<K, T> extends Observable<T> {
     private final K key;
@@ -37,8 +37,13 @@ public class GroupedObservable<K, T> extends Observable<T> {
         this.key = key;
     }
 
+    /**
+     * Returns the key the elements in this observable were grouped by.
+     *
+     * @return the key the elements in this observable were grouped by
+     */
     public K getKey() {
         return key;
     }
-
 }
+

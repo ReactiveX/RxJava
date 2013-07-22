@@ -21,6 +21,8 @@ import rx.subscriptions.Subscriptions;
  * Subscription returns from {@link Observable#subscribe(Observer)} to allow unsubscribing.
  * <p>
  * See utilities in {@link Subscriptions} and implementations in the {@link rx.subscriptions} package.
+ * <p>
+ * This interface is the RxJava equivalent of {@code IDisposable} in Microsoft's Rx implementation.
  */
 public interface Subscription {
 
