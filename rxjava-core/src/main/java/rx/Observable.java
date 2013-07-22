@@ -638,7 +638,6 @@ public class Observable<T> {
     }
 
     /**
-<<<<<<< HEAD
      * Creates an Observable which produces buffers of collected values. This Observable produces connected
      * non-overlapping buffers. The current buffer is emitted and replaced with a new buffer when the
      * Observable produced by the specified {@link Func0} produces a {@link BufferClosing} object. The
