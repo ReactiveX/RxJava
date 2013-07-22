@@ -24,8 +24,8 @@ subprojects { project ->
         extension 'jar'
     }
 
-    configurations.add('sources')
-    configurations.add('javadoc')
+    configurations.create('sources')
+    configurations.create('javadoc')
     configurations.archives {
         extendsFrom configurations.sources
         extendsFrom configurations.javadoc
