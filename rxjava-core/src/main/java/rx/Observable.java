@@ -42,6 +42,7 @@ import rx.observables.GroupedObservable;
 import rx.operators.AtomicObservableSubscription;
 import rx.operators.AtomicObserver;
 import rx.operators.OperationAll;
+import rx.operators.OperationBuffer;
 import rx.operators.OperationCache;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
@@ -84,6 +85,8 @@ import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.BufferClosing;
+import rx.util.BufferOpening;
 import rx.util.OnErrorNotImplementedException;
 import rx.util.Range;
 import rx.util.Timestamped;
@@ -632,6 +635,222 @@ public class Observable<T> {
             });
         }
 
+    }
+
+    /**
+<<<<<<< HEAD
+     * Creates an Observable which produces buffers of collected values. This Observable produces connected
+     * non-overlapping buffers. The current buffer is emitted and replaced with a new buffer when the
+     * Observable produced by the specified {@link Func0} produces a {@link BufferClosing} object. The
+     * {@link Func0} will then be used to create a new Observable to listen for the end of the next buffer.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param bufferClosingSelector
+     *            The {@link Func0} which is used to produce an {@link Observable} for every buffer created.
+     *            When this {@link Observable} produces a {@link BufferClosing} object, the associated buffer
+     *            is emitted and replaced with a new one.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping buffers, which are emitted
+     *            when the current {@link Observable} created with the {@link Func0} argument produces a
+     *            {@link BufferClosing} object.
+     */
+    public static <T> Observable<List<T>> buffer(Observable<T> source, Func0<Observable<BufferClosing>> bufferClosingSelector) {
+        return create(OperationBuffer.buffer(source, bufferClosingSelector));
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces buffers.
+     * Buffers are created when the specified "bufferOpenings" Observable produces a {@link BufferOpening} object.
+     * Additionally the {@link Func0} argument is used to create an Observable which produces {@link BufferClosing}
+     * objects. When this Observable produces such an object, the associated buffer is emitted.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param bufferOpenings
+     *            The {@link Observable} which when it produces a {@link BufferOpening} object, will cause
+     *            another buffer to be created.
+     * @param bufferClosingSelector
+     *            The {@link Func0} which is used to produce an {@link Observable} for every buffer created.
+     *            When this {@link Observable} produces a {@link BufferClosing} object, the associated buffer
+     *            is emitted.
+     * @return
+     *            An {@link Observable} which produces buffers which are created and emitted when the specified
+     *            {@link Observable}s publish certain objects.
+     */
+    public static <T> Observable<List<T>> buffer(Observable<T> source, Observable<BufferOpening> bufferOpenings, Func1<BufferOpening, Observable<BufferClosing>> bufferClosingSelector) {
+        return create(OperationBuffer.buffer(source, bufferOpenings, bufferClosingSelector));
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces connected
+     * non-overlapping buffers, each containing "count" elements. When the source Observable completes or
+     * encounters an error, the current buffer is emitted, and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param count
+     *            The maximum size of each buffer before it should be emitted.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping buffers containing at most
+     *            "count" produced values.
+     */
+    public static <T> Observable<List<T>> buffer(Observable<T> source, int count) {
+        return create(OperationBuffer.buffer(source, count));
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces buffers every
+     * "skip" values, each containing "count" elements. When the source Observable completes or encounters an error,
+     * the current buffer is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param count
+     *            The maximum size of each buffer before it should be emitted.
+     * @param skip
+     *            How many produced values need to be skipped before starting a new buffer. Note that when "skip" and
+     *            "count" are equals that this is the same operation as {@link Observable#buffer(Observable, int)}.
+     * @return
+     *            An {@link Observable} which produces buffers every "skipped" values containing at most
+     *            "count" produced values.
+     */
+    public static <T> Observable<List<T>> buffer(Observable<T> source, int count, int skip) {
+        return create(OperationBuffer.buffer(source, count, skip));
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces connected
+     * non-overlapping buffers, each of a fixed duration specified by the "timespan" argument. When the source
+     * Observable completes or encounters an error, the current buffer is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each buffer is collecting values before it should be emitted, and
+     *            replaced with a new buffer.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping buffers with a fixed duration.
+     */
+    public static <T> Observable<List<T>> buffer(Observable<T> source, long timespan, TimeUnit unit) {
+        return create(OperationBuffer.buffer(source, timespan, unit));
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces connected
+     * non-overlapping buffers, each of a fixed duration specified by the "timespan" argument. When the source
+     * Observable completes or encounters an error, the current buffer is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each buffer is collecting values before it should be emitted, and
+     *            replaced with a new buffer.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @param scheduler
+     *            The {@link Scheduler} to use when determining the end and start of a buffer.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping buffers with a fixed duration.
+     */
+    public static <T> Observable<List<T>> buffer(Observable<T> source, long timespan, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationBuffer.buffer(source, timespan, unit, scheduler));
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces connected
+     * non-overlapping buffers, each of a fixed duration specified by the "timespan" argument or a maximum size
+     * specified by the "count" argument (which ever is reached first). When the source Observable completes
+     * or encounters an error, the current buffer is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each buffer is collecting values before it should be emitted, and
+     *            replaced with a new buffer.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @param count
+     *            The maximum size of each buffer before it should be emitted.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping buffers which are emitted after
+     *            a fixed duration or when the buffer has reached maximum capacity (which ever occurs first).
+     */
+    public static <T> Observable<List<T>> buffer(Observable<T> source, long timespan, TimeUnit unit, int count) {
+        return create(OperationBuffer.buffer(source, timespan, unit, count));
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces connected
+     * non-overlapping buffers, each of a fixed duration specified by the "timespan" argument or a maximum size
+     * specified by the "count" argument (which ever is reached first). When the source Observable completes
+     * or encounters an error, the current buffer is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each buffer is collecting values before it should be emitted, and
+     *            replaced with a new buffer.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @param count
+     *            The maximum size of each buffer before it should be emitted.
+     * @param scheduler
+     *            The {@link Scheduler} to use when determining the end and start of a buffer.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping buffers which are emitted after
+     *            a fixed duration or when the buffer has reached maximum capacity (which ever occurs first).
+     */
+    public static <T> Observable<List<T>> buffer(Observable<T> source, long timespan, TimeUnit unit, int count, Scheduler scheduler) {
+        return create(OperationBuffer.buffer(source, timespan, unit, count, scheduler));
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable starts a new buffer
+     * periodically, which is determined by the "timeshift" argument. Each buffer is emitted after a fixed timespan
+     * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
+     * current buffer is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each buffer is collecting values before it should be emitted.
+     * @param timeshift
+     *            The period of time after which a new buffer will be created.
+     * @param unit
+     *            The unit of time which applies to the "timespan" and "timeshift" argument.
+     * @return
+     *            An {@link Observable} which produces new buffers periodically, and these are emitted after
+     *            a fixed timespan has elapsed.
+     */
+    public static <T> Observable<List<T>> buffer(Observable<T> source, long timespan, long timeshift, TimeUnit unit) {
+        return create(OperationBuffer.buffer(source, timespan, timeshift, unit));
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable starts a new buffer
+     * periodically, which is determined by the "timeshift" argument. Each buffer is emitted after a fixed timespan
+     * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
+     * current buffer is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each buffer is collecting values before it should be emitted.
+     * @param timeshift
+     *            The period of time after which a new buffer will be created.
+     * @param unit
+     *            The unit of time which applies to the "timespan" and "timeshift" argument.
+     * @param scheduler
+     *            The {@link Scheduler} to use when determining the end and start of a buffer.
+     * @return
+     *            An {@link Observable} which produces new buffers periodically, and these are emitted after
+     *            a fixed timespan has elapsed.
+     */
+    public static <T> Observable<List<T>> buffer(Observable<T> source, long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationBuffer.buffer(source, timespan, timeshift, unit, scheduler));
     }
 
     /**
@@ -2688,6 +2907,201 @@ public class Observable<T> {
             }
 
         });
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces connected
+     * non-overlapping buffers. The current buffer is emitted and replaced with a new buffer when the
+     * Observable produced by the specified {@link Func0} produces a {@link BufferClosing} object. The
+     * {@link Func0} will then be used to create a new Observable to listen for the end of the next buffer.
+     *
+     * @param bufferClosingSelector
+     *            The {@link Func0} which is used to produce an {@link Observable} for every buffer created.
+     *            When this {@link Observable} produces a {@link BufferClosing} object, the associated buffer
+     *            is emitted and replaced with a new one.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping buffers, which are emitted
+     *            when the current {@link Observable} created with the {@link Func0} argument produces a
+     *            {@link BufferClosing} object.
+     */
+    public Observable<List<T>> buffer(Func0<Observable<BufferClosing>> bufferClosingSelector) {
+        return buffer(this, bufferClosingSelector);
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces buffers.
+     * Buffers are created when the specified "bufferOpenings" Observable produces a {@link BufferOpening} object.
+     * Additionally the {@link Func0} argument is used to create an Observable which produces {@link BufferClosing}
+     * objects. When this Observable produces such an object, the associated buffer is emitted.
+     *
+     * @param bufferOpenings
+     *            The {@link Observable} which when it produces a {@link BufferOpening} object, will cause
+     *            another buffer to be created.
+     * @param bufferClosingSelector
+     *            The {@link Func0} which is used to produce an {@link Observable} for every buffer created.
+     *            When this {@link Observable} produces a {@link BufferClosing} object, the associated buffer
+     *            is emitted.
+     * @return
+     *            An {@link Observable} which produces buffers which are created and emitted when the specified
+     *            {@link Observable}s publish certain objects.
+     */
+    public Observable<List<T>> buffer(Observable<BufferOpening> bufferOpenings, Func1<BufferOpening, Observable<BufferClosing>> bufferClosingSelector) {
+        return buffer(this, bufferOpenings, bufferClosingSelector);
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces connected
+     * non-overlapping buffers, each containing "count" elements. When the source Observable completes or
+     * encounters an error, the current buffer is emitted, and the event is propagated.
+     *
+     * @param count
+     *            The maximum size of each buffer before it should be emitted.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping buffers containing at most
+     *            "count" produced values.
+     */
+    public Observable<List<T>> buffer(int count) {
+        return buffer(this, count);
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces buffers every
+     * "skip" values, each containing "count" elements. When the source Observable completes or encounters an error,
+     * the current buffer is emitted, and the event is propagated.
+     *
+     * @param count
+     *            The maximum size of each buffer before it should be emitted.
+     * @param skip
+     *            How many produced values need to be skipped before starting a new buffer. Note that when "skip" and
+     *            "count" are equals that this is the same operation as {@link Observable#buffer(Observable, int)}.
+     * @return
+     *            An {@link Observable} which produces buffers every "skipped" values containing at most
+     *            "count" produced values.
+     */
+    public Observable<List<T>> buffer(int count, int skip) {
+        return buffer(this, count, skip);
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces connected
+     * non-overlapping buffers, each of a fixed duration specified by the "timespan" argument. When the source
+     * Observable completes or encounters an error, the current buffer is emitted and the event is propagated.
+     *
+     * @param timespan
+     *            The period of time each buffer is collecting values before it should be emitted, and
+     *            replaced with a new buffer.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping buffers with a fixed duration.
+     */
+    public Observable<List<T>> buffer(long timespan, TimeUnit unit) {
+        return buffer(this, timespan, unit);
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces connected
+     * non-overlapping buffers, each of a fixed duration specified by the "timespan" argument. When the source
+     * Observable completes or encounters an error, the current buffer is emitted and the event is propagated.
+     *
+     * @param timespan
+     *            The period of time each buffer is collecting values before it should be emitted, and
+     *            replaced with a new buffer.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @param scheduler
+     *            The {@link Scheduler} to use when determining the end and start of a buffer.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping buffers with a fixed duration.
+     */
+    public Observable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler) {
+        return buffer(this, timespan, unit, scheduler);
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces connected
+     * non-overlapping buffers, each of a fixed duration specified by the "timespan" argument or a maximum size
+     * specified by the "count" argument (which ever is reached first). When the source Observable completes
+     * or encounters an error, the current buffer is emitted and the event is propagated.
+     *
+     * @param timespan
+     *            The period of time each buffer is collecting values before it should be emitted, and
+     *            replaced with a new buffer.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @param count
+     *            The maximum size of each buffer before it should be emitted.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping buffers which are emitted after
+     *            a fixed duration or when the buffer has reached maximum capacity (which ever occurs first).
+     */
+    public Observable<List<T>> buffer(long timespan, TimeUnit unit, int count) {
+        return buffer(this, timespan, unit, count);
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable produces connected
+     * non-overlapping buffers, each of a fixed duration specified by the "timespan" argument or a maximum size
+     * specified by the "count" argument (which ever is reached first). When the source Observable completes
+     * or encounters an error, the current buffer is emitted and the event is propagated.
+     *
+     * @param timespan
+     *            The period of time each buffer is collecting values before it should be emitted, and
+     *            replaced with a new buffer.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @param count
+     *            The maximum size of each buffer before it should be emitted.
+     * @param scheduler
+     *            The {@link Scheduler} to use when determining the end and start of a buffer.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping buffers which are emitted after
+     *            a fixed duration or when the buffer has reached maximum capacity (which ever occurs first).
+     */
+    public Observable<List<T>> buffer(long timespan, TimeUnit unit, int count, Scheduler scheduler) {
+        return buffer(this, timespan, unit, count, scheduler);
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable starts a new buffer
+     * periodically, which is determined by the "timeshift" argument. Each buffer is emitted after a fixed timespan
+     * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
+     * current buffer is emitted and the event is propagated.
+     *
+     * @param timespan
+     *            The period of time each buffer is collecting values before it should be emitted.
+     * @param timeshift
+     *            The period of time after which a new buffer will be created.
+     * @param unit
+     *            The unit of time which applies to the "timespan" and "timeshift" argument.
+     * @return
+     *            An {@link Observable} which produces new buffers periodically, and these are emitted after
+     *            a fixed timespan has elapsed.
+     */
+    public Observable<List<T>> buffer(long timespan, long timeshift, TimeUnit unit) {
+        return buffer(this, timespan, timeshift, unit);
+    }
+
+    /**
+     * Creates an Observable which produces buffers of collected values. This Observable starts a new buffer
+     * periodically, which is determined by the "timeshift" argument. Each buffer is emitted after a fixed timespan
+     * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
+     * current buffer is emitted and the event is propagated.
+     *
+     * @param timespan
+     *            The period of time each buffer is collecting values before it should be emitted.
+     * @param timeshift
+     *            The period of time after which a new buffer will be created.
+     * @param unit
+     *            The unit of time which applies to the "timespan" and "timeshift" argument.
+     * @param scheduler
+     *            The {@link Scheduler} to use when determining the end and start of a buffer.
+     * @return
+     *            An {@link Observable} which produces new buffers periodically, and these are emitted after
+     *            a fixed timespan has elapsed.
+     */
+    public Observable<List<T>> buffer(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
+        return buffer(this, timespan, timeshift, unit, scheduler);
     }
 
     /**
