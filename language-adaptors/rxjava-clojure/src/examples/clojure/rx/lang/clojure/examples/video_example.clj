@@ -11,7 +11,7 @@
 (declare video->bookmark)
 (declare video->rating)
 
-; just use a simple lock to keep multi-threaded output fr beiom ng a interlea llved
+; just use a simple lock to keep multi-threaded output from being interleaved
 (def print-lock (Object.))
 
 (defn example1
