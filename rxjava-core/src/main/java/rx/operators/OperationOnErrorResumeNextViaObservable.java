@@ -84,8 +84,8 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                 public void onError(Exception ex) {
                     /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
                     AtomicObservableSubscription currentSubscription = subscriptionRef.get();
-                    // check that we have not been unsubscribed before we can process the error
-                    if (currentSubscription != null) {
+                    // check that we have not been unsubscribed and not already resumed before we can process the error
+                    if (currentSubscription == subscription) {
                         /* error occurred, so switch subscription to the 'resumeSequence' */
                         AtomicObservableSubscription innerSubscription = new AtomicObservableSubscription(resumeSequence.subscribe(observer));
                         /* we changed the sequence, so also change the subscription to the one of the 'resumeSequence' instead */
@@ -148,8 +148,8 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
         @Test
         public void testMapResumeAsyncNext() {
             Subscription sr = mock(Subscription.class);
-            // Trigger failure on the second event
-            Observable<String> w = Observable.from("one", "fail", "two", "three");
+            // Trigger multiple failures
+            Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
             // Resume Observable is async
             TestObservable resume = new TestObservable(sr, "twoResume", "threeResume");
 
