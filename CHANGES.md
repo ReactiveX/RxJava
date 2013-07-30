@@ -1,5 +1,10 @@
 # RxJava Releases #
 
+### Version 0.9.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.9.2%22)) ###
+
+* [Pull 308](https://github.com/Netflix/RxJava/pull/308) Ensure now() is always updated in TestScheduler.advanceTo/By
+* [Pull 281](https://github.com/Netflix/RxJava/pull/281) Operator: Buffer
+
 ### Version 0.9.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.9.1%22)) ###
 
 * [Pull 303](https://github.com/Netflix/RxJava/pull/303) CombineLatest
