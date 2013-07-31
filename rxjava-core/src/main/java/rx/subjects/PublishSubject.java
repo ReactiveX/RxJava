@@ -37,7 +37,7 @@ import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.operators.AtomicObservableSubscription;
+import rx.operators.SafeObservableSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
@@ -77,7 +77,7 @@ public class PublishSubject<T> extends Subject<T, T> {
                 Subscription s = checkTerminalState(observer);
                 if(s != null) return s;
 
-                final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+                final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
                 subscription.wrap(new Subscription() {
                     @Override

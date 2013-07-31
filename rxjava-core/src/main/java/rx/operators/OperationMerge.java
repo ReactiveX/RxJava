@@ -133,7 +133,7 @@ public final class OperationMerge {
              * <p>
              * Bug report: https://github.com/Netflix/RxJava/issues/200
              */
-            AtomicObservableSubscription subscription = new AtomicObservableSubscription(ourSubscription);
+            SafeObservableSubscription subscription = new SafeObservableSubscription(ourSubscription);
             SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(actualObserver, subscription);
 
             /**

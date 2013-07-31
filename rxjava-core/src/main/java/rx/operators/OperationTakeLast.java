@@ -51,7 +51,7 @@ public final class OperationTakeLast {
     private static class TakeLast<T> implements Func1<Observer<T>, Subscription> {
         private final int count;
         private final Observable<T> items;
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
         TakeLast(final Observable<T> items, final int count) {
             this.count = count;

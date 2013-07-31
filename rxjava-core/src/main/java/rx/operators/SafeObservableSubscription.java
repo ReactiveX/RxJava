@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
  * <li>handle both synchronous and asynchronous subscribe() execution flows</li>
  * </ul>
  */
-public final class AtomicObservableSubscription implements Subscription {
+public final class SafeObservableSubscription implements Subscription {
 
     private static final Subscription UNSUBSCRIBED = new Subscription()
     {
@@ -45,10 +45,10 @@ public final class AtomicObservableSubscription implements Subscription {
     };
     private final AtomicReference<Subscription> actualSubscription = new AtomicReference<Subscription>();
 
-    public AtomicObservableSubscription() {
+    public SafeObservableSubscription() {
     }
 
-    public AtomicObservableSubscription(Subscription actualSubscription) {
+    public SafeObservableSubscription(Subscription actualSubscription) {
         this.actualSubscription.set(actualSubscription);
     }
 
@@ -59,7 +59,7 @@ public final class AtomicObservableSubscription implements Subscription {
      * @throws IllegalStateException
      *             if trying to set more than once (or use this method after setting via constructor)
      */
-    public AtomicObservableSubscription wrap(Subscription actualSubscription) {
+    public SafeObservableSubscription wrap(Subscription actualSubscription) {
         if (!this.actualSubscription.compareAndSet(null, actualSubscription)) {
             if (this.actualSubscription.get() == UNSUBSCRIBED) {
                 actualSubscription.unsubscribe();
@@ -87,7 +87,7 @@ public final class AtomicObservableSubscription implements Subscription {
     public static class UnitTest {
         @Test
         public void testWrapAfterUnsubscribe() {
-            AtomicObservableSubscription atomicObservableSubscription = new AtomicObservableSubscription();
+            SafeObservableSubscription atomicObservableSubscription = new SafeObservableSubscription();
             atomicObservableSubscription.unsubscribe();
             Subscription innerSubscription = mock(Subscription.class);
             atomicObservableSubscription.wrap(innerSubscription);

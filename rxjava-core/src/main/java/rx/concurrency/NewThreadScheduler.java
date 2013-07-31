@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.operators.AtomicObservableSubscription;
+import rx.operators.SafeObservableSubscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func2;
@@ -37,7 +37,7 @@ public class NewThreadScheduler extends Scheduler {
 
     @Override
     public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action) {
-        final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        final SafeObservableSubscription subscription = new SafeObservableSubscription();
         final Scheduler _scheduler = this;
 
         Thread t = new Thread(new Runnable() {

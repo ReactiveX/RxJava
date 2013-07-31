@@ -94,7 +94,7 @@ public final class OperationZip {
     private static class ZipObserver<R, T> implements Observer<T> {
         final Observable<T> w;
         final Aggregator<R> a;
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
         private final AtomicBoolean subscribed = new AtomicBoolean(false);
 
         public ZipObserver(Aggregator<R> a, Observable<T> w) {
@@ -246,7 +246,7 @@ public final class OperationZip {
         @Override
         public Subscription call(Observer<T> observer) {
             if (started.compareAndSet(false, true)) {
-                AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+                SafeObservableSubscription subscription = new SafeObservableSubscription();
                 this.observer = new SynchronizedObserver<T>(observer, subscription);
                 /* start the Observers */
                 for (ZipObserver<T, ?> rw : observers) {

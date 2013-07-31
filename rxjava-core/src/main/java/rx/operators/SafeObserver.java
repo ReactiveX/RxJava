@@ -40,13 +40,13 @@ import rx.util.OnErrorNotImplementedException;
  * 
  * @param <T>
  */
-public class AtomicObserver<T> implements Observer<T> {
+public class SafeObserver<T> implements Observer<T> {
 
     private final Observer<T> actual;
     private final AtomicBoolean isFinished = new AtomicBoolean(false);
-    private final AtomicObservableSubscription subscription;
+    private final SafeObservableSubscription subscription;
 
-    public AtomicObserver(AtomicObservableSubscription subscription, Observer<T> actual) {
+    public SafeObserver(SafeObservableSubscription subscription, Observer<T> actual) {
         this.subscription = subscription;
         this.actual = actual;
     }

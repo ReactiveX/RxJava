@@ -69,7 +69,7 @@ public final class OperationSwitch {
 
         @Override
         public Subscription call(Observer<T> observer) {
-            AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+            SafeObservableSubscription subscription = new SafeObservableSubscription();
             subscription.wrap(sequences.subscribe(new SwitchObserver<T>(observer, subscription)));
             return subscription;
         }
@@ -78,10 +78,10 @@ public final class OperationSwitch {
     private static class SwitchObserver<T> implements Observer<Observable<T>> {
 
         private final Observer<T> observer;
-        private final AtomicObservableSubscription parent;
+        private final SafeObservableSubscription parent;
         private final AtomicReference<Subscription> subsequence = new AtomicReference<Subscription>();
 
-        public SwitchObserver(Observer<T> observer, AtomicObservableSubscription parent) {
+        public SwitchObserver(Observer<T> observer, SafeObservableSubscription parent) {
             this.observer = observer;
             this.parent = parent;
         }
