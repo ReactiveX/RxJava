@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,23 +37,24 @@ import rx.util.functions.Func1;
 
 /**
  * Subject that retains all events and will replay them to an {@link Observer} that subscribes.
+ *
  * <p>
  * Example usage:
  * <p>
  * <pre> {@code
- 
+
   ReplaySubject<Object> subject = ReplaySubject.create();
   subject.onNext("one");
   subject.onNext("two");
   subject.onNext("three");
   subject.onCompleted();
-  
+
   // both of the following will get the onNext/onCompleted calls from above
   subject.subscribe(observer1);
   subject.subscribe(observer2);
- 
+
   } </pre>
- * 
+ *
  * @param <T>
  */
 public final class ReplaySubject<T> extends Subject<T, T>
