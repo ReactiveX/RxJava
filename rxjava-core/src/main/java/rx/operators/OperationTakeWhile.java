@@ -95,7 +95,7 @@ public final class OperationTakeWhile {
     private static class TakeWhile<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> items;
         private final Func2<T, Integer, Boolean> predicate;
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
         private TakeWhile(Observable<T> items, Func2<T, Integer, Boolean> predicate) {
             this.items = items;
@@ -116,7 +116,7 @@ public final class OperationTakeWhile {
                 // Using AtomicObserver because the unsubscribe, onCompleted, onError and error handling behavior
                 // needs "isFinished" logic to not send duplicated events
                 // The 'testTakeWhile1' and 'testTakeWhile2' tests fail without this.
-                this.observer = new AtomicObserver<T>(subscription, observer);
+                this.observer = new SafeObserver<T>(subscription, observer);
             }
 
             @Override

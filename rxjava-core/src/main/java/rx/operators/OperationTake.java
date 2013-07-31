@@ -77,7 +77,7 @@ public final class OperationTake {
     private static class Take<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> items;
         private final int num;
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
         private Take(Observable<T> items, int num) {
             this.items = items;

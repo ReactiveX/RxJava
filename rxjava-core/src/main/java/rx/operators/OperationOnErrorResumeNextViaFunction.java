@@ -69,10 +69,10 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
 
         public Subscription call(final Observer<T> observer) {
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
-            final AtomicReference<AtomicObservableSubscription> subscriptionRef = new AtomicReference<AtomicObservableSubscription>(new AtomicObservableSubscription());
+            final AtomicReference<SafeObservableSubscription> subscriptionRef = new AtomicReference<SafeObservableSubscription>(new SafeObservableSubscription());
 
             // subscribe to the original Observable and remember the subscription
-            subscriptionRef.get().wrap(new AtomicObservableSubscription(originalSequence.subscribe(new Observer<T>() {
+            subscriptionRef.get().wrap(new SafeObservableSubscription(originalSequence.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     // forward the successful calls
                     observer.onNext(value);
@@ -83,13 +83,13 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
                  */
                 public void onError(Exception ex) {
                     /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
-                    AtomicObservableSubscription currentSubscription = subscriptionRef.get();
+                    SafeObservableSubscription currentSubscription = subscriptionRef.get();
                     // check that we have not been unsubscribed before we can process the error
                     if (currentSubscription != null) {
                         try {
                             Observable<T> resumeSequence = resumeFunction.call(ex);
                             /* error occurred, so switch subscription to the 'resumeSequence' */
-                            AtomicObservableSubscription innerSubscription = new AtomicObservableSubscription(resumeSequence.subscribe(observer));
+                            SafeObservableSubscription innerSubscription = new SafeObservableSubscription(resumeSequence.subscribe(observer));
                             /* we changed the sequence, so also change the subscription to the one of the 'resumeSequence' instead */
                             if (!subscriptionRef.compareAndSet(currentSubscription, innerSubscription)) {
                                 // we failed to set which means 'subscriptionRef' was set to NULL via the unsubscribe below

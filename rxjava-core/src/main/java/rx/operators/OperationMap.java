@@ -15,11 +15,13 @@
  */
 package rx.operators;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -119,11 +121,8 @@ public final class OperationMap {
         Func1<T, R> func;
 
         public void onNext(T value) {
-            try {
-                observer.onNext(func.call(value));
-            } catch (Exception ex) {
-                observer.onError(ex);
-            }
+            // let the exception be thrown if func fails as a SafeObserver wrapping this will handle it
+            observer.onNext(func.call(value));
         }
 
         public void onError(Exception ex) {
@@ -249,6 +248,40 @@ public final class OperationMap {
             verify(stringObserver, times(1)).onNext("FourFirst");
             verify(stringObserver, times(1)).onCompleted();
 
+        }
+
+        @Test
+        public void testMapWithSynchronousObservableContainingError() {
+            Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
+            final AtomicInteger c1 = new AtomicInteger();
+            final AtomicInteger c2 = new AtomicInteger();
+            Observable<String> m = Observable.create(map(w, new Func1<String, String>() {
+                public String call(String s) {
+                    if ("fail".equals(s))
+                        throw new RuntimeException("Forced Failure");
+                    System.out.println("BadMapper:" + s);
+                    c1.incrementAndGet();
+                    return s;
+                }
+            })).map(new Func1<String, String>() {
+                public String call(String s) {
+                    System.out.println("SecondMapper:" + s);
+                    c2.incrementAndGet();
+                    return s;
+                }
+            });
+
+            m.subscribe(stringObserver);
+
+            verify(stringObserver, times(1)).onNext("one");
+            verify(stringObserver, never()).onNext("two");
+            verify(stringObserver, never()).onNext("three");
+            verify(stringObserver, never()).onCompleted();
+            verify(stringObserver, times(1)).onError(any(Exception.class));
+
+            // we should have only returned 1 value: "one"
+            assertEquals(1, c1.get());
+            assertEquals(1, c2.get());
         }
 
         private Map<String, String> getMap(String prefix) {

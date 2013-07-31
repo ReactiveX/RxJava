@@ -48,7 +48,7 @@ public final class OperationFilter<T> {
         }
 
         public Subscription call(final Observer<T> observer) {
-            final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+            final SafeObservableSubscription subscription = new SafeObservableSubscription();
             return subscription.wrap(that.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     try {

@@ -64,10 +64,10 @@ public final class OperationOnErrorReturn<T> {
         }
 
         public Subscription call(final Observer<T> observer) {
-            final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+            final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
-            final AtomicReference<AtomicObservableSubscription> subscriptionRef = new AtomicReference<AtomicObservableSubscription>(subscription);
+            final AtomicReference<SafeObservableSubscription> subscriptionRef = new AtomicReference<SafeObservableSubscription>(subscription);
 
             // subscribe to the original Observable and remember the subscription
             subscription.wrap(originalSequence.subscribe(new Observer<T>() {
@@ -81,7 +81,7 @@ public final class OperationOnErrorReturn<T> {
                  */
                 public void onError(Exception ex) {
                     /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
-                    AtomicObservableSubscription currentSubscription = subscriptionRef.get();
+                    SafeObservableSubscription currentSubscription = subscriptionRef.get();
                     // check that we have not been unsubscribed before we can process the error
                     if (currentSubscription != null) {
                         try {

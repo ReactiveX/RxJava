@@ -443,7 +443,7 @@ public final class OperationBuffer {
      */
     private static class ObservableBasedSingleBufferCreator<T> implements BufferCreator<T> {
 
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
         private final Func0<Observable<BufferClosing>> bufferClosingSelector;
         private final NonOverlappingBuffers<T> buffers;
 
@@ -487,7 +487,7 @@ public final class OperationBuffer {
      */
     private static class ObservableBasedMultiBufferCreator<T> implements BufferCreator<T> {
 
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
         public ObservableBasedMultiBufferCreator(final OverlappingBuffers<T> buffers, Observable<BufferOpening> bufferOpenings, final Func1<BufferOpening, Observable<BufferClosing>> bufferClosingSelector) {
             subscription.wrap(bufferOpenings.subscribe(new Action1<BufferOpening>() {
@@ -525,7 +525,7 @@ public final class OperationBuffer {
      */
     private static class TimeBasedBufferCreator<T> implements BufferCreator<T> {
 
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
         public TimeBasedBufferCreator(final NonOverlappingBuffers<T> buffers, long time, TimeUnit unit, Scheduler scheduler) {
             this.subscription.wrap(scheduler.schedulePeriodically(new Action0() {

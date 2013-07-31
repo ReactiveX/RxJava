@@ -71,7 +71,7 @@ public final class OperationGroupBy {
 
         private final Observable<KeyValue<K, V>> source;
         private final ConcurrentHashMap<K, GroupedSubject<K, V>> groupedObservables = new ConcurrentHashMap<K, GroupedSubject<K, V>>();
-        private final AtomicObservableSubscription actualParentSubscription = new AtomicObservableSubscription();
+        private final SafeObservableSubscription actualParentSubscription = new SafeObservableSubscription();
         private final AtomicInteger numGroupSubscriptions = new AtomicInteger();
         private final AtomicBoolean unsubscribeRequested = new AtomicBoolean(false);
 
@@ -178,7 +178,7 @@ public final class OperationGroupBy {
 
             return new GroupedSubject<K, T>(key, new Func1<Observer<T>, Subscription>() {
 
-                private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+                private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
                 @Override
                 public Subscription call(Observer<T> observer) {
