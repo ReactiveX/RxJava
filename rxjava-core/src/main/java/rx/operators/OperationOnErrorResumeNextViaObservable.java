@@ -73,8 +73,9 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             // subscribe to the original Observable and remember the subscription
             subscription.wrap(originalSequence.subscribe(new Observer<T>() {
                 public void onNext(T value) {
-                    // forward the successful calls
-                    observer.onNext(value);
+                    // forward the successful calls unless resumed
+                    if (subscriptionRef.get()==subscription)
+                        observer.onNext(value);
                 }
 
                 /**
@@ -83,8 +84,8 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                 public void onError(Exception ex) {
                     /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
                     AtomicObservableSubscription currentSubscription = subscriptionRef.get();
-                    // check that we have not been unsubscribed before we can process the error
-                    if (currentSubscription != null) {
+                    // check that we have not been unsubscribed and not already resumed before we can process the error
+                    if (currentSubscription == subscription) {
                         /* error occurred, so switch subscription to the 'resumeSequence' */
                         AtomicObservableSubscription innerSubscription = new AtomicObservableSubscription(resumeSequence.subscribe(observer));
                         /* we changed the sequence, so also change the subscription to the one of the 'resumeSequence' instead */
@@ -97,8 +98,9 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                 }
 
                 public void onCompleted() {
-                    // forward the successful calls
-                    observer.onCompleted();
+                    // forward the successful calls unless resumed
+                    if (subscriptionRef.get()==subscription)
+                        observer.onCompleted();
                 }
             }));
 
@@ -119,7 +121,8 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
         @Test
         public void testResumeNext() {
             Subscription s = mock(Subscription.class);
-            TestObservable w = new TestObservable(s, "one");
+            // Trigger failure on second element
+            TestObservable w = new TestObservable(s, "one", "fail", "two", "three");
             Observable<String> resume = Observable.from("twoResume", "threeResume");
             Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
 
@@ -140,7 +143,46 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             verify(aObserver, Mockito.never()).onNext("three");
             verify(aObserver, times(1)).onNext("twoResume");
             verify(aObserver, times(1)).onNext("threeResume");
+        }
 
+        @Test
+        public void testMapResumeAsyncNext() {
+            Subscription sr = mock(Subscription.class);
+            // Trigger multiple failures
+            Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
+            // Resume Observable is async
+            TestObservable resume = new TestObservable(sr, "twoResume", "threeResume");
+
+            // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
+            //  rx.operator incl onErrorResumeNextViaObservable)
+            w = w.map(new Func1<String, String>() {
+                public String call(String s) {
+                    if ("fail".equals(s))
+                        throw new RuntimeException("Forced Failure");
+                    System.out.println("BadMapper:" + s);
+                    return s;
+                }
+            });
+
+            Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+            observable.subscribe(aObserver);
+
+            try {
+                resume.t.join();
+            } catch (InterruptedException e) {
+                fail(e.getMessage());
+            }
+
+            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, times(1)).onCompleted();
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, Mockito.never()).onNext("two");
+            verify(aObserver, Mockito.never()).onNext("three");
+            verify(aObserver, times(1)).onNext("twoResume");
+            verify(aObserver, times(1)).onNext("threeResume");
         }
 
         private static class TestObservable extends Observable<String> {
@@ -164,11 +206,15 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                         try {
                             System.out.println("running TestObservable thread");
                             for (String s : values) {
+                                if ("fail".equals(s))
+                                    throw new RuntimeException("Forced Failure");
                                 System.out.println("TestObservable onNext: " + s);
                                 observer.onNext(s);
                             }
-                            throw new RuntimeException("Forced Failure");
+                            System.out.println("TestObservable onCompleted");
+                            observer.onCompleted();
                         } catch (Exception e) {
+                            System.out.println("TestObservable onError: " + e);
                             observer.onError(e);
                         }
                     }
