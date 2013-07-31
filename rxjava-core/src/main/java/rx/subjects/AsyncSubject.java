@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,19 +32,21 @@ import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 /**
- * Subject that publishes only the last event to each {@link Observer} that has subscribed when the completes. 
+ * Subject that publishes only the last event to each {@link Observer} that has subscribed when the
+ * sequence completes.
+ *
  * <p>
  * Example usage:
  * <p>
  * <pre> {@code
- 
-  // observer will receive no onNext events.
+
+  // observer will receive no onNext events because the subject.onCompleted() isn't called.
   AsyncSubject<Object> subject = AsyncSubject.create();
   subject.subscribe(observer);
   subject.onNext("one");
   subject.onNext("two");
   subject.onNext("three");
- 
+
   // observer will receive "three" as the only onNext event.
   AsyncSubject<Object> subject = AsyncSubject.create();
   subject.subscribe(observer);
@@ -52,13 +54,19 @@ import rx.util.functions.Func1;
   subject.onNext("two");
   subject.onNext("three");
   subject.onCompleted();
- 
+
   } </pre>
- * 
+ *
  * @param <T>
  */
 public class AsyncSubject<T> extends Subject<T, T> {
-	
+
+
+    /**
+     * Create a new AsyncSubject
+     *
+     * @return a new AsyncSubject
+     */
     public static <T> AsyncSubject<T> create() {
         final ConcurrentHashMap<Subscription, Observer<T>> observers = new ConcurrentHashMap<Subscription, Observer<T>>();
 
@@ -95,10 +103,10 @@ public class AsyncSubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-    	T finalValue = currentValue.get();
-    	for (Observer<T> observer : observers.values()) {
-			observer.onNext(finalValue);
-    	}
+        T finalValue = currentValue.get();
+        for (Observer<T> observer : observers.values()) {
+            observer.onNext(finalValue);
+        }
         for (Observer<T> observer : observers.values()) {
             observer.onCompleted();
         }
@@ -141,7 +149,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
             verify(aObserver, Mockito.never()).onError(testException);
             verify(aObserver, Mockito.never()).onCompleted();
         }
-        
+
         @Test
         public void testCompleted() {
         	AsyncSubject<Object> subject = AsyncSubject.create();
@@ -242,7 +250,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
                 {
                     DefaultSubject.onError(new Exception());
                 }
-            }, 
+            },
             null);
         }
     }
