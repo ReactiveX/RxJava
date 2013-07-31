@@ -28,7 +28,7 @@ public class OperationAll {
         private final Observable<T> sequence;
         private final Func1<T, Boolean> predicate;
 
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
 
         private AllObservable(Observable<T> sequence, Func1<T, Boolean> predicate) {

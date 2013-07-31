@@ -15,8 +15,8 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.operators.AtomicObservableSubscription;
-import rx.operators.AtomicObserver;
+import rx.operators.SafeObservableSubscription;
+import rx.operators.SafeObserver;
 import rx.operators.OperationMostRecent;
 import rx.operators.OperationNext;
 import rx.operators.OperationToFuture;
@@ -404,8 +404,8 @@ public class BlockingObservable<T> extends Observable<T> {
      * calls to user code from within an operator"
      */
     private Subscription protectivelyWrapAndSubscribe(Observer<T> o) {
-        AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-        return subscription.wrap(subscribe(new AtomicObserver<T>(subscription, o)));
+        SafeObservableSubscription subscription = new SafeObservableSubscription();
+        return subscription.wrap(subscribe(new SafeObserver<T>(subscription, o)));
     }
     
     /**

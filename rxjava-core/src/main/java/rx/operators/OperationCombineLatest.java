@@ -237,7 +237,7 @@ public class OperationCombineLatest {
                 throw new IllegalStateException("Only one Observer can subscribe to this Observable.");
             }
             
-            AtomicObservableSubscription subscription = new AtomicObservableSubscription(new Subscription() {
+            SafeObservableSubscription subscription = new SafeObservableSubscription(new Subscription() {
                 @Override
                 public void unsubscribe() {
                     stop();

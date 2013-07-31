@@ -71,7 +71,7 @@ public final class OperationSynchronize<T> {
         private SynchronizedObserver<T> atomicObserver;
 
         public Subscription call(Observer<T> observer) {
-            AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+            SafeObservableSubscription subscription = new SafeObservableSubscription();
             atomicObserver = new SynchronizedObserver<T>(observer, subscription);
             return subscription.wrap(innerObservable.subscribe(atomicObserver));
         }

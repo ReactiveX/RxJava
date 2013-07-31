@@ -65,11 +65,11 @@ public final class SynchronizedObserver<T> implements Observer<T> {
      */
 
     private final Observer<? super T> observer;
-    private final AtomicObservableSubscription subscription;
+    private final SafeObservableSubscription subscription;
     private volatile boolean finishRequested = false;
     private volatile boolean finished = false;
 
-    public SynchronizedObserver(Observer<? super T> Observer, AtomicObservableSubscription subscription) {
+    public SynchronizedObserver(Observer<? super T> Observer, SafeObservableSubscription subscription) {
         this.observer = Observer;
         this.subscription = subscription;
     }
@@ -136,7 +136,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable(s, "one", "two", "three");
             Observable<String> w = Observable.create(onSubscribe);
 
-            AtomicObservableSubscription as = new AtomicObservableSubscription(s);
+            SafeObservableSubscription as = new SafeObservableSubscription(s);
             SynchronizedObserver<String> aw = new SynchronizedObserver<String>(aObserver, as);
 
             w.subscribe(aw);
@@ -158,7 +158,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three");
             Observable<String> w = Observable.create(onSubscribe);
 
-            AtomicObservableSubscription as = new AtomicObservableSubscription(s);
+            SafeObservableSubscription as = new SafeObservableSubscription(s);
             BusyObserver busyObserver = new BusyObserver();
             SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as);
 
@@ -184,7 +184,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null);
             Observable<String> w = Observable.create(onSubscribe);
 
-            AtomicObservableSubscription as = new AtomicObservableSubscription(s);
+            SafeObservableSubscription as = new SafeObservableSubscription(s);
             BusyObserver busyObserver = new BusyObserver();
             SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as);
 
@@ -216,7 +216,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
             Observable<String> w = Observable.create(onSubscribe);
 
-            AtomicObservableSubscription as = new AtomicObservableSubscription(s);
+            SafeObservableSubscription as = new SafeObservableSubscription(s);
             BusyObserver busyObserver = new BusyObserver();
             SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as);
 
@@ -252,7 +252,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             ExecutorService tp = Executors.newFixedThreadPool(20);
             try {
                 TestConcurrencyObserver tw = new TestConcurrencyObserver();
-                AtomicObservableSubscription s = new AtomicObservableSubscription();
+                SafeObservableSubscription s = new SafeObservableSubscription();
                 SynchronizedObserver<String> w = new SynchronizedObserver<String>(tw, s);
 
                 Future<?> f1 = tp.submit(new OnNextThread(w, 12000));

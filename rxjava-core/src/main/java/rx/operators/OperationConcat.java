@@ -71,7 +71,7 @@ public final class OperationConcat {
 
     private static class Concat<T> implements Func1<Observer<T>, Subscription> {
         private Observable<Observable<T>> sequences;
-        private AtomicObservableSubscription innerSubscription = null;
+        private SafeObservableSubscription innerSubscription = null;
 
         public Concat(Observable<Observable<T>> sequences) {
             this.sequences = sequences;
@@ -81,7 +81,7 @@ public final class OperationConcat {
             final AtomicBoolean completedOrErred = new AtomicBoolean(false);
             final AtomicBoolean allSequencesReceived = new AtomicBoolean(false);
             final Queue<Observable<T>> nextSequences = new ConcurrentLinkedQueue<Observable<T>>();
-            final AtomicObservableSubscription outerSubscription = new AtomicObservableSubscription();
+            final SafeObservableSubscription outerSubscription = new SafeObservableSubscription();
 
             final Observer<T> reusableObserver = new Observer<T>() {
                 @Override
@@ -109,7 +109,7 @@ public final class OperationConcat {
                             }
                         } else {
                             // Continue on to the next sequence
-                            innerSubscription = new AtomicObservableSubscription();
+                            innerSubscription = new SafeObservableSubscription();
                             innerSubscription.wrap(nextSequences.poll().subscribe(this));
                         }
                     }
@@ -122,7 +122,7 @@ public final class OperationConcat {
                     synchronized (nextSequences) {
                         if (innerSubscription == null) {
                             // We are currently not subscribed to any sequence
-                            innerSubscription = new AtomicObservableSubscription();
+                            innerSubscription = new SafeObservableSubscription();
                             innerSubscription.wrap(nextSequence.subscribe(reusableObserver));
                         } else {
                             // Put this sequence at the end of the queue
@@ -545,7 +545,7 @@ public final class OperationConcat {
             final Observer<String> aObserver = mock(Observer.class);
             @SuppressWarnings("unchecked")
             final Observable<String> concat = Observable.create(concat(w1, w2));
-            final AtomicObservableSubscription s1 = new AtomicObservableSubscription();
+            final SafeObservableSubscription s1 = new SafeObservableSubscription();
 
             try {
                 // Subscribe

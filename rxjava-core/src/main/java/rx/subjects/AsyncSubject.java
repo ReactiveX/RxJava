@@ -26,7 +26,7 @@ import org.mockito.Mockito;
 
 import rx.Observer;
 import rx.Subscription;
-import rx.operators.AtomicObservableSubscription;
+import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
@@ -73,7 +73,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
         Func1<Observer<T>, Subscription> onSubscribe = new Func1<Observer<T>, Subscription>() {
             @Override
             public Subscription call(Observer<T> observer) {
-                final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+                final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
                 subscription.wrap(new Subscription() {
                     @Override

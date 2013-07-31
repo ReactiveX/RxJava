@@ -39,8 +39,8 @@ import org.mockito.MockitoAnnotations;
 import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
-import rx.operators.AtomicObservableSubscription;
-import rx.operators.AtomicObserver;
+import rx.operators.SafeObservableSubscription;
+import rx.operators.SafeObserver;
 import rx.operators.OperationAll;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCache;
@@ -198,8 +198,8 @@ public class Observable<T> {
                     return hook.onSubscribeReturn(this, s);
                 }
             } else {
-                AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-                subscription.wrap(onSubscribeFunction.call(new AtomicObserver<T>(subscription, observer)));
+                SafeObservableSubscription subscription = new SafeObservableSubscription();
+                subscription.wrap(onSubscribeFunction.call(new SafeObserver<T>(subscription, observer)));
                 return hook.onSubscribeReturn(this, subscription);
             }
         } catch (OnErrorNotImplementedException e) {
@@ -263,8 +263,8 @@ public class Observable<T> {
      * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
      */
     private Subscription protectivelyWrapAndSubscribe(Observer<T> o) {
-        AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-        return subscription.wrap(subscribe(new AtomicObserver<T>(subscription, o)));
+        SafeObservableSubscription subscription = new SafeObservableSubscription();
+        return subscription.wrap(subscribe(new SafeObserver<T>(subscription, o)));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -4337,7 +4337,7 @@ public class Observable<T> {
             return true;
         }
         // prevent double-wrapping (yeah it happens)
-        if (o instanceof AtomicObserver)
+        if (o instanceof SafeObserver)
             return true;
         // we treat the following package as "internal" and don't wrap it
         Package p = o.getClass().getPackage(); // it can be null
