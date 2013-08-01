@@ -91,7 +91,7 @@ public class Notification<T> {
      * 
      * @return a value indicating whether this notification has an exception.
      */
-    public boolean hasException() {
+    public boolean hasThrowable() {
         return isOnError() && throwable != null;
     }
 
@@ -125,7 +125,7 @@ public class Notification<T> {
         StringBuilder str = new StringBuilder("[").append(super.toString()).append(" ").append(getKind());
         if (hasValue())
             str.append(" ").append(getValue());
-        if (hasException())
+        if (hasThrowable())
             str.append(" ").append(getThrowable().getMessage());
         str.append("]");
         return str.toString();
@@ -136,7 +136,7 @@ public class Notification<T> {
         int hash = getKind().hashCode();
         if (hasValue())
             hash = hash * 31 + getValue().hashCode();
-        if (hasException())
+        if (hasThrowable())
             hash = hash * 31 + getThrowable().hashCode();
         return hash;
     }
@@ -154,7 +154,7 @@ public class Notification<T> {
             return false;
         if (hasValue() && !getValue().equals(notification.getValue()))
             return false;
-        if (hasException() && !getThrowable().equals(notification.getThrowable()))
+        if (hasThrowable() && !getThrowable().equals(notification.getThrowable()))
             return false;
         return true;
     }
