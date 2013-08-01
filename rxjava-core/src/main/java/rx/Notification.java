@@ -23,7 +23,7 @@ package rx;
 public class Notification<T> {
 
     private final Kind kind;
-    private final Exception exception;
+    private final Throwable exception;
     private final T value;
 
     /**
@@ -44,7 +44,7 @@ public class Notification<T> {
      * @param exception
      *            The exception passed to the onError notification.
      */
-    public Notification(Exception exception) {
+    public Notification(Throwable exception) {
         this.exception = exception;
         this.value = null;
         this.kind = Kind.OnError;
@@ -62,9 +62,9 @@ public class Notification<T> {
     /**
      * Retrieves the exception associated with an onError notification.
      * 
-     * @return The exception associated with an onError notification.
+     * @return Throwable associated with an onError notification.
      */
-    public Exception getException() {
+    public Throwable getThrowable() {
         return exception;
     }
 
@@ -126,7 +126,7 @@ public class Notification<T> {
         if (hasValue())
             str.append(" ").append(getValue());
         if (hasException())
-            str.append(" ").append(getException().getMessage());
+            str.append(" ").append(getThrowable().getMessage());
         str.append("]");
         return str.toString();
     }
@@ -137,7 +137,7 @@ public class Notification<T> {
         if (hasValue())
             hash = hash * 31 + getValue().hashCode();
         if (hasException())
-            hash = hash * 31 + getException().hashCode();
+            hash = hash * 31 + getThrowable().hashCode();
         return hash;
     }
 
@@ -154,7 +154,7 @@ public class Notification<T> {
             return false;
         if (hasValue() && !getValue().equals(notification.getValue()))
             return false;
-        if (hasException() && !getException().equals(notification.getException()))
+        if (hasException() && !getThrowable().equals(notification.getThrowable()))
             return false;
         return true;
     }

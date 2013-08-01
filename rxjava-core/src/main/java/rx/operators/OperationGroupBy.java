@@ -95,7 +95,7 @@ public final class OperationGroupBy {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     // we need to propagate to all children I imagine ... we can't just leave all of those Observable/Observers hanging 
                     for (GroupedSubject<K, V> o : groupedObservables.values()) {
                         o.onError(e);
@@ -215,7 +215,7 @@ public final class OperationGroupBy {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             subscribedObserver.get().onError(e);
         }
 
@@ -235,7 +235,7 @@ public final class OperationGroupBy {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             // do nothing            
         }
 
@@ -298,7 +298,7 @@ public final class OperationGroupBy {
 
             final AtomicInteger groupCounter = new AtomicInteger();
             final AtomicInteger eventCounter = new AtomicInteger();
-            final AtomicReference<Exception> error = new AtomicReference<Exception>();
+            final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
             grouped.mapMany(new Func1<GroupedObservable<Integer, String>, Observable<String>>() {
 
@@ -321,7 +321,7 @@ public final class OperationGroupBy {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     e.printStackTrace();
                     error.set(e);
                 }
@@ -365,10 +365,10 @@ public final class OperationGroupBy {
         /**
          * Assert that only a single subscription to a stream occurs and that all events are received.
          * 
-         * @throws Exception
+         * @throws Throwable
          */
         @Test
-        public void testGroupedEventStream() throws Exception {
+        public void testGroupedEventStream() throws Throwable {
 
             final AtomicInteger eventCounter = new AtomicInteger();
             final AtomicInteger subscribeCounter = new AtomicInteger();
@@ -432,7 +432,7 @@ public final class OperationGroupBy {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     e.printStackTrace();
                     latch.countDown();
                 }
@@ -529,7 +529,7 @@ public final class OperationGroupBy {
                         }
 
                         @Override
-                        public void onError(Exception e) {
+                        public void onError(Throwable e) {
                             e.printStackTrace();
                             latch.countDown();
                         }

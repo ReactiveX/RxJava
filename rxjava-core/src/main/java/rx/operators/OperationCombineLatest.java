@@ -115,7 +115,7 @@ public class OperationCombineLatest {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             a.error(e);
         }
 
@@ -185,7 +185,7 @@ public class OperationCombineLatest {
         /**
          * Receive error for a Observer. Throw the error up the chain and stop processing.
          */
-        void error(Exception e) {
+        void error(Throwable e) {
             observer.onError(e);
             /* tell all observers to unsubscribe since we had an error */
             stop();
@@ -226,7 +226,7 @@ public class OperationCombineLatest {
             try {
                 R combinedValue = combineLatestFunction.call(argsToCombineLatest);
                 observer.onNext(combinedValue);
-            } catch(Exception ex) {
+            } catch(Throwable ex) {
                 observer.onError(ex);
             }
         }
@@ -433,14 +433,14 @@ public class OperationCombineLatest {
 
             InOrder inOrder = inOrder(aObserver);
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             inOrder.verify(aObserver, times(1)).onNext("helloworld");
 
             a.next(r1, "hello ");
             a.next(r2, "again");
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             inOrder.verify(aObserver, times(1)).onNext("hello again");
 
@@ -476,14 +476,14 @@ public class OperationCombineLatest {
             a.next(r2, "world");
             a.complete(r2);
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             verify(aObserver, times(1)).onNext("helloworld");
 
             a.next(r1, "hi");
             a.complete(r1);
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
             verify(aObserver, times(1)).onNext("hiworld");
         }
@@ -513,14 +513,14 @@ public class OperationCombineLatest {
             a.next(r2, "world");
             a.complete(r2);
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             verify(aObserver, times(1)).onNext("helloworld");
 
             a.next(r1, "hi");
             a.complete(r1);
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
             verify(aObserver, times(1)).onNext("hiworld");
         }
@@ -552,7 +552,7 @@ public class OperationCombineLatest {
             a.next(r2, 2);
             a.next(r3, new int[] { 5, 6, 7 });
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             verify(aObserver, times(1)).onNext("hello2[5, 6, 7]");
         }
@@ -583,7 +583,7 @@ public class OperationCombineLatest {
             a.next(r1, "three");
             a.next(r2, "A");
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             verify(aObserver, times(1)).onNext("threeA");
 
@@ -599,7 +599,7 @@ public class OperationCombineLatest {
             verify(aObserver, times(1)).onNext("fourE");
             a.complete(r2);
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -627,7 +627,7 @@ public class OperationCombineLatest {
             a.next(r1, "hello");
             a.next(r2, "world");
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             verify(aObserver, times(1)).onNext("helloworld");
 
@@ -635,7 +635,7 @@ public class OperationCombineLatest {
             a.next(r1, "hello");
             a.next(r2, "again");
 
-            verify(aObserver, times(1)).onError(any(Exception.class));
+            verify(aObserver, times(1)).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             // we don't want to be called again after an error
             verify(aObserver, times(0)).onNext("helloagain");
@@ -665,7 +665,7 @@ public class OperationCombineLatest {
             a.next(r1, "hello");
             a.next(r2, "world");
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             verify(aObserver, times(1)).onNext("helloworld");
 
@@ -673,7 +673,7 @@ public class OperationCombineLatest {
             a.next(r1, "hello");
             a.next(r2, "again");
 
-            verify(aObserver, times(0)).onError(any(Exception.class));
+            verify(aObserver, times(0)).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             // we don't want to be called again after an error
             verify(aObserver, times(0)).onNext("helloagain");
@@ -707,13 +707,13 @@ public class OperationCombineLatest {
 
             InOrder inOrder = inOrder(aObserver);
             
-            inOrder.verify(aObserver, never()).onError(any(Exception.class));
+            inOrder.verify(aObserver, never()).onError(any(Throwable.class));
             inOrder.verify(aObserver, never()).onCompleted();
             inOrder.verify(aObserver, times(1)).onNext("twoA");
 
             a.complete(r2);
 
-            inOrder.verify(aObserver, never()).onError(any(Exception.class));
+            inOrder.verify(aObserver, never()).onError(any(Throwable.class));
             inOrder.verify(aObserver, times(1)).onCompleted();
             // we shouldn't get this since completed is called before any other onNext calls could trigger this
             inOrder.verify(aObserver, never()).onNext(anyString());
@@ -731,7 +731,7 @@ public class OperationCombineLatest {
             Observable<String> w = Observable.create(combineLatest(Observable.from("one", "two"), Observable.from(2, 3, 4), combineLatestFunction));
             w.subscribe(aObserver);
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
             verify(aObserver, times(1)).onNext("two2");
             verify(aObserver, times(1)).onNext("two3");
@@ -750,7 +750,7 @@ public class OperationCombineLatest {
             Observable<String> w = Observable.create(combineLatest(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), combineLatestFunction));
             w.subscribe(aObserver);
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
             verify(aObserver, times(1)).onNext("two2[4, 5, 6]");
         }
@@ -767,7 +767,7 @@ public class OperationCombineLatest {
             Observable<String> w = Observable.create(combineLatest(Observable.from("one"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction));
             w.subscribe(aObserver);
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
             verify(aObserver, times(1)).onNext("one2[4, 5, 6]");
             verify(aObserver, times(1)).onNext("one2[7, 8]");

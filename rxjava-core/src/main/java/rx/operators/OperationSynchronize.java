@@ -137,7 +137,7 @@ public final class OperationSynchronize<T> {
             t.sendOnError(new RuntimeException("bad"));
 
             verify(w, times(1)).onNext("one");
-            verify(w, Mockito.never()).onError(any(Exception.class));
+            verify(w, Mockito.never()).onError(any(Throwable.class));
         }
 
         /**
@@ -158,7 +158,7 @@ public final class OperationSynchronize<T> {
             t.sendOnNext("two");
 
             verify(w, times(1)).onNext("one");
-            verify(w, times(1)).onError(any(Exception.class));
+            verify(w, times(1)).onError(any(Throwable.class));
             verify(w, Mockito.never()).onNext("two");
         }
 
@@ -180,7 +180,7 @@ public final class OperationSynchronize<T> {
             t.sendOnCompleted();
 
             verify(w, times(1)).onNext("one");
-            verify(w, times(1)).onError(any(Exception.class));
+            verify(w, times(1)).onError(any(Throwable.class));
             verify(w, Mockito.never()).onCompleted();
         }
 
@@ -204,7 +204,7 @@ public final class OperationSynchronize<T> {
             verify(w, times(1)).onNext("one");
             verify(w, Mockito.never()).onNext("two");
             verify(w, times(1)).onCompleted();
-            verify(w, Mockito.never()).onError(any(Exception.class));
+            verify(w, Mockito.never()).onError(any(Throwable.class));
         }
 
         /**
@@ -226,7 +226,7 @@ public final class OperationSynchronize<T> {
 
             verify(w, times(1)).onNext("one");
             verify(w, times(1)).onCompleted();
-            verify(w, Mockito.never()).onError(any(Exception.class));
+            verify(w, Mockito.never()).onError(any(Throwable.class));
         }
 
         /**
@@ -250,7 +250,7 @@ public final class OperationSynchronize<T> {
             }
 
             /* used to simulate subscription */
-            public void sendOnError(Exception e) {
+            public void sendOnError(Throwable e) {
                 observer.onError(e);
             }
 

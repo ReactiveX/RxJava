@@ -115,7 +115,7 @@ public final class OperationZip {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             a.error(this, e);
         }
 
@@ -123,7 +123,7 @@ public final class OperationZip {
         public void onNext(T args) {
             try {
                 a.next(this, args);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 onError(e);
             }
         }
@@ -189,7 +189,7 @@ public final class OperationZip {
          * 
          * @param w
          */
-        void error(ZipObserver<T, ?> w, Exception e) {
+        void error(ZipObserver<T, ?> w, Throwable e) {
             if (running.compareAndSet(true, false)) {
                 // this thread succeeded in setting running=false so let's propagate the error
                 observer.onError(e);
@@ -308,7 +308,7 @@ public final class OperationZip {
             Observable<String> w = Observable.create(zip(ws, zipr));
             w.subscribe(aObserver);
 
-            verify(aObserver, times(1)).onError(any(Exception.class));
+            verify(aObserver, times(1)).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             verify(aObserver, never()).onNext(any(String.class));
         }
@@ -412,14 +412,14 @@ public final class OperationZip {
 
             InOrder inOrder = inOrder(aObserver);
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             inOrder.verify(aObserver, times(1)).onNext("helloworld");
 
             a.next(r1, "hello ");
             a.next(r2, "again");
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             inOrder.verify(aObserver, times(1)).onNext("hello again");
 
@@ -457,14 +457,14 @@ public final class OperationZip {
 
             InOrder inOrder = inOrder(aObserver);
 
-            inOrder.verify(aObserver, never()).onError(any(Exception.class));
+            inOrder.verify(aObserver, never()).onError(any(Throwable.class));
             inOrder.verify(aObserver, never()).onCompleted();
             inOrder.verify(aObserver, times(1)).onNext("helloworld");
 
             a.next(r1, "hi");
             a.complete(r1);
 
-            inOrder.verify(aObserver, never()).onError(any(Exception.class));
+            inOrder.verify(aObserver, never()).onError(any(Throwable.class));
             inOrder.verify(aObserver, times(1)).onCompleted();
             inOrder.verify(aObserver, never()).onNext(anyString());
         }
@@ -496,14 +496,14 @@ public final class OperationZip {
 
             InOrder inOrder = inOrder(aObserver);
 
-            inOrder.verify(aObserver, never()).onError(any(Exception.class));
+            inOrder.verify(aObserver, never()).onError(any(Throwable.class));
             inOrder.verify(aObserver, never()).onCompleted();
             inOrder.verify(aObserver, times(1)).onNext("helloworld");
 
             a.next(r1, "hi");
             a.complete(r1);
 
-            inOrder.verify(aObserver, never()).onError(any(Exception.class));
+            inOrder.verify(aObserver, never()).onError(any(Throwable.class));
             inOrder.verify(aObserver, times(1)).onCompleted();
             inOrder.verify(aObserver, never()).onNext(anyString());
         }
@@ -535,7 +535,7 @@ public final class OperationZip {
             a.next(r2, 2);
             a.next(r3, new int[] { 5, 6, 7 });
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             verify(aObserver, times(1)).onNext("hello2[5, 6, 7]");
         }
@@ -566,7 +566,7 @@ public final class OperationZip {
             a.next(r1, "three");
             a.next(r2, "A");
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             verify(aObserver, times(1)).onNext("oneA");
 
@@ -582,7 +582,7 @@ public final class OperationZip {
             verify(aObserver, never()).onNext("E");
             a.complete(r2);
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -610,7 +610,7 @@ public final class OperationZip {
             a.next(r1, "hello");
             a.next(r2, "world");
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             verify(aObserver, times(1)).onNext("helloworld");
 
@@ -618,7 +618,7 @@ public final class OperationZip {
             a.next(r1, "hello");
             a.next(r2, "again");
 
-            verify(aObserver, times(1)).onError(any(Exception.class));
+            verify(aObserver, times(1)).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             // we don't want to be called again after an error
             verify(aObserver, times(0)).onNext("helloagain");
@@ -648,7 +648,7 @@ public final class OperationZip {
             a.next(r1, "hello");
             a.next(r2, "world");
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             verify(aObserver, times(1)).onNext("helloworld");
 
@@ -656,7 +656,7 @@ public final class OperationZip {
             a.next(r1, "hello");
             a.next(r2, "again");
 
-            verify(aObserver, times(0)).onError(any(Exception.class));
+            verify(aObserver, times(0)).onError(any(Throwable.class));
             verify(aObserver, never()).onCompleted();
             // we don't want to be called again after an error
             verify(aObserver, times(0)).onNext("helloagain");
@@ -690,13 +690,13 @@ public final class OperationZip {
 
             InOrder inOrder = inOrder(aObserver);
 
-            inOrder.verify(aObserver, never()).onError(any(Exception.class));
+            inOrder.verify(aObserver, never()).onError(any(Throwable.class));
             inOrder.verify(aObserver, never()).onCompleted();
             inOrder.verify(aObserver, times(1)).onNext("oneA");
 
             a.complete(r2);
 
-            inOrder.verify(aObserver, never()).onError(any(Exception.class));
+            inOrder.verify(aObserver, never()).onError(any(Throwable.class));
             inOrder.verify(aObserver, times(1)).onCompleted();
             inOrder.verify(aObserver, never()).onNext(anyString());
         }
@@ -713,7 +713,7 @@ public final class OperationZip {
             Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2, 3, 4), zipr));
             w.subscribe(aObserver);
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
             verify(aObserver, times(1)).onNext("one2");
             verify(aObserver, times(1)).onNext("two3");
@@ -732,7 +732,7 @@ public final class OperationZip {
             Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), zipr));
             w.subscribe(aObserver);
 
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
             verify(aObserver, times(1)).onNext("one2[4, 5, 6]");
             verify(aObserver, never()).onNext("two");
@@ -748,7 +748,7 @@ public final class OperationZip {
             Observable<Integer> w = Observable.create(zip(Observable.from(10, 20, 30), Observable.from(0, 1, 2), zipr));
             w.subscribe(aObserver);
 
-            verify(aObserver, times(1)).onError(any(Exception.class));
+            verify(aObserver, times(1)).onError(any(Throwable.class));
         }
 
         private Func2<Integer, Integer, Integer> getDivideZipr() {

@@ -3,7 +3,7 @@ package rx.util;
 import rx.Observer;
 
 /**
- * Used for re-throwing {@link Observer#onError(Exception)} when an implementation doesn't exist.
+ * Used for re-throwing {@link Observer#onError(Throwable)} when an implementation doesn't exist.
  * 
  * https://github.com/Netflix/RxJava/issues/198
  * 

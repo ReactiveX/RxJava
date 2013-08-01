@@ -70,7 +70,7 @@ public final class OperationMaterialize {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     observer.onNext(new Notification<T>(e));
                     observer.onCompleted();
                 }
@@ -108,7 +108,7 @@ public final class OperationMaterialize {
             assertTrue(Observer.notifications.get(0).isOnNext());
             assertEquals("two", Observer.notifications.get(1).getValue());
             assertTrue(Observer.notifications.get(1).isOnNext());
-            assertEquals(NullPointerException.class, Observer.notifications.get(2).getException().getClass());
+            assertEquals(NullPointerException.class, Observer.notifications.get(2).getThrowable().getClass());
             assertTrue(Observer.notifications.get(2).isOnError());
         }
 
@@ -174,7 +174,7 @@ public final class OperationMaterialize {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             this.onError = true;
         }
 
@@ -206,7 +206,7 @@ public final class OperationMaterialize {
                             System.out.println("throwing exception");
                             try {
                                 Thread.sleep(100);
-                            } catch (Exception e) {
+                            } catch (Throwable e) {
 
                             }
                             observer.onError(new NullPointerException());

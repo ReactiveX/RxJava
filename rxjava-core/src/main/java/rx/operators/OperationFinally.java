@@ -91,7 +91,7 @@ public final class OperationFinally {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 try {
                     observer.onError(e);
                 } finally {

@@ -105,7 +105,7 @@ public class OperationTakeUntil {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     notificationObserver.onError(e);
                 }
 
@@ -133,7 +133,7 @@ public class OperationTakeUntil {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     notificationObserver.onError(e);
                 }
 
@@ -203,7 +203,7 @@ public class OperationTakeUntil {
             Subscription sOther = mock(Subscription.class);
             TestObservable source = new TestObservable(sSource);
             TestObservable other = new TestObservable(sOther);
-            Exception error = new Exception();
+            Throwable error = new Throwable();
 
             Observer<String> result = mock(Observer.class);
             Observable<String> stringObservable = takeUntil(source, other);
@@ -227,7 +227,7 @@ public class OperationTakeUntil {
             Subscription sOther = mock(Subscription.class);
             TestObservable source = new TestObservable(sSource);
             TestObservable other = new TestObservable(sOther);
-            Exception error = new Exception();
+            Throwable error = new Throwable();
 
             Observer<String> result = mock(Observer.class);
             Observable<String> stringObservable = takeUntil(source, other);
@@ -288,7 +288,7 @@ public class OperationTakeUntil {
             }
 
             /* used to simulate subscription */
-            public void sendOnError(Exception e) {
+            public void sendOnError(Throwable e) {
                 observer.onError(e);
             }
 

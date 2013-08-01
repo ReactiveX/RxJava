@@ -97,7 +97,7 @@ public final class OperationSkip {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 observer.onError(e);
             }
 
@@ -126,7 +126,7 @@ public final class OperationSkip {
             verify(aObserver, never()).onNext("one");
             verify(aObserver, never()).onNext("two");
             verify(aObserver, times(1)).onNext("three");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -141,7 +141,7 @@ public final class OperationSkip {
             verify(aObserver, never()).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, times(1)).onNext("three");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 

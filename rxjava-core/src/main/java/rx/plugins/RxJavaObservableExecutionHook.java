@@ -69,18 +69,18 @@ public abstract class RxJavaObservableExecutionHook {
     }
 
     /**
-     * Invoked after failed execution of {@link Observable#subscribe(Observer)} with thrown Exception.
+     * Invoked after failed execution of {@link Observable#subscribe(Observer)} with thrown Throwable.
      * <p>
-     * This is NOT errors emitted via {@link Observer#onError(Exception)} but exceptions thrown when attempting
+     * This is NOT errors emitted via {@link Observer#onError(Throwable)} but exceptions thrown when attempting
      * to subscribe to a {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}>.
      * 
      * @param observableInstance
      *            The executing {@link Observable} instance.
      * @param e
-     *            Exception thrown by {@link Observable#subscribe(Observer)}
-     * @return Exception that can be decorated, replaced or just returned as a pass-thru.
+     *            Throwable thrown by {@link Observable#subscribe(Observer)}
+     * @return Throwable that can be decorated, replaced or just returned as a pass-thru.
      */
-    public <T> Exception onSubscribeError(Observable<T> observableInstance, Exception e) {
+    public <T> Throwable onSubscribeError(Observable<T> observableInstance, Throwable e) {
         // pass-thru by default
         return e;
     }

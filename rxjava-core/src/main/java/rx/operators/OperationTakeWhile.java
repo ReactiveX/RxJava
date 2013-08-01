@@ -125,7 +125,7 @@ public final class OperationTakeWhile {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 observer.onError(e);
             }
 
@@ -134,7 +134,7 @@ public final class OperationTakeWhile {
                 Boolean isSelected;
                 try {
                     isSelected = predicate.call(args, counter.getAndIncrement());
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     observer.onError(e);
                     return;
                 }
@@ -171,7 +171,7 @@ public final class OperationTakeWhile {
             verify(aObserver, times(1)).onNext(1);
             verify(aObserver, times(1)).onNext(2);
             verify(aObserver, never()).onNext(3);
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -203,7 +203,7 @@ public final class OperationTakeWhile {
             verify(aObserver, never()).onNext(3);
             verify(aObserver, never()).onNext(4);
             verify(aObserver, never()).onNext(5);
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -225,7 +225,7 @@ public final class OperationTakeWhile {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, never()).onNext("three");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -237,7 +237,7 @@ public final class OperationTakeWhile {
                 public Subscription call(Observer<String> observer)
                 {
                     observer.onNext("one");
-                    observer.onError(new Exception("test failed"));
+                    observer.onError(new Throwable("test failed"));
                     return Subscriptions.empty();
                 }
             });
@@ -272,7 +272,7 @@ public final class OperationTakeWhile {
             // wait for the Observable to complete
             try {
                 source.t.join();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
                 fail(e.getMessage());
             }
@@ -301,7 +301,7 @@ public final class OperationTakeWhile {
             // wait for the Observable to complete
             try {
                 w.t.join();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
                 fail(e.getMessage());
             }
@@ -338,7 +338,7 @@ public final class OperationTakeWhile {
                                 observer.onNext(s);
                             }
                             observer.onCompleted();
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             throw new RuntimeException(e);
                         }
                     }

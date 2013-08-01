@@ -95,7 +95,7 @@ public final class OperationTake {
                     }
 
                     @Override
-                    public void onError(Exception e)
+                    public void onError(Throwable e)
                     {
                     }
 
@@ -128,7 +128,7 @@ public final class OperationTake {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 if (counter.getAndSet(num) < num) {
                     observer.onError(e);
                 }
@@ -166,7 +166,7 @@ public final class OperationTake {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, never()).onNext("three");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -181,7 +181,7 @@ public final class OperationTake {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, never()).onNext("two");
             verify(aObserver, never()).onNext("three");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -193,7 +193,7 @@ public final class OperationTake {
                 public Subscription call(Observer<String> observer)
                 {
                     observer.onNext("one");
-                    observer.onError(new Exception("test failed"));
+                    observer.onError(new Throwable("test failed"));
                     return Subscriptions.empty();
                 }
             });
@@ -220,7 +220,7 @@ public final class OperationTake {
                 public Subscription call(Observer<String> observer)
                 {
                     subscribed.set(true);
-                    observer.onError(new Exception("test failed"));
+                    observer.onError(new Throwable("test failed"));
                     return new Subscription()
                     {
                         @Override
@@ -259,7 +259,7 @@ public final class OperationTake {
             // wait for the Observable to complete
             try {
                 w.t.join();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
                 fail(e.getMessage());
             }
@@ -298,7 +298,7 @@ public final class OperationTake {
                                 observer.onNext(s);
                             }
                             observer.onCompleted();
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             throw new RuntimeException(e);
                         }
                     }

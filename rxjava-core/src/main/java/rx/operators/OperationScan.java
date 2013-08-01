@@ -101,7 +101,7 @@ public final class OperationScan {
                 }
                 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     observer.onError(e);
                 }
 
@@ -156,13 +156,13 @@ public final class OperationScan {
             try {
                 acc = accumulatorFunction.call(acc, value);
                 observer.onNext(acc);
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 observer.onError(ex);
             }
         }
         
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             observer.onError(e);
         }
         
@@ -196,14 +196,14 @@ public final class OperationScan {
             }));
             m.subscribe(observer);
 
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
             verify(observer, times(1)).onNext("");
             verify(observer, times(1)).onNext("1");
             verify(observer, times(1)).onNext("12");
             verify(observer, times(1)).onNext("123");
             verify(observer, times(4)).onNext(anyString());
             verify(observer, times(1)).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
         }
 
         @Test
@@ -223,14 +223,14 @@ public final class OperationScan {
             }));
             m.subscribe(Observer);
 
-            verify(Observer, never()).onError(any(Exception.class));
+            verify(Observer, never()).onError(any(Throwable.class));
             verify(Observer, never()).onNext(0);
             verify(Observer, times(1)).onNext(1);
             verify(Observer, times(1)).onNext(3);
             verify(Observer, times(1)).onNext(6);
             verify(Observer, times(3)).onNext(anyInt());
             verify(Observer, times(1)).onCompleted();
-            verify(Observer, never()).onError(any(Exception.class));
+            verify(Observer, never()).onError(any(Throwable.class));
         }
 
         @Test
@@ -250,12 +250,12 @@ public final class OperationScan {
             }));
             m.subscribe(Observer);
 
-            verify(Observer, never()).onError(any(Exception.class));
+            verify(Observer, never()).onError(any(Throwable.class));
             verify(Observer, never()).onNext(0);
             verify(Observer, times(1)).onNext(1);
             verify(Observer, times(1)).onNext(anyInt());
             verify(Observer, times(1)).onCompleted();
-            verify(Observer, never()).onError(any(Exception.class));
+            verify(Observer, never()).onError(any(Throwable.class));
         }
     }
 

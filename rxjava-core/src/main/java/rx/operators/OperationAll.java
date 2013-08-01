@@ -61,7 +61,7 @@ public class OperationAll {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 underlying.onError(e);
             }
 
@@ -139,7 +139,7 @@ public class OperationAll {
         @Test
         @SuppressWarnings("unchecked")
         public void testError() {
-            Exception error = new Exception();
+            Throwable error = new Throwable();
             Observable<String> obs = Observable.error(error);
 
             Observer<Boolean> observer = mock(Observer.class);

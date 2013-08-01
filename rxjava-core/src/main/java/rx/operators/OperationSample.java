@@ -83,7 +83,7 @@ public final class OperationSample {
                 public void onCompleted() { /* the clock never completes */ }
                 
                 @Override
-                public void onError(Exception e) { /* the clock has no errors */ }
+                public void onError(Throwable e) { /* the clock has no errors */ }
                 
                 @Override
                 public void onNext(Long tick) {
@@ -101,7 +101,7 @@ public final class OperationSample {
                 }
         
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     clockSubscription.unsubscribe();
                     observer.onError(e);
                 }
@@ -170,31 +170,31 @@ public final class OperationSample {
             scheduler.advanceTimeTo(800L, TimeUnit.MILLISECONDS);
             verify(observer, never()).onNext(any(Long.class));
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
             
             scheduler.advanceTimeTo(1200L, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext(1L);
             verify(observer, never()).onNext(2L);
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             scheduler.advanceTimeTo(1600L, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext(1L);
             verify(observer, never()).onNext(2L);
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
             
             scheduler.advanceTimeTo(2000L, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, never()).onNext(1L);
             inOrder.verify(observer, times(1)).onNext(2L);
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
             
             scheduler.advanceTimeTo(3000L, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, never()).onNext(1L);
             inOrder.verify(observer, times(2)).onNext(2L);
             verify(observer, times(1)).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
         }
     }
 }

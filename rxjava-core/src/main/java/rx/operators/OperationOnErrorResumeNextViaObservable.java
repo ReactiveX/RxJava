@@ -81,7 +81,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                 /**
                  * Instead of passing the onError forward, we intercept and "resume" with the resumeSequence.
                  */
-                public void onError(Exception ex) {
+                public void onError(Throwable ex) {
                     /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
                     SafeObservableSubscription currentSubscription = subscriptionRef.get();
                     // check that we have not been unsubscribed and not already resumed before we can process the error
@@ -136,7 +136,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                 fail(e.getMessage());
             }
 
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, Mockito.never()).onNext("two");
@@ -176,7 +176,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                 fail(e.getMessage());
             }
 
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, Mockito.never()).onNext("two");
@@ -213,7 +213,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                             }
                             System.out.println("TestObservable onCompleted");
                             observer.onCompleted();
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             System.out.println("TestObservable onError: " + e);
                             observer.onError(e);
                         }

@@ -205,14 +205,14 @@ public class Observable<T> {
         } catch (OnErrorNotImplementedException e) {
             // special handling when onError is not implemented ... we just rethrow
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
                 observer.onError(hook.onSubscribeError(this, e));
             } catch (OnErrorNotImplementedException e2) {
                 // special handling when onError is not implemented ... we just rethrow
                 throw e2;
-            } catch (Exception e2) {
+            } catch (Throwable e2) {
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
@@ -295,7 +295,7 @@ public class Observable<T> {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 handleError(e);
                 Object onError = callbacks.get("onError");
                 if (onError != null) {
@@ -344,7 +344,7 @@ public class Observable<T> {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 handleError(e);
                 throw new OnErrorNotImplementedException(e);
             }
@@ -379,7 +379,7 @@ public class Observable<T> {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 handleError(e);
                 throw new OnErrorNotImplementedException(e);
             }
@@ -421,7 +421,7 @@ public class Observable<T> {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 handleError(e);
                 Functions.from(onError).call(e);
             }
@@ -438,7 +438,7 @@ public class Observable<T> {
         return subscribeOn(scheduler).subscribe(onNext, onError);
     }
 
-    public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError) {
+    public Subscription subscribe(final Action1<T> onNext, final Action1<Throwable> onError) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -459,7 +459,7 @@ public class Observable<T> {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 handleError(e);
                 onError.call(e);
             }
@@ -472,7 +472,7 @@ public class Observable<T> {
         });
     }
 
-    public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError, Scheduler scheduler) {
+    public Subscription subscribe(final Action1<T> onNext, final Action1<Throwable> onError, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError);
     }
 
@@ -504,7 +504,7 @@ public class Observable<T> {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 handleError(e);
                 Functions.from(onError).call(e);
             }
@@ -521,7 +521,7 @@ public class Observable<T> {
         return subscribeOn(scheduler).subscribe(onNext, onError, onComplete);
     }
 
-    public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError, final Action0 onComplete) {
+    public Subscription subscribe(final Action1<T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -545,7 +545,7 @@ public class Observable<T> {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 handleError(e);
                 onError.call(e);
             }
@@ -558,7 +558,7 @@ public class Observable<T> {
         });
     }
 
-    public Subscription subscribe(final Action1<T> onNext, final Action1<Exception> onError, final Action0 onComplete, Scheduler scheduler) {
+    public Subscription subscribe(final Action1<T> onNext, final Action1<Throwable> onError, final Action0 onComplete, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError, onComplete);
     }
 
@@ -583,7 +583,7 @@ public class Observable<T> {
      *
      * @param e
      */
-    private void handleError(Exception e) {
+    private void handleError(Throwable e) {
         // onError should be rare so we'll only fetch when needed
         RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
     }
@@ -618,7 +618,7 @@ public class Observable<T> {
      */
     private static class ThrowObservable<T> extends Observable<T> {
 
-        public ThrowObservable(final Exception exception) {
+        public ThrowObservable(final Throwable exception) {
             super(new Func1<Observer<T>, Subscription>() {
 
                 /**
@@ -956,7 +956,7 @@ public class Observable<T> {
      * @return an Observable that invokes the {@link Observer}'s
      *         {@link Observer#onError onError} method when the Observer subscribes to it
      */
-    public static <T> Observable<T> error(Exception exception) {
+    public static <T> Observable<T> error(Throwable exception) {
         return new ThrowObservable<T>(exception);
     }
 
@@ -1767,7 +1767,7 @@ public class Observable<T> {
      *            encounters an error
      * @return an Observable, identical to the source Observable with its behavior modified as described
      */
-    public static <T> Observable<T> onErrorResumeNext(final Observable<T> that, final Func1<Exception, Observable<T>> resumeFunction) {
+    public static <T> Observable<T> onErrorResumeNext(final Observable<T> that, final Func1<Throwable, Observable<T>> resumeFunction) {
         return create(OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(that, resumeFunction));
     }
 
@@ -1800,11 +1800,11 @@ public class Observable<T> {
     public static <T> Observable<T> onErrorResumeNext(final Observable<T> that, final Object resumeFunction) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(resumeFunction);
-        return onErrorResumeNext(that, new Func1<Exception, Observable<T>>() {
+        return onErrorResumeNext(that, new Func1<Throwable, Observable<T>>() {
 
             @SuppressWarnings("unchecked")
             @Override
-            public Observable<T> call(Exception e) {
+            public Observable<T> call(Throwable e) {
                 return (Observable<T>) _f.call(e);
             }
         });
@@ -1866,7 +1866,7 @@ public class Observable<T> {
      *            would otherwise cause it to invoke {@link Observer#onError onError}
      * @return an Observable, identical to the source Observable with its behavior modified as described
      */
-    public static <T> Observable<T> onErrorReturn(final Observable<T> that, Func1<Exception, T> resumeFunction) {
+    public static <T> Observable<T> onErrorReturn(final Observable<T> that, Func1<Throwable, T> resumeFunction) {
         return create(OperationOnErrorReturn.onErrorReturn(that, resumeFunction));
     }
 
@@ -3537,7 +3537,7 @@ public class Observable<T> {
      * @return an Observable that emits the items and notifications embedded in the
      *         {@link Notification} objects emitted by the source Observable
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">MSDN: Observable.dematerialize</a>
-     * @throws Exception
+     * @throws Throwable
      *             if the source Observable is not of type {@code Observable<Notification<T>>}.
      */
     @SuppressWarnings("unchecked")
@@ -3571,7 +3571,7 @@ public class Observable<T> {
      *            encounters an error
      * @return the original Observable, with appropriately modified behavior
      */
-    public Observable<T> onErrorResumeNext(final Func1<Exception, Observable<T>> resumeFunction) {
+    public Observable<T> onErrorResumeNext(final Func1<Throwable, Observable<T>> resumeFunction) {
         return onErrorResumeNext(this, resumeFunction);
     }
 
@@ -3601,11 +3601,11 @@ public class Observable<T> {
     public Observable<T> onErrorResumeNext(final Object resumeFunction) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(resumeFunction);
-        return onErrorResumeNext(this, new Func1<Exception, Observable<T>>() {
+        return onErrorResumeNext(this, new Func1<Throwable, Observable<T>>() {
 
             @Override
             @SuppressWarnings("unchecked")
-            public Observable<T> call(Exception e) {
+            public Observable<T> call(Throwable e) {
                 return (Observable<T>) _f.call(e);
             }
         });
@@ -3664,7 +3664,7 @@ public class Observable<T> {
      *            Observable encounters an error
      * @return the original Observable with appropriately modified behavior
      */
-    public Observable<T> onErrorReturn(Func1<Exception, T> resumeFunction) {
+    public Observable<T> onErrorReturn(Func1<Throwable, T> resumeFunction) {
         return onErrorReturn(this, resumeFunction);
     }
 
@@ -3694,11 +3694,11 @@ public class Observable<T> {
     public Observable<T> onErrorReturn(final Object resumeFunction) {
         @SuppressWarnings("rawtypes")
         final FuncN _f = Functions.from(resumeFunction);
-        return onErrorReturn(this, new Func1<Exception, T>() {
+        return onErrorReturn(this, new Func1<Throwable, T>() {
 
             @Override
             @SuppressWarnings("unchecked")
-            public T call(Exception e) {
+            public T call(Throwable e) {
                 return (T) _f.call(e);
             }
         });
@@ -4376,7 +4376,7 @@ public class Observable<T> {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, times(1)).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -4453,7 +4453,7 @@ public class Observable<T> {
 
             verify(observer, times(1)).onNext(1);
             verify(observer, times(1)).onCompleted();
-            verify(observer, times(0)).onError(any(Exception.class));
+            verify(observer, times(0)).onError(any(Throwable.class));
         }
 
         /**
@@ -4467,7 +4467,7 @@ public class Observable<T> {
         public void testCustomObservableWithErrorInObserverAsynchronous() throws InterruptedException {
             final CountDownLatch latch = new CountDownLatch(1);
             final AtomicInteger count = new AtomicInteger();
-            final AtomicReference<Exception> error = new AtomicReference<Exception>();
+            final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
             Observable.create(new Func1<Observer<String>, Subscription>() {
 
                 @Override
@@ -4499,7 +4499,7 @@ public class Observable<T> {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     error.set(e);
                     System.out.println("error");
                     e.printStackTrace();
@@ -4533,7 +4533,7 @@ public class Observable<T> {
         @Test
         public void testCustomObservableWithErrorInObserverSynchronous() {
             final AtomicInteger count = new AtomicInteger();
-            final AtomicReference<Exception> error = new AtomicReference<Exception>();
+            final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
             Observable.create(new Func1<Observer<String>, Subscription>() {
 
                 @Override
@@ -4553,7 +4553,7 @@ public class Observable<T> {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     error.set(e);
                     System.out.println("error");
                     e.printStackTrace();
@@ -4584,7 +4584,7 @@ public class Observable<T> {
         @Test
         public void testCustomObservableWithErrorInObservableSynchronous() {
             final AtomicInteger count = new AtomicInteger();
-            final AtomicReference<Exception> error = new AtomicReference<Exception>();
+            final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
             Observable.create(new Func1<Observer<String>, Subscription>() {
 
                 @Override
@@ -4601,7 +4601,7 @@ public class Observable<T> {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     error.set(e);
                     System.out.println("error");
                     e.printStackTrace();
@@ -4803,7 +4803,7 @@ public class Observable<T> {
 
                 });
                 fail("expected exception");
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 assertEquals("failure", e.getMessage());
             }
         }
@@ -4822,7 +4822,7 @@ public class Observable<T> {
         @Test
         public void testErrorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
             final CountDownLatch latch = new CountDownLatch(1);
-            final AtomicReference<Exception> exception = new AtomicReference<Exception>();
+            final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
             Observable.create(new Func1<Observer<String>, Subscription>() {
 
                 @Override
@@ -4833,7 +4833,7 @@ public class Observable<T> {
                         public void run() {
                             try {
                                 observer.onError(new RuntimeException("failure"));
-                            } catch (Exception e) {
+                            } catch (Throwable e) {
                                 // without an onError handler it has to just throw on whatever thread invokes it
                                 exception.set(e);
                             }
