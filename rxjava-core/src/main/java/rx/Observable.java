@@ -4895,7 +4895,7 @@ public class Observable<T> {
                         @Override
                         public void run() {
                             try {
-                                observer.onError(new RuntimeException("failure"));
+                                observer.onError(new Error("failure"));
                             } catch (Throwable e) {
                                 // without an onError handler it has to just throw on whatever thread invokes it
                                 exception.set(e);
