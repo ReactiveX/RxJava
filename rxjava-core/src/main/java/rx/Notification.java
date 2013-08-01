@@ -23,7 +23,7 @@ package rx;
 public class Notification<T> {
 
     private final Kind kind;
-    private final Throwable exception;
+    private final Throwable throwable;
     private final T value;
 
     /**
@@ -34,7 +34,7 @@ public class Notification<T> {
      */
     public Notification(T value) {
         this.value = value;
-        this.exception = null;
+        this.throwable = null;
         this.kind = Kind.OnNext;
     }
 
@@ -45,7 +45,7 @@ public class Notification<T> {
      *            The exception passed to the onError notification.
      */
     public Notification(Throwable exception) {
-        this.exception = exception;
+        this.throwable = exception;
         this.value = null;
         this.kind = Kind.OnError;
     }
@@ -54,7 +54,7 @@ public class Notification<T> {
      * A constructor used to represent an onCompleted notification.
      */
     public Notification() {
-        this.exception = null;
+        this.throwable = null;
         this.value = null;
         this.kind = Kind.OnCompleted;
     }
@@ -65,7 +65,7 @@ public class Notification<T> {
      * @return Throwable associated with an onError notification.
      */
     public Throwable getThrowable() {
-        return exception;
+        return throwable;
     }
 
     /**
@@ -92,7 +92,7 @@ public class Notification<T> {
      * @return a value indicating whether this notification has an exception.
      */
     public boolean hasException() {
-        return isOnError() && exception != null;
+        return isOnError() && throwable != null;
     }
 
     /**
