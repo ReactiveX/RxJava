@@ -158,7 +158,7 @@ public final class OperationTake {
         @Test
         public void testTake1() {
             Observable<String> w = Observable.from("one", "two", "three");
-            Observable<String> take = Observable.create(assertTrustedObservable(take(w, 2)));
+            Observable<String> take = Observable.create(take(w, 2));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -173,7 +173,7 @@ public final class OperationTake {
         @Test
         public void testTake2() {
             Observable<String> w = Observable.from("one", "two", "three");
-            Observable<String> take = Observable.create(assertTrustedObservable(take(w, 1)));
+            Observable<String> take = Observable.create(take(w, 1));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -197,7 +197,17 @@ public final class OperationTake {
                     return Subscriptions.empty();
                 }
             });
-            Observable.create(assertTrustedObservable(take(source, 1))).toBlockingObservable().last();
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+
+            Observable.create(take(source, 1)).subscribe(aObserver);
+
+            verify(aObserver, times(1)).onNext("one");
+            // even though onError is called we take(1) so shouldn't see it
+            verify(aObserver, never()).onError(any(Throwable.class));
+            verify(aObserver, times(1)).onCompleted();
+            verifyNoMoreInteractions(aObserver);
         }
 
         @Test
@@ -221,9 +231,19 @@ public final class OperationTake {
                     };
                 }
             });
-            Observable.create(assertTrustedObservable(take(source, 0))).toBlockingObservable().lastOrDefault("ok");
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+
+            Observable.create(take(source, 0)).subscribe(aObserver);
             assertTrue("source subscribed", subscribed.get());
             assertTrue("source unsubscribed", unSubscribed.get());
+
+            verify(aObserver, never()).onNext(anyString());
+            // even though onError is called we take(0) so shouldn't see it
+            verify(aObserver, never()).onError(any(Throwable.class));
+            verify(aObserver, times(1)).onCompleted();
+            verifyNoMoreInteractions(aObserver);
         }
 
         @Test
@@ -233,7 +253,7 @@ public final class OperationTake {
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
-            Observable<String> take = Observable.create(assertTrustedObservable(take(w, 1)));
+            Observable<String> take = Observable.create(take(w, 1));
             take.subscribe(aObserver);
 
             // wait for the Observable to complete
@@ -248,7 +268,9 @@ public final class OperationTake {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, never()).onNext("two");
             verify(aObserver, never()).onNext("three");
+            verify(aObserver, times(1)).onCompleted();
             verify(s, times(1)).unsubscribe();
+            verifyNoMoreInteractions(aObserver);
         }
 
         private static class TestObservable extends Observable<String> {
