@@ -113,7 +113,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
     }
 
     @Override
-    public void onError(Exception e) {
+    public void onError(Throwable e) {
         for (Observer<T> observer : observers.values()) {
             observer.onError(e);
         }
@@ -126,7 +126,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
 
     public static class UnitTest {
 
-        private final Exception testException = new Exception();
+        private final Throwable testException = new Throwable();
 
         @Test
         public void testNeverCompleted() {
@@ -169,7 +169,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
         private void assertCompletedObserver(Observer<String> aObserver)
         {
             verify(aObserver, times(1)).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -186,7 +186,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
             subject.onNext("three");
             subject.onError(testException);
             subject.onNext("four");
-            subject.onError(new Exception());
+            subject.onError(new Throwable());
             subject.onCompleted();
 
             assertErrorObserver(aObserver);
@@ -222,7 +222,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
         private void assertNoOnNextEventsReceived(Observer<String> aObserver)
         {
             verify(aObserver, Mockito.never()).onNext(anyString());
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, Mockito.never()).onCompleted();
         }
 
@@ -248,7 +248,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
                 @Override
                 public void call(AsyncSubject<Object> DefaultSubject)
                 {
-                    DefaultSubject.onError(new Exception());
+                    DefaultSubject.onError(new Throwable());
                 }
             },
             null);

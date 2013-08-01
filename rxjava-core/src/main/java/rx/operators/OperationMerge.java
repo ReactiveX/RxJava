@@ -202,7 +202,7 @@ public final class OperationMerge {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 actualObserver.onError(e);
             }
 
@@ -260,7 +260,7 @@ public final class OperationMerge {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 if (!stopped.get()) {
                     if (ourSubscription.stop()) {
                         // this thread 'won' the race to unsubscribe/stop so let's send the error
@@ -318,7 +318,7 @@ public final class OperationMerge {
             Observable<String> m = Observable.create(merge(observableOfObservables));
             m.subscribe(stringObserver);
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(1)).onCompleted();
             verify(stringObserver, times(2)).onNext("hello");
         }
@@ -332,7 +332,7 @@ public final class OperationMerge {
             Observable<String> m = Observable.create(merge(o1, o2));
             m.subscribe(stringObserver);
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(2)).onNext("hello");
             verify(stringObserver, times(1)).onCompleted();
         }
@@ -348,7 +348,7 @@ public final class OperationMerge {
             Observable<String> m = Observable.create(merge(listOfObservables));
             m.subscribe(stringObserver);
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(1)).onCompleted();
             verify(stringObserver, times(2)).onNext("hello");
         }
@@ -370,7 +370,7 @@ public final class OperationMerge {
             tA.sendOnCompleted();
             tB.sendOnCompleted();
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(1)).onNext("Aone");
             verify(stringObserver, times(1)).onNext("Bone");
             assertTrue(tA.unsubscribed);
@@ -396,13 +396,13 @@ public final class OperationMerge {
                 throw new RuntimeException(e);
             }
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(2)).onNext("hello");
             verify(stringObserver, times(1)).onCompleted();
         }
 
         @Test
-        public void testSynchronizationOfMultipleSequences() throws Exception {
+        public void testSynchronizationOfMultipleSequences() throws Throwable {
             final TestASynchronousObservable o1 = new TestASynchronousObservable();
             final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
@@ -422,7 +422,7 @@ public final class OperationMerge {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     throw new RuntimeException("failed", e);
                 }
 
@@ -604,7 +604,7 @@ public final class OperationMerge {
 
             /* used to simulate subscription */
             @SuppressWarnings("unused")
-            public void sendOnError(Exception e) {
+            public void sendOnError(Throwable e) {
                 observer.onError(e);
             }
 

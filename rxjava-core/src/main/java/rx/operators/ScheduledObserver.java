@@ -41,7 +41,7 @@ import rx.util.functions.Action0;
     }
 
     @Override
-    public void onError(final Exception e) {
+    public void onError(final Throwable e) {
         enqueue(new Notification<T>(e));
     }
 
@@ -73,7 +73,7 @@ import rx.util.functions.Action0;
                     underlying.onNext(not.getValue());
                     break;
                 case OnError:
-                    underlying.onError(not.getException());
+                    underlying.onError(not.getThrowable());
                     break;
                 case OnCompleted:
                     underlying.onCompleted();

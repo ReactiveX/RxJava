@@ -68,8 +68,8 @@ public final class OperationMostRecent {
 
         @Override
         public T next() {
-            if (observer.getException() != null) {
-                throw Exceptions.propagate(observer.getException());
+            if (observer.getThrowable() != null) {
+                throw Exceptions.propagate(observer.getThrowable());
             }
             return observer.getRecentValue();
         }
@@ -83,7 +83,7 @@ public final class OperationMostRecent {
     private static class MostRecentObserver<T> implements Observer<T> {
         private final AtomicBoolean completed = new AtomicBoolean(false);
         private final AtomicReference<T> value;
-        private final AtomicReference<Exception> exception = new AtomicReference<Exception>();
+        private final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
 
         private MostRecentObserver(T value) {
             this.value = new AtomicReference<T>(value);
@@ -95,7 +95,7 @@ public final class OperationMostRecent {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             exception.set(e);
         }
 
@@ -104,15 +104,15 @@ public final class OperationMostRecent {
             value.set(args);
         }
 
-        public boolean isCompleted() {
+        private boolean isCompleted() {
             return completed.get();
         }
 
-        public Exception getException() {
+        private Throwable getThrowable() {
             return exception.get();
         }
 
-        public T getRecentValue() {
+        private T getRecentValue() {
             return value.get();
         }
 
@@ -182,7 +182,7 @@ public final class OperationMostRecent {
             }
 
             /* used to simulate subscription */
-            public void sendOnError(Exception e) {
+            public void sendOnError(Throwable e) {
                 observer.onError(e);
             }
 

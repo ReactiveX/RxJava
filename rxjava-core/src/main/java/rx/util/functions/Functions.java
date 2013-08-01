@@ -52,7 +52,7 @@ public class Functions {
         } catch (ClassNotFoundException e) {
             System.err.println("RxJava => Could not find function language adaptor: " + name + " with path: " + className);
             return false;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             System.err.println("RxJava => Failed trying to initialize function language adaptor: " + className);
             e.printStackTrace();
             return false;

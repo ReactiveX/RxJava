@@ -92,7 +92,7 @@ public final class OperationToObservableSortedList<T> {
                     list.add(value);
                 }
 
-                public void onError(Exception ex) {
+                public void onError(Throwable ex) {
                     observer.onError(ex);
                 }
 
@@ -116,7 +116,7 @@ public final class OperationToObservableSortedList<T> {
 
                         observer.onNext(Collections.unmodifiableList(l));
                         observer.onCompleted();
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         onError(e);
                     }
 
@@ -154,7 +154,7 @@ public final class OperationToObservableSortedList<T> {
             Observer<List<Integer>> aObserver = mock(Observer.class);
             observable.subscribe(aObserver);
             verify(aObserver, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -174,7 +174,7 @@ public final class OperationToObservableSortedList<T> {
             Observer<List<Integer>> aObserver = mock(Observer.class);
             observable.subscribe(aObserver);
             verify(aObserver, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 

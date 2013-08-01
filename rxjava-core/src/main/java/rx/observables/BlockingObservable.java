@@ -415,7 +415,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * NOTE: This will block even if the Observable is asynchronous.
      * <p>
      * This is similar to {@link #subscribe(Observer)}, but it blocks. Because it blocks it does
-     * not need the {@link Observer#onCompleted()} or {@link Observer#onError(Exception)} methods.
+     * not need the {@link Observer#onCompleted()} or {@link Observer#onError(Throwable)} methods.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
      * 
@@ -426,7 +426,7 @@ public class BlockingObservable<T> extends Observable<T> {
      */
     public void forEach(final Action1<T> onNext) {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Exception> exceptionFromOnError = new AtomicReference<Exception>();
+        final AtomicReference<Throwable> exceptionFromOnError = new AtomicReference<Throwable>();
 
         /**
          * Wrapping since raw functions provided by the user are being invoked.
@@ -440,7 +440,7 @@ public class BlockingObservable<T> extends Observable<T> {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 /*
                  * If we receive an onError event we set the reference on the outer thread
                  * so we can git it and throw after the latch.await().
@@ -483,7 +483,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * NOTE: This will block even if the Observable is asynchronous.
      * <p>
      * This is similar to {@link #subscribe(Observer)}, but it blocks. Because it blocks it does
-     * not need the {@link Observer#onCompleted()} or {@link Observer#onError(Exception)} methods.
+     * not need the {@link Observer#onCompleted()} or {@link Observer#onError(Throwable)} methods.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
      * 
@@ -1026,7 +1026,7 @@ public class BlockingObservable<T> extends Observable<T> {
                     }
                 });
                 fail("we expect an exception to be thrown");
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 // do nothing as we expect this
             }
         }

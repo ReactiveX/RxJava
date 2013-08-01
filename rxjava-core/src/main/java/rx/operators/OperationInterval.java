@@ -106,7 +106,7 @@ public final class OperationInterval {
             
             verify(observer, never()).onNext(0L);
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
             
             scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
 
@@ -115,13 +115,13 @@ public final class OperationInterval {
             inOrder.verify(observer, times(1)).onNext(1L);
             inOrder.verify(observer, never()).onNext(2L);
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
             
             sub.unsubscribe();
             scheduler.advanceTimeTo(4, TimeUnit.SECONDS);
             verify(observer, never()).onNext(2L);
             verify(observer, times(1)).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
         }
     }
 }

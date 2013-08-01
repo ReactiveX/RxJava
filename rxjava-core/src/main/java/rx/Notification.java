@@ -23,7 +23,7 @@ package rx;
 public class Notification<T> {
 
     private final Kind kind;
-    private final Exception exception;
+    private final Throwable throwable;
     private final T value;
 
     /**
@@ -34,7 +34,7 @@ public class Notification<T> {
      */
     public Notification(T value) {
         this.value = value;
-        this.exception = null;
+        this.throwable = null;
         this.kind = Kind.OnNext;
     }
 
@@ -44,8 +44,8 @@ public class Notification<T> {
      * @param exception
      *            The exception passed to the onError notification.
      */
-    public Notification(Exception exception) {
-        this.exception = exception;
+    public Notification(Throwable exception) {
+        this.throwable = exception;
         this.value = null;
         this.kind = Kind.OnError;
     }
@@ -54,7 +54,7 @@ public class Notification<T> {
      * A constructor used to represent an onCompleted notification.
      */
     public Notification() {
-        this.exception = null;
+        this.throwable = null;
         this.value = null;
         this.kind = Kind.OnCompleted;
     }
@@ -62,10 +62,10 @@ public class Notification<T> {
     /**
      * Retrieves the exception associated with an onError notification.
      * 
-     * @return The exception associated with an onError notification.
+     * @return Throwable associated with an onError notification.
      */
-    public Exception getException() {
-        return exception;
+    public Throwable getThrowable() {
+        return throwable;
     }
 
     /**
@@ -91,8 +91,8 @@ public class Notification<T> {
      * 
      * @return a value indicating whether this notification has an exception.
      */
-    public boolean hasException() {
-        return isOnError() && exception != null;
+    public boolean hasThrowable() {
+        return isOnError() && throwable != null;
     }
 
     /**
@@ -125,8 +125,8 @@ public class Notification<T> {
         StringBuilder str = new StringBuilder("[").append(super.toString()).append(" ").append(getKind());
         if (hasValue())
             str.append(" ").append(getValue());
-        if (hasException())
-            str.append(" ").append(getException().getMessage());
+        if (hasThrowable())
+            str.append(" ").append(getThrowable().getMessage());
         str.append("]");
         return str.toString();
     }
@@ -136,8 +136,8 @@ public class Notification<T> {
         int hash = getKind().hashCode();
         if (hasValue())
             hash = hash * 31 + getValue().hashCode();
-        if (hasException())
-            hash = hash * 31 + getException().hashCode();
+        if (hasThrowable())
+            hash = hash * 31 + getThrowable().hashCode();
         return hash;
     }
 
@@ -154,7 +154,7 @@ public class Notification<T> {
             return false;
         if (hasValue() && !getValue().equals(notification.getValue()))
             return false;
-        if (hasException() && !getException().equals(notification.getException()))
+        if (hasThrowable() && !getThrowable().equals(notification.getThrowable()))
             return false;
         return true;
     }

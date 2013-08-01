@@ -89,7 +89,7 @@ public final class OperationConcat {
                     observer.onNext(item);
                 }
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     if (completedOrErred.compareAndSet(false, true)) {
                         outerSubscription.unsubscribe();
                         observer.onError(e);
@@ -131,7 +131,7 @@ public final class OperationConcat {
                     }
                 }
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     if (completedOrErred.compareAndSet(false, true)) {
                         if (innerSubscription != null) {
                             innerSubscription.unsubscribe();
@@ -258,7 +258,7 @@ public final class OperationConcat {
                 // wait for async observables to complete
                 o1.t.join();
                 o2.t.join();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new RuntimeException("failed waiting on threads");
             }
 
@@ -276,7 +276,7 @@ public final class OperationConcat {
          */
         @SuppressWarnings("unchecked")
         @Test
-        public void testNestedAsyncConcat() throws Exception {
+        public void testNestedAsyncConcat() throws Throwable {
             Observer<String> observer = mock(Observer.class);
 
             final TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
@@ -317,7 +317,7 @@ public final class OperationConcat {
                                             observer.onNext(o3);
                                         }
 
-                                    } catch (Exception e) {
+                                    } catch (Throwable e) {
                                         observer.onError(e);
                                     } finally {
                                         System.out.println("Done parent Observable");
@@ -349,7 +349,7 @@ public final class OperationConcat {
                 }
                 System.out.println("Thread2 started ... waiting for it to complete ...");
                 o2.t.join();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new RuntimeException("failed waiting on threads", e);
             }
 
@@ -366,7 +366,7 @@ public final class OperationConcat {
             inOrder.verify(observer, never()).onNext("nine");
             // we should not be completed yet
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             // now allow the third
             allowThird.countDown();
@@ -377,7 +377,7 @@ public final class OperationConcat {
                 }
                 // wait for 3rd to complete
                 o3.t.join();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new RuntimeException("failed waiting on threads", e);
             }
 
@@ -386,7 +386,7 @@ public final class OperationConcat {
             inOrder.verify(observer, times(1)).onNext("nine");
 
             inOrder.verify(observer, times(1)).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
         }
 
         @SuppressWarnings("unchecked")
@@ -407,7 +407,7 @@ public final class OperationConcat {
             try {
                 //Block main thread to allow observables to serve up o1.
                 callOnce.await();
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 ex.printStackTrace();
                 fail(ex.getMessage());
             }
@@ -421,7 +421,7 @@ public final class OperationConcat {
                 // unblock observables so it can serve up o2 and complete
                 okToContinue.countDown();
                 observableOfObservables.t.join();
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 ex.printStackTrace();
                 fail(ex.getMessage());
             }
@@ -463,7 +463,7 @@ public final class OperationConcat {
             inOrder.verify(aObserver, times(1)).onNext("three");
             inOrder.verify(aObserver, times(47)).onNext("hello");
             verify(aObserver, times(1)).onCompleted();
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             
  		}
         
@@ -558,7 +558,7 @@ public final class OperationConcat {
                 okToContinue.countDown();
                 w1.t.join();
                 w2.t.join();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
                 fail(e.getMessage());
             }
@@ -604,7 +604,7 @@ public final class OperationConcat {
                 okToContinue.countDown();
                 w1.t.join();   
                 w2.t.join();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
                 fail(e.getMessage());
             }
@@ -617,7 +617,7 @@ public final class OperationConcat {
             inOrder.verify(aObserver, never()).onNext("five");
             inOrder.verify(aObserver, never()).onNext("six");
             verify(aObserver, never()).onCompleted();
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
         }
         
         private static class TestObservable<T> extends Observable<T> {

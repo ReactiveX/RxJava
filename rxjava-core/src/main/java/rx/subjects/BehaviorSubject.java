@@ -115,7 +115,7 @@ public class BehaviorSubject<T> extends Subject<T, T> {
     }
 
     @Override
-    public void onError(Exception e) {
+    public void onError(Throwable e) {
         for (Observer<T> observer : observers.values()) {
             observer.onError(e);
         }
@@ -131,7 +131,7 @@ public class BehaviorSubject<T> extends Subject<T, T> {
 
     public static class UnitTest {
 
-        private final Exception testException = new Exception();
+        private final Throwable testException = new Throwable();
 
         @Test
         public void testThatObserverReceivesDefaultValueIfNothingWasPublished() {
@@ -200,7 +200,7 @@ public class BehaviorSubject<T> extends Subject<T, T> {
         {
             verify(aObserver, times(1)).onNext("default");
             verify(aObserver, times(1)).onNext("one");
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -249,7 +249,7 @@ public class BehaviorSubject<T> extends Subject<T, T> {
                 @Override
                 public void call(BehaviorSubject<String> DefaultSubject)
                 {
-                    DefaultSubject.onError(new Exception());
+                    DefaultSubject.onError(new Throwable());
                 }
             }, new Action1<BehaviorSubject<String>>()
             {

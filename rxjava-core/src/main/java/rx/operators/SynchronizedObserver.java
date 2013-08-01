@@ -89,7 +89,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
         }
     }
 
-    public void onError(Exception e) {
+    public void onError(Throwable e) {
         if (finished || subscription.isUnsubscribed()) {
             // another thread has already finished us, so we won't proceed
             return;
@@ -145,7 +145,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, times(1)).onNext("three");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
             // non-deterministic because unsubscribe happens after 'waitToFinish' releases
             // so commenting out for now as this is not a critical thing to test here
@@ -284,7 +284,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
                 @SuppressWarnings("unused")
                 int numNextEvents = tw.assertEvents(null); // no check of type since we don't want to test barging results here, just interleaving behavior
                 // System.out.println("Number of events executed: " + numNextEvents);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 fail("Concurrency test failed: " + e.getMessage());
                 e.printStackTrace();
             } finally {
@@ -301,7 +301,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             for (Future<?> f : futures) {
                 try {
                     f.get(10, TimeUnit.SECONDS);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     System.err.println("Failed while waiting on future.");
                     e.printStackTrace();
                 }
@@ -351,7 +351,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
                     for (Future<?> f : waitOnThese) {
                         try {
                             f.get();
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             System.err.println("Error while waiting on future in CompletionThread");
                         }
                     }
@@ -394,7 +394,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 events.add(TestConcurrencyObserverEvent.onError);
             }
 
@@ -489,7 +489,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
                                 observer.onNext(s);
                             }
                             observer.onCompleted();
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             throw new RuntimeException(e);
                         }
                     }
@@ -559,7 +559,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
                                             if (concurrentThreads > maxThreads) {
                                                 maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
                                             }
-                                        } catch (Exception e) {
+                                        } catch (Throwable e) {
                                             observer.onError(e);
                                         } finally {
                                             threadsRunning.decrementAndGet();
@@ -569,7 +569,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
                             }
                             // we are done spawning threads
                             threadPool.shutdown();
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             throw new RuntimeException(e);
                         }
 
@@ -612,7 +612,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 System.out.println(">>> BusyObserver received onError: " + e.getMessage());
                 onError = true;
             }

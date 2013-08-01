@@ -50,7 +50,7 @@ public class OperationToObservableFuture {
                     observer.onNext(value);
                 }
                 observer.onCompleted();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 observer.onError(e);
             }
 

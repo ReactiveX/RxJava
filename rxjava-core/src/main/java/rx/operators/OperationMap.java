@@ -125,7 +125,7 @@ public final class OperationMap {
             observer.onNext(func.call(value));
         }
 
-        public void onError(Exception ex) {
+        public void onError(Throwable ex) {
             observer.onError(ex);
         }
 
@@ -160,7 +160,7 @@ public final class OperationMap {
             }));
             m.subscribe(stringObserver);
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(1)).onNext("OneFirst");
             verify(stringObserver, times(1)).onNext("TwoFirst");
             verify(stringObserver, times(1)).onCompleted();
@@ -202,7 +202,7 @@ public final class OperationMap {
             }));
             m.subscribe(stringObserver);
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(1)).onNext("OneFirst");
             verify(stringObserver, times(1)).onNext("TwoFirst");
             verify(stringObserver, times(1)).onNext("ThreeFirst");
@@ -241,7 +241,7 @@ public final class OperationMap {
             }));
             m.subscribe(stringObserver);
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(1)).onNext("OneFirst");
             verify(stringObserver, times(1)).onNext("TwoFirst");
             verify(stringObserver, times(1)).onNext("ThreeFirst");
@@ -277,7 +277,7 @@ public final class OperationMap {
             verify(stringObserver, never()).onNext("two");
             verify(stringObserver, never()).onNext("three");
             verify(stringObserver, never()).onCompleted();
-            verify(stringObserver, times(1)).onError(any(Exception.class));
+            verify(stringObserver, times(1)).onError(any(Throwable.class));
 
             // we should have only returned 1 value: "one"
             assertEquals(1, c1.get());

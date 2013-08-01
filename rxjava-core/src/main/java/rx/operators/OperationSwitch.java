@@ -93,7 +93,7 @@ public final class OperationSwitch {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             unsubscribeFromSubSequence();
             observer.onError(e);
         }
@@ -109,7 +109,7 @@ public final class OperationSwitch {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     parent.unsubscribe();
                     observer.onError(e);
                 }
@@ -178,27 +178,27 @@ public final class OperationSwitch {
             scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, never()).onNext(anyString());
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext("one");
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             scheduler.advanceTimeTo(175, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext("two");
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             scheduler.advanceTimeTo(225, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext("three");
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             scheduler.advanceTimeTo(350, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, never()).onNext(anyString());
             verify(observer, times(1)).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
         }
 
         @Test
@@ -238,22 +238,22 @@ public final class OperationSwitch {
             scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, never()).onNext(anyString());
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext("one");
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             scheduler.advanceTimeTo(175, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext("two");
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             scheduler.advanceTimeTo(225, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext("three");
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             scheduler.advanceTimeTo(350, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, never()).onNext(anyString());
@@ -303,17 +303,17 @@ public final class OperationSwitch {
             scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, never()).onNext(anyString());
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext("one");
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext("three");
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
         }
 
         @Test
@@ -358,12 +358,12 @@ public final class OperationSwitch {
             scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, never()).onNext(anyString());
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext("one");
             verify(observer, never()).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
 
             scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, never()).onNext("three");
@@ -380,7 +380,7 @@ public final class OperationSwitch {
             }, delay, TimeUnit.MILLISECONDS);
         }
 
-        private <T> void publishError(final Observer<T> observer, long delay, final Exception error) {
+        private <T> void publishError(final Observer<T> observer, long delay, final Throwable error) {
             scheduler.schedule(new Action0() {
                 @Override
                 public void call() {
@@ -399,7 +399,7 @@ public final class OperationSwitch {
         }
 
         @SuppressWarnings("serial")
-        private class TestException extends Exception {
+        private class TestException extends Throwable {
         }
     }
 }
