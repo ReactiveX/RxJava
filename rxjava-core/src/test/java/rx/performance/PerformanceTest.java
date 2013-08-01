@@ -231,7 +231,7 @@ public class PerformanceTest {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             e.printStackTrace();
         }
 
@@ -260,7 +260,7 @@ public class PerformanceTest {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             e.printStackTrace();
         }
 

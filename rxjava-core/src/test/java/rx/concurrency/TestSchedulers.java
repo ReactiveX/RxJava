@@ -330,7 +330,7 @@ public class TestSchedulers {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 System.out.println("Error");
             }
 
@@ -491,7 +491,7 @@ public class TestSchedulers {
     private static class ConcurrentObserverValidator<T> implements Observer<T> {
 
         final AtomicInteger concurrentCounter = new AtomicInteger();
-        final AtomicReference<Exception> error = new AtomicReference<Exception>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         final CountDownLatch completed = new CountDownLatch(1);
 
         @Override
@@ -500,7 +500,7 @@ public class TestSchedulers {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             completed.countDown();
             error.set(e);
         }

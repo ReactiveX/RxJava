@@ -117,7 +117,7 @@ public class PublishSubject<T> extends Subject<T, T> {
                     if (n.isOnCompleted()) {
                         observer.onCompleted();
                     } else {
-                        observer.onError(n.getException());
+                        observer.onError(n.getThrowable());
                     }
                     return Subscriptions.empty();
                 } else {
@@ -155,7 +155,7 @@ public class PublishSubject<T> extends Subject<T, T> {
     }
 
     @Override
-    public void onError(Exception e) {
+    public void onError(Throwable e) {
         /**
          * Synchronizing despite terminalState being an AtomicReference because of multi-step logic in subscription.
          * Why use AtomicReference then? Convenient for passing around a mutable reference holder between the
@@ -241,7 +241,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             sub.unsubscribe();
         }
 
-        private final Exception testException = new Exception();
+        private final Throwable testException = new Throwable();
 
         @Test
         public void testCompleted() {
@@ -262,7 +262,7 @@ public class PublishSubject<T> extends Subject<T, T> {
 
             subject.onNext("four");
             subject.onCompleted();
-            subject.onError(new Exception());
+            subject.onError(new Throwable());
 
             assertCompletedObserver(aObserver);
             // todo bug?            assertNeverObserver(anotherObserver);
@@ -273,14 +273,14 @@ public class PublishSubject<T> extends Subject<T, T> {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, times(1)).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
         private void assertNeverObserver(Observer<String> aObserver)
         {
             verify(aObserver, Mockito.never()).onNext(any(String.class));
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, Mockito.never()).onCompleted();
         }
 
@@ -302,7 +302,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             subject.subscribe(anotherObserver);
 
             subject.onNext("four");
-            subject.onError(new Exception());
+            subject.onError(new Throwable());
             subject.onCompleted();
 
             assertErrorObserver(aObserver);
@@ -347,7 +347,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             verify(aObserver, Mockito.never()).onNext("one");
             verify(aObserver, Mockito.never()).onNext("two");
             verify(aObserver, times(1)).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -381,7 +381,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, Mockito.never()).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, Mockito.never()).onCompleted();
         }
 
@@ -411,7 +411,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             inOrder.verify(anObserver, times(1)).onNext("one");
             inOrder.verify(anObserver, times(1)).onNext("two");
             inOrder.verify(anObserver, times(1)).onCompleted();
-            inOrder.verify(anObserver, Mockito.never()).onError(any(Exception.class));
+            inOrder.verify(anObserver, Mockito.never()).onError(any(Throwable.class));
 
             @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
@@ -421,7 +421,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             inOrder.verify(anotherObserver, Mockito.never()).onNext("one");
             inOrder.verify(anotherObserver, Mockito.never()).onNext("two");
             inOrder.verify(anotherObserver, times(1)).onCompleted();
-            inOrder.verify(anotherObserver, Mockito.never()).onError(any(Exception.class));
+            inOrder.verify(anotherObserver, Mockito.never()).onError(any(Throwable.class));
         }
 
         @Test
@@ -476,7 +476,7 @@ public class PublishSubject<T> extends Subject<T, T> {
                 @Override
                 public void call(PublishSubject<Object> DefaultSubject)
                 {
-                    DefaultSubject.onError(new Exception());
+                    DefaultSubject.onError(new Throwable());
                 }
             }, new Action1<PublishSubject<Object>>()
             {

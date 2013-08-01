@@ -21,8 +21,18 @@ public class Exceptions {
     }
 
     public static RuntimeException propagate(Throwable t) {
+        /**
+         * The return type of RuntimeException is a trick for code to be like this:
+         * 
+         * throw Exceptions.propagate(e);
+         * 
+         * Even though nothing will return and throw via that 'throw', it allows the code to look like it
+         * so it's easy to read and understand that it will always result in a throw.
+         */
         if (t instanceof RuntimeException) {
             throw (RuntimeException) t;
+        } else if (t instanceof Error) {
+            throw (Error) t;
         } else {
             throw new RuntimeException(t);
         }

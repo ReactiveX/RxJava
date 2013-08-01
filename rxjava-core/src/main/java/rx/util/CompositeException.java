@@ -29,17 +29,17 @@ public class CompositeException extends RuntimeException {
 
     private static final long serialVersionUID = 3026362227162912146L;
 
-    private final List<Exception> exceptions;
+    private final List<Throwable> exceptions;
     private final String message;
 
-    public CompositeException(String messagePrefix, Collection<Exception> errors) {
+    public CompositeException(String messagePrefix, Collection<Throwable> errors) {
         StringBuilder _message = new StringBuilder();
         if (messagePrefix != null) {
             _message.append(messagePrefix).append(" => ");
         }
 
-        List<Exception> _exceptions = new ArrayList<Exception>();
-        for (Exception e : errors) {
+        List<Throwable> _exceptions = new ArrayList<Throwable>();
+        for (Throwable e : errors) {
             _exceptions.add(e);
             if (_message.length() > 0) {
                 _message.append(", ");
@@ -50,11 +50,11 @@ public class CompositeException extends RuntimeException {
         this.message = _message.toString();
     }
 
-    public CompositeException(Collection<Exception> errors) {
+    public CompositeException(Collection<Throwable> errors) {
         this(null, errors);
     }
 
-    public List<Exception> getExceptions() {
+    public List<Throwable> getExceptions() {
         return exceptions;
     }
 

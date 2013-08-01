@@ -41,7 +41,7 @@ public class OperationToFuture {
 
         final CountDownLatch finished = new CountDownLatch(1);
         final AtomicReference<T> value = new AtomicReference<T>();
-        final AtomicReference<Exception> error = new AtomicReference<Exception>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
         final Subscription s = that.subscribe(new Observer<T>() {
 
@@ -51,7 +51,7 @@ public class OperationToFuture {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 error.compareAndSet(null, e);
                 finished.countDown();
             }
@@ -161,7 +161,7 @@ public class OperationToFuture {
         try {
             f.get();
             fail("expected exception");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             assertEquals(TestException.class, e.getCause().getClass());
         }
     }

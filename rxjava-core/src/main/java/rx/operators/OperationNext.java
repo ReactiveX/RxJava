@@ -109,7 +109,7 @@ public final class OperationNext {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             // ignore
         }
 
@@ -142,7 +142,7 @@ public final class OperationNext {
 
             if (lastItem.isOnError()) {
                 if (rethrowExceptionIfExists) {
-                    throw Exceptions.propagate(lastItem.getException());
+                    throw Exceptions.propagate(lastItem.getThrowable());
                 } else {
                     return true;
                 }
@@ -155,7 +155,7 @@ public final class OperationNext {
             Notification<T> next = buf.take();
 
             if (next.isOnError()) {
-                throw Exceptions.propagate(next.getException());
+                throw Exceptions.propagate(next.getThrowable());
             }
 
             if (next.isOnCompleted()) {
@@ -172,7 +172,7 @@ public final class OperationNext {
         private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
         @Test
-        public void testNext() throws Exception {
+        public void testNext() throws Throwable {
             Subscription s = mock(Subscription.class);
             final TestObservable obs = new TestObservable(s);
 
@@ -249,13 +249,13 @@ public final class OperationNext {
             // this should not throw an exception but instead just return false
             try {
                 assertFalse(it.hasNext());
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 fail("should not have received exception");
                 e.printStackTrace();
             }
         }
 
-        private Future<String> nextAsync(final Iterator<String> it) throws Exception {
+        private Future<String> nextAsync(final Iterator<String> it) throws Throwable {
 
             return executor.submit(new Callable<String>() {
 
@@ -286,7 +286,7 @@ public final class OperationNext {
             }
 
             /* used to simulate subscription */
-            public void sendOnError(Exception e) {
+            public void sendOnError(Throwable e) {
                 observer.onError(e);
             }
 
@@ -308,10 +308,10 @@ public final class OperationNext {
          * 
          * This results in output such as => a: 1 b: 2 c: 89
          * 
-         * @throws Exception
+         * @throws Throwable
          */
         @Test
-        public void testNoBufferingOrBlockingOfSequence() throws Exception {
+        public void testNoBufferingOrBlockingOfSequence() throws Throwable {
             final CountDownLatch finished = new CountDownLatch(1);
             final AtomicBoolean running = new AtomicBoolean(true);
             final AtomicInteger count = new AtomicInteger(0);
@@ -329,7 +329,7 @@ public final class OperationNext {
                                     Thread.sleep(0, 100);
                                 }
                                 o.onCompleted();
-                            } catch (Exception e) {
+                            } catch (Throwable e) {
                                 o.onError(e);
                             } finally {
                                 finished.countDown();

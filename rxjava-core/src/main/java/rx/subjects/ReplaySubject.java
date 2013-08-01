@@ -61,7 +61,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
 {
 
     private boolean isDone = false;
-    private Exception exception = null;
+    private Throwable exception = null;
     private final Map<Subscription, Observer<T>> subscriptions = new HashMap<Subscription, Observer<T>>();
     private final List<T> history = Collections.synchronizedList(new ArrayList<T>());
 
@@ -153,7 +153,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
     }
 
     @Override
-    public void onError(Exception e)
+    public void onError(Throwable e)
     {
         synchronized (subscriptions) {
             if (isDone) {
@@ -181,7 +181,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
 
     public static class UnitTest {
 
-        private final Exception testException = new Exception();
+        private final Throwable testException = new Throwable();
 
         @SuppressWarnings("unchecked")
         @Test
@@ -198,7 +198,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
 
             subject.onNext("four");
             subject.onCompleted();
-            subject.onError(new Exception());
+            subject.onError(new Throwable());
 
             assertCompletedObserver(o1);
 
@@ -215,7 +215,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
             inOrder.verify(aObserver, times(1)).onNext("one");
             inOrder.verify(aObserver, times(1)).onNext("two");
             inOrder.verify(aObserver, times(1)).onNext("three");
-            inOrder.verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            inOrder.verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             inOrder.verify(aObserver, times(1)).onCompleted();
             inOrder.verifyNoMoreInteractions();
         }
@@ -234,7 +234,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
             subject.onError(testException);
 
             subject.onNext("four");
-            subject.onError(new Exception());
+            subject.onError(new Throwable());
             subject.onCompleted();
 
             assertErrorObserver(aObserver);
@@ -307,7 +307,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, Mockito.never()).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, Mockito.never()).onCompleted();
         }
 
@@ -333,7 +333,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
                 @Override
                 public void call(ReplaySubject<Object> repeatSubject)
                 {
-                    repeatSubject.onError(new Exception());
+                    repeatSubject.onError(new Throwable());
                 }
             }, new Action1<ReplaySubject<Object>>()
             {

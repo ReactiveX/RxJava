@@ -56,7 +56,7 @@ public class SafeObserver<T> implements Observer<T> {
         if (isFinished.compareAndSet(false, true)) {
             try {
                 actual.onCompleted();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 // handle errors if the onCompleted implementation fails, not just if the Observable fails
                 onError(e);
             }
@@ -66,11 +66,11 @@ public class SafeObserver<T> implements Observer<T> {
     }
 
     @Override
-    public void onError(Exception e) {
+    public void onError(Throwable e) {
         if (isFinished.compareAndSet(false, true)) {
             try {
                 actual.onError(e);
-            } catch (Exception e2) {
+            } catch (Throwable e2) {
                 if (e2 instanceof OnErrorNotImplementedException) {
                     /**
                      * onError isn't implemented so throw
@@ -105,7 +105,7 @@ public class SafeObserver<T> implements Observer<T> {
             if (!isFinished.get()) {
                 actual.onNext(args);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // handle errors if the onNext implementation fails, not just if the Observable fails
             onError(e);
         }

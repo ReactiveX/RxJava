@@ -42,7 +42,7 @@ public interface Observer<T> {
      *
      * @param e
      */
-    public void onError(Exception e);
+    public void onError(Throwable e);
 
     /**
      * Provides the Observer with new data.

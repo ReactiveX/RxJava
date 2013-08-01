@@ -96,7 +96,7 @@ import static org.junit.Assert.assertTrue;
             }
 
             @Override
-            public void onError(Exception e)
+            public void onError(Throwable e)
             {
                 test.gotEvent("onError");
             }
@@ -122,7 +122,7 @@ import static org.junit.Assert.assertTrue;
             }
 
             @Override
-            public void onError(Exception e)
+            public void onError(Throwable e)
             {
                 test.doUnsubscribe("onError");
             }
@@ -148,7 +148,7 @@ import static org.junit.Assert.assertTrue;
             }
 
             @Override
-            public void onError(Exception e)
+            public void onError(Throwable e)
             {
                 test.gotEvent("onError");
             }

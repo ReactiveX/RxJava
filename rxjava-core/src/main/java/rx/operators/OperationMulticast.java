@@ -60,7 +60,7 @@ public class OperationMulticast {
                         }
 
                         @Override
-                        public void onError(Exception e) {
+                        public void onError(Throwable e) {
                             subject.onError(e);
                         }
 
@@ -185,7 +185,7 @@ public class OperationMulticast {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     // Do nothing
                 }
 
@@ -204,7 +204,7 @@ public class OperationMulticast {
                         }
 
                         @Override
-                        public void onError(Exception e) {
+                        public void onError(Throwable e) {
                             // Do nothing
                         }
 

@@ -50,15 +50,15 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnErrorReturn<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> onErrorReturn(Observable<T> originalSequence, Func1<Exception, T> resumeFunction) {
+    public static <T> Func1<Observer<T>, Subscription> onErrorReturn(Observable<T> originalSequence, Func1<Throwable, T> resumeFunction) {
         return new OnErrorReturn<T>(originalSequence, resumeFunction);
     }
 
     private static class OnErrorReturn<T> implements Func1<Observer<T>, Subscription> {
-        private final Func1<Exception, T> resumeFunction;
+        private final Func1<Throwable, T> resumeFunction;
         private final Observable<T> originalSequence;
 
-        public OnErrorReturn(Observable<T> originalSequence, Func1<Exception, T> resumeFunction) {
+        public OnErrorReturn(Observable<T> originalSequence, Func1<Throwable, T> resumeFunction) {
             this.resumeFunction = resumeFunction;
             this.originalSequence = originalSequence;
         }
@@ -79,7 +79,7 @@ public final class OperationOnErrorReturn<T> {
                 /**
                  * Instead of passing the onError forward, we intercept and "resume" with the resumeSequence.
                  */
-                public void onError(Exception ex) {
+                public void onError(Throwable ex) {
                     /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
                     SafeObservableSubscription currentSubscription = subscriptionRef.get();
                     // check that we have not been unsubscribed before we can process the error
@@ -99,7 +99,7 @@ public final class OperationOnErrorReturn<T> {
 
                             /* unsubscribe since it blew up */
                             currentSubscription.unsubscribe();
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             // the return function failed so we need to call onError
                             // I am using CompositeException so that both exceptions can be seen
                             observer.onError(new CompositeException("OnErrorReturn function failed", Arrays.asList(ex, e)));
@@ -131,12 +131,12 @@ public final class OperationOnErrorReturn<T> {
         public void testResumeNext() {
             Subscription s = mock(Subscription.class);
             TestObservable w = new TestObservable(s, "one");
-            final AtomicReference<Exception> capturedException = new AtomicReference<Exception>();
+            final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-            Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Exception, String>() {
+            Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Throwable, String>() {
 
                 @Override
-                public String call(Exception e) {
+                public String call(Throwable e) {
                     capturedException.set(e);
                     return "failure";
                 }
@@ -153,7 +153,7 @@ public final class OperationOnErrorReturn<T> {
                 fail(e.getMessage());
             }
 
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("failure");
@@ -167,12 +167,12 @@ public final class OperationOnErrorReturn<T> {
         public void testFunctionThrowsError() {
             Subscription s = mock(Subscription.class);
             TestObservable w = new TestObservable(s, "one");
-            final AtomicReference<Exception> capturedException = new AtomicReference<Exception>();
+            final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-            Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Exception, String>() {
+            Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Throwable, String>() {
 
                 @Override
-                public String call(Exception e) {
+                public String call(Throwable e) {
                     capturedException.set(e);
                     throw new RuntimeException("exception from function");
                 }
@@ -193,7 +193,7 @@ public final class OperationOnErrorReturn<T> {
             verify(aObserver, times(1)).onNext("one");
 
             // we should have received an onError call on the Observer since the resume function threw an exception
-            verify(aObserver, times(1)).onError(any(Exception.class));
+            verify(aObserver, times(1)).onError(any(Throwable.class));
             verify(aObserver, times(0)).onCompleted();
             assertNotNull(capturedException.get());
         }
@@ -223,7 +223,7 @@ public final class OperationOnErrorReturn<T> {
                                 observer.onNext(s);
                             }
                             throw new RuntimeException("Forced Failure");
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             observer.onError(e);
                         }
                     }

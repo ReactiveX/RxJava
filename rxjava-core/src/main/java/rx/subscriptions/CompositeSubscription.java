@@ -69,13 +69,13 @@ public class CompositeSubscription implements Subscription {
     @Override
     public synchronized void unsubscribe() {
         if (unsubscribed.compareAndSet(false, true)) {
-            Collection<Exception> es = null;
+            Collection<Throwable> es = null;
             for (Subscription s : subscriptions) {
                 try {
                     s.unsubscribe();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     if (es == null) {
-                        es = new ArrayList<Exception>();
+                        es = new ArrayList<Throwable>();
                     }
                     es.add(e);
                 }

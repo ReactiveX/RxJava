@@ -55,14 +55,14 @@ public final class OperationFilter<T> {
                         if (predicate.call(value)) {
                             observer.onNext(value);
                         }
-                    } catch (Exception ex) {
+                    } catch (Throwable ex) {
                         observer.onError(ex);
                         // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
                         subscription.unsubscribe();
                     }
                 }
 
-                public void onError(Exception ex) {
+                public void onError(Throwable ex) {
                     observer.onError(ex);
                 }
 
@@ -93,7 +93,7 @@ public final class OperationFilter<T> {
             verify(aObserver, Mockito.never()).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, Mockito.never()).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
     }

@@ -154,7 +154,7 @@ public final class OperationMergeDelayError {
         private final ConcurrentHashMap<ChildObserver, ChildObserver> childObservers = new ConcurrentHashMap<ChildObserver, ChildObserver>();
         private final ConcurrentHashMap<ChildObserver, Subscription> childSubscriptions = new ConcurrentHashMap<ChildObserver, Subscription>();
         // onErrors we received that will be delayed until everything is completed and then sent
-        private ConcurrentLinkedQueue<Exception> onErrorReceived = new ConcurrentLinkedQueue<Exception>();
+        private ConcurrentLinkedQueue<Throwable> onErrorReceived = new ConcurrentLinkedQueue<Throwable>();
 
         private MergeDelayErrorObservable(Observable<Observable<T>> sequences) {
             this.sequences = sequences;
@@ -236,7 +236,7 @@ public final class OperationMergeDelayError {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 actualObserver.onError(e);
             }
 
@@ -290,7 +290,7 @@ public final class OperationMergeDelayError {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 if (!stopped.get()) {
                     onErrorReceived.add(e);
                     // mark this ChildObserver as done
@@ -548,7 +548,7 @@ public final class OperationMergeDelayError {
             Observable<String> m = Observable.create(mergeDelayError(observableOfObservables));
             m.subscribe(stringObserver);
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(1)).onCompleted();
             verify(stringObserver, times(2)).onNext("hello");
         }
@@ -562,7 +562,7 @@ public final class OperationMergeDelayError {
             Observable<String> m = Observable.create(mergeDelayError(o1, o2));
             m.subscribe(stringObserver);
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(2)).onNext("hello");
             verify(stringObserver, times(1)).onCompleted();
         }
@@ -578,7 +578,7 @@ public final class OperationMergeDelayError {
             Observable<String> m = Observable.create(mergeDelayError(listOfObservables));
             m.subscribe(stringObserver);
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(1)).onCompleted();
             verify(stringObserver, times(2)).onNext("hello");
         }
@@ -600,7 +600,7 @@ public final class OperationMergeDelayError {
             tA.sendOnCompleted();
             tB.sendOnCompleted();
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(1)).onNext("Aone");
             verify(stringObserver, times(1)).onNext("Bone");
             assertTrue(tA.unsubscribed);
@@ -626,7 +626,7 @@ public final class OperationMergeDelayError {
                 throw new RuntimeException(e);
             }
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(2)).onNext("hello");
             verify(stringObserver, times(1)).onCompleted();
         }
@@ -706,7 +706,7 @@ public final class OperationMergeDelayError {
 
             /* used to simulate subscription */
             @SuppressWarnings("unused")
-            public void sendOnError(Exception e) {
+            public void sendOnError(Throwable e) {
                 observer.onError(e);
             }
 
@@ -775,7 +775,7 @@ public final class OperationMergeDelayError {
                                 System.out.println("throwing exception");
                                 try {
                                     Thread.sleep(100);
-                                } catch (Exception e) {
+                                } catch (Throwable e) {
 
                                 }
                                 observer.onError(new NullPointerException());
@@ -803,7 +803,7 @@ public final class OperationMergeDelayError {
         }
 
         private static class CaptureObserver implements Observer<String> {
-            volatile Exception e;
+            volatile Throwable e;
 
             @Override
             public void onCompleted() {
@@ -811,7 +811,7 @@ public final class OperationMergeDelayError {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 this.e = e;
             }
 

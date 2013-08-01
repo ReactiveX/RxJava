@@ -19,9 +19,9 @@ import rx.Observable;
 import rx.Observer;
 
 /**
- * Abstract class for defining error handling logic in addition to the normal {@link Observer#onError(Exception)} behavior.
+ * Abstract class for defining error handling logic in addition to the normal {@link Observer#onError(Throwable)} behavior.
  * <p>
- * For example, all Exceptions can be logged using this handler even if {@link Observer#onError(Exception)} is ignored or not provided when an {@link Observable} is subscribed to.
+ * For example, all Exceptions can be logged using this handler even if {@link Observer#onError(Throwable)} is ignored or not provided when an {@link Observable} is subscribed to.
  * <p>
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins: <a
  * href="https://github.com/Netflix/RxJava/wiki/Plugins">https://github.com/Netflix/RxJava/wiki/Plugins</a>.
@@ -29,12 +29,12 @@ import rx.Observer;
 public abstract class RxJavaErrorHandler {
 
     /**
-     * Receives all Exceptions from an {@link Observable} passed to {@link Observer#onError(Exception)}.
+     * Receives all Exceptions from an {@link Observable} passed to {@link Observer#onError(Throwable)}.
      * 
      * @param e
      *            Exception
      */
-    public void handleError(Exception e) {
+    public void handleError(Throwable e) {
         // do nothing by default
     }
 

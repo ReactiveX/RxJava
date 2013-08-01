@@ -52,7 +52,7 @@ public final class OperationDefer {
     public static class UnitTest {
         @Test
         @SuppressWarnings("unchecked")
-        public void testDefer() throws Exception {
+        public void testDefer() throws Throwable {
 
             Func0<Observable<String>> factory = mock(Func0.class);
 

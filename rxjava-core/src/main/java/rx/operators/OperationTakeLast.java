@@ -81,7 +81,7 @@ public final class OperationTakeLast {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 observer.onError(e);
             }
 
@@ -107,7 +107,7 @@ public final class OperationTakeLast {
             Observer<String> aObserver = mock(Observer.class);
             take.subscribe(aObserver);
             verify(aObserver, never()).onNext(any(String.class));
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -123,7 +123,7 @@ public final class OperationTakeLast {
             inOrder.verify(aObserver, times(1)).onNext("two");
             inOrder.verify(aObserver, times(1)).onNext("three");
             verify(aObserver, never()).onNext("one");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -136,7 +136,7 @@ public final class OperationTakeLast {
             Observer<String> aObserver = mock(Observer.class);
             take.subscribe(aObserver);
             verify(aObserver, times(1)).onNext("one");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 

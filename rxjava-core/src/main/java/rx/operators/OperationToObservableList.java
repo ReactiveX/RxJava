@@ -68,7 +68,7 @@ public final class OperationToObservableList<T> {
                     list.add(value);
                 }
 
-                public void onError(Exception ex) {
+                public void onError(Throwable ex) {
                     observer.onError(ex);
                 }
 
@@ -85,7 +85,7 @@ public final class OperationToObservableList<T> {
                         // observer.onNext(Collections.unmodifiableList(l));
                         observer.onNext(l);
                         observer.onCompleted();
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         onError(e);
                     }
 
@@ -105,7 +105,7 @@ public final class OperationToObservableList<T> {
             Observer<List<String>> aObserver = mock(Observer.class);
             observable.subscribe(aObserver);
             verify(aObserver, times(1)).onNext(Arrays.asList("one", "two", "three"));
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -125,11 +125,11 @@ public final class OperationToObservableList<T> {
             List<String> expected = Arrays.asList("one", "two", "three");
 
             verify(o1, times(1)).onNext(expected);
-            verify(o1, Mockito.never()).onError(any(Exception.class));
+            verify(o1, Mockito.never()).onError(any(Throwable.class));
             verify(o1, times(1)).onCompleted();
 
             verify(o2, times(1)).onNext(expected);
-            verify(o2, Mockito.never()).onError(any(Exception.class));
+            verify(o2, Mockito.never()).onError(any(Throwable.class));
             verify(o2, times(1)).onCompleted();
         }
     }

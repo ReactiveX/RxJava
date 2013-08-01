@@ -59,7 +59,7 @@ public class OperationToIterator {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 // ignore
             }
 
@@ -86,7 +86,7 @@ public class OperationToIterator {
                     buf = take();
                 }
                 if (buf.isOnError()) {
-                    throw Exceptions.propagate(buf.getException());
+                    throw Exceptions.propagate(buf.getThrowable());
                 }
 
                 T result = buf.getValue();
