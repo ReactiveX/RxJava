@@ -1,5 +1,15 @@
 # RxJava Releases #
 
+### Version 0.10.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.10.0%22)) ###
+
+This release includes a breaking change as it changes `onError(Exception)` to `onError(Throwable)`. This decision was made via discussion at https://github.com/Netflix/RxJava/issues/296.
+
+Any statically-typed `Observer` implementations with `onError(Exception)` will need to be updated to `onError(Throwable)` when moving to this version.
+
+* [Pull 312](https://github.com/Netflix/RxJava/pull/312) Fix for OperatorOnErrorResumeNextViaObservable and async Resume
+* [Pull 314](https://github.com/Netflix/RxJava/pull/314) Map Error Handling
+* [Pull 315](https://github.com/Netflix/RxJava/pull/315) Change onError(Exception) to onError(Throwable) - Issue #296
+
 ### Version 0.9.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.9.2%22)) ###
 
 * [Pull 308](https://github.com/Netflix/RxJava/pull/308) Ensure now() is always updated in TestScheduler.advanceTo/By
