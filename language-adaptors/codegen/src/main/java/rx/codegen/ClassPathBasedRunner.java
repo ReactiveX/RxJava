@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package rx.codegen;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javassist.ClassPool;
+import javassist.CtClass;
+
 import rx.util.functions.FunctionLanguageAdaptor;
 
+/**
+ * Java Executable that performs bytecode rewriting at compile-time.
+ * It accepts 2 args: dynamic language and dir to store result output classfiles
+ */
 public class ClassPathBasedRunner {
     public static void main(String[] args) {
         if (args.length != 2) {
@@ -31,17 +37,25 @@ public class ClassPathBasedRunner {
         }
         String lang = args[0];
         File dir = new File(args[1]);
+        System.out.println("Using dir : " + dir + " for outputting classfiles");
         System.out.println("Looking for Adaptor for : " + lang);
         String className = "rx.lang." + lang.toLowerCase() + "." + lang + "Adaptor";
         try {
+            ClassPool pool = ClassPool.getDefault();
+
             Class<?> adaptorClass = Class.forName(className);
             System.out.println("Found Adaptor : " + adaptorClass);
             FunctionLanguageAdaptor adaptor = (FunctionLanguageAdaptor) adaptorClass.newInstance();
 
-            CodeGenerator codeGen = new CodeGenerator(); 
-            System.out.println("Using dir : " + dir + " for outputting classfiles");
+            Func1Generator func1Generator = new Func1Generator(pool, adaptor);
+            CtClass dynamicFunc1Class = func1Generator.createDynamicFunc1Class();
+            writeClassFile(dynamicFunc1Class, dir);
+            pool.appendPathList(dir.getCanonicalPath());
+
+            ObservableRewriter rewriter = new ObservableRewriter(pool, adaptor); 
             for (Class<?> observableClass: getObservableClasses()) {
-                codeGen.addMethods(observableClass, adaptor, new File(args[1]));
+                CtClass rewrittenClass = rewriter.addMethods(observableClass);
+                writeClassFile(rewrittenClass, dir);
             }
         } catch (ClassNotFoundException ex) {
             System.out.println("Did not find adaptor class : " + className);
@@ -52,6 +66,22 @@ public class ClassPathBasedRunner {
         } catch (IllegalAccessException ex) {
             System.out.println("Access to constructor on : " + className + " failed");
             System.exit(1);
+        } catch (Exception ex) {
+            System.out.println("Exception : " + ex.getMessage());
+            System.exit(1);
+        }
+    }
+
+    protected static void writeClassFile(CtClass clazz, File dir) {
+        try {
+            System.out.println("Using " + dir.getCanonicalPath() + " for dynamic class file");
+            clazz.writeFile(dir.getCanonicalPath());
+        } catch (java.io.IOException ioe) {
+            System.out.println("Could not write classfile to : " + dir.toString());
+            System.exit(1);
+        } catch (javassist.CannotCompileException cce) {
+            System.out.println("Could not create a valid classfile");
+            System.exit(2);
         }
     }
 

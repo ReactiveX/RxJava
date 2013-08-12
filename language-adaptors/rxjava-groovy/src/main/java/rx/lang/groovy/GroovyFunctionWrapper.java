@@ -20,6 +20,7 @@ import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 import rx.util.functions.Func3;
 import rx.util.functions.Func4;
+import rx.util.functions.FuncN;
 import rx.util.functions.FunctionLanguageAdaptor;
 
 import groovy.lang.Closure;

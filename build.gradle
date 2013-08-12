@@ -31,7 +31,7 @@ subprojects {
         examplesRuntime.extendsFrom runtime
     }
 
-    sourceSets.test.java.srcDirs.add('src/main/java')
+    sourceSets.test.java.srcDir 'src/main/java'
 
     tasks.withType(Javadoc).each {
         it.classpath = sourceSets.main.compileClasspath

@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +34,7 @@ import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.concurrency.TestScheduler;
 import rx.observables.GroupedObservable;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
@@ -48,6 +50,41 @@ def class ObservableTests {
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testSubscribeWithMap() { 
+        def o = Observable.from(1, 2, 3)
+        def subscribeMap = [
+            "onNext"      : { i -> a.received(i) },
+            "onError"     : { e -> a.received(e) },
+            "onCompleted" : { a.received("COMPLETE") }
+        ]
+        o.subscribe(subscribeMap)
+        verify(a, times(1)).received(1)
+        verify(a, times(1)).received(2)
+        verify(a, times(1)).received(3)
+        verify(a, times(1)).received("COMPLETE")
+    }
+
+    @Test
+    public void testSubscribeWithMapAndScheduler() { 
+        def o = Observable.from(1, 2, 3)
+        def subscribeMap = [
+            "onNext"      : { i -> a.received(i) },
+            "onError"     : { e -> a.received(e) },
+            "onCompleted" : { a.received("COMPLETE") }
+        ]
+        def scheduler = new TestScheduler()
+        o.subscribe(subscribeMap, scheduler)
+        verify(a, never()).received(any(Object.class))
+    
+        scheduler.advanceTimeBy(5, TimeUnit.SECONDS)   
+
+        verify(a, times(1)).received(1)
+        verify(a, times(1)).received(2)
+        verify(a, times(1)).received(3)
+        verify(a, times(1)).received("COMPLETE")
     }
 
     @Test

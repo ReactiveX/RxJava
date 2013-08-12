@@ -21,23 +21,7 @@ package rx.util.functions;
 public class Functions {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static FuncN from(final Object function) {
-        if (function == null) {
-            throw new RuntimeException("function is null. Can't send arguments to null function.");
-        }
-
-        /* check for typed Rx Function implementation first */
-        if (function instanceof Function) {
-            return fromFunction((Function) function);
-        } else if (function instanceof Action) {
-            return fromAction((Action) function);
-        }
-        // no support found
-        throw new RuntimeException("Unsupported closure type: " + function.getClass().getSimpleName());
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static FuncN fromFunction(Function function) {
+    public static FuncN fromFunction(Function function) {
         // check Func* classes 
         if (function instanceof Func0) {
             return fromFunc((Func0) function);
@@ -67,7 +51,7 @@ public class Functions {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static FuncN fromAction(Action action) {
+    public static FuncN fromAction(Action action) {
         // check Action* classes 
         if (action instanceof Action0) {
             return fromAction((Action0) action);

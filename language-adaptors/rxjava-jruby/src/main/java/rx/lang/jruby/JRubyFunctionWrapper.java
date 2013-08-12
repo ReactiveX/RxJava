@@ -16,6 +16,7 @@
 package rx.lang.jruby;
 
 import org.jruby.Ruby;
+import org.jruby.RubyBoolean;
 import org.jruby.RubyProc;
 import org.jruby.javasupport.JavaEmbedUtils;
 import org.jruby.runtime.builtin.IRubyObject;
@@ -65,6 +66,11 @@ public class JRubyFunctionWrapper<T1, T2, T3, T4, R> implements Func0<R>, Func1<
         for (int i = 0; i < args.length; i++) {
             rubyArgs[i] = JavaEmbedUtils.javaToRuby(ruby, args[i]);
         }
-        return (R) proc.getBlock().call(ruby.getCurrentContext(), rubyArgs);
+        R result = (R) proc.getBlock().call(ruby.getCurrentContext(), rubyArgs);
+        if (result instanceof RubyBoolean) {
+            return ((RubyBoolean) result).isTrue();
+        } else {
+            return result;
+        }
     }
 }

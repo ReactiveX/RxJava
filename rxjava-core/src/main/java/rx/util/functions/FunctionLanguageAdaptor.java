@@ -31,11 +31,23 @@ public interface FunctionLanguageAdaptor {
      */
     //public Class<?>[] getFunctionClass();
 
-    //TODO MRJ: Add Javadoc
+    /**
+     * Map detailing how to rewrite a native function class into an Rx {@code Action}
+     * Example: for Groovy, a 1-element Map : { groovy.lang.Closure -> GroovyActionWrapper }
+     * @return map for rewriting native functions to Rx {@code Action}s.
+     */
     public Map<Class<?>, Class<?>> getActionClassRewritingMap();
 
-    //TODO MRJ: Add Javadoc
+    /**
+     * Map detailing how to rewrite a native function class into an Rx {@code Function}
+     * Example: for Groovy, a 1-element Map : { groovy.lang.Closure -> GroovyFunctionWrapper }
+     * @return map for rewriting native functions to Rx {@code Function}s.
+     */
     public Map<Class<?>, Class<?>> getFunctionClassRewritingMap();
 
+    /**
+     * All native function classes that require translation into the Rx world
+     * @return set of all native function classes
+     */
     public Set<Class<?>> getAllClassesToRewrite();
 }

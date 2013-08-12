@@ -169,10 +169,10 @@ public class JRubyAdaptor implements FunctionLanguageAdaptor {
             container.put("a", assertion);
 
             StringBuilder b = new StringBuilder();
-            // force JRuby to always use subscribe(Object)
+            // force JRuby to always use subscribe(RubyProc)
             b.append("import \"rx.Observable\"").append("\n");
             b.append("class Observable").append("\n");
-            b.append("  java_alias :subscribe, :subscribe, [java.lang.Object]").append("\n");
+            b.append("  java_alias :subscribe, :subscribe, [org.jruby.RubyProc]").append("\n");
             b.append("end").append("\n");
             b.append(script);
 

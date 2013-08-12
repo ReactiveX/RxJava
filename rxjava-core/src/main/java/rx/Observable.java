@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -36,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import rx.concurrency.TestScheduler;
 import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
@@ -91,6 +93,7 @@ import rx.util.BufferOpening;
 import rx.util.OnErrorNotImplementedException;
 import rx.util.Range;
 import rx.util.Timestamped;
+import rx.util.functions.Action;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
@@ -268,17 +271,26 @@ public class Observable<T> {
         return subscription.wrap(subscribe(new SafeObserver<T>(subscription, o)));
     }
 
+    /**
+     * Helper method that is especially useful for supporting dynamic languages ({@see FunctionLanguageAdaptor}).
+     * Given a {@code Map} of callbacks, pull the function out and use the supplied converter to get out an Rx core
+     * {@code Action}.
+     * @param callbacks {@code Map} of callback functions.  "onNext" is required, and "onError"/"onCompleted" also supported as keys
+     * @param converter {@code Func1} that converts from some Function-y type to an Rx core {@code Action}
+     * @param <F> specific dynamic language function type
+     * @return subscription using supplied callbacks and converter
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Subscription subscribe(final Map<String, Object> callbacks) {
+    private <F> Subscription subscribeWithConversion(final Map<String, F> callbacks, final Func1<F, Action> converter) {
         if (callbacks == null) {
             throw new RuntimeException("callbacks map can not be null");
         }
-        Object _onNext = callbacks.get("onNext");
+        F _onNext = callbacks.get("onNext");
         if (_onNext == null) {
             throw new RuntimeException("'onNext' key must contain an implementation");
         }
         // lookup and memoize onNext
-        final FuncN onNext = Functions.from(_onNext);
+        final Action1 onNext = (Action1) converter.call(_onNext);
 
         /**
          * Wrapping since raw functions provided by the user are being invoked.
@@ -288,19 +300,21 @@ public class Observable<T> {
         return protectivelyWrapAndSubscribe(new Observer() {
 
             @Override
-                public void onCompleted() {
-                Object onComplete = callbacks.get("onCompleted");
-                if (onComplete != null) {
-                    Functions.from(onComplete).call();
+            public void onCompleted() {
+                F _onComplete = callbacks.get("onCompleted");
+                if (_onComplete != null) {
+                    final Action0 onCompleteAction = (Action0) converter.call(_onComplete);
+                    onCompleteAction.call();
                 }
             }
 
             @Override
             public void onError(Throwable e) {
                 handleError(e);
-                Object onError = callbacks.get("onError");
-                if (onError != null) {
-                    Functions.from(onError).call(e);
+                F _onError = callbacks.get("onError");
+                if (_onError != null) {
+                    final Action1 onError = (Action1) converter.call(_onError);
+                    onError.call(e);
                 } else {
                     throw new OnErrorNotImplementedException(e);
                 }
@@ -310,11 +324,30 @@ public class Observable<T> {
                 public void onNext(Object args) {
                 onNext.call(args);
             }
+        });    
+    } 
 
-            });
+    /**
+     * Used in conjunction with {@code subscribeWithConversion} to do the proper no-op conversion.
+     * Contrast this with the {@code Func1}s in the dynamic language support codegen package.
+     */
+    private static Func1<Action, Action> actionIdentity = new Func1<Action, Action>() {
+        @Override
+        public Action call(Action a) {
+            return a;
+        }
+    };
+
+    /**
+     * Given a {@code Map} of callbacks, create a {@code Subscription}
+     * @param callbacks {@code Map} of callback functions.  "onNext" is required, and "onError"/"onCompleted" also supported as keys
+     * @return subscription using supplied callbacks
+     */
+    public Subscription subscribe(final Map<String, Action> callbacks) {
+        return subscribeWithConversion(callbacks, actionIdentity);
     }
 
-    public Subscription subscribe(final Map<String, Object> callbacks, Scheduler scheduler) {
+    public Subscription subscribe(final Map<String, Action> callbacks, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(callbacks);
     }
 
@@ -3186,6 +3219,83 @@ public class Observable<T> {
             sequenceEqual(first, second).subscribe(result);
             verify(result, times(2)).onNext(true);
             verify(result, times(1)).onNext(false);
+        }
+
+        @Test
+        public void testSubscribeWithMap() {
+            Observable<Integer> o = toObservable(1, 2, 3);
+            final Observer<Integer> observer = mock(Observer.class);
+            Action1<Integer> onNext = new Action1<Integer>() {
+                @Override
+                public void call(Integer in) {
+                    observer.onNext(in);
+                }
+            };
+            Action1<Exception> onError = new Action1<Exception>() {
+                @Override
+                public void call(Exception ex) {
+                    observer.onError(ex);
+                }
+            };
+            Action0 onCompleted = new Action0() {
+                @Override
+                public void call() {
+                    observer.onCompleted();
+                }                    
+            };
+            Map<String, Action> fMap = new HashMap<String, Action>();
+            fMap.put("onNext", onNext);
+            fMap.put("onError", onError);
+            fMap.put("onCompleted", onCompleted);
+            o.subscribe(fMap);
+            verify(observer, times(1)).onNext(1);
+            verify(observer, times(1)).onNext(2);
+            verify(observer, times(1)).onNext(3);
+            verify(observer, times(1)).onCompleted();
+            verify(observer, times(0)).onError(any(Exception.class));
+        }
+
+        @Test
+        public void testSubscribeWithMapAndScheduler() {
+            Observable<Integer> o = toObservable(1, 2, 3);
+            final Observer<Integer> observer = mock(Observer.class);
+            Action1<Integer> onNext = new Action1<Integer>() {
+                @Override
+                public void call(Integer in) {
+                    observer.onNext(in);
+                }
+            };
+            Action1<Exception> onError = new Action1<Exception>() {
+                @Override
+                public void call(Exception ex) {
+                    observer.onError(ex);
+                }
+            };
+            Action0 onCompleted = new Action0() {
+                @Override
+                public void call() {
+                    observer.onCompleted();
+                }                    
+            };
+            Map<String, Action> fMap = new HashMap<String, Action>();
+            fMap.put("onNext", onNext);
+            fMap.put("onError", onError);
+            fMap.put("onCompleted", onCompleted);
+
+            TestScheduler scheduler = new TestScheduler();
+
+            o.subscribe(fMap, scheduler);
+            verify(observer, times(0)).onNext(any(Integer.class));
+            verify(observer, times(0)).onError(any(Exception.class));
+            verify(observer, times(0)).onCompleted();
+
+            scheduler.advanceTimeBy(10, TimeUnit.SECONDS);
+
+            verify(observer, times(1)).onNext(1);
+            verify(observer, times(1)).onNext(2);
+            verify(observer, times(1)).onNext(3);
+            verify(observer, times(1)).onCompleted();
+            verify(observer, times(0)).onError(any(Exception.class));
         }
 
         @Test
