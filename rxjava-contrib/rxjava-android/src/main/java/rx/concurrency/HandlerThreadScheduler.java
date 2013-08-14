@@ -12,11 +12,8 @@ import rx.util.functions.Func2;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -32,40 +29,27 @@ public class HandlerThreadScheduler extends Scheduler {
 
     @Override
     public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action) {
-        final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-        final Scheduler _scheduler = this;
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                subscription.wrap(action.call(_scheduler, state));
-            }
-        });
-        return subscription;
+        return schedule(state, action, 0L, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit) {
-        if (delayTime == 0) {
-            return schedule(state, action);
-        } else {
-            final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
-            final Scheduler _scheduler = this;
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    subscription.wrap(action.call(_scheduler, state));
-                }
-            }, unit.toMillis(delayTime));
-            return subscription;
-        }
+        final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        final Scheduler _scheduler = this;
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                subscription.wrap(action.call(_scheduler, state));
+            }
+        }, unit.toMillis(delayTime));
+        return subscription;
     }
 
     @RunWith(AndroidTestRunner.class)
     public static final class UnitTest {
 
         @Test
-        public void shouldScheduleActionOnHandlerThread() {
+        public void shouldScheduleImmediateActionOnHandlerThread() {
             final Handler handler = mock(Handler.class);
             final Object state = new Object();
             final Func2<Scheduler, Object, Subscription> action = mock(Func2.class);
@@ -75,7 +59,7 @@ public class HandlerThreadScheduler extends Scheduler {
 
             // verify that we post to the given Handler
             ArgumentCaptor<Runnable> runnable = ArgumentCaptor.forClass(Runnable.class);
-            verify(handler).post(runnable.capture());
+            verify(handler).postDelayed(runnable.capture(), eq(0L));
 
             // verify that the given handler delegates to our action
             runnable.getValue().run();
@@ -99,21 +83,6 @@ public class HandlerThreadScheduler extends Scheduler {
             runnable.getValue().run();
             verify(action).call(scheduler, state);
         }
-
-        @Test
-        public void scheduleDelayedActionShouldForwardToNormalPostIfDelayIsZero() {
-            final Handler handler = mock(Handler.class);
-            final Object state = new Object();
-            final Func2<Scheduler, Object, Subscription> action = mock(Func2.class);
-
-            Scheduler scheduler = new HandlerThreadScheduler(handler);
-            scheduler.schedule(state, action, 0L, TimeUnit.SECONDS);
-
-            // verify that we post to the given Handler
-            verify(handler).post(any(Runnable.class));
-            verify(handler, never()).postDelayed(any(Runnable.class), anyLong());
-        }
-
     }
 }
 
