@@ -1,4 +1,4 @@
-package rx.concurrency;
+package rx.android.concurrency;
 
 import android.os.Handler;
 import org.junit.Test;
@@ -23,15 +23,37 @@ public class HandlerThreadScheduler extends Scheduler {
 
     private final Handler handler;
 
+    /**
+     * Constructs a {@link HandlerThreadScheduler} using the given {@link Handler}
+     * @param handler {@link Handler} to use when scheduling actions
+     */
     public HandlerThreadScheduler(Handler handler) {
         this.handler = handler;
     }
 
+    /**
+     * Calls {@link HandlerThreadScheduler#schedule(Object, rx.util.functions.Func2, long, java.util.concurrent.TimeUnit)}
+     * with a delay of zero milliseconds.
+     *
+     * See {@link #schedule(Object, rx.util.functions.Func2, long, java.util.concurrent.TimeUnit)}
+     */
     @Override
     public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action) {
         return schedule(state, action, 0L, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Calls {@link Handler#postDelayed(Runnable, long)} with a runnable that executes the given action.
+     * @param state
+     *            State to pass into the action.
+     * @param action
+     *            Action to schedule.
+     * @param delayTime
+     *            Time the action is to be delayed before executing.
+     * @param unit
+     *            Time unit of the delay time.
+     * @return A Subscription from which one can unsubscribe from.
+     */
     @Override
     public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit) {
         final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
