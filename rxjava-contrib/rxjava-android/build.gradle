@@ -32,9 +32,6 @@ idea {
 }
 
 javadoc {
-    exclude "rx/android/testsupport"
-    //Excluding the test support directory causes an error when generating docs
-    failOnError false;
     options {
         doclet = "org.benjchristensen.doclet.DocletExclude"
         docletpath = [rootProject.file('./gradle/doclet-exclude.jar')]
@@ -52,5 +49,13 @@ jar {
         instruction 'Bundle-Vendor', 'Netflix'
         instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
         instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
+    }
+}
+
+test {
+    testLogging {
+        exceptionFormat "full"
+        events "started"
+        displayGranularity 2
     }
 }
