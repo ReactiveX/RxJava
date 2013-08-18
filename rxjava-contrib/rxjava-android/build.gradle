@@ -10,7 +10,7 @@ dependencies {
     compile project(':rxjava-core')
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
-    provided 'com.pivotallabs:robolectric:1.2'
+    provided 'org.robolectric:robolectric:2.1.1'
     provided 'com.google.android:android:4.0.1.2'
 }
 
@@ -42,8 +42,6 @@ javadoc {
 }
 
 jar {
-    exclude "rx/android/testsupport"
-
     manifest {
         name = 'rxjava-android'
         instruction 'Bundle-Vendor', 'Netflix'

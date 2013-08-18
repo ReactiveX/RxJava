@@ -4,9 +4,10 @@ import android.os.Handler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.android.testsupport.AndroidTestRunner;
 import rx.operators.AtomicObservableSubscription;
 import rx.util.functions.Func2;
 
@@ -67,7 +68,8 @@ public class HandlerThreadScheduler extends Scheduler {
         return subscription;
     }
 
-    @RunWith(AndroidTestRunner.class)
+    @RunWith(RobolectricTestRunner.class)
+    @Config(manifest=Config.NONE)
     public static final class UnitTest {
 
         @Test
