@@ -15,7 +15,10 @@
  */
 package rx.codegen;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javassist.ClassPool;
@@ -76,8 +79,9 @@ public class ObservableRewriter {
      * @throws Exception
      */
     private CtClass rewriteMethodsWithRxArgs(CtClass enclosingClass) throws Exception {
+        List<ConflictingMethodGroup> conflictingMethodGroups = getConflictingMethodGroups(enclosingClass);
         for (CtMethod method : enclosingClass.getMethods()) {
-            MethodRewriter methodRewriter = MethodRewriter.from(enclosingClass, method, adaptor);
+            MethodRewriter methodRewriter = MethodRewriter.from(enclosingClass, method, adaptor, conflictingMethodGroups);
             if (methodRewriter.needsRewrite()) {
                 if (methodRewriter.isReplacement()) {
                     enclosingClass.removeMethod(method);
@@ -89,6 +93,63 @@ public class ObservableRewriter {
             }
         }
         return enclosingClass;
+    }
+
+    /**
+     * Iterate through all the methods in the given class and find methods which would collide
+     * if they were rewritten with dynamic wrappers.  
+     * @param enclosingClass class to find conflicting methods in
+     * @return list of {@code ConflictingMethodGroup}s found in given class
+     */
+    private List<ConflictingMethodGroup> getConflictingMethodGroups(CtClass enclosingClass) throws Exception {
+        List<ConflictingMethodGroup> groups = new ArrayList<ConflictingMethodGroup>();
+
+        Map<Integer, List<CtMethod>> methodHashes = new HashMap<Integer, List<CtMethod>>();
+        for (CtMethod m: enclosingClass.getMethods()) {
+            if (enclosingClass.equals(m.getDeclaringClass())) {
+                Integer hash = getHash(m);
+                if (methodHashes.containsKey(hash)) {
+                    List<CtMethod> existingMethods = methodHashes.get(hash);
+                    existingMethods.add(m);
+                    methodHashes.put(hash, existingMethods);
+                } else {
+                    List<CtMethod> newMethodList = new ArrayList<CtMethod>();
+                    newMethodList.add(m);
+                    methodHashes.put(hash, newMethodList);
+                }
+            }
+        }
+
+        for (Integer key: methodHashes.keySet()) {
+            List<CtMethod> methodsWithSameHash = methodHashes.get(key);
+            if (methodsWithSameHash.size() > 1) {
+                ConflictingMethodGroup group = new ConflictingMethodGroup(methodsWithSameHash);
+                groups.add(group);
+            }
+        }
+
+        return groups;
+    }
+
+    //we care about collisions post-rewrite.  So take a hash over method name and arguments
+    //where every Rx {@code Action} or Rx {@code Function} is hashed to the same value
+    // in this case {@code Function}
+    private int getHash(CtMethod m) throws Exception {
+        final String delimiter = ",";
+
+        final StringBuffer buffer = new StringBuffer();
+        final String name = m.getName();
+        buffer.append(name);
+        buffer.append(delimiter);
+        for (CtClass argClass: m.getParameterTypes()) {
+            if (MethodRewriter.isRxActionType(argClass) || MethodRewriter.isRxFunctionType(argClass)) {
+                buffer.append("RxFunc");
+            } else {
+                buffer.append(argClass.getName());
+            }
+            buffer.append(delimiter);
+        }
+        return buffer.toString().hashCode();
     }
 }
 

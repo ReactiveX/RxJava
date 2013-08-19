@@ -32,6 +32,10 @@ import clojure.lang.IFn;
 import clojure.lang.RT;
 import clojure.lang.Var;
 
+/**
+ * Defines the single Clojure class {@code IFn} that should map to Rx functions
+ * For now, a unit test to prove the Clojure integration works
+ */
 public class ClojureAdaptor implements FunctionLanguageAdaptor {
 
     @Override

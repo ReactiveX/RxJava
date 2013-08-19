@@ -38,6 +38,9 @@ import rx.Subscription;
 import rx.util.functions.Func1;
 import rx.util.functions.FunctionLanguageAdaptor;
 
+/**
+ *  Defines the single JRuby class {@code RubyProc} that should map to Rx functions
+ */
 public class JRubyAdaptor implements FunctionLanguageAdaptor {
 
     @Override

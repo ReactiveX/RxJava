@@ -79,7 +79,7 @@ public class OneArgSubscribeOnMapMethodRewriter extends MethodRewriter {
     }
 
     @Override
-    protected String getRewrittenMethodBody(CtMethod method, CtClass enclosingClass, MethodRewriteRequest methodRewriteRequest) {
+    protected String getRewrittenMethodBody(MethodRewriteRequest methodRewriteRequest) {
         Class<?> func1Class = Func1.class;
         StringBuffer methodBody = new StringBuffer();
 

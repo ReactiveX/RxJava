@@ -42,7 +42,7 @@ public class NoOpMethodRewriter extends MethodRewriter {
     }
 
     @Override
-    protected String getRewrittenMethodBody(CtMethod method, CtClass enclosingClass, MethodRewriteRequest methodRewriteRequest) {
+    protected String getRewrittenMethodBody(MethodRewriteRequest methodRewriteRequest) {
         return "";
     }
 }

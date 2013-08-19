@@ -22,9 +22,11 @@ import clojure.lang.IFn;
 import clojure.lang.RT;
 import clojure.lang.Var;
 
-public class ClojureActionWrapper<T1> implements Action0, Action1<T1> {
-    private IFn ifn;
-
+/**
+ * Concrete wrapper that accepts an {@code IFn} and produces any needed Rx {@code Action}.
+ * @param <T1>
+ */
+public class ClojureActionWrapper<T1> extends ClojureArityChecker implements Action0, Action1<T1> {
     public ClojureActionWrapper(IFn ifn) {
         this.ifn = ifn;
     }

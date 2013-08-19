@@ -24,9 +24,15 @@ import rx.util.functions.FunctionLanguageAdaptor;
 
 import clojure.lang.IFn;
 
-public class ClojureFunctionWrapper<T1, T2, T3, T4, R> implements Func0<R>, Func1<T1, R>, Func2<T1, T2, R>, Func3<T1, T2, T3, R>, Func4<T1, T2, T3, T4, R> {
-    private IFn ifn;
-
+/**
+ * Concrete wrapper that accepts an {@code IFn} and produces any needed Rx {@code Function}.
+ * @param <T1>
+ * @param <T2>
+ * @param <T3>
+ * @param <T4>
+ * @param <R>
+ */
+public class ClojureFunctionWrapper<T1, T2, T3, T4, R> extends ClojureArityChecker implements Func0<R>, Func1<T1, R>, Func2<T1, T2, R>, Func3<T1, T2, T3, R>, Func4<T1, T2, T3, T4, R> {
     public ClojureFunctionWrapper(IFn ifn) {
         this.ifn = ifn;
     }

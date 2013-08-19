@@ -28,9 +28,15 @@ import rx.util.functions.Func3;
 import rx.util.functions.Func4;
 import rx.util.functions.FunctionLanguageAdaptor;
 
-public class JRubyFunctionWrapper<T1, T2, T3, T4, R> implements Func0<R>, Func1<T1, R>, Func2<T1, T2, R>, Func3<T1, T2, T3, R>, Func4<T1, T2, T3, T4, R> {
-    private RubyProc proc;
-    
+/**
+ * Concrete wrapper that accepts a {@code RubyProc} and produces any needed Rx {@code Function}.
+ * @param <T1>
+ * @param <T2>
+ * @param <T3>
+ * @param <T4>
+ * @param <R>
+ */
+public class JRubyFunctionWrapper<T1, T2, T3, T4, R> extends JRubyArityChecker implements Func0<R>, Func1<T1, R>, Func2<T1, T2, R>, Func3<T1, T2, T3, R>, Func4<T1, T2, T3, T4, R> {
     public JRubyFunctionWrapper(RubyProc proc) {
         this.proc = proc;
     }

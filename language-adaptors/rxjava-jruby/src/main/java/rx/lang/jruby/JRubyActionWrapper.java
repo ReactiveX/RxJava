@@ -24,9 +24,11 @@ import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.FunctionLanguageAdaptor;
 
-public class JRubyActionWrapper<T1> implements Action0, Action1<T1> {
-    private RubyProc proc;
-    
+/**
+ * Concrete wrapper that accepts a {@code RubyProc} and produces any needed Rx {@code Action}.
+ * @param <T1>
+ */
+public class JRubyActionWrapper<T1> extends JRubyArityChecker implements Action0, Action1<T1> {
     public JRubyActionWrapper(RubyProc proc) {
         this.proc = proc;
     }

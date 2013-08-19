@@ -15,27 +15,15 @@
  */
 package rx.lang.groovy;
 
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-
 import groovy.lang.Closure;
 
 /**
- * Concrete wrapper that accepts a {@code Closure} and produces any needed Rx {@code Action}.
- * @param <T1>
+ * Base class for Groovy adaptors that knows how to get the arity of a {@code Closure}.
  */
-public class GroovyActionWrapper<T1> extends GroovyArityChecker implements Action0, Action1<T1> {
-    public GroovyActionWrapper(Closure closure) {
-        this.closure = closure;
-    }
+public abstract class GroovyArityChecker {
+    protected Closure closure;
 
-    @Override
-    public void call() {
-        closure.call();
-    }
-
-    @Override
-    public void call(T1 t1) {
-        closure.call(t1);
+    public int getArity() {
+        return closure.getMaximumNumberOfParameters();
     }
 }

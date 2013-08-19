@@ -25,9 +25,15 @@ import rx.util.functions.FunctionLanguageAdaptor;
 
 import groovy.lang.Closure;
 
-public class GroovyFunctionWrapper<T1, T2, T3, T4, R> implements Func0<R>, Func1<T1, R>, Func2<T1, T2, R>, Func3<T1, T2, T3, R>, Func4<T1, T2, T3, T4, R> {
-    private Closure closure;
-
+/**
+ * Concrete wrapper that accepts a {@code Closure} and produces any needed Rx {@code Function}.
+ * @param <T1>
+ * @param <T2>
+ * @param <T3>
+ * @param <T4>
+ * @param <R>
+ */
+public class GroovyFunctionWrapper<T1, T2, T3, T4, R> extends GroovyArityChecker implements Func0<R>, Func1<T1, R>, Func2<T1, T2, R>, Func3<T1, T2, T3, R>, Func4<T1, T2, T3, T4, R> {
     public GroovyFunctionWrapper(Closure closure) {
         this.closure = closure;
     }

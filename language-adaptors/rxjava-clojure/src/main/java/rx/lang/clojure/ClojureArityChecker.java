@@ -13,29 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.lang.groovy;
+package rx.lang.clojure;
 
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
+import clojure.lang.IFn;
 
-import groovy.lang.Closure;
+import java.lang.reflect.Method;
 
 /**
- * Concrete wrapper that accepts a {@code Closure} and produces any needed Rx {@code Action}.
- * @param <T1>
+ * Base class for Clojure adaptors that knows how to get the arity of an {@code IFn}.
  */
-public class GroovyActionWrapper<T1> extends GroovyArityChecker implements Action0, Action1<T1> {
-    public GroovyActionWrapper(Closure closure) {
-        this.closure = closure;
-    }
+public abstract class ClojureArityChecker {
+    protected IFn ifn;
 
-    @Override
-    public void call() {
-        closure.call();
-    }
-
-    @Override
-    public void call(T1 t1) {
-        closure.call(t1);
+    //Hoping this is correct: 
+    //http://stackoverflow.com/questions/1696693/clojure-how-to-find-out-the-arity-of-function-at-runtime
+    int getArity() {
+        Class<?> ifnClass = ifn.getClass();
+        for (Method m: ifnClass.getDeclaredMethods()) {
+            return m.getParameterTypes().length;
+        }
+        return 0;
     }
 }

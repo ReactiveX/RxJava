@@ -58,49 +58,24 @@ public class AddSpecializedDynamicMethodRewriter extends MethodRewriter {
 
     @Override
     protected List<MethodRewriteRequest> getNewMethodsToRewrite(CtClass[] initialArgTypes) {
-        List<MethodRewriteRequest> reqs = new ArrayList<MethodRewriteRequest>();
-
-        try {
-            for (Class<?> nativeFunctionClass: adaptor.getAllClassesToRewrite()) {
-                Class<?> functionAdaptorClass = adaptor.getFunctionClassRewritingMap().get(nativeFunctionClass);
-                Class<?> actionAdaptorClass = adaptor.getActionClassRewritingMap().get(nativeFunctionClass);
-                
-                CtClass[] argTypes = initialMethod.getParameterTypes();
-                List<CtClass> parameters = new ArrayList<CtClass>();
-                
-                for (CtClass argType : argTypes) {
-                    if (isRxFunctionType(argType) || isRxActionType(argType)) {
-                        // needs conversion
-                        parameters.add(pool.get(nativeFunctionClass.getName()));
-                    } else {
-                        // no conversion, copy through
-                        parameters.add(argType);
-                    }
-                }
-                MethodRewriteRequest req = new MethodRewriteRequest(functionAdaptorClass, actionAdaptorClass, parameters);
-                reqs.add(req);
-            }
-        } catch (Exception ex) {
-            System.out.println("Exception while rewriting method : " + initialMethod.getName());
-        }
-        return reqs;
+        return duplicatedMethodsWithWrappedFunctionTypes();
     }
 
     @Override
-    protected String getRewrittenMethodBody(CtMethod method, CtClass enclosingClass, MethodRewriteRequest req) {
+    protected String getRewrittenMethodBody(MethodRewriteRequest req) {
         StringBuffer newBody = new StringBuffer();
         List<String> argumentList = new ArrayList<String>();
         newBody.append("{ return ");
-        if (Modifier.isStatic(method.getModifiers())) {
+        if (Modifier.isStatic(initialMethod.getModifiers())) {
             newBody.append(enclosingClass.getName() + ".");
         } else {
             newBody.append("this.");
         }
-        newBody.append(method.getName());
+        newBody.append(initialMethod.getName());
         newBody.append("(");
         try {
-            for (int i = 0; i < method.getParameterTypes().length; i++) {
-                CtClass argType = method.getParameterTypes()[i];
+            for (int i = 0; i < initialMethod.getParameterTypes().length; i++) {
+                CtClass argType = initialMethod.getParameterTypes()[i];
                 if (isRxActionType(argType) && req.getActionAdaptorClass() != null) {
                     argumentList.add(getAdaptedArg(req.getActionAdaptorClass(), i + 1));
                 } else if (isRxFunctionType(argType) && req.getFunctionAdaptorClass() != null) {

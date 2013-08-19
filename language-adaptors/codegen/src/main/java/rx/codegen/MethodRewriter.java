@@ -67,14 +67,22 @@ abstract class MethodRewriter {
      * @return a strategy for rewriting the given {@code CtMethod}
      * @throws Exception on any error
      */
-    public static MethodRewriter from(CtClass enclosingClass, CtMethod method, FunctionLanguageAdaptor adaptor) throws Exception {
-        if (isOneArgSubscribeOnMap(enclosingClass, method)) {
-            return new OneArgSubscribeOnMapMethodRewriter(enclosingClass, method, adaptor);
-        } else if (argTypeIncludesRxFunction(method)) {
-            return new AddSpecializedDynamicMethodRewriter(enclosingClass, method, adaptor);
+    public static MethodRewriter from(CtClass enclosingClass, CtMethod method, FunctionLanguageAdaptor adaptor, List<ConflictingMethodGroup> conflictingMethodGroups) throws Exception {
+        ConflictingMethodGroup conflictingMethodGroup = getConflictingMethodGroup(conflictingMethodGroups, method);
+        if (conflictingMethodGroup != null) {
+            if (conflictingMethodGroup.hasHead(method)) {
+                return new ConflictingMethodRewriter(enclosingClass, method, adaptor, conflictingMethodGroup);
+            }
         } else {
-            return new NoOpMethodRewriter();
+            if (enclosingClass.equals(method.getDeclaringClass())) {
+                if (isOneArgSubscribeOnMap(enclosingClass, method)) {
+                    return new OneArgSubscribeOnMapMethodRewriter(enclosingClass, method, adaptor);
+                } else if (argTypeIncludesRxFunction(enclosingClass, method)) {
+                    return new AddSpecializedDynamicMethodRewriter(enclosingClass, method, adaptor);
+                }
+            }
         }
+        return new NoOpMethodRewriter();
     }
 
     /**
@@ -102,7 +110,7 @@ abstract class MethodRewriter {
      *                             support for a given language)
      * @return {@code String} body of new method
      */
-    protected abstract String getRewrittenMethodBody(CtMethod method, CtClass enclosingClass, MethodRewriteRequest methodRewriteRequest);
+    protected abstract String getRewrittenMethodBody(MethodRewriteRequest methodRewriteRequest);
 
     /**
      * Return all the fully-formed {@code CtMethod}s that the rewriting process generates, given the initial method
@@ -120,11 +128,12 @@ abstract class MethodRewriter {
             CtClass[] newArgTypeArray = newArgTypes.toArray(new CtClass[newArgTypes.size()]);
             CtMethod newMethod = new CtMethod(initialMethod.getReturnType(), initialMethod.getName(), newArgTypeArray, enclosingClass);
             newMethod.setModifiers(initialMethod.getModifiers());
-            String newBody = getRewrittenMethodBody(initialMethod, enclosingClass, newMethodRewriteRequest);
-            //Uncomment this to see all the rewritten method body
-            debugMethodRewriting(initialMethod, newMethod, newBody);
+            String newBody = getRewrittenMethodBody(newMethodRewriteRequest);
             newMethod.setBody(newBody);
             methodList.add(newMethod);
+
+            //Uncomment this to see the rewritten method body
+            //debugMethodRewriting(initialMethod, newMethod, newBody);
         }
         return methodList;
     }
@@ -147,6 +156,15 @@ abstract class MethodRewriter {
         System.out.println("    " + newBody.toString());
     }
 
+    private static ConflictingMethodGroup getConflictingMethodGroup(List<ConflictingMethodGroup> conflictingMethodGroups, CtMethod method) {
+        for (ConflictingMethodGroup group: conflictingMethodGroups) {
+            if (group.getMethods().contains(method)) {
+                return group;
+            }
+        }
+        return null;
+    }
+
     /**
      * We need to special case the subscribe(Map m) method.  Check if the given method is subscribe(Map m)
      * @param enclosingClass {@code Observable} class where method lives
@@ -157,7 +175,7 @@ abstract class MethodRewriter {
     private static boolean isOneArgSubscribeOnMap(CtClass enclosingClass, CtMethod method) throws Exception {
         String methodName = method.getName();
         CtClass[] args = method.getParameterTypes();
-        if (enclosingClass.equals(method.getDeclaringClass()) && args.length == 1 && methodName.equals("subscribe")) {
+        if (args.length == 1 && methodName.equals("subscribe")) {
             if (isMap(args[0])) {
                 return true;
             }
@@ -172,7 +190,7 @@ abstract class MethodRewriter {
      * @return true iff the method has an Rx core function type in its args
      * @throws Exception
      */
-    private static boolean argTypeIncludesRxFunction(CtMethod method) throws Exception {
+    private static boolean argTypeIncludesRxFunction(CtClass enclosingClass, CtMethod method) throws Exception {
         CtClass[] args = method.getParameterTypes();
         for (CtClass methodArg: args) {
             if (isRxFunctionType(methodArg) || isRxActionType(methodArg)) {
@@ -239,6 +257,40 @@ abstract class MethodRewriter {
             }
         }
         return false;
+    }
+
+    /**
+     * Given an initial method, return {@code MethodRewriteRequest}s that replace all Rx functions with
+     * the native function equivalent, so that dynamic languages can target this method.
+     * @return {@code MethodRewriteRequest}s that dynamic languages can natively target
+     */
+    protected List<MethodRewriteRequest> duplicatedMethodsWithWrappedFunctionTypes() {
+        List<MethodRewriteRequest> reqs = new ArrayList<MethodRewriteRequest>();
+
+        try {
+            for (Class<?> nativeFunctionClass: adaptor.getAllClassesToRewrite()) {
+                Class<?> functionAdaptorClass = adaptor.getFunctionClassRewritingMap().get(nativeFunctionClass);
+                Class<?> actionAdaptorClass = adaptor.getActionClassRewritingMap().get(nativeFunctionClass);
+
+                CtClass[] argTypes = initialMethod.getParameterTypes();
+                List<CtClass> parameters = new ArrayList<CtClass>();
+
+                for (CtClass argType : argTypes) {
+                    if (isRxFunctionType(argType) || isRxActionType(argType)) {
+                        // needs conversion
+                        parameters.add(pool.get(nativeFunctionClass.getName()));
+                    } else {
+                        // no conversion, copy through
+                        parameters.add(argType);
+                    }
+                }
+                MethodRewriteRequest req = new MethodRewriteRequest(functionAdaptorClass, actionAdaptorClass, parameters);
+                reqs.add(req);
+            }
+        } catch (Exception ex) {
+            System.out.println("Exception while rewriting method : " + initialMethod.getName());
+        }
+        return reqs;
     }
 
     /**

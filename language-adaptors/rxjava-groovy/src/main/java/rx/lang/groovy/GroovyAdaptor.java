@@ -25,6 +25,9 @@ import groovy.lang.Closure;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ *  Defines the single Groovy class {@code Closure} that should map to Rx functions
+ */
 public class GroovyAdaptor implements FunctionLanguageAdaptor {
 
     @Override
@@ -48,3 +51,4 @@ public class GroovyAdaptor implements FunctionLanguageAdaptor {
         return groovyClasses;
     }
 }
+
