@@ -13,8 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.util.functions;
+package rx.lang.jruby;
 
-public interface Action3<T1, T2, T3> extends Action {
-    public void call(T1 t1, T2 t2, T3 t3);
+import org.jruby.RubyProc;
+
+/**
+ * Base class for JRuby adaptors that knows how to get the arity of a {@code RubyProc}.
+ */
+public abstract class JRubyArityChecker {
+    protected RubyProc proc;
+    
+    public int getArity() {
+        return (int) proc.arity().getLongValue();
+    }
 }

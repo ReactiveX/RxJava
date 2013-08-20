@@ -13,8 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.util.functions;
+package rx.lang.clojure;
 
-public interface Action3<T1, T2, T3> extends Action {
-    public void call(T1 t1, T2 t2, T3 t3);
+import clojure.lang.IFn;
+
+import java.lang.reflect.Method;
+
+/**
+ * Base class for Clojure adaptors that knows how to get the arity of an {@code IFn}.
+ */
+public abstract class ClojureArityChecker {
+    protected IFn ifn;
+
+    //Hoping this is correct: 
+    //http://stackoverflow.com/questions/1696693/clojure-how-to-find-out-the-arity-of-function-at-runtime
+    int getArity() {
+        Class<?> ifnClass = ifn.getClass();
+        for (Method m: ifnClass.getDeclaredMethods()) {
+            return m.getParameterTypes().length;
+        }
+        return 0;
+    }
 }

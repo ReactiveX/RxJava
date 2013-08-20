@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'osgi'
+
+dependencies { 
+    compile project(':rxjava-core')
+    compile 'org.javassist:javassist:3.17.1-GA'
+
+    provided 'junit:junit:4.10'
+}
+
+jar {
+    manifest {
+        name = 'rxjava-codegen'
+        instruction 'Bundle-Vendor', 'Netflix'
+        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
+        instruction 'Fragment-Host', 'com.netflix.rxjava.core'
+    }
+}

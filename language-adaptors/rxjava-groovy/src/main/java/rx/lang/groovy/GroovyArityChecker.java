@@ -13,8 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.util.functions;
+package rx.lang.groovy;
 
-public interface Action3<T1, T2, T3> extends Action {
-    public void call(T1 t1, T2 t2, T3 t3);
+import groovy.lang.Closure;
+
+/**
+ * Base class for Groovy adaptors that knows how to get the arity of a {@code Closure}.
+ */
+public abstract class GroovyArityChecker {
+    protected Closure closure;
+
+    public int getArity() {
+        return closure.getMaximumNumberOfParameters();
+    }
 }

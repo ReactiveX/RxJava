@@ -15,16 +15,10 @@
  */
 package rx.util.functions;
 
-public interface FunctionLanguageAdaptor {
+import java.util.Map;
+import java.util.Set;
 
-    /**
-     * Invoke the function and return the results.
-     * 
-     * @param function
-     * @param args
-     * @return Object results from function execution
-     */
-    Object call(Object function, Object[] args);
+public interface FunctionLanguageAdaptor {
 
     /**
      * The Class of the Function that this adaptor serves.
@@ -35,5 +29,25 @@ public interface FunctionLanguageAdaptor {
      * 
      * @return Class[] of classes that this adaptor should be invoked for.
      */
-    public Class<?>[] getFunctionClass();
+    //public Class<?>[] getFunctionClass();
+
+    /**
+     * Map detailing how to rewrite a native function class into an Rx {@code Action}
+     * Example: for Groovy, a 1-element Map : { groovy.lang.Closure -> GroovyActionWrapper }
+     * @return map for rewriting native functions to Rx {@code Action}s.
+     */
+    public Map<Class<?>, Class<?>> getActionClassRewritingMap();
+
+    /**
+     * Map detailing how to rewrite a native function class into an Rx {@code Function}
+     * Example: for Groovy, a 1-element Map : { groovy.lang.Closure -> GroovyFunctionWrapper }
+     * @return map for rewriting native functions to Rx {@code Function}s.
+     */
+    public Map<Class<?>, Class<?>> getFunctionClassRewritingMap();
+
+    /**
+     * All native function classes that require translation into the Rx world
+     * @return set of all native function classes
+     */
+    public Set<Class<?>> getAllClassesToRewrite();
 }

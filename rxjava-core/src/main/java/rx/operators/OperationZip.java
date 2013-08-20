@@ -299,7 +299,7 @@ public final class OperationZip {
         @SuppressWarnings("unchecked")
         @Test
         public void testCollectionSizeDifferentThanFunction() {
-            FuncN<String> zipr = Functions.from(getConcatStringIntegerIntArrayZipr());
+            FuncN<String> zipr = Functions.fromFunction(getConcatStringIntegerIntArrayZipr());
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);

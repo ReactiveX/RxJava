@@ -13,8 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.util.functions;
+package rx.lang.clojure;
 
-public interface Action3<T1, T2, T3> extends Action {
-    public void call(T1 t1, T2 t2, T3 t3);
+import rx.util.functions.Action0;
+import rx.util.functions.Action1;
+
+import clojure.lang.IFn;
+import clojure.lang.RT;
+import clojure.lang.Var;
+
+/**
+ * Concrete wrapper that accepts an {@code IFn} and produces any needed Rx {@code Action}.
+ * @param <T1>
+ */
+public class ClojureActionWrapper<T1> extends ClojureArityChecker implements Action0, Action1<T1> {
+    public ClojureActionWrapper(IFn ifn) {
+        this.ifn = ifn;
+    }
+
+    @Override
+    public void call() {
+        ifn.invoke();
+    }
+
+    @Override
+    public void call(T1 t1) {
+        ifn.invoke(t1);
+    }
 }

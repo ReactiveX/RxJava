@@ -21,20 +21,27 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.concurrency.TestScheduler;
 import rx.observables.GroupedObservable;
 import rx.subscriptions.Subscriptions;
+import rx.util.BufferClosings;
+import rx.util.BufferOpenings;
+import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
 def class ObservableTests {
@@ -45,9 +52,48 @@ def class ObservableTests {
     @Mock
     Observer<Integer> w;
 
+    @Mock Observer<List<String>> observer;
+
+    TestScheduler scheduler;
+
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
+        scheduler = new TestScheduler();
+    }
+
+    @Test
+    public void testSubscribeWithMap() { 
+        def o = Observable.from(1, 2, 3)
+        def subscribeMap = [
+            "onNext"      : { i -> a.received(i) },
+            "onError"     : { e -> a.received(e) },
+            "onCompleted" : { a.received("COMPLETE") }
+        ]
+        o.subscribe(subscribeMap)
+        verify(a, times(1)).received(1)
+        verify(a, times(1)).received(2)
+        verify(a, times(1)).received(3)
+        verify(a, times(1)).received("COMPLETE")
+    }
+
+    @Test
+    public void testSubscribeWithMapAndScheduler() { 
+        def o = Observable.from(1, 2, 3)
+        def subscribeMap = [
+            "onNext"      : { i -> a.received(i) },
+            "onError"     : { e -> a.received(e) },
+            "onCompleted" : { a.received("COMPLETE") }
+        ]
+        o.subscribe(subscribeMap, scheduler)
+        verify(a, never()).received(any(Object.class))
+    
+        scheduler.advanceTimeBy(5, TimeUnit.SECONDS)   
+
+        verify(a, times(1)).received(1)
+        verify(a, times(1)).received(2)
+        verify(a, times(1)).received(3)
+        verify(a, times(1)).received("COMPLETE")
     }
 
     @Test
@@ -306,7 +352,107 @@ def class ObservableTests {
           
           assertEquals(6, count);
     }
-    
+
+    /*@Test
+    public void testStaticBufferOfCollectedValues() { 
+        def source = Observable.create(
+            { observer ->
+                push(observer, "one", 10)
+                push(observer, "two", 60)
+                push(observer, "three", 110)
+                push(observer, "four", 160)
+                push(observer, "five", 210)
+                complete(observer, 250)
+                return Subscriptions.empty()
+            }
+        )
+
+        def closer = { ->
+            return Observable.create(
+                { observer ->
+                    push(observer, BufferClosings.create(), 100)
+                    complete(observer, 101)
+                    return Subscriptions.empty()
+                }
+            )
+        }
+
+        def buffered = Observable.create(buffer(source, closer))
+        buffered.subscribe(observer)
+
+        InOrder inOrder = Mockito.inOrder(observer)
+        scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS)
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"))
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four"))
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("five"))
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class))
+        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class))
+        inOrder.verify(observer, Mockito.times(1)).onCompleted()
+    }*/
+
+    @Test
+    public void testInstanceBufferWithOpeningAndClosing() { 
+        def source = Observable.create(
+            { observer ->
+                push(observer, "one", 10)
+                push(observer, "two", 60)
+                push(observer, "three", 110)
+                push(observer, "four", 160)
+                push(observer, "five", 210)
+                complete(observer, 500)
+                return Subscriptions.empty()
+            }
+        )
+
+        def openings = Observable.create(
+            { observer -> 
+                push(observer, BufferOpenings.create(), 50)
+                push(observer, BufferOpenings.create(), 200)
+                complete(observer, 250)
+                return Subscriptions.empty()
+            }
+        )
+
+        def closer = { 
+            opening -> Observable.create(
+                { observer ->
+                    push(observer, BufferClosings.create(), 100)
+                    complete(observer, 101)
+                    return Subscriptions.empty()
+                }
+            )
+        }
+
+        def buffered = source.buffer(openings, closer)
+        buffered.subscribe(observer)
+
+        InOrder inOrder = Mockito.inOrder(observer)
+        scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS)
+        inOrder.verify(observer, Mockito.times(1)).onNext(["two", "three"])
+        inOrder.verify(observer, Mockito.times(1)).onNext(["five"])
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class))
+        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class))
+        inOrder.verify(observer, Mockito.times(1)).onCompleted()
+    }
+
+    def push(observer, value, delay) { 
+        Action0 onNext = new Action0() { 
+            def void call() { 
+                observer.onNext(value)
+            }
+        }
+        scheduler.schedule(onNext, delay, TimeUnit.MILLISECONDS)
+    }
+
+    def complete(observer, delay) { 
+        Action0 onCompleted = new Action0() { 
+            def void call() { 
+                observer.onCompleted()
+            }
+        }
+
+        scheduler.schedule(onCompleted, delay, TimeUnit.MILLISECONDS)
+    }
 
     def class AsyncObservable implements Func1<Observer<Integer>, Subscription> {
 

@@ -195,12 +195,12 @@ public class PublishSubject<T> extends Subject<T, T> {
         @Test
         public void test() {
             PublishSubject<Integer> subject = PublishSubject.create();
-            final AtomicReference<List<Notification<String>>> actualRef = new AtomicReference<List<Notification<String>>>();
+            final AtomicReference<List<Notification<Integer>>> actualRef = new AtomicReference<List<Notification<Integer>>>();
 
             Observable<List<Notification<Integer>>> wNotificationsList = subject.materialize().toList();
-            wNotificationsList.subscribe(new Action1<List<Notification<String>>>() {
+            wNotificationsList.subscribe(new Action1<List<Notification<Integer>>>() {
                 @Override
-                public void call(List<Notification<String>> actual) {
+                public void call(List<Notification<Integer>> actual) {
                     actualRef.set(actual);
                 }
             });
@@ -245,9 +245,8 @@ public class PublishSubject<T> extends Subject<T, T> {
 
         @Test
         public void testCompleted() {
-            PublishSubject<Object> subject = PublishSubject.create();
+            PublishSubject<String> subject = PublishSubject.create();
 
-            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -256,7 +255,6 @@ public class PublishSubject<T> extends Subject<T, T> {
             subject.onNext("three");
             subject.onCompleted();
 
-            @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
             subject.subscribe(anotherObserver);
 
@@ -286,9 +284,8 @@ public class PublishSubject<T> extends Subject<T, T> {
 
         @Test
         public void testError() {
-            PublishSubject<Object> subject = PublishSubject.create();
+            PublishSubject<String> subject = PublishSubject.create();
 
-            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -297,7 +294,6 @@ public class PublishSubject<T> extends Subject<T, T> {
             subject.onNext("three");
             subject.onError(testException);
 
-            @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
             subject.subscribe(anotherObserver);
 
@@ -320,9 +316,8 @@ public class PublishSubject<T> extends Subject<T, T> {
 
         @Test
         public void testSubscribeMidSequence() {
-            PublishSubject<Object> subject = PublishSubject.create();
+            PublishSubject<String> subject = PublishSubject.create();
 
-            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -331,7 +326,6 @@ public class PublishSubject<T> extends Subject<T, T> {
 
             assertObservedUntilTwo(aObserver);
 
-            @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
             subject.subscribe(anotherObserver);
 
@@ -353,9 +347,8 @@ public class PublishSubject<T> extends Subject<T, T> {
 
         @Test
         public void testUnsubscribeFirstObserver() {
-            PublishSubject<Object> subject = PublishSubject.create();
+            PublishSubject<String> subject = PublishSubject.create();
 
-            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             Subscription subscription = subject.subscribe(aObserver);
 
@@ -365,7 +358,6 @@ public class PublishSubject<T> extends Subject<T, T> {
             subscription.unsubscribe();
             assertObservedUntilTwo(aObserver);
 
-            @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
             subject.subscribe(anotherObserver);
 
@@ -397,9 +389,8 @@ public class PublishSubject<T> extends Subject<T, T> {
          */
         @Test
         public void testUnsubscribeAfterOnCompleted() {
-            PublishSubject<Object> subject = PublishSubject.create();
+            PublishSubject<String> subject = PublishSubject.create();
 
-            @SuppressWarnings("unchecked")
             Observer<String> anObserver = mock(Observer.class);
             subject.subscribe(anObserver);
 
@@ -426,7 +417,7 @@ public class PublishSubject<T> extends Subject<T, T> {
 
         @Test
         public void testUnsubscribeAfterOnError() {
-            PublishSubject<Object> subject = PublishSubject.create();
+            PublishSubject<String> subject = PublishSubject.create();
             RuntimeException exception = new RuntimeException("failure");
 
             @SuppressWarnings("unchecked")
