@@ -34,8 +34,6 @@ tasks.jar {
     }
     from(codeGenOutputDir)
 
-    exclude('**/*$UnitTest*')
-
     manifest {
         name = 'rxjava-jruby'
         instruction 'Bundle-Vendor', 'Netflix'

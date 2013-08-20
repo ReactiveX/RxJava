@@ -68,8 +68,6 @@ tasks.jar {
     }
     from(codeGenOutputDir)
 
-    exclude('**/*$UnitTest*')
-
     manifest {
         name = 'rxjava-clojure'
         instruction 'Bundle-Vendor', 'Netflix'

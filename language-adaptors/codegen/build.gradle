@@ -12,8 +12,6 @@ dependencies {
 }
 
 jar {
-    exclude('**/*$UnitTest*')
-
     manifest {
         name = 'rxjava-codegen'
         instruction 'Bundle-Vendor', 'Netflix'

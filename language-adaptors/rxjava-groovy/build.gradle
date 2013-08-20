@@ -39,8 +39,6 @@ tasks.jar {
     }
     from(codeGenOutputDir)
 
-    exclude('**/*$UnitTest*')
-
     manifest {
         name = 'rxjava-groovy'
         instruction 'Bundle-Vendor', 'Netflix'
