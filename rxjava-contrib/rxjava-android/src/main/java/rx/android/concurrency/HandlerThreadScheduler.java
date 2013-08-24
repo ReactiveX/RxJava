@@ -8,7 +8,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.operators.AtomicObservableSubscription;
+import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Func2;
 
 import java.util.concurrent.TimeUnit;
@@ -57,7 +57,7 @@ public class HandlerThreadScheduler extends Scheduler {
      */
     @Override
     public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit) {
-        final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        final SafeObservableSubscription subscription = new SafeObservableSubscription();
         final Scheduler _scheduler = this;
         handler.postDelayed(new Runnable() {
             @Override
