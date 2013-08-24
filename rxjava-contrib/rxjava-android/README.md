@@ -1,5 +1,6 @@
 # rxjava-android
 
+Android specific bindings for Rx.
 
 # Binaries
 
