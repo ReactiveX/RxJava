@@ -1,17 +1,15 @@
-apply plugin: 'java'
 apply plugin: 'clojure'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 apply plugin: 'osgi'
 
 dependencies {
     compile project(':rxjava-core')
-    provided 'org.clojure:clojure:1.4.+'
+
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
     
     // clojure
-    testCompile 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
+    compile 'org.clojure:clojure:1.4.+'
+    compile 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
 }
 
 /*
@@ -26,7 +24,6 @@ buildscript {
 }
 
 repositories {
-  mavenCentral()
   clojarsRepo()
 }
 
@@ -37,44 +34,15 @@ eclipse {
   project {
     natures "ccw.nature"
   }
-  classpath {
-    plusConfigurations += configurations.provided
-    downloadSources = true
-    downloadJavadoc = true
-  }
 }
 
-idea {
-	module {
-		// include 'provided' dependencies on the classpath
-		scopes.PROVIDED.plus += configurations.provided
-	}
+tasks.clojureTest {  
+    classpath = classpath + configurations.provided
 }
 
-
-eclipse {
-  classpath {
-    // include 'provided' dependencies on the classpath
-    plusConfigurations += configurations.provided
-
-    downloadSources = true
-    downloadJavadoc = true
-  }
+tasks.compileExamplesClojure {  
+    classpath = classpath + configurations.provided
 }
-
-// include /src/examples folder
-sourceSets {
-    examples
-}
-
-// make 'examples' use the same classpath
-configurations {
-    examplesCompile.extendsFrom compile
-    examplesRuntime.extendsFrom runtime
-}
-
-// include 'examples' in build task
-build.dependsOn examplesClasses
 
 jar {
     manifest {
