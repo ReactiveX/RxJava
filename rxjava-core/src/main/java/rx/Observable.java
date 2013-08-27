@@ -100,7 +100,6 @@ import rx.util.functions.Func3;
 import rx.util.functions.Func4;
 import rx.util.functions.FuncN;
 import rx.util.functions.Function;
-import rx.util.functions.FunctionLanguageAdaptor;
 import rx.util.functions.Functions;
 
 /**
