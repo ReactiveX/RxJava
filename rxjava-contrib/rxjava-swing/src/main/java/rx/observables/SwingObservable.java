@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.swing.AbstractButton;
 
 import rx.Observable;
+import static rx.Observable.filter;
 import rx.swing.sources.AbstractButtonSource;
 import rx.swing.sources.ComponentEventSource;
 import rx.swing.sources.KeyEventSource;
