@@ -85,7 +85,7 @@ public enum KeyEventSource { ; // no instances
      * @see SwingObservable.fromKeyEvents(Component, Set)
      */
     public static Observable<Set<Integer>> currentlyPressedKeysOf(Component component) {
-        return Observable.<KeyEvent, Set<Integer>>scan(fromKeyEventsOf(component), new HashSet<Integer>(), new Func2<Set<Integer>, KeyEvent, Set<Integer>>() {
+        return fromKeyEventsOf(component).<Set<Integer>>scan(new HashSet<Integer>(), new Func2<Set<Integer>, KeyEvent, Set<Integer>>() {
             @Override
             public Set<Integer> call(Set<Integer> pressedKeys, KeyEvent event) {
                 Set<Integer> afterEvent = new HashSet<Integer>(pressedKeys);
