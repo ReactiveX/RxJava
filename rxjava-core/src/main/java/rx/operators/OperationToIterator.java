@@ -49,10 +49,10 @@ public class OperationToIterator {
      *            the type of source.
      * @return the iterator that could be used to iterate over the elements of the observable.
      */
-    public static <T> Iterator<T> toIterator(Observable<T> that) {
+    public static <T> Iterator<T> toIterator(Observable<T> source) {
         final BlockingQueue<Notification<T>> notifications = new LinkedBlockingQueue<Notification<T>>();
 
-        Observable.materialize(that).subscribe(new Observer<Notification<T>>() {
+        source.materialize().subscribe(new Observer<Notification<T>>() {
             @Override
             public void onCompleted() {
                 // ignore
