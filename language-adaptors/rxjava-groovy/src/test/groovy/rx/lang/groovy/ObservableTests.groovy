@@ -58,7 +58,7 @@ def class ObservableTests {
 
     @Test
     public void testFilter() {
-        Observable.filter(Observable.from(1, 2, 3), {it >= 2}).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).filter({it >= 2}).subscribe({ result -> a.received(result)});
         verify(a, times(0)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(1)).received(3);
@@ -82,7 +82,7 @@ def class ObservableTests {
 
     @Test
     public void testMap2() {
-        Observable.map(Observable.from(1, 2, 3), {'hello_' + it}).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).map({'hello_' + it}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received("hello_" + 1);
         verify(a, times(1)).received("hello_" + 2);
         verify(a, times(1)).received("hello_" + 3);
@@ -90,7 +90,7 @@ def class ObservableTests {
 
     @Test
     public void testMaterialize() {
-        Observable.materialize(Observable.from(1, 2, 3)).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).materialize().subscribe({ result -> a.received(result)});
         // we expect 4 onNext calls: 3 for 1, 2, 3 ObservableNotification.OnNext and 1 for ObservableNotification.OnCompleted
         verify(a, times(4)).received(any(Notification.class));
         verify(a, times(0)).error(any(Exception.class));
@@ -162,7 +162,7 @@ def class ObservableTests {
 
     @Test
     public void testSkipTake() {
-        Observable.skip(Observable.from(1, 2, 3), 1).take(1).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).skip(1).take(1).subscribe({ result -> a.received(result)});
         verify(a, times(0)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(0)).received(3);
@@ -170,7 +170,7 @@ def class ObservableTests {
 
     @Test
     public void testSkip() {
-        Observable.skip(Observable.from(1, 2, 3), 2).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).skip(2).subscribe({ result -> a.received(result)});
         verify(a, times(0)).received(1);
         verify(a, times(0)).received(2);
         verify(a, times(1)).received(3);
@@ -178,7 +178,7 @@ def class ObservableTests {
 
     @Test
     public void testTake() {
-        Observable.take(Observable.from(1, 2, 3), 2).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).take(2).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(0)).received(3);
@@ -192,7 +192,7 @@ def class ObservableTests {
 
     @Test
     public void testTakeWhileViaGroovy() {
-        Observable.takeWhile(Observable.from(1, 2, 3), { x -> x < 3}).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).takeWhile( { x -> x < 3}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(0)).received(3);
@@ -200,7 +200,7 @@ def class ObservableTests {
 
     @Test
     public void testTakeWhileWithIndexViaGroovy() {
-        Observable.takeWhileWithIndex(Observable.from(1, 2, 3), { x, i -> i < 2}).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).takeWhileWithIndex({ x, i -> i < 2}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(0)).received(3);
@@ -213,23 +213,11 @@ def class ObservableTests {
     }
 
     @Test
-    public void testToSortedListStatic() {
-        Observable.toSortedList(Observable.from(1, 3, 2, 5, 4)).subscribe({ result -> a.received(result)});
-        verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
-    }
-
-    @Test
     public void testToSortedListWithFunction() {
         new TestFactory().getNumbers().toSortedList({a, b -> a - b}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
     }
 
-    @Test
-    public void testToSortedListWithFunctionStatic() {
-        Observable.toSortedList(Observable.from(1, 3, 2, 5, 4), {a, b -> a - b}).subscribe({ result -> a.received(result)});
-        verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
-    }
-    
     @Test
     public void testForEach() {
         Observable.create(new AsyncObservable()).toBlockingObservable().forEach({ result -> a.received(result)});
