@@ -15,10 +15,6 @@
  */
 package rx;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +23,6 @@ import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-
 import rx.concurrency.Schedulers;
 import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
@@ -35,6 +30,7 @@ import rx.observables.GroupedObservable;
 import rx.operators.OperationAll;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCache;
+import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
@@ -1085,6 +1081,38 @@ public class Observable<T> {
         return create(OperationZip.zip(w0, w1, w2, w3, reduceFunction));
     }
 
+    /**
+     * Combines the given observables, emitting an event containing an aggregation of the latest values of each of the source observables
+     * each time an event is received from one of the source observables, where the aggregation is defined by the given function.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/combineLatest.png">
+     *
+     * @param w0
+     * The first source observable.
+     * @param w1
+     * The second source observable.
+     * @param combineFunction
+     * The aggregation function used to combine the source observable values.
+     * @return An Observable that combines the source Observables with the given combine function
+     */
+    public static <R, T0, T1> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(w0, w1, combineFunction));
+    }
+
+    /**
+     * @see #combineLatest(Observable, Observable, Func2)
+     */
+    public static <R, T0, T1, T2> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(w0, w1, w2, combineFunction));
+    }
+
+    /**
+     * @see #combineLatest(Observable, Observable, Func2)
+     */
+    public static <R, T0, T1, T2, T3> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(w0, w1, w2, w3, combineFunction));
+    }
+    
     /**
      * Creates an Observable which produces buffers of collected values.
      * 

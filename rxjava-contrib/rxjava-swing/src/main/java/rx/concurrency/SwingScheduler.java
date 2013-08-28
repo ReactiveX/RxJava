@@ -38,7 +38,6 @@ import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-import rx.util.functions.Func0;
 import rx.util.functions.Func2;
 
 /**
@@ -187,14 +186,12 @@ public final class SwingScheduler extends Scheduler {
             final CountDownLatch latch = new CountDownLatch(4);
 
             final Action0 innerAction = mock(Action0.class);
-            final Action0 unsubscribe = mock(Action0.class);
-            final Func0<Subscription> action = new Func0<Subscription>() {
+            final Action0 action = new Action0() {
                 @Override
-                public Subscription call() {
+                public void call() {
                     try {
                         innerAction.call();
                         assertTrue(SwingUtilities.isEventDispatchThread());
-                        return Subscriptions.create(unsubscribe);
                     } finally {
                         latch.countDown();
                     }
@@ -210,7 +207,6 @@ public final class SwingScheduler extends Scheduler {
             sub.unsubscribe();
             waitForEmptyEventQueue();
             verify(innerAction, times(4)).call();
-            verify(unsubscribe, times(4)).call();
         }
 
         @Test
