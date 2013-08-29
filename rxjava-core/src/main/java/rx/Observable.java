@@ -77,6 +77,7 @@ import rx.util.BufferOpening;
 import rx.util.OnErrorNotImplementedException;
 import rx.util.Range;
 import rx.util.Timestamped;
+import rx.util.functions.Action;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
@@ -247,56 +248,6 @@ public class Observable<T> {
     private Subscription protectivelyWrapAndSubscribe(Observer<T> o) {
         SafeObservableSubscription subscription = new SafeObservableSubscription();
         return subscription.wrap(subscribe(new SafeObserver<T>(subscription, o)));
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Subscription subscribe(final Map<String, Object> callbacks) {
-        if (callbacks == null) {
-            throw new RuntimeException("callbacks map can not be null");
-        }
-        Object _onNext = callbacks.get("onNext");
-        if (_onNext == null) {
-            throw new RuntimeException("'onNext' key must contain an implementation");
-        }
-        // lookup and memoize onNext
-        final FuncN onNext = Functions.from(_onNext);
-
-        /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
-         */
-        return protectivelyWrapAndSubscribe(new Observer() {
-
-            @Override
-            public void onCompleted() {
-                Object onComplete = callbacks.get("onCompleted");
-                if (onComplete != null) {
-                    Functions.from(onComplete).call();
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                handleError(e);
-                Object onError = callbacks.get("onError");
-                if (onError != null) {
-                    Functions.from(onError).call(e);
-                } else {
-                    throw new OnErrorNotImplementedException(e);
-                }
-            }
-
-            @Override
-            public void onNext(Object args) {
-                onNext.call(args);
-            }
-
-        });
-    }
-
-    public Subscription subscribe(final Map<String, Object> callbacks, Scheduler scheduler) {
-        return subscribeOn(scheduler).subscribe(callbacks);
     }
 
     public Subscription subscribe(final Action1<T> onNext) {
@@ -1086,13 +1037,13 @@ public class Observable<T> {
      * each time an event is received from one of the source observables, where the aggregation is defined by the given function.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/combineLatest.png">
-     *
+     * 
      * @param w0
-     * The first source observable.
+     *            The first source observable.
      * @param w1
-     * The second source observable.
+     *            The second source observable.
      * @param combineFunction
-     * The aggregation function used to combine the source observable values.
+     *            The aggregation function used to combine the source observable values.
      * @return An Observable that combines the source Observables with the given combine function
      */
     public static <R, T0, T1> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> combineFunction) {
@@ -1112,7 +1063,7 @@ public class Observable<T> {
     public static <R, T0, T1, T2, T3> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(w0, w1, w2, w3, combineFunction));
     }
-    
+
     /**
      * Creates an Observable which produces buffers of collected values.
      * 

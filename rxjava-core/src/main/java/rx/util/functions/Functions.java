@@ -15,9 +15,6 @@
  */
 package rx.util.functions;
 
-import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-
 public class Functions {
 
     /**
@@ -26,17 +23,11 @@ public class Functions {
      * @param function
      */
     @SuppressWarnings({ "rawtypes" })
-    public static FuncN from(final Object function) {
+    public static FuncN from(final Function function) {
         if (function == null) {
             throw new RuntimeException("function is null. Can't send arguments to null function.");
         }
-
-        /* check for typed Rx Function implementation first */
-        if (function instanceof Function) {
-            return fromFunction((Function) function);
-        }
-        // no support found
-        throw new RuntimeException("Unsupported closure type: " + function.getClass().getSimpleName());
+        return fromFunction(function);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
