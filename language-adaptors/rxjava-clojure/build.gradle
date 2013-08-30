@@ -4,12 +4,9 @@ apply plugin: 'osgi'
 dependencies {
     compile project(':rxjava-core')
 
-    provided 'junit:junit-dep:4.10'
-    provided 'org.mockito:mockito-core:1.8.5'
-    
     // clojure
     compile 'org.clojure:clojure:1.4.+'
-    compile 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
+    //compile 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
 }
 
 /*
@@ -20,7 +17,7 @@ warnOnReflection = true
 
 buildscript {
   repositories { maven { url "http://clojars.org/repo" } }
-  dependencies { classpath "clojuresque:clojuresque:1.5.4" }
+  dependencies { classpath "clojuresque:clojuresque:1.5.8" }
 }
 
 repositories {

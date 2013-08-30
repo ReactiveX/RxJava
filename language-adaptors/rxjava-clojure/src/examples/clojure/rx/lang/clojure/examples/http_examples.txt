@@ -1,0 +1,58 @@
+(ns rx.lang.clojure.examples.http-examples
+  (:require [rx.lang.clojure.interop :as rx]
+            [clj-http.client :as http])
+  (:import rx.Observable rx.subscriptions.Subscriptions))
+
+; NOTE on naming conventions. I'm using camelCase names (against clojure convention)
+; in this file as I'm purposefully keeping functions and methods across
+; different language implementations in-sync for easy comparison.
+
+(defn fetchWikipediaArticleAsynchronously [wikipediaArticleNames]
+  "Fetch a list of Wikipedia articles asynchronously.
+
+   return Observable<String> of HTML"
+  (Observable/create
+    (rx/fn [observer]
+      (let [f (future
+                (doseq [articleName wikipediaArticleNames]
+                  (-> observer (.onNext (http/get (str "http://en.wikipedia.org/wiki/" articleName)))))
+                ; after sending response to onnext we complete the sequence
+                (-> observer .onCompleted))]
+        ; a subscription that cancels the future if unsubscribed
+        (Subscriptions/create (rx/action [] (future-cancel f)))))))
+
+; To see output
+(comment
+  (-> (fetchWikipediaArticleAsynchronously ["Tiger" "Elephant"])
+    (.subscribe (rx/action [v] (println "--- Article ---\n" (subs (:body v) 0 125) "...")))))
+
+
+; --------------------------------------------------
+; Error Handling
+; --------------------------------------------------
+
+(defn fetchWikipediaArticleAsynchronouslyWithErrorHandling [wikipediaArticleNames]
+  "Fetch a list of Wikipedia articles asynchronously
+   with proper error handling.
+
+   return Observable<String> of HTML"
+  (Observable/create
+    (rx/fn [observer]
+      (let [f (future
+                (try
+                  (doseq [articleName wikipediaArticleNames]
+                    (-> observer (.onNext (http/get (str "http://en.wikipedia.org/wiki/" articleName)))))
+                  ;(catch Exception e (prn "exception")))
+                  (catch Exception e (-> observer (.onError e))))
+                ; after sending response to onNext we complete the sequence
+                (-> observer .onCompleted))]
+        ; a subscription that cancels the future if unsubscribed
+        (Subscriptions/create (rx/action [] (future-cancel f)))))))
+
+; To see output
+(comment
+  (-> (fetchWikipediaArticleAsynchronouslyWithErrorHandling ["Tiger" "NonExistentTitle" "Elephant"])
+    (.subscribe (rx/action [v] (println "--- Article ---\n" (subs (:body v) 0 125) "..."))
+                (rx/action [e] (println "--- Error ---\n" (.getMessage e))))))
+
+

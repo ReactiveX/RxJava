@@ -1,5 +1,7 @@
 (ns rx.lang.clojure.examples.video-example
-  (:import [rx Observable Observer Subscription] rx.subscriptions.Subscriptions))
+  (:require [rx.lang.clojure.interop :as rx])
+  (:import [rx Observable Observer Subscription]
+           rx.subscriptions.Subscriptions))
 
 ; Adapted from language-adaptors/rxjava-groovy/src/examples/groovy/rx/lang/groovy/examples/VideoExample.groovy
 
@@ -21,11 +23,11 @@
   ; how progressive rendering could work
   (println "---- sequence of video dictionaries ----")
   (-> (get-video-grid-for-display 1)
-    (.subscribe #(locking print-lock (println %))
-                #(locking print-lock (println "Error: " %))
-                #(do
-                   (println "Finished example 1")
-                   (on-complete)))))
+    (.subscribe (rx/action [v] (locking print-lock (println v)))
+                (rx/action [v] (locking print-lock (println "Error: " v)))
+                (rx/action []
+                  (println "Finished example 1")
+                  (on-complete)))))
 
 (defn example2
   [on-complete]
@@ -34,9 +36,9 @@
   ; for document style responses (most webservices)
   (-> (get-video-grid-for-display 1)
     .toList
-    (.subscribe #(println "\n ---- single list of video dictionaries ----\n" %)
-                #(println "Error: " %)
-                #(do
+    (.subscribe (rx/action [v] (println "\n ---- single list of video dictionaries ----\n" v))
+                (rx/action [v] (println "Error: " v))
+                (rx/action []
                    (println "Finished Example 2")
                    (println "Exiting")
                    (on-complete)))))
@@ -61,27 +63,27 @@
   "
   [user-id]
   (-> (get-list-of-lists user-id)
-    (.mapMany (fn [list]
+    (.mapMany (rx/fn [list]
                 ; for each VideoList we want to fetch the videos
                 (-> (video-list->videos list)
                   (.take 10) ; we only want the first 10 of each list
-                  (.mapMany (fn [video]
+                  (.mapMany (rx/fn [video]
                               ; for each video we want to fetch metadata
                               (let [m (-> (video->metadata video)
-                                          (.map (fn [md]
+                                          (.map (rx/fn [md]
                                                   ; transform to the data and format we want
                                                   {:title  (:title md)
                                                   :length (:duration md) })))
                                     b (-> (video->bookmark video user-id)
-                                          (.map (fn [position]
+                                          (.map (rx/fn [position]
                                                   {:bookmark position})))
                                     r (-> (video->rating video user-id)
-                                          (.map (fn [rating]
+                                          (.map (rx/fn [rating]
                                                   {:rating {:actual    (:actual-star-rating rating)
                                                             :average   (:average-star-rating rating)
                                                             :predicted (:predicted-star-rating rating) }})))]
                                 ; join these together into a single, merged map for each video
-                                (Observable/zip m b r (fn [m b r]
+                                (Observable/zip m b r (rx/fn [m b r]
                                                         (merge {:id video} m b r)))))))))))
 
 
@@ -91,9 +93,10 @@
   "Returns an observable that executes (f observer) in a future, returning a
   subscription that will cancel the future."
   [f]
-  (Observable/create (fn [^Observer observer]
+  (Observable/create (rx/fn [^Observer observer]
+                       (println "Starting f")
                        (let [f (future (f observer))]
-                         (Subscriptions/create #(future-cancel f))))))
+                         (Subscriptions/create (rx/action [] (future-cancel f)))))))
 
 (defn ^Observable get-list-of-lists
   "
@@ -109,7 +112,8 @@
                        (.onCompleted observer))))
 
 
-(comment (.subscribe (get-list-of-lists 7777) println))
+(comment (.subscribe (get-list-of-lists 7777)
+                     (rx/action* println)))
 
 (defn video-list
   [position]
@@ -118,7 +122,7 @@
 
 (defn ^Observable video-list->videos
   [{:keys [position] :as video-list}]
-  (Observable/create (fn [^Observer observer]
+  (Observable/create (rx/fn [^Observer observer]
                        (dotimes [i 50]
                          (.onNext observer (+ (* position 1000) i)))
                        (.onCompleted observer)
@@ -128,23 +132,25 @@
 
 (defn ^Observable video->metadata
   [video-id]
-  (Observable/create (fn [^Observer observer]
+  (Observable/create (rx/fn [^Observer observer]
                        (.onNext observer {:title (str "video-" video-id "-title")
                                           :actors ["actor1" "actor2"]
                                           :duration 5428 })
                        (.onCompleted observer)
                        (Subscriptions/empty))))
 
-(comment (.subscribe (video->metadata 10) println))
+(comment (.subscribe (video->metadata 10) (rx/action* println)))
 
 (defn ^Observable video->bookmark
   [video-id user-id]
   (future-observable (fn [^Observer observer]
                        (Thread/sleep 4)
+                       (println "onNext")
                        (.onNext observer (if (> (rand-int 6) 1) 0 (rand-int 4000)))
+                       (println "onComplete")
                        (.onCompleted observer))))
 
-(comment (.subscribe (video->bookmark 112345 99999) println))
+(comment (.subscribe (video->bookmark 112345 99999) (rx/action* println)))
 
 (defn ^Observable video->rating
   [video-id user-id]
