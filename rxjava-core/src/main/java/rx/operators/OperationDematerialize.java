@@ -92,7 +92,7 @@ public final class OperationDematerialize {
         @SuppressWarnings("unchecked")
         public void testDematerialize1() {
             Observable<Notification<Integer>> notifications = Observable.from(1, 2).materialize();
-            Observable<Integer> dematerialize = Observable.dematerialize(notifications);
+            Observable<Integer> dematerialize = notifications.dematerialize();
 
             Observer<Integer> aObserver = mock(Observer.class);
             dematerialize.subscribe(aObserver);

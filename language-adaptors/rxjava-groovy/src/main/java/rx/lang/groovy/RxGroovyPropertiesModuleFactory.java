@@ -15,17 +15,23 @@
  */
 package rx.lang.groovy;
 
-import groovy.lang.Closure;
-import rx.util.functions.FunctionLanguageAdaptor;
+import java.util.Properties;
 
-public class GroovyAdaptor implements FunctionLanguageAdaptor {
+import org.codehaus.groovy.runtime.m12n.ExtensionModule;
+import org.codehaus.groovy.runtime.m12n.PropertiesModuleFactory;
+
+/**
+ * Factory for {@link RxGroovyExtensionModule} to add extension methods.
+ * <p>
+ * This is loaded from /META-INF/services/org.codehaus.groovy.runtime.ExtensionModule
+ * <p>
+ * The property is defined as: moduleFactory=rx.lang.groovy.RxGroovyPropertiesModuleFactory
+ */
+public class RxGroovyPropertiesModuleFactory extends PropertiesModuleFactory {
 
     @Override
-    public Object call(Object function, Object[] args) {
-        return ((Closure<?>) function).call(args);
+    public ExtensionModule newModule(Properties properties, ClassLoader classLoader) {
+        return new RxGroovyExtensionModule();
     }
 
-    public Class<?>[] getFunctionClass() {
-        return new Class<?>[] { Closure.class };
-    }
 }

@@ -16,6 +16,8 @@
 package rx.operators;
 
 import org.junit.Test;
+import org.mockito.Matchers;
+
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
@@ -24,6 +26,7 @@ import rx.concurrency.Schedulers;
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -50,9 +53,9 @@ public class OperationSubscribeOn {
 
         @Override
         public Subscription call(final Observer<T> observer) {
-            return scheduler.schedule(new Func0<Subscription>() {
+            return scheduler.schedule(null, new Func2<Scheduler, T, Subscription>() {
                 @Override
-                public Subscription call() {
+                public Subscription call(Scheduler s, T t) {
                     return new ScheduledSubscription(source.subscribe(observer), scheduler);
                 }
             });
@@ -91,7 +94,7 @@ public class OperationSubscribeOn {
             Observer<Integer> observer = mock(Observer.class);
             Subscription subscription = Observable.create(subscribeOn(w, scheduler)).subscribe(observer);
 
-            verify(scheduler, times(1)).schedule(any(Func0.class));
+            verify(scheduler, times(1)).schedule(isNull(), any(Func2.class));
             subscription.unsubscribe();
             verify(scheduler, times(1)).schedule(any(Action0.class));
             verifyNoMoreInteractions(scheduler);

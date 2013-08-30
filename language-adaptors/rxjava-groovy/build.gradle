@@ -1,45 +1,11 @@
-apply plugin: 'java'
 apply plugin: 'groovy'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 apply plugin: 'osgi'
 
 dependencies {
     compile project(':rxjava-core')
-    groovy 'org.codehaus.groovy:groovy-all:2.+'
+    compile 'org.codehaus.groovy:groovy-all:2.+'
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
-}
-
-// include /src/examples folder
-sourceSets {
-    examples
-}
-
-// make 'examples' use the same classpath
-configurations {
-    examplesCompile.extendsFrom compile
-    examplesRuntime.extendsFrom runtime
-}
-
-// include 'examples' in build task
-build.dependsOn examplesClasses
-
-eclipse {
-    classpath {
-      // include 'provided' dependencies on the classpath
-      plusConfigurations += configurations.provided
-  
-      downloadSources = true
-      downloadJavadoc = true
-    }
-}
-
-idea {
-	module {
-		// include 'provided' dependencies on the classpath
-		scopes.PROVIDED.plus += configurations.provided
-	}
 }
 
 jar {

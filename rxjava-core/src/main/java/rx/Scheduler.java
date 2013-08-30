@@ -151,39 +151,6 @@ public abstract class Scheduler {
         }
     }
 
-    /**
-     * Schedules a cancelable action to be executed.
-     * 
-     * @param action
-     *            Action to schedule.
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    public Subscription schedule(final Func1<Scheduler, Subscription> action) {
-        return schedule(null, new Func2<Scheduler, Void, Subscription>() {
-
-            @Override
-            public Subscription call(Scheduler scheduler, @SuppressWarnings("unused") Void state) {
-                return action.call(scheduler);
-            }
-        });
-    }
-
-    /**
-     * Schedules a cancelable action to be executed.
-     * 
-     * @param action
-     *            action
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    public Subscription schedule(final Func0<Subscription> action) {
-        return schedule(null, new Func2<Scheduler, Void, Subscription>() {
-
-            @Override
-            public Subscription call(@SuppressWarnings("unused") Scheduler scheduler, @SuppressWarnings("unused") Void state) {
-                return action.call();
-            }
-        });
-    }
 
     /**
      * Schedules an action to be executed.
@@ -204,27 +171,6 @@ public abstract class Scheduler {
     }
 
     /**
-     * Schedules a cancelable action to be executed in delayTime.
-     * 
-     * @param action
-     *            Action to schedule.
-     * @param delayTime
-     *            Time the action is to be delayed before executing.
-     * @param unit
-     *            Time unit of the delay time.
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    public Subscription schedule(final Func1<Scheduler, Subscription> action, long delayTime, TimeUnit unit) {
-        return schedule(null, new Func2<Scheduler, Void, Subscription>() {
-
-            @Override
-            public Subscription call(Scheduler scheduler, @SuppressWarnings("unused") Void state) {
-                return action.call(scheduler);
-            }
-        }, delayTime, unit);
-    }
-
-    /**
      * Schedules an action to be executed in delayTime.
      * 
      * @param action
@@ -242,66 +188,6 @@ public abstract class Scheduler {
         }, delayTime, unit);
     }
 
-    /**
-     * Schedules a cancelable action to be executed in delayTime.
-     * 
-     * @param action
-     *            action
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    public Subscription schedule(final Func0<Subscription> action, long delayTime, TimeUnit unit) {
-        return schedule(null, new Func2<Scheduler, Void, Subscription>() {
-
-            @Override
-            public Subscription call(@SuppressWarnings("unused") Scheduler scheduler, @SuppressWarnings("unused") Void state) {
-                return action.call();
-            }
-        }, delayTime, unit);
-    }
-
-    /**
-     * Schedules a cancelable action to be executed periodically.
-     * 
-     * @param action 
-     *            The action to execute periodically.
-     * @param initialDelay 
-     *            Time to wait before executing the action for the first time.
-     * @param period 
-     *            The time interval to wait each time in between executing the action.
-     * @param unit 
-     *            The time unit the interval above is given in.
-     * @return A subscription to be able to unsubscribe from action.
-     */
-    public Subscription schedulePeriodically(final Func1<Scheduler, Subscription> action, long initialDelay, long period, TimeUnit unit) {
-        return schedulePeriodically(null, new Func2<Scheduler, Void, Subscription>() {
-            @Override
-            public Subscription call(Scheduler scheduler, @SuppressWarnings("unused") Void state) {
-                return action.call(scheduler);
-            }
-        }, initialDelay, period, unit);
-    }
-
-    /**
-     * Schedules a cancelable action to be executed periodically.
-     * 
-     * @param action 
-     *            The action to execute periodically.
-     * @param initialDelay 
-     *            Time to wait before executing the action for the first time.
-     * @param period 
-     *            The time interval to wait each time in between executing the action.
-     * @param unit 
-     *            The time unit the interval above is given in.
-     * @return A subscription to be able to unsubscribe from action.
-     */
-    public Subscription schedulePeriodically(final Func0<Subscription> action, long initialDelay, long period, TimeUnit unit) {
-        return schedulePeriodically(null, new Func2<Scheduler, Void, Subscription>() {
-            @Override
-            public Subscription call(@SuppressWarnings("unused") Scheduler scheduler, @SuppressWarnings("unused") Void state) {
-                return action.call();
-            }
-        }, initialDelay, period, unit);
-    }
 
     /**
      * Schedules an action to be executed periodically.
