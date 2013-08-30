@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -77,7 +76,6 @@ import rx.util.BufferOpening;
 import rx.util.OnErrorNotImplementedException;
 import rx.util.Range;
 import rx.util.Timestamped;
-import rx.util.functions.Action;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
@@ -87,7 +85,6 @@ import rx.util.functions.Func3;
 import rx.util.functions.Func4;
 import rx.util.functions.FuncN;
 import rx.util.functions.Function;
-import rx.util.functions.Functions;
 
 /**
  * The Observable interface that implements the Reactive Pattern.

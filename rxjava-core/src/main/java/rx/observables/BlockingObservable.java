@@ -15,18 +15,16 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.operators.SafeObservableSubscription;
-import rx.operators.SafeObserver;
 import rx.operators.OperationMostRecent;
 import rx.operators.OperationNext;
 import rx.operators.OperationToFuture;
 import rx.operators.OperationToIterator;
+import rx.operators.SafeObservableSubscription;
+import rx.operators.SafeObserver;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
-import rx.util.functions.FuncN;
-import rx.util.functions.Functions;
 
 /**
  * An extension of {@link Observable} that provides blocking operators.

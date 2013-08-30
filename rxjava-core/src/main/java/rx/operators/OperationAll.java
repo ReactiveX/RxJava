@@ -1,16 +1,15 @@
 package rx.operators;
 
+import static org.mockito.Mockito.*;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.Test;
+
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Returns an Observable that emits a Boolean that indicates whether all items emitted by an
