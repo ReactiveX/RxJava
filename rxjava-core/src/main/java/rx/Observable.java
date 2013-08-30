@@ -781,13 +781,11 @@ public class Observable<T> {
     }
 
     /**
-     * Given an Observable that emits Observables, creates a single Observable that
+     * On an Observable that emits Observables, creates a single Observable that
      * emits the items emitted by the most recently published of those Observables.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/switchDo.png">
      * 
-     * @param sequenceOfSequences
-     *            the source Observable that emits Observables
      * @return an Observable that emits only the items emitted by the most recently published
      *         Observable
      * @throws ClassCastException
@@ -1133,7 +1131,7 @@ public class Observable<T> {
      *            The maximum size of each buffer before it should be emitted.
      * @param skip
      *            How many produced values need to be skipped before starting a new buffer. Note that when "skip" and
-     *            "count" are equals that this is the same operation as {@link Observable#buffer(Observable, int)}.
+     *            "count" are equals that this is the same operation as {@link Observable#buffer(int)}.
      * @return
      *         An {@link Observable} which produces buffers every "skipped" values containing at most
      *         "count" produced values.
