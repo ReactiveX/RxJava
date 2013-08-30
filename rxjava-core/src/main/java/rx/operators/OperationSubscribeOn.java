@@ -15,8 +15,10 @@
  */
 package rx.operators;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 import org.junit.Test;
-import org.mockito.Matchers;
 
 import rx.Observable;
 import rx.Observer;
@@ -24,12 +26,8 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
 import rx.util.functions.Action0;
-import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
 
 /**
  * Asynchronously subscribes and unsubscribes Observers on the specified Scheduler.

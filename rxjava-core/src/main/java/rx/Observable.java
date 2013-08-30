@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -77,7 +76,6 @@ import rx.util.BufferOpening;
 import rx.util.OnErrorNotImplementedException;
 import rx.util.Range;
 import rx.util.Timestamped;
-import rx.util.functions.Action;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
@@ -87,7 +85,6 @@ import rx.util.functions.Func3;
 import rx.util.functions.Func4;
 import rx.util.functions.FuncN;
 import rx.util.functions.Function;
-import rx.util.functions.Functions;
 
 /**
  * The Observable interface that implements the Reactive Pattern.
@@ -781,13 +778,11 @@ public class Observable<T> {
     }
 
     /**
-     * Given an Observable that emits Observables, creates a single Observable that
+     * On an Observable that emits Observables, creates a single Observable that
      * emits the items emitted by the most recently published of those Observables.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/switchDo.png">
      * 
-     * @param sequenceOfSequences
-     *            the source Observable that emits Observables
      * @return an Observable that emits only the items emitted by the most recently published
      *         Observable
      * @throws ClassCastException
@@ -1133,7 +1128,7 @@ public class Observable<T> {
      *            The maximum size of each buffer before it should be emitted.
      * @param skip
      *            How many produced values need to be skipped before starting a new buffer. Note that when "skip" and
-     *            "count" are equals that this is the same operation as {@link Observable#buffer(Observable, int)}.
+     *            "count" are equals that this is the same operation as {@link Observable#buffer(int)}.
      * @return
      *         An {@link Observable} which produces buffers every "skipped" values containing at most
      *         "count" produced values.

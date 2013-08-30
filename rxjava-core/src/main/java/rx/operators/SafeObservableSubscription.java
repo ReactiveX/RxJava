@@ -15,14 +15,13 @@
  */
 package rx.operators;
 
-import org.junit.Test;
-import rx.Subscription;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import org.junit.Test;
+
+import rx.Subscription;
 
 /**
  * Thread-safe wrapper around Observable Subscription that ensures unsubscribe can be called only once.

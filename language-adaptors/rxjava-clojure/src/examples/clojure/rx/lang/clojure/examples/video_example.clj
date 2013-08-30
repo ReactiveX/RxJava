@@ -1,3 +1,18 @@
+;
+; Copyright 2013 Netflix, Inc.
+;  
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+; http://www.apache.org/licenses/LICENSE-2.0
+; 
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+;
 (ns rx.lang.clojure.examples.video-example
   (:require [rx.lang.clojure.interop :as rx])
   (:import [rx Observable Observer Subscription]
@@ -128,7 +143,7 @@
                        (.onCompleted observer)
                        (Subscriptions/empty))))
 
-(comment (.subscribe (video-list->videos (video-list 2)) println))
+(comment (.subscribe (video-list->videos (video-list 2)) (rx/action* println)))
 
 (defn ^Observable video->metadata
   [video-id]
@@ -163,5 +178,5 @@
                                           :actual-star-rating    (rand-int 5) })
                        (.onCompleted observer))))
 
-(comment (.subscribe (video->rating 234345 8888) println))
+(comment (.subscribe (video->rating 234345 8888) (rx/action* println)))
 
