@@ -15,67 +15,7 @@
  */
 package rx.util.functions;
 
-import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-
-/**
- * Allows execution of functions from multiple different languages.
- * <p>
- * Language support is provided via implementations of {@link FunctionLanguageAdaptor}.
- * <p>
- * This class will dynamically look for known language adaptors on the classpath at startup or new ones can be registered using {@link #registerLanguageAdaptor(Class[], FunctionLanguageAdaptor)}.
- */
 public class Functions {
-
-    private final static ConcurrentHashMap<Class<?>, FunctionLanguageAdaptor> languageAdaptors = new ConcurrentHashMap<Class<?>, FunctionLanguageAdaptor>();
-
-    static {
-        /* optimistically look for supported languages if they are in the classpath */
-        loadLanguageAdaptor("Groovy");
-        loadLanguageAdaptor("JRuby");
-        loadLanguageAdaptor("Clojure");
-        loadLanguageAdaptor("Scala");
-        // as new languages arise we can add them here but this does not prevent someone from using 'registerLanguageAdaptor' directly
-    }
-
-    private static boolean loadLanguageAdaptor(String name) {
-        String className = "rx.lang." + name.toLowerCase() + "." + name + "Adaptor";
-        try {
-            Class<?> c = Class.forName(className);
-            FunctionLanguageAdaptor a = (FunctionLanguageAdaptor) c.newInstance();
-            registerLanguageAdaptor(a.getFunctionClass(), a);
-            /*
-             * Using System.err/System.out as this is the only place in the library where we do logging and it's only at startup.
-             * I don't want to include SL4J/Log4j just for this and no one uses Java Logging.
-             */
-            System.out.println("RxJava => Successfully loaded function language adaptor: " + name + " with path: " + className);
-        } catch (ClassNotFoundException e) {
-            System.err.println("RxJava => Could not find function language adaptor: " + name + " with path: " + className);
-            return false;
-        } catch (Throwable e) {
-            System.err.println("RxJava => Failed trying to initialize function language adaptor: " + className);
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    public static void registerLanguageAdaptor(Class<?>[] functionClasses, FunctionLanguageAdaptor adaptor) {
-        for (Class<?> functionClass : functionClasses) {
-            if (functionClass.getPackage().getName().startsWith("java.")) {
-                throw new IllegalArgumentException("FunctionLanguageAdaptor implementations can not specify java.lang.* classes.");
-            }
-            languageAdaptors.put(functionClass, adaptor);
-        }
-    }
-
-    public static void removeLanguageAdaptor(Class<?> functionClass) {
-        languageAdaptors.remove(functionClass);
-    }
-
-    public static Collection<FunctionLanguageAdaptor> getRegisteredLanguageAdaptors() {
-        return languageAdaptors.values();
-    }
 
     /**
      * Utility method for determining the type of closure/function and executing it.
@@ -83,138 +23,12 @@ public class Functions {
      * @param function
      */
     @SuppressWarnings({ "rawtypes" })
-    public static FuncN from(final Object function) {
+    public static FuncN from(final Function function) {
         if (function == null) {
             throw new RuntimeException("function is null. Can't send arguments to null function.");
         }
-
-        /* check for typed Rx Function implementation first */
-        if (function instanceof Function) {
-            return fromFunction((Function) function);
-        } else {
-            /* not an Rx Function so try language adaptors */
-
-            // check for language adaptor
-            for (final Class c : languageAdaptors.keySet()) {
-                if (c.isInstance(function)) {
-                    final FunctionLanguageAdaptor la = languageAdaptors.get(c);
-                    // found the language adaptor so wrap in FuncN and return
-                    return new FuncN() {
-
-                        @Override
-                        public Object call(Object... args) {
-                            return la.call(function, args);
-                        }
-
-                    };
-                }
-            }
-            // no language adaptor found
-        }
-
-        // no support found
-        throw new RuntimeException("Unsupported closure type: " + function.getClass().getSimpleName());
+        return fromFunction(function);
     }
-
-    //
-    //    @SuppressWarnings("unchecked")
-    //    private static <R> R executionRxFunction(Function function, Object... args) {
-    //        // check Func* classes 
-    //        if (function instanceof Func0) {
-    //            Func0<R> f = (Func0<R>) function;
-    //            if (args.length != 0) {
-    //                throw new RuntimeException("The closure was Func0 and expected no arguments, but we received: " + args.length);
-    //            }
-    //            return (R) f.call();
-    //        } else if (function instanceof Func1) {
-    //            Func1<Object, R> f = (Func1<Object, R>) function;
-    //            if (args.length != 1) {
-    //                throw new RuntimeException("The closure was Func1 and expected 1 argument, but we received: " + args.length);
-    //            }
-    //            return f.call(args[0]);
-    //        } else if (function instanceof Func2) {
-    //            Func2<Object, Object, R> f = (Func2<Object, Object, R>) function;
-    //            if (args.length != 2) {
-    //                throw new RuntimeException("The closure was Func2 and expected 2 arguments, but we received: " + args.length);
-    //            }
-    //            return f.call(args[0], args[1]);
-    //        } else if (function instanceof Func3) {
-    //            Func3<Object, Object, Object, R> f = (Func3<Object, Object, Object, R>) function;
-    //            if (args.length != 3) {
-    //                throw new RuntimeException("The closure was Func3 and expected 3 arguments, but we received: " + args.length);
-    //            }
-    //            return (R) f.call(args[0], args[1], args[2]);
-    //        } else if (function instanceof Func4) {
-    //            Func4<Object, Object, Object, Object, R> f = (Func4<Object, Object, Object, Object, R>) function;
-    //            if (args.length != 1) {
-    //                throw new RuntimeException("The closure was Func4 and expected 4 arguments, but we received: " + args.length);
-    //            }
-    //            return f.call(args[0], args[1], args[2], args[3]);
-    //        } else if (function instanceof Func5) {
-    //            Func5<Object, Object, Object, Object, Object, R> f = (Func5<Object, Object, Object, Object, Object, R>) function;
-    //            if (args.length != 1) {
-    //                throw new RuntimeException("The closure was Func5 and expected 5 arguments, but we received: " + args.length);
-    //            }
-    //            return f.call(args[0], args[1], args[2], args[3], args[4]);
-    //        } else if (function instanceof Func6) {
-    //            Func6<Object, Object, Object, Object, Object, Object, R> f = (Func6<Object, Object, Object, Object, Object, Object, R>) function;
-    //            if (args.length != 1) {
-    //                throw new RuntimeException("The closure was Func6 and expected 6 arguments, but we received: " + args.length);
-    //            }
-    //            return f.call(args[0], args[1], args[2], args[3], args[4], args[5]);
-    //        } else if (function instanceof Func7) {
-    //            Func7<Object, Object, Object, Object, Object, Object, Object, R> f = (Func7<Object, Object, Object, Object, Object, Object, Object, R>) function;
-    //            if (args.length != 1) {
-    //                throw new RuntimeException("The closure was Func7 and expected 7 arguments, but we received: " + args.length);
-    //            }
-    //            return f.call(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
-    //        } else if (function instanceof Func8) {
-    //            Func8<Object, Object, Object, Object, Object, Object, Object, Object, R> f = (Func8<Object, Object, Object, Object, Object, Object, Object, Object, R>) function;
-    //            if (args.length != 1) {
-    //                throw new RuntimeException("The closure was Func8 and expected 8 arguments, but we received: " + args.length);
-    //            }
-    //            return f.call(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
-    //        } else if (function instanceof Func9) {
-    //            Func9<Object, Object, Object, Object, Object, Object, Object, Object, Object, R> f = (Func9<Object, Object, Object, Object, Object, Object, Object, Object, Object, R>) function;
-    //            if (args.length != 1) {
-    //                throw new RuntimeException("The closure was Func9 and expected 9 arguments, but we received: " + args.length);
-    //            }
-    //            return f.call(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
-    //        } else if (function instanceof FuncN) {
-    //            FuncN<R> f = (FuncN<R>) function;
-    //            return f.call(args);
-    //        } else if (function instanceof Action0) {
-    //            Action0 f = (Action0) function;
-    //            if (args.length != 1) {
-    //                throw new RuntimeException("The closure was Action0 and expected 0 arguments, but we received: " + args.length);
-    //            }
-    //            f.call();
-    //            return null;
-    //        } else if (function instanceof Action1) {
-    //            Action1<Object> f = (Action1<Object>) function;
-    //            if (args.length != 1) {
-    //                throw new RuntimeException("The closure was Action1 and expected 1 argument, but we received: " + args.length);
-    //            }
-    //            f.call(args[0]);
-    //            return null;
-    //        } else if (function instanceof Action2) {
-    //            Action2<Object, Object> f = (Action2<Object, Object>) function;
-    //            if (args.length != 1) {
-    //                throw new RuntimeException("The closure was Action2 and expected 2 argument, but we received: " + args.length);
-    //            }
-    //            f.call(args[0], args[1]);
-    //            return null;
-    //        } else if (function instanceof Action3) {
-    //            Action3<Object, Object, Object> f = (Action3<Object, Object, Object>) function;
-    //            if (args.length != 1) {
-    //                throw new RuntimeException("The closure was Action1 and expected 1 argument, but we received: " + args.length);
-    //            }
-    //            f.call(args[0], args[1], args[2]);
-    //            return null;
-    //        }
-    //
-    //        throw new RuntimeException("Unknown implementation of Function: " + function.getClass().getSimpleName());
-    //    }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static FuncN fromFunction(Function function) {

@@ -15,25 +15,11 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
-
-import rx.Observable;
-import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 /**
@@ -78,16 +64,6 @@ import rx.util.functions.Func2;
             }
 
             @Override
-            public Subscription schedule(Func0<Subscription> action) {
-                return underlying.schedule(action);
-            }
-
-            @Override
-            public Subscription schedule(Func1<Scheduler, Subscription> action) {
-                return underlying.schedule(action);
-            }
-
-            @Override
             public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action) {
                 return underlying.schedule(state, action);
             }
@@ -98,32 +74,12 @@ import rx.util.functions.Func2;
             }
 
             @Override
-            public Subscription schedule(Func0<Subscription> action, long dueTime, TimeUnit unit) {
-                return underlying.schedule(action, dueTime, unit);
-            }
-
-            @Override
-            public Subscription schedule(Func1<Scheduler, Subscription> action, long dueTime, TimeUnit unit) {
-                return underlying.schedule(action, dueTime, unit);
-            }
-
-            @Override
             public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
                 return underlying.schedule(state, action, dueTime, unit);
             }
 
             @Override
             public Subscription schedulePeriodically(Action0 action, long initialDelay, long period, TimeUnit unit) {
-                return underlying.schedulePeriodically(action, initialDelay, period, unit);
-            }
-
-            @Override
-            public Subscription schedulePeriodically(Func0<Subscription> action, long initialDelay, long period, TimeUnit unit) {
-                return underlying.schedulePeriodically(action, initialDelay, period, unit);
-            }
-
-            @Override
-            public Subscription schedulePeriodically(Func1<Scheduler, Subscription> action, long initialDelay, long period, TimeUnit unit) {
                 return underlying.schedulePeriodically(action, initialDelay, period, unit);
             }
 
