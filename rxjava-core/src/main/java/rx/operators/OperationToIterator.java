@@ -43,8 +43,6 @@ public class OperationToIterator {
     /**
      * Returns an iterator that iterates all values of the observable.
      * 
-     * @param that
-     *            an observable sequence to get an iterator for.
      * @param <T>
      *            the type of source.
      * @return the iterator that could be used to iterate over the elements of the observable.

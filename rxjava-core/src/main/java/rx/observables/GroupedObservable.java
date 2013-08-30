@@ -24,7 +24,7 @@ import rx.util.functions.Func1;
  * An {@link Observable} that has been grouped by a key whose value can be obtained using
  * {@link #getKey()} <p>
  *
- * @see Observable#groupBy(Observable, Func1)
+ * @see Observable#groupBy(Func1)
  *
  * @param <K> the type of the key
  * @param <T> the type of the elements in the group

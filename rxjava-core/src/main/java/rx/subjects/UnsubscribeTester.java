@@ -15,14 +15,12 @@
  */
 package rx.subjects;
 
+import static org.junit.Assert.*;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /* package */class UnsubscribeTester {
 

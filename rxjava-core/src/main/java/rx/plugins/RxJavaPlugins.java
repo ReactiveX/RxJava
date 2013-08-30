@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -153,6 +154,7 @@ public class RxJavaPlugins {
     public static class UnitTest {
 
         @After
+        @Before
         public void reset() {
             // use private access to reset so we can test different initializations via the public static flow
             RxJavaPlugins.getInstance().errorHandler.set(null);

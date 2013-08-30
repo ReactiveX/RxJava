@@ -6,14 +6,16 @@ dependencies {
 
     // clojure
     compile 'org.clojure:clojure:1.4.+'
-    //compile 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
+    provided 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
 }
+
+tasks.compileExamplesClojure.classpath = files(tasks.compileClojure.destinationDir) + tasks.compileClojure.classpath
 
 /*
  * Clojure
  */
 aotCompile = true
-warnOnReflection = true
+warnOnReflection = false
 
 buildscript {
   repositories { maven { url "http://clojars.org/repo" } }
@@ -34,10 +36,6 @@ eclipse {
 }
 
 tasks.clojureTest {  
-    classpath = classpath + configurations.provided
-}
-
-tasks.compileExamplesClojure {  
     classpath = classpath + configurations.provided
 }
 

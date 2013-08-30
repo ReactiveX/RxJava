@@ -15,7 +15,10 @@
  */
 package rx.operators;
 
+import static org.mockito.Mockito.*;
+
 import org.junit.Test;
+
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -23,8 +26,6 @@ import rx.observables.ConnectableObservable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.util.functions.Func1;
-
-import static org.mockito.Mockito.*;
 
 public class OperationMulticast {
     public static <T, R> ConnectableObservable<R> multicast(Observable<T> source, final Subject<T, R> subject) {
