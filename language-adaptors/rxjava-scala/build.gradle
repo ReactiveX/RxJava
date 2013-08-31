@@ -21,7 +21,8 @@ sourceSets {
 }
 
 dependencies {
-    compile 'org.scala-lang:scala-library:2.10+'
+	// pinning to 2.10.1 as having issues with 2.10.2
+    compile 'org.scala-lang:scala-library:2.10.1'
 
     compile project(':rxjava-core')
     
