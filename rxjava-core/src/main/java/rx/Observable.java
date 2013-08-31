@@ -992,7 +992,7 @@ public class Observable<T> {
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R, T0, T1, T2> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> function) {
+    public static <R, T0, T1, T2> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<? super T0, ? super T1, ? super T2, ? extends R> function) {
         return create(OperationZip.zip(w0, w1, w2, function));
     }
 
@@ -1023,7 +1023,7 @@ public class Observable<T> {
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R, T0, T1, T2, T3> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> reduceFunction) {
+    public static <R, T0, T1, T2, T3> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<? super T0, ? super T1, ? super T2, ? super T3, ? extends R> reduceFunction) {
         return create(OperationZip.zip(w0, w1, w2, w3, reduceFunction));
     }
 
@@ -1048,14 +1048,14 @@ public class Observable<T> {
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <R, T0, T1, T2> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> combineFunction) {
+    public static <R, T0, T1, T2> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<? super T0, ? super T1, ? super T2, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(w0, w1, w2, combineFunction));
     }
 
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <R, T0, T1, T2, T3> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> combineFunction) {
+    public static <R, T0, T1, T2, T3> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<? super T0, ? super T1, ? super T2, ? super T3, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(w0, w1, w2, w3, combineFunction));
     }
 
@@ -1283,7 +1283,7 @@ public class Observable<T> {
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R> Observable<R> zip(Observable<Observable<?>> ws, final FuncN<R> reduceFunction) {
+    public static <R> Observable<R> zip(Observable<Observable<?>> ws, final FuncN<? extends R> reduceFunction) {
         return ws.toList().mapMany(new Func1<List<Observable<?>>, Observable<R>>() {
             @Override
             public Observable<R> call(List<Observable<?>> wsList) {
@@ -1312,7 +1312,7 @@ public class Observable<T> {
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R> Observable<R> zip(Collection<Observable<?>> ws, FuncN<R> reduceFunction) {
+    public static <R> Observable<R> zip(Collection<Observable<?>> ws, FuncN<? extends R> reduceFunction) {
         return create(OperationZip.zip(ws, reduceFunction));
     }
 

@@ -61,7 +61,7 @@ public final class OperationZip {
         return a;
     }
 
-    public static <T0, T1, T2, R> Func1<Observer<R>, Subscription> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> zipFunction) {
+    public static <T0, T1, T2, R> Func1<Observer<R>, Subscription> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<? super T0, ? super T1, ? super T2, ? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T0>(a, w0));
         a.addObserver(new ZipObserver<R, T1>(a, w1));
@@ -69,7 +69,7 @@ public final class OperationZip {
         return a;
     }
 
-    public static <T0, T1, T2, T3, R> Func1<Observer<R>, Subscription> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> zipFunction) {
+    public static <T0, T1, T2, T3, R> Func1<Observer<R>, Subscription> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<? super T0, ? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T0>(a, w0));
         a.addObserver(new ZipObserver<R, T1>(a, w1));
@@ -79,7 +79,7 @@ public final class OperationZip {
     }
 
     @SuppressWarnings("unchecked")
-    public static <R> Func1<Observer<R>, Subscription> zip(Collection<Observable<?>> ws, FuncN<R> zipFunction) {
+    public static <R> Func1<Observer<R>, Subscription> zip(Collection<Observable<?>> ws, FuncN<? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(zipFunction);
         for (@SuppressWarnings("rawtypes") Observable w : ws) {
             ZipObserver<R, Object> zipObserver = new ZipObserver<R, Object>(a, w);
@@ -139,7 +139,7 @@ public final class OperationZip {
     private static class Aggregator<T> implements Func1<Observer<T>, Subscription> {
 
         private volatile SynchronizedObserver<T> observer;
-        private final FuncN<T> zipFunction;
+        private final FuncN<? extends T> zipFunction;
         private final AtomicBoolean started = new AtomicBoolean(false);
         private final AtomicBoolean running = new AtomicBoolean(true);
         private final ConcurrentHashMap<ZipObserver<T, ?>, Boolean> completed = new ConcurrentHashMap<ZipObserver<T, ?>, Boolean>();
@@ -149,7 +149,7 @@ public final class OperationZip {
         /* we use a ConcurrentLinkedQueue to retain ordering (I'd like to just use a ConcurrentLinkedHashMap for 'receivedValuesPerObserver' but that doesn't exist in standard java */
         private ConcurrentLinkedQueue<ZipObserver<T, ?>> observers = new ConcurrentLinkedQueue<ZipObserver<T, ?>>();
 
-        public Aggregator(FuncN<T> zipFunction) {
+        public Aggregator(FuncN<? extends T> zipFunction) {
             this.zipFunction = zipFunction;
         }
 

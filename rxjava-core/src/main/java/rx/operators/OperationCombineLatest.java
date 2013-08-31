@@ -72,7 +72,7 @@ public class OperationCombineLatest {
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
-    public static <T0, T1, T2, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, ? extends R> combineLatestFunction) {
+    public static <T0, T1, T2, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<? super T0, ? super T1, ? super T2, ? extends R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
         a.addObserver(new CombineObserver<R, T1>(a, w1));
@@ -83,7 +83,7 @@ public class OperationCombineLatest {
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
-    public static <T0, T1, T2, T3, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, ? extends R> combineLatestFunction) {
+    public static <T0, T1, T2, T3, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<? super T0, ? super T1, ? super T2, ? super T3, ? extends R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
         a.addObserver(new CombineObserver<R, T1>(a, w1));

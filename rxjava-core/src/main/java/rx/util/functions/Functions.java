@@ -85,7 +85,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, R> FuncN<R> fromFunc(final Func3<T0, T1, T2, ? extends R> f) {
+    public static <T0, T1, T2, R> FuncN<R> fromFunc(final Func3<? super T0, ? super T1, ? super T2, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -106,7 +106,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, T3, R> FuncN<R> fromFunc(final Func4<T0, T1, T2, T3, ? extends R> f) {
+    public static <T0, T1, T2, T3, R> FuncN<R> fromFunc(final Func4<? super T0, ? super T1, ? super T2, ? super T3, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -127,7 +127,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, T3, T4, R> FuncN<R> fromFunc(final Func5<T0, T1, T2, T3, T4, ? extends R> f) {
+    public static <T0, T1, T2, T3, T4, R> FuncN<R> fromFunc(final Func5<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -148,7 +148,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, T3, T4, T5, R> FuncN<R> fromFunc(final Func6<T0, T1, T2, T3, T4, T5, ? extends R> f) {
+    public static <T0, T1, T2, T3, T4, T5, R> FuncN<R> fromFunc(final Func6<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -169,7 +169,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, T3, T4, T5, T6, R> FuncN<R> fromFunc(final Func7<T0, T1, T2, T3, T4, T5, T6, ? extends R> f) {
+    public static <T0, T1, T2, T3, T4, T5, T6, R> FuncN<R> fromFunc(final Func7<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -190,7 +190,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, T3, T4, T5, T6, T7, R> FuncN<R> fromFunc(final Func8<T0, T1, T2, T3, T4, T5, T6, T7, ? extends R> f) {
+    public static <T0, T1, T2, T3, T4, T5, T6, T7, R> FuncN<R> fromFunc(final Func8<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -211,7 +211,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, R> FuncN<R> fromFunc(final Func9<T0, T1, T2, T3, T4, T5, T6, T7, T8, ? extends R> f) {
+    public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, R> FuncN<R> fromFunc(final Func9<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
