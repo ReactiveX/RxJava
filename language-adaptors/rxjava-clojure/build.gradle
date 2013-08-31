@@ -13,6 +13,7 @@ dependencies {
 
 tasks.compileExamplesClojure.classpath = files(tasks.compileClojure.destinationDir) + tasks.compileClojure.classpath
 
+clojureTest.dependsOn compileTestJava
 /*
  * Clojure
  */
