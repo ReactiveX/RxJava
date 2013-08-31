@@ -11,7 +11,7 @@ Some of the goals of RxJava are:
 <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-clojure">Clojure</a>, 
 and <a href="https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-scala">Scala</a>. 
 New language adapters can be <a href="https://github.com/Netflix/RxJava/wiki/How-to-Contribute">contributed</a>.
-- Support Java 5 (to include Android support) and higher with an eventual goal to target a build for Java 8 with its lambda support.
+- Support Java 6+ (to include Android support) 
 
 Learn more about Rx on the <a href="https://github.com/Netflix/RxJava/wiki">Wiki Home</a> and the <a href="http://techblog.netflix.com/2013/02/rxjava-netflix-api.html">Netflix TechBlog post</a> where RxJava was introduced.
 
