@@ -80,9 +80,9 @@ public final class OperationZip {
 
     @SuppressWarnings("unchecked")
     public static <R> Func1<Observer<R>, Subscription> zip(Collection<Observable<?>> ws, FuncN<R> zipFunction) {
-        Aggregator a = new Aggregator(zipFunction);
-        for (Observable w : ws) {
-            ZipObserver zipObserver = new ZipObserver(a, w);
+        Aggregator<R> a = new Aggregator<R>(zipFunction);
+        for (@SuppressWarnings("rawtypes") Observable w : ws) {
+            ZipObserver<R, Object> zipObserver = new ZipObserver<R, Object>(a, w);
             a.addObserver(zipObserver);
         }
         return a;
@@ -299,11 +299,13 @@ public final class OperationZip {
         @SuppressWarnings("unchecked")
         @Test
         public void testCollectionSizeDifferentThanFunction() {
-            FuncN<String> zipr = Functions.from(getConcatStringIntegerIntArrayZipr());
+            FuncN<String> zipr = Functions.fromFunc(getConcatStringIntegerIntArrayZipr());
+            //Func3<String, Integer, int[], String>
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
 
+            @SuppressWarnings("rawtypes")
             Collection ws = java.util.Collections.singleton(Observable.from("one", "two"));
             Observable<String> w = Observable.create(zip(ws, zipr));
             w.subscribe(aObserver);

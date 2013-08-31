@@ -18,63 +18,12 @@ package rx.util.functions;
 public class Functions {
 
     /**
-     * Utility method for determining the type of closure/function and executing it.
-     * 
-     * @param function
-     */
-    @SuppressWarnings({ "rawtypes" })
-    public static FuncN from(final Function function) {
-        if (function == null) {
-            throw new RuntimeException("function is null. Can't send arguments to null function.");
-        }
-        return fromFunction(function);
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static FuncN fromFunction(Function function) {
-        // check Func* classes 
-        if (function instanceof Func0) {
-            return fromFunc((Func0) function);
-        } else if (function instanceof Func1) {
-            return fromFunc((Func1) function);
-        } else if (function instanceof Func2) {
-            return fromFunc((Func2) function);
-        } else if (function instanceof Func3) {
-            return fromFunc((Func3) function);
-        } else if (function instanceof Func4) {
-            return fromFunc((Func4) function);
-        } else if (function instanceof Func5) {
-            return fromFunc((Func5) function);
-        } else if (function instanceof Func6) {
-            return fromFunc((Func6) function);
-        } else if (function instanceof Func7) {
-            return fromFunc((Func7) function);
-        } else if (function instanceof Func8) {
-            return fromFunc((Func8) function);
-        } else if (function instanceof Func9) {
-            return fromFunc((Func9) function);
-        } else if (function instanceof FuncN) {
-            return (FuncN) function;
-        } else if (function instanceof Action0) {
-            return fromAction((Action0) function);
-        } else if (function instanceof Action1) {
-            return fromAction((Action1) function);
-        } else if (function instanceof Action2) {
-            return fromAction((Action2) function);
-        } else if (function instanceof Action3) {
-            return fromAction((Action3) function);
-        }
-
-        throw new RuntimeException("Unknown implementation of Function: " + function.getClass().getSimpleName());
-    }
-
-    /**
      * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
      * 
      * @param f
      * @return {@link FuncN}
      */
-    public static <R> FuncN<R> fromFunc(final Func0<R> f) {
+    public static <R> FuncN<R> fromFunc(final Func0<? extends R> f) {
         return new FuncN<R>() {
 
             @Override
@@ -94,7 +43,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, R> FuncN<R> fromFunc(final Func1<T0, R> f) {
+    public static <T0, R> FuncN<R> fromFunc(final Func1<T0, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -115,7 +64,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, R> FuncN<R> fromFunc(final Func2<T0, T1, R> f) {
+    public static <T0, T1, R> FuncN<R> fromFunc(final Func2<T0, T1, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -136,7 +85,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, R> FuncN<R> fromFunc(final Func3<T0, T1, T2, R> f) {
+    public static <T0, T1, T2, R> FuncN<R> fromFunc(final Func3<T0, T1, T2, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -157,7 +106,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, T3, R> FuncN<R> fromFunc(final Func4<T0, T1, T2, T3, R> f) {
+    public static <T0, T1, T2, T3, R> FuncN<R> fromFunc(final Func4<T0, T1, T2, T3, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -178,7 +127,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, T3, T4, R> FuncN<R> fromFunc(final Func5<T0, T1, T2, T3, T4, R> f) {
+    public static <T0, T1, T2, T3, T4, R> FuncN<R> fromFunc(final Func5<T0, T1, T2, T3, T4, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -199,7 +148,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, T3, T4, T5, R> FuncN<R> fromFunc(final Func6<T0, T1, T2, T3, T4, T5, R> f) {
+    public static <T0, T1, T2, T3, T4, T5, R> FuncN<R> fromFunc(final Func6<T0, T1, T2, T3, T4, T5, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -220,7 +169,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, T3, T4, T5, T6, R> FuncN<R> fromFunc(final Func7<T0, T1, T2, T3, T4, T5, T6, R> f) {
+    public static <T0, T1, T2, T3, T4, T5, T6, R> FuncN<R> fromFunc(final Func7<T0, T1, T2, T3, T4, T5, T6, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -241,7 +190,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, T3, T4, T5, T6, T7, R> FuncN<R> fromFunc(final Func8<T0, T1, T2, T3, T4, T5, T6, T7, R> f) {
+    public static <T0, T1, T2, T3, T4, T5, T6, T7, R> FuncN<R> fromFunc(final Func8<T0, T1, T2, T3, T4, T5, T6, T7, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -262,7 +211,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, R> FuncN<R> fromFunc(final Func9<T0, T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
+    public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, R> FuncN<R> fromFunc(final Func9<T0, T1, T2, T3, T4, T5, T6, T7, T8, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")

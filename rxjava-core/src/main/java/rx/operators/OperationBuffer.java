@@ -69,7 +69,7 @@ public final class OperationBuffer {
      * @return
      *            the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> buffer(final Observable<T> source, final Func0<Observable<BufferClosing>> bufferClosingSelector) {
+    public static <T> Func1<Observer<List<T>>, Subscription> buffer(final Observable<T> source, final Func0<? extends Observable<BufferClosing>> bufferClosingSelector) {
         return new Func1<Observer<List<T>>, Subscription>() {
             @Override
             public Subscription call(final Observer<List<T>> observer) {
@@ -444,10 +444,10 @@ public final class OperationBuffer {
     private static class ObservableBasedSingleBufferCreator<T> implements BufferCreator<T> {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
-        private final Func0<Observable<BufferClosing>> bufferClosingSelector;
+        private final Func0<? extends Observable<BufferClosing>> bufferClosingSelector;
         private final NonOverlappingBuffers<T> buffers;
 
-        public ObservableBasedSingleBufferCreator(NonOverlappingBuffers<T> buffers, Func0<Observable<BufferClosing>> bufferClosingSelector) {
+        public ObservableBasedSingleBufferCreator(NonOverlappingBuffers<T> buffers, Func0<? extends Observable<BufferClosing>> bufferClosingSelector) {
             this.buffers = buffers;
             this.bufferClosingSelector = bufferClosingSelector;
 

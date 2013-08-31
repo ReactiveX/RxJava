@@ -574,7 +574,7 @@ public class Observable<T> {
      * @return an Observable whose {@link Observer}s trigger an invocation of the given Observable
      *         factory function
      */
-    public static <T> Observable<T> defer(Func0<Observable<T>> observableFactory) {
+    public static <T> Observable<T> defer(Func0<? extends Observable<T>> observableFactory) {
         return create(OperationDefer.defer(observableFactory));
     }
 
@@ -1074,7 +1074,7 @@ public class Observable<T> {
      *         An {@link Observable} which produces connected non-overlapping buffers, which are emitted
      *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link BufferClosing} object.
      */
-    public Observable<List<T>> buffer(Func0<Observable<BufferClosing>> bufferClosingSelector) {
+    public Observable<List<T>> buffer(Func0<? extends Observable<BufferClosing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferClosingSelector));
     }
 

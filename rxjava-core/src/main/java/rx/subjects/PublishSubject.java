@@ -247,6 +247,7 @@ public class PublishSubject<T> extends Subject<T, T> {
         public void testCompleted() {
             PublishSubject<String> subject = PublishSubject.create();
 
+            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -255,6 +256,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             subject.onNext("three");
             subject.onCompleted();
 
+            @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
             subject.subscribe(anotherObserver);
 
@@ -275,17 +277,11 @@ public class PublishSubject<T> extends Subject<T, T> {
             verify(aObserver, times(1)).onCompleted();
         }
 
-        private void assertNeverObserver(Observer<String> aObserver)
-        {
-            verify(aObserver, Mockito.never()).onNext(any(String.class));
-            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-            verify(aObserver, Mockito.never()).onCompleted();
-        }
-
         @Test
         public void testError() {
             PublishSubject<String> subject = PublishSubject.create();
 
+            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -294,6 +290,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             subject.onNext("three");
             subject.onError(testException);
 
+            @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
             subject.subscribe(anotherObserver);
 
@@ -318,6 +315,7 @@ public class PublishSubject<T> extends Subject<T, T> {
         public void testSubscribeMidSequence() {
             PublishSubject<String> subject = PublishSubject.create();
 
+            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -326,6 +324,7 @@ public class PublishSubject<T> extends Subject<T, T> {
 
             assertObservedUntilTwo(aObserver);
 
+            @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
             subject.subscribe(anotherObserver);
 
@@ -349,6 +348,7 @@ public class PublishSubject<T> extends Subject<T, T> {
         public void testUnsubscribeFirstObserver() {
             PublishSubject<String> subject = PublishSubject.create();
 
+            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             Subscription subscription = subject.subscribe(aObserver);
 
@@ -358,6 +358,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             subscription.unsubscribe();
             assertObservedUntilTwo(aObserver);
 
+            @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
             subject.subscribe(anotherObserver);
 
@@ -391,6 +392,7 @@ public class PublishSubject<T> extends Subject<T, T> {
         public void testUnsubscribeAfterOnCompleted() {
             PublishSubject<String> subject = PublishSubject.create();
 
+            @SuppressWarnings("unchecked")
             Observer<String> anObserver = mock(Observer.class);
             subject.subscribe(anObserver);
 
