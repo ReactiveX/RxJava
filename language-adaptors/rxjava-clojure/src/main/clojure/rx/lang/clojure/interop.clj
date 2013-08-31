@@ -66,11 +66,13 @@
 
   "
   [& fn-form]
+  ; preserve metadata so type hints work
   ; have to qualify fn*. Otherwise bad things happen with the fn* special form in clojure
-  `(rx.lang.clojure.interop/fn* (clojure.core/fn ~@fn-form)))
+  (with-meta `(rx.lang.clojure.interop/fn* (clojure.core/fn ~@fn-form))
+             (meta &form)))
 
 (defn action*
-  "Given function f, returns an object that implements rx.util.functions.Action0-9
+  "Given function f, returns an object that implements rx.util.functions.Action0-3
   by delegating to the given function.
 
   Example:
@@ -93,6 +95,8 @@
 
   "
   [& fn-form]
-  `(action* (clojure.core/fn ~@fn-form)))
+  ; preserve metadata so type hints work
+  (with-meta `(action* (clojure.core/fn ~@fn-form))
+             (meta &form)))
 
 ;################################################################################
