@@ -1,5 +1,50 @@
 # RxJava Releases #
 
+### Version 0.11.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.11.0%22)) ###
+
+This is a major refactor of rxjava-core and the language adaptors. 
+
+Note that there are *breaking changes* in this release. Details are below.
+
+After this refactor it is expected that the API will settle down and allow us to stabilize towards a 1.0 release.
+
+* [Pull 332](https://github.com/Netflix/RxJava/pull/332) Refactor Core to be Statically Typed
+
+RxJava was written from the beginning to target the JVM, not any specific language.
+
+As a side-effect of Java not having lambdas/clojures yet (and other considerations), Netflix used dynamic languages with it predominantly for the year of its existence prior to open sourcing.
+
+To bridge the rxjava-core written in Java with the various languages a FunctionalLanguageAdaptor was registered at runtime for each language of interest.
+
+To enable these language adaptors methods are overloaded with `Object` in the API since `Object` is the only super-type that works across all languages for their various implementations of lambdas and closures.
+
+This downside of this has been that it breaks static typing for Java, Scala and other statically-typed languages. More can be read on this issue and discussion of the subject here: https://groups.google.com/forum/#!topic/rxjava/bVZoKSsb1-o
+
+This release:
+
+- removes all `Object` overload methods from rxjava-core so it is statically typed
+- removes dynamic FunctionalLanguageAdaptors 
+- uses idiomatic approaches for each language adaptor 
+  - Java core is statically typed and has no knowledge of other languages
+  - Scala uses implicits
+  - Groovy uses an ExtensionModule
+  - Clojure adds a new macro ([NOTE: this requires code changes](https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-clojure#basic-usage))
+  - JRuby has been temporarily disabled (discussing new implementation at https://github.com/Netflix/RxJava/issues/320)
+- language supports continue to be additive
+  - the rxjava-core will always be required and then whichever language modules are desired such as rxjava-scala, rxjava-clojure, rxjava-groovy are added to the classpath
+- deletes deprecated methods
+- deletes redundant static methods on `Observable` that cluttered the API and in some cases caused dynamic languages trouble choosing which method to invoke
+- deletes redundant methods on `Scheduler` that gave dynamic languages a hard time choosing which method to invoke
+
+The benefits of this are:
+
+1) Everything is statically typed so compile-time checks for Java, Scala, etc work correctly
+2) Method dispatch is now done via native Java bytecode using types rather than going via `Object` which then has to do a lookup in a map. Memoization helped with the performance but each method invocation still required looking in a map for the correct adaptor. With this approach the appropriate methods will be compiled into the `rx.Observable` class to correctly invoke the right adaptor without lookups. 
+3) Interaction from each language should work as expected idiomatically for that language.
+
+Further history on the various discussions and different attempts at solutions can be seen at https://github.com/Netflix/RxJava/pull/304, https://github.com/Netflix/RxJava/issues/204 and https://github.com/Netflix/RxJava/issues/208
+
+
 ### Version 0.10.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.10.1%22)) ###
 
 A new contrib module for Android: https://github.com/Netflix/RxJava/tree/master/rxjava-contrib/rxjava-android
