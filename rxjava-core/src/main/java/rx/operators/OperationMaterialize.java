@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
 
@@ -139,25 +140,13 @@ public final class OperationMaterialize {
         }
 
         @Test
-        public void testMultipleSubscribes() {
-            final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", null, "three");
+        public void testMultipleSubscribes() throws InterruptedException, ExecutionException {
+            final TestAsyncErrorObservable o = new TestAsyncErrorObservable("one", "two", null, "three");
 
-            Observable<Notification<String>> m = Observable.create(materialize(o1));
+            Observable<Notification<String>> m = Observable.create(materialize(o));
 
-            TestObserver Observer1 = new TestObserver();
-            m.subscribe(Observer1);
-
-            TestObserver Observer2 = new TestObserver();
-            m.subscribe(Observer2);
-
-            try {
-                o1.t.join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            assertEquals(3, Observer1.notifications.size());
-            assertEquals(3, Observer2.notifications.size());
+            assertEquals(3, m.toList().toBlockingObservable().toFuture().get().size());
+            assertEquals(3, m.toList().toBlockingObservable().toFuture().get().size());
         }
 
     }
@@ -193,7 +182,7 @@ public final class OperationMaterialize {
             valuesToReturn = values;
         }
 
-        Thread t;
+        volatile Thread t;
 
         @Override
         public Subscription subscribe(final Observer<String> observer) {
