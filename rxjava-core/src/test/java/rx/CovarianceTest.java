@@ -27,7 +27,7 @@ public class CovarianceTest {
             }
         };
 
-        Observable.<Result, Movie, CoolRating> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<Result>() {
+        Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<Result>() {
 
             @Override
             public void call(Result t1) {
@@ -36,7 +36,7 @@ public class CovarianceTest {
 
         });
 
-        Observable.<Result, Movie, CoolRating> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<Result>() {
+        Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<Result>() {
 
             @Override
             public void call(Result t1) {
@@ -45,7 +45,7 @@ public class CovarianceTest {
 
         });
 
-        Observable.<ExtendedResult, Media, Rating> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<ExtendedResult>() {
+        Observable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<ExtendedResult>() {
 
             @Override
             public void call(ExtendedResult t1) {
@@ -54,7 +54,7 @@ public class CovarianceTest {
 
         });
 
-        Observable.<Result, Media, Rating> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<Result>() {
+        Observable.<Media, Rating, Result> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<Result>() {
 
             @Override
             public void call(Result t1) {
@@ -63,7 +63,7 @@ public class CovarianceTest {
 
         });
 
-        Observable.<ExtendedResult, Media, Rating> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<Result>() {
+        Observable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<Result>() {
 
             @Override
             public void call(Result t1) {
@@ -72,7 +72,7 @@ public class CovarianceTest {
 
         });
 
-        Observable.<Result, Movie, CoolRating> zip(horrors, ratings, combine);
+        Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine);
 
     }
 
