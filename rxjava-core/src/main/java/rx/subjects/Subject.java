@@ -21,7 +21,7 @@ import rx.Subscription;
 import rx.util.functions.Func1;
 
 public abstract class Subject<T, R> extends Observable<R> implements Observer<T> {
-    protected Subject(Func1<? super Observer<R>, ? extends Subscription> onSubscribe) {
+    protected Subject(Func1<? super Observer<? super R>, ? extends Subscription> onSubscribe) {
         super(onSubscribe);
     }
 }

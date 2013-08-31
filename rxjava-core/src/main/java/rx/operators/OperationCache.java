@@ -47,14 +47,14 @@ import rx.util.functions.Func1;
  */
 public class OperationCache {
 
-    public static <T> Func1<Observer<T>, Subscription> cache(final Observable<T> source) {
-        return new Func1<Observer<T>, Subscription>() {
+    public static <T> Func1<Observer<? super T>, Subscription> cache(final Observable<T> source) {
+        return new Func1<Observer<? super T>, Subscription>() {
 
             final AtomicBoolean subscribed = new AtomicBoolean(false);
             private final ReplaySubject<T> cache = ReplaySubject.create();
 
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription call(Observer<? super T> observer) {
                 if (subscribed.compareAndSet(false, true)) {
                     // subscribe to the source once
                     source.subscribe(cache);
@@ -76,10 +76,10 @@ public class OperationCache {
         @Test
         public void testCache() throws InterruptedException {
             final AtomicInteger counter = new AtomicInteger();
-            Observable<String> o = Observable.create(cache(Observable.create(new Func1<Observer<String>, Subscription>() {
+            Observable<String> o = Observable.create(cache(Observable.create(new Func1<Observer<? super String>, Subscription>() {
 
                 @Override
-                public Subscription call(final Observer<String> observer) {
+                public Subscription call(final Observer<? super String> observer) {
                     final BooleanSubscription subscription = new BooleanSubscription();
                     new Thread(new Runnable() {
 

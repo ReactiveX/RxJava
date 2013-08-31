@@ -55,7 +55,7 @@ public final class OperationScan {
      * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212007%28v=vs.103%29.aspx">Observable.Scan(TSource, TAccumulate) Method (IObservable(TSource), TAccumulate, Func(TAccumulate, TSource, TAccumulate))</a>
      */
-    public static <T, R> Func1<Observer<R>, Subscription> scan(Observable<T> sequence, R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
+    public static <T, R> Func1<Observer<? super R>, Subscription> scan(Observable<T> sequence, R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
         return new Accumulator<T, R>(sequence, initialValue, accumulator);
     }
 
@@ -70,11 +70,11 @@ public final class OperationScan {
      * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx">Observable.Scan(TSource) Method (IObservable(TSource), Func(TSource, TSource, TSource))</a>
      */
-    public static <T> Func1<Observer<T>, Subscription> scan(Observable<T> sequence, Func2<? super T, ? super T, ? extends T> accumulator) {
+    public static <T> Func1<Observer<? super T>, Subscription> scan(Observable<T> sequence, Func2<? super T, ? super T, ? extends T> accumulator) {
         return new AccuWithoutInitialValue<T>(sequence, accumulator);
     }
 
-    private static class AccuWithoutInitialValue<T> implements Func1<Observer<T>, Subscription> {
+    private static class AccuWithoutInitialValue<T> implements Func1<Observer<? super T>, Subscription> {
         private final Observable<T> sequence;
         private final Func2<? super T, ? super T, ? extends T> accumulatorFunction;
         
@@ -86,7 +86,7 @@ public final class OperationScan {
         }
         
         @Override
-        public Subscription call(final Observer<T> observer) {
+        public Subscription call(final Observer<? super T> observer) {
             return sequence.subscribe(new Observer<T>() {
                 
                 // has to be synchronized so that the initial value is always sent only once.
@@ -113,7 +113,7 @@ public final class OperationScan {
         }
     }
     
-    private static class Accumulator<T, R> implements Func1<Observer<R>, Subscription> {
+    private static class Accumulator<T, R> implements Func1<Observer<? super R>, Subscription> {
         private final Observable<T> sequence;
         private final R initialValue;
         private final Func2<? super R, ? super T, ? extends R> accumulatorFunction;
@@ -125,19 +125,19 @@ public final class OperationScan {
         }
 
         @Override
-        public Subscription call(final Observer<R> observer) {
+        public Subscription call(final Observer<? super R> observer) {
             observer.onNext(initialValue);
             return sequence.subscribe(new AccumulatingObserver<T, R>(observer, initialValue, accumulatorFunction));
         }
     }
 
     private static class AccumulatingObserver<T, R> implements Observer<T> {
-        private final Observer<R> observer;
+        private final Observer<? super R> observer;
         private final Func2<? super R, ? super T, ? extends R> accumulatorFunction;
 
         private R acc;
 
-        private AccumulatingObserver(Observer<R> observer, R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
+        private AccumulatingObserver(Observer<? super R> observer, R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
             this.observer = observer;
             this.accumulatorFunction = accumulator;
             

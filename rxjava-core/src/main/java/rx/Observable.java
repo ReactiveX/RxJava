@@ -108,7 +108,7 @@ public class Observable<T> {
 
     private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
-    private final Func1<? super Observer<T>, ? extends Subscription> onSubscribe;
+    private final Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe;
 
     /**
      * Observable with Function to execute when subscribed to.
@@ -119,7 +119,7 @@ public class Observable<T> {
      * @param onSubscribe
      *            {@link Func1} to be executed when {@link #subscribe(Observer)} is called.
      */
-    protected Observable(Func1<? super Observer<T>, ? extends Subscription> onSubscribe) {
+    protected Observable(Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe) {
         this.onSubscribe = onSubscribe;
     }
 
@@ -155,9 +155,9 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if the {@link Observer} provided as the argument to {@code subscribe()} is {@code null}
      */
-    public Subscription subscribe(Observer<T> observer) {
+    public Subscription subscribe(Observer<? super T> observer) {
         // allow the hook to intercept and/or decorate
-        Func1<? super Observer<T>, ? extends Subscription> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
+        Func1<? super Observer<? super T>, ? extends Subscription> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
         // validate and proceed
         if (observer == null) {
             throw new IllegalArgumentException("observer can not be null");
@@ -233,7 +233,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if an argument to {@code subscribe()} is {@code null}
      */
-    public Subscription subscribe(Observer<T> observer, Scheduler scheduler) {
+    public Subscription subscribe(Observer<? super T> observer, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(observer);
     }
 
@@ -242,7 +242,7 @@ public class Observable<T> {
      * <p>
      * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
      */
-    private Subscription protectivelyWrapAndSubscribe(Observer<T> o) {
+    private Subscription protectivelyWrapAndSubscribe(Observer<? super T> o) {
         SafeObservableSubscription subscription = new SafeObservableSubscription();
         return subscription.wrap(subscribe(new SafeObserver<T>(subscription, o)));
     }
@@ -397,10 +397,10 @@ public class Observable<T> {
      */
     private static class NeverObservable<T> extends Observable<T> {
         public NeverObservable() {
-            super(new Func1<Observer<T>, Subscription>() {
+            super(new Func1<Observer<? super T>, Subscription>() {
 
                 @Override
-                public Subscription call(Observer<T> t1) {
+                public Subscription call(Observer<? super T> t1) {
                     return Subscriptions.empty();
                 }
 
@@ -417,7 +417,7 @@ public class Observable<T> {
     private static class ThrowObservable<T> extends Observable<T> {
 
         public ThrowObservable(final Throwable exception) {
-            super(new Func1<Observer<T>, Subscription>() {
+            super(new Func1<Observer<? super T>, Subscription>() {
 
                 /**
                  * Accepts an {@link Observer} and calls its {@link Observer#onError onError} method.
@@ -427,7 +427,7 @@ public class Observable<T> {
                  * @return a reference to the subscription
                  */
                 @Override
-                public Subscription call(Observer<T> observer) {
+                public Subscription call(Observer<? super T> observer) {
                     observer.onError(exception);
                     return Subscriptions.empty();
                 }
@@ -461,7 +461,7 @@ public class Observable<T> {
      * @return an Observable that, when an {@link Observer} subscribes to it, will execute the given
      *         function
      */
-    public static <T> Observable<T> create(Func1<? super Observer<T>, ? extends Subscription> func) {
+    public static <T> Observable<T> create(Func1<? super Observer<? super T>, ? extends Subscription> func) {
         return new Observable<T>(func);
     }
 
@@ -918,7 +918,7 @@ public class Observable<T> {
      *            Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R, T0, T1> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Func2<? super T0, ? super T1, ? extends R> reduceFunction) {
+    public static <R, T0, T1> Observable<R> zip(Observable<? extends T0> w0, Observable<? extends T1> w1, Func2<? super T0, ? super T1, ? extends R> reduceFunction) {
         return create(OperationZip.zip(w0, w1, reduceFunction));
     }
 
@@ -992,7 +992,7 @@ public class Observable<T> {
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R, T0, T1, T2> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<? super T0, ? super T1, ? super T2, ? extends R> function) {
+    public static <R, T0, T1, T2> Observable<R> zip(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2, Func3<? super T0, ? super T1, ? super T2, ? extends R> function) {
         return create(OperationZip.zip(w0, w1, w2, function));
     }
 

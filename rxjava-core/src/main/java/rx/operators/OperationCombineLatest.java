@@ -62,7 +62,7 @@ public class OperationCombineLatest {
      *          The aggregation function used to combine the source observable values.
      * @return A function from an observer to a subscription. This can be used to create an observable from.
      */
-    public static <T0, T1, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<? super T0, ? super T1, ? extends R> combineLatestFunction) {
+    public static <T0, T1, R> Func1<Observer<? super R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<? super T0, ? super T1, ? extends R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
         a.addObserver(new CombineObserver<R, T1>(a, w1));
@@ -72,7 +72,7 @@ public class OperationCombineLatest {
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
-    public static <T0, T1, T2, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<? super T0, ? super T1, ? super T2, ? extends R> combineLatestFunction) {
+    public static <T0, T1, T2, R> Func1<Observer<? super R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<? super T0, ? super T1, ? super T2, ? extends R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
         a.addObserver(new CombineObserver<R, T1>(a, w1));
@@ -83,7 +83,7 @@ public class OperationCombineLatest {
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
-    public static <T0, T1, T2, T3, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<? super T0, ? super T1, ? super T2, ? super T3, ? extends R> combineLatestFunction) {
+    public static <T0, T1, T2, T3, R> Func1<Observer<? super R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<? super T0, ? super T1, ? super T2, ? super T3, ? extends R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
         a.addObserver(new CombineObserver<R, T1>(a, w1));
@@ -130,7 +130,7 @@ public class OperationCombineLatest {
      * whenever we have received an event from one of the observables, as soon as each Observable has received 
      * at least one event.
      */
-    private static class Aggregator<R> implements Func1<Observer<R>, Subscription> {
+    private static class Aggregator<R> implements Func1<Observer<? super R>, Subscription> {
 
         private volatile Observer<R> observer;
 
@@ -232,7 +232,7 @@ public class OperationCombineLatest {
         }
 
         @Override
-        public Subscription call(Observer<R> observer) {
+        public Subscription call(Observer<? super R> observer) {
             if (this.observer != null) {
                 throw new IllegalStateException("Only one Observer can subscribe to this Observable.");
             }
@@ -283,8 +283,8 @@ public class OperationCombineLatest {
             }));
             combined.subscribe(w);
             
-            w1.Observer.onNext("first value of w1");
-            w2.Observer.onNext("first value of w2");
+            w1.observer.onNext("first value of w1");
+            w2.observer.onNext("first value of w2");
             
             verify(w, never()).onNext(anyString());
             verify(w, never()).onCompleted();
@@ -305,18 +305,18 @@ public class OperationCombineLatest {
 
             /* simulate sending data */
             // once for w1
-            w1.Observer.onNext("1a");
-            w2.Observer.onNext("2a");
-            w3.Observer.onNext("3a");
-            w1.Observer.onCompleted();
+            w1.observer.onNext("1a");
+            w2.observer.onNext("2a");
+            w3.observer.onNext("3a");
+            w1.observer.onCompleted();
             // twice for w2
-            w2.Observer.onNext("2b");
-            w2.Observer.onCompleted();
+            w2.observer.onNext("2b");
+            w2.observer.onCompleted();
             // 4 times for w3
-            w3.Observer.onNext("3b");
-            w3.Observer.onNext("3c");
-            w3.Observer.onNext("3d");
-            w3.Observer.onCompleted();
+            w3.observer.onNext("3b");
+            w3.observer.onNext("3c");
+            w3.observer.onNext("3d");
+            w3.observer.onCompleted();
 
             /* we should have been called 4 times on the Observer */
             InOrder inOrder = inOrder(w);
@@ -343,18 +343,18 @@ public class OperationCombineLatest {
 
             /* simulate sending data */
             // 4 times for w1
-            w1.Observer.onNext("1a");
-            w1.Observer.onNext("1b");
-            w1.Observer.onNext("1c");
-            w1.Observer.onNext("1d");
-            w1.Observer.onCompleted();
+            w1.observer.onNext("1a");
+            w1.observer.onNext("1b");
+            w1.observer.onNext("1c");
+            w1.observer.onNext("1d");
+            w1.observer.onCompleted();
             // twice for w2
-            w2.Observer.onNext("2a");
-            w2.Observer.onNext("2b");
-            w2.Observer.onCompleted();
+            w2.observer.onNext("2a");
+            w2.observer.onNext("2b");
+            w2.observer.onCompleted();
             // 1 times for w3
-            w3.Observer.onNext("3a");
-            w3.Observer.onCompleted();
+            w3.observer.onNext("3a");
+            w3.observer.onCompleted();
 
             /* we should have been called 1 time only on the Observer since we only combine the "latest" we don't go back and loop through others once completed */
             InOrder inOrder = inOrder(w);
@@ -378,19 +378,19 @@ public class OperationCombineLatest {
             combineLatestW.subscribe(w);
 
             /* simulate sending data */
-            w1.Observer.onNext("1a");
-            w2.Observer.onNext("2a");
-            w2.Observer.onNext("2b");
-            w3.Observer.onNext("3a");
+            w1.observer.onNext("1a");
+            w2.observer.onNext("2a");
+            w2.observer.onNext("2b");
+            w3.observer.onNext("3a");
 
-            w1.Observer.onNext("1b");
-            w2.Observer.onNext("2c");
-            w2.Observer.onNext("2d");
-            w3.Observer.onNext("3b");
+            w1.observer.onNext("1b");
+            w2.observer.onNext("2c");
+            w2.observer.onNext("2d");
+            w3.observer.onNext("3b");
             
-            w1.Observer.onCompleted();
-            w2.Observer.onCompleted();
-            w3.Observer.onCompleted();
+            w1.observer.onCompleted();
+            w2.observer.onCompleted();
+            w3.observer.onCompleted();
 
             /* we should have been called 5 times on the Observer */
             InOrder inOrder = inOrder(w);
@@ -851,12 +851,12 @@ public class OperationCombineLatest {
 
         private static class TestObservable extends Observable<String> {
 
-            Observer<String> Observer;
+            Observer<? super String> observer;
 
             @Override
-            public Subscription subscribe(Observer<String> Observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 // just store the variable where it can be accessed so we can manually trigger it
-                this.Observer = Observer;
+                this.observer = observer;
                 return Subscriptions.empty();
             }
 

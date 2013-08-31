@@ -268,7 +268,7 @@ public final class OperationNext {
 
         private static class TestObservable extends Observable<String> {
 
-            Observer<String> observer = null;
+            Observer<? super String> observer = null;
             Subscription s;
 
             public TestObservable(Subscription s) {
@@ -291,7 +291,7 @@ public final class OperationNext {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 this.observer = observer;
                 return s;
             }
@@ -315,10 +315,10 @@ public final class OperationNext {
             final CountDownLatch finished = new CountDownLatch(1);
             final AtomicBoolean running = new AtomicBoolean(true);
             final AtomicInteger count = new AtomicInteger(0);
-            final Observable<Integer> obs = Observable.create(new Func1<Observer<Integer>, Subscription>() {
+            final Observable<Integer> obs = Observable.create(new Func1<Observer<? super Integer>, Subscription>() {
 
                 @Override
-                public Subscription call(final Observer<Integer> o) {
+                public Subscription call(final Observer<? super Integer> o) {
                     new Thread(new Runnable() {
 
                         @Override

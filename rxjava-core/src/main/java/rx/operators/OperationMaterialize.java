@@ -47,11 +47,11 @@ public final class OperationMaterialize {
      * @return An observable sequence whose elements are the result of materializing the notifications of the given sequence.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">Observable.Materialize(TSource) Method </a>
      */
-    public static <T> Func1<Observer<Notification<T>>, Subscription> materialize(final Observable<T> sequence) {
+    public static <T> Func1<Observer<? super Notification<T>>, Subscription> materialize(final Observable<T> sequence) {
         return new MaterializeObservable<T>(sequence);
     }
 
-    private static class MaterializeObservable<T> implements Func1<Observer<Notification<T>>, Subscription> {
+    private static class MaterializeObservable<T> implements Func1<Observer<? super Notification<T>>, Subscription> {
 
         private final Observable<T> sequence;
 
@@ -60,7 +60,7 @@ public final class OperationMaterialize {
         }
 
         @Override
-        public Subscription call(final Observer<Notification<T>> observer) {
+        public Subscription call(final Observer<? super Notification<T>> observer) {
             return sequence.subscribe(new Observer<T>() {
 
                 @Override
@@ -196,7 +196,7 @@ public final class OperationMaterialize {
         Thread t;
 
         @Override
-        public Subscription subscribe(final Observer<String> observer) {
+        public Subscription subscribe(final Observer<? super String> observer) {
             t = new Thread(new Runnable() {
 
                 @Override

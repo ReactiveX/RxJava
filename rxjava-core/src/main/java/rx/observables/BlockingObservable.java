@@ -60,7 +60,7 @@ import rx.util.functions.Func1;
  */
 public class BlockingObservable<T> extends Observable<T> {
 
-    protected BlockingObservable(Func1<? super Observer<T>, ? extends Subscription> onSubscribe) {
+    protected BlockingObservable(Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe) {
         super(onSubscribe);
     }
     
@@ -76,10 +76,10 @@ public class BlockingObservable<T> extends Observable<T> {
      * Convert an Observable into a BlockingObservable.
      */
     public static <T> BlockingObservable<T> from(final Observable<T> o) {
-        return new BlockingObservable<T>(new Func1<Observer<T>, Subscription>() {
+        return new BlockingObservable<T>(new Func1<Observer<? super T>, Subscription>() {
 
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription call(Observer<? super T> observer) {
                 return o.subscribe(observer);
             }
         });
@@ -784,10 +784,10 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test(expected = TestException.class)
         public void testToIterableWithException() {
-            BlockingObservable<String> obs = BlockingObservable.from(create(new Func1<Observer<String>, Subscription>() {
+            BlockingObservable<String> obs = BlockingObservable.from(create(new Func1<Observer<? super String>, Subscription>() {
 
                 @Override
-                public Subscription call(Observer<String> observer) {
+                public Subscription call(Observer<? super String> observer) {
                     observer.onNext("one");
                     observer.onError(new TestException());
                     return Subscriptions.empty();
@@ -807,10 +807,10 @@ public class BlockingObservable<T> extends Observable<T> {
         @Test
         public void testForEachWithError() {
             try {
-                BlockingObservable.from(Observable.create(new Func1<Observer<String>, Subscription>() {
+                BlockingObservable.from(Observable.create(new Func1<Observer<? super String>, Subscription>() {
 
                     @Override
-                    public Subscription call(final Observer<String> observer) {
+                    public Subscription call(final Observer<? super String> observer) {
                         final BooleanSubscription subscription = new BooleanSubscription();
                         new Thread(new Runnable() {
 

@@ -37,18 +37,18 @@ import rx.util.functions.Func1;
  */
 public final class OperationTakeLast {
 
-    public static <T> Func1<Observer<T>, Subscription> takeLast(final Observable<T> items, final int count) {
-        return new Func1<Observer<T>, Subscription>() {
+    public static <T> Func1<Observer<? super T>, Subscription> takeLast(final Observable<T> items, final int count) {
+        return new Func1<Observer<? super T>, Subscription>() {
 
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription call(Observer<? super T> observer) {
                 return new TakeLast<T>(items, count).call(observer);
             }
 
         };
     }
 
-    private static class TakeLast<T> implements Func1<Observer<T>, Subscription> {
+    private static class TakeLast<T> implements Func1<Observer<? super T>, Subscription> {
         private final int count;
         private final Observable<T> items;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
@@ -58,16 +58,16 @@ public final class OperationTakeLast {
             this.items = items;
         }
 
-        public Subscription call(Observer<T> observer) {
+        public Subscription call(Observer<? super T> observer) {
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
         private class ItemObserver implements Observer<T> {
 
             private LinkedBlockingDeque<T> deque = new LinkedBlockingDeque<T>(count);
-            private final Observer<T> observer;
+            private final Observer<? super T> observer;
 
-            public ItemObserver(Observer<T> observer) {
+            public ItemObserver(Observer<? super T> observer) {
                 this.observer = observer;
             }
 

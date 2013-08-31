@@ -41,9 +41,9 @@ public class OperationMulticast {
         private Subscription subscription;
 
         public MulticastConnectableObservable(Observable<T> source, final Subject<T, R> subject) {
-            super(new Func1<Observer<R>, Subscription>() {
+            super(new Func1<Observer<? super R>, Subscription>() {
                 @Override
-                public Subscription call(Observer<R> observer) {
+                public Subscription call(Observer<? super R> observer) {
                     return subject.subscribe(observer);
                 }
             });
@@ -179,7 +179,7 @@ public class OperationMulticast {
 
         private static class TestObservable extends Observable<String> {
 
-            Observer<String> observer = new Observer<String>() {
+            Observer<? super String> observer = new Observer<String>() {
                 @Override
                 public void onCompleted() {
                     // Do nothing
@@ -231,7 +231,7 @@ public class OperationMulticast {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 this.observer = observer;
                 return s;
             }

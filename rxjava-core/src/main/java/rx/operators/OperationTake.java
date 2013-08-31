@@ -50,12 +50,12 @@ public final class OperationTake {
      * @param num
      * @return the specified number of contiguous values from the start of the given observable sequence
      */
-    public static <T> Func1<Observer<T>, Subscription> take(final Observable<T> items, final int num) {
+    public static <T> Func1<Observer<? super T>, Subscription> take(final Observable<T> items, final int num) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new Func1<Observer<T>, Subscription>() {
+        return new Func1<Observer<? super T>, Subscription>() {
 
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription call(Observer<? super T> observer) {
                 return new Take<T>(items, num).call(observer);
             }
 
@@ -73,7 +73,7 @@ public final class OperationTake {
      * 
      * @param <T>
      */
-    private static class Take<T> implements Func1<Observer<T>, Subscription> {
+    private static class Take<T> implements Func1<Observer<? super T>, Subscription> {
         private final Observable<T> items;
         private final int num;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
@@ -84,7 +84,7 @@ public final class OperationTake {
         }
 
         @Override
-        public Subscription call(Observer<T> observer) {
+        public Subscription call(Observer<? super T> observer) {
             if (num < 1) {
                 items.subscribe(new Observer<T>()
                 {
@@ -111,11 +111,11 @@ public final class OperationTake {
         }
 
         private class ItemObserver implements Observer<T> {
-            private final Observer<T> observer;
+            private final Observer<? super T> observer;
 
             private final AtomicInteger counter = new AtomicInteger();
 
-            public ItemObserver(Observer<T> observer) {
+            public ItemObserver(Observer<? super T> observer) {
                 this.observer = observer;
             }
 
@@ -186,10 +186,10 @@ public final class OperationTake {
 
         @Test
         public void testTakeDoesntLeakErrors() {
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>()
+            Observable<String> source = Observable.create(new Func1<Observer<? super String>, Subscription>()
             {
                 @Override
-                public Subscription call(Observer<String> observer)
+                public Subscription call(Observer<? super String> observer)
                 {
                     observer.onNext("one");
                     observer.onError(new Throwable("test failed"));
@@ -213,10 +213,10 @@ public final class OperationTake {
         public void testTakeZeroDoesntLeakError() {
             final AtomicBoolean subscribed = new AtomicBoolean(false);
             final AtomicBoolean unSubscribed = new AtomicBoolean(false);
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>()
+            Observable<String> source = Observable.create(new Func1<Observer<? super String>, Subscription>()
             {
                 @Override
-                public Subscription call(Observer<String> observer)
+                public Subscription call(Observer<? super String> observer)
                 {
                     subscribed.set(true);
                     observer.onError(new Throwable("test failed"));
@@ -284,7 +284,7 @@ public final class OperationTake {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

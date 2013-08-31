@@ -53,11 +53,11 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnErrorResumeNextViaFunction<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> onErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<? super Throwable, ? extends Observable<T>> resumeFunction) {
+    public static <T> Func1<Observer<? super T>, Subscription> onErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<? super Throwable, ? extends Observable<T>> resumeFunction) {
         return new OnErrorResumeNextViaFunction<T>(originalSequence, resumeFunction);
     }
 
-    private static class OnErrorResumeNextViaFunction<T> implements Func1<Observer<T>, Subscription> {
+    private static class OnErrorResumeNextViaFunction<T> implements Func1<Observer<? super T>, Subscription> {
 
         private final Func1<? super Throwable, ? extends Observable<T>> resumeFunction;
         private final Observable<T> originalSequence;
@@ -67,7 +67,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
             this.originalSequence = originalSequence;
         }
 
-        public Subscription call(final Observer<T> observer) {
+        public Subscription call(final Observer<? super T> observer) {
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
             final AtomicReference<SafeObservableSubscription> subscriptionRef = new AtomicReference<SafeObservableSubscription>(new SafeObservableSubscription());
 
@@ -127,10 +127,10 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
         @Test
         public void testResumeNextWithSynchronousExecution() {
             final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
-            Observable<String> w = Observable.create(new Func1<Observer<String>, Subscription>() {
+            Observable<String> w = Observable.create(new Func1<Observer<? super String>, Subscription>() {
 
                 @Override
-                public Subscription call(Observer<String> observer) {
+                public Subscription call(Observer<? super String> observer) {
                     observer.onNext("one");
                     observer.onError(new Throwable("injected failure"));
                     return Subscriptions.empty();
@@ -245,7 +245,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

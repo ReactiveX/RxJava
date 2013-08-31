@@ -50,11 +50,11 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnErrorReturn<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> onErrorReturn(Observable<T> originalSequence, Func1<? super Throwable, ? extends T> resumeFunction) {
+    public static <T> Func1<Observer<? super T>, Subscription> onErrorReturn(Observable<T> originalSequence, Func1<? super Throwable, ? extends T> resumeFunction) {
         return new OnErrorReturn<T>(originalSequence, resumeFunction);
     }
 
-    private static class OnErrorReturn<T> implements Func1<Observer<T>, Subscription> {
+    private static class OnErrorReturn<T> implements Func1<Observer<? super T>, Subscription> {
         private final Func1<? super Throwable, ? extends T> resumeFunction;
         private final Observable<T> originalSequence;
 
@@ -63,7 +63,7 @@ public final class OperationOnErrorReturn<T> {
             this.originalSequence = originalSequence;
         }
 
-        public Subscription call(final Observer<T> observer) {
+        public Subscription call(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
@@ -210,7 +210,7 @@ public final class OperationOnErrorReturn<T> {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

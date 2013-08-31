@@ -36,11 +36,11 @@ import rx.util.functions.Func2;
  */
 public class OperationSubscribeOn {
 
-    public static <T> Func1<Observer<T>, Subscription> subscribeOn(Observable<T> source, Scheduler scheduler) {
+    public static <T> Func1<Observer<? super T>, Subscription> subscribeOn(Observable<T> source, Scheduler scheduler) {
         return new SubscribeOn<T>(source, scheduler);
     }
 
-    private static class SubscribeOn<T> implements Func1<Observer<T>, Subscription> {
+    private static class SubscribeOn<T> implements Func1<Observer<? super T>, Subscription> {
         private final Observable<T> source;
         private final Scheduler scheduler;
 
@@ -50,7 +50,7 @@ public class OperationSubscribeOn {
         }
 
         @Override
-        public Subscription call(final Observer<T> observer) {
+        public Subscription call(final Observer<? super T> observer) {
             return scheduler.schedule(null, new Func2<Scheduler, T, Subscription>() {
                 @Override
                 public Subscription call(Scheduler s, T t) {

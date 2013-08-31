@@ -164,7 +164,7 @@ public final class OperationMostRecent {
 
         private static class TestObservable extends Observable<String> {
 
-            Observer<String> observer = null;
+            Observer<? super String> observer = null;
             Subscription s;
 
             public TestObservable(Subscription s) {
@@ -187,7 +187,7 @@ public final class OperationMostRecent {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 this.observer = observer;
                 return s;
             }

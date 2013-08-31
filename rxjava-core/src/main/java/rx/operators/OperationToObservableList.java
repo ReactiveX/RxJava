@@ -47,11 +47,11 @@ import rx.util.functions.Func1;
  */
 public final class OperationToObservableList<T> {
 
-    public static <T> Func1<Observer<List<T>>, Subscription> toObservableList(Observable<T> that) {
+    public static <T> Func1<Observer<? super List<T>>, Subscription> toObservableList(Observable<T> that) {
         return new ToObservableList<T>(that);
     }
 
-    private static class ToObservableList<T> implements Func1<Observer<List<T>>, Subscription> {
+    private static class ToObservableList<T> implements Func1<Observer<? super List<T>>, Subscription> {
 
         private final Observable<T> that;
 
@@ -59,7 +59,7 @@ public final class OperationToObservableList<T> {
             this.that = that;
         }
 
-        public Subscription call(final Observer<List<T>> observer) {
+        public Subscription call(final Observer<? super List<T>> observer) {
 
             return that.subscribe(new Observer<T>() {
                 final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();

@@ -39,7 +39,7 @@ import rx.util.functions.Func1;
  * <code>Observable.subscribe(Observer)</code> does nothing.
  */
 public class OperationToObservableFuture {
-    private static class ToObservableFuture<T> implements Func1<Observer<T>, Subscription> {
+    private static class ToObservableFuture<T> implements Func1<Observer<? super T>, Subscription> {
         private final Future<T> that;
         private final Long time;
         private final TimeUnit unit;
@@ -57,7 +57,7 @@ public class OperationToObservableFuture {
         }
 
         @Override
-        public Subscription call(Observer<T> observer) {
+        public Subscription call(Observer<? super T> observer) {
             try {
                 T value = (time == null) ? that.get() : that.get(time, unit);
 
@@ -75,11 +75,11 @@ public class OperationToObservableFuture {
         }
     }
 
-    public static <T> Func1<Observer<T>, Subscription> toObservableFuture(final Future<T> that) {
+    public static <T> Func1<Observer<? super T>, Subscription> toObservableFuture(final Future<T> that) {
         return new ToObservableFuture<T>(that);
     }
 
-    public static <T> Func1<Observer<T>, Subscription> toObservableFuture(final Future<T> that, long time, TimeUnit unit) {
+    public static <T> Func1<Observer<? super T>, Subscription> toObservableFuture(final Future<T> that, long time, TimeUnit unit) {
         return new ToObservableFuture<T>(that, time, unit);
     }
 

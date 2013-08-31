@@ -24,13 +24,13 @@ import rx.Scheduler;
 import rx.util.functions.Action0;
 
 /* package */class ScheduledObserver<T> implements Observer<T> {
-    private final Observer<T> underlying;
+    private final Observer<? super T> underlying;
     private final Scheduler scheduler;
 
     private final ConcurrentLinkedQueue<Notification<T>> queue = new ConcurrentLinkedQueue<Notification<T>>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
-    public ScheduledObserver(Observer<T> underlying, Scheduler scheduler) {
+    public ScheduledObserver(Observer<? super T> underlying, Scheduler scheduler) {
         this.underlying = underlying;
         this.scheduler = scheduler;
     }

@@ -50,11 +50,11 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnErrorResumeNextViaObservable<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> onErrorResumeNextViaObservable(Observable<T> originalSequence, Observable<T> resumeSequence) {
+    public static <T> Func1<Observer<? super T>, Subscription> onErrorResumeNextViaObservable(Observable<T> originalSequence, Observable<T> resumeSequence) {
         return new OnErrorResumeNextViaObservable<T>(originalSequence, resumeSequence);
     }
 
-    private static class OnErrorResumeNextViaObservable<T> implements Func1<Observer<T>, Subscription> {
+    private static class OnErrorResumeNextViaObservable<T> implements Func1<Observer<? super T>, Subscription> {
 
         private final Observable<T> resumeSequence;
         private final Observable<T> originalSequence;
@@ -64,7 +64,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             this.originalSequence = originalSequence;
         }
 
-        public Subscription call(final Observer<T> observer) {
+        public Subscription call(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
@@ -197,7 +197,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

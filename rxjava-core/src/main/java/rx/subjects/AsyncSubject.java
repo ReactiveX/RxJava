@@ -68,11 +68,11 @@ public class AsyncSubject<T> extends Subject<T, T> {
      * @return a new AsyncSubject
      */
     public static <T> AsyncSubject<T> create() {
-        final ConcurrentHashMap<Subscription, Observer<T>> observers = new ConcurrentHashMap<Subscription, Observer<T>>();
+        final ConcurrentHashMap<Subscription, Observer<? super T>> observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
 
-        Func1<Observer<T>, Subscription> onSubscribe = new Func1<Observer<T>, Subscription>() {
+        Func1<Observer<? super T>, Subscription> onSubscribe = new Func1<Observer<? super T>, Subscription>() {
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription call(Observer<? super T> observer) {
                 final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
                 subscription.wrap(new Subscription() {
@@ -92,10 +92,10 @@ public class AsyncSubject<T> extends Subject<T, T> {
         return new AsyncSubject<T>(onSubscribe, observers);
     }
 
-    private final ConcurrentHashMap<Subscription, Observer<T>> observers;
+    private final ConcurrentHashMap<Subscription, Observer<? super T>> observers;
     private final AtomicReference<T> currentValue;
 
-    protected AsyncSubject(Func1<? super Observer<T>, ? extends Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
+    protected AsyncSubject(Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers) {
         super(onSubscribe);
         this.observers = observers;
         this.currentValue = new AtomicReference<T>();
@@ -104,17 +104,17 @@ public class AsyncSubject<T> extends Subject<T, T> {
     @Override
     public void onCompleted() {
         T finalValue = currentValue.get();
-        for (Observer<T> observer : observers.values()) {
+        for (Observer<? super T> observer : observers.values()) {
             observer.onNext(finalValue);
         }
-        for (Observer<T> observer : observers.values()) {
+        for (Observer<? super T> observer : observers.values()) {
             observer.onCompleted();
         }
     }
 
     @Override
     public void onError(Throwable e) {
-        for (Observer<T> observer : observers.values()) {
+        for (Observer<? super T> observer : observers.values()) {
             observer.onError(e);
         }
     }

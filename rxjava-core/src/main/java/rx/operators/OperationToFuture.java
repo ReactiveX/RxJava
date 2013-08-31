@@ -162,10 +162,10 @@ public class OperationToFuture {
 
     @Test
     public void testToFutureWithException() {
-        Observable<String> obs = Observable.create(new Func1<Observer<String>, Subscription>() {
+        Observable<String> obs = Observable.create(new Func1<Observer<? super String>, Subscription>() {
 
             @Override
-            public Subscription call(Observer<String> observer) {
+            public Subscription call(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new TestException());
                 return Subscriptions.empty();

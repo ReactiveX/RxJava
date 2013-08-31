@@ -48,18 +48,18 @@ public final class OperationSample {
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> Func1<Observer<T>, Subscription> sample(final Observable<T> source, long period, TimeUnit unit) {
+    public static <T> Func1<Observer<? super T>, Subscription> sample(final Observable<T> source, long period, TimeUnit unit) {
         return new Sample<T>(source, period, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
     }
 
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> Func1<Observer<T>, Subscription> sample(final Observable<T> source, long period, TimeUnit unit, Scheduler scheduler) {
+    public static <T> Func1<Observer<? super T>, Subscription> sample(final Observable<T> source, long period, TimeUnit unit, Scheduler scheduler) {
         return new Sample<T>(source, period, unit, scheduler);
     }
     
-    private static class Sample<T> implements Func1<Observer<T>, Subscription> {
+    private static class Sample<T> implements Func1<Observer<? super T>, Subscription> {
         private final Observable<T> source;
         private final long period;
         private final TimeUnit unit;
@@ -76,7 +76,7 @@ public final class OperationSample {
         }
 
         @Override
-        public Subscription call(final Observer<T> observer) {
+        public Subscription call(final Observer<? super T> observer) {
             Observable<Long> clock = Observable.create(OperationInterval.interval(period, unit, scheduler));
             final Subscription clockSubscription = clock.subscribe(new Observer<Long>() {
                 @Override
@@ -136,9 +136,9 @@ public final class OperationSample {
         
         @Test
         public void testSample() {
-            Observable<Long> source = Observable.create(new Func1<Observer<Long>, Subscription>() {
+            Observable<Long> source = Observable.create(new Func1<Observer<? super Long>, Subscription>() {
                 @Override
-                public Subscription call(final Observer<Long> observer1) {
+                public Subscription call(final Observer<? super Long> observer1) {
                     scheduler.schedule(new Action0() {
                         @Override
                         public void call() {

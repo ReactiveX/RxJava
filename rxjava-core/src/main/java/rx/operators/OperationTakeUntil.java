@@ -89,7 +89,7 @@ public class OperationTakeUntil {
 
     }
 
-    private static class SourceObservable<T> implements Func1<Observer<Notification<T>>, Subscription> {
+    private static class SourceObservable<T> implements Func1<Observer<? super Notification<T>>, Subscription> {
         private final Observable<T> sequence;
 
         private SourceObservable(Observable<T> sequence) {
@@ -97,7 +97,7 @@ public class OperationTakeUntil {
         }
 
         @Override
-        public Subscription call(final Observer<Notification<T>> notificationObserver) {
+        public Subscription call(final Observer<? super Notification<T>> notificationObserver) {
             return sequence.subscribe(new Observer<T>() {
                 @Override
                 public void onCompleted() {
@@ -117,7 +117,7 @@ public class OperationTakeUntil {
         }
     }
 
-    private static class OtherObservable<T, E> implements Func1<Observer<Notification<T>>, Subscription> {
+    private static class OtherObservable<T, E> implements Func1<Observer<? super Notification<T>>, Subscription> {
         private final Observable<E> sequence;
 
         private OtherObservable(Observable<E> sequence) {
@@ -125,7 +125,7 @@ public class OperationTakeUntil {
         }
 
         @Override
-        public Subscription call(final Observer<Notification<T>> notificationObserver) {
+        public Subscription call(final Observer<? super Notification<T>> notificationObserver) {
             return sequence.subscribe(new Observer<E>() {
                 @Override
                 public void onCompleted() {
@@ -270,7 +270,7 @@ public class OperationTakeUntil {
 
         private static class TestObservable extends Observable<String> {
 
-            Observer<String> observer = null;
+            Observer<? super String> observer = null;
             Subscription s;
 
             public TestObservable(Subscription s) {
@@ -293,7 +293,7 @@ public class OperationTakeUntil {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 this.observer = observer;
                 return s;
             }

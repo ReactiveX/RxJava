@@ -55,28 +55,28 @@ public final class OperationMerge {
      * @return An observable sequence whose elements are the result of flattening the output from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">Observable.Merge(TSource) Method (IObservable(TSource)[])</a>
      */
-    public static <T> Func1<Observer<T>, Subscription> merge(final Observable<Observable<T>> o) {
+    public static <T> Func1<Observer<? super T>, Subscription> merge(final Observable<Observable<T>> o) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new Func1<Observer<T>, Subscription>() {
+        return new Func1<Observer<? super T>, Subscription>() {
 
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription call(Observer<? super T> observer) {
                 return new MergeObservable<T>(o).call(observer);
             }
         };
     }
 
-    public static <T> Func1<Observer<T>, Subscription> merge(final Observable<T>... sequences) {
+    public static <T> Func1<Observer<? super T>, Subscription> merge(final Observable<T>... sequences) {
         return merge(Arrays.asList(sequences));
     }
 
-    public static <T> Func1<Observer<T>, Subscription> merge(final List<Observable<T>> sequences) {
-        return merge(Observable.create(new Func1<Observer<Observable<T>>, Subscription>() {
+    public static <T> Func1<Observer<? super T>, Subscription> merge(final List<Observable<T>> sequences) {
+        return merge(Observable.create(new Func1<Observer<? super Observable<T>>, Subscription>() {
 
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription call(Observer<Observable<T>> observer) {
+            public Subscription call(Observer<? super Observable<T>> observer) {
                 for (Observable<T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
@@ -112,7 +112,7 @@ public final class OperationMerge {
      * 
      * @param <T>
      */
-    private static final class MergeObservable<T> implements Func1<Observer<T>, Subscription> {
+    private static final class MergeObservable<T> implements Func1<Observer<? super T>, Subscription> {
         private final Observable<Observable<T>> sequences;
         private final MergeSubscription ourSubscription = new MergeSubscription();
         private AtomicBoolean stopped = new AtomicBoolean(false);
@@ -124,7 +124,7 @@ public final class OperationMerge {
             this.sequences = sequences;
         }
 
-        public Subscription call(Observer<T> actualObserver) {
+        public Subscription call(Observer<? super T> actualObserver) {
 
             /**
              * We must synchronize a merge because we subscribe to multiple sequences in parallel that will each be emitting.
@@ -295,10 +295,10 @@ public final class OperationMerge {
             final Observable<String> o1 = new TestSynchronousObservable();
             final Observable<String> o2 = new TestSynchronousObservable();
 
-            Observable<Observable<String>> observableOfObservables = Observable.create(new Func1<Observer<Observable<String>>, Subscription>() {
+            Observable<Observable<String>> observableOfObservables = Observable.create(new Func1<Observer<? super Observable<String>>, Subscription>() {
 
                 @Override
-                public Subscription call(Observer<Observable<String>> observer) {
+                public Subscription call(Observer<? super Observable<String>> observer) {
                     // simulate what would happen in an observable
                     observer.onNext(o1);
                     observer.onNext(o2);
@@ -528,7 +528,7 @@ public final class OperationMerge {
         private static class TestSynchronousObservable extends Observable<String> {
 
             @Override
-            public Subscription subscribe(Observer<String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
 
                 observer.onNext("hello");
                 observer.onCompleted();
@@ -549,7 +549,7 @@ public final class OperationMerge {
             final CountDownLatch onNextBeingSent = new CountDownLatch(1);
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 t = new Thread(new Runnable() {
 
                     @Override
@@ -580,7 +580,7 @@ public final class OperationMerge {
          */
         private static class TestObservable extends Observable<String> {
 
-            Observer<String> observer = null;
+            Observer<? super String> observer = null;
             volatile boolean unsubscribed = false;
             Subscription s = new Subscription() {
 
@@ -609,7 +609,7 @@ public final class OperationMerge {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 this.observer = observer;
                 return s;
             }
@@ -624,7 +624,7 @@ public final class OperationMerge {
             }
 
             @Override
-            public Subscription subscribe(Observer<String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
 
                 for (String s : valuesToReturn) {
                     if (s == null) {
