@@ -918,7 +918,7 @@ public class Observable<T> {
      *            Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R, T0, T1> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> reduceFunction) {
+    public static <R, T0, T1> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Func2<? super T0, ? super T1, ? extends R> reduceFunction) {
         return create(OperationZip.zip(w0, w1, reduceFunction));
     }
 
@@ -964,7 +964,7 @@ public class Observable<T> {
      * @return an Observable that emits Booleans that indicate whether the corresponding items
      *         emitted by the source Observables are equal
      */
-    public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Func2<T, T, Boolean> equality) {
+    public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Func2<? super T, ? super T, Boolean> equality) {
         return zip(first, second, equality);
     }
 
@@ -1041,7 +1041,7 @@ public class Observable<T> {
      *            The aggregation function used to combine the source observable values.
      * @return An Observable that combines the source Observables with the given combine function
      */
-    public static <R, T0, T1> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> combineFunction) {
+    public static <R, T0, T1> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<? super T0, ? super T1, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(w0, w1, combineFunction));
     }
 
@@ -1606,7 +1606,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public Observable<T> reduce(Func2<T, T, T> accumulator) {
+    public Observable<T> reduce(Func2<? super T, ? super T, ? extends T> accumulator) {
         return create(OperationScan.scan(this, accumulator)).takeLast(1);
     }
 
@@ -1663,7 +1663,7 @@ public class Observable<T> {
      * 
      * @see #reduce(Func2)
      */
-    public Observable<T> aggregate(Func2<T, T, T> accumulator) {
+    public Observable<T> aggregate(Func2<? super T, ? super T, ? extends T> accumulator) {
         return reduce(accumulator);
     }
 
@@ -1690,7 +1690,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public <R> Observable<R> reduce(R initialValue, Func2<R, T, R> accumulator) {
+    public <R> Observable<R> reduce(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
         return create(OperationScan.scan(this, initialValue, accumulator)).takeLast(1);
     }
 
@@ -1701,7 +1701,7 @@ public class Observable<T> {
      * 
      * @see #reduce(Object, Func2)
      */
-    public <R> Observable<R> aggregate(R initialValue, Func2<R, T, R> accumulator) {
+    public <R> Observable<R> aggregate(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
         return reduce(initialValue, accumulator);
     }
 
@@ -1724,7 +1724,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of each call to the accumulator function
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public Observable<T> scan(Func2<T, T, T> accumulator) {
+    public Observable<T> scan(Func2<? super T, ? super T, ? extends T> accumulator) {
         return create(OperationScan.scan(this, accumulator));
     }
 
@@ -1785,7 +1785,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of each call to the accumulator function
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public <R> Observable<R> scan(R initialValue, Func2<R, T, R> accumulator) {
+    public <R> Observable<R> scan(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
         return create(OperationScan.scan(this, initialValue, accumulator));
     }
 
@@ -1870,7 +1870,7 @@ public class Observable<T> {
      * @return an Observable that emits items from the source Observable so long as the predicate
      *         continues to return <code>true</code> for each item, then completes
      */
-    public Observable<T> takeWhileWithIndex(final Func2<T, Integer, Boolean> predicate) {
+    public Observable<T> takeWhileWithIndex(final Func2<? super T, ? super Integer, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhileWithIndex(this, predicate));
     }
 
@@ -1956,7 +1956,7 @@ public class Observable<T> {
      *            an Integer that indicates their sort order
      * @return an Observable that emits the items from the source Observable in sorted order
      */
-    public Observable<List<T>> toSortedList(Func2<T, T, Integer> sortFunction) {
+    public Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) {
         return create(OperationToObservableSortedList.toSortedList(this, sortFunction));
     }
 

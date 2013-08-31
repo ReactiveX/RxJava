@@ -1,11 +1,13 @@
 package rx.android.concurrency;
 
 import android.os.Handler;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+
 import rx.Scheduler;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
@@ -39,7 +41,7 @@ public class HandlerThreadScheduler extends Scheduler {
      * See {@link #schedule(Object, rx.util.functions.Func2, long, java.util.concurrent.TimeUnit)}
      */
     @Override
-    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action) {
+    public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
         return schedule(state, action, 0L, TimeUnit.MILLISECONDS);
     }
 
@@ -56,7 +58,7 @@ public class HandlerThreadScheduler extends Scheduler {
      * @return A Subscription from which one can unsubscribe from.
      */
     @Override
-    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit) {
+    public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
         final SafeObservableSubscription subscription = new SafeObservableSubscription();
         final Scheduler _scheduler = this;
         handler.postDelayed(new Runnable() {
@@ -76,6 +78,7 @@ public class HandlerThreadScheduler extends Scheduler {
         public void shouldScheduleImmediateActionOnHandlerThread() {
             final Handler handler = mock(Handler.class);
             final Object state = new Object();
+            @SuppressWarnings("unchecked")
             final Func2<Scheduler, Object, Subscription> action = mock(Func2.class);
 
             Scheduler scheduler = new HandlerThreadScheduler(handler);
@@ -94,6 +97,7 @@ public class HandlerThreadScheduler extends Scheduler {
         public void shouldScheduleDelayedActionOnHandlerThread() {
             final Handler handler = mock(Handler.class);
             final Object state = new Object();
+            @SuppressWarnings("unchecked")
             final Func2<Scheduler, Object, Subscription> action = mock(Func2.class);
 
             Scheduler scheduler = new HandlerThreadScheduler(handler);

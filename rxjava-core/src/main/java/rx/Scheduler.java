@@ -62,7 +62,7 @@ public abstract class Scheduler {
      *            Action to schedule.
      * @return a subscription to be able to unsubscribe from action.
      */
-    public abstract <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action);
+    public abstract <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action);
 
     /**
      * Schedules a cancelable action to be executed in delayTime.
@@ -77,7 +77,7 @@ public abstract class Scheduler {
      *            Time unit of the delay time.
      * @return a subscription to be able to unsubscribe from action.
      */
-    public abstract <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit);
+    public abstract <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit);
 
     /**
      * Schedules a cancelable action to be executed periodically.
@@ -96,7 +96,7 @@ public abstract class Scheduler {
      *            The time unit the interval above is given in.
      * @return A subscription to be able to unsubscribe from action.
      */
-    public <T> Subscription schedulePeriodically(T state, final Func2<Scheduler, T, Subscription> action, long initialDelay, long period, TimeUnit unit) {
+    public <T> Subscription schedulePeriodically(T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long initialDelay, long period, TimeUnit unit) {
         final long periodInNanos = unit.toNanos(period);
         final AtomicBoolean complete = new AtomicBoolean();
   
@@ -140,7 +140,7 @@ public abstract class Scheduler {
      *            Time the action is to be executed. If in the past it will be executed immediately.
      * @return a subscription to be able to unsubscribe from action.
      */
-    public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, Date dueTime) {
+    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, Date dueTime) {
         long scheduledTime = dueTime.getTime();
         long timeInFuture = scheduledTime - now();
         if (timeInFuture <= 0) {
@@ -162,7 +162,7 @@ public abstract class Scheduler {
         return schedule(null, new Func2<Scheduler, Void, Subscription>() {
 
             @Override
-            public Subscription call(@SuppressWarnings("unused") Scheduler scheduler, @SuppressWarnings("unused") Void state) {
+            public Subscription call(Scheduler scheduler, Void state) {
                 action.call();
                 return Subscriptions.empty();
             }
@@ -180,7 +180,7 @@ public abstract class Scheduler {
         return schedule(null, new Func2<Scheduler, Void, Subscription>() {
 
             @Override
-            public Subscription call(@SuppressWarnings("unused") Scheduler scheduler, @SuppressWarnings("unused") Void state) {
+            public Subscription call(Scheduler scheduler, Void state) {
                 action.call();
                 return Subscriptions.empty();
             }
@@ -204,7 +204,7 @@ public abstract class Scheduler {
     public Subscription schedulePeriodically(final Action0 action, long initialDelay, long period, TimeUnit unit) {
         return schedulePeriodically(null, new Func2<Scheduler, Void, Subscription>() {
             @Override
-            public Subscription call(@SuppressWarnings("unused") Scheduler scheduler, @SuppressWarnings("unused") Void state) {
+            public Subscription call(Scheduler scheduler, Void state) {
                 action.call();
                 return Subscriptions.empty();
             }

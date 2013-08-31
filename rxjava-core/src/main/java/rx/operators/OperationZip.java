@@ -54,7 +54,7 @@ import rx.util.functions.Functions;
  */
 public final class OperationZip {
 
-    public static <T0, T1, R> Func1<Observer<R>, Subscription> zip(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> zipFunction) {
+    public static <T0, T1, R> Func1<Observer<R>, Subscription> zip(Observable<T0> w0, Observable<T1> w1, Func2<? super T0, ? super T1, ? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T0>(a, w0));
         a.addObserver(new ZipObserver<R, T1>(a, w1));

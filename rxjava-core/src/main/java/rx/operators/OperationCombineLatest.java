@@ -62,7 +62,7 @@ public class OperationCombineLatest {
      *          The aggregation function used to combine the source observable values.
      * @return A function from an observer to a subscription. This can be used to create an observable from.
      */
-    public static <T0, T1, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, ? extends R> combineLatestFunction) {
+    public static <T0, T1, R> Func1<Observer<R>, Subscription> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<? super T0, ? super T1, ? extends R> combineLatestFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
         a.addObserver(new CombineObserver<R, T0>(a, w0));
         a.addObserver(new CombineObserver<R, T1>(a, w1));

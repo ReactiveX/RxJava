@@ -64,7 +64,7 @@ public final class OperationToObservableSortedList<T> {
      * @param sortFunction
      * @return an observable containing the sorted list
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> toSortedList(Observable<T> sequence, Func2<T, T, Integer> sortFunction) {
+    public static <T> Func1<Observer<List<T>>, Subscription> toSortedList(Observable<T> sequence, Func2<? super T, ? super T, Integer> sortFunction) {
         return new ToObservableSortedList<T>(sequence, sortFunction);
     }
 
@@ -72,7 +72,7 @@ public final class OperationToObservableSortedList<T> {
 
         private final Observable<T> that;
         private final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();
-        private final Func2<T, T, Integer> sortFunction;
+        private final Func2<? super T, ? super T, Integer> sortFunction;
 
         // unchecked as we're support Object for the default
         @SuppressWarnings("unchecked")
@@ -80,7 +80,7 @@ public final class OperationToObservableSortedList<T> {
             this(that, defaultSortFunction);
         }
 
-        private ToObservableSortedList(Observable<T> that, Func2<T, T, Integer> sortFunction) {
+        private ToObservableSortedList(Observable<T> that, Func2<? super T, ? super T, Integer> sortFunction) {
             this.that = that;
             this.sortFunction = sortFunction;
         }

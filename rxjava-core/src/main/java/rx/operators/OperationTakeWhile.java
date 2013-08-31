@@ -60,7 +60,7 @@ public final class OperationTakeWhile {
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
      * @return sequence of observable values from the start as long as the predicate is true
      */
-    public static <T> Func1<Observer<T>, Subscription> takeWhileWithIndex(final Observable<T> items, final Func2<T, Integer, Boolean> predicate) {
+    public static <T> Func1<Observer<T>, Subscription> takeWhileWithIndex(final Observable<T> items, final Func2<? super T, ? super Integer, Boolean> predicate) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
         return new Func1<Observer<T>, Subscription>() {
 
@@ -94,10 +94,10 @@ public final class OperationTakeWhile {
      */
     private static class TakeWhile<T> implements Func1<Observer<T>, Subscription> {
         private final Observable<T> items;
-        private final Func2<T, Integer, Boolean> predicate;
+        private final Func2<? super T, ? super Integer, Boolean> predicate;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        private TakeWhile(Observable<T> items, Func2<T, Integer, Boolean> predicate) {
+        private TakeWhile(Observable<T> items, Func2<? super T, ? super Integer, Boolean> predicate) {
             this.items = items;
             this.predicate = predicate;
         }

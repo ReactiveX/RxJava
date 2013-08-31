@@ -64,7 +64,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, R> FuncN<R> fromFunc(final Func2<T0, T1, ? extends R> f) {
+    public static <T0, T1, R> FuncN<R> fromFunc(final Func2<? super T0, ? super T1, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")

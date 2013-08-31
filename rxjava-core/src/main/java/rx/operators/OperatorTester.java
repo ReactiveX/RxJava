@@ -64,7 +64,7 @@ import rx.util.functions.Func2;
             }
 
             @Override
-            public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action) {
+            public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
                 return underlying.schedule(state, action);
             }
 
@@ -74,7 +74,7 @@ import rx.util.functions.Func2;
             }
 
             @Override
-            public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
+            public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long dueTime, TimeUnit unit) {
                 return underlying.schedule(state, action, dueTime, unit);
             }
 
@@ -84,7 +84,7 @@ import rx.util.functions.Func2;
             }
 
             @Override
-            public <T> Subscription schedulePeriodically(T state, Func2<Scheduler, T, Subscription> action, long initialDelay, long period, TimeUnit unit) {
+            public <T> Subscription schedulePeriodically(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long initialDelay, long period, TimeUnit unit) {
                 return underlying.schedulePeriodically(state, action, initialDelay, period, unit);
             }
 
