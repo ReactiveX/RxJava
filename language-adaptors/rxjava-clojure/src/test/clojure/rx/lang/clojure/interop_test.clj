@@ -3,7 +3,7 @@
             [clojure.test :refer [deftest testing is]])
   (:import [rx Observable]
            [rx.observables BlockingObservable]
-           ))
+           [rx.lang.clojure.interop DummyObservable]))
 
 (deftest test-fn*
   (testing "implements Func0-9"
@@ -27,12 +27,38 @@
       (is (= [1 2 3 4 5 6]       (.call f 1 2 3 4 5 6)))
       (is (= [1 2 3 4 5 6 7]     (.call f 1 2 3 4 5 6 7)))
       (is (= [1 2 3 4 5 6 7 8]   (.call f 1 2 3 4 5 6 7 8)))
-      (is (= [1 2 3 4 5 6 7 8 9] (.call f 1 2 3 4 5 6 7 8 9))))))
+      (is (= [1 2 3 4 5 6 7 8 9] (.call f 1 2 3 4 5 6 7 8 9)))))
+
+  (let [dummy (DummyObservable.)]
+    (testing "preserves metadata applied to form"
+      ; No type hint, picks Object overload
+      (is (= "Object"
+             (.call dummy (rx/fn* +))))
+      (is (= "rx.util.functions.Func1"
+             (.call dummy
+                    ^rx.util.functions.Func1 (rx/fn* +))))
+      (is (= "rx.util.functions.Func2"
+             (.call dummy
+                    ^rx.util.functions.Func2 (rx/fn* *)))))))
 
 (deftest test-fn
   (testing "makes appropriate Func*"
     (let [f (rx/fn [a b c] (println "test-fn") (+ a b c))]
-      (is (= 6 (.call f 1 2 3))))))
+      (is (= 6 (.call f 1 2 3)))))
+
+  (let [dummy (DummyObservable.)]
+    (testing "preserves metadata applied to form"
+      ; No type hint, picks Object overload
+      (is (= "Object"
+             (.call dummy
+                    (rx/fn [a] a))))
+      (is (= "rx.util.functions.Func1"
+             (.call dummy
+                    ^rx.util.functions.Func1 (rx/fn [a] a))))
+      (is (= "rx.util.functions.Func2"
+             (.call dummy
+                    ^rx.util.functions.Func2 (rx/fn [a b] (* a b))))))))
+
 
 (deftest test-fnN*
   (testing "implements FuncN"
@@ -51,14 +77,39 @@
       (.call a 1)
       (.call a 1 2)
       (.call a 1 2 3)
-      (is (= [[] [1] [1 2] [1 2 3]])))))
+      (is (= [[] [1] [1 2] [1 2 3]]))))
+  (let [dummy (DummyObservable.)]
+    (testing "preserves metadata applied to form"
+      ; no meta, picks Object overload
+      (is (= "Object"
+             (.call dummy
+                    (rx/action* println))))
+      (is (= "rx.util.functions.Action1"
+             (.call dummy
+                    ^rx.util.functions.Action1 (rx/action* println))))
+      (is (= "rx.util.functions.Action2"
+             (.call dummy
+                    ^rx.util.functions.Action2 (rx/action* prn)))))))
 
 (deftest test-action
   (testing "makes appropriate Action*"
     (let [called (atom nil)
           a (rx/action [a b] (reset! called [a b]))]
       (.call a 9 10)
-      (is (= [9 10] @called)))))
+      (is (= [9 10] @called))))
+
+  (let [dummy (DummyObservable.)]
+    (testing "preserves metadata applied to form"
+      ; no meta, picks Object overload
+      (is (= "Object"
+             (.call dummy
+                    (rx/action [a] a))))
+      (is (= "rx.util.functions.Action1"
+             (.call dummy
+                    ^rx.util.functions.Action1 (rx/action [a] a))))
+      (is (= "rx.util.functions.Action2"
+             (.call dummy
+                    ^rx.util.functions.Action2 (rx/action [a b] (* a b))))))))
 
 (deftest test-basic-usage
 
