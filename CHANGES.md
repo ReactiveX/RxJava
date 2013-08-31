@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 0.10.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.10.1%22)) ###
+
+A new contrib module for Android: https://github.com/Netflix/RxJava/tree/master/rxjava-contrib/rxjava-android
+
+* [Pull 318](https://github.com/Netflix/RxJava/pull/318) rxjava-android module with Android Schedulers
+
 ### Version 0.10.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.10.0%22)) ###
 
 This release includes a breaking change as it changes `onError(Exception)` to `onError(Throwable)`. This decision was made via discussion at https://github.com/Netflix/RxJava/issues/296.
