@@ -355,7 +355,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @throws RuntimeException
      *             if an error occurs
      */
-    public void forEach(final Action1<T> onNext) {
+    public void forEach(final Action1<? super T> onNext) {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exceptionFromOnError = new AtomicReference<Throwable>();
 

@@ -247,7 +247,7 @@ public class Observable<T> {
         return subscription.wrap(subscribe(new SafeObserver<T>(subscription, o)));
     }
 
-    public Subscription subscribe(final Action1<T> onNext) {
+    public Subscription subscribe(final Action1<? super T> onNext) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -278,11 +278,11 @@ public class Observable<T> {
         });
     }
 
-    public Subscription subscribe(final Action1<T> onNext, Scheduler scheduler) {
+    public Subscription subscribe(final Action1<? super T> onNext, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext);
     }
 
-    public Subscription subscribe(final Action1<T> onNext, final Action1<Throwable> onError) {
+    public Subscription subscribe(final Action1<? super T> onNext, final Action1<? super Throwable> onError) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -316,11 +316,11 @@ public class Observable<T> {
         });
     }
 
-    public Subscription subscribe(final Action1<T> onNext, final Action1<Throwable> onError, Scheduler scheduler) {
+    public Subscription subscribe(final Action1<? super T> onNext, final Action1<? super Throwable> onError, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError);
     }
 
-    public Subscription subscribe(final Action1<T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
+    public Subscription subscribe(final Action1<? super T> onNext, final Action1<? super Throwable> onError, final Action0 onComplete) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -357,7 +357,7 @@ public class Observable<T> {
         });
     }
 
-    public Subscription subscribe(final Action1<T> onNext, final Action1<Throwable> onError, final Action0 onComplete, Scheduler scheduler) {
+    public Subscription subscribe(final Action1<? super T> onNext, final Action1<? super Throwable> onError, final Action0 onComplete, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError, onComplete);
     }
 

@@ -253,7 +253,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0> FuncN<Void> fromAction(final Action1<T0> f) {
+    public static <T0> FuncN<Void> fromAction(final Action1<? super T0> f) {
         return new FuncN<Void>() {
 
             @SuppressWarnings("unchecked")
@@ -275,7 +275,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1> FuncN<Void> fromAction(final Action2<T0, T1> f) {
+    public static <T0, T1> FuncN<Void> fromAction(final Action2<? super T0, ? super T1> f) {
         return new FuncN<Void>() {
 
             @SuppressWarnings("unchecked")
@@ -297,7 +297,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, T1, T2> FuncN<Void> fromAction(final Action3<T0, T1, T2> f) {
+    public static <T0, T1, T2> FuncN<Void> fromAction(final Action3<? super T0, ? super T1, ? super T2> f) {
         return new FuncN<Void>() {
 
             @SuppressWarnings("unchecked")
