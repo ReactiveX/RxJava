@@ -53,16 +53,16 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnErrorResumeNextViaFunction<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> onErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<Throwable, Observable<T>> resumeFunction) {
+    public static <T> Func1<Observer<T>, Subscription> onErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<? super Throwable, ? extends Observable<T>> resumeFunction) {
         return new OnErrorResumeNextViaFunction<T>(originalSequence, resumeFunction);
     }
 
     private static class OnErrorResumeNextViaFunction<T> implements Func1<Observer<T>, Subscription> {
 
-        private final Func1<Throwable, Observable<T>> resumeFunction;
+        private final Func1<? super Throwable, ? extends Observable<T>> resumeFunction;
         private final Observable<T> originalSequence;
 
-        public OnErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<Throwable, Observable<T>> resumeFunction) {
+        public OnErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<? super Throwable, ? extends Observable<T>> resumeFunction) {
             this.resumeFunction = resumeFunction;
             this.originalSequence = originalSequence;
         }

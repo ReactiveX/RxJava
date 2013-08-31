@@ -95,7 +95,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
     private final ConcurrentHashMap<Subscription, Observer<T>> observers;
     private final AtomicReference<T> currentValue;
 
-    protected AsyncSubject(Func1<Observer<T>, Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
+    protected AsyncSubject(Func1<? super Observer<T>, ? extends Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
         super(onSubscribe);
         this.observers = observers;
         this.currentValue = new AtomicReference<T>();

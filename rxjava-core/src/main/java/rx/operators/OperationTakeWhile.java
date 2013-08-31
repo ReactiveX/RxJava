@@ -48,7 +48,7 @@ public final class OperationTakeWhile {
      *            a function to test each source element for a condition
      * @return sequence of observable values from the start as long as the predicate is true
      */
-    public static <T> Func1<Observer<T>, Subscription> takeWhile(final Observable<T> items, final Func1<T, Boolean> predicate) {
+    public static <T> Func1<Observer<T>, Subscription> takeWhile(final Observable<T> items, final Func1<? super T, Boolean> predicate) {
         return takeWhileWithIndex(items, OperationTakeWhile.<T> skipIndex(predicate));
     }
 
@@ -72,7 +72,7 @@ public final class OperationTakeWhile {
         };
     }
 
-    private static <T> Func2<T, Integer, Boolean> skipIndex(final Func1<T, Boolean> underlying) {
+    private static <T> Func2<T, Integer, Boolean> skipIndex(final Func1<? super T, Boolean> underlying) {
         return new Func2<T, Integer, Boolean>() {
             @Override
             public Boolean call(T input, Integer index) {

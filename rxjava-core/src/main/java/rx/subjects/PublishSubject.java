@@ -132,7 +132,7 @@ public class PublishSubject<T> extends Subject<T, T> {
     private final ConcurrentHashMap<Subscription, Observer<T>> observers;
     private final AtomicReference<Notification<T>> terminalState;
 
-    protected PublishSubject(Func1<Observer<T>, Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers, AtomicReference<Notification<T>> terminalState) {
+    protected PublishSubject(Func1<? super Observer<T>, ? extends Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers, AtomicReference<Notification<T>> terminalState) {
         super(onSubscribe);
         this.observers = observers;
         this.terminalState = terminalState;

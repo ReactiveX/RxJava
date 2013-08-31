@@ -76,9 +76,9 @@ public final class ReplaySubject<T> extends Subject<T, T>
 
     private static final class DelegateSubscriptionFunc<T> implements Func1<Observer<T>, Subscription>
     {
-        private Func1<Observer<T>, Subscription> delegate = null;
+        private Func1<? super Observer<T>, ? extends Subscription> delegate = null;
 
-        public void wrap(Func1<Observer<T>, Subscription> delegate)
+        public void wrap(Func1<? super Observer<T>, ? extends Subscription> delegate)
         {
             if (this.delegate != null) {
                 throw new UnsupportedOperationException("delegate already set");

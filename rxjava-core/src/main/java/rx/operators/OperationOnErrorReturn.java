@@ -50,15 +50,15 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnErrorReturn<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> onErrorReturn(Observable<T> originalSequence, Func1<Throwable, T> resumeFunction) {
+    public static <T> Func1<Observer<T>, Subscription> onErrorReturn(Observable<T> originalSequence, Func1<? super Throwable, ? extends T> resumeFunction) {
         return new OnErrorReturn<T>(originalSequence, resumeFunction);
     }
 
     private static class OnErrorReturn<T> implements Func1<Observer<T>, Subscription> {
-        private final Func1<Throwable, T> resumeFunction;
+        private final Func1<? super Throwable, ? extends T> resumeFunction;
         private final Observable<T> originalSequence;
 
-        public OnErrorReturn(Observable<T> originalSequence, Func1<Throwable, T> resumeFunction) {
+        public OnErrorReturn(Observable<T> originalSequence, Func1<? super Throwable, ? extends T> resumeFunction) {
             this.resumeFunction = resumeFunction;
             this.originalSequence = originalSequence;
         }

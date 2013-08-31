@@ -108,7 +108,7 @@ public class Observable<T> {
 
     private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
-    private final Func1<Observer<T>, Subscription> onSubscribe;
+    private final Func1<? super Observer<T>, ? extends Subscription> onSubscribe;
 
     /**
      * Observable with Function to execute when subscribed to.
@@ -119,7 +119,7 @@ public class Observable<T> {
      * @param onSubscribe
      *            {@link Func1} to be executed when {@link #subscribe(Observer)} is called.
      */
-    protected Observable(Func1<Observer<T>, Subscription> onSubscribe) {
+    protected Observable(Func1<? super Observer<T>, ? extends Subscription> onSubscribe) {
         this.onSubscribe = onSubscribe;
     }
 
@@ -157,7 +157,7 @@ public class Observable<T> {
      */
     public Subscription subscribe(Observer<T> observer) {
         // allow the hook to intercept and/or decorate
-        Func1<Observer<T>, Subscription> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
+        Func1<? super Observer<T>, ? extends Subscription> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
         // validate and proceed
         if (observer == null) {
             throw new IllegalArgumentException("observer can not be null");
@@ -461,7 +461,7 @@ public class Observable<T> {
      * @return an Observable that, when an {@link Observer} subscribes to it, will execute the given
      *         function
      */
-    public static <T> Observable<T> create(Func1<Observer<T>, Subscription> func) {
+    public static <T> Observable<T> create(Func1<? super Observer<T>, ? extends Subscription> func) {
         return new Observable<T>(func);
     }
 
@@ -1096,7 +1096,7 @@ public class Observable<T> {
      * @return
      *         An {@link Observable} which produces buffers which are created and emitted when the specified {@link Observable}s publish certain objects.
      */
-    public Observable<List<T>> buffer(Observable<BufferOpening> bufferOpenings, Func1<BufferOpening, Observable<BufferClosing>> bufferClosingSelector) {
+    public Observable<List<T>> buffer(Observable<BufferOpening> bufferOpenings, Func1<? super BufferOpening, ? extends Observable<BufferClosing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferOpenings, bufferClosingSelector));
     }
 
@@ -1325,7 +1325,7 @@ public class Observable<T> {
      * @return an Observable that emits only those items in the original Observable that the filter
      *         evaluates as {@code true}
      */
-    public Observable<T> filter(Func1<T, Boolean> predicate) {
+    public Observable<T> filter(Func1<? super T, Boolean> predicate) {
         return create(OperationFilter.filter(this, predicate));
     }
 
@@ -1360,7 +1360,7 @@ public class Observable<T> {
      *         obtained from this transformation.
      * @see #mapMany(Func1)
      */
-    public <R> Observable<R> flatMap(Func1<T, Observable<R>> func) {
+    public <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<R>> func) {
         return mapMany(func);
     }
 
@@ -1374,7 +1374,7 @@ public class Observable<T> {
      *         evaluates as {@code true}
      * @see #filter(Func1)
      */
-    public Observable<T> where(Func1<T, Boolean> predicate) {
+    public Observable<T> where(Func1<? super T, Boolean> predicate) {
         return filter(predicate);
     }
 
@@ -1389,7 +1389,7 @@ public class Observable<T> {
      * @return an Observable that emits the items from the source Observable, transformed by the
      *         given function
      */
-    public <R> Observable<R> map(Func1<T, R> func) {
+    public <R> Observable<R> map(Func1<? super T, ? extends R> func) {
         return create(OperationMap.map(this, func));
     }
 
@@ -1410,7 +1410,7 @@ public class Observable<T> {
      *         obtained from this transformation.
      * @see #flatMap(Func1)
      */
-    public <R> Observable<R> mapMany(Func1<T, Observable<R>> func) {
+    public <R> Observable<R> mapMany(Func1<? super T, ? extends Observable<R>> func) {
         return create(OperationMap.mapMany(this, func));
     }
 
@@ -1496,7 +1496,7 @@ public class Observable<T> {
      *            encounters an error
      * @return the original Observable, with appropriately modified behavior
      */
-    public Observable<T> onErrorResumeNext(final Func1<Throwable, Observable<T>> resumeFunction) {
+    public Observable<T> onErrorResumeNext(final Func1<? super Throwable, ? extends Observable<T>> resumeFunction) {
         return create(OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(this, resumeFunction));
     }
 
@@ -1581,7 +1581,7 @@ public class Observable<T> {
      *            Observable encounters an error
      * @return the original Observable with appropriately modified behavior
      */
-    public Observable<T> onErrorReturn(Func1<Throwable, T> resumeFunction) {
+    public Observable<T> onErrorReturn(Func1<? super Throwable, ? extends T> resumeFunction) {
         return create(OperationOnErrorReturn.onErrorReturn(this, resumeFunction));
     }
 
@@ -1800,7 +1800,7 @@ public class Observable<T> {
      * @return an Observable that emits <code>true</code> if all items emitted by the source
      *         Observable satisfy the predicate; otherwise, <code>false</code>
      */
-    public Observable<Boolean> all(Func1<T, Boolean> predicate) {
+    public Observable<Boolean> all(Func1<? super T, Boolean> predicate) {
         return create(OperationAll.all(this, predicate));
     }
 
@@ -1853,7 +1853,7 @@ public class Observable<T> {
      * @return an Observable that emits the items from the source Observable so long as each item
      *         satisfies the condition defined by <code>predicate</code>
      */
-    public Observable<T> takeWhile(final Func1<T, Boolean> predicate) {
+    public Observable<T> takeWhile(final Func1<? super T, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhile(this, predicate));
     }
 
@@ -1992,7 +1992,7 @@ public class Observable<T> {
      *         unique key value and emits items representing items from the source Observable that
      *         share that key value
      */
-    public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
+    public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) {
         return create(OperationGroupBy.groupBy(this, keySelector, elementSelector));
     }
 
@@ -2010,7 +2010,7 @@ public class Observable<T> {
      *         unique key value and emits items representing items from the source Observable that
      *         share that key value
      */
-    public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<T, K> keySelector) {
+    public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) {
         return create(OperationGroupBy.groupBy(this, keySelector));
     }
 

@@ -32,7 +32,7 @@ import rx.util.functions.Func1;
 public class GroupedObservable<K, T> extends Observable<T> {
     private final K key;
 
-    public GroupedObservable(K key, Func1<Observer<T>, Subscription> onSubscribe) {
+    public GroupedObservable(K key, Func1<? super Observer<T>, ? extends Subscription> onSubscribe) {
         super(onSubscribe);
         this.key = key;
     }

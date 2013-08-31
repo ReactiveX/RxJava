@@ -60,7 +60,7 @@ import rx.util.functions.Func1;
  */
 public class BlockingObservable<T> extends Observable<T> {
 
-    protected BlockingObservable(Func1<Observer<T>, Subscription> onSubscribe) {
+    protected BlockingObservable(Func1<? super Observer<T>, ? extends Subscription> onSubscribe) {
         super(onSubscribe);
     }
     
@@ -126,7 +126,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the last item emitted by the {@link Observable} for which the predicate function
      *         returns <code>true</code>
      */
-    public static <T> T last(final Observable<T> source, final Func1<T, Boolean> predicate) {
+    public static <T> T last(final Observable<T> source, final Func1<? super T, Boolean> predicate) {
         return last(source.filter(predicate));
     }
 
@@ -166,7 +166,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the last item emitted by an {@link Observable} that matches the predicate, or the
      *         default value if no matching item is emitted
      */
-    public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Func1<T, Boolean> predicate) {
+    public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Func1<? super T, Boolean> predicate) {
         return lastOrDefault(source.filter(predicate), defaultValue);
     }
 
@@ -257,7 +257,7 @@ public class BlockingObservable<T> extends Observable<T> {
      *             if the {@link Observable} does not emit exactly one item that matches the
      *             predicate
      */
-    public static <T> T single(Observable<T> source, Func1<T, Boolean> predicate) {
+    public static <T> T single(Observable<T> source, Func1<? super T, Boolean> predicate) {
         return from(source).single(predicate);
     }
 
@@ -293,7 +293,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the single item emitted by the source {@link Observable} that matches the predicate,
      *         or a default value if no such value is emitted
      */
-    public static <T> T singleOrDefault(Observable<T> source, T defaultValue, Func1<T, Boolean> predicate) {
+    public static <T> T singleOrDefault(Observable<T> source, T defaultValue, Func1<? super T, Boolean> predicate) {
         return from(source).singleOrDefault(defaultValue, predicate);
     }
 
@@ -443,7 +443,7 @@ public class BlockingObservable<T> extends Observable<T> {
      *            a predicate function to evaluate items emitted by the {@link Observable}
      * @return the last item emitted by the {@link Observable} that matches the predicate
      */
-    public T last(final Func1<T, Boolean> predicate) {
+    public T last(final Func1<? super T, Boolean> predicate) {
         return last(this, predicate);
     }
 
@@ -487,7 +487,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the last item emitted by the {@link Observable} that matches the predicate, or the
      *         default value if no matching items are emitted
      */
-    public T lastOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
+    public T lastOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return lastOrDefault(this, defaultValue, predicate);
     }
 
@@ -542,7 +542,7 @@ public class BlockingObservable<T> extends Observable<T> {
      *            a predicate function to evaluate items emitted by the {@link Observable}
      * @return the single item emitted by the source {@link Observable} that matches the predicate
      */
-    public T single(Func1<T, Boolean> predicate) {
+    public T single(Func1<? super T, Boolean> predicate) {
         return _singleOrDefault(from(this.filter(predicate)), false, null);
     }
 
@@ -575,7 +575,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the single item emitted by the {@link Observable} that matches the predicate, or the
      *         default value if no such items are emitted
      */
-    public T singleOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
+    public T singleOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return _singleOrDefault(from(this.filter(predicate)), true, defaultValue);
     }
 

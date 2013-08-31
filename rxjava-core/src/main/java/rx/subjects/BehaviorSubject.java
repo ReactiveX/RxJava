@@ -101,7 +101,7 @@ public class BehaviorSubject<T> extends Subject<T, T> {
     private final ConcurrentHashMap<Subscription, Observer<T>> observers;
     private final AtomicReference<T> currentValue;
 
-    protected BehaviorSubject(AtomicReference<T> currentValue, Func1<Observer<T>, Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
+    protected BehaviorSubject(AtomicReference<T> currentValue, Func1<? super Observer<T>, ? extends Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
         super(onSubscribe);
         this.currentValue = currentValue;
         this.observers = observers;

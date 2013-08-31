@@ -107,7 +107,7 @@ public final class OperationBuffer {
      * @return
      *            the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> buffer(final Observable<T> source, final Observable<BufferOpening> bufferOpenings, final Func1<BufferOpening, Observable<BufferClosing>> bufferClosingSelector) {
+    public static <T> Func1<Observer<List<T>>, Subscription> buffer(final Observable<T> source, final Observable<BufferOpening> bufferOpenings, final Func1<? super BufferOpening, ? extends Observable<BufferClosing>> bufferClosingSelector) {
         return new Func1<Observer<List<T>>, Subscription>() {
             @Override
             public Subscription call(final Observer<List<T>> observer) {
@@ -489,7 +489,7 @@ public final class OperationBuffer {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        public ObservableBasedMultiBufferCreator(final OverlappingBuffers<T> buffers, Observable<BufferOpening> bufferOpenings, final Func1<BufferOpening, Observable<BufferClosing>> bufferClosingSelector) {
+        public ObservableBasedMultiBufferCreator(final OverlappingBuffers<T> buffers, Observable<BufferOpening> bufferOpenings, final Func1<? super BufferOpening, ? extends Observable<BufferClosing>> bufferClosingSelector) {
             subscription.wrap(bufferOpenings.subscribe(new Action1<BufferOpening>() {
                 @Override
                 public void call(BufferOpening opening) {

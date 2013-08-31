@@ -43,7 +43,7 @@ public class Functions {
      * @param f
      * @return {@link FuncN}
      */
-    public static <T0, R> FuncN<R> fromFunc(final Func1<T0, ? extends R> f) {
+    public static <T0, R> FuncN<R> fromFunc(final Func1<? super T0, ? extends R> f) {
         return new FuncN<R>() {
 
             @SuppressWarnings("unchecked")
@@ -313,14 +313,17 @@ public class Functions {
         };
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Func1<T, Boolean> alwaysTrue() {
-        return (Func1<T, Boolean>) AlwaysTrue.INSTANCE;
+    public static <T> Func1<? super T, Boolean> alwaysTrue() {
+        return AlwaysTrue.INSTANCE;
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> Func1<T, T> identity() {
-        return (Func1<T, T>) Identity.INSTANCE;
+        return new Func1<T, T>() {
+            @Override
+            public T call(T o) {
+                return o;
+            }
+        };
     }
 
     private enum AlwaysTrue implements Func1<Object, Boolean> {
@@ -331,14 +334,4 @@ public class Functions {
             return true;
         }
     }
-
-    private enum Identity implements Func1<Object, Object> {
-        INSTANCE;
-
-        @Override
-        public Object call(Object o) {
-            return o;
-        }
-    }
-
 }

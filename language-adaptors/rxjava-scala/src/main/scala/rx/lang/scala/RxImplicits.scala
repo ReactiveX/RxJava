@@ -338,7 +338,8 @@ class UnitTestSuite extends JUnitSuite {
     @Test def testMap {
         val numbers = Observable.from(1, 2, 3, 4, 5, 6, 7, 8, 9)
         val mappedNumbers = ArrayBuffer.empty[Int]
-        numbers.map((x: Int) => x * x).subscribe((squareVal: Int) => {
+        val mapped: Observable[Int] = numbers map ((x: Int) => x * x)
+        mapped.subscribe((squareVal: Int) => {
             mappedNumbers.append(squareVal)
         })
         assertEquals(List(1, 4, 9, 16, 25, 36, 49, 64, 81), mappedNumbers.toList)
@@ -559,7 +560,7 @@ class UnitTestSuite extends JUnitSuite {
     
     @Test def testFilterInForComprehension {
         val doubler = (i: Int) => Observable.from(i, i)
-        val filteredObservable = for {
+        val filteredObservable: Observable[Int] = for {
             i: Int <- Observable.from(1, 2, 3, 4)
             j: Int <- doubler(i) if isOdd(i)
         } yield j
