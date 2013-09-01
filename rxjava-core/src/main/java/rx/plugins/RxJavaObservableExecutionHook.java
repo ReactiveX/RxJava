@@ -63,7 +63,7 @@ public abstract class RxJavaObservableExecutionHook {
      *            original {@link Subscription}
      * @return {@link Subscription} subscription that can be modified, decorated, replaced or just returned as a pass-thru.
      */
-    public <T> Subscription onSubscribeReturn(Observable<T> observableInstance, Subscription subscription) {
+    public <T> Subscription onSubscribeReturn(Observable<? extends T> observableInstance, Subscription subscription) {
         // pass-thru by default
         return subscription;
     }
@@ -80,7 +80,7 @@ public abstract class RxJavaObservableExecutionHook {
      *            Throwable thrown by {@link Observable#subscribe(Observer)}
      * @return Throwable that can be decorated, replaced or just returned as a pass-thru.
      */
-    public <T> Throwable onSubscribeError(Observable<T> observableInstance, Throwable e) {
+    public <T> Throwable onSubscribeError(Observable<? extends T> observableInstance, Throwable e) {
         // pass-thru by default
         return e;
     }
