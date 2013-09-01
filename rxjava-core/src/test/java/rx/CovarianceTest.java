@@ -28,52 +28,41 @@ public class CovarianceTest {
         };
 
         Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<Result>() {
-
             @Override
             public void call(Result t1) {
                 System.out.println("Result: " + t1);
             }
-
         });
 
         Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<Result>() {
-
             @Override
             public void call(Result t1) {
                 System.out.println("Result: " + t1);
             }
-
         });
 
         Observable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<ExtendedResult>() {
-
             @Override
             public void call(ExtendedResult t1) {
                 System.out.println("Result: " + t1);
             }
-
         });
 
         Observable.<Media, Rating, Result> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<Result>() {
-
             @Override
             public void call(Result t1) {
                 System.out.println("Result: " + t1);
             }
-
         });
 
         Observable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).toBlockingObservable().forEach(new Action1<Result>() {
-
             @Override
             public void call(Result t1) {
                 System.out.println("Result: " + t1);
             }
-
         });
 
         Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine);
-
     }
 
     static class Media {

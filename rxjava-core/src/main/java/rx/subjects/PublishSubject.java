@@ -68,7 +68,7 @@ import rx.util.functions.Func1;
 public class PublishSubject<T> extends Subject<T, T> {
     public static <T> PublishSubject<T> create() {
         final ConcurrentHashMap<Subscription, Observer<? super T>> observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
-        final AtomicReference<Notification<T>> terminalState = new AtomicReference<Notification<T>>();
+        final AtomicReference<Notification<? extends T>> terminalState = new AtomicReference<Notification<? extends T>>();
 
         Func1<Observer<? super T>, Subscription> onSubscribe = new Func1<Observer<? super T>, Subscription>() {
             @Override
@@ -111,7 +111,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             }
 
             private Subscription checkTerminalState(Observer<? super T> observer) {
-                Notification<T> n = terminalState.get();
+                Notification<? extends T> n = terminalState.get();
                 if (n != null) {
                     // we are terminated to immediately emit and don't continue with subscription
                     if (n.isOnCompleted()) {
@@ -130,9 +130,9 @@ public class PublishSubject<T> extends Subject<T, T> {
     }
 
     private final ConcurrentHashMap<Subscription, Observer<? super T>> observers;
-    private final AtomicReference<Notification<T>> terminalState;
+    private final AtomicReference<Notification<? extends T>> terminalState;
 
-    protected PublishSubject(Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers, AtomicReference<Notification<T>> terminalState) {
+    protected PublishSubject(Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers, AtomicReference<Notification<? extends T>> terminalState) {
         super(onSubscribe);
         this.observers = observers;
         this.terminalState = terminalState;

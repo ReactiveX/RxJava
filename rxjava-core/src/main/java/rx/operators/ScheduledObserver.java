@@ -27,7 +27,7 @@ import rx.util.functions.Action0;
     private final Observer<? super T> underlying;
     private final Scheduler scheduler;
 
-    private final ConcurrentLinkedQueue<Notification<T>> queue = new ConcurrentLinkedQueue<Notification<T>>();
+    private final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
     public ScheduledObserver(Observer<? super T> underlying, Scheduler scheduler) {
@@ -50,7 +50,7 @@ import rx.util.functions.Action0;
         enqueue(new Notification<T>(args));
     }
 
-    private void enqueue(Notification<T> notification) {
+    private void enqueue(Notification<? extends T> notification) {
         // this must happen before 'counter' is used to provide synchronization between threads
         queue.offer(notification);
 
@@ -66,7 +66,7 @@ import rx.util.functions.Action0;
         scheduler.schedule(new Action0() {
             @Override
             public void call() {
-                Notification<T> not = queue.poll();
+                Notification<? extends T> not = queue.poll();
 
                 switch (not.getKind()) {
                 case OnNext:

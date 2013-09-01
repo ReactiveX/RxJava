@@ -850,7 +850,7 @@ public class Observable<T> {
      *            be emitted by the resulting Observable
      * @return an Observable that emits the item from the source Future
      */
-    public static <T> Observable<T> from(Future<T> future) {
+    public static <T> Observable<T> from(Future<? extends T> future) {
         return create(OperationToObservableFuture.toObservableFuture(future));
     }
 
@@ -873,7 +873,7 @@ public class Observable<T> {
      *            be emitted by the resulting Observable
      * @return an Observable that emits the item from the source Future
      */
-    public static <T> Observable<T> from(Future<T> future, Scheduler scheduler) {
+    public static <T> Observable<T> from(Future<? extends T> future, Scheduler scheduler) {
         return create(OperationToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
     }
 
@@ -899,7 +899,7 @@ public class Observable<T> {
      *            be emitted by the resulting Observable
      * @return an Observable that emits the item from the source {@link Future}
      */
-    public static <T> Observable<T> from(Future<T> future, long timeout, TimeUnit unit) {
+    public static <T> Observable<T> from(Future<? extends T> future, long timeout, TimeUnit unit) {
         return create(OperationToObservableFuture.toObservableFuture(future, timeout, unit));
     }
 
@@ -1703,7 +1703,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public <T2> Observable<T2> dematerialize() {
-        return create(OperationDematerialize.dematerialize((Observable<? extends Notification<T2>>) this));
+        return create(OperationDematerialize.dematerialize((Observable<? extends Notification<? extends T2>>) this));
     }
 
     /**
