@@ -248,7 +248,7 @@ class UnitTestSuite extends JUnitSuite {
     
     @Test def testFlattenMerge {
         val observable = Observable.from(Observable.from(1, 2, 3))
-        val merged = Observable.merge(observable)
+        val merged = Observable.merge[Int](observable)
         assertSubscribeReceives(merged)(1, 2, 3)
     }
     

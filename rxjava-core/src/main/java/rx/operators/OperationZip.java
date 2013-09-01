@@ -147,11 +147,9 @@ public final class OperationZip {
         return a;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <R> Func1<Observer<? super R>, Subscription> zip(Collection<Observable<?>> ws, FuncN<? extends R> zipFunction) {
+    public static <R> Func1<Observer<? super R>, Subscription> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(zipFunction);
-        for (@SuppressWarnings("rawtypes")
-        Observable w : ws) {
+        for (Observable<?> w : ws) {
             ZipObserver<R, Object> zipObserver = new ZipObserver<R, Object>(a, w);
             a.addObserver(zipObserver);
         }

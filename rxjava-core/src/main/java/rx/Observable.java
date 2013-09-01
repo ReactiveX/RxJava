@@ -622,7 +622,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening the {@code source} list of Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge</a>
      */
-    public static <T> Observable<T> merge(List<Observable<T>> source) {
+    public static <T> Observable<T> merge(List<? extends Observable<? extends T>> source) {
         return create(OperationMerge.merge(source));
     }
 
@@ -641,7 +641,7 @@ public class Observable<T> {
      *         by the Observables emitted by the {@code source} Observable
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> merge(Observable<Observable<T>> source) {
+    public static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
         return create(OperationMerge.merge(source));
     }
 
@@ -659,7 +659,7 @@ public class Observable<T> {
      *         by the {@code source} Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> merge(Observable<T>... source) {
+    public static <T> Observable<T> merge(Observable<? extends T>... source) {
         return create(OperationMerge.merge(source));
     }
 
@@ -675,7 +675,7 @@ public class Observable<T> {
      *         the {@code source} Observables, one after the other
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
      */
-    public static <T> Observable<T> concat(Observable<T>... source) {
+    public static <T> Observable<T> concat(Observable<? extends T>... source) {
         return create(OperationConcat.concat(source));
     }
 
@@ -699,7 +699,7 @@ public class Observable<T> {
      *         the {@code source} list of Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> mergeDelayError(List<Observable<T>> source) {
+    public static <T> Observable<T> mergeDelayError(List<? extends Observable<? extends T>> source) {
         return create(OperationMergeDelayError.mergeDelayError(source));
     }
 
@@ -723,7 +723,7 @@ public class Observable<T> {
      *         the Observables emitted by the {@code source} Observable
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> mergeDelayError(Observable<Observable<T>> source) {
+    public static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source) {
         return create(OperationMergeDelayError.mergeDelayError(source));
     }
 
@@ -747,7 +747,7 @@ public class Observable<T> {
      *         the {@code source} Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> mergeDelayError(Observable<T>... source) {
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T>... source) {
         return create(OperationMergeDelayError.mergeDelayError(source));
     }
 
@@ -777,7 +777,7 @@ public class Observable<T> {
      * @return an Observable that emits only the items emitted by the most recently published
      *         Observable
      */
-    public static <T> Observable<T> switchDo(Observable<Observable<T>> sequenceOfSequences) {
+    public static <T> Observable<T> switchDo(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
         // TODO should this static remain? I have left it because it is an Observable<Observable>
         return create(OperationSwitch.switchDo(sequenceOfSequences));
     }
@@ -797,7 +797,7 @@ public class Observable<T> {
     public Observable<T> switchDo() {
         // TODO can we come up with a better name than this? It should be 'switch' but that is reserved.
         // Perhaps 'switchOnNext'?
-        return create(OperationSwitch.switchDo((Observable<Observable<T>>) this));
+        return create(OperationSwitch.switchDo((Observable<? extends Observable<? extends T>>) this));
     }
 
     /**
@@ -817,7 +817,7 @@ public class Observable<T> {
      * @return an Observable that is a chronologically well-behaved version of the source
      *         Observable, and that synchronously notifies its {@link Observer}s
      */
-    public static <T> Observable<T> synchronize(Observable<T> observable) {
+    public static <T> Observable<T> synchronize(Observable<? extends T> observable) {
         return create(OperationSynchronize.synchronize(observable));
     }
 
@@ -941,7 +941,7 @@ public class Observable<T> {
      * @return an Observable that emits Booleans that indicate whether the corresponding items
      *         emitted by the source Observables are equal
      */
-    public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second) {
+    public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second) {
         return sequenceEqual(first, second, new Func2<T, T, Boolean>() {
             @Override
             public Boolean call(T first, T second) {
@@ -968,7 +968,7 @@ public class Observable<T> {
      * @return an Observable that emits Booleans that indicate whether the corresponding items
      *         emitted by the source Observables are equal
      */
-    public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Func2<? super T, ? super T, Boolean> equality) {
+    public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality) {
         return zip(first, second, equality);
     }
 
@@ -1234,22 +1234,63 @@ public class Observable<T> {
      *            The aggregation function used to combine the source observable values.
      * @return An Observable that combines the source Observables with the given combine function
      */
-    public static <T1, T2, R> Observable<R> combineLatest(Observable<T1> o1, Observable<T2> o2, Func2<? super T1, ? super T2, ? extends R> combineFunction) {
+    public static <T1, T2, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, combineFunction));
     }
 
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <T1, T2, T3, R> Observable<R> combineLatest(Observable<T1> o1, Observable<T2> o2, Observable<T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> combineFunction) {
+    public static <T1, T2, T3, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, combineFunction));
     }
 
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <T1, T2, T3, T4, R> Observable<R> combineLatest(Observable<T1> o1, Observable<T2> o2, Observable<T3> o3, Observable<T4> o4, Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combineFunction) {
+    public static <T1, T2, T3, T4, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, 
+            Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, combineFunction));
+    }
+
+    /**
+     * @see #combineLatest(Observable, Observable, Func2)
+     */
+    public static <T1, T2, T3, T4, T5, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, 
+            Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, combineFunction));
+    }
+
+    /**
+     * @see #combineLatest(Observable, Observable, Func2)
+     */
+    public static <T1, T2, T3, T4, T5, T6, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, 
+            Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, combineFunction));
+    }
+
+    /**
+     * @see #combineLatest(Observable, Observable, Func2)
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, 
+            Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, combineFunction));
+    }
+
+    /**
+     * @see #combineLatest(Observable, Observable, Func2)
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8, 
+            Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, o8, combineFunction));
+    }
+
+    /**
+     * @see #combineLatest(Observable, Observable, Func2)
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8, Observable<? extends T9> o9, 
+            Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, o8, o9, combineFunction));
     }
 
     /**
@@ -1267,7 +1308,7 @@ public class Observable<T> {
      *         An {@link Observable} which produces connected non-overlapping buffers, which are emitted
      *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link BufferClosing} object.
      */
-    public Observable<List<T>> buffer(Func0<? extends Observable<BufferClosing>> bufferClosingSelector) {
+    public Observable<List<T>> buffer(Func0<? extends Observable<? extends BufferClosing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferClosingSelector));
     }
 
@@ -1289,7 +1330,7 @@ public class Observable<T> {
      * @return
      *         An {@link Observable} which produces buffers which are created and emitted when the specified {@link Observable}s publish certain objects.
      */
-    public Observable<List<T>> buffer(Observable<BufferOpening> bufferOpenings, Func1<? super BufferOpening, ? extends Observable<BufferClosing>> bufferClosingSelector) {
+    public Observable<List<T>> buffer(Observable<? extends BufferOpening> bufferOpenings, Func1<? super BufferOpening, ? extends Observable<? extends BufferClosing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferOpenings, bufferClosingSelector));
     }
 
@@ -1476,10 +1517,10 @@ public class Observable<T> {
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R> Observable<R> zip(Observable<Observable<?>> ws, final FuncN<? extends R> zipFunction) {
-        return ws.toList().mapMany(new Func1<List<Observable<?>>, Observable<R>>() {
+    public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction) {
+        return ws.toList().mapMany(new Func1<List<? extends Observable<?>>, Observable<? extends R>>() {
             @Override
-            public Observable<R> call(List<Observable<?>> wsList) {
+            public Observable<R> call(List<? extends Observable<?>> wsList) {
                 return create(OperationZip.zip(wsList, zipFunction));
             }
         });
@@ -1505,7 +1546,7 @@ public class Observable<T> {
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R> Observable<R> zip(Collection<Observable<?>> ws, FuncN<? extends R> zipFunction) {
+    public static <R> Observable<R> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction) {
         return create(OperationZip.zip(ws, zipFunction));
     }
 
@@ -1553,7 +1594,7 @@ public class Observable<T> {
      *         obtained from this transformation.
      * @see #mapMany(Func1)
      */
-    public <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<R>> func) {
+    public <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
         return mapMany(func);
     }
 
@@ -1603,7 +1644,7 @@ public class Observable<T> {
      *         obtained from this transformation.
      * @see #flatMap(Func1)
      */
-    public <R> Observable<R> mapMany(Func1<? super T, ? extends Observable<R>> func) {
+    public <R> Observable<R> mapMany(Func1<? super T, ? extends Observable<? extends R>> func) {
         return create(OperationMap.mapMany(this, func));
     }
 
@@ -1662,7 +1703,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public <T2> Observable<T2> dematerialize() {
-        return create(OperationDematerialize.dematerialize((Observable<Notification<T2>>) this));
+        return create(OperationDematerialize.dematerialize((Observable<? extends Notification<T2>>) this));
     }
 
     /**
@@ -1689,7 +1730,7 @@ public class Observable<T> {
      *            encounters an error
      * @return the original Observable, with appropriately modified behavior
      */
-    public Observable<T> onErrorResumeNext(final Func1<? super Throwable, ? extends Observable<T>> resumeFunction) {
+    public Observable<T> onErrorResumeNext(final Func1<? super Throwable, ? extends Observable<? extends T>> resumeFunction) {
         return create(OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(this, resumeFunction));
     }
 
@@ -1717,7 +1758,7 @@ public class Observable<T> {
      *            encounters an error
      * @return the original Observable, with appropriately modified behavior
      */
-    public Observable<T> onErrorResumeNext(final Observable<T> resumeSequence) {
+    public Observable<T> onErrorResumeNext(final Observable<? extends T> resumeSequence) {
         return create(OperationOnErrorResumeNextViaObservable.onErrorResumeNextViaObservable(this, resumeSequence));
     }
 
@@ -1747,7 +1788,7 @@ public class Observable<T> {
      *            encounters an error
      * @return the original Observable, with appropriately modified behavior
      */
-    public Observable<T> onExceptionResumeNext(final Observable<T> resumeSequence) {
+    public Observable<T> onExceptionResumeNext(final Observable<? extends T> resumeSequence) {
         return create(OperationOnExceptionResumeNextViaObservable.onExceptionResumeNextViaObservable(this, resumeSequence));
     }
 
@@ -2097,7 +2138,7 @@ public class Observable<T> {
      * @return an Observable that emits the items of the source Observable until such time as
      *         <code>other</code> emits its first item
      */
-    public <E> Observable<T> takeUntil(Observable<E> other) {
+    public <E> Observable<T> takeUntil(Observable<? extends E> other) {
         return OperationTakeUntil.takeUntil(this, other);
     }
 

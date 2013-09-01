@@ -45,15 +45,15 @@ public final class OperationDematerialize {
      * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">Observable.Dematerialize(TSource) Method </a>
      */
-    public static <T> Func1<Observer<? super T>, Subscription> dematerialize(final Observable<Notification<T>> sequence) {
+    public static <T> Func1<Observer<? super T>, Subscription> dematerialize(final Observable<? extends Notification<T>> sequence) {
         return new DematerializeObservable<T>(sequence);
     }
 
     private static class DematerializeObservable<T> implements Func1<Observer<? super T>, Subscription> {
 
-        private final Observable<Notification<T>> sequence;
+        private final Observable<? extends Notification<T>> sequence;
 
-        public DematerializeObservable(Observable<Notification<T>> sequence) {
+        public DematerializeObservable(Observable<? extends Notification<T>> sequence) {
             this.sequence = sequence;
         }
 

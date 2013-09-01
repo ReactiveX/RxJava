@@ -55,7 +55,7 @@ public final class OperationMap {
      *            the type of the output sequence.
      * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
      */
-    public static <T, R> Func1<Observer<? super R>, Subscription> map(Observable<T> sequence, Func1<? super T, ? extends R> func) {
+    public static <T, R> Func1<Observer<? super R>, Subscription> map(Observable<? extends T> sequence, Func1<? super T, ? extends R> func) {
         return new MapObservable<T, R>(sequence, func);
     }
 
@@ -75,7 +75,7 @@ public final class OperationMap {
      *            the type of the output sequence.
      * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
      */
-    public static <T, R> Func1<Observer<? super R>, Subscription> mapMany(Observable<T> sequence, Func1<? super T, ? extends Observable<R>> func) {
+    public static <T, R> Func1<Observer<? super R>, Subscription> mapMany(Observable<? extends T> sequence, Func1<? super T, ? extends Observable<? extends R>> func) {
         return OperationMerge.merge(Observable.create(map(sequence, func)));
     }
 
@@ -88,12 +88,12 @@ public final class OperationMap {
      *            the type of the output sequence.
      */
     private static class MapObservable<T, R> implements Func1<Observer<? super R>, Subscription> {
-        public MapObservable(Observable<T> sequence, Func1<? super T, ? extends R> func) {
+        public MapObservable(Observable<? extends T> sequence, Func1<? super T, ? extends R> func) {
             this.sequence = sequence;
             this.func = func;
         }
 
-        private Observable<T> sequence;
+        private Observable<? extends T> sequence;
 
         private Func1<? super T, ? extends R> func;
 

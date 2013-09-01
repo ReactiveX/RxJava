@@ -53,16 +53,16 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnErrorResumeNextViaFunction<T> {
 
-    public static <T> Func1<Observer<? super T>, Subscription> onErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<? super Throwable, ? extends Observable<T>> resumeFunction) {
+    public static <T> Func1<Observer<? super T>, Subscription> onErrorResumeNextViaFunction(Observable<? extends T> originalSequence, Func1<? super Throwable, ? extends Observable<? extends T>> resumeFunction) {
         return new OnErrorResumeNextViaFunction<T>(originalSequence, resumeFunction);
     }
 
     private static class OnErrorResumeNextViaFunction<T> implements Func1<Observer<? super T>, Subscription> {
 
-        private final Func1<? super Throwable, ? extends Observable<T>> resumeFunction;
-        private final Observable<T> originalSequence;
+        private final Func1<? super Throwable, ? extends Observable<? extends T>> resumeFunction;
+        private final Observable<? extends T> originalSequence;
 
-        public OnErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<? super Throwable, ? extends Observable<T>> resumeFunction) {
+        public OnErrorResumeNextViaFunction(Observable<? extends T> originalSequence, Func1<? super Throwable, ? extends Observable<? extends T>> resumeFunction) {
             this.resumeFunction = resumeFunction;
             this.originalSequence = originalSequence;
         }
@@ -87,7 +87,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
                     // check that we have not been unsubscribed before we can process the error
                     if (currentSubscription != null) {
                         try {
-                            Observable<T> resumeSequence = resumeFunction.call(ex);
+                            Observable<? extends T> resumeSequence = resumeFunction.call(ex);
                             /* error occurred, so switch subscription to the 'resumeSequence' */
                             SafeObservableSubscription innerSubscription = new SafeObservableSubscription(resumeSequence.subscribe(observer));
                             /* we changed the sequence, so also change the subscription to the one of the 'resumeSequence' instead */

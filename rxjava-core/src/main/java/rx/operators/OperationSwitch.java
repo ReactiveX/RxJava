@@ -49,7 +49,7 @@ public final class OperationSwitch {
      *            The {@link Observable} sequence consisting of {@link Observable} sequences.
      * @return A {@link Func1} which does this transformation.
      */
-    public static <T> Func1<Observer<? super T>, Subscription> switchDo(final Observable<Observable<T>> sequences) {
+    public static <T> Func1<Observer<? super T>, Subscription> switchDo(final Observable<? extends Observable<? extends T>> sequences) {
         return new Func1<Observer<? super T>, Subscription>() {
             @Override
             public Subscription call(Observer<? super T> observer) {
@@ -60,9 +60,9 @@ public final class OperationSwitch {
 
     private static class Switch<T> implements Func1<Observer<? super T>, Subscription> {
 
-        private final Observable<Observable<T>> sequences;
+        private final Observable<? extends Observable<? extends T>> sequences;
 
-        public Switch(Observable<Observable<T>> sequences) {
+        public Switch(Observable<? extends Observable<? extends T>> sequences) {
             this.sequences = sequences;
         }
 
@@ -74,7 +74,7 @@ public final class OperationSwitch {
         }
     }
 
-    private static class SwitchObserver<T> implements Observer<Observable<T>> {
+    private static class SwitchObserver<T> implements Observer<Observable<? extends T>> {
 
         private final Observer<? super T> observer;
         private final SafeObservableSubscription parent;
@@ -98,7 +98,7 @@ public final class OperationSwitch {
         }
 
         @Override
-        public void onNext(Observable<T> args) {
+        public void onNext(Observable<? extends T> args) {
             unsubscribeFromSubSequence();
 
             subsequence.set(args.subscribe(new Observer<T>() {

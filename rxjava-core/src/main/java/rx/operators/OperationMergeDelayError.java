@@ -64,7 +64,7 @@ public final class OperationMergeDelayError {
      * @return An observable sequence whose elements are the result of flattening the output from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">Observable.Merge(TSource) Method (IObservable(TSource)[])</a>
      */
-    public static <T> Func1<Observer<? super T>, Subscription> mergeDelayError(final Observable<Observable<T>> sequences) {
+    public static <T> Func1<Observer<? super T>, Subscription> mergeDelayError(final Observable<? extends Observable<? extends T>> sequences) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
         return new Func1<Observer<? super T>, Subscription>() {
 
@@ -75,13 +75,13 @@ public final class OperationMergeDelayError {
         };
     }
 
-    public static <T> Func1<Observer<? super T>, Subscription> mergeDelayError(final Observable<T>... sequences) {
-        return mergeDelayError(Observable.create(new Func1<Observer<? super Observable<T>>, Subscription>() {
+    public static <T> Func1<Observer<? super T>, Subscription> mergeDelayError(final Observable<? extends T>... sequences) {
+        return mergeDelayError(Observable.create(new Func1<Observer<? super Observable<? extends T>>, Subscription>() {
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription call(Observer<? super Observable<T>> observer) {
-                for (Observable<T> o : sequences) {
+            public Subscription call(Observer<? super Observable<? extends T>> observer) {
+                for (Observable<? extends T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
                     } else {
@@ -104,14 +104,14 @@ public final class OperationMergeDelayError {
         }));
     }
 
-    public static <T> Func1<Observer<? super T>, Subscription> mergeDelayError(final List<Observable<T>> sequences) {
-        return mergeDelayError(Observable.create(new Func1<Observer<? super Observable<T>>, Subscription>() {
+    public static <T> Func1<Observer<? super T>, Subscription> mergeDelayError(final List<? extends Observable<? extends T>> sequences) {
+        return mergeDelayError(Observable.create(new Func1<Observer<? super Observable<? extends T>>, Subscription>() {
 
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription call(Observer<? super Observable<T>> observer) {
-                for (Observable<T> o : sequences) {
+            public Subscription call(Observer<? super Observable<? extends T>> observer) {
+                for (Observable<? extends T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
                     } else {
@@ -147,7 +147,7 @@ public final class OperationMergeDelayError {
      * @param <T>
      */
     private static final class MergeDelayErrorObservable<T> implements Func1<Observer<? super T>, Subscription> {
-        private final Observable<Observable<T>> sequences;
+        private final Observable<? extends Observable<? extends T>> sequences;
         private final MergeSubscription ourSubscription = new MergeSubscription();
         private AtomicBoolean stopped = new AtomicBoolean(false);
         private volatile boolean parentCompleted = false;
@@ -156,7 +156,7 @@ public final class OperationMergeDelayError {
         // onErrors we received that will be delayed until everything is completed and then sent
         private ConcurrentLinkedQueue<Throwable> onErrorReceived = new ConcurrentLinkedQueue<Throwable>();
 
-        private MergeDelayErrorObservable(Observable<Observable<T>> sequences) {
+        private MergeDelayErrorObservable(Observable<? extends Observable<? extends T>> sequences) {
             this.sequences = sequences;
         }
 
@@ -203,7 +203,7 @@ public final class OperationMergeDelayError {
          * 
          * @param <T>
          */
-        private class ParentObserver implements Observer<Observable<T>> {
+        private class ParentObserver implements Observer<Observable<? extends T>> {
             private final Observer<? super T> actualObserver;
 
             public ParentObserver(Observer<? super T> actualObserver) {
@@ -241,7 +241,7 @@ public final class OperationMergeDelayError {
             }
 
             @Override
-            public void onNext(Observable<T> childObservable) {
+            public void onNext(Observable<? extends T> childObservable) {
                 if (stopped.get()) {
                     // we won't act on any further items
                     return;

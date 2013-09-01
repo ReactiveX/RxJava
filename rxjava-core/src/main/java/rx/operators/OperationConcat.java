@@ -56,30 +56,30 @@ public final class OperationConcat {
      *            An observable sequence of elements to project.
      * @return An observable sequence whose elements are the result of combining the output from the list of Observables.
      */
-    public static <T> Func1<Observer<? super T>, Subscription> concat(final Observable<T>... sequences) {
+    public static <T> Func1<Observer<? super T>, Subscription> concat(final Observable<? extends T>... sequences) {
         return concat(Observable.from(sequences));
     }
 
-    public static <T> Func1<Observer<? super T>, Subscription> concat(final List<Observable<T>> sequences) {
+    public static <T> Func1<Observer<? super T>, Subscription> concat(final List<? extends Observable<? extends T>> sequences) {
         return concat(Observable.from(sequences));
     }
 
-    public static <T> Func1<Observer<? super T>, Subscription> concat(final Observable<Observable<T>> sequences) {
+    public static <T> Func1<Observer<? super T>, Subscription> concat(final Observable<? extends Observable<? extends T>> sequences) {
         return new Concat<T>(sequences);
     }
 
     private static class Concat<T> implements Func1<Observer<? super T>, Subscription> {
-        private Observable<Observable<T>> sequences;
+        private Observable<? extends Observable<? extends T>> sequences;
         private SafeObservableSubscription innerSubscription = null;
 
-        public Concat(Observable<Observable<T>> sequences) {
+        public Concat(Observable<? extends Observable<? extends T>> sequences) {
             this.sequences = sequences;
         }
 
         public Subscription call(final Observer<? super T> observer) {
             final AtomicBoolean completedOrErred = new AtomicBoolean(false);
             final AtomicBoolean allSequencesReceived = new AtomicBoolean(false);
-            final Queue<Observable<T>> nextSequences = new ConcurrentLinkedQueue<Observable<T>>();
+            final Queue<Observable<? extends T>> nextSequences = new ConcurrentLinkedQueue<Observable<? extends T>>();
             final SafeObservableSubscription outerSubscription = new SafeObservableSubscription();
 
             final Observer<T> reusableObserver = new Observer<T>() {
@@ -117,9 +117,9 @@ public final class OperationConcat {
                 }
             };
 
-            outerSubscription.wrap(sequences.subscribe(new Observer<Observable<T>>() {
+            outerSubscription.wrap(sequences.subscribe(new Observer<Observable<? extends T>>() {
                 @Override
-                public void onNext(Observable<T> nextSequence) {
+                public void onNext(Observable<? extends T> nextSequence) {
                     synchronized (nextSequences) {
                         if (innerSubscription == null) {
                             // We are currently not subscribed to any sequence

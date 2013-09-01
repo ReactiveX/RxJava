@@ -57,17 +57,17 @@ public final class OperationSynchronize<T> {
      * @param <T>
      * @return the wrapped synchronized observable sequence
      */
-    public static <T> Func1<Observer<? super T>, Subscription> synchronize(Observable<T> observable) {
+    public static <T> Func1<Observer<? super T>, Subscription> synchronize(Observable<? extends T> observable) {
         return new Synchronize<T>(observable);
     }
 
     private static class Synchronize<T> implements Func1<Observer<? super T>, Subscription> {
 
-        public Synchronize(Observable<T> innerObservable) {
+        public Synchronize(Observable<? extends T> innerObservable) {
             this.innerObservable = innerObservable;
         }
 
-        private Observable<T> innerObservable;
+        private Observable<? extends T> innerObservable;
         private SynchronizedObserver<T> atomicObserver;
 
         public Subscription call(Observer<? super T> observer) {
