@@ -59,7 +59,7 @@ public class OperationToObservableFuture {
         @Override
         public Subscription call(Observer<? super T> observer) {
             try {
-                T value = (time == null) ? that.get() : that.get(time, unit);
+                T value = (time == null) ? (T) that.get() : (T) that.get(time, unit);
 
                 if (!that.isCancelled()) {
                     observer.onNext(value);
