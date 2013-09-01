@@ -1471,16 +1471,16 @@ public class Observable<T> {
      * 
      * @param ws
      *            An Observable of source Observables
-     * @param reduceFunction
+     * @param zipFunction
      *            a function that, when applied to an item emitted by each of the source
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R> Observable<R> zip(Observable<Observable<?>> ws, final FuncN<? extends R> reduceFunction) {
+    public static <R> Observable<R> zip(Observable<Observable<?>> ws, final FuncN<? extends R> zipFunction) {
         return ws.toList().mapMany(new Func1<List<Observable<?>>, Observable<R>>() {
             @Override
             public Observable<R> call(List<Observable<?>> wsList) {
-                return create(OperationZip.zip(wsList, reduceFunction));
+                return create(OperationZip.zip(wsList, zipFunction));
             }
         });
     }
@@ -1505,8 +1505,8 @@ public class Observable<T> {
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R> Observable<R> zip(Collection<Observable<?>> ws, FuncN<? extends R> reduceFunction) {
-        return create(OperationZip.zip(ws, reduceFunction));
+    public static <R> Observable<R> zip(Collection<Observable<?>> ws, FuncN<? extends R> zipFunction) {
+        return create(OperationZip.zip(ws, zipFunction));
     }
 
     /**

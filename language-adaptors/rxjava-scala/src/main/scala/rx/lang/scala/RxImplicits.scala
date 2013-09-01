@@ -280,7 +280,7 @@ class UnitTestSuite extends JUnitSuite {
         
         val cheetara = Character("green", "cheetara")
         val panthro = Character("blue", "panthro")
-        val characters = Observable.zip[Character, String, String](colors, names, Character.apply _)
+        val characters = Observable.zip[String, String, Character](colors, names, Character.apply _)
         assertSubscribeReceives(characters)(cheetara, panthro)
     }
     
@@ -295,7 +295,7 @@ class UnitTestSuite extends JUnitSuite {
         val cheetara = Character(2, "green", "cheetara")
         val panthro = Character(3, "blue", "panthro")
         
-        val characters = Observable.zip[Character, Int, String, String](numbers, colors, names, Character.apply _)
+        val characters = Observable.zip[Int, String, String, Character](numbers, colors, names, Character.apply _)
         assertSubscribeReceives(characters)(liono, cheetara, panthro)
     }
     
@@ -311,7 +311,7 @@ class UnitTestSuite extends JUnitSuite {
         val cheetara = Character(2, "green", "cheetara", false)
         val panthro = Character(3, "blue", "panthro", false)
         
-        val characters = Observable.zip[Character, Int, String, String, Boolean](numbers, colors, names, isLeader, Character.apply _)
+        val characters = Observable.zip[Int, String, String, Boolean, Character](numbers, colors, names, isLeader, Character.apply _)
         assertSubscribeReceives(characters)(liono, cheetara, panthro)
     }
     
