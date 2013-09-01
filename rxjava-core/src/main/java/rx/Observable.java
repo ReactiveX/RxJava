@@ -515,7 +515,7 @@ public class Observable<T> {
      *            emitted by the resulting Observable
      * @return an Observable that emits each item in the source {@link Iterable} sequence
      */
-    public static <T> Observable<T> from(Iterable<T> iterable) {
+    public static <T> Observable<T> from(Iterable<? extends T> iterable) {
         return create(OperationToObservableIterable.toObservableIterable(iterable));
     }
 
@@ -579,7 +579,7 @@ public class Observable<T> {
      * @return an Observable whose {@link Observer}s trigger an invocation of the given Observable
      *         factory function
      */
-    public static <T> Observable<T> defer(Func0<? extends Observable<T>> observableFactory) {
+    public static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) {
         return create(OperationDefer.defer(observableFactory));
     }
 
