@@ -50,7 +50,7 @@ public final class OperationTake {
      * @param num
      * @return the specified number of contiguous values from the start of the given observable sequence
      */
-    public static <T> Func1<Observer<? super T>, Subscription> take(final Observable<T> items, final int num) {
+    public static <T> Func1<Observer<? super T>, Subscription> take(final Observable<? extends T> items, final int num) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
         return new Func1<Observer<? super T>, Subscription>() {
 
@@ -74,11 +74,11 @@ public final class OperationTake {
      * @param <T>
      */
     private static class Take<T> implements Func1<Observer<? super T>, Subscription> {
-        private final Observable<T> items;
+        private final Observable<? extends T> items;
         private final int num;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        private Take(Observable<T> items, int num) {
+        private Take(Observable<? extends T> items, int num) {
             this.items = items;
             this.num = num;
         }

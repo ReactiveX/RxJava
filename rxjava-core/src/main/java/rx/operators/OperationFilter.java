@@ -33,16 +33,16 @@ import rx.util.functions.Func1;
  */
 public final class OperationFilter<T> {
 
-    public static <T> Func1<Observer<? super T>, Subscription> filter(Observable<T> that, Func1<? super T, Boolean> predicate) {
+    public static <T> Func1<Observer<? super T>, Subscription> filter(Observable<? extends T> that, Func1<? super T, Boolean> predicate) {
         return new Filter<T>(that, predicate);
     }
 
     private static class Filter<T> implements Func1<Observer<? super T>, Subscription> {
 
-        private final Observable<T> that;
+        private final Observable<? extends T> that;
         private final Func1<? super T, Boolean> predicate;
 
-        public Filter(Observable<T> that, Func1<? super T, Boolean> predicate) {
+        public Filter(Observable<? extends T> that, Func1<? super T, Boolean> predicate) {
             this.that = that;
             this.predicate = predicate;
         }

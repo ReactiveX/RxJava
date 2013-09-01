@@ -48,19 +48,19 @@ public final class OperationSample {
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> Func1<Observer<? super T>, Subscription> sample(final Observable<T> source, long period, TimeUnit unit) {
+    public static <T> Func1<Observer<? super T>, Subscription> sample(final Observable<? extends T> source, long period, TimeUnit unit) {
         return new Sample<T>(source, period, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
     }
 
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> Func1<Observer<? super T>, Subscription> sample(final Observable<T> source, long period, TimeUnit unit, Scheduler scheduler) {
+    public static <T> Func1<Observer<? super T>, Subscription> sample(final Observable<? extends T> source, long period, TimeUnit unit, Scheduler scheduler) {
         return new Sample<T>(source, period, unit, scheduler);
     }
     
     private static class Sample<T> implements Func1<Observer<? super T>, Subscription> {
-        private final Observable<T> source;
+        private final Observable<? extends T> source;
         private final long period;
         private final TimeUnit unit;
         private final Scheduler scheduler;
@@ -68,7 +68,7 @@ public final class OperationSample {
         private final AtomicBoolean hasValue = new AtomicBoolean();
         private final AtomicReference<T> latestValue = new AtomicReference<T>();
         
-        private Sample(Observable<T> source, long interval, TimeUnit unit, Scheduler scheduler) {
+        private Sample(Observable<? extends T> source, long interval, TimeUnit unit, Scheduler scheduler) {
             this.source = source;
             this.period = interval;
             this.unit = unit;

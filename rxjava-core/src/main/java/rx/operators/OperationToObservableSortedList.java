@@ -53,7 +53,7 @@ public final class OperationToObservableSortedList<T> {
      *             if T objects do not implement Comparable
      * @return an observable containing the sorted list
      */
-    public static <T> Func1<Observer<? super List<T>>, Subscription> toSortedList(Observable<T> sequence) {
+    public static <T> Func1<Observer<? super List<T>>, Subscription> toSortedList(Observable<? extends T> sequence) {
         return new ToObservableSortedList<T>(sequence);
     }
 
@@ -64,23 +64,23 @@ public final class OperationToObservableSortedList<T> {
      * @param sortFunction
      * @return an observable containing the sorted list
      */
-    public static <T> Func1<Observer<? super List<T>>, Subscription> toSortedList(Observable<T> sequence, Func2<? super T, ? super T, Integer> sortFunction) {
+    public static <T> Func1<Observer<? super List<T>>, Subscription> toSortedList(Observable<? extends T> sequence, Func2<? super T, ? super T, Integer> sortFunction) {
         return new ToObservableSortedList<T>(sequence, sortFunction);
     }
 
     private static class ToObservableSortedList<T> implements Func1<Observer<? super List<T>>, Subscription> {
 
-        private final Observable<T> that;
+        private final Observable<? extends T> that;
         private final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();
         private final Func2<? super T, ? super T, Integer> sortFunction;
 
         // unchecked as we're support Object for the default
         @SuppressWarnings("unchecked")
-        private ToObservableSortedList(Observable<T> that) {
+        private ToObservableSortedList(Observable<? extends T> that) {
             this(that, defaultSortFunction);
         }
 
-        private ToObservableSortedList(Observable<T> that, Func2<? super T, ? super T, Integer> sortFunction) {
+        private ToObservableSortedList(Observable<? extends T> that, Func2<? super T, ? super T, Integer> sortFunction) {
             this.that = that;
             this.sortFunction = sortFunction;
         }

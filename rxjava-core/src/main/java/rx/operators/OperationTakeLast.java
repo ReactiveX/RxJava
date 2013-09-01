@@ -37,7 +37,7 @@ import rx.util.functions.Func1;
  */
 public final class OperationTakeLast {
 
-    public static <T> Func1<Observer<? super T>, Subscription> takeLast(final Observable<T> items, final int count) {
+    public static <T> Func1<Observer<? super T>, Subscription> takeLast(final Observable<? extends T> items, final int count) {
         return new Func1<Observer<? super T>, Subscription>() {
 
             @Override
@@ -50,10 +50,10 @@ public final class OperationTakeLast {
 
     private static class TakeLast<T> implements Func1<Observer<? super T>, Subscription> {
         private final int count;
-        private final Observable<T> items;
+        private final Observable<? extends T> items;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        TakeLast(final Observable<T> items, final int count) {
+        TakeLast(final Observable<? extends T> items, final int count) {
             this.count = count;
             this.items = items;
         }

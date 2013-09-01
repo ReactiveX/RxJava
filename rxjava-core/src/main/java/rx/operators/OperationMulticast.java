@@ -28,19 +28,19 @@ import rx.subjects.Subject;
 import rx.util.functions.Func1;
 
 public class OperationMulticast {
-    public static <T, R> ConnectableObservable<R> multicast(Observable<T> source, final Subject<T, R> subject) {
+    public static <T, R> ConnectableObservable<R> multicast(Observable<? extends T> source, final Subject<T, R> subject) {
         return new MulticastConnectableObservable<T, R>(source, subject);
     }
 
     private static class MulticastConnectableObservable<T, R> extends ConnectableObservable<R> {
         private final Object lock = new Object();
 
-        private final Observable<T> source;
+        private final Observable<? extends T> source;
         private final Subject<T, R> subject;
 
         private Subscription subscription;
 
-        public MulticastConnectableObservable(Observable<T> source, final Subject<T, R> subject) {
+        public MulticastConnectableObservable(Observable<? extends T> source, final Subject<T, R> subject) {
             super(new Func1<Observer<? super R>, Subscription>() {
                 @Override
                 public Subscription call(Observer<? super R> observer) {

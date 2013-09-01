@@ -47,7 +47,7 @@ public final class OperationSkip {
      * 
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229847(v=vs.103).aspx">Observable.Skip(TSource) Method</a>
      */
-    public static <T> Func1<Observer<? super T>, Subscription> skip(final Observable<T> items, final int num) {
+    public static <T> Func1<Observer<? super T>, Subscription> skip(final Observable<? extends T> items, final int num) {
         // wrap in a Observable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
         return new Func1<Observer<? super T>, Subscription>() {
 
@@ -68,9 +68,9 @@ public final class OperationSkip {
      */
     private static class Skip<T> implements Func1<Observer<? super T>, Subscription> {
         private final int num;
-        private final Observable<T> items;
+        private final Observable<? extends T> items;
 
-        Skip(final Observable<T> items, final int num) {
+        Skip(final Observable<? extends T> items, final int num) {
             this.num = num;
             this.items = items;
         }

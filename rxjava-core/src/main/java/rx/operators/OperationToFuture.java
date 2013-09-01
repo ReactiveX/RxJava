@@ -52,7 +52,7 @@ public class OperationToFuture {
      *            the type of source.
      * @return the Future to retrieve a single elements from an Observable
      */
-    public static <T> Future<T> toFuture(Observable<T> that) {
+    public static <T> Future<T> toFuture(Observable<? extends T> that) {
 
         final CountDownLatch finished = new CountDownLatch(1);
         final AtomicReference<T> value = new AtomicReference<T>();

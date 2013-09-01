@@ -41,15 +41,15 @@ import rx.util.functions.Func1;
  */
 public class OperationObserveOn {
 
-    public static <T> Func1<Observer<? super T>, Subscription> observeOn(Observable<T> source, Scheduler scheduler) {
+    public static <T> Func1<Observer<? super T>, Subscription> observeOn(Observable<? extends T> source, Scheduler scheduler) {
         return new ObserveOn<T>(source, scheduler);
     }
 
     private static class ObserveOn<T> implements Func1<Observer<? super T>, Subscription> {
-        private final Observable<T> source;
+        private final Observable<? extends T> source;
         private final Scheduler scheduler;
 
-        public ObserveOn(Observable<T> source, Scheduler scheduler) {
+        public ObserveOn(Observable<? extends T> source, Scheduler scheduler) {
             this.source = source;
             this.scheduler = scheduler;
         }

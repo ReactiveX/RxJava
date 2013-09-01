@@ -47,7 +47,7 @@ import rx.util.functions.Func1;
  */
 public final class OperationNext {
 
-    public static <T> Iterable<T> next(final Observable<T> items) {
+    public static <T> Iterable<T> next(final Observable<? extends T> items) {
 
         NextObserver<T> nextObserver = new NextObserver<T>();
         final NextIterator<T> nextIterator = new NextIterator<T>(nextObserver);
@@ -65,9 +65,9 @@ public final class OperationNext {
 
     private static class NextIterator<T> implements Iterator<T> {
 
-        private final NextObserver<T> observer;
+        private final NextObserver<? extends T> observer;
 
-        private NextIterator(NextObserver<T> observer) {
+        private NextIterator(NextObserver<? extends T> observer) {
             this.observer = observer;
         }
 
@@ -99,8 +99,8 @@ public final class OperationNext {
         }
     }
 
-    private static class NextObserver<T> implements Observer<Notification<T>> {
-        private final BlockingQueue<Notification<T>> buf = new ArrayBlockingQueue<Notification<T>>(1);
+    private static class NextObserver<T> implements Observer<Notification<? extends T>> {
+        private final BlockingQueue<Notification<? extends T>> buf = new ArrayBlockingQueue<Notification<? extends T>>(1);
         private final AtomicBoolean waiting = new AtomicBoolean(false);
 
         @Override
@@ -114,12 +114,12 @@ public final class OperationNext {
         }
 
         @Override
-        public void onNext(Notification<T> args) {
+        public void onNext(Notification<? extends T> args) {
 
             if (waiting.getAndSet(false) || !args.isOnNext()) {
-                Notification<T> toOffer = args;
+                Notification<? extends T> toOffer = args;
                 while (!buf.offer(toOffer)) {
-                    Notification<T> concurrentItem = buf.poll();
+                    Notification<? extends T> concurrentItem = buf.poll();
 
                     // in case if we won race condition with onComplete/onError method
                     if (!concurrentItem.isOnNext()) {
@@ -135,7 +135,7 @@ public final class OperationNext {
         }
 
         public boolean isCompleted(boolean rethrowExceptionIfExists) {
-            Notification<T> lastItem = buf.peek();
+            Notification<? extends T> lastItem = buf.peek();
             if (lastItem == null) {
                 return false;
             }
@@ -152,7 +152,7 @@ public final class OperationNext {
         }
 
         public T takeNext() throws InterruptedException {
-            Notification<T> next = buf.take();
+            Notification<? extends T> next = buf.take();
 
             if (next.isOnError()) {
                 throw Exceptions.propagate(next.getThrowable());

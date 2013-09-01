@@ -34,18 +34,18 @@ import rx.util.functions.Func1;
  */
 public class OperationAll {
 
-    public static <T> Func1<Observer<? super Boolean>, Subscription> all(Observable<T> sequence, Func1<? super T, Boolean> predicate) {
+    public static <T> Func1<Observer<? super Boolean>, Subscription> all(Observable<? extends T> sequence, Func1<? super T, Boolean> predicate) {
         return new AllObservable<T>(sequence, predicate);
     }
 
     private static class AllObservable<T> implements Func1<Observer<? super Boolean>, Subscription> {
-        private final Observable<T> sequence;
+        private final Observable<? extends T> sequence;
         private final Func1<? super T, Boolean> predicate;
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
 
-        private AllObservable(Observable<T> sequence, Func1<? super T, Boolean> predicate) {
+        private AllObservable(Observable<? extends T> sequence, Func1<? super T, Boolean> predicate) {
             this.sequence = sequence;
             this.predicate = predicate;
         }

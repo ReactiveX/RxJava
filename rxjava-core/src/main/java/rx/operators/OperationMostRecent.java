@@ -37,7 +37,7 @@ import rx.util.Exceptions;
  */
 public final class OperationMostRecent {
 
-    public static <T> Iterable<T> mostRecent(final Observable<T> source, T initialValue) {
+    public static <T> Iterable<T> mostRecent(final Observable<? extends T> source, T initialValue) {
 
         MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
         final MostRecentIterator<T> nextIterator = new MostRecentIterator<T>(mostRecentObserver);

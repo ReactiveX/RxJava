@@ -47,10 +47,10 @@ public class OperationToIterator {
      *            the type of source.
      * @return the iterator that could be used to iterate over the elements of the observable.
      */
-    public static <T> Iterator<T> toIterator(Observable<T> source) {
-        final BlockingQueue<Notification<T>> notifications = new LinkedBlockingQueue<Notification<T>>();
+    public static <T> Iterator<T> toIterator(Observable<? extends T> source) {
+        final BlockingQueue<Notification<? extends T>> notifications = new LinkedBlockingQueue<Notification<? extends T>>();
 
-        source.materialize().subscribe(new Observer<Notification<T>>() {
+        source.materialize().subscribe(new Observer<Notification<? extends T>>() {
             @Override
             public void onCompleted() {
                 // ignore
@@ -62,13 +62,13 @@ public class OperationToIterator {
             }
 
             @Override
-            public void onNext(Notification<T> args) {
+            public void onNext(Notification<? extends T> args) {
                 notifications.offer(args);
             }
         });
 
         return new Iterator<T>() {
-            private Notification<T> buf;
+            private Notification<? extends T> buf;
 
             @Override
             public boolean hasNext() {
@@ -92,7 +92,7 @@ public class OperationToIterator {
                 return result;
             }
 
-            private Notification<T> take() {
+            private Notification<? extends T> take() {
                 try {
                     return notifications.take();
                 } catch (InterruptedException e) {

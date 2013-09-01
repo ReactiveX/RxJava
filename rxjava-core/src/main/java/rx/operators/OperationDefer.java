@@ -37,12 +37,12 @@ import rx.util.functions.Func1;
  */
 public final class OperationDefer {
 
-    public static <T> Func1<Observer<? super T>, Subscription> defer(final Func0<? extends Observable<T>> observableFactory) {
+    public static <T> Func1<Observer<? super T>, Subscription> defer(final Func0<? extends Observable<? extends T>> observableFactory) {
 
         return new Func1<Observer<? super T>, Subscription>() {
             @Override
             public Subscription call(Observer<? super T> observer) {
-                Observable<T> obs = observableFactory.call();
+                Observable<? extends T> obs = observableFactory.call();
                 return obs.subscribe(observer);
             }
         };

@@ -39,16 +39,16 @@ import rx.util.functions.Func1;
  */
 public final class OperationToObservableIterable<T> {
 
-    public static <T> Func1<Observer<? super T>, Subscription> toObservableIterable(Iterable<T> list) {
+    public static <T> Func1<Observer<? super T>, Subscription> toObservableIterable(Iterable<? extends T> list) {
         return new ToObservableIterable<T>(list);
     }
 
     private static class ToObservableIterable<T> implements Func1<Observer<? super T>, Subscription> {
-        public ToObservableIterable(Iterable<T> list) {
+        public ToObservableIterable(Iterable<? extends T> list) {
             this.iterable = list;
         }
 
-        public Iterable<T> iterable;
+        public Iterable<? extends T> iterable;
 
         public Subscription call(Observer<? super T> observer) {
             for (T item : iterable) {

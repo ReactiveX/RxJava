@@ -47,7 +47,7 @@ import rx.util.functions.Func1;
  */
 public class OperationCache {
 
-    public static <T> Func1<Observer<? super T>, Subscription> cache(final Observable<T> source) {
+    public static <T> Func1<Observer<? super T>, Subscription> cache(final Observable<? extends T> source) {
         return new Func1<Observer<? super T>, Subscription>() {
 
             final AtomicBoolean subscribed = new AtomicBoolean(false);
