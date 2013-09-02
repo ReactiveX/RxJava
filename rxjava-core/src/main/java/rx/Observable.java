@@ -61,6 +61,7 @@ import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
 import rx.operators.OperationToObservableList;
 import rx.operators.OperationToObservableSortedList;
+import rx.operators.OperationWindow;
 import rx.operators.OperationZip;
 import rx.operators.SafeObservableSubscription;
 import rx.operators.SafeObserver;
@@ -71,8 +72,8 @@ import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
-import rx.util.BufferClosing;
-import rx.util.BufferOpening;
+import rx.util.Closing;
+import rx.util.Opening;
 import rx.util.OnErrorNotImplementedException;
 import rx.util.Range;
 import rx.util.Timestamped;
@@ -83,11 +84,6 @@ import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 import rx.util.functions.Func3;
 import rx.util.functions.Func4;
-import rx.util.functions.Func5;
-import rx.util.functions.Func6;
-import rx.util.functions.Func7;
-import rx.util.functions.Func8;
-import rx.util.functions.Func9;
 import rx.util.functions.FuncN;
 import rx.util.functions.Function;
 
@@ -102,27 +98,18 @@ import rx.util.functions.Function;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/legend.png">
  * <p>
- * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
+ * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava
+ * Wiki</a>
  * 
  * @param <T>
  */
 public class Observable<T> {
 
-    /**
-     * Executed when 'subscribe' is invoked.
-     */
-    private final OnSubscribeFunc<T> onSubscribe;
+    //TODO use a consistent parameter naming scheme (for example: for all operators that modify a source Observable, the parameter representing that source Observable should have the same name, e.g. "source" -- currently such parameters are named any of "sequence", "that", "source", "items", or "observable")
 
-    /**
-     * Function interface for work to be performed when an {@link Observable} is subscribed to via {@link Observable#subscribe(Observer)}
-     * 
-     * @param <T>
-     */
-    public static interface OnSubscribeFunc<T> extends Function {
+    private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
-        public Subscription onSubscribe(Observer<? super T> t1);
-
-    }
+    private final Func1<Observer<T>, Subscription> onSubscribe;
 
     /**
      * Observable with Function to execute when subscribed to.
@@ -131,14 +118,16 @@ public class Observable<T> {
      * specifically have a need for inheritance.
      * 
      * @param onSubscribe
-     *            {@link OnSubscribeFunc} to be executed when {@link #subscribe(Observer)} is called.
+     *            {@link Func1} to be executed when {@link #subscribe(Observer)} is called.
      */
-    protected Observable(OnSubscribeFunc<T> onSubscribe) {
+    protected Observable(Func1<Observer<T>, Subscription> onSubscribe) {
         this.onSubscribe = onSubscribe;
     }
 
-    private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
-
+    protected Observable() {
+        this(null);
+        //TODO should this be made private to prevent it? It really serves no good purpose and only confuses things. Unit tests are incorrectly using it today
+    }
 
     /**
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to
@@ -167,9 +156,9 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if the {@link Observer} provided as the argument to {@code subscribe()} is {@code null}
      */
-    public Subscription subscribe(Observer<? super T> observer) {
+    public Subscription subscribe(Observer<T> observer) {
         // allow the hook to intercept and/or decorate
-        OnSubscribeFunc<T> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
+        Func1<Observer<T>, Subscription> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
         // validate and proceed
         if (observer == null) {
             throw new IllegalArgumentException("observer can not be null");
@@ -183,7 +172,7 @@ public class Observable<T> {
              * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
              */
             if (isInternalImplementation(observer)) {
-                Subscription s = onSubscribeFunction.onSubscribe(observer);
+                Subscription s = onSubscribeFunction.call(observer);
                 if (s == null) {
                     // this generally shouldn't be the case on a 'trusted' onSubscribe but in case it happens
                     // we want to gracefully handle it the same as AtomicObservableSubscription does
@@ -193,7 +182,7 @@ public class Observable<T> {
                 }
             } else {
                 SafeObservableSubscription subscription = new SafeObservableSubscription();
-                subscription.wrap(onSubscribeFunction.onSubscribe(new SafeObserver<T>(subscription, observer)));
+                subscription.wrap(onSubscribeFunction.call(new SafeObserver<T>(subscription, observer)));
                 return hook.onSubscribeReturn(this, subscription);
             }
         } catch (OnErrorNotImplementedException e) {
@@ -245,7 +234,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if an argument to {@code subscribe()} is {@code null}
      */
-    public Subscription subscribe(Observer<? super T> observer, Scheduler scheduler) {
+    public Subscription subscribe(Observer<T> observer, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(observer);
     }
 
@@ -254,12 +243,12 @@ public class Observable<T> {
      * <p>
      * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
      */
-    private Subscription protectivelyWrapAndSubscribe(Observer<? super T> o) {
+    private Subscription protectivelyWrapAndSubscribe(Observer<T> o) {
         SafeObservableSubscription subscription = new SafeObservableSubscription();
         return subscription.wrap(subscribe(new SafeObserver<T>(subscription, o)));
     }
 
-    public Subscription subscribe(final Action1<? super T> onNext) {
+    public Subscription subscribe(final Action1<T> onNext) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -290,11 +279,11 @@ public class Observable<T> {
         });
     }
 
-    public Subscription subscribe(final Action1<? super T> onNext, Scheduler scheduler) {
+    public Subscription subscribe(final Action1<T> onNext, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext);
     }
 
-    public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError) {
+    public Subscription subscribe(final Action1<T> onNext, final Action1<Throwable> onError) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -328,11 +317,11 @@ public class Observable<T> {
         });
     }
 
-    public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, Scheduler scheduler) {
+    public Subscription subscribe(final Action1<T> onNext, final Action1<Throwable> onError, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError);
     }
 
-    public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
+    public Subscription subscribe(final Action1<T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -369,7 +358,7 @@ public class Observable<T> {
         });
     }
 
-    public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete, Scheduler scheduler) {
+    public Subscription subscribe(final Action1<T> onNext, final Action1<Throwable> onError, final Action0 onComplete, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError, onComplete);
     }
 
@@ -409,10 +398,10 @@ public class Observable<T> {
      */
     private static class NeverObservable<T> extends Observable<T> {
         public NeverObservable() {
-            super(new OnSubscribeFunc<T>() {
+            super(new Func1<Observer<T>, Subscription>() {
 
                 @Override
-                public Subscription onSubscribe(Observer<? super T> t1) {
+                public Subscription call(Observer<T> t1) {
                     return Subscriptions.empty();
                 }
 
@@ -429,7 +418,7 @@ public class Observable<T> {
     private static class ThrowObservable<T> extends Observable<T> {
 
         public ThrowObservable(final Throwable exception) {
-            super(new OnSubscribeFunc<T>() {
+            super(new Func1<Observer<T>, Subscription>() {
 
                 /**
                  * Accepts an {@link Observer} and calls its {@link Observer#onError onError} method.
@@ -439,7 +428,7 @@ public class Observable<T> {
                  * @return a reference to the subscription
                  */
                 @Override
-                public Subscription onSubscribe(Observer<? super T> observer) {
+                public Subscription call(Observer<T> observer) {
                     observer.onError(exception);
                     return Subscriptions.empty();
                 }
@@ -473,7 +462,7 @@ public class Observable<T> {
      * @return an Observable that, when an {@link Observer} subscribes to it, will execute the given
      *         function
      */
-    public static <T> Observable<T> create(OnSubscribeFunc<T> func) {
+    public static <T> Observable<T> create(Func1<Observer<T>, Subscription> func) {
         return new Observable<T>(func);
     }
 
@@ -522,7 +511,7 @@ public class Observable<T> {
      *            emitted by the resulting Observable
      * @return an Observable that emits each item in the source {@link Iterable} sequence
      */
-    public static <T> Observable<T> from(Iterable<? extends T> iterable) {
+    public static <T> Observable<T> from(Iterable<T> iterable) {
         return create(OperationToObservableIterable.toObservableIterable(iterable));
     }
 
@@ -586,7 +575,7 @@ public class Observable<T> {
      * @return an Observable whose {@link Observer}s trigger an invocation of the given Observable
      *         factory function
      */
-    public static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) {
+    public static <T> Observable<T> defer(Func0<Observable<T>> observableFactory) {
         return create(OperationDefer.defer(observableFactory));
     }
 
@@ -629,7 +618,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening the {@code source} list of Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge</a>
      */
-    public static <T> Observable<T> merge(List<? extends Observable<? extends T>> source) {
+    public static <T> Observable<T> merge(List<Observable<T>> source) {
         return create(OperationMerge.merge(source));
     }
 
@@ -648,7 +637,7 @@ public class Observable<T> {
      *         by the Observables emitted by the {@code source} Observable
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
+    public static <T> Observable<T> merge(Observable<Observable<T>> source) {
         return create(OperationMerge.merge(source));
     }
 
@@ -666,7 +655,7 @@ public class Observable<T> {
      *         by the {@code source} Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> merge(Observable<? extends T>... source) {
+    public static <T> Observable<T> merge(Observable<T>... source) {
         return create(OperationMerge.merge(source));
     }
 
@@ -682,7 +671,7 @@ public class Observable<T> {
      *         the {@code source} Observables, one after the other
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
      */
-    public static <T> Observable<T> concat(Observable<? extends T>... source) {
+    public static <T> Observable<T> concat(Observable<T>... source) {
         return create(OperationConcat.concat(source));
     }
 
@@ -706,7 +695,7 @@ public class Observable<T> {
      *         the {@code source} list of Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> mergeDelayError(List<? extends Observable<? extends T>> source) {
+    public static <T> Observable<T> mergeDelayError(List<Observable<T>> source) {
         return create(OperationMergeDelayError.mergeDelayError(source));
     }
 
@@ -730,7 +719,7 @@ public class Observable<T> {
      *         the Observables emitted by the {@code source} Observable
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source) {
+    public static <T> Observable<T> mergeDelayError(Observable<Observable<T>> source) {
         return create(OperationMergeDelayError.mergeDelayError(source));
     }
 
@@ -754,7 +743,7 @@ public class Observable<T> {
      *         the {@code source} Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> mergeDelayError(Observable<? extends T>... source) {
+    public static <T> Observable<T> mergeDelayError(Observable<T>... source) {
         return create(OperationMergeDelayError.mergeDelayError(source));
     }
 
@@ -784,7 +773,7 @@ public class Observable<T> {
      * @return an Observable that emits only the items emitted by the most recently published
      *         Observable
      */
-    public static <T> Observable<T> switchDo(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
+    public static <T> Observable<T> switchDo(Observable<Observable<T>> sequenceOfSequences) {
         // TODO should this static remain? I have left it because it is an Observable<Observable>
         return create(OperationSwitch.switchDo(sequenceOfSequences));
     }
@@ -804,7 +793,7 @@ public class Observable<T> {
     public Observable<T> switchDo() {
         // TODO can we come up with a better name than this? It should be 'switch' but that is reserved.
         // Perhaps 'switchOnNext'?
-        return create(OperationSwitch.switchDo((Observable<? extends Observable<? extends T>>) this));
+        return create(OperationSwitch.switchDo((Observable<Observable<T>>) this));
     }
 
     /**
@@ -824,7 +813,7 @@ public class Observable<T> {
      * @return an Observable that is a chronologically well-behaved version of the source
      *         Observable, and that synchronously notifies its {@link Observer}s
      */
-    public static <T> Observable<T> synchronize(Observable<? extends T> observable) {
+    public static <T> Observable<T> synchronize(Observable<T> observable) {
         return create(OperationSynchronize.synchronize(observable));
     }
 
@@ -857,7 +846,7 @@ public class Observable<T> {
      *            be emitted by the resulting Observable
      * @return an Observable that emits the item from the source Future
      */
-    public static <T> Observable<T> from(Future<? extends T> future) {
+    public static <T> Observable<T> from(Future<T> future) {
         return create(OperationToObservableFuture.toObservableFuture(future));
     }
 
@@ -880,7 +869,7 @@ public class Observable<T> {
      *            be emitted by the resulting Observable
      * @return an Observable that emits the item from the source Future
      */
-    public static <T> Observable<T> from(Future<? extends T> future, Scheduler scheduler) {
+    public static <T> Observable<T> from(Future<T> future, Scheduler scheduler) {
         return create(OperationToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
     }
 
@@ -906,7 +895,7 @@ public class Observable<T> {
      *            be emitted by the resulting Observable
      * @return an Observable that emits the item from the source {@link Future}
      */
-    public static <T> Observable<T> from(Future<? extends T> future, long timeout, TimeUnit unit) {
+    public static <T> Observable<T> from(Future<T> future, long timeout, TimeUnit unit) {
         return create(OperationToObservableFuture.toObservableFuture(future, timeout, unit));
     }
 
@@ -920,17 +909,18 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations
      * of the source Observable that emits the fewest items.
      * 
-     * @param o1
+     * @param w0
      *            one source Observable
-     * @param o2
+     * @param w1
      *            another source Observable
-     * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source
-     *            Observables, results in an item that will be emitted by the resulting Observable
+     * @param reduceFunction
+     *            a function that, when applied to a pair of items, each emitted by one of the two
+     *            source Observables, results in an item that will be emitted by the resulting
+     *            Observable
      * @return an Observable that emits the zipped results
      */
-    public static <T1, T2, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> zipFunction) {
-        return create(OperationZip.zip(o1, o2, zipFunction));
+    public static <R, T0, T1> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> reduceFunction) {
+        return create(OperationZip.zip(w0, w1, reduceFunction));
     }
 
     /**
@@ -948,7 +938,7 @@ public class Observable<T> {
      * @return an Observable that emits Booleans that indicate whether the corresponding items
      *         emitted by the source Observables are equal
      */
-    public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second) {
+    public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second) {
         return sequenceEqual(first, second, new Func2<T, T, Boolean>() {
             @Override
             public Boolean call(T first, T second) {
@@ -975,7 +965,7 @@ public class Observable<T> {
      * @return an Observable that emits Booleans that indicate whether the corresponding items
      *         emitted by the source Observables are equal
      */
-    public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality) {
+    public static <T> Observable<Boolean> sequenceEqual(Observable<T> first, Observable<T> second, Func2<T, T, Boolean> equality) {
         return zip(first, second, equality);
     }
 
@@ -992,19 +982,19 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations
      * of the source Observable that emits the fewest items.
      * 
-     * @param o1
+     * @param w0
      *            one source Observable
-     * @param o2
-     *            a second source Observable
-     * @param o3
+     * @param w1
+     *            another source Observable
+     * @param w2
      *            a third source Observable
-     * @param zipFunction
+     * @param function
      *            a function that, when applied to an item emitted by each of the source
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <T1, T2, T3, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
-        return create(OperationZip.zip(o1, o2, o3, zipFunction));
+    public static <R, T0, T1, T2> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> function) {
+        return create(OperationZip.zip(w0, w1, w2, function));
     }
 
     /**
@@ -1021,210 +1011,21 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations
      * of the source Observable that emits the fewest items.
      * 
-     * @param o1
+     * @param w0
      *            one source Observable
-     * @param o2
-     *            a second source Observable
-     * @param o3
+     * @param w1
+     *            another source Observable
+     * @param w2
      *            a third source Observable
-     * @param o4
+     * @param w3
      *            a fourth source Observable
-     * @param zipFunction
+     * @param reduceFunction
      *            a function that, when applied to an item emitted by each of the source
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <T1, T2, T3, T4, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
-        return create(OperationZip.zip(o1, o2, o3, o4, zipFunction));
-    }
-    
-    /**
-     * Returns an Observable that emits the results of a function of your choosing applied to
-     * combinations of four items emitted, in sequence, by four other Observables.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
-     * new Observable will be the result of the function applied to the first item emitted by {@code w0}, the first item emitted by {@code w1}, the first item emitted by {@code w2}, and the first item
-     * emitted by {@code w3}; the second item emitted by
-     * the new Observable will be the result of the function applied to the second item emitted by
-     * each of those Observables; and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations
-     * of the source Observable that emits the fewest items.
-     * 
-     * @param o1
-     *            one source Observable
-     * @param o2
-     *            a second source Observable
-     * @param o3
-     *            a third source Observable
-     * @param o4
-     *            a fourth source Observable
-     * @param o5
-     *            a fifth source Observable
-     * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source
-     *            Observables, results in an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
-     */
-    public static <T1, T2, T3, T4, T5, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
-        return create(OperationZip.zip(o1, o2, o3, o4, o5, zipFunction));
-    }
-    
-    /**
-     * Returns an Observable that emits the results of a function of your choosing applied to
-     * combinations of four items emitted, in sequence, by four other Observables.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
-     * new Observable will be the result of the function applied to the first item emitted by {@code w0}, the first item emitted by {@code w1}, the first item emitted by {@code w2}, and the first item
-     * emitted by {@code w3}; the second item emitted by
-     * the new Observable will be the result of the function applied to the second item emitted by
-     * each of those Observables; and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations
-     * of the source Observable that emits the fewest items.
-     * 
-     * @param o1
-     *            one source Observable
-     * @param o2
-     *            a second source Observable
-     * @param o3
-     *            a third source Observable
-     * @param o4
-     *            a fourth source Observable
-     * @param o5
-     *            a fifth source Observable
-     * @param o6
-     *            a sixth source Observable
-     * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source
-     *            Observables, results in an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
-     */
-    public static <T1, T2, T3, T4, T5, T6, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6,
-            Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipFunction) {
-        return create(OperationZip.zip(o1, o2, o3, o4, o5, o6, zipFunction));
-    }
-    
-    /**
-     * Returns an Observable that emits the results of a function of your choosing applied to
-     * combinations of four items emitted, in sequence, by four other Observables.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
-     * new Observable will be the result of the function applied to the first item emitted by {@code w0}, the first item emitted by {@code w1}, the first item emitted by {@code w2}, and the first item
-     * emitted by {@code w3}; the second item emitted by
-     * the new Observable will be the result of the function applied to the second item emitted by
-     * each of those Observables; and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations
-     * of the source Observable that emits the fewest items.
-     * 
-     * @param o1
-     *            one source Observable
-     * @param o2
-     *            a second source Observable
-     * @param o3
-     *            a third source Observable
-     * @param o4
-     *            a fourth source Observable
-     * @param o5
-     *            a fifth source Observable
-     * @param o6
-     *            a sixth source Observable
-     * @param o7
-     *            a seventh source Observable
-     * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source
-     *            Observables, results in an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
-     */
-    public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7,
-            Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipFunction) {
-        return create(OperationZip.zip(o1, o2, o3, o4, o5, o6, o7, zipFunction));
-    }
-    
-    /**
-     * Returns an Observable that emits the results of a function of your choosing applied to
-     * combinations of four items emitted, in sequence, by four other Observables.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
-     * new Observable will be the result of the function applied to the first item emitted by {@code w0}, the first item emitted by {@code w1}, the first item emitted by {@code w2}, and the first item
-     * emitted by {@code w3}; the second item emitted by
-     * the new Observable will be the result of the function applied to the second item emitted by
-     * each of those Observables; and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations
-     * of the source Observable that emits the fewest items.
-     * 
-     * @param o1
-     *            one source Observable
-     * @param o2
-     *            a second source Observable
-     * @param o3
-     *            a third source Observable
-     * @param o4
-     *            a fourth source Observable
-     * @param o5
-     *            a fifth source Observable
-     * @param o6
-     *            a sixth source Observable
-     * @param o7
-     *            a seventh source Observable
-     * @param o8
-     *            an eighth source Observable
-     * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source
-     *            Observables, results in an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
-     */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
-            Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipFunction) {
-        return create(OperationZip.zip(o1, o2, o3, o4, o5, o6, o7, o8, zipFunction));
-    }
-    
-    /**
-     * Returns an Observable that emits the results of a function of your choosing applied to
-     * combinations of four items emitted, in sequence, by four other Observables.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
-     * new Observable will be the result of the function applied to the first item emitted by {@code w0}, the first item emitted by {@code w1}, the first item emitted by {@code w2}, and the first item
-     * emitted by {@code w3}; the second item emitted by
-     * the new Observable will be the result of the function applied to the second item emitted by
-     * each of those Observables; and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations
-     * of the source Observable that emits the fewest items.
-     * 
-     * @param o1
-     *            one source Observable
-     * @param o2
-     *            a second source Observable
-     * @param o3
-     *            a third source Observable
-     * @param o4
-     *            a fourth source Observable
-     * @param o5
-     *            a fifth source Observable
-     * @param o6
-     *            a sixth source Observable
-     * @param o7
-     *            a seventh source Observable
-     * @param o8
-     *            an eighth source Observable
-     * @param o9
-     *            a ninth source Observable
-     * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source
-     *            Observables, results in an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
-     */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
-            Observable<? extends T9> o9, Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipFunction) {
-        return create(OperationZip.zip(o1, o2, o3, o4, o5, o6, o7, o8, o9, zipFunction));
+    public static <R, T0, T1, T2, T3> Observable<R> zip(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> reduceFunction) {
+        return create(OperationZip.zip(w0, w1, w2, w3, reduceFunction));
     }
 
     /**
@@ -1233,89 +1034,48 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/combineLatest.png">
      * 
-     * @param o1
+     * @param w0
      *            The first source observable.
-     * @param o2
+     * @param w1
      *            The second source observable.
      * @param combineFunction
      *            The aggregation function used to combine the source observable values.
      * @return An Observable that combines the source Observables with the given combine function
      */
-    public static <T1, T2, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, combineFunction));
+    public static <R, T0, T1> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Func2<T0, T1, R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(w0, w1, combineFunction));
     }
 
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <T1, T2, T3, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, combineFunction));
+    public static <R, T0, T1, T2> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Func3<T0, T1, T2, R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(w0, w1, w2, combineFunction));
     }
 
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <T1, T2, T3, T4, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, 
-            Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, combineFunction));
-    }
-
-    /**
-     * @see #combineLatest(Observable, Observable, Func2)
-     */
-    public static <T1, T2, T3, T4, T5, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, 
-            Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, combineFunction));
-    }
-
-    /**
-     * @see #combineLatest(Observable, Observable, Func2)
-     */
-    public static <T1, T2, T3, T4, T5, T6, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, 
-            Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, combineFunction));
-    }
-
-    /**
-     * @see #combineLatest(Observable, Observable, Func2)
-     */
-    public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, 
-            Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, combineFunction));
-    }
-
-    /**
-     * @see #combineLatest(Observable, Observable, Func2)
-     */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8, 
-            Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, o8, combineFunction));
-    }
-
-    /**
-     * @see #combineLatest(Observable, Observable, Func2)
-     */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8, Observable<? extends T9> o9, 
-            Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, o8, o9, combineFunction));
+    public static <R, T0, T1, T2, T3> Observable<R> combineLatest(Observable<T0> w0, Observable<T1> w1, Observable<T2> w2, Observable<T3> w3, Func4<T0, T1, T2, T3, R> combineFunction) {
+        return create(OperationCombineLatest.combineLatest(w0, w1, w2, w3, combineFunction));
     }
 
     /**
      * Creates an Observable which produces buffers of collected values.
      * 
      * <p>This Observable produces connected non-overlapping buffers. The current buffer is
-     * emitted and replaced with a new buffer when the Observable produced by the specified {@link Func0} produces a {@link BufferClosing} object. The * {@link Func0} will then
+     * emitted and replaced with a new buffer when the Observable produced by the specified {@link Func0} produces a {@link rx.util.Closing} object. The * {@link Func0} will then
      * be used to create a new Observable to listen for the end of the next buffer.
      * 
      * @param bufferClosingSelector
      *            The {@link Func0} which is used to produce an {@link Observable} for every buffer created.
-     *            When this {@link Observable} produces a {@link BufferClosing} object, the associated buffer
+     *            When this {@link Observable} produces a {@link rx.util.Closing} object, the associated buffer
      *            is emitted and replaced with a new one.
      * @return
      *         An {@link Observable} which produces connected non-overlapping buffers, which are emitted
-     *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link BufferClosing} object.
+     *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link rx.util.Closing} object.
      */
-    public Observable<List<T>> buffer(Func0<? extends Observable<? extends BufferClosing>> bufferClosingSelector) {
+    public Observable<List<T>> buffer(Func0<Observable<Closing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferClosingSelector));
     }
 
@@ -1323,21 +1083,21 @@ public class Observable<T> {
      * Creates an Observable which produces buffers of collected values.
      * 
      * <p>This Observable produces buffers. Buffers are created when the specified "bufferOpenings"
-     * Observable produces a {@link BufferOpening} object. Additionally the {@link Func0} argument
-     * is used to create an Observable which produces {@link BufferClosing} objects. When this
+     * Observable produces a {@link rx.util.Opening} object. Additionally the {@link Func0} argument
+     * is used to create an Observable which produces {@link rx.util.Closing} objects. When this
      * Observable produces such an object, the associated buffer is emitted.
      * 
      * @param bufferOpenings
-     *            The {@link Observable} which, when it produces a {@link BufferOpening} object, will cause
+     *            The {@link Observable} which, when it produces a {@link rx.util.Opening} object, will cause
      *            another buffer to be created.
      * @param bufferClosingSelector
      *            The {@link Func0} which is used to produce an {@link Observable} for every buffer created.
-     *            When this {@link Observable} produces a {@link BufferClosing} object, the associated buffer
+     *            When this {@link Observable} produces a {@link rx.util.Closing} object, the associated buffer
      *            is emitted.
      * @return
      *         An {@link Observable} which produces buffers which are created and emitted when the specified {@link Observable}s publish certain objects.
      */
-    public Observable<List<T>> buffer(Observable<? extends BufferOpening> bufferOpenings, Func1<? super BufferOpening, ? extends Observable<? extends BufferClosing>> bufferClosingSelector) {
+    public Observable<List<T>> buffer(Observable<Opening> bufferOpenings, Func1<Opening, Observable<Closing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferOpenings, bufferClosingSelector));
     }
 
@@ -1503,7 +1263,222 @@ public class Observable<T> {
     public Observable<List<T>> buffer(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
         return create(OperationBuffer.buffer(this, timespan, timeshift, unit, scheduler));
     }
+    
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces connected
+     * non-overlapping windows. The current window is emitted and replaced with a new window when the
+     * Observable produced by the specified {@link Func0} produces a {@link rx.util.Closing} object. The
+     * {@link Func0} will then be used to create a new Observable to listen for the end of the next window.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param closingSelector
+     *            The {@link Func0} which is used to produce an {@link Observable} for every window created.
+     *            When this {@link Observable} produces a {@link rx.util.Closing} object, the associated window
+     *            is emitted and replaced with a new one.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping windows, which are emitted
+     *            when the current {@link Observable} created with the {@link Func0} argument produces a
+     *            {@link rx.util.Closing} object.
+     */
+    public Observable<Observable<T>> window(Observable<T> source, Func0<Observable<Closing>> closingSelector) {
+        return create(OperationWindow.window(source, closingSelector));
+    }
 
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces windows.
+     * Chunks are created when the specified "windowOpenings" Observable produces a {@link rx.util.Opening} object.
+     * Additionally the {@link Func0} argument is used to create an Observable which produces {@link rx.util.Closing}
+     * objects. When this Observable produces such an object, the associated window is emitted.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param windowOpenings
+     *            The {@link Observable} which when it produces a {@link rx.util.Opening} object, will cause
+     *            another window to be created.
+     * @param closingSelector
+     *            The {@link Func0} which is used to produce an {@link Observable} for every window created.
+     *            When this {@link Observable} produces a {@link rx.util.Closing} object, the associated window
+     *            is emitted.
+     * @return
+     *            An {@link Observable} which produces windows which are created and emitted when the specified
+     *            {@link Observable}s publish certain objects.
+     */
+    public Observable<Observable<T>> window(Observable<T> source, Observable<Opening> windowOpenings, Func1<Opening, Observable<Closing>> closingSelector) {
+        return create(OperationWindow.window(source, windowOpenings, closingSelector));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces connected
+     * non-overlapping windows, each containing "count" elements. When the source Observable completes or
+     * encounters an error, the current window is emitted, and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param count
+     *            The maximum size of each window before it should be emitted.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping windows containing at most
+     *            "count" produced values.
+     */
+    public Observable<Observable<T>> window(Observable<T> source, int count) {
+        return create(OperationWindow.window(source, count));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces windows every
+     * "skip" values, each containing "count" elements. When the source Observable completes or encounters an error,
+     * the current window is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param count
+     *            The maximum size of each window before it should be emitted.
+     * @param skip
+     *            How many produced values need to be skipped before starting a new window. Note that when "skip" and
+     *            "count" are equals that this is the same operation as {@link Observable#window(Observable, int)}.
+     * @return
+     *            An {@link Observable} which produces windows every "skipped" values containing at most
+     *            "count" produced values.
+     */
+    public Observable<Observable<T>> window(Observable<T> source, int count, int skip) {
+        return create(OperationWindow.window(source, count, skip));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces connected
+     * non-overlapping windows, each of a fixed duration specified by the "timespan" argument. When the source
+     * Observable completes or encounters an error, the current window is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each window is collecting values before it should be emitted, and
+     *            replaced with a new window.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping windows with a fixed duration.
+     */
+    public Observable<Observable<T>> window(Observable<T> source, long timespan, TimeUnit unit) {
+        return create(OperationWindow.window(source, timespan, unit));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces connected
+     * non-overlapping windows, each of a fixed duration specified by the "timespan" argument. When the source
+     * Observable completes or encounters an error, the current window is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each window is collecting values before it should be emitted, and
+     *            replaced with a new window.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @param scheduler
+     *            The {@link Scheduler} to use when determining the end and start of a window.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping windows with a fixed duration.
+     */
+    public Observable<Observable<T>> window(Observable<T> source, long timespan, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationWindow.window(source, timespan, unit, scheduler));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces connected
+     * non-overlapping windows, each of a fixed duration specified by the "timespan" argument or a maximum size
+     * specified by the "count" argument (which ever is reached first). When the source Observable completes
+     * or encounters an error, the current window is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each window is collecting values before it should be emitted, and
+     *            replaced with a new window.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @param count
+     *            The maximum size of each window before it should be emitted.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping windows which are emitted after
+     *            a fixed duration or when the window has reached maximum capacity (which ever occurs first).
+     */
+    public Observable<Observable<T>> window(Observable<T> source, long timespan, TimeUnit unit, int count) {
+        return create(OperationWindow.window(source, timespan, unit, count));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces connected
+     * non-overlapping windows, each of a fixed duration specified by the "timespan" argument or a maximum size
+     * specified by the "count" argument (which ever is reached first). When the source Observable completes
+     * or encounters an error, the current window is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each window is collecting values before it should be emitted, and
+     *            replaced with a new window.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @param count
+     *            The maximum size of each window before it should be emitted.
+     * @param scheduler
+     *            The {@link Scheduler} to use when determining the end and start of a window.
+     * @return
+     *            An {@link Observable} which produces connected non-overlapping windows which are emitted after
+     *            a fixed duration or when the window has reached maximum capacity (which ever occurs first).
+     */
+    public Observable<Observable<T>> window(Observable<T> source, long timespan, TimeUnit unit, int count, Scheduler scheduler) {
+        return create(OperationWindow.window(source, timespan, unit, count, scheduler));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable starts a new window
+     * periodically, which is determined by the "timeshift" argument. Each window is emitted after a fixed timespan
+     * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
+     * current window is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each window is collecting values before it should be emitted.
+     * @param timeshift
+     *            The period of time after which a new window will be created.
+     * @param unit
+     *            The unit of time which applies to the "timespan" and "timeshift" argument.
+     * @return
+     *            An {@link Observable} which produces new windows periodically, and these are emitted after
+     *            a fixed timespan has elapsed.
+     */
+    public Observable<Observable<T>> window(Observable<T> source, long timespan, long timeshift, TimeUnit unit) {
+        return create(OperationWindow.window(source, timespan, timeshift, unit));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable starts a new window
+     * periodically, which is determined by the "timeshift" argument. Each window is emitted after a fixed timespan
+     * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
+     * current window is emitted and the event is propagated.
+     *
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each window is collecting values before it should be emitted.
+     * @param timeshift
+     *            The period of time after which a new window will be created.
+     * @param unit
+     *            The unit of time which applies to the "timespan" and "timeshift" argument.
+     * @param scheduler
+     *            The {@link Scheduler} to use when determining the end and start of a window.
+     * @return
+     *            An {@link Observable} which produces new windows periodically, and these are emitted after
+     *            a fixed timespan has elapsed.
+     */
+    public Observable<Observable<T>> window(Observable<T> source, long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationWindow.window(source, timespan, timeshift, unit, scheduler));
+    }
+    
     /**
      * Returns an Observable that emits the results of a function of your choosing applied to
      * combinations of four items emitted, in sequence, by four other Observables.
@@ -1519,16 +1494,16 @@ public class Observable<T> {
      * 
      * @param ws
      *            An Observable of source Observables
-     * @param zipFunction
+     * @param reduceFunction
      *            a function that, when applied to an item emitted by each of the source
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction) {
-        return ws.toList().mapMany(new Func1<List<? extends Observable<?>>, Observable<? extends R>>() {
+    public static <R> Observable<R> zip(Observable<Observable<?>> ws, final FuncN<R> reduceFunction) {
+        return ws.toList().mapMany(new Func1<List<Observable<?>>, Observable<R>>() {
             @Override
-            public Observable<R> call(List<? extends Observable<?>> wsList) {
-                return create(OperationZip.zip(wsList, zipFunction));
+            public Observable<R> call(List<Observable<?>> wsList) {
+                return create(OperationZip.zip(wsList, reduceFunction));
             }
         });
     }
@@ -1548,13 +1523,13 @@ public class Observable<T> {
      * 
      * @param ws
      *            A collection of source Observables
-     * @param zipFunction
+     * @param reduceFunction
      *            a function that, when applied to an item emitted by each of the source
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R> Observable<R> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction) {
-        return create(OperationZip.zip(ws, zipFunction));
+    public static <R> Observable<R> zip(Collection<Observable<?>> ws, FuncN<R> reduceFunction) {
+        return create(OperationZip.zip(ws, reduceFunction));
     }
 
     /**
@@ -1566,7 +1541,7 @@ public class Observable<T> {
      * @return an Observable that emits only those items in the original Observable that the filter
      *         evaluates as {@code true}
      */
-    public Observable<T> filter(Func1<? super T, Boolean> predicate) {
+    public Observable<T> filter(Func1<T, Boolean> predicate) {
         return create(OperationFilter.filter(this, predicate));
     }
 
@@ -1601,7 +1576,7 @@ public class Observable<T> {
      *         obtained from this transformation.
      * @see #mapMany(Func1)
      */
-    public <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
+    public <R> Observable<R> flatMap(Func1<T, Observable<R>> func) {
         return mapMany(func);
     }
 
@@ -1615,7 +1590,7 @@ public class Observable<T> {
      *         evaluates as {@code true}
      * @see #filter(Func1)
      */
-    public Observable<T> where(Func1<? super T, Boolean> predicate) {
+    public Observable<T> where(Func1<T, Boolean> predicate) {
         return filter(predicate);
     }
 
@@ -1630,7 +1605,7 @@ public class Observable<T> {
      * @return an Observable that emits the items from the source Observable, transformed by the
      *         given function
      */
-    public <R> Observable<R> map(Func1<? super T, ? extends R> func) {
+    public <R> Observable<R> map(Func1<T, R> func) {
         return create(OperationMap.map(this, func));
     }
 
@@ -1651,7 +1626,7 @@ public class Observable<T> {
      *         obtained from this transformation.
      * @see #flatMap(Func1)
      */
-    public <R> Observable<R> mapMany(Func1<? super T, ? extends Observable<? extends R>> func) {
+    public <R> Observable<R> mapMany(Func1<T, Observable<R>> func) {
         return create(OperationMap.mapMany(this, func));
     }
 
@@ -1710,7 +1685,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public <T2> Observable<T2> dematerialize() {
-        return create(OperationDematerialize.dematerialize((Observable<? extends Notification<? extends T2>>) this));
+        return create(OperationDematerialize.dematerialize((Observable<Notification<T2>>) this));
     }
 
     /**
@@ -1737,7 +1712,7 @@ public class Observable<T> {
      *            encounters an error
      * @return the original Observable, with appropriately modified behavior
      */
-    public Observable<T> onErrorResumeNext(final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) {
+    public Observable<T> onErrorResumeNext(final Func1<Throwable, Observable<T>> resumeFunction) {
         return create(OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(this, resumeFunction));
     }
 
@@ -1765,7 +1740,7 @@ public class Observable<T> {
      *            encounters an error
      * @return the original Observable, with appropriately modified behavior
      */
-    public Observable<T> onErrorResumeNext(final Observable<? extends T> resumeSequence) {
+    public Observable<T> onErrorResumeNext(final Observable<T> resumeSequence) {
         return create(OperationOnErrorResumeNextViaObservable.onErrorResumeNextViaObservable(this, resumeSequence));
     }
 
@@ -1795,7 +1770,7 @@ public class Observable<T> {
      *            encounters an error
      * @return the original Observable, with appropriately modified behavior
      */
-    public Observable<T> onExceptionResumeNext(final Observable<? extends T> resumeSequence) {
+    public Observable<T> onExceptionResumeNext(final Observable<T> resumeSequence) {
         return create(OperationOnExceptionResumeNextViaObservable.onExceptionResumeNextViaObservable(this, resumeSequence));
     }
 
@@ -1822,7 +1797,7 @@ public class Observable<T> {
      *            Observable encounters an error
      * @return the original Observable with appropriately modified behavior
      */
-    public Observable<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) {
+    public Observable<T> onErrorReturn(Func1<Throwable, T> resumeFunction) {
         return create(OperationOnErrorReturn.onErrorReturn(this, resumeFunction));
     }
 
@@ -1847,7 +1822,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public Observable<T> reduce(Func2<? super T, ? super T, ? extends T> accumulator) {
+    public Observable<T> reduce(Func2<T, T, T> accumulator) {
         return create(OperationScan.scan(this, accumulator)).takeLast(1);
     }
 
@@ -1904,7 +1879,7 @@ public class Observable<T> {
      * 
      * @see #reduce(Func2)
      */
-    public Observable<T> aggregate(Func2<? super T, ? super T, ? extends T> accumulator) {
+    public Observable<T> aggregate(Func2<T, T, T> accumulator) {
         return reduce(accumulator);
     }
 
@@ -1931,7 +1906,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public <R> Observable<R> reduce(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
+    public <R> Observable<R> reduce(R initialValue, Func2<R, T, R> accumulator) {
         return create(OperationScan.scan(this, initialValue, accumulator)).takeLast(1);
     }
 
@@ -1942,7 +1917,7 @@ public class Observable<T> {
      * 
      * @see #reduce(Object, Func2)
      */
-    public <R> Observable<R> aggregate(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
+    public <R> Observable<R> aggregate(R initialValue, Func2<R, T, R> accumulator) {
         return reduce(initialValue, accumulator);
     }
 
@@ -1965,7 +1940,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of each call to the accumulator function
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public Observable<T> scan(Func2<? super T, ? super T, ? extends T> accumulator) {
+    public Observable<T> scan(Func2<T, T, T> accumulator) {
         return create(OperationScan.scan(this, accumulator));
     }
 
@@ -2026,7 +2001,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of each call to the accumulator function
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public <R> Observable<R> scan(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
+    public <R> Observable<R> scan(R initialValue, Func2<R, T, R> accumulator) {
         return create(OperationScan.scan(this, initialValue, accumulator));
     }
 
@@ -2041,7 +2016,7 @@ public class Observable<T> {
      * @return an Observable that emits <code>true</code> if all items emitted by the source
      *         Observable satisfy the predicate; otherwise, <code>false</code>
      */
-    public Observable<Boolean> all(Func1<? super T, Boolean> predicate) {
+    public Observable<Boolean> all(Func1<T, Boolean> predicate) {
         return create(OperationAll.all(this, predicate));
     }
 
@@ -2094,7 +2069,7 @@ public class Observable<T> {
      * @return an Observable that emits the items from the source Observable so long as each item
      *         satisfies the condition defined by <code>predicate</code>
      */
-    public Observable<T> takeWhile(final Func1<? super T, Boolean> predicate) {
+    public Observable<T> takeWhile(final Func1<T, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhile(this, predicate));
     }
 
@@ -2111,7 +2086,7 @@ public class Observable<T> {
      * @return an Observable that emits items from the source Observable so long as the predicate
      *         continues to return <code>true</code> for each item, then completes
      */
-    public Observable<T> takeWhileWithIndex(final Func2<? super T, ? super Integer, Boolean> predicate) {
+    public Observable<T> takeWhileWithIndex(final Func2<T, Integer, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhileWithIndex(this, predicate));
     }
 
@@ -2145,7 +2120,7 @@ public class Observable<T> {
      * @return an Observable that emits the items of the source Observable until such time as
      *         <code>other</code> emits its first item
      */
-    public <E> Observable<T> takeUntil(Observable<? extends E> other) {
+    public <E> Observable<T> takeUntil(Observable<E> other) {
         return OperationTakeUntil.takeUntil(this, other);
     }
 
@@ -2197,7 +2172,7 @@ public class Observable<T> {
      *            an Integer that indicates their sort order
      * @return an Observable that emits the items from the source Observable in sorted order
      */
-    public Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) {
+    public Observable<List<T>> toSortedList(Func2<T, T, Integer> sortFunction) {
         return create(OperationToObservableSortedList.toSortedList(this, sortFunction));
     }
 
@@ -2233,7 +2208,7 @@ public class Observable<T> {
      *         unique key value and emits items representing items from the source Observable that
      *         share that key value
      */
-    public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) {
+    public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
         return create(OperationGroupBy.groupBy(this, keySelector, elementSelector));
     }
 
@@ -2251,7 +2226,7 @@ public class Observable<T> {
      *         unique key value and emits items representing items from the source Observable that
      *         share that key value
      */
-    public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) {
+    public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<T, K> keySelector) {
         return create(OperationGroupBy.groupBy(this, keySelector));
     }
 
@@ -2272,7 +2247,7 @@ public class Observable<T> {
      * 
      * NOTE: If strong reasons for not depending on package names comes up then the implementation of this method can change to looking for a marker interface.
      * 
-     * @param f
+     * @param o
      * @return {@code true} if the given function is an internal implementation, and {@code false} otherwise.
      */
     private boolean isInternalImplementation(Object o) {

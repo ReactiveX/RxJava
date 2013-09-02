@@ -15,6 +15,6 @@
  */
 package rx.util;
 
-public interface BufferClosing {
+public interface Closing {
     // Tagging interface for objects which can close buffers.
 }
