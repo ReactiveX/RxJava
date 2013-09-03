@@ -97,5 +97,5 @@ githubPages {
 
 // Generate wrapper, which is distributed as part of source to alleviate the need of installing gradle
 task createWrapper(type: Wrapper) {
-    gradleVersion = '1.5'
+    gradleVersion = '1.6'
 }
