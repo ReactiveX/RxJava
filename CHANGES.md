@@ -2,7 +2,7 @@
 
 ### Version 0.11.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.11.2%22)) ###
 
-* [Commit ccf53e8]( https://github.com/Netflix/RxJava/commit/ccf53e84835d99136cce80a4c508bae787d5da45] Update to Scala 2.10.2
+* [Commit ccf53e8]( https://github.com/Netflix/RxJava/commit/ccf53e84835d99136cce80a4c508bae787d5da45) Update to Scala 2.10.2
 
 ### Version 0.11.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.11.1%22)) ###
 
