@@ -36,7 +36,7 @@ public class NewThreadScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action) {
+    public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
         final SafeObservableSubscription subscription = new SafeObservableSubscription();
         final Scheduler _scheduler = this;
 
@@ -53,7 +53,7 @@ public class NewThreadScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long delay, TimeUnit unit) {
+    public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delay, TimeUnit unit) {
         // we will use the system scheduler since it doesn't make sense to launch a new Thread and then sleep
         // we will instead schedule the event then launch the thread after the delay has passed
         final Scheduler _scheduler = this;

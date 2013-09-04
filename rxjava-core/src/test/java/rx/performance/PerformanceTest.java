@@ -207,15 +207,13 @@ public class PerformanceTest {
         final AtomicInteger onNextSum = new AtomicInteger(0);
         final long start = System.nanoTime();
         final MathFunction m = new MathFunction();
-        @SuppressWarnings("rawtypes")
-        final Func1[] functionCalls = new Func1<?, ?>[50];
+        final Func1<Integer, Integer>[] functionCalls = new MathFunction[50];
         for (int i = 0; i < 50; i++) {
             functionCalls[i] = m;
         }
 
         Observable.from(values).map(new Func1<Integer, Integer>() {
 
-            @SuppressWarnings("unchecked")
             @Override
             public Integer call(Integer t1) {
                 // iterate the 50 times here in a loop rather than via composition

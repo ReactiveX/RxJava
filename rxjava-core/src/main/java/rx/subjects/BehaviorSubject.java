@@ -70,13 +70,13 @@ public class BehaviorSubject<T> extends Subject<T, T> {
      * @return the constructed {@link BehaviorSubject}.
      */
     public static <T> BehaviorSubject<T> createWithDefaultValue(T defaultValue) {
-        final ConcurrentHashMap<Subscription, Observer<T>> observers = new ConcurrentHashMap<Subscription, Observer<T>>();
+        final ConcurrentHashMap<Subscription, Observer<? super T>> observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
 
         final AtomicReference<T> currentValue = new AtomicReference<T>(defaultValue);
 
-        Func1<Observer<T>, Subscription> onSubscribe = new Func1<Observer<T>, Subscription>() {
+        Func1<Observer<? super T>, Subscription> onSubscribe = new Func1<Observer<? super T>, Subscription>() {
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription call(Observer<? super T> observer) {
                 final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
                 subscription.wrap(new Subscription() {
@@ -98,10 +98,10 @@ public class BehaviorSubject<T> extends Subject<T, T> {
         return new BehaviorSubject<T>(currentValue, onSubscribe, observers);
     }
 
-    private final ConcurrentHashMap<Subscription, Observer<T>> observers;
+    private final ConcurrentHashMap<Subscription, Observer<? super T>> observers;
     private final AtomicReference<T> currentValue;
 
-    protected BehaviorSubject(AtomicReference<T> currentValue, Func1<Observer<T>, Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
+    protected BehaviorSubject(AtomicReference<T> currentValue, Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers) {
         super(onSubscribe);
         this.currentValue = currentValue;
         this.observers = observers;
@@ -109,14 +109,14 @@ public class BehaviorSubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-        for (Observer<T> observer : observers.values()) {
+        for (Observer<? super T> observer : observers.values()) {
             observer.onCompleted();
         }
     }
 
     @Override
     public void onError(Throwable e) {
-        for (Observer<T> observer : observers.values()) {
+        for (Observer<? super T> observer : observers.values()) {
             observer.onError(e);
         }
     }
@@ -124,7 +124,7 @@ public class BehaviorSubject<T> extends Subject<T, T> {
     @Override
     public void onNext(T args) {
         currentValue.set(args);
-        for (Observer<T> observer : observers.values()) {
+        for (Observer<? super T> observer : observers.values()) {
             observer.onNext(args);
         }
     }

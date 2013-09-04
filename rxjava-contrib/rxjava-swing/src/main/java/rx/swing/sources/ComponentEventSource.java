@@ -36,9 +36,9 @@ public enum ComponentEventSource { ; // no instances
      * @see SwingObservable.fromComponentEvents
      */
     public static Observable<ComponentEvent> fromComponentEventsOf(final Component component) {
-        return Observable.create(new Func1<Observer<ComponentEvent>, Subscription>() {
+        return Observable.create(new Func1<Observer<? super ComponentEvent>, Subscription>() {
             @Override
-            public Subscription call(final Observer<ComponentEvent> observer) {
+            public Subscription call(final Observer<? super ComponentEvent> observer) {
                 final ComponentListener listener = new ComponentListener() {
                     @Override
                     public void componentHidden(ComponentEvent event) {

@@ -48,7 +48,7 @@ import rx.util.functions.Functions;
  */
 public final class OperationGroupBy {
 
-    public static <K, T, R> Func1<Observer<GroupedObservable<K, R>>, Subscription> groupBy(Observable<T> source, final Func1<T, K> keySelector, final Func1<T, R> elementSelector) {
+    public static <K, T, R> Func1<Observer<? super GroupedObservable<K, R>>, Subscription> groupBy(Observable<? extends T> source, final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) {
 
         final Observable<KeyValue<K, R>> keyval = source.map(new Func1<T, KeyValue<K, R>>() {
             @Override
@@ -63,11 +63,11 @@ public final class OperationGroupBy {
         return new GroupBy<K, R>(keyval);
     }
 
-    public static <K, T> Func1<Observer<GroupedObservable<K, T>>, Subscription> groupBy(Observable<T> source, final Func1<T, K> keySelector) {
+    public static <K, T> Func1<Observer<? super GroupedObservable<K, T>>, Subscription> groupBy(Observable<? extends T> source, final Func1<? super T, ? extends K> keySelector) {
         return groupBy(source, keySelector, Functions.<T> identity());
     }
 
-    private static class GroupBy<K, V> implements Func1<Observer<GroupedObservable<K, V>>, Subscription> {
+    private static class GroupBy<K, V> implements Func1<Observer<? super GroupedObservable<K, V>>, Subscription> {
 
         private final Observable<KeyValue<K, V>> source;
         private final ConcurrentHashMap<K, GroupedSubject<K, V>> groupedObservables = new ConcurrentHashMap<K, GroupedSubject<K, V>>();
@@ -80,7 +80,7 @@ public final class OperationGroupBy {
         }
 
         @Override
-        public Subscription call(final Observer<GroupedObservable<K, V>> observer) {
+        public Subscription call(final Observer<? super GroupedObservable<K, V>> observer) {
             final GroupBy<K, V> _this = this;
             actualParentSubscription.wrap(source.subscribe(new Observer<KeyValue<K, V>>() {
 
@@ -173,27 +173,23 @@ public final class OperationGroupBy {
     private static class GroupedSubject<K, T> extends GroupedObservable<K, T> implements Observer<T> {
 
         static <K, T> GroupedSubject<K, T> create(final K key, final GroupBy<K, T> parent) {
-            @SuppressWarnings("unchecked")
-            final AtomicReference<Observer<T>> subscribedObserver = new AtomicReference<Observer<T>>(EMPTY_OBSERVER);
-
-            return new GroupedSubject<K, T>(key, new Func1<Observer<T>, Subscription>() {
+            final AtomicReference<Observer<? super T>> subscribedObserver = new AtomicReference<Observer<? super T>>(OperationGroupBy.<T>emptyObserver());
+            return new GroupedSubject<K, T>(key, new Func1<Observer<? super T>, Subscription>() {
 
                 private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
                 @Override
-                public Subscription call(Observer<T> observer) {
+                public Subscription call(Observer<? super T> observer) {
                     // register Observer
                     subscribedObserver.set(observer);
 
                     parent.subscribeKey(key);
 
                     return subscription.wrap(new Subscription() {
-
-                        @SuppressWarnings("unchecked")
                         @Override
                         public void unsubscribe() {
                             // we remove the Observer so we stop emitting further events (they will be ignored if parent continues to send)
-                            subscribedObserver.set(EMPTY_OBSERVER);
+                            subscribedObserver.set(OperationGroupBy.<T>emptyObserver());
                             // now we need to notify the parent that we're unsubscribed
                             parent.unsubscribeKey(key);
                         }
@@ -202,9 +198,9 @@ public final class OperationGroupBy {
             }, subscribedObserver);
         }
 
-        private final AtomicReference<Observer<T>> subscribedObserver;
+        private final AtomicReference<Observer<? super T>> subscribedObserver;
 
-        public GroupedSubject(K key, Func1<Observer<T>, Subscription> onSubscribe, AtomicReference<Observer<T>> subscribedObserver) {
+        public GroupedSubject(K key, Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe, AtomicReference<Observer<? super T>> subscribedObserver) {
             super(key, onSubscribe);
             this.subscribedObserver = subscribedObserver;
         }
@@ -226,25 +222,24 @@ public final class OperationGroupBy {
 
     }
 
-    @SuppressWarnings("rawtypes")
-    private static Observer EMPTY_OBSERVER = new Observer() {
-
-        @Override
-        public void onCompleted() {
-            // do nothing            
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            // do nothing            
-        }
-
-        @Override
-        public void onNext(Object args) {
-            // do nothing
-        }
-
-    };
+    private static <T> Observer<T> emptyObserver() { 
+        return new Observer<T>() {
+            @Override
+            public void onCompleted() {
+                // do nothing            
+            }
+    
+            @Override
+            public void onError(Throwable e) {
+                // do nothing            
+            }
+    
+            @Override
+            public void onNext(T t) {
+                // do nothing
+            }
+        };
+    }
 
     private static class KeyValue<K, V> {
         private final K key;
@@ -377,10 +372,10 @@ public final class OperationGroupBy {
             final int count = 100;
             final int groupCount = 2;
 
-            Observable<Event> es = Observable.create(new Func1<Observer<Event>, Subscription>() {
+            Observable<Event> es = Observable.create(new Func1<Observer<? super Event>, Subscription>() {
 
                 @Override
-                public Subscription call(final Observer<Event> observer) {
+                public Subscription call(final Observer<? super Event> observer) {
                     System.out.println("*** Subscribing to EventStream ***");
                     subscribeCounter.incrementAndGet();
                     new Thread(new Runnable() {
@@ -423,7 +418,7 @@ public final class OperationGroupBy {
                         }
                     });
 
-                };
+                }
             }).subscribe(new Observer<String>() {
 
                 @Override
@@ -465,10 +460,10 @@ public final class OperationGroupBy {
             final int count = 100;
             final int groupCount = 2;
 
-            Observable<Event> es = Observable.create(new Func1<Observer<Event>, Subscription>() {
+            Observable<Event> es = Observable.create(new Func1<Observer<? super Event>, Subscription>() {
 
                 @Override
-                public Subscription call(final Observer<Event> observer) {
+                public Subscription call(final Observer<? super Event> observer) {
                     final BooleanSubscription s = new BooleanSubscription();
                     System.out.println("testUnsubscribe => *** Subscribing to EventStream ***");
                     subscribeCounter.incrementAndGet();
@@ -520,7 +515,7 @@ public final class OperationGroupBy {
                                         }
                                     });
 
-                        };
+                        }
                     }).subscribe(new Observer<String>() {
 
                         @Override

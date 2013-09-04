@@ -20,6 +20,6 @@ package rx.util.functions;
  * <p>
  * Marker interface to allow instanceof checks.
  */
-public interface Action extends Function {
+public interface Action extends Function<Void> {
 
 }

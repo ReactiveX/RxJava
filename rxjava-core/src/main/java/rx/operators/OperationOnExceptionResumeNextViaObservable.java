@@ -52,21 +52,21 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnExceptionResumeNextViaObservable<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> onExceptionResumeNextViaObservable(Observable<T> originalSequence, Observable<T> resumeSequence) {
+    public static <T> Func1<Observer<? super T>, Subscription> onExceptionResumeNextViaObservable(Observable<? extends T> originalSequence, Observable<? extends T> resumeSequence) {
         return new OnExceptionResumeNextViaObservable<T>(originalSequence, resumeSequence);
     }
 
-    private static class OnExceptionResumeNextViaObservable<T> implements Func1<Observer<T>, Subscription> {
+    private static class OnExceptionResumeNextViaObservable<T> implements Func1<Observer<? super T>, Subscription> {
 
-        private final Observable<T> resumeSequence;
-        private final Observable<T> originalSequence;
+        private final Observable<? extends T> resumeSequence;
+        private final Observable<? extends T> originalSequence;
 
-        public OnExceptionResumeNextViaObservable(Observable<T> originalSequence, Observable<T> resumeSequence) {
+        public OnExceptionResumeNextViaObservable(Observable<? extends T> originalSequence, Observable<? extends T> resumeSequence) {
             this.resumeSequence = resumeSequence;
             this.originalSequence = originalSequence;
         }
 
-        public Subscription call(final Observer<T> observer) {
+        public Subscription call(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
@@ -292,7 +292,7 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

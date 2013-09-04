@@ -57,20 +57,20 @@ public final class OperationSynchronize<T> {
      * @param <T>
      * @return the wrapped synchronized observable sequence
      */
-    public static <T> Func1<Observer<T>, Subscription> synchronize(Observable<T> observable) {
+    public static <T> Func1<Observer<? super T>, Subscription> synchronize(Observable<? extends T> observable) {
         return new Synchronize<T>(observable);
     }
 
-    private static class Synchronize<T> implements Func1<Observer<T>, Subscription> {
+    private static class Synchronize<T> implements Func1<Observer<? super T>, Subscription> {
 
-        public Synchronize(Observable<T> innerObservable) {
+        public Synchronize(Observable<? extends T> innerObservable) {
             this.innerObservable = innerObservable;
         }
 
-        private Observable<T> innerObservable;
+        private Observable<? extends T> innerObservable;
         private SynchronizedObserver<T> atomicObserver;
 
-        public Subscription call(Observer<T> observer) {
+        public Subscription call(Observer<? super T> observer) {
             SafeObservableSubscription subscription = new SafeObservableSubscription();
             atomicObserver = new SynchronizedObserver<T>(observer, subscription);
             return subscription.wrap(innerObservable.subscribe(atomicObserver));
@@ -234,7 +234,7 @@ public final class OperationSynchronize<T> {
          */
         private static class TestObservable extends Observable<String> {
 
-            Observer<String> observer = null;
+            Observer<? super String> observer = null;
 
             public TestObservable(Subscription s) {
             }
@@ -255,7 +255,7 @@ public final class OperationSynchronize<T> {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 this.observer = observer;
                 return new Subscription() {
 

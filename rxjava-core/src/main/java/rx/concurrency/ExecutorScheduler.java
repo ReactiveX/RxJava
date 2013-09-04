@@ -45,7 +45,7 @@ public class ExecutorScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedulePeriodically(final T state, final Func2<Scheduler, T, Subscription> action, long initialDelay, long period, TimeUnit unit) {
+    public <T> Subscription schedulePeriodically(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long initialDelay, long period, TimeUnit unit) {
         if (executor instanceof ScheduledExecutorService) {
             final CompositeSubscription subscriptions = new CompositeSubscription();
             
@@ -66,7 +66,7 @@ public class ExecutorScheduler extends Scheduler {
     }
     
     @Override
-    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit) {
+    public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
         final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
         final Scheduler _scheduler = this;
         // all subscriptions that may need to be unsubscribed
@@ -113,7 +113,7 @@ public class ExecutorScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action) {
+    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
         final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
         final Scheduler _scheduler = this;
         // all subscriptions that may need to be unsubscribed

@@ -45,7 +45,7 @@ public class OperationTakeUntil {
      *            the other type.
      * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
      */
-    public static <T, E> Observable<T> takeUntil(final Observable<T> source, final Observable<E> other) {
+    public static <T, E> Observable<T> takeUntil(final Observable<? extends T> source, final Observable<? extends E> other) {
         Observable<Notification<T>> s = Observable.create(new SourceObservable<T>(source));
         Observable<Notification<T>> o = Observable.create(new OtherObservable<T, E>(other));
 
@@ -89,15 +89,15 @@ public class OperationTakeUntil {
 
     }
 
-    private static class SourceObservable<T> implements Func1<Observer<Notification<T>>, Subscription> {
-        private final Observable<T> sequence;
+    private static class SourceObservable<T> implements Func1<Observer<? super Notification<T>>, Subscription> {
+        private final Observable<? extends T> sequence;
 
-        private SourceObservable(Observable<T> sequence) {
+        private SourceObservable(Observable<? extends T> sequence) {
             this.sequence = sequence;
         }
 
         @Override
-        public Subscription call(final Observer<Notification<T>> notificationObserver) {
+        public Subscription call(final Observer<? super Notification<T>> notificationObserver) {
             return sequence.subscribe(new Observer<T>() {
                 @Override
                 public void onCompleted() {
@@ -117,15 +117,15 @@ public class OperationTakeUntil {
         }
     }
 
-    private static class OtherObservable<T, E> implements Func1<Observer<Notification<T>>, Subscription> {
-        private final Observable<E> sequence;
+    private static class OtherObservable<T, E> implements Func1<Observer<? super Notification<T>>, Subscription> {
+        private final Observable<? extends E> sequence;
 
-        private OtherObservable(Observable<E> sequence) {
+        private OtherObservable(Observable<? extends E> sequence) {
             this.sequence = sequence;
         }
 
         @Override
-        public Subscription call(final Observer<Notification<T>> notificationObserver) {
+        public Subscription call(final Observer<? super Notification<T>> notificationObserver) {
             return sequence.subscribe(new Observer<E>() {
                 @Override
                 public void onCompleted() {
@@ -270,7 +270,7 @@ public class OperationTakeUntil {
 
         private static class TestObservable extends Observable<String> {
 
-            Observer<String> observer = null;
+            Observer<? super String> observer = null;
             Subscription s;
 
             public TestObservable(Subscription s) {
@@ -293,7 +293,7 @@ public class OperationTakeUntil {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 this.observer = observer;
                 return s;
             }
