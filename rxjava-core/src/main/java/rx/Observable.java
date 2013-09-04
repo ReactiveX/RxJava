@@ -102,17 +102,15 @@ import rx.util.functions.Function;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/legend.png">
  * <p>
- * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava
- * Wiki</a>
+ * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
  * 
  * @param <T>
  */
 public class Observable<T> {
 
-    //TODO use a consistent parameter naming scheme (for example: for all operators that modify a source Observable, the parameter representing that source Observable should have the same name, e.g. "source" -- currently such parameters are named any of "sequence", "that", "source", "items", or "observable")
-
-    private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
-
+    /**
+     * Executed when 'subscribe' is invoked.
+     */
     private final OnSubscribeFunc<T> onSubscribe;
 
     /**
@@ -125,7 +123,7 @@ public class Observable<T> {
         public Subscription onSubscribe(Observer<? super T> t1);
 
     }
-    
+
     /**
      * Observable with Function to execute when subscribed to.
      * <p>
@@ -139,10 +137,8 @@ public class Observable<T> {
         this.onSubscribe = onSubscribe;
     }
 
-    protected Observable() {
-        this(null);
-        //TODO should this be made private to prevent it? It really serves no good purpose and only confuses things. Unit tests are incorrectly using it today
-    }
+    private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
+
 
     /**
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to

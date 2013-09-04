@@ -27,6 +27,8 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
 import rx.util.Exceptions;
 
 /**
@@ -121,8 +123,7 @@ public final class OperationMostRecent {
     public static class UnitTest {
         @Test
         public void testMostRecent() {
-            Subscription s = mock(Subscription.class);
-            TestObservable observable = new TestObservable(s);
+            Subject<String, String> observable = PublishSubject.create();
 
             Iterator<String> it = mostRecent(observable, "default").iterator();
 
@@ -130,25 +131,24 @@ public final class OperationMostRecent {
             assertEquals("default", it.next());
             assertEquals("default", it.next());
 
-            observable.sendOnNext("one");
+            observable.onNext("one");
             assertTrue(it.hasNext());
             assertEquals("one", it.next());
             assertEquals("one", it.next());
 
-            observable.sendOnNext("two");
+            observable.onNext("two");
             assertTrue(it.hasNext());
             assertEquals("two", it.next());
             assertEquals("two", it.next());
 
-            observable.sendOnCompleted();
+            observable.onCompleted();
             assertFalse(it.hasNext());
 
         }
 
         @Test(expected = TestException.class)
         public void testMostRecentWithException() {
-            Subscription s = mock(Subscription.class);
-            TestObservable observable = new TestObservable(s);
+            Subject<String, String> observable = PublishSubject.create();
 
             Iterator<String> it = mostRecent(observable, "default").iterator();
 
@@ -156,41 +156,10 @@ public final class OperationMostRecent {
             assertEquals("default", it.next());
             assertEquals("default", it.next());
 
-            observable.sendOnError(new TestException());
+            observable.onError(new TestException());
             assertTrue(it.hasNext());
 
             it.next();
-        }
-
-        private static class TestObservable extends Observable<String> {
-
-            Observer<? super String> observer = null;
-            Subscription s;
-
-            public TestObservable(Subscription s) {
-                this.s = s;
-            }
-
-            /* used to simulate subscription */
-            public void sendOnCompleted() {
-                observer.onCompleted();
-            }
-
-            /* used to simulate subscription */
-            public void sendOnNext(String value) {
-                observer.onNext(value);
-            }
-
-            /* used to simulate subscription */
-            public void sendOnError(Throwable e) {
-                observer.onError(e);
-            }
-
-            @Override
-            public Subscription subscribe(final Observer<? super String> observer) {
-                this.observer = observer;
-                return s;
-            }
         }
 
         private static class TestException extends RuntimeException {

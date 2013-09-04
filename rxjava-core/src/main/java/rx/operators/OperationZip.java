@@ -393,7 +393,7 @@ public final class OperationZip {
             TestObservable w2 = new TestObservable();
             TestObservable w3 = new TestObservable();
 
-            Observable<String> zipW = Observable.create(zip(w1, w2, w3, getConcat3StringsZipr()));
+            Observable<String> zipW = Observable.create(zip(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsZipr()));
             zipW.subscribe(w);
 
             /* simulate sending data */
@@ -427,7 +427,7 @@ public final class OperationZip {
             TestObservable w2 = new TestObservable();
             TestObservable w3 = new TestObservable();
 
-            Observable<String> zipW = Observable.create(zip(w1, w2, w3, getConcat3StringsZipr()));
+            Observable<String> zipW = Observable.create(zip(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsZipr()));
             zipW.subscribe(w);
 
             /* simulate sending data */
@@ -909,12 +909,12 @@ public final class OperationZip {
             }
         }
 
-        private static class TestObservable extends Observable<String> {
+        private static class TestObservable implements OnSubscribeFunc<String> {
 
             Observer<? super String> observer;
 
             @Override
-            public Subscription subscribe(Observer<? super String> Observer) {
+            public Subscription onSubscribe(Observer<? super String> Observer) {
                 // just store the variable where it can be accessed so we can manually trigger it
                 this.observer = Observer;
                 return Subscriptions.empty();

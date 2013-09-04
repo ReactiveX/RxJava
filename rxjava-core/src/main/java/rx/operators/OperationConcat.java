@@ -255,7 +255,7 @@ public final class OperationConcat {
             TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
             TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
 
-            Observable.concat(o1, o2).subscribe(observer);
+            Observable.concat(Observable.create(o1), Observable.create(o2)).subscribe(observer);
 
             try {
                 // wait for async observables to complete
@@ -301,12 +301,12 @@ public final class OperationConcat {
                                 // emit first
                                 if (!s.isUnsubscribed()) {
                                     System.out.println("Emit o1");
-                                    observer.onNext(o1);
+                                    observer.onNext(Observable.create(o1));
                                 }
                                 // emit second
                                 if (!s.isUnsubscribed()) {
                                     System.out.println("Emit o2");
-                                    observer.onNext(o2);
+                                    observer.onNext(Observable.create(o2));
                                 }
 
                                 // wait until sometime later and emit third
@@ -317,7 +317,7 @@ public final class OperationConcat {
                                 }
                                 if (!s.isUnsubscribed()) {
                                     System.out.println("Emit o3");
-                                    observer.onNext(o3);
+                                    observer.onNext(Observable.create(o3));
                                 }
 
                             } catch (Throwable e) {
@@ -404,7 +404,7 @@ public final class OperationConcat {
             final CountDownLatch callOnce = new CountDownLatch(1);
             final CountDownLatch okToContinue = new CountDownLatch(1);
             TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(callOnce, okToContinue, odds, even);
-            OnSubscribeFunc<String> concatF = concat(observableOfObservables);
+            OnSubscribeFunc<String> concatF = concat(Observable.create(observableOfObservables));
             Observable<String> concat = Observable.create(concatF);
             concat.subscribe(observer);
             try {
@@ -443,8 +443,8 @@ public final class OperationConcat {
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             @SuppressWarnings("unchecked")
-            TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(w1, w2);
-            OnSubscribeFunc<String> concatF = concat(observableOfObservables);
+            TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.create(w1), Observable.create(w2));
+            OnSubscribeFunc<String> concatF = concat(Observable.create(observableOfObservables));
 
             Observable<String> concat = Observable.create(concatF);
 
@@ -485,8 +485,8 @@ public final class OperationConcat {
                 @Override
                 public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
                     // simulate what would happen in an observable
-                    observer.onNext(w1);
-                    observer.onNext(w2);
+                    observer.onNext(Observable.create(w1));
+                    observer.onNext(Observable.create(w2));
                     observer.onCompleted();
 
                     return new Subscription() {
@@ -540,7 +540,7 @@ public final class OperationConcat {
             @SuppressWarnings("unchecked")
             final Observer<String> aObserver = mock(Observer.class);
             @SuppressWarnings("unchecked")
-            final Observable<String> concat = Observable.create(concat(w1, w2));
+            final Observable<String> concat = Observable.create(concat(Observable.create(w1), Observable.create(w2)));
             final SafeObservableSubscription s1 = new SafeObservableSubscription();
 
             try {
@@ -583,8 +583,8 @@ public final class OperationConcat {
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             @SuppressWarnings("unchecked")
-            TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(w1, w2);
-            OnSubscribeFunc<String> concatF = concat(observableOfObservables);
+            TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.create(w1), Observable.create(w2));
+            OnSubscribeFunc<String> concatF = concat(Observable.create(observableOfObservables));
 
             Observable<String> concat = Observable.create(concatF);
 
@@ -616,7 +616,7 @@ public final class OperationConcat {
             verify(aObserver, never()).onError(any(Throwable.class));
         }
 
-        private static class TestObservable<T> extends Observable<T> {
+        private static class TestObservable<T> implements OnSubscribeFunc<T> {
 
             private final Subscription s = new Subscription() {
 
@@ -656,7 +656,7 @@ public final class OperationConcat {
             }
 
             @Override
-            public Subscription subscribe(final Observer<? super T> observer) {
+            public Subscription onSubscribe(final Observer<? super T> observer) {
                 t = new Thread(new Runnable() {
 
                     @Override

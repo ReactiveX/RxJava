@@ -86,7 +86,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnCompletedAfterUnSubscribe() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -106,7 +106,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnNextAfterUnSubscribe() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -126,7 +126,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnErrorAfterUnSubscribe() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -146,7 +146,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnNextAfterOnError() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -168,7 +168,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnCompletedAfterOnError() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -190,7 +190,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnNextAfterOnCompleted() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -213,7 +213,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnErrorAfterOnCompleted() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -232,7 +232,7 @@ public final class OperationSynchronize<T> {
         /**
          * A Observable that doesn't do the right thing on UnSubscribe/Error/etc in that it will keep sending events down the pipe regardless of what happens.
          */
-        private static class TestObservable extends Observable<String> {
+        private static class TestObservable implements OnSubscribeFunc<String> {
 
             Observer<? super String> observer = null;
 
@@ -255,7 +255,7 @@ public final class OperationSynchronize<T> {
             }
 
             @Override
-            public Subscription subscribe(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 this.observer = observer;
                 return new Subscription() {
 
