@@ -131,7 +131,8 @@ public final class OperationOnErrorReturn<T> {
         @Test
         public void testResumeNext() {
             Subscription s = mock(Subscription.class);
-            TestObservable w = new TestObservable(s, "one");
+            TestObservable f = new TestObservable(s, "one");
+            Observable<String> w = Observable.create(f);
             final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
             Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Throwable, String>() {
@@ -149,7 +150,7 @@ public final class OperationOnErrorReturn<T> {
             observable.subscribe(aObserver);
 
             try {
-                w.t.join();
+                f.t.join();
             } catch (InterruptedException e) {
                 fail(e.getMessage());
             }
@@ -167,7 +168,8 @@ public final class OperationOnErrorReturn<T> {
         @Test
         public void testFunctionThrowsError() {
             Subscription s = mock(Subscription.class);
-            TestObservable w = new TestObservable(s, "one");
+            TestObservable f = new TestObservable(s, "one");
+            Observable<String> w = Observable.create(f);
             final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
             Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Throwable, String>() {
@@ -185,7 +187,7 @@ public final class OperationOnErrorReturn<T> {
             observable.subscribe(aObserver);
 
             try {
-                w.t.join();
+                f.t.join();
             } catch (InterruptedException e) {
                 fail(e.getMessage());
             }
@@ -199,7 +201,7 @@ public final class OperationOnErrorReturn<T> {
             assertNotNull(capturedException.get());
         }
 
-        private static class TestObservable extends Observable<String> {
+        private static class TestObservable implements OnSubscribeFunc<String> {
 
             final Subscription s;
             final String[] values;
@@ -211,7 +213,7 @@ public final class OperationOnErrorReturn<T> {
             }
 
             @Override
-            public Subscription subscribe(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

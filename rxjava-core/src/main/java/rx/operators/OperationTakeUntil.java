@@ -157,7 +157,7 @@ public class OperationTakeUntil {
             TestObservable other = new TestObservable(sOther);
 
             Observer<String> result = mock(Observer.class);
-            Observable<String> stringObservable = takeUntil(source, other);
+            Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
             stringObservable.subscribe(result);
             source.sendOnNext("one");
             source.sendOnNext("two");
@@ -184,7 +184,7 @@ public class OperationTakeUntil {
             TestObservable other = new TestObservable(sOther);
 
             Observer<String> result = mock(Observer.class);
-            Observable<String> stringObservable = takeUntil(source, other);
+            Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
             stringObservable.subscribe(result);
             source.sendOnNext("one");
             source.sendOnNext("two");
@@ -207,7 +207,7 @@ public class OperationTakeUntil {
             Throwable error = new Throwable();
 
             Observer<String> result = mock(Observer.class);
-            Observable<String> stringObservable = takeUntil(source, other);
+            Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
             stringObservable.subscribe(result);
             source.sendOnNext("one");
             source.sendOnNext("two");
@@ -231,7 +231,7 @@ public class OperationTakeUntil {
             Throwable error = new Throwable();
 
             Observer<String> result = mock(Observer.class);
-            Observable<String> stringObservable = takeUntil(source, other);
+            Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
             stringObservable.subscribe(result);
             source.sendOnNext("one");
             source.sendOnNext("two");
@@ -255,7 +255,7 @@ public class OperationTakeUntil {
             TestObservable other = new TestObservable(sOther);
 
             Observer<String> result = mock(Observer.class);
-            Observable<String> stringObservable = takeUntil(source, other);
+            Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
             stringObservable.subscribe(result);
             source.sendOnNext("one");
             source.sendOnNext("two");
@@ -269,7 +269,7 @@ public class OperationTakeUntil {
 
         }
 
-        private static class TestObservable extends Observable<String> {
+        private static class TestObservable implements OnSubscribeFunc<String> {
 
             Observer<? super String> observer = null;
             Subscription s;
@@ -294,7 +294,7 @@ public class OperationTakeUntil {
             }
 
             @Override
-            public Subscription subscribe(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 this.observer = observer;
                 return s;
             }

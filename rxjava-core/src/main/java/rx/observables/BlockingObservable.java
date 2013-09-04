@@ -65,14 +65,6 @@ public class BlockingObservable<T> extends Observable<T> {
     }
     
     /**
-     * Used to prevent public instantiation
-     */
-    @SuppressWarnings("unused")
-    private BlockingObservable() {
-        // prevent public instantiation
-    }
-
-    /**
      * Convert an Observable into a BlockingObservable.
      */
     public static <T> BlockingObservable<T> from(final Observable<? extends T> o) {

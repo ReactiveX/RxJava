@@ -177,7 +177,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
                 }
 
             };
-            Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(w, resume));
+            Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(Observable.create(w), resume));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -214,7 +214,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
                 }
 
             };
-            Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(w, resume));
+            Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(Observable.create(w), resume));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -234,7 +234,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
             verify(aObserver, times(0)).onCompleted();
         }
 
-        private static class TestObservable extends Observable<String> {
+        private static class TestObservable implements OnSubscribeFunc<String> {
 
             final Subscription s;
             final String[] values;
@@ -246,7 +246,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
             }
 
             @Override
-            public Subscription subscribe(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

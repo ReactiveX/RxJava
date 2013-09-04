@@ -260,7 +260,7 @@ public final class OperationTakeWhile {
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
-            Observable<String> take = Observable.create(takeWhile(source, new Func1<String, Boolean>()
+            Observable<String> take = Observable.create(takeWhile(Observable.create(source), new Func1<String, Boolean>()
             {
                 @Override
                 public Boolean call(String s)
@@ -289,7 +289,7 @@ public final class OperationTakeWhile {
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
-            Observable<String> take = Observable.create(takeWhileWithIndex(w, new Func2<String, Integer, Boolean>()
+            Observable<String> take = Observable.create(takeWhileWithIndex(Observable.create(w), new Func2<String, Integer, Boolean>()
             {
                 @Override
                 public Boolean call(String s, Integer index)
@@ -314,7 +314,7 @@ public final class OperationTakeWhile {
             verify(s, times(1)).unsubscribe();
         }
 
-        private static class TestObservable extends Observable<String> {
+        private static class TestObservable implements OnSubscribeFunc<String> {
 
             final Subscription s;
             final String[] values;
@@ -326,7 +326,7 @@ public final class OperationTakeWhile {
             }
 
             @Override
-            public Subscription subscribe(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 
