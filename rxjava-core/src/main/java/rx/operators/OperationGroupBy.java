@@ -418,7 +418,7 @@ public final class OperationGroupBy {
                         }
                     });
 
-                };
+                }
             }).subscribe(new Observer<String>() {
 
                 @Override
@@ -515,7 +515,7 @@ public final class OperationGroupBy {
                                         }
                                     });
 
-                        };
+                        }
                     }).subscribe(new Observer<String>() {
 
                         @Override

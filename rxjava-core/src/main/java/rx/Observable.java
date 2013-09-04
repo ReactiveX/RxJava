@@ -287,7 +287,7 @@ public class Observable<T> {
         return subscribeOn(scheduler).subscribe(onNext);
     }
 
-    public Subscription subscribe(final Action1<? super T> onNext, final Action1<? super Throwable> onError) {
+    public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -321,11 +321,11 @@ public class Observable<T> {
         });
     }
 
-    public Subscription subscribe(final Action1<? super T> onNext, final Action1<? super Throwable> onError, Scheduler scheduler) {
+    public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError);
     }
 
-    public Subscription subscribe(final Action1<? super T> onNext, final Action1<? super Throwable> onError, final Action0 onComplete) {
+    public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -362,7 +362,7 @@ public class Observable<T> {
         });
     }
 
-    public Subscription subscribe(final Action1<? super T> onNext, final Action1<? super Throwable> onError, final Action0 onComplete, Scheduler scheduler) {
+    public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError, onComplete);
     }
 
@@ -1730,7 +1730,7 @@ public class Observable<T> {
      *            encounters an error
      * @return the original Observable, with appropriately modified behavior
      */
-    public Observable<T> onErrorResumeNext(final Func1<? super Throwable, ? extends Observable<? extends T>> resumeFunction) {
+    public Observable<T> onErrorResumeNext(final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) {
         return create(OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(this, resumeFunction));
     }
 
@@ -1815,7 +1815,7 @@ public class Observable<T> {
      *            Observable encounters an error
      * @return the original Observable with appropriately modified behavior
      */
-    public Observable<T> onErrorReturn(Func1<? super Throwable, ? extends T> resumeFunction) {
+    public Observable<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) {
         return create(OperationOnErrorReturn.onErrorReturn(this, resumeFunction));
     }
 
