@@ -15,10 +15,7 @@
  */
 package rx.swing.sources;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,12 +26,13 @@ import org.junit.Test;
 import org.mockito.Matchers;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.observables.SwingObservable;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 public enum AbstractButtonSource { ; // no instances
 
@@ -42,9 +40,9 @@ public enum AbstractButtonSource { ; // no instances
      * @see SwingObservable.fromButtonAction
      */
     public static Observable<ActionEvent> fromActionOf(final AbstractButton button) {
-        return Observable.create(new Func1<Observer<ActionEvent>, Subscription>() {
+        return Observable.create(new OnSubscribeFunc<ActionEvent>() {
             @Override
-            public Subscription call(final Observer<ActionEvent> observer) {
+            public Subscription onSubscribe(final Observer<? super ActionEvent> observer) {
                 final ActionListener listener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {

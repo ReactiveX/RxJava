@@ -37,7 +37,7 @@ import rx.util.Exceptions;
  */
 public final class OperationMostRecent {
 
-    public static <T> Iterable<T> mostRecent(final Observable<T> source, T initialValue) {
+    public static <T> Iterable<T> mostRecent(final Observable<? extends T> source, T initialValue) {
 
         MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
         final MostRecentIterator<T> nextIterator = new MostRecentIterator<T>(mostRecentObserver);
@@ -164,7 +164,7 @@ public final class OperationMostRecent {
 
         private static class TestObservable extends Observable<String> {
 
-            Observer<String> observer = null;
+            Observer<? super String> observer = null;
             Subscription s;
 
             public TestObservable(Subscription s) {
@@ -187,7 +187,7 @@ public final class OperationMostRecent {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 this.observer = observer;
                 return s;
             }

@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.concurrency.TestScheduler;
@@ -49,38 +50,38 @@ public final class OperationSwitch {
      *            The {@link Observable} sequence consisting of {@link Observable} sequences.
      * @return A {@link Func1} which does this transformation.
      */
-    public static <T> Func1<Observer<T>, Subscription> switchDo(final Observable<Observable<T>> sequences) {
-        return new Func1<Observer<T>, Subscription>() {
+    public static <T> OnSubscribeFunc<T> switchDo(final Observable<? extends Observable<? extends T>> sequences) {
+        return new OnSubscribeFunc<T>() {
             @Override
-            public Subscription call(Observer<T> observer) {
-                return new Switch<T>(sequences).call(observer);
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                return new Switch<T>(sequences).onSubscribe(observer);
             }
         };
     }
 
-    private static class Switch<T> implements Func1<Observer<T>, Subscription> {
+    private static class Switch<T> implements OnSubscribeFunc<T> {
 
-        private final Observable<Observable<T>> sequences;
+        private final Observable<? extends Observable<? extends T>> sequences;
 
-        public Switch(Observable<Observable<T>> sequences) {
+        public Switch(Observable<? extends Observable<? extends T>> sequences) {
             this.sequences = sequences;
         }
 
         @Override
-        public Subscription call(Observer<T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             SafeObservableSubscription subscription = new SafeObservableSubscription();
             subscription.wrap(sequences.subscribe(new SwitchObserver<T>(observer, subscription)));
             return subscription;
         }
     }
 
-    private static class SwitchObserver<T> implements Observer<Observable<T>> {
+    private static class SwitchObserver<T> implements Observer<Observable<? extends T>> {
 
-        private final Observer<T> observer;
+        private final Observer<? super T> observer;
         private final SafeObservableSubscription parent;
         private final AtomicReference<Subscription> subsequence = new AtomicReference<Subscription>();
 
-        public SwitchObserver(Observer<T> observer, SafeObservableSubscription parent) {
+        public SwitchObserver(Observer<? super T> observer, SafeObservableSubscription parent) {
             this.observer = observer;
             this.parent = parent;
         }
@@ -98,7 +99,7 @@ public final class OperationSwitch {
         }
 
         @Override
-        public void onNext(Observable<T> args) {
+        public void onNext(Observable<? extends T> args) {
             unsubscribeFromSubSequence();
 
             subsequence.set(args.subscribe(new Observer<T>() {
@@ -142,21 +143,21 @@ public final class OperationSwitch {
 
         @Test
         public void testSwitchWithComplete() {
-            Observable<Observable<String>> source = Observable.create(new Func1<Observer<Observable<String>>, Subscription>() {
+            Observable<Observable<String>> source = Observable.create(new OnSubscribeFunc<Observable<String>>() {
                 @Override
-                public Subscription call(Observer<Observable<String>> observer) {
-                    publishNext(observer, 50, Observable.create(new Func1<Observer<String>, Subscription>() {
+                public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+                    publishNext(observer, 50, Observable.create(new OnSubscribeFunc<String>() {
                         @Override
-                        public Subscription call(Observer<String> observer) {
+                        public Subscription onSubscribe(Observer<? super String> observer) {
                             publishNext(observer, 50, "one");
                             publishNext(observer, 100, "two");
                             return Subscriptions.empty();
                         }
                     }));
 
-                    publishNext(observer, 200, Observable.create(new Func1<Observer<String>, Subscription>() {
+                    publishNext(observer, 200, Observable.create(new OnSubscribeFunc<String>() {
                         @Override
-                        public Subscription call(Observer<String> observer) {
+                        public Subscription onSubscribe(Observer<? super String> observer) {
                             publishNext(observer, 0, "three");
                             publishNext(observer, 100, "four");
                             return Subscriptions.empty();
@@ -202,21 +203,21 @@ public final class OperationSwitch {
 
         @Test
         public void testSwitchWithError() {
-            Observable<Observable<String>> source = Observable.create(new Func1<Observer<Observable<String>>, Subscription>() {
+            Observable<Observable<String>> source = Observable.create(new OnSubscribeFunc<Observable<String>>() {
                 @Override
-                public Subscription call(Observer<Observable<String>> observer) {
-                    publishNext(observer, 50, Observable.create(new Func1<Observer<String>, Subscription>() {
+                public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+                    publishNext(observer, 50, Observable.create(new OnSubscribeFunc<String>() {
                         @Override
-                        public Subscription call(Observer<String> observer) {
+                        public Subscription onSubscribe(Observer<? super String> observer) {
                             publishNext(observer, 50, "one");
                             publishNext(observer, 100, "two");
                             return Subscriptions.empty();
                         }
                     }));
 
-                    publishNext(observer, 200, Observable.create(new Func1<Observer<String>, Subscription>() {
+                    publishNext(observer, 200, Observable.create(new OnSubscribeFunc<String>() {
                         @Override
-                        public Subscription call(Observer<String> observer) {
+                        public Subscription onSubscribe(Observer<? super String> observer) {
                             publishNext(observer, 0, "three");
                             publishNext(observer, 100, "four");
                             return Subscriptions.empty();
@@ -262,29 +263,29 @@ public final class OperationSwitch {
 
         @Test
         public void testSwitchWithSubsequenceComplete() {
-            Observable<Observable<String>> source = Observable.create(new Func1<Observer<Observable<String>>, Subscription>() {
+            Observable<Observable<String>> source = Observable.create(new OnSubscribeFunc<Observable<String>>() {
                 @Override
-                public Subscription call(Observer<Observable<String>> observer) {
-                    publishNext(observer, 50, Observable.create(new Func1<Observer<String>, Subscription>() {
+                public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+                    publishNext(observer, 50, Observable.create(new OnSubscribeFunc<String>() {
                         @Override
-                        public Subscription call(Observer<String> observer) {
+                        public Subscription onSubscribe(Observer<? super String> observer) {
                             publishNext(observer, 50, "one");
                             publishNext(observer, 100, "two");
                             return Subscriptions.empty();
                         }
                     }));
 
-                    publishNext(observer, 130, Observable.create(new Func1<Observer<String>, Subscription>() {
+                    publishNext(observer, 130, Observable.create(new OnSubscribeFunc<String>() {
                         @Override
-                        public Subscription call(Observer<String> observer) {
+                        public Subscription onSubscribe(Observer<? super String> observer) {
                             publishCompleted(observer, 0);
                             return Subscriptions.empty();
                         }
                     }));
 
-                    publishNext(observer, 150, Observable.create(new Func1<Observer<String>, Subscription>() {
+                    publishNext(observer, 150, Observable.create(new OnSubscribeFunc<String>() {
                         @Override
-                        public Subscription call(Observer<String> observer) {
+                        public Subscription onSubscribe(Observer<? super String> observer) {
                             publishNext(observer, 50, "three");
                             return Subscriptions.empty();
                         }
@@ -317,29 +318,29 @@ public final class OperationSwitch {
 
         @Test
         public void testSwitchWithSubsequenceError() {
-            Observable<Observable<String>> source = Observable.create(new Func1<Observer<Observable<String>>, Subscription>() {
+            Observable<Observable<String>> source = Observable.create(new OnSubscribeFunc<Observable<String>>() {
                 @Override
-                public Subscription call(Observer<Observable<String>> observer) {
-                    publishNext(observer, 50, Observable.create(new Func1<Observer<String>, Subscription>() {
+                public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+                    publishNext(observer, 50, Observable.create(new OnSubscribeFunc<String>() {
                         @Override
-                        public Subscription call(Observer<String> observer) {
+                        public Subscription onSubscribe(Observer<? super String> observer) {
                             publishNext(observer, 50, "one");
                             publishNext(observer, 100, "two");
                             return Subscriptions.empty();
                         }
                     }));
 
-                    publishNext(observer, 130, Observable.create(new Func1<Observer<String>, Subscription>() {
+                    publishNext(observer, 130, Observable.create(new OnSubscribeFunc<String>() {
                         @Override
-                        public Subscription call(Observer<String> observer) {
+                        public Subscription onSubscribe(Observer<? super String> observer) {
                             publishError(observer, 0, new TestException());
                             return Subscriptions.empty();
                         }
                     }));
 
-                    publishNext(observer, 150, Observable.create(new Func1<Observer<String>, Subscription>() {
+                    publishNext(observer, 150, Observable.create(new OnSubscribeFunc<String>() {
                         @Override
-                        public Subscription call(Observer<String> observer) {
+                        public Subscription onSubscribe(Observer<? super String> observer) {
                             publishNext(observer, 50, "three");
                             return Subscriptions.empty();
                         }

@@ -25,12 +25,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subjects.ReplaySubject;
 import rx.subscriptions.BooleanSubscription;
 import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 /**
  * This method has similar behavior to {@link Observable#replay()} except that this auto-subscribes
@@ -47,14 +47,14 @@ import rx.util.functions.Func1;
  */
 public class OperationCache {
 
-    public static <T> Func1<Observer<T>, Subscription> cache(final Observable<T> source) {
-        return new Func1<Observer<T>, Subscription>() {
+    public static <T> OnSubscribeFunc<T> cache(final Observable<? extends T> source) {
+        return new OnSubscribeFunc<T>() {
 
             final AtomicBoolean subscribed = new AtomicBoolean(false);
             private final ReplaySubject<T> cache = ReplaySubject.create();
 
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 if (subscribed.compareAndSet(false, true)) {
                     // subscribe to the source once
                     source.subscribe(cache);
@@ -76,10 +76,10 @@ public class OperationCache {
         @Test
         public void testCache() throws InterruptedException {
             final AtomicInteger counter = new AtomicInteger();
-            Observable<String> o = Observable.create(cache(Observable.create(new Func1<Observer<String>, Subscription>() {
+            Observable<String> o = Observable.create(cache(Observable.create(new OnSubscribeFunc<String>() {
 
                 @Override
-                public Subscription call(final Observer<String> observer) {
+                public Subscription onSubscribe(final Observer<? super String> observer) {
                     final BooleanSubscription subscription = new BooleanSubscription();
                     new Thread(new Runnable() {
 

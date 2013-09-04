@@ -13,13 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.subjects;
+package rx.lang.groovy;
 
-import rx.Observable;
+import groovy.lang.Closure;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscription;
 
-public abstract class Subject<T, R> extends Observable<R> implements Observer<T> {
-    protected Subject(OnSubscribeFunc<R> onSubscribe) {
-        super(onSubscribe);
+/**
+ * Concrete wrapper that accepts a {@link Closure} and produces a {@link OnSubscribeFunc}.
+ * 
+ * @param <T>
+ */
+public class GroovyOnSubscribeFuncWrapper<T> implements OnSubscribeFunc<T> {
+
+    private final Closure<Subscription> closure;
+
+    public GroovyOnSubscribeFuncWrapper(Closure<Subscription> closure) {
+        this.closure = closure;
     }
+
+    @Override
+    public Subscription onSubscribe(Observer<? super T> observer) {
+        return closure.call(observer);
+    }
+
 }

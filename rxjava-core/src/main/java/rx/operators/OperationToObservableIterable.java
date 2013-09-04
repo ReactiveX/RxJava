@@ -24,10 +24,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func1;
 
 /**
  * Converts an Iterable sequence into an Observable.
@@ -39,18 +39,18 @@ import rx.util.functions.Func1;
  */
 public final class OperationToObservableIterable<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> toObservableIterable(Iterable<T> list) {
+    public static <T> OnSubscribeFunc<T> toObservableIterable(Iterable<? extends T> list) {
         return new ToObservableIterable<T>(list);
     }
 
-    private static class ToObservableIterable<T> implements Func1<Observer<T>, Subscription> {
-        public ToObservableIterable(Iterable<T> list) {
+    private static class ToObservableIterable<T> implements OnSubscribeFunc<T> {
+        public ToObservableIterable(Iterable<? extends T> list) {
             this.iterable = list;
         }
 
-        public Iterable<T> iterable;
+        public Iterable<? extends T> iterable;
 
-        public Subscription call(Observer<T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             for (T item : iterable) {
                 observer.onNext(item);
             }

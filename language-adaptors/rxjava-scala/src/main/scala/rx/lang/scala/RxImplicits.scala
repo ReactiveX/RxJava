@@ -19,7 +19,8 @@ object RxImplicits {
     import java.{ lang => jlang }
     import language.implicitConversions
 
-    import rx.Observable
+    import rx.{ Observable, Observer, Subscription }
+    import rx.Observable.OnSubscribeFunc
     import rx.observables.BlockingObservable
     import rx.util.functions._
     
@@ -56,7 +57,7 @@ object RxImplicits {
         }
     
     /**
-     * Converts a function shaped ilke compareTo into the equivalent Rx Func2
+     * Converts a function shaped like compareTo into the equivalent Rx Func2
      */
     implicit def convertComparisonFuncToRxFunc2[A](f: (A, A) => Int): Func2[A, A, jlang.Integer] =
         new Func2[A, A, jlang.Integer] {
@@ -100,13 +101,18 @@ object RxImplicits {
             def call(a: A, b: B, c: C, d: D) = f(a, b, c, d)
         }
 
+    implicit def onSubscribeFunc[A](f: (Observer[_ >: A]) => Subscription): OnSubscribeFunc[A] =
+        new OnSubscribeFunc[A] {
+            override def onSubscribe(a: Observer[_ >: A]) = f(a)
+        }
+
     /**
      * This implicit class implements all of the methods necessary for including Observables in a
      * for-comprehension.  Note that return type is always Observable, so that the ScalaObservable
      * type never escapes the for-comprehension
      */
     implicit class ScalaObservable[A](wrapped: Observable[A]) {
-        def map[B](f: A => B): Observable[B] = wrapped.map(f)
+        def map[B](f: A => B): Observable[B] = wrapped.map[B](f)
         def flatMap[B](f: A => Observable[B]): Observable[B] = wrapped.mapMany(f)
         def foreach(f: A => Unit): Unit = wrapped.toBlockingObservable.forEach(f)
         def withFilter(p: A => Boolean): WithFilter = new WithFilter(p)
@@ -131,7 +137,9 @@ class UnitTestSuite extends JUnitSuite {
     import org.mockito.Mockito._
     import org.mockito.{ MockitoAnnotations, Mock }
     import rx.{ Notification, Observer, Observable, Subscription }
+    import rx.Observable.OnSubscribeFunc
     import rx.observables.GroupedObservable
+    import rx.subscriptions.Subscriptions
     import collection.mutable.ArrayBuffer
     import collection.JavaConverters._
             
@@ -147,7 +155,7 @@ class UnitTestSuite extends JUnitSuite {
     class ObservableWithException(s: Subscription, values: String*) extends Observable[String] {
         var t: Thread = null
         
-        override def subscribe(observer: Observer[String]): Subscription = {
+        override def subscribe(observer: Observer[_ >: String]): Subscription = {
             println("ObservableWithException subscribed to ...")
             t = new Thread(new Runnable() {
                 override def run() {
@@ -175,7 +183,6 @@ class UnitTestSuite extends JUnitSuite {
     }
     
     // tests of static methods
-    
     @Test def testSingle {
         assertEquals(1, Observable.from(1).toBlockingObservable.single)
     }
@@ -207,6 +214,11 @@ class UnitTestSuite extends JUnitSuite {
             case ex: IllegalStateException => println("Caught expected IllegalStateException")
             case ex: Throwable => fail("Caught unexpected exception " + ex.getCause + ", expected IllegalStateException")
         }
+    }
+
+    @Test def testCreateFromOnSubscribeFunc {
+        val created = Observable.create((o: Observer[_ >: Integer]) => Subscriptions.empty)
+        //no assertions on subscription, just testing the implicit
     }
     
     @Test def testFromJavaInterop {
@@ -248,7 +260,7 @@ class UnitTestSuite extends JUnitSuite {
     
     @Test def testFlattenMerge {
         val observable = Observable.from(Observable.from(1, 2, 3))
-        val merged = Observable.merge(observable)
+        val merged = Observable.merge[Int](observable)
         assertSubscribeReceives(merged)(1, 2, 3)
     }
     
@@ -272,6 +284,18 @@ class UnitTestSuite extends JUnitSuite {
         assertSubscribeReceives(synchronized)(1, 2, 3)
     }
     
+    @Test def testZip2() {
+        val colors: Observable[String] = Observable.from("red", "green", "blue")
+        val names: Observable[String] = Observable.from("lion-o", "cheetara", "panthro")
+        
+        case class Character(color: String, name: String)
+        
+        val cheetara = Character("green", "cheetara")
+        val panthro = Character("blue", "panthro")
+        val characters = Observable.zip[String, String, Character](colors, names, Character.apply _)
+        assertSubscribeReceives(characters)(cheetara, panthro)
+    }
+    
     @Test def testZip3() {
         val numbers = Observable.from(1, 2, 3)
         val colors = Observable.from("red", "green", "blue")
@@ -283,7 +307,7 @@ class UnitTestSuite extends JUnitSuite {
         val cheetara = Character(2, "green", "cheetara")
         val panthro = Character(3, "blue", "panthro")
         
-        val characters = Observable.zip(numbers, colors, names, Character.apply _)
+        val characters = Observable.zip[Int, String, String, Character](numbers, colors, names, Character.apply _)
         assertSubscribeReceives(characters)(liono, cheetara, panthro)
     }
     
@@ -299,7 +323,7 @@ class UnitTestSuite extends JUnitSuite {
         val cheetara = Character(2, "green", "cheetara", false)
         val panthro = Character(3, "blue", "panthro", false)
         
-        val characters = Observable.zip(numbers, colors, names, isLeader, Character.apply _)
+        val characters = Observable.zip[Int, String, String, Boolean, Character](numbers, colors, names, isLeader, Character.apply _)
         assertSubscribeReceives(characters)(liono, cheetara, panthro)
     }
     
@@ -338,7 +362,8 @@ class UnitTestSuite extends JUnitSuite {
     @Test def testMap {
         val numbers = Observable.from(1, 2, 3, 4, 5, 6, 7, 8, 9)
         val mappedNumbers = ArrayBuffer.empty[Int]
-        numbers.map((x: Int) => x * x).subscribe((squareVal: Int) => {
+        val mapped: Observable[Int] = numbers map ((x: Int) => x * x)
+        mapped.subscribe((squareVal: Int) => {
             mappedNumbers.append(squareVal)
         })
         assertEquals(List(1, 4, 9, 16, 25, 36, 49, 64, 81), mappedNumbers.toList)
@@ -458,18 +483,9 @@ class UnitTestSuite extends JUnitSuite {
         assertSubscribeReceives(skipped)(3, 4)
     }
     
-    /**
-     * Both testTake and testTakeWhileWithIndex exposed a bug with unsubscribes not properly propagating.
-     * observable.take(2) produces onNext(first), onNext(second), and 4 onCompleteds
-     * it should produce onNext(first), onNext(second), and 1 onCompleted
-     *
-     * Switching to Observable.create(OperationTake.take(observable, 2)) works as expected
-     */
     @Test def testTake {
-        import rx.operators._
-        
         val observable = Observable.from(1, 2, 3, 4, 5)
-        val took = Observable.create(OperationTake.take(observable, 2))
+        val took = observable.take(2)
         assertSubscribeReceives(took)(1, 2)
     }
     
@@ -479,11 +495,11 @@ class UnitTestSuite extends JUnitSuite {
         assertSubscribeReceives(took)(1, 3, 5)
     }
     
-    /*@Test def testTakeWhileWithIndex {
-     val observable = Observable.from(1, 3, 5, 6, 7, 9, 11, 12, 13, 15, 17)
-     val took = observable.takeWhileWithIndex((i: Int, idx: Int) => isOdd(i) && idx > 4)
-     assertSubscribeReceives(took)(9, 11)
-     }*/
+    @Test def testTakeWhileWithIndex {
+        val observable = Observable.from(1, 3, 5, 7, 9, 11, 12, 13, 15, 17)
+        val took = observable.takeWhileWithIndex((i: Int, idx: Int) => isOdd(i) && idx < 8)
+        assertSubscribeReceives(took)(1, 3, 5, 7, 9, 11)
+    }
     
     @Test def testTakeLast {
         val observable = Observable.from(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -559,7 +575,7 @@ class UnitTestSuite extends JUnitSuite {
     
     @Test def testFilterInForComprehension {
         val doubler = (i: Int) => Observable.from(i, i)
-        val filteredObservable = for {
+        val filteredObservable: Observable[Int] = for {
             i: Int <- Observable.from(1, 2, 3, 4)
             j: Int <- doubler(i) if isOdd(i)
         } yield j

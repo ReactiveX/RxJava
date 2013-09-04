@@ -29,7 +29,6 @@ import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
-import rx.util.functions.Func1;
 
 /**
  * Subject that publishes only the last event to each {@link Observer} that has subscribed when the
@@ -68,11 +67,11 @@ public class AsyncSubject<T> extends Subject<T, T> {
      * @return a new AsyncSubject
      */
     public static <T> AsyncSubject<T> create() {
-        final ConcurrentHashMap<Subscription, Observer<T>> observers = new ConcurrentHashMap<Subscription, Observer<T>>();
+        final ConcurrentHashMap<Subscription, Observer<? super T>> observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
 
-        Func1<Observer<T>, Subscription> onSubscribe = new Func1<Observer<T>, Subscription>() {
+        OnSubscribeFunc<T> onSubscribe = new OnSubscribeFunc<T>() {
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
                 subscription.wrap(new Subscription() {
@@ -92,10 +91,10 @@ public class AsyncSubject<T> extends Subject<T, T> {
         return new AsyncSubject<T>(onSubscribe, observers);
     }
 
-    private final ConcurrentHashMap<Subscription, Observer<T>> observers;
+    private final ConcurrentHashMap<Subscription, Observer<? super T>> observers;
     private final AtomicReference<T> currentValue;
 
-    protected AsyncSubject(Func1<Observer<T>, Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
+    protected AsyncSubject(OnSubscribeFunc<T> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers) {
         super(onSubscribe);
         this.observers = observers;
         this.currentValue = new AtomicReference<T>();
@@ -104,17 +103,17 @@ public class AsyncSubject<T> extends Subject<T, T> {
     @Override
     public void onCompleted() {
         T finalValue = currentValue.get();
-        for (Observer<T> observer : observers.values()) {
+        for (Observer<? super T> observer : observers.values()) {
             observer.onNext(finalValue);
         }
-        for (Observer<T> observer : observers.values()) {
+        for (Observer<? super T> observer : observers.values()) {
             observer.onCompleted();
         }
     }
 
     @Override
     public void onError(Throwable e) {
-        for (Observer<T> observer : observers.values()) {
+        for (Observer<? super T> observer : observers.values()) {
             observer.onError(e);
         }
     }
@@ -132,6 +131,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
         public void testNeverCompleted() {
         	AsyncSubject<String> subject = AsyncSubject.create();
 
+            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -153,6 +153,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
         public void testCompleted() {
         	AsyncSubject<String> subject = AsyncSubject.create();
 
+            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -175,6 +176,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
         public void testError() {
         	AsyncSubject<String> subject = AsyncSubject.create();
 
+            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 

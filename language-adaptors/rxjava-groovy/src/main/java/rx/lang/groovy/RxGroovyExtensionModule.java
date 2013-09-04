@@ -33,6 +33,7 @@ import org.codehaus.groovy.runtime.m12n.ExtensionModule;
 import org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.observables.BlockingObservable;
 import rx.util.functions.Action;
 import rx.util.functions.Function;
@@ -50,33 +51,6 @@ public class RxGroovyExtensionModule extends ExtensionModule {
 
     public RxGroovyExtensionModule() {
         super("RxGroovyExtensionModule", "1.0");
-    }
-
-    /**
-     * Keeping this code around a little while as it was hard to figure out ... and I'm still messing with it while debugging.
-     * 
-     * Once the rest of this ExtensionModule stuff is working I'll delete this method.
-     * 
-     * This is used for manually initializing rather than going via the org.codehaus.groovy.runtime.ExtensionModule properties file.
-     */
-    public static void initializeManuallyForTesting() {
-        System.out.println("initialize");
-        MetaClassRegistryImpl mcRegistry = ((MetaClassRegistryImpl) GroovySystem.getMetaClassRegistry());
-        //        RxGroovyExtensionModule em = new RxGroovyExtensionModule();
-
-        Properties p = new Properties();
-        p.setProperty("moduleFactory", "rx.lang.groovy.RxGroovyPropertiesModuleFactory");
-        Map<CachedClass, List<MetaMethod>> metaMethods = new HashMap<CachedClass, List<MetaMethod>>();
-        mcRegistry.registerExtensionModuleFromProperties(p, RxGroovyExtensionModule.class.getClassLoader(), metaMethods);
-
-        for (ExtensionModule m : mcRegistry.getModuleRegistry().getModules()) {
-            System.out.println("Module: " + m.getName());
-        }
-
-        for (CachedClass cc : metaMethods.keySet()) {
-            System.out.println("Adding MetaMethods to CachedClass: " + cc);
-            cc.addNewMopMethods(metaMethods.get(cc));
-        }
     }
 
     @SuppressWarnings("rawtypes")
@@ -135,6 +109,8 @@ public class RxGroovyExtensionModule extends ExtensionModule {
                         if (o instanceof Closure) {
                             if (Action.class.isAssignableFrom(m.getParameterTypes()[i])) {
                                 newArgs[i] = new GroovyActionWrapper((Closure) o);
+                            } else if(OnSubscribeFunc.class.isAssignableFrom(m.getParameterTypes()[i])) {
+                                newArgs[i] = new GroovyOnSubscribeFuncWrapper((Closure) o);
                             } else {
                                 newArgs[i] = new GroovyFunctionWrapper((Closure) o);
                             }

@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
 
 /**
  * Returns an Observable that skips the first <code>num</code> items emitted by the source
@@ -47,13 +47,13 @@ public final class OperationSkip {
      * 
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229847(v=vs.103).aspx">Observable.Skip(TSource) Method</a>
      */
-    public static <T> Func1<Observer<T>, Subscription> skip(final Observable<T> items, final int num) {
+    public static <T> OnSubscribeFunc<T> skip(final Observable<? extends T> items, final int num) {
         // wrap in a Observable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new Func1<Observer<T>, Subscription>() {
+        return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription call(Observer<T> observer) {
-                return new Skip<T>(items, num).call(observer);
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                return new Skip<T>(items, num).onSubscribe(observer);
             }
 
         };
@@ -66,16 +66,16 @@ public final class OperationSkip {
      * 
      * @param <T>
      */
-    private static class Skip<T> implements Func1<Observer<T>, Subscription> {
+    private static class Skip<T> implements OnSubscribeFunc<T> {
         private final int num;
-        private final Observable<T> items;
+        private final Observable<? extends T> items;
 
-        Skip(final Observable<T> items, final int num) {
+        Skip(final Observable<? extends T> items, final int num) {
             this.num = num;
             this.items = items;
         }
 
-        public Subscription call(Observer<T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             return items.subscribe(new ItemObserver(observer));
         }
 
@@ -85,9 +85,9 @@ public final class OperationSkip {
         private class ItemObserver implements Observer<T> {
 
             private AtomicInteger counter = new AtomicInteger();
-            private final Observer<T> observer;
+            private final Observer<? super T> observer;
 
-            public ItemObserver(Observer<T> observer) {
+            public ItemObserver(Observer<? super T> observer) {
                 this.observer = observer;
             }
 

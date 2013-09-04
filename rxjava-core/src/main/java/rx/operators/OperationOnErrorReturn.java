@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.CompositeException;
@@ -50,20 +51,20 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnErrorReturn<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> onErrorReturn(Observable<T> originalSequence, Func1<Throwable, T> resumeFunction) {
+    public static <T> OnSubscribeFunc<T> onErrorReturn(Observable<? extends T> originalSequence, Func1<Throwable, ? extends T> resumeFunction) {
         return new OnErrorReturn<T>(originalSequence, resumeFunction);
     }
 
-    private static class OnErrorReturn<T> implements Func1<Observer<T>, Subscription> {
-        private final Func1<Throwable, T> resumeFunction;
-        private final Observable<T> originalSequence;
+    private static class OnErrorReturn<T> implements OnSubscribeFunc<T> {
+        private final Func1<Throwable, ? extends T> resumeFunction;
+        private final Observable<? extends T> originalSequence;
 
-        public OnErrorReturn(Observable<T> originalSequence, Func1<Throwable, T> resumeFunction) {
+        public OnErrorReturn(Observable<? extends T> originalSequence, Func1<Throwable, ? extends T> resumeFunction) {
             this.resumeFunction = resumeFunction;
             this.originalSequence = originalSequence;
         }
 
-        public Subscription call(final Observer<T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
@@ -210,7 +211,7 @@ public final class OperationOnErrorReturn<T> {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 
