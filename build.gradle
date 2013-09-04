@@ -1,4 +1,3 @@
-
 ext.githubProjectName = 'RxJava'
 
 apply from: file('gradle/convention.gradle')
@@ -27,7 +26,7 @@ subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
 
-    group = "com.netflix.${githubProjectName}"
+    group = "com.netflix.rxjava"
 
     // make 'examples' use the same classpath
     configurations { 
