@@ -247,8 +247,9 @@ public final class OperationTake {
 
         @Test
         public void testUnsubscribeAfterTake() {
-            Subscription s = mock(Subscription.class);
-            TestObservable w = new TestObservable(s, "one", "two", "three");
+            final Subscription s = mock(Subscription.class);
+            TestObservableFunc f = new TestObservableFunc(s, "one", "two", "three");
+            Observable<String> w = Observable.create(f);
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -257,7 +258,7 @@ public final class OperationTake {
 
             // wait for the Observable to complete
             try {
-                w.t.join();
+                f.t.join();
             } catch (Throwable e) {
                 e.printStackTrace();
                 fail(e.getMessage());
@@ -272,19 +273,19 @@ public final class OperationTake {
             verifyNoMoreInteractions(aObserver);
         }
 
-        private static class TestObservable extends Observable<String> {
+        private static class TestObservableFunc implements OnSubscribeFunc<String> {
 
             final Subscription s;
             final String[] values;
             Thread t = null;
 
-            public TestObservable(Subscription s, String... values) {
+            public TestObservableFunc(Subscription s, String... values) {
                 this.s = s;
                 this.values = values;
             }
 
             @Override
-            public Subscription subscribe(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

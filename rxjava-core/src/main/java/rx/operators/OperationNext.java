@@ -38,6 +38,8 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 import rx.util.Exceptions;
 
@@ -174,8 +176,7 @@ public final class OperationNext {
 
         @Test
         public void testNext() throws Throwable {
-            Subscription s = mock(Subscription.class);
-            final TestObservable obs = new TestObservable(s);
+            Subject<String, String> obs = PublishSubject.create();
 
             Iterator<String> it = next(obs).iterator();
 
@@ -183,27 +184,26 @@ public final class OperationNext {
 
             Future<String> next = nextAsync(it);
             Thread.sleep(100);
-            obs.sendOnNext("one");
+            obs.onNext("one");
             assertEquals("one", next.get());
 
             assertTrue(it.hasNext());
 
             next = nextAsync(it);
             Thread.sleep(100);
-            obs.sendOnNext("two");
+            obs.onNext("two");
             assertEquals("two", next.get());
 
             assertTrue(it.hasNext());
 
-            obs.sendOnCompleted();
+            obs.onCompleted();
 
             assertFalse(it.hasNext());
         }
 
         @Test(expected = TestException.class)
         public void testOnError() throws Throwable {
-            Subscription s = mock(Subscription.class);
-            final TestObservable obs = new TestObservable(s);
+            Subject<String, String> obs = PublishSubject.create();;
 
             Iterator<String> it = next(obs).iterator();
 
@@ -211,14 +211,14 @@ public final class OperationNext {
 
             Future<String> next = nextAsync(it);
             Thread.sleep(100);
-            obs.sendOnNext("one");
+            obs.onNext("one");
             assertEquals("one", next.get());
 
             assertTrue(it.hasNext());
 
             next = nextAsync(it);
             Thread.sleep(100);
-            obs.sendOnError(new TestException());
+            obs.onError(new TestException());
 
             try {
                 next.get();
@@ -229,8 +229,7 @@ public final class OperationNext {
 
         @Test
         public void testOnErrorViaHasNext() throws Throwable {
-            Subscription s = mock(Subscription.class);
-            final TestObservable obs = new TestObservable(s);
+            Subject<String, String> obs = PublishSubject.create();
 
             Iterator<String> it = next(obs).iterator();
 
@@ -238,14 +237,14 @@ public final class OperationNext {
 
             Future<String> next = nextAsync(it);
             Thread.sleep(100);
-            obs.sendOnNext("one");
+            obs.onNext("one");
             assertEquals("one", next.get());
 
             assertTrue(it.hasNext());
 
             next = nextAsync(it);
             Thread.sleep(100);
-            obs.sendOnError(new TestException());
+            obs.onError(new TestException());
 
             // this should not throw an exception but instead just return false
             try {
@@ -265,38 +264,6 @@ public final class OperationNext {
                     return it.next();
                 }
             });
-        }
-
-        private static class TestObservable extends Observable<String> {
-
-            Observer<? super String> observer = null;
-            Subscription s;
-
-            public TestObservable(Subscription s) {
-                this.s = s;
-            }
-
-            /* used to simulate subscription */
-            public void sendOnCompleted() {
-                observer.onCompleted();
-            }
-
-            /* used to simulate subscription */
-            public void sendOnNext(String value) {
-                observer.onNext(value);
-            }
-
-            /* used to simulate subscription */
-            public void sendOnError(Throwable e) {
-                observer.onError(e);
-            }
-
-            @Override
-            public Subscription subscribe(final Observer<? super String> observer) {
-                this.observer = observer;
-                return s;
-            }
-
         }
 
         @SuppressWarnings("serial")
