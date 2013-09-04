@@ -39,27 +39,27 @@ import rx.util.functions.Func1;
  * <code>Observable.subscribe(Observer)</code> does nothing.
  */
 public class OperationToObservableFuture {
-    private static class ToObservableFuture<T> implements Func1<Observer<T>, Subscription> {
-        private final Future<T> that;
+    private static class ToObservableFuture<T> implements Func1<Observer<? super T>, Subscription> {
+        private final Future<? extends T> that;
         private final Long time;
         private final TimeUnit unit;
 
-        public ToObservableFuture(Future<T> that) {
+        public ToObservableFuture(Future<? extends T> that) {
             this.that = that;
             this.time = null;
             this.unit = null;
         }
 
-        public ToObservableFuture(Future<T> that, long time, TimeUnit unit) {
+        public ToObservableFuture(Future<? extends T> that, long time, TimeUnit unit) {
             this.that = that;
             this.time = time;
             this.unit = unit;
         }
 
         @Override
-        public Subscription call(Observer<T> observer) {
+        public Subscription call(Observer<? super T> observer) {
             try {
-                T value = (time == null) ? that.get() : that.get(time, unit);
+                T value = (time == null) ? (T) that.get() : (T) that.get(time, unit);
 
                 if (!that.isCancelled()) {
                     observer.onNext(value);
@@ -75,11 +75,11 @@ public class OperationToObservableFuture {
         }
     }
 
-    public static <T> Func1<Observer<T>, Subscription> toObservableFuture(final Future<T> that) {
+    public static <T> Func1<Observer<? super T>, Subscription> toObservableFuture(final Future<? extends T> that) {
         return new ToObservableFuture<T>(that);
     }
 
-    public static <T> Func1<Observer<T>, Subscription> toObservableFuture(final Future<T> that, long time, TimeUnit unit) {
+    public static <T> Func1<Observer<? super T>, Subscription> toObservableFuture(final Future<? extends T> that, long time, TimeUnit unit) {
         return new ToObservableFuture<T>(that, time, unit);
     }
 

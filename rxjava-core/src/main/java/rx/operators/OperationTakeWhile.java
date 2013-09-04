@@ -48,7 +48,7 @@ public final class OperationTakeWhile {
      *            a function to test each source element for a condition
      * @return sequence of observable values from the start as long as the predicate is true
      */
-    public static <T> Func1<Observer<T>, Subscription> takeWhile(final Observable<T> items, final Func1<T, Boolean> predicate) {
+    public static <T> Func1<Observer<? super T>, Subscription> takeWhile(final Observable<? extends T> items, final Func1<? super T, Boolean> predicate) {
         return takeWhileWithIndex(items, OperationTakeWhile.<T> skipIndex(predicate));
     }
 
@@ -60,19 +60,19 @@ public final class OperationTakeWhile {
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
      * @return sequence of observable values from the start as long as the predicate is true
      */
-    public static <T> Func1<Observer<T>, Subscription> takeWhileWithIndex(final Observable<T> items, final Func2<T, Integer, Boolean> predicate) {
+    public static <T> Func1<Observer<? super T>, Subscription> takeWhileWithIndex(final Observable<? extends T> items, final Func2<? super T, ? super Integer, Boolean> predicate) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new Func1<Observer<T>, Subscription>() {
+        return new Func1<Observer<? super T>, Subscription>() {
 
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription call(Observer<? super T> observer) {
                 return new TakeWhile<T>(items, predicate).call(observer);
             }
 
         };
     }
 
-    private static <T> Func2<T, Integer, Boolean> skipIndex(final Func1<T, Boolean> underlying) {
+    private static <T> Func2<T, Integer, Boolean> skipIndex(final Func1<? super T, Boolean> underlying) {
         return new Func2<T, Integer, Boolean>() {
             @Override
             public Boolean call(T input, Integer index) {
@@ -92,27 +92,27 @@ public final class OperationTakeWhile {
      * 
      * @param <T>
      */
-    private static class TakeWhile<T> implements Func1<Observer<T>, Subscription> {
-        private final Observable<T> items;
-        private final Func2<T, Integer, Boolean> predicate;
+    private static class TakeWhile<T> implements Func1<Observer<? super T>, Subscription> {
+        private final Observable<? extends T> items;
+        private final Func2<? super T, ? super Integer, Boolean> predicate;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        private TakeWhile(Observable<T> items, Func2<T, Integer, Boolean> predicate) {
+        private TakeWhile(Observable<? extends T> items, Func2<? super T, ? super Integer, Boolean> predicate) {
             this.items = items;
             this.predicate = predicate;
         }
 
         @Override
-        public Subscription call(Observer<T> observer) {
+        public Subscription call(Observer<? super T> observer) {
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
         private class ItemObserver implements Observer<T> {
-            private final Observer<T> observer;
+            private final Observer<? super T> observer;
 
             private final AtomicInteger counter = new AtomicInteger();
 
-            public ItemObserver(Observer<T> observer) {
+            public ItemObserver(Observer<? super T> observer) {
                 // Using AtomicObserver because the unsubscribe, onCompleted, onError and error handling behavior
                 // needs "isFinished" logic to not send duplicated events
                 // The 'testTakeWhile1' and 'testTakeWhile2' tests fail without this.
@@ -231,10 +231,10 @@ public final class OperationTakeWhile {
 
         @Test
         public void testTakeWhileDoesntLeakErrors() {
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>()
+            Observable<String> source = Observable.create(new Func1<Observer<? super String>, Subscription>()
             {
                 @Override
-                public Subscription call(Observer<String> observer)
+                public Subscription call(Observer<? super String> observer)
                 {
                     observer.onNext("one");
                     observer.onError(new Throwable("test failed"));
@@ -325,7 +325,7 @@ public final class OperationTakeWhile {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

@@ -57,11 +57,11 @@ import rx.util.OnErrorNotImplementedException;
  */
 public class SafeObserver<T> implements Observer<T> {
 
-    private final Observer<T> actual;
+    private final Observer<? super T> actual;
     private final AtomicBoolean isFinished = new AtomicBoolean(false);
     private final SafeObservableSubscription subscription;
 
-    public SafeObserver(SafeObservableSubscription subscription, Observer<T> actual) {
+    public SafeObserver(SafeObservableSubscription subscription, Observer<? super T> actual) {
         this.subscription = subscription;
         this.actual = actual;
     }

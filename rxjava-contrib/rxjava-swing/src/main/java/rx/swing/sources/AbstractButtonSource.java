@@ -42,9 +42,9 @@ public enum AbstractButtonSource { ; // no instances
      * @see SwingObservable.fromButtonAction
      */
     public static Observable<ActionEvent> fromActionOf(final AbstractButton button) {
-        return Observable.create(new Func1<Observer<ActionEvent>, Subscription>() {
+        return Observable.create(new Func1<Observer<? super ActionEvent>, Subscription>() {
             @Override
-            public Subscription call(final Observer<ActionEvent> observer) {
+            public Subscription call(final Observer<? super ActionEvent> observer) {
                 final ActionListener listener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {

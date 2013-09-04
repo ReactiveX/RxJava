@@ -60,7 +60,7 @@ import rx.util.functions.Func1;
  */
 public class BlockingObservable<T> extends Observable<T> {
 
-    protected BlockingObservable(Func1<Observer<T>, Subscription> onSubscribe) {
+    protected BlockingObservable(Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe) {
         super(onSubscribe);
     }
     
@@ -75,11 +75,11 @@ public class BlockingObservable<T> extends Observable<T> {
     /**
      * Convert an Observable into a BlockingObservable.
      */
-    public static <T> BlockingObservable<T> from(final Observable<T> o) {
-        return new BlockingObservable<T>(new Func1<Observer<T>, Subscription>() {
+    public static <T> BlockingObservable<T> from(final Observable<? extends T> o) {
+        return new BlockingObservable<T>(new Func1<Observer<? super T>, Subscription>() {
 
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription call(Observer<? super T> observer) {
                 return o.subscribe(observer);
             }
         });
@@ -97,7 +97,7 @@ public class BlockingObservable<T> extends Observable<T> {
      *            the type of items emitted by the source {@link Observable}
      * @return an {@link Iterator} that can iterate over the items emitted by the {@link Observable}
      */
-    public static <T> Iterator<T> toIterator(Observable<T> source) {
+    public static <T> Iterator<T> toIterator(Observable<? extends T> source) {
         return OperationToIterator.toIterator(source);
     }
 
@@ -110,7 +110,7 @@ public class BlockingObservable<T> extends Observable<T> {
      *            the source {@link Observable}
      * @return the last item emitted by the source {@link Observable}
      */
-    public static <T> T last(final Observable<T> source) {
+    public static <T> T last(final Observable<? extends T> source) {
         return from(source).last();
     }
 
@@ -126,7 +126,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the last item emitted by the {@link Observable} for which the predicate function
      *         returns <code>true</code>
      */
-    public static <T> T last(final Observable<T> source, final Func1<T, Boolean> predicate) {
+    public static <T> T last(final Observable<? extends T> source, final Func1<? super T, Boolean> predicate) {
         return last(source.filter(predicate));
     }
 
@@ -145,7 +145,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the last item emitted by an {@link Observable}, or the default value if no item is
      *         emitted
      */
-    public static <T> T lastOrDefault(Observable<T> source, T defaultValue) {
+    public static <T> T lastOrDefault(Observable<? extends T> source, T defaultValue) {
         return from(source).lastOrDefault(defaultValue);
     }
 
@@ -166,7 +166,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the last item emitted by an {@link Observable} that matches the predicate, or the
      *         default value if no matching item is emitted
      */
-    public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Func1<T, Boolean> predicate) {
+    public static <T> T lastOrDefault(Observable<? extends T> source, T defaultValue, Func1<? super T, Boolean> predicate) {
         return lastOrDefault(source.filter(predicate), defaultValue);
     }
 
@@ -186,7 +186,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return an {@link Iterable} that on each iteration returns the item that the
      *         {@link Observable} has most recently emitted
      */
-    public static <T> Iterable<T> mostRecent(Observable<T> source, T initialValue) {
+    public static <T> Iterable<T> mostRecent(Observable<? extends T> source, T initialValue) {
         return OperationMostRecent.mostRecent(source, initialValue);
     }
 
@@ -203,12 +203,12 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return an {@link Iterable} that blocks upon each iteration until the {@link Observable}
      *         emits a new item, whereupon the Iterable returns that item
      */
-    public static <T> Iterable<T> next(Observable<T> items) {
+    public static <T> Iterable<T> next(Observable<? extends T> items) {
         return OperationNext.next(items);
     }
 
-    private static <T> T _singleOrDefault(BlockingObservable<T> source, boolean hasDefault, T defaultValue) {
-        Iterator<T> it = source.toIterable().iterator();
+    private static <T> T _singleOrDefault(BlockingObservable<? extends T> source, boolean hasDefault, T defaultValue) {
+        Iterator<? extends T> it = source.toIterable().iterator();
 
         if (!it.hasNext()) {
             if (hasDefault) {
@@ -238,7 +238,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @throws IllegalStateException
      *             if the {@link Observable} does not emit exactly one item
      */
-    public static <T> T single(Observable<T> source) {
+    public static <T> T single(Observable<? extends T> source) {
         return from(source).single();
     }
 
@@ -257,7 +257,7 @@ public class BlockingObservable<T> extends Observable<T> {
      *             if the {@link Observable} does not emit exactly one item that matches the
      *             predicate
      */
-    public static <T> T single(Observable<T> source, Func1<T, Boolean> predicate) {
+    public static <T> T single(Observable<? extends T> source, Func1<? super T, Boolean> predicate) {
         return from(source).single(predicate);
     }
 
@@ -274,7 +274,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the single item emitted by the source {@link Observable}, or a default value if no
      *         value is emitted
      */
-    public static <T> T singleOrDefault(Observable<T> source, T defaultValue) {
+    public static <T> T singleOrDefault(Observable<? extends T> source, T defaultValue) {
         return from(source).singleOrDefault(defaultValue);
     }
 
@@ -293,7 +293,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the single item emitted by the source {@link Observable} that matches the predicate,
      *         or a default value if no such value is emitted
      */
-    public static <T> T singleOrDefault(Observable<T> source, T defaultValue, Func1<T, Boolean> predicate) {
+    public static <T> T singleOrDefault(Observable<? extends T> source, T defaultValue, Func1<? super T, Boolean> predicate) {
         return from(source).singleOrDefault(defaultValue, predicate);
     }
 
@@ -310,7 +310,7 @@ public class BlockingObservable<T> extends Observable<T> {
      *            the source {@link Observable}
      * @return a Future that expects a single item to be emitted by the source {@link Observable}
      */
-    public static <T> Future<T> toFuture(final Observable<T> source) {
+    public static <T> Future<T> toFuture(final Observable<? extends T> source) {
         return OperationToFuture.toFuture(source);
     }
 
@@ -323,7 +323,7 @@ public class BlockingObservable<T> extends Observable<T> {
      *            the source {@link Observable}
      * @return an {@link Iterable} version of the underlying {@link Observable}
      */
-    public static <T> Iterable<T> toIterable(final Observable<T> source) {
+    public static <T> Iterable<T> toIterable(final Observable<? extends T> source) {
         return from(source).toIterable();
     }
 
@@ -334,7 +334,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect
      * calls to user code from within an operator"
      */
-    private Subscription protectivelyWrapAndSubscribe(Observer<T> o) {
+    private Subscription protectivelyWrapAndSubscribe(Observer<? super T> o) {
         SafeObservableSubscription subscription = new SafeObservableSubscription();
         return subscription.wrap(subscribe(new SafeObserver<T>(subscription, o)));
     }
@@ -355,7 +355,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @throws RuntimeException
      *             if an error occurs
      */
-    public void forEach(final Action1<T> onNext) {
+    public void forEach(final Action1<? super T> onNext) {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exceptionFromOnError = new AtomicReference<Throwable>();
 
@@ -443,7 +443,7 @@ public class BlockingObservable<T> extends Observable<T> {
      *            a predicate function to evaluate items emitted by the {@link Observable}
      * @return the last item emitted by the {@link Observable} that matches the predicate
      */
-    public T last(final Func1<T, Boolean> predicate) {
+    public T last(final Func1<? super T, Boolean> predicate) {
         return last(this, predicate);
     }
 
@@ -487,7 +487,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the last item emitted by the {@link Observable} that matches the predicate, or the
      *         default value if no matching items are emitted
      */
-    public T lastOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
+    public T lastOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return lastOrDefault(this, defaultValue, predicate);
     }
 
@@ -542,7 +542,7 @@ public class BlockingObservable<T> extends Observable<T> {
      *            a predicate function to evaluate items emitted by the {@link Observable}
      * @return the single item emitted by the source {@link Observable} that matches the predicate
      */
-    public T single(Func1<T, Boolean> predicate) {
+    public T single(Func1<? super T, Boolean> predicate) {
         return _singleOrDefault(from(this.filter(predicate)), false, null);
     }
 
@@ -575,7 +575,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the single item emitted by the {@link Observable} that matches the predicate, or the
      *         default value if no such items are emitted
      */
-    public T singleOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
+    public T singleOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return _singleOrDefault(from(this.filter(predicate)), true, defaultValue);
     }
 
@@ -784,10 +784,10 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test(expected = TestException.class)
         public void testToIterableWithException() {
-            BlockingObservable<String> obs = BlockingObservable.from(create(new Func1<Observer<String>, Subscription>() {
+            BlockingObservable<String> obs = BlockingObservable.from(create(new Func1<Observer<? super String>, Subscription>() {
 
                 @Override
-                public Subscription call(Observer<String> observer) {
+                public Subscription call(Observer<? super String> observer) {
                     observer.onNext("one");
                     observer.onError(new TestException());
                     return Subscriptions.empty();
@@ -807,10 +807,10 @@ public class BlockingObservable<T> extends Observable<T> {
         @Test
         public void testForEachWithError() {
             try {
-                BlockingObservable.from(Observable.create(new Func1<Observer<String>, Subscription>() {
+                BlockingObservable.from(Observable.create(new Func1<Observer<? super String>, Subscription>() {
 
                     @Override
-                    public Subscription call(final Observer<String> observer) {
+                    public Subscription call(final Observer<? super String> observer) {
                         final BooleanSubscription subscription = new BooleanSubscription();
                         new Thread(new Runnable() {
 

@@ -15,6 +15,6 @@
  */
 package rx.util.functions;
 
-public interface FuncN<R> extends Function {
+public interface FuncN<R> extends Function<R> {
     public R call(Object... args);
 }

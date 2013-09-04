@@ -28,22 +28,22 @@ import rx.subjects.Subject;
 import rx.util.functions.Func1;
 
 public class OperationMulticast {
-    public static <T, R> ConnectableObservable<R> multicast(Observable<T> source, final Subject<T, R> subject) {
+    public static <T, R> ConnectableObservable<R> multicast(Observable<? extends T> source, final Subject<T, R> subject) {
         return new MulticastConnectableObservable<T, R>(source, subject);
     }
 
     private static class MulticastConnectableObservable<T, R> extends ConnectableObservable<R> {
         private final Object lock = new Object();
 
-        private final Observable<T> source;
+        private final Observable<? extends T> source;
         private final Subject<T, R> subject;
 
         private Subscription subscription;
 
-        public MulticastConnectableObservable(Observable<T> source, final Subject<T, R> subject) {
-            super(new Func1<Observer<R>, Subscription>() {
+        public MulticastConnectableObservable(Observable<? extends T> source, final Subject<T, R> subject) {
+            super(new Func1<Observer<? super R>, Subscription>() {
                 @Override
-                public Subscription call(Observer<R> observer) {
+                public Subscription call(Observer<? super R> observer) {
                     return subject.subscribe(observer);
                 }
             });
@@ -179,7 +179,7 @@ public class OperationMulticast {
 
         private static class TestObservable extends Observable<String> {
 
-            Observer<String> observer = new Observer<String>() {
+            Observer<? super String> observer = new Observer<String>() {
                 @Override
                 public void onCompleted() {
                     // Do nothing
@@ -231,7 +231,7 @@ public class OperationMulticast {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 this.observer = observer;
                 return s;
             }

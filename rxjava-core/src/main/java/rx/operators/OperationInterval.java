@@ -44,18 +44,18 @@ public final class OperationInterval {
     /**
      * Creates an event each time interval.
      */
-    public static Func1<Observer<Long>, Subscription> interval(long interval, TimeUnit unit) {
+    public static Func1<Observer<? super Long>, Subscription> interval(long interval, TimeUnit unit) {
         return new Interval(interval, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
     }
 
     /**
      * Creates an event each time interval.
      */
-    public static Func1<Observer<Long>, Subscription> interval(long interval, TimeUnit unit, Scheduler scheduler) {
+    public static Func1<Observer<? super Long>, Subscription> interval(long interval, TimeUnit unit, Scheduler scheduler) {
         return new Interval(interval, unit, scheduler);
     }
 
-    private static class Interval implements Func1<Observer<Long>, Subscription> {
+    private static class Interval implements Func1<Observer<? super Long>, Subscription> {
         private final long period;
         private final TimeUnit unit;
         private final Scheduler scheduler;
@@ -69,7 +69,7 @@ public final class OperationInterval {
         }
 
         @Override
-        public Subscription call(final Observer<Long> observer) {
+        public Subscription call(final Observer<? super Long> observer) {
             final Subscription wrapped = scheduler.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {

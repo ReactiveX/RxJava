@@ -52,32 +52,32 @@ public final class OperationFinally {
      *         the given action will be called.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN Observable.Finally method</a>
      */
-    public static <T> Func1<Observer<T>, Subscription> finallyDo(final Observable<T> sequence, final Action0 action) {
-        return new Func1<Observer<T>, Subscription>() {
+    public static <T> Func1<Observer<? super T>, Subscription> finallyDo(final Observable<? extends T> sequence, final Action0 action) {
+        return new Func1<Observer<? super T>, Subscription>() {
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription call(Observer<? super T> observer) {
                 return new Finally<T>(sequence, action).call(observer);
             }
         };
     }
 
-    private static class Finally<T> implements Func1<Observer<T>, Subscription> {
-        private final Observable<T> sequence;
+    private static class Finally<T> implements Func1<Observer<? super T>, Subscription> {
+        private final Observable<? extends T> sequence;
         private final Action0 finalAction;
 
-        Finally(final Observable<T> sequence, Action0 finalAction) {
+        Finally(final Observable<? extends T> sequence, Action0 finalAction) {
             this.sequence = sequence;
             this.finalAction = finalAction;
         }
 
-        public Subscription call(Observer<T> observer) {
+        public Subscription call(Observer<? super T> observer) {
             return sequence.subscribe(new FinallyObserver(observer));
         }
 
         private class FinallyObserver implements Observer<T> {
-            private final Observer<T> observer;
+            private final Observer<? super T> observer;
 
-            FinallyObserver(Observer<T> observer) {
+            FinallyObserver(Observer<? super T> observer) {
                 this.observer = observer;
             }
 

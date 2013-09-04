@@ -50,9 +50,9 @@ public enum KeyEventSource { ; // no instances
      * @see SwingObservable.fromKeyEvents(Component)
      */
     public static Observable<KeyEvent> fromKeyEventsOf(final Component component) {
-        return Observable.create(new Func1<Observer<KeyEvent>, Subscription>() {
+        return Observable.create(new Func1<Observer<? super KeyEvent>, Subscription>() {
             @Override
-            public Subscription call(final Observer<KeyEvent> observer) {
+            public Subscription call(final Observer<? super KeyEvent> observer) {
                 final KeyListener listener = new KeyListener() {
                     @Override
                     public void keyPressed(KeyEvent event) {

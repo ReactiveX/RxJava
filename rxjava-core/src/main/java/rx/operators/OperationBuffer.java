@@ -69,10 +69,10 @@ public final class OperationBuffer {
      * @return
      *            the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> buffer(final Observable<T> source, final Func0<Observable<BufferClosing>> bufferClosingSelector) {
-        return new Func1<Observer<List<T>>, Subscription>() {
+    public static <T> Func1<Observer<? super List<T>>, Subscription> buffer(final Observable<? extends T> source, final Func0<? extends Observable<? extends BufferClosing>> bufferClosingSelector) {
+        return new Func1<Observer<? super List<T>>, Subscription>() {
             @Override
-            public Subscription call(final Observer<List<T>> observer) {
+            public Subscription call(final Observer<? super List<T>> observer) {
                 NonOverlappingBuffers<T> buffers = new NonOverlappingBuffers<T>(observer);
                 BufferCreator<T> creator = new ObservableBasedSingleBufferCreator<T>(buffers, bufferClosingSelector);
                 return source.subscribe(new BufferObserver<T>(buffers, observer, creator));
@@ -107,10 +107,10 @@ public final class OperationBuffer {
      * @return
      *            the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> buffer(final Observable<T> source, final Observable<BufferOpening> bufferOpenings, final Func1<BufferOpening, Observable<BufferClosing>> bufferClosingSelector) {
-        return new Func1<Observer<List<T>>, Subscription>() {
+    public static <T> Func1<Observer<? super List<T>>, Subscription> buffer(final Observable<? extends T> source, final Observable<? extends BufferOpening> bufferOpenings, final Func1<? super BufferOpening, ? extends Observable<? extends BufferClosing>> bufferClosingSelector) {
+        return new Func1<Observer<? super List<T>>, Subscription>() {
             @Override
-            public Subscription call(final Observer<List<T>> observer) {
+            public Subscription call(final Observer<? super List<T>> observer) {
                 OverlappingBuffers<T> buffers = new OverlappingBuffers<T>(observer);
                 BufferCreator<T> creator = new ObservableBasedMultiBufferCreator<T>(buffers, bufferOpenings, bufferClosingSelector);
                 return source.subscribe(new BufferObserver<T>(buffers, observer, creator));
@@ -135,7 +135,7 @@ public final class OperationBuffer {
      * @return
      *            the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> buffer(Observable<T> source, int count) {
+    public static <T> Func1<Observer<? super List<T>>, Subscription> buffer(Observable<? extends T> source, int count) {
         return buffer(source, count, count);
     }
 
@@ -162,10 +162,10 @@ public final class OperationBuffer {
      * @return
      *            the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> buffer(final Observable<T> source, final int count, final int skip) {
-        return new Func1<Observer<List<T>>, Subscription>() {
+    public static <T> Func1<Observer<? super List<T>>, Subscription> buffer(final Observable<? extends T> source, final int count, final int skip) {
+        return new Func1<Observer<? super List<T>>, Subscription>() {
             @Override
-            public Subscription call(final Observer<List<T>> observer) {
+            public Subscription call(final Observer<? super List<T>> observer) {
                 Buffers<T> buffers = new SizeBasedBuffers<T>(observer, count);
                 BufferCreator<T> creator = new SkippingBufferCreator<T>(buffers, skip);
                 return source.subscribe(new BufferObserver<T>(buffers, observer, creator));
@@ -192,7 +192,7 @@ public final class OperationBuffer {
      * @return
      *            the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> buffer(Observable<T> source, long timespan, TimeUnit unit) {
+    public static <T> Func1<Observer<? super List<T>>, Subscription> buffer(Observable<? extends T> source, long timespan, TimeUnit unit) {
         return buffer(source, timespan, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -217,10 +217,10 @@ public final class OperationBuffer {
      * @return
      *            the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> buffer(final Observable<T> source, final long timespan, final TimeUnit unit, final Scheduler scheduler) {
-        return new Func1<Observer<List<T>>, Subscription>() {
+    public static <T> Func1<Observer<? super List<T>>, Subscription> buffer(final Observable<? extends T> source, final long timespan, final TimeUnit unit, final Scheduler scheduler) {
+        return new Func1<Observer<? super List<T>>, Subscription>() {
             @Override
-            public Subscription call(final Observer<List<T>> observer) {
+            public Subscription call(final Observer<? super List<T>> observer) {
                 NonOverlappingBuffers<T> buffers = new NonOverlappingBuffers<T>(observer);
                 BufferCreator<T> creator = new TimeBasedBufferCreator<T>(buffers, timespan, unit, scheduler);
                 return source.subscribe(new BufferObserver<T>(buffers, observer, creator));
@@ -250,7 +250,7 @@ public final class OperationBuffer {
      * @return
      *            the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> buffer(Observable<T> source, long timespan, TimeUnit unit, int count) {
+    public static <T> Func1<Observer<? super List<T>>, Subscription> buffer(Observable<? extends T> source, long timespan, TimeUnit unit, int count) {
         return buffer(source, timespan, unit, count, Schedulers.threadPoolForComputation());
     }
 
@@ -278,10 +278,10 @@ public final class OperationBuffer {
      * @return
      *            the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> buffer(final Observable<T> source, final long timespan, final TimeUnit unit, final int count, final Scheduler scheduler) {
-        return new Func1<Observer<List<T>>, Subscription>() {
+    public static <T> Func1<Observer<? super List<T>>, Subscription> buffer(final Observable<? extends T> source, final long timespan, final TimeUnit unit, final int count, final Scheduler scheduler) {
+        return new Func1<Observer<? super List<T>>, Subscription>() {
             @Override
-            public Subscription call(final Observer<List<T>> observer) {
+            public Subscription call(final Observer<? super List<T>> observer) {
                 Buffers<T> buffers = new TimeAndSizeBasedBuffers<T>(observer, count, timespan, unit, scheduler);
                 BufferCreator<T> creator = new SingleBufferCreator<T>(buffers);
                 return source.subscribe(new BufferObserver<T>(buffers, observer, creator));
@@ -311,7 +311,7 @@ public final class OperationBuffer {
      * @return
      *            the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> buffer(Observable<T> source, long timespan, long timeshift, TimeUnit unit) {
+    public static <T> Func1<Observer<? super List<T>>, Subscription> buffer(Observable<? extends T> source, long timespan, long timeshift, TimeUnit unit) {
         return buffer(source, timespan, timeshift, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -339,10 +339,10 @@ public final class OperationBuffer {
      * @return
      *            the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> buffer(final Observable<T> source, final long timespan, final long timeshift, final TimeUnit unit, final Scheduler scheduler) {
-        return new Func1<Observer<List<T>>, Subscription>() {
+    public static <T> Func1<Observer<? super List<T>>, Subscription> buffer(final Observable<? extends T> source, final long timespan, final long timeshift, final TimeUnit unit, final Scheduler scheduler) {
+        return new Func1<Observer<? super List<T>>, Subscription>() {
             @Override
-            public Subscription call(final Observer<List<T>> observer) {
+            public Subscription call(final Observer<? super List<T>> observer) {
                 OverlappingBuffers<T> buffers = new TimeBasedBuffers<T>(observer, timespan, unit, scheduler);
                 BufferCreator<T> creator = new TimeBasedBufferCreator<T>(buffers, timeshift, unit, scheduler);
                 return source.subscribe(new BufferObserver<T>(buffers, observer, creator));
@@ -362,10 +362,10 @@ public final class OperationBuffer {
     private static class BufferObserver<T> implements Observer<T> {
 
         private final Buffers<T> buffers;
-        private final Observer<List<T>> observer;
+        private final Observer<? super List<T>> observer;
         private final BufferCreator<T> creator;
 
-        public BufferObserver(Buffers<T> buffers, Observer<List<T>> observer, BufferCreator<T> creator) {
+        public BufferObserver(Buffers<T> buffers, Observer<? super List<T>> observer, BufferCreator<T> creator) {
             this.observer = observer;
             this.creator = creator;
             this.buffers = buffers;
@@ -444,10 +444,10 @@ public final class OperationBuffer {
     private static class ObservableBasedSingleBufferCreator<T> implements BufferCreator<T> {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
-        private final Func0<Observable<BufferClosing>> bufferClosingSelector;
+        private final Func0<? extends Observable<? extends BufferClosing>> bufferClosingSelector;
         private final NonOverlappingBuffers<T> buffers;
 
-        public ObservableBasedSingleBufferCreator(NonOverlappingBuffers<T> buffers, Func0<Observable<BufferClosing>> bufferClosingSelector) {
+        public ObservableBasedSingleBufferCreator(NonOverlappingBuffers<T> buffers, Func0<? extends Observable<? extends BufferClosing>> bufferClosingSelector) {
             this.buffers = buffers;
             this.bufferClosingSelector = bufferClosingSelector;
 
@@ -456,7 +456,7 @@ public final class OperationBuffer {
         }
 
         private void listenForBufferEnd() {
-            Observable<BufferClosing> closingObservable = bufferClosingSelector.call();
+            Observable<? extends BufferClosing> closingObservable = bufferClosingSelector.call();
             closingObservable.subscribe(new Action1<BufferClosing>() {
                 @Override
                 public void call(BufferClosing closing) {
@@ -489,12 +489,12 @@ public final class OperationBuffer {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        public ObservableBasedMultiBufferCreator(final OverlappingBuffers<T> buffers, Observable<BufferOpening> bufferOpenings, final Func1<BufferOpening, Observable<BufferClosing>> bufferClosingSelector) {
+        public ObservableBasedMultiBufferCreator(final OverlappingBuffers<T> buffers, Observable<? extends BufferOpening> bufferOpenings, final Func1<? super BufferOpening, ? extends Observable<? extends BufferClosing>> bufferClosingSelector) {
             subscription.wrap(bufferOpenings.subscribe(new Action1<BufferOpening>() {
                 @Override
                 public void call(BufferOpening opening) {
                     final Buffer<T> buffer = buffers.createBuffer();
-                    Observable<BufferClosing> closingObservable = bufferClosingSelector.call(opening);
+                    Observable<? extends BufferClosing> closingObservable = bufferClosingSelector.call(opening);
 
                     closingObservable.subscribe(new Action1<BufferClosing>() {
                         @Override
@@ -597,7 +597,7 @@ public final class OperationBuffer {
 
         private final Object lock = new Object();
 
-        public NonOverlappingBuffers(Observer<List<T>> observer) {
+        public NonOverlappingBuffers(Observer<? super List<T>> observer) {
             super(observer);
         }
 
@@ -624,7 +624,7 @@ public final class OperationBuffer {
      * @param <T> The type of object all internal {@link Buffer} objects record.
      */
     private static class OverlappingBuffers<T> extends Buffers<T> {
-        public OverlappingBuffers(Observer<List<T>> observer) {
+        public OverlappingBuffers(Observer<? super List<T>> observer) {
             super(observer);
         }
     }
@@ -646,7 +646,7 @@ public final class OperationBuffer {
         private final TimeUnit unit;
         private final int maxSize;
 
-        public TimeAndSizeBasedBuffers(Observer<List<T>> observer, int maxSize, long maxTime, TimeUnit unit, Scheduler scheduler) {
+        public TimeAndSizeBasedBuffers(Observer<? super List<T>> observer, int maxSize, long maxTime, TimeUnit unit, Scheduler scheduler) {
             super(observer);
             this.maxSize = maxSize;
             this.maxTime = maxTime;
@@ -710,7 +710,7 @@ public final class OperationBuffer {
         private final long time;
         private final TimeUnit unit;
 
-        public TimeBasedBuffers(Observer<List<T>> observer, long time, TimeUnit unit, Scheduler scheduler) {
+        public TimeBasedBuffers(Observer<? super List<T>> observer, long time, TimeUnit unit, Scheduler scheduler) {
             super(observer);
             this.time = time;
             this.unit = unit;
@@ -747,7 +747,7 @@ public final class OperationBuffer {
 
         private final int size;
 
-        public SizeBasedBuffers(Observer<List<T>> observer, int size) {
+        public SizeBasedBuffers(Observer<? super List<T>> observer, int size) {
             super(observer);
             this.size = size;
         }
@@ -776,7 +776,7 @@ public final class OperationBuffer {
     private static class Buffers<T> {
 
         private final Queue<Buffer<T>> buffers = new ConcurrentLinkedQueue<Buffer<T>>();
-        private final Observer<List<T>> observer;
+        private final Observer<? super List<T>> observer;
 
         /**
          * Constructs a new {@link Buffers} object for the specified {@link Observer}.
@@ -785,7 +785,7 @@ public final class OperationBuffer {
          *            The {@link Observer} to which this object will emit its internal
          *            {@link Buffer} objects to when requested.
          */
-        public Buffers(Observer<List<T>> observer) {
+        public Buffers(Observer<? super List<T>> observer) {
             this.observer = observer;
         }
 
@@ -889,9 +889,9 @@ public final class OperationBuffer {
 
         @Test
         public void testComplete() {
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>() {
+            Observable<String> source = Observable.create(new Func1<Observer<? super String>, Subscription>() {
                 @Override
-                public Subscription call(Observer<String> observer) {
+                public Subscription call(Observer<? super String> observer) {
                     observer.onCompleted();
                     return Subscriptions.empty();
                 }
@@ -907,9 +907,9 @@ public final class OperationBuffer {
 
         @Test
         public void testSkipAndCountOverlappingBuffers() {
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>() {
+            Observable<String> source = Observable.create(new Func1<Observer<? super String>, Subscription>() {
                 @Override
-                public Subscription call(Observer<String> observer) {
+                public Subscription call(Observer<? super String> observer) {
                     observer.onNext("one");
                     observer.onNext("two");
                     observer.onNext("three");
@@ -933,9 +933,9 @@ public final class OperationBuffer {
 
         @Test
         public void testSkipAndCountGaplessBuffers() {
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>() {
+            Observable<String> source = Observable.create(new Func1<Observer<? super String>, Subscription>() {
                 @Override
-                public Subscription call(Observer<String> observer) {
+                public Subscription call(Observer<? super String> observer) {
                     observer.onNext("one");
                     observer.onNext("two");
                     observer.onNext("three");
@@ -959,9 +959,9 @@ public final class OperationBuffer {
 
         @Test
         public void testSkipAndCountBuffersWithGaps() {
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>() {
+            Observable<String> source = Observable.create(new Func1<Observer<? super String>, Subscription>() {
                 @Override
-                public Subscription call(Observer<String> observer) {
+                public Subscription call(Observer<? super String> observer) {
                     observer.onNext("one");
                     observer.onNext("two");
                     observer.onNext("three");
@@ -985,9 +985,9 @@ public final class OperationBuffer {
 
         @Test
         public void testTimedAndCount() {
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>() {
+            Observable<String> source = Observable.create(new Func1<Observer<? super String>, Subscription>() {
                 @Override
-                public Subscription call(Observer<String> observer) {
+                public Subscription call(Observer<? super String> observer) {
                     push(observer, "one", 10);
                     push(observer, "two", 90);
                     push(observer, "three", 110);
@@ -1017,9 +1017,9 @@ public final class OperationBuffer {
 
         @Test
         public void testTimed() {
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>() {
+            Observable<String> source = Observable.create(new Func1<Observer<? super String>, Subscription>() {
                 @Override
-                public Subscription call(Observer<String> observer) {
+                public Subscription call(Observer<? super String> observer) {
                     push(observer, "one", 98);
                     push(observer, "two", 99);
                     push(observer, "three", 100);
@@ -1046,9 +1046,9 @@ public final class OperationBuffer {
 
         @Test
         public void testObservableBasedOpenerAndCloser() {
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>() {
+            Observable<String> source = Observable.create(new Func1<Observer<? super String>, Subscription>() {
                 @Override
-                public Subscription call(Observer<String> observer) {
+                public Subscription call(Observer<? super String> observer) {
                     push(observer, "one", 10);
                     push(observer, "two", 60);
                     push(observer, "three", 110);
@@ -1059,9 +1059,9 @@ public final class OperationBuffer {
                 }
             });
 
-            Observable<BufferOpening> openings = Observable.create(new Func1<Observer<BufferOpening>, Subscription>() {
+            Observable<BufferOpening> openings = Observable.create(new Func1<Observer<? super BufferOpening>, Subscription>() {
                 @Override
-                public Subscription call(Observer<BufferOpening> observer) {
+                public Subscription call(Observer<? super BufferOpening> observer) {
                     push(observer, BufferOpenings.create(), 50);
                     push(observer, BufferOpenings.create(), 200);
                     complete(observer, 250);
@@ -1072,9 +1072,9 @@ public final class OperationBuffer {
             Func1<BufferOpening, Observable<BufferClosing>> closer = new Func1<BufferOpening, Observable<BufferClosing>>() {
                 @Override
                 public Observable<BufferClosing> call(BufferOpening opening) {
-                    return Observable.create(new Func1<Observer<BufferClosing>, Subscription>() {
+                    return Observable.create(new Func1<Observer<? super BufferClosing>, Subscription>() {
                         @Override
-                        public Subscription call(Observer<BufferClosing> observer) {
+                        public Subscription call(Observer<? super BufferClosing> observer) {
                             push(observer, BufferClosings.create(), 100);
                             complete(observer, 101);
                             return Subscriptions.empty();
@@ -1097,9 +1097,9 @@ public final class OperationBuffer {
 
         @Test
         public void testObservableBasedCloser() {
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>() {
+            Observable<String> source = Observable.create(new Func1<Observer<? super String>, Subscription>() {
                 @Override
-                public Subscription call(Observer<String> observer) {
+                public Subscription call(Observer<? super String> observer) {
                     push(observer, "one", 10);
                     push(observer, "two", 60);
                     push(observer, "three", 110);
@@ -1113,9 +1113,9 @@ public final class OperationBuffer {
             Func0<Observable<BufferClosing>> closer = new Func0<Observable<BufferClosing>>() {
                 @Override
                 public Observable<BufferClosing> call() {
-                    return Observable.create(new Func1<Observer<BufferClosing>, Subscription>() {
+                    return Observable.create(new Func1<Observer<? super BufferClosing>, Subscription>() {
                         @Override
-                        public Subscription call(Observer<BufferClosing> observer) {
+                        public Subscription call(Observer<? super BufferClosing> observer) {
                             push(observer, BufferClosings.create(), 100);
                             complete(observer, 101);
                             return Subscriptions.empty();

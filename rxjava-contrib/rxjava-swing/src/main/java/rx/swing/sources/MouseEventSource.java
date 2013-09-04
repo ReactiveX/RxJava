@@ -33,9 +33,9 @@ public enum MouseEventSource { ; // no instances
      * @see SwingObservable.fromMouseEvents
      */
     public static Observable<MouseEvent> fromMouseEventsOf(final Component component) {
-        return Observable.create(new Func1<Observer<MouseEvent>, Subscription>() {
+        return Observable.create(new Func1<Observer<? super MouseEvent>, Subscription>() {
             @Override
-            public Subscription call(final Observer<MouseEvent> observer) {
+            public Subscription call(final Observer<? super MouseEvent> observer) {
                 final MouseListener listener = new MouseListener() {
                     @Override
                     public void mouseClicked(MouseEvent event) {
@@ -78,9 +78,9 @@ public enum MouseEventSource { ; // no instances
      * @see SwingObservable.fromMouseMotionEvents
      */
     public static Observable<MouseEvent> fromMouseMotionEventsOf(final Component component) {
-        return Observable.create(new Func1<Observer<MouseEvent>, Subscription>() {
+        return Observable.create(new Func1<Observer<? super MouseEvent>, Subscription>() {
             @Override
-            public Subscription call(final Observer<MouseEvent> observer) {
+            public Subscription call(final Observer<? super MouseEvent> observer) {
                 final MouseMotionListener listener = new MouseMotionListener() {
                     @Override
                     public void mouseDragged(MouseEvent event) {
