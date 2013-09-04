@@ -306,12 +306,7 @@ public class TestSchedulers {
                         observer.onNext(42);
                         latch.countDown();
 
-                        try {
-                            Thread.sleep(1);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
+                        // this will recursively schedule this task for execution again
                         scheduler.schedule(cancel, this);
 
                         return cancel;
@@ -353,7 +348,8 @@ public class TestSchedulers {
             fail("Timed out waiting on completion latch");
         }
 
-        assertEquals(10, count.get()); // wondering if this could be 11 in a race condition (which would be okay due to how unsubscribe works ... just it would make this test non-deterministic)
+        // the count can be 10 or higher due to thread scheduling of the unsubscribe vs the scheduler looping to emit the count
+        assertTrue(count.get() >= 10);
         assertTrue(completed.get());
     }
 

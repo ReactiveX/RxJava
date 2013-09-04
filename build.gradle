@@ -1,20 +1,26 @@
+
+ext.githubProjectName = 'RxJava'
+
 apply from: file('gradle/convention.gradle')
 apply from: file('gradle/maven.gradle')
 //apply from: file('gradle/check.gradle')
 apply from: file('gradle/license.gradle')
 apply from: file('gradle/release.gradle')
 
-ext.githubProjectName = rootProject.name
-
 buildscript {
-    repositories { mavenCentral() }
+    repositories {
+        mavenLocal()
+        mavenCentral() // maven { url 'http://jcenter.bintray.com' }
+    }
     apply from: file('gradle/buildscript.gradle'), to: buildscript 
 }
 
 allprojects {
-    repositories { mavenCentral() }
+    repositories { 
+        mavenLocal()
+        mavenCentral() // maven { url: 'http://jcenter.bintray.com' }
+    }
 }
-
 
 subprojects {
     apply plugin: 'java'
@@ -66,4 +72,3 @@ subprojects {
 project(':rxjava-core') {
     sourceSets.test.java.srcDir 'src/test/java'
 }
-

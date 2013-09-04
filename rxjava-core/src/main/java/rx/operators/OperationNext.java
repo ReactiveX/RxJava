@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -313,6 +314,8 @@ public final class OperationNext {
         @Test
         public void testNoBufferingOrBlockingOfSequence() throws Throwable {
             final CountDownLatch finished = new CountDownLatch(1);
+            final int COUNT = 30;
+            final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
             final AtomicBoolean running = new AtomicBoolean(true);
             final AtomicInteger count = new AtomicInteger(0);
             final Observable<Integer> obs = Observable.create(new Func1<Observer<? super Integer>, Subscription>() {
@@ -326,7 +329,7 @@ public final class OperationNext {
                             try {
                                 while (running.get()) {
                                     o.onNext(count.incrementAndGet());
-                                    Thread.sleep(0, 100);
+                                    timeHasPassed.countDown();
                                 }
                                 o.onCompleted();
                             } catch (Throwable e) {
@@ -350,19 +353,14 @@ public final class OperationNext {
             // we should have a different value
             assertTrue("a and b should be different", a != b);
 
-            // wait for some time
-            Thread.sleep(100);
-            // make sure the counter in the observable has increased beyond b
-            while (count.get() <= (b + 10)) {
-                Thread.sleep(100);
-            }
+            // wait for some time (if times out we are blocked somewhere so fail ... set very high for very slow, constrained machines)
+            timeHasPassed.await(8000, TimeUnit.MILLISECONDS);
 
             assertTrue(it.hasNext());
-            int expectedHigherThan = count.get();
             int c = it.next();
 
             assertTrue("c should not just be the next in sequence", c != (b + 1));
-            assertTrue("expected that c [" + c + "] is higher than " + expectedHigherThan, c > expectedHigherThan);
+            assertTrue("expected that c [" + c + "] is higher than or equal to " + COUNT, c >= COUNT);
 
             assertTrue(it.hasNext());
 

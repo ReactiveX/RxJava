@@ -543,8 +543,8 @@ public final class OperationGroupBy {
             // sentEvents will go until 'eventCounter' hits 20 and then unsubscribes
             // which means it will also send (but ignore) the 19/20 events for the other group
             // It will not however send all 100 events.
-            assertEquals(39, sentEventCounter.get(), 2);
-            // gave it a delta of 2 so the threading/unsubscription race has wiggle 
+            assertEquals(39, sentEventCounter.get(), 10);
+            // gave it a delta of 10 to account for the threading/unsubscription race condition which can vary depending on a machines performance, thread-scheduler, etc
         }
 
         private static class Event {
