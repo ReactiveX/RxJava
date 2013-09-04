@@ -19,7 +19,8 @@ object RxImplicits {
     import java.{ lang => jlang }
     import language.implicitConversions
 
-    import rx.Observable
+    import rx.{ Observable, Observer, Subscription }
+    import rx.Observable.OnSubscribeFunc
     import rx.observables.BlockingObservable
     import rx.util.functions._
     
@@ -56,7 +57,7 @@ object RxImplicits {
         }
     
     /**
-     * Converts a function shaped ilke compareTo into the equivalent Rx Func2
+     * Converts a function shaped like compareTo into the equivalent Rx Func2
      */
     implicit def convertComparisonFuncToRxFunc2[A](f: (A, A) => Int): Func2[A, A, jlang.Integer] =
         new Func2[A, A, jlang.Integer] {
@@ -100,6 +101,11 @@ object RxImplicits {
             def call(a: A, b: B, c: C, d: D) = f(a, b, c, d)
         }
 
+    implicit def onSubscribeFunc[A](f: (Observer[_ >: A]) => Subscription): OnSubscribeFunc[A] =
+        new OnSubscribeFunc[A] {
+            override def call(a: Observer[_ >: A]) = f(a)
+        }
+
     /**
      * This implicit class implements all of the methods necessary for including Observables in a
      * for-comprehension.  Note that return type is always Observable, so that the ScalaObservable
@@ -131,7 +137,9 @@ class UnitTestSuite extends JUnitSuite {
     import org.mockito.Mockito._
     import org.mockito.{ MockitoAnnotations, Mock }
     import rx.{ Notification, Observer, Observable, Subscription }
+    import rx.Observable.OnSubscribeFunc
     import rx.observables.GroupedObservable
+    import rx.subscriptions.Subscriptions
     import collection.mutable.ArrayBuffer
     import collection.JavaConverters._
             
@@ -175,7 +183,6 @@ class UnitTestSuite extends JUnitSuite {
     }
     
     // tests of static methods
-    
     @Test def testSingle {
         assertEquals(1, Observable.from(1).toBlockingObservable.single)
     }
@@ -207,6 +214,11 @@ class UnitTestSuite extends JUnitSuite {
             case ex: IllegalStateException => println("Caught expected IllegalStateException")
             case ex: Throwable => fail("Caught unexpected exception " + ex.getCause + ", expected IllegalStateException")
         }
+    }
+
+    @Test def testCreateFromOnSubscribeFunc {
+        val created = Observable.create((o: Observer[_ >: Integer]) => Subscriptions.empty)
+        //no assertions on subscription, just testing the implicit
     }
     
     @Test def testFromJavaInterop {
