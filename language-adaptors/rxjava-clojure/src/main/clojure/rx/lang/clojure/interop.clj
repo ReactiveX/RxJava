@@ -17,6 +17,14 @@
   (let [f-name (gensym "rc")]
     `(let [~f-name ~f]
        (reify
+         ; If they want Func1, give them onSubscribe as well so Observable/create can be
+         ; used seemlessly with rx/fn.
+         ~@(if (and (= prefix "rx.util.functions.Func")
+                    (some #{1} arities))
+             `(rx.Observable$OnSubscribeFunc
+                (~'onSubscribe [~'this observer#]
+                  (~f-name observer#))))
+
          ~@(mapcat (clojure.core/fn [n]
                      (let [ifc-sym  (symbol (str prefix n))
                            arg-syms (map #(symbol (str "v" %)) (range n))]
@@ -30,6 +38,10 @@
   by delegating the call() method to the given function.
 
   If the f has the wrong arity, an ArityException will be thrown at runtime.
+
+  This will also implement rx.Observable$OnSubscribeFunc.onSubscribe for use with
+  Observable/create. In this case, the function must take an Observable as its single
+  argument and return a subscription object.
 
   Example:
 
@@ -64,6 +76,15 @@
 
     (.map my-observable (rx/fn [a] (* 2 a)))
 
+    or, to create an Observable:
+
+    (Observable/create (rx/fn [observer]
+                         (.onNext observer 10)
+                         (.onCompleted observer)
+                         (Subscriptions/empty)))
+
+  See:
+    rx.lang.clojure.interop/fn*
   "
   [& fn-form]
   ; preserve metadata so type hints work
