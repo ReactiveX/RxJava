@@ -59,7 +59,7 @@ public final class OperationToObservableList<T> {
             this.that = that;
         }
 
-        public Subscription call(final Observer<? super List<T>> observer) {
+        public Subscription onSubscribe(final Observer<? super List<T>> observer) {
 
             return that.subscribe(new Observer<T>() {
                 final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();

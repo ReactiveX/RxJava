@@ -76,7 +76,7 @@ public final class OperationConcat {
             this.sequences = sequences;
         }
 
-        public Subscription call(final Observer<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             final AtomicBoolean completedOrErred = new AtomicBoolean(false);
             final AtomicBoolean allSequencesReceived = new AtomicBoolean(false);
             final Queue<Observable<? extends T>> nextSequences = new ConcurrentLinkedQueue<Observable<? extends T>>();
@@ -220,7 +220,7 @@ public final class OperationConcat {
             Observable<Observable<String>> observableOfObservables = Observable.create(new OnSubscribeFunc<Observable<String>>() {
 
                 @Override
-                public Subscription call(Observer<? super Observable<String>> observer) {
+                public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
                     // simulate what would happen in an observable
                     observer.onNext(odds);
                     observer.onNext(even);
@@ -291,7 +291,7 @@ public final class OperationConcat {
             Observable<Observable<String>> observableOfObservables = Observable.create(new OnSubscribeFunc<Observable<String>>() {
 
                 @Override
-                public Subscription call(final Observer<? super Observable<String>> observer) {
+                public Subscription onSubscribe(final Observer<? super Observable<String>> observer) {
                     final BooleanSubscription s = new BooleanSubscription();
                     parent.set(new Thread(new Runnable() {
 
@@ -483,7 +483,7 @@ public final class OperationConcat {
             Observable<Observable<String>> observableOfObservables = Observable.create(new OnSubscribeFunc<Observable<String>>() {
 
                 @Override
-                public Subscription call(Observer<? super Observable<String>> observer) {
+                public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
                     // simulate what would happen in an observable
                     observer.onNext(w1);
                     observer.onNext(w2);

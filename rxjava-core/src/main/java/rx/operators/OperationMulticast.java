@@ -42,7 +42,7 @@ public class OperationMulticast {
         public MulticastConnectableObservable(Observable<? extends T> source, final Subject<T, R> subject) {
             super(new OnSubscribeFunc<R>() {
                 @Override
-                public Subscription call(Observer<? super R> observer) {
+                public Subscription onSubscribe(Observer<? super R> observer) {
                     return subject.subscribe(observer);
                 }
             });

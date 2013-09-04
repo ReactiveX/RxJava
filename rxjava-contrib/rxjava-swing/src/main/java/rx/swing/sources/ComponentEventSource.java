@@ -39,7 +39,7 @@ public enum ComponentEventSource { ; // no instances
     public static Observable<ComponentEvent> fromComponentEventsOf(final Component component) {
         return Observable.create(new OnSubscribeFunc<ComponentEvent>() {
             @Override
-            public Subscription call(final Observer<? super ComponentEvent> observer) {
+            public Subscription onSubscribe(final Observer<? super ComponentEvent> observer) {
                 final ComponentListener listener = new ComponentListener() {
                     @Override
                     public void componentHidden(ComponentEvent event) {

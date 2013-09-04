@@ -55,8 +55,8 @@ public final class OperationTake {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription call(Observer<? super T> observer) {
-                return new Take<T>(items, num).call(observer);
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                return new Take<T>(items, num).onSubscribe(observer);
             }
 
         };
@@ -84,7 +84,7 @@ public final class OperationTake {
         }
 
         @Override
-        public Subscription call(Observer<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             if (num < 1) {
                 items.subscribe(new Observer<T>()
                 {
@@ -189,7 +189,7 @@ public final class OperationTake {
             Observable<String> source = Observable.create(new OnSubscribeFunc<String>()
             {
                 @Override
-                public Subscription call(Observer<? super String> observer)
+                public Subscription onSubscribe(Observer<? super String> observer)
                 {
                     observer.onNext("one");
                     observer.onError(new Throwable("test failed"));
@@ -216,7 +216,7 @@ public final class OperationTake {
             Observable<String> source = Observable.create(new OnSubscribeFunc<String>()
             {
                 @Override
-                public Subscription call(Observer<? super String> observer)
+                public Subscription onSubscribe(Observer<? super String> observer)
                 {
                     subscribed.set(true);
                     observer.onError(new Throwable("test failed"));

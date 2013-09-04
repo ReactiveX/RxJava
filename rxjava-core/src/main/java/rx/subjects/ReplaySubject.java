@@ -87,7 +87,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
         }
 
         @Override
-        public Subscription call(Observer<? super T> observer)
+        public Subscription onSubscribe(Observer<? super T> observer)
         {
             return delegate.call(observer);
         }

@@ -55,7 +55,7 @@ public class OperationObserveOn {
         }
 
         @Override
-        public Subscription call(final Observer<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             if (scheduler instanceof ImmediateScheduler) {
                 // do nothing if we request ImmediateScheduler so we don't invoke overhead
                 return source.subscribe(observer);

@@ -60,8 +60,8 @@ public final class OperationMerge {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription call(Observer<? super T> observer) {
-                return new MergeObservable<T>(o).call(observer);
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                return new MergeObservable<T>(o).onSubscribe(observer);
             }
         };
     }
@@ -76,7 +76,7 @@ public final class OperationMerge {
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription call(Observer<? super Observable<? extends T>> observer) {
+            public Subscription onSubscribe(Observer<? super Observable<? extends T>> observer) {
                 for (Observable<? extends T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
@@ -124,7 +124,7 @@ public final class OperationMerge {
             this.sequences = sequences;
         }
 
-        public Subscription call(Observer<? super T> actualObserver) {
+        public Subscription onSubscribe(Observer<? super T> actualObserver) {
 
             /**
              * We must synchronize a merge because we subscribe to multiple sequences in parallel that will each be emitting.
@@ -298,7 +298,7 @@ public final class OperationMerge {
             Observable<Observable<String>> observableOfObservables = Observable.create(new OnSubscribeFunc<Observable<String>>() {
 
                 @Override
-                public Subscription call(Observer<? super Observable<String>> observer) {
+                public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
                     // simulate what would happen in an observable
                     observer.onNext(o1);
                     observer.onNext(o2);

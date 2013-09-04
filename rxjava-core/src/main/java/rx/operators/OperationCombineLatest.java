@@ -319,7 +319,7 @@ public class OperationCombineLatest {
         }
 
         @Override
-        public Subscription call(Observer<? super R> observer) {
+        public Subscription onSubscribe(Observer<? super R> observer) {
             if (this.observer != null) {
                 throw new IllegalStateException("Only one Observer can subscribe to this Observable.");
             }

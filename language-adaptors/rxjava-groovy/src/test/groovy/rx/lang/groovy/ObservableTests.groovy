@@ -299,7 +299,7 @@ def class ObservableTests {
 
     def class AsyncObservable implements OnSubscribeFunc {
 
-        public Subscription call(final Observer<Integer> observer) {
+        public Subscription onSubscribe(final Observer<Integer> observer) {
             new Thread(new Runnable() {
                 public void run() {
                     try {

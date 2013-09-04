@@ -71,7 +71,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
 
         OnSubscribeFunc<T> onSubscribe = new OnSubscribeFunc<T>() {
             @Override
-            public Subscription call(Observer<? super T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
                 subscription.wrap(new Subscription() {

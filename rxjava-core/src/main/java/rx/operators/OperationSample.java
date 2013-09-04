@@ -76,7 +76,7 @@ public final class OperationSample {
         }
 
         @Override
-        public Subscription call(final Observer<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             Observable<Long> clock = Observable.create(OperationInterval.interval(period, unit, scheduler));
             final Subscription clockSubscription = clock.subscribe(new Observer<Long>() {
                 @Override
@@ -138,7 +138,7 @@ public final class OperationSample {
         public void testSample() {
             Observable<Long> source = Observable.create(new OnSubscribeFunc<Long>() {
                 @Override
-                public Subscription call(final Observer<? super Long> observer1) {
+                public Subscription onSubscribe(final Observer<? super Long> observer1) {
                     scheduler.schedule(new Action0() {
                         @Override
                         public void call() {

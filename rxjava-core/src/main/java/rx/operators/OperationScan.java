@@ -86,7 +86,7 @@ public final class OperationScan {
         }
         
         @Override
-        public Subscription call(final Observer<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             return sequence.subscribe(new Observer<T>() {
                 
                 // has to be synchronized so that the initial value is always sent only once.
@@ -125,7 +125,7 @@ public final class OperationScan {
         }
 
         @Override
-        public Subscription call(final Observer<? super R> observer) {
+        public Subscription onSubscribe(final Observer<? super R> observer) {
             observer.onNext(initialValue);
             return sequence.subscribe(new AccumulatingObserver<T, R>(observer, initialValue, accumulatorFunction));
         }

@@ -321,7 +321,7 @@ public final class OperationNext {
             final Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
 
                 @Override
-                public Subscription call(final Observer<? super Integer> o) {
+                public Subscription onSubscribe(final Observer<? super Integer> o) {
                     new Thread(new Runnable() {
 
                         @Override

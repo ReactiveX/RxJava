@@ -41,8 +41,8 @@ public final class OperationTakeLast {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription call(Observer<? super T> observer) {
-                return new TakeLast<T>(items, count).call(observer);
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                return new TakeLast<T>(items, count).onSubscribe(observer);
             }
 
         };
@@ -58,7 +58,7 @@ public final class OperationTakeLast {
             this.items = items;
         }
 
-        public Subscription call(Observer<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 

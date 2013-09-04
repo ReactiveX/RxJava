@@ -57,7 +57,7 @@ public class OperationToObservableFuture {
         }
 
         @Override
-        public Subscription call(Observer<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             try {
                 T value = (time == null) ? (T) that.get() : (T) that.get(time, unit);
 
@@ -93,7 +93,7 @@ public class OperationToObservableFuture {
             ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
             Observer<Object> o = mock(Observer.class);
 
-            Subscription sub = ob.call(o);
+            Subscription sub = ob.onSubscribe(o);
             sub.unsubscribe();
 
             verify(o, times(1)).onNext(value);
@@ -110,7 +110,7 @@ public class OperationToObservableFuture {
             ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
             Observer<Object> o = mock(Observer.class);
 
-            Subscription sub = ob.call(o);
+            Subscription sub = ob.onSubscribe(o);
             sub.unsubscribe();
 
             verify(o, never()).onNext(null);

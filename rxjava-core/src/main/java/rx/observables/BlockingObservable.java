@@ -79,7 +79,7 @@ public class BlockingObservable<T> extends Observable<T> {
         return new BlockingObservable<T>(new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription call(Observer<? super T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 return o.subscribe(observer);
             }
         });
@@ -787,7 +787,7 @@ public class BlockingObservable<T> extends Observable<T> {
             BlockingObservable<String> obs = BlockingObservable.from(create(new OnSubscribeFunc<String>() {
 
                 @Override
-                public Subscription call(Observer<? super String> observer) {
+                public Subscription onSubscribe(Observer<? super String> observer) {
                     observer.onNext("one");
                     observer.onError(new TestException());
                     return Subscriptions.empty();
@@ -810,7 +810,7 @@ public class BlockingObservable<T> extends Observable<T> {
                 BlockingObservable.from(Observable.create(new OnSubscribeFunc<String>() {
 
                     @Override
-                    public Subscription call(final Observer<? super String> observer) {
+                    public Subscription onSubscribe(final Observer<? super String> observer) {
                         final BooleanSubscription subscription = new BooleanSubscription();
                         new Thread(new Runnable() {
 

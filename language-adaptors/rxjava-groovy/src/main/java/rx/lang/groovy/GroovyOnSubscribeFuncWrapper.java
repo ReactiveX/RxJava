@@ -34,7 +34,7 @@ public class GroovyOnSubscribeFuncWrapper<T> implements OnSubscribeFunc<T> {
     }
 
     @Override
-    public Subscription call(Observer<? super T> observer) {
+    public Subscription onSubscribe(Observer<? super T> observer) {
         return closure.call(observer);
     }
 

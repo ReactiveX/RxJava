@@ -312,7 +312,7 @@ public final class OperationZip {
         }
 
         @Override
-        public Subscription call(Observer<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             if (started.compareAndSet(false, true)) {
                 SafeObservableSubscription subscription = new SafeObservableSubscription();
                 this.observer = new SynchronizedObserver<T>(observer, subscription);
@@ -466,7 +466,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.call(aObserver);
+            a.onSubscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -510,7 +510,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.call(aObserver);
+            a.onSubscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -549,7 +549,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.call(aObserver);
+            a.onSubscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -588,7 +588,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.call(aObserver);
+            a.onSubscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -620,7 +620,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.call(aObserver);
+            a.onSubscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -666,7 +666,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.call(aObserver);
+            a.onSubscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -704,7 +704,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            Subscription subscription = a.call(aObserver);
+            Subscription subscription = a.onSubscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);
@@ -742,7 +742,7 @@ public final class OperationZip {
 
             /* define a Observer to receive aggregated events */
             Observer<String> aObserver = mock(Observer.class);
-            a.call(aObserver);
+            a.onSubscribe(aObserver);
 
             /* mock the Observable Observers that are 'pushing' data for us */
             ZipObserver<String, String> r1 = mock(ZipObserver.class);

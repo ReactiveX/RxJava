@@ -98,7 +98,7 @@ public class OperationTakeUntil {
         }
 
         @Override
-        public Subscription call(final Observer<? super Notification<T>> notificationObserver) {
+        public Subscription onSubscribe(final Observer<? super Notification<T>> notificationObserver) {
             return sequence.subscribe(new Observer<T>() {
                 @Override
                 public void onCompleted() {
@@ -126,7 +126,7 @@ public class OperationTakeUntil {
         }
 
         @Override
-        public Subscription call(final Observer<? super Notification<T>> notificationObserver) {
+        public Subscription onSubscribe(final Observer<? super Notification<T>> notificationObserver) {
             return sequence.subscribe(new Observer<E>() {
                 @Override
                 public void onCompleted() {

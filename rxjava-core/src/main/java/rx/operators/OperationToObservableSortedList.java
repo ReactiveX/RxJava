@@ -85,7 +85,7 @@ public final class OperationToObservableSortedList<T> {
             this.sortFunction = sortFunction;
         }
 
-        public Subscription call(final Observer<? super List<T>> observer) {
+        public Subscription onSubscribe(final Observer<? super List<T>> observer) {
             return that.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     // onNext can be concurrently executed so list must be thread-safe

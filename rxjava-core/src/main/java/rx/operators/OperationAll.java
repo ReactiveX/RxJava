@@ -53,7 +53,7 @@ public class OperationAll {
 
 
         @Override
-        public Subscription call(final Observer<? super Boolean> observer) {
+        public Subscription onSubscribe(final Observer<? super Boolean> observer) {
             return subscription.wrap(sequence.subscribe(new AllObserver(observer)));
 
         }

@@ -255,7 +255,7 @@ public class TestSchedulers {
     public void testRecursiveScheduler1() {
         Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
             @Override
-            public Subscription call(final Observer<? super Integer> observer) {
+            public Subscription onSubscribe(final Observer<? super Integer> observer) {
                 return Schedulers.currentThread().schedule(0, new Func2<Scheduler, Integer, Subscription>() {
                     @Override
                     public Subscription call(Scheduler scheduler, Integer i) {
@@ -293,7 +293,7 @@ public class TestSchedulers {
 
         Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
             @Override
-            public Subscription call(final Observer<? super Integer> observer) {
+            public Subscription onSubscribe(final Observer<? super Integer> observer) {
 
                 return Schedulers.threadPoolForComputation().schedule(new BooleanSubscription(), new Func2<Scheduler, BooleanSubscription, Subscription>() {
                     @Override
@@ -397,7 +397,7 @@ public class TestSchedulers {
         Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription call(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 for (int i = 0; i < count; i++) {
                     final int v = i;
                     new Thread(new Runnable() {
@@ -457,7 +457,7 @@ public class TestSchedulers {
                         return Observable.create(new OnSubscribeFunc<String>() {
 
                             @Override
-                            public Subscription call(final Observer<? super String> observer) {
+                            public Subscription onSubscribe(final Observer<? super String> observer) {
                                 observer.onNext("value_after_map-" + v);
                                 observer.onCompleted();
                                 return Subscriptions.empty();

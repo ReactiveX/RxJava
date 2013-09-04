@@ -50,7 +50,7 @@ public final class OperationToObservableIterable<T> {
 
         public Iterable<? extends T> iterable;
 
-        public Subscription call(Observer<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             for (T item : iterable) {
                 observer.onNext(item);
             }

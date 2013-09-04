@@ -72,7 +72,7 @@ public class PublishSubject<T> extends Subject<T, T> {
 
         OnSubscribeFunc<T> onSubscribe = new OnSubscribeFunc<T>() {
             @Override
-            public Subscription call(Observer<? super T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 // shortcut check if terminal state exists already
                 Subscription s = checkTerminalState(observer);
                 if(s != null) return s;
@@ -207,7 +207,7 @@ public class PublishSubject<T> extends Subject<T, T> {
 
             Subscription sub = Observable.create(new OnSubscribeFunc<Integer>() {
                 @Override
-                public Subscription call(final Observer<? super Integer> observer) {
+                public Subscription onSubscribe(final Observer<? super Integer> observer) {
                     final AtomicBoolean stop = new AtomicBoolean(false);
                     new Thread() {
                         @Override

@@ -68,7 +68,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
             this.originalSequence = originalSequence;
         }
 
-        public Subscription call(final Observer<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
             final AtomicReference<SafeObservableSubscription> subscriptionRef = new AtomicReference<SafeObservableSubscription>(new SafeObservableSubscription());
 
@@ -131,7 +131,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
             Observable<String> w = Observable.create(new OnSubscribeFunc<String>() {
 
                 @Override
-                public Subscription call(Observer<? super String> observer) {
+                public Subscription onSubscribe(Observer<? super String> observer) {
                     observer.onNext("one");
                     observer.onError(new Throwable("injected failure"));
                     return Subscriptions.empty();

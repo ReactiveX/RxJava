@@ -69,7 +69,7 @@ public final class OperationInterval {
         }
 
         @Override
-        public Subscription call(final Observer<? super Long> observer) {
+        public Subscription onSubscribe(final Observer<? super Long> observer) {
             final Subscription wrapped = scheduler.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {

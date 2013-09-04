@@ -55,8 +55,8 @@ public final class OperationFinally {
     public static <T> OnSubscribeFunc<T> finallyDo(final Observable<? extends T> sequence, final Action0 action) {
         return new OnSubscribeFunc<T>() {
             @Override
-            public Subscription call(Observer<? super T> observer) {
-                return new Finally<T>(sequence, action).call(observer);
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                return new Finally<T>(sequence, action).onSubscribe(observer);
             }
         };
     }
@@ -70,7 +70,7 @@ public final class OperationFinally {
             this.finalAction = finalAction;
         }
 
-        public Subscription call(Observer<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             return sequence.subscribe(new FinallyObserver(observer));
         }
 

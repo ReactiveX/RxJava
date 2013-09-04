@@ -98,7 +98,7 @@ public final class OperationMap {
 
         private Func1<? super T, ? extends R> func;
 
-        public Subscription call(Observer<? super R> observer) {
+        public Subscription onSubscribe(Observer<? super R> observer) {
             return sequence.subscribe(new MapObserver<T, R>(observer, func));
         }
     }

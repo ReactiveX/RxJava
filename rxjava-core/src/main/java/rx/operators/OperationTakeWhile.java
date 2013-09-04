@@ -66,8 +66,8 @@ public final class OperationTakeWhile {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription call(Observer<? super T> observer) {
-                return new TakeWhile<T>(items, predicate).call(observer);
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                return new TakeWhile<T>(items, predicate).onSubscribe(observer);
             }
 
         };
@@ -104,7 +104,7 @@ public final class OperationTakeWhile {
         }
 
         @Override
-        public Subscription call(Observer<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
@@ -235,7 +235,7 @@ public final class OperationTakeWhile {
             Observable<String> source = Observable.create(new OnSubscribeFunc<String>()
             {
                 @Override
-                public Subscription call(Observer<? super String> observer)
+                public Subscription onSubscribe(Observer<? super String> observer)
                 {
                     observer.onNext("one");
                     observer.onError(new Throwable("test failed"));

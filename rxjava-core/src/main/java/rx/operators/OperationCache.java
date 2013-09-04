@@ -54,7 +54,7 @@ public class OperationCache {
             private final ReplaySubject<T> cache = ReplaySubject.create();
 
             @Override
-            public Subscription call(Observer<? super T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 if (subscribed.compareAndSet(false, true)) {
                     // subscribe to the source once
                     source.subscribe(cache);
@@ -79,7 +79,7 @@ public class OperationCache {
             Observable<String> o = Observable.create(cache(Observable.create(new OnSubscribeFunc<String>() {
 
                 @Override
-                public Subscription call(final Observer<? super String> observer) {
+                public Subscription onSubscribe(final Observer<? super String> observer) {
                     final BooleanSubscription subscription = new BooleanSubscription();
                     new Thread(new Runnable() {
 

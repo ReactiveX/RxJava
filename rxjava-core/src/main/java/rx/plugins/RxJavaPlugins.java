@@ -207,7 +207,7 @@ public class RxJavaPlugins {
                 RxJavaObservableExecutionHook impl = p.getObservableExecutionHook();
                 assertTrue(impl instanceof RxJavaObservableExecutionHookTestImpl);
             } finally {
-                System.clearProperty("rxjava.plugin.RxJavaErrorHandler.implementation");
+                System.clearProperty("rxjava.plugin.RxJavaObservableExecutionHook.implementation");
             }
         }
 

@@ -42,7 +42,7 @@ public enum AbstractButtonSource { ; // no instances
     public static Observable<ActionEvent> fromActionOf(final AbstractButton button) {
         return Observable.create(new OnSubscribeFunc<ActionEvent>() {
             @Override
-            public Subscription call(final Observer<? super ActionEvent> observer) {
+            public Subscription onSubscribe(final Observer<? super ActionEvent> observer) {
                 final ActionListener listener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {

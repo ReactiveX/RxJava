@@ -69,8 +69,8 @@ public final class OperationMergeDelayError {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription call(Observer<? super T> observer) {
-                return new MergeDelayErrorObservable<T>(sequences).call(observer);
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                return new MergeDelayErrorObservable<T>(sequences).onSubscribe(observer);
             }
         };
     }
@@ -80,7 +80,7 @@ public final class OperationMergeDelayError {
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription call(Observer<? super Observable<? extends T>> observer) {
+            public Subscription onSubscribe(Observer<? super Observable<? extends T>> observer) {
                 for (Observable<? extends T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
@@ -110,7 +110,7 @@ public final class OperationMergeDelayError {
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription call(Observer<? super Observable<? extends T>> observer) {
+            public Subscription onSubscribe(Observer<? super Observable<? extends T>> observer) {
                 for (Observable<? extends T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
@@ -160,7 +160,7 @@ public final class OperationMergeDelayError {
             this.sequences = sequences;
         }
 
-        public Subscription call(Observer<? super T> actualObserver) {
+        public Subscription onSubscribe(Observer<? super T> actualObserver) {
             /**
              * Subscribe to the parent Observable to get to the children Observables
              */
@@ -528,7 +528,7 @@ public final class OperationMergeDelayError {
             Observable<Observable<String>> observableOfObservables = Observable.create(new OnSubscribeFunc<Observable<String>>() {
 
                 @Override
-                public Subscription call(Observer<? super Observable<String>> observer) {
+                public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
                     // simulate what would happen in an observable
                     observer.onNext(o1);
                     observer.onNext(o2);

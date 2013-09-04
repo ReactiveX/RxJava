@@ -103,7 +103,7 @@ object RxImplicits {
 
     implicit def onSubscribeFunc[A](f: (Observer[_ >: A]) => Subscription): OnSubscribeFunc[A] =
         new OnSubscribeFunc[A] {
-            override def call(a: Observer[_ >: A]) = f(a)
+            override def onSubscribe(a: Observer[_ >: A]) = f(a)
         }
 
     /**

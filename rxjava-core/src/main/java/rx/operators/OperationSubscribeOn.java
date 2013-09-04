@@ -50,7 +50,7 @@ public class OperationSubscribeOn {
         }
 
         @Override
-        public Subscription call(final Observer<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             return scheduler.schedule(null, new Func2<Scheduler, T, Subscription>() {
                 @Override
                 public Subscription call(Scheduler s, T t) {

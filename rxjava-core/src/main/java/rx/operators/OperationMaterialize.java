@@ -61,7 +61,7 @@ public final class OperationMaterialize {
         }
 
         @Override
-        public Subscription call(final Observer<? super Notification<T>> observer) {
+        public Subscription onSubscribe(final Observer<? super Notification<T>> observer) {
             return sequence.subscribe(new Observer<T>() {
 
                 @Override

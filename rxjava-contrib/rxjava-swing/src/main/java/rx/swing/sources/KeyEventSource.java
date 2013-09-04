@@ -48,7 +48,7 @@ public enum KeyEventSource { ; // no instances
     public static Observable<KeyEvent> fromKeyEventsOf(final Component component) {
         return Observable.create(new OnSubscribeFunc<KeyEvent>() {
             @Override
-            public Subscription call(final Observer<? super KeyEvent> observer) {
+            public Subscription onSubscribe(final Observer<? super KeyEvent> observer) {
                 final KeyListener listener = new KeyListener() {
                     @Override
                     public void keyPressed(KeyEvent event) {

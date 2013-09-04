@@ -120,9 +120,9 @@ public class Observable<T> {
      * 
      * @param <T>
      */
-    public static interface OnSubscribeFunc<T> extends Function<T> {
+    public static interface OnSubscribeFunc<T> extends Function {
 
-        public Subscription call(Observer<? super T> t1);
+        public Subscription onSubscribe(Observer<? super T> t1);
 
     }
     
@@ -133,7 +133,7 @@ public class Observable<T> {
      * specifically have a need for inheritance.
      * 
      * @param onSubscribe
-     *            {@link Func1} to be executed when {@link #subscribe(Observer)} is called.
+     *            {@link OnSubscribeFunc} to be executed when {@link #subscribe(Observer)} is called.
      */
     protected Observable(OnSubscribeFunc<T> onSubscribe) {
         this.onSubscribe = onSubscribe;
@@ -187,7 +187,7 @@ public class Observable<T> {
              * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
              */
             if (isInternalImplementation(observer)) {
-                Subscription s = onSubscribeFunction.call(observer);
+                Subscription s = onSubscribeFunction.onSubscribe(observer);
                 if (s == null) {
                     // this generally shouldn't be the case on a 'trusted' onSubscribe but in case it happens
                     // we want to gracefully handle it the same as AtomicObservableSubscription does
@@ -197,7 +197,7 @@ public class Observable<T> {
                 }
             } else {
                 SafeObservableSubscription subscription = new SafeObservableSubscription();
-                subscription.wrap(onSubscribeFunction.call(new SafeObserver<T>(subscription, observer)));
+                subscription.wrap(onSubscribeFunction.onSubscribe(new SafeObserver<T>(subscription, observer)));
                 return hook.onSubscribeReturn(this, subscription);
             }
         } catch (OnErrorNotImplementedException e) {
@@ -416,7 +416,7 @@ public class Observable<T> {
             super(new OnSubscribeFunc<T>() {
 
                 @Override
-                public Subscription call(Observer<? super T> t1) {
+                public Subscription onSubscribe(Observer<? super T> t1) {
                     return Subscriptions.empty();
                 }
 
@@ -443,7 +443,7 @@ public class Observable<T> {
                  * @return a reference to the subscription
                  */
                 @Override
-                public Subscription call(Observer<? super T> observer) {
+                public Subscription onSubscribe(Observer<? super T> observer) {
                     observer.onError(exception);
                     return Subscriptions.empty();
                 }

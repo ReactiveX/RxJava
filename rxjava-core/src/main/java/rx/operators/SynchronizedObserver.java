@@ -476,7 +476,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
 
             }
 
-            public Subscription call(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 System.out.println("TestSingleThreadedObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 
@@ -531,7 +531,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             }
 
             @Override
-            public Subscription call(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 System.out.println("TestMultiThreadedObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

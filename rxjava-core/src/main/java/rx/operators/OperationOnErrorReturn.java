@@ -64,7 +64,7 @@ public final class OperationOnErrorReturn<T> {
             this.originalSequence = originalSequence;
         }
 
-        public Subscription call(final Observer<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed

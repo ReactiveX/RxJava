@@ -81,7 +81,7 @@ public final class OperationGroupBy {
         }
 
         @Override
-        public Subscription call(final Observer<? super GroupedObservable<K, V>> observer) {
+        public Subscription onSubscribe(final Observer<? super GroupedObservable<K, V>> observer) {
             final GroupBy<K, V> _this = this;
             actualParentSubscription.wrap(source.subscribe(new Observer<KeyValue<K, V>>() {
 
@@ -180,7 +180,7 @@ public final class OperationGroupBy {
                 private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
                 @Override
-                public Subscription call(Observer<? super T> observer) {
+                public Subscription onSubscribe(Observer<? super T> observer) {
                     // register Observer
                     subscribedObserver.set(observer);
 
@@ -376,7 +376,7 @@ public final class OperationGroupBy {
             Observable<Event> es = Observable.create(new OnSubscribeFunc<Event>() {
 
                 @Override
-                public Subscription call(final Observer<? super Event> observer) {
+                public Subscription onSubscribe(final Observer<? super Event> observer) {
                     System.out.println("*** Subscribing to EventStream ***");
                     subscribeCounter.incrementAndGet();
                     new Thread(new Runnable() {
@@ -464,7 +464,7 @@ public final class OperationGroupBy {
             Observable<Event> es = Observable.create(new OnSubscribeFunc<Event>() {
 
                 @Override
-                public Subscription call(final Observer<? super Event> observer) {
+                public Subscription onSubscribe(final Observer<? super Event> observer) {
                     final BooleanSubscription s = new BooleanSubscription();
                     System.out.println("testUnsubscribe => *** Subscribing to EventStream ***");
                     subscribeCounter.incrementAndGet();

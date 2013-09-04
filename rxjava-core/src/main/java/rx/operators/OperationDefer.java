@@ -41,7 +41,7 @@ public final class OperationDefer {
 
         return new OnSubscribeFunc<T>() {
             @Override
-            public Subscription call(Observer<? super T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 Observable<? extends T> obs = observableFactory.call();
                 return obs.subscribe(observer);
             }

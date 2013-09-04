@@ -165,7 +165,7 @@ public class OperationToFuture {
         Observable<String> obs = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription call(Observer<? super String> observer) {
+            public Subscription onSubscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new TestException());
                 return Subscriptions.empty();

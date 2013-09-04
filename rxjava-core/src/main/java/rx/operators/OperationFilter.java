@@ -48,7 +48,7 @@ public final class OperationFilter<T> {
             this.predicate = predicate;
         }
 
-        public Subscription call(final Observer<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
             return subscription.wrap(that.subscribe(new Observer<T>() {
                 public void onNext(T value) {

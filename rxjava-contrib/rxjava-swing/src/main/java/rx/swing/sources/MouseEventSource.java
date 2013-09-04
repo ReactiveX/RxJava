@@ -36,7 +36,7 @@ public enum MouseEventSource { ; // no instances
     public static Observable<MouseEvent> fromMouseEventsOf(final Component component) {
         return Observable.create(new OnSubscribeFunc<MouseEvent>() {
             @Override
-            public Subscription call(final Observer<? super MouseEvent> observer) {
+            public Subscription onSubscribe(final Observer<? super MouseEvent> observer) {
                 final MouseListener listener = new MouseListener() {
                     @Override
                     public void mouseClicked(MouseEvent event) {
@@ -81,7 +81,7 @@ public enum MouseEventSource { ; // no instances
     public static Observable<MouseEvent> fromMouseMotionEventsOf(final Component component) {
         return Observable.create(new OnSubscribeFunc<MouseEvent>() {
             @Override
-            public Subscription call(final Observer<? super MouseEvent> observer) {
+            public Subscription onSubscribe(final Observer<? super MouseEvent> observer) {
                 final MouseMotionListener listener = new MouseMotionListener() {
                     @Override
                     public void mouseDragged(MouseEvent event) {

@@ -52,8 +52,8 @@ public final class OperationSkip {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription call(Observer<? super T> observer) {
-                return new Skip<T>(items, num).call(observer);
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                return new Skip<T>(items, num).onSubscribe(observer);
             }
 
         };
@@ -75,7 +75,7 @@ public final class OperationSkip {
             this.items = items;
         }
 
-        public Subscription call(Observer<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             return items.subscribe(new ItemObserver(observer));
         }
 
