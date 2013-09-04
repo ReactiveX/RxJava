@@ -55,7 +55,7 @@ public final class SwingScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action) {
+    public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
         final AtomicReference<Subscription> sub = new AtomicReference<Subscription>();
         EventQueue.invokeLater(new Runnable() {
             @Override
@@ -75,7 +75,7 @@ public final class SwingScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
+    public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long dueTime, TimeUnit unit) {
         final AtomicReference<Subscription> sub = new AtomicReference<Subscription>();
         long delay = unit.toMillis(dueTime);
         assertThatTheDelayIsValidForTheSwingTimer(delay);
@@ -113,7 +113,7 @@ public final class SwingScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedulePeriodically(T state, final Func2<Scheduler, T, Subscription> action, long initialDelay, long period, TimeUnit unit) {
+    public <T> Subscription schedulePeriodically(T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long initialDelay, long period, TimeUnit unit) {
         final AtomicReference<Timer> timer = new AtomicReference<Timer>();
 
         final long delay = unit.toMillis(period);

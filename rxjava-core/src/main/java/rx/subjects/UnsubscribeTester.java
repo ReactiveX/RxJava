@@ -54,7 +54,7 @@ import rx.util.functions.Func0;
      * @param <T>
      *            The type of object passed by the Observable
      */
-    public static <T, O extends Observable<T>> void test(Func0<O> provider, Action1<? super O> generateOnCompleted, Action1<? super O> generateOnError, Action1<? super O> generateOnNext)
+    public static <T, O extends Observable<T>> void test(Func0<? extends O> provider, Action1<? super O> generateOnCompleted, Action1<? super O> generateOnError, Action1<? super O> generateOnNext)
     {
         if (generateOnCompleted != null) {
             O observable = provider.call();

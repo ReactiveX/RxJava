@@ -67,12 +67,12 @@ import rx.util.functions.Func1;
  */
 public class PublishSubject<T> extends Subject<T, T> {
     public static <T> PublishSubject<T> create() {
-        final ConcurrentHashMap<Subscription, Observer<T>> observers = new ConcurrentHashMap<Subscription, Observer<T>>();
-        final AtomicReference<Notification<T>> terminalState = new AtomicReference<Notification<T>>();
+        final ConcurrentHashMap<Subscription, Observer<? super T>> observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
+        final AtomicReference<Notification<? extends T>> terminalState = new AtomicReference<Notification<? extends T>>();
 
-        Func1<Observer<T>, Subscription> onSubscribe = new Func1<Observer<T>, Subscription>() {
+        OnSubscribeFunc<T> onSubscribe = new OnSubscribeFunc<T>() {
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 // shortcut check if terminal state exists already
                 Subscription s = checkTerminalState(observer);
                 if(s != null) return s;
@@ -110,8 +110,8 @@ public class PublishSubject<T> extends Subject<T, T> {
                 }
             }
 
-            private Subscription checkTerminalState(Observer<T> observer) {
-                Notification<T> n = terminalState.get();
+            private Subscription checkTerminalState(Observer<? super T> observer) {
+                Notification<? extends T> n = terminalState.get();
                 if (n != null) {
                     // we are terminated to immediately emit and don't continue with subscription
                     if (n.isOnCompleted()) {
@@ -129,10 +129,10 @@ public class PublishSubject<T> extends Subject<T, T> {
         return new PublishSubject<T>(onSubscribe, observers, terminalState);
     }
 
-    private final ConcurrentHashMap<Subscription, Observer<T>> observers;
-    private final AtomicReference<Notification<T>> terminalState;
+    private final ConcurrentHashMap<Subscription, Observer<? super T>> observers;
+    private final AtomicReference<Notification<? extends T>> terminalState;
 
-    protected PublishSubject(Func1<Observer<T>, Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers, AtomicReference<Notification<T>> terminalState) {
+    protected PublishSubject(OnSubscribeFunc<T> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers, AtomicReference<Notification<? extends T>> terminalState) {
         super(onSubscribe);
         this.observers = observers;
         this.terminalState = terminalState;
@@ -148,7 +148,7 @@ public class PublishSubject<T> extends Subject<T, T> {
         synchronized (terminalState) {
             terminalState.set(new Notification<T>());
         }
-        for (Observer<T> observer : snapshotOfValues()) {
+        for (Observer<? super T> observer : snapshotOfValues()) {
             observer.onCompleted();
         }
         observers.clear();
@@ -164,7 +164,7 @@ public class PublishSubject<T> extends Subject<T, T> {
         synchronized (terminalState) {
             terminalState.set(new Notification<T>(e));
         }
-        for (Observer<T> observer : snapshotOfValues()) {
+        for (Observer<? super T> observer : snapshotOfValues()) {
             observer.onError(e);
         }
         observers.clear();
@@ -172,7 +172,7 @@ public class PublishSubject<T> extends Subject<T, T> {
 
     @Override
     public void onNext(T args) {
-        for (Observer<T> observer : snapshotOfValues()) {
+        for (Observer<? super T> observer : snapshotOfValues()) {
             observer.onNext(args);
         }
     }
@@ -187,8 +187,8 @@ public class PublishSubject<T> extends Subject<T, T> {
      *
      * @return List<Observer<T>>
      */
-    private Collection<Observer<T>> snapshotOfValues() {
-        return new ArrayList<Observer<T>>(observers.values());
+    private Collection<Observer<? super T>> snapshotOfValues() {
+        return new ArrayList<Observer<? super T>>(observers.values());
     }
 
     public static class UnitTest {
@@ -205,9 +205,9 @@ public class PublishSubject<T> extends Subject<T, T> {
                 }
             });
 
-            Subscription sub = Observable.create(new Func1<Observer<Integer>, Subscription>() {
+            Subscription sub = Observable.create(new OnSubscribeFunc<Integer>() {
                 @Override
-                public Subscription call(final Observer<Integer> observer) {
+                public Subscription onSubscribe(final Observer<? super Integer> observer) {
                     final AtomicBoolean stop = new AtomicBoolean(false);
                     new Thread() {
                         @Override
@@ -247,6 +247,7 @@ public class PublishSubject<T> extends Subject<T, T> {
         public void testCompleted() {
             PublishSubject<String> subject = PublishSubject.create();
 
+            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -255,6 +256,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             subject.onNext("three");
             subject.onCompleted();
 
+            @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
             subject.subscribe(anotherObserver);
 
@@ -275,17 +277,11 @@ public class PublishSubject<T> extends Subject<T, T> {
             verify(aObserver, times(1)).onCompleted();
         }
 
-        private void assertNeverObserver(Observer<String> aObserver)
-        {
-            verify(aObserver, Mockito.never()).onNext(any(String.class));
-            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-            verify(aObserver, Mockito.never()).onCompleted();
-        }
-
         @Test
         public void testError() {
             PublishSubject<String> subject = PublishSubject.create();
 
+            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -294,6 +290,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             subject.onNext("three");
             subject.onError(testException);
 
+            @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
             subject.subscribe(anotherObserver);
 
@@ -318,6 +315,7 @@ public class PublishSubject<T> extends Subject<T, T> {
         public void testSubscribeMidSequence() {
             PublishSubject<String> subject = PublishSubject.create();
 
+            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
 
@@ -326,6 +324,7 @@ public class PublishSubject<T> extends Subject<T, T> {
 
             assertObservedUntilTwo(aObserver);
 
+            @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
             subject.subscribe(anotherObserver);
 
@@ -349,6 +348,7 @@ public class PublishSubject<T> extends Subject<T, T> {
         public void testUnsubscribeFirstObserver() {
             PublishSubject<String> subject = PublishSubject.create();
 
+            @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             Subscription subscription = subject.subscribe(aObserver);
 
@@ -358,6 +358,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             subscription.unsubscribe();
             assertObservedUntilTwo(aObserver);
 
+            @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
             subject.subscribe(anotherObserver);
 
@@ -391,6 +392,7 @@ public class PublishSubject<T> extends Subject<T, T> {
         public void testUnsubscribeAfterOnCompleted() {
             PublishSubject<String> subject = PublishSubject.create();
 
+            @SuppressWarnings("unchecked")
             Observer<String> anObserver = mock(Observer.class);
             subject.subscribe(anObserver);
 

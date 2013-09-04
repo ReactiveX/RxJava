@@ -35,11 +35,11 @@ import org.junit.Test;
 
 import rx.Notification;
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.Exceptions;
-import rx.util.functions.Func1;
 
 /**
  * Returns an Iterable that blocks until the Observable emits another item, then returns that item.
@@ -48,7 +48,7 @@ import rx.util.functions.Func1;
  */
 public final class OperationNext {
 
-    public static <T> Iterable<T> next(final Observable<T> items) {
+    public static <T> Iterable<T> next(final Observable<? extends T> items) {
 
         NextObserver<T> nextObserver = new NextObserver<T>();
         final NextIterator<T> nextIterator = new NextIterator<T>(nextObserver);
@@ -66,9 +66,9 @@ public final class OperationNext {
 
     private static class NextIterator<T> implements Iterator<T> {
 
-        private final NextObserver<T> observer;
+        private final NextObserver<? extends T> observer;
 
-        private NextIterator(NextObserver<T> observer) {
+        private NextIterator(NextObserver<? extends T> observer) {
             this.observer = observer;
         }
 
@@ -100,8 +100,8 @@ public final class OperationNext {
         }
     }
 
-    private static class NextObserver<T> implements Observer<Notification<T>> {
-        private final BlockingQueue<Notification<T>> buf = new ArrayBlockingQueue<Notification<T>>(1);
+    private static class NextObserver<T> implements Observer<Notification<? extends T>> {
+        private final BlockingQueue<Notification<? extends T>> buf = new ArrayBlockingQueue<Notification<? extends T>>(1);
         private final AtomicBoolean waiting = new AtomicBoolean(false);
 
         @Override
@@ -115,12 +115,12 @@ public final class OperationNext {
         }
 
         @Override
-        public void onNext(Notification<T> args) {
+        public void onNext(Notification<? extends T> args) {
 
             if (waiting.getAndSet(false) || !args.isOnNext()) {
-                Notification<T> toOffer = args;
+                Notification<? extends T> toOffer = args;
                 while (!buf.offer(toOffer)) {
-                    Notification<T> concurrentItem = buf.poll();
+                    Notification<? extends T> concurrentItem = buf.poll();
 
                     // in case if we won race condition with onComplete/onError method
                     if (!concurrentItem.isOnNext()) {
@@ -136,7 +136,7 @@ public final class OperationNext {
         }
 
         public boolean isCompleted(boolean rethrowExceptionIfExists) {
-            Notification<T> lastItem = buf.peek();
+            Notification<? extends T> lastItem = buf.peek();
             if (lastItem == null) {
                 return false;
             }
@@ -153,7 +153,7 @@ public final class OperationNext {
         }
 
         public T takeNext() throws InterruptedException {
-            Notification<T> next = buf.take();
+            Notification<? extends T> next = buf.take();
 
             if (next.isOnError()) {
                 throw Exceptions.propagate(next.getThrowable());
@@ -269,7 +269,7 @@ public final class OperationNext {
 
         private static class TestObservable extends Observable<String> {
 
-            Observer<String> observer = null;
+            Observer<? super String> observer = null;
             Subscription s;
 
             public TestObservable(Subscription s) {
@@ -292,7 +292,7 @@ public final class OperationNext {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 this.observer = observer;
                 return s;
             }
@@ -318,10 +318,10 @@ public final class OperationNext {
             final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
             final AtomicBoolean running = new AtomicBoolean(true);
             final AtomicInteger count = new AtomicInteger(0);
-            final Observable<Integer> obs = Observable.create(new Func1<Observer<Integer>, Subscription>() {
+            final Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
 
                 @Override
-                public Subscription call(final Observer<Integer> o) {
+                public Subscription onSubscribe(final Observer<? super Integer> o) {
                     new Thread(new Runnable() {
 
                         @Override

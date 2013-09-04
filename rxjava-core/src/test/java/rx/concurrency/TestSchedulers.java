@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -252,9 +253,9 @@ public class TestSchedulers {
 
     @Test
     public void testRecursiveScheduler1() {
-        Observable<Integer> obs = Observable.create(new Func1<Observer<Integer>, Subscription>() {
+        Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
             @Override
-            public Subscription call(final Observer<Integer> observer) {
+            public Subscription onSubscribe(final Observer<? super Integer> observer) {
                 return Schedulers.currentThread().schedule(0, new Func2<Scheduler, Integer, Subscription>() {
                     @Override
                     public Subscription call(Scheduler scheduler, Integer i) {
@@ -290,9 +291,9 @@ public class TestSchedulers {
         final CountDownLatch latch = new CountDownLatch(10);
         final CountDownLatch completionLatch = new CountDownLatch(1);
 
-        Observable<Integer> obs = Observable.create(new Func1<Observer<Integer>, Subscription>() {
+        Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
             @Override
-            public Subscription call(final Observer<Integer> observer) {
+            public Subscription onSubscribe(final Observer<? super Integer> observer) {
 
                 return Schedulers.threadPoolForComputation().schedule(new BooleanSubscription(), new Func2<Scheduler, BooleanSubscription, Subscription>() {
                     @Override
@@ -393,10 +394,10 @@ public class TestSchedulers {
 
         final int count = 10;
         final CountDownLatch latch = new CountDownLatch(count);
-        Observable<String> o = Observable.create(new Func1<Observer<String>, Subscription>() {
+        Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription call(final Observer<String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 for (int i = 0; i < count; i++) {
                     final int v = i;
                     new Thread(new Runnable() {
@@ -453,10 +454,10 @@ public class TestSchedulers {
 
                     @Override
                     public Observable<String> call(final String v) {
-                        return Observable.create(new Func1<Observer<String>, Subscription>() {
+                        return Observable.create(new OnSubscribeFunc<String>() {
 
                             @Override
-                            public Subscription call(final Observer<String> observer) {
+                            public Subscription onSubscribe(final Observer<? super String> observer) {
                                 observer.onNext("value_after_map-" + v);
                                 observer.onCompleted();
                                 return Subscriptions.empty();

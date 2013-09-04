@@ -19,8 +19,6 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -209,7 +207,7 @@ public class RxJavaPlugins {
                 RxJavaObservableExecutionHook impl = p.getObservableExecutionHook();
                 assertTrue(impl instanceof RxJavaObservableExecutionHookTestImpl);
             } finally {
-                System.clearProperty("rxjava.plugin.RxJavaErrorHandler.implementation");
+                System.clearProperty("rxjava.plugin.RxJavaObservableExecutionHook.implementation");
             }
         }
 

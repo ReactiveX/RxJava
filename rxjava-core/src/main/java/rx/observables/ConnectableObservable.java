@@ -18,7 +18,6 @@ package rx.observables;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
 
 /**
  * A ConnectableObservable resembles an ordinary {@link Observable}, except that it does not begin
@@ -37,7 +36,7 @@ import rx.util.functions.Func1;
 
 public abstract class ConnectableObservable<T> extends Observable<T> {
 
-    protected ConnectableObservable(Func1<Observer<T>, Subscription> onSubscribe) {
+    protected ConnectableObservable(OnSubscribeFunc<T> onSubscribe) {
         super(onSubscribe);
     }
 
