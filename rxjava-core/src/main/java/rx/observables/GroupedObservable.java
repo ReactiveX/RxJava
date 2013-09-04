@@ -16,8 +16,6 @@
 package rx.observables;
 
 import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
 import rx.util.functions.Func1;
 
 /**
@@ -32,7 +30,7 @@ import rx.util.functions.Func1;
 public class GroupedObservable<K, T> extends Observable<T> {
     private final K key;
 
-    public GroupedObservable(K key, Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe) {
+    public GroupedObservable(K key, OnSubscribeFunc<T> onSubscribe) {
         super(onSubscribe);
         this.key = key;
     }

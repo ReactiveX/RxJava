@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -33,11 +34,11 @@ import rx.util.functions.Func1;
  */
 public final class OperationFilter<T> {
 
-    public static <T> Func1<Observer<? super T>, Subscription> filter(Observable<? extends T> that, Func1<? super T, Boolean> predicate) {
+    public static <T> OnSubscribeFunc<T> filter(Observable<? extends T> that, Func1<? super T, Boolean> predicate) {
         return new Filter<T>(that, predicate);
     }
 
-    private static class Filter<T> implements Func1<Observer<? super T>, Subscription> {
+    private static class Filter<T> implements OnSubscribeFunc<T> {
 
         private final Observable<? extends T> that;
         private final Func1<? super T, Boolean> predicate;

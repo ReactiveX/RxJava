@@ -25,11 +25,11 @@ import org.junit.Test;
 
 import rx.Notification;
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.Exceptions;
-import rx.util.functions.Func1;
 
 /**
  * Returns an Iterator that iterates over all items emitted by a specified Observable.
@@ -128,7 +128,7 @@ public class OperationToIterator {
 
     @Test(expected = TestException.class)
     public void testToIteratorWithException() {
-        Observable<String> obs = Observable.create(new Func1<Observer<? super String>, Subscription>() {
+        Observable<String> obs = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
             public Subscription call(Observer<? super String> observer) {

@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -252,7 +253,7 @@ public class TestSchedulers {
 
     @Test
     public void testRecursiveScheduler1() {
-        Observable<Integer> obs = Observable.create(new Func1<Observer<? super Integer>, Subscription>() {
+        Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
             @Override
             public Subscription call(final Observer<? super Integer> observer) {
                 return Schedulers.currentThread().schedule(0, new Func2<Scheduler, Integer, Subscription>() {
@@ -290,7 +291,7 @@ public class TestSchedulers {
         final CountDownLatch latch = new CountDownLatch(10);
         final CountDownLatch completionLatch = new CountDownLatch(1);
 
-        Observable<Integer> obs = Observable.create(new Func1<Observer<? super Integer>, Subscription>() {
+        Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
             @Override
             public Subscription call(final Observer<? super Integer> observer) {
 
@@ -393,7 +394,7 @@ public class TestSchedulers {
 
         final int count = 10;
         final CountDownLatch latch = new CountDownLatch(count);
-        Observable<String> o = Observable.create(new Func1<Observer<? super String>, Subscription>() {
+        Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
             public Subscription call(final Observer<? super String> observer) {
@@ -453,7 +454,7 @@ public class TestSchedulers {
 
                     @Override
                     public Observable<String> call(final String v) {
-                        return Observable.create(new Func1<Observer<? super String>, Subscription>() {
+                        return Observable.create(new OnSubscribeFunc<String>() {
 
                             @Override
                             public Subscription call(final Observer<? super String> observer) {

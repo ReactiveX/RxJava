@@ -35,11 +35,11 @@ import org.junit.Test;
 
 import rx.Notification;
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.Exceptions;
-import rx.util.functions.Func1;
 
 /**
  * Returns an Iterable that blocks until the Observable emits another item, then returns that item.
@@ -318,7 +318,7 @@ public final class OperationNext {
             final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
             final AtomicBoolean running = new AtomicBoolean(true);
             final AtomicInteger count = new AtomicInteger(0);
-            final Observable<Integer> obs = Observable.create(new Func1<Observer<? super Integer>, Subscription>() {
+            final Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
 
                 @Override
                 public Subscription call(final Observer<? super Integer> o) {

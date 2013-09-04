@@ -33,10 +33,10 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.BooleanSubscription;
-import rx.util.functions.Func1;
 
 /**
  * Returns an Observable that emits the items emitted by two or more Observables, one after the
@@ -56,19 +56,19 @@ public final class OperationConcat {
      *            An observable sequence of elements to project.
      * @return An observable sequence whose elements are the result of combining the output from the list of Observables.
      */
-    public static <T> Func1<Observer<? super T>, Subscription> concat(final Observable<? extends T>... sequences) {
+    public static <T> OnSubscribeFunc<T> concat(final Observable<? extends T>... sequences) {
         return concat(Observable.from(sequences));
     }
 
-    public static <T> Func1<Observer<? super T>, Subscription> concat(final List<? extends Observable<? extends T>> sequences) {
+    public static <T> OnSubscribeFunc<T> concat(final List<? extends Observable<? extends T>> sequences) {
         return concat(Observable.from(sequences));
     }
 
-    public static <T> Func1<Observer<? super T>, Subscription> concat(final Observable<? extends Observable<? extends T>> sequences) {
+    public static <T> OnSubscribeFunc<T> concat(final Observable<? extends Observable<? extends T>> sequences) {
         return new Concat<T>(sequences);
     }
 
-    private static class Concat<T> implements Func1<Observer<? super T>, Subscription> {
+    private static class Concat<T> implements OnSubscribeFunc<T> {
         private Observable<? extends Observable<? extends T>> sequences;
         private SafeObservableSubscription innerSubscription = null;
 
@@ -217,7 +217,7 @@ public final class OperationConcat {
             final Observable<String> odds = Observable.from(o);
             final Observable<String> even = Observable.from(e);
 
-            Observable<Observable<String>> observableOfObservables = Observable.create(new Func1<Observer<? super Observable<String>>, Subscription>() {
+            Observable<Observable<String>> observableOfObservables = Observable.create(new OnSubscribeFunc<Observable<String>>() {
 
                 @Override
                 public Subscription call(Observer<? super Observable<String>> observer) {
@@ -288,7 +288,7 @@ public final class OperationConcat {
             final CountDownLatch allowThird = new CountDownLatch(1);
 
             final AtomicReference<Thread> parent = new AtomicReference<Thread>();
-            Observable<Observable<String>> observableOfObservables = Observable.create(new Func1<Observer<? super Observable<String>>, Subscription>() {
+            Observable<Observable<String>> observableOfObservables = Observable.create(new OnSubscribeFunc<Observable<String>>() {
 
                 @Override
                 public Subscription call(final Observer<? super Observable<String>> observer) {
@@ -404,7 +404,7 @@ public final class OperationConcat {
             final CountDownLatch callOnce = new CountDownLatch(1);
             final CountDownLatch okToContinue = new CountDownLatch(1);
             TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(callOnce, okToContinue, odds, even);
-            Func1<Observer<? super String>, Subscription> concatF = concat(observableOfObservables);
+            OnSubscribeFunc<String> concatF = concat(observableOfObservables);
             Observable<String> concat = Observable.create(concatF);
             concat.subscribe(observer);
             try {
@@ -444,7 +444,7 @@ public final class OperationConcat {
             Observer<String> aObserver = mock(Observer.class);
             @SuppressWarnings("unchecked")
             TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(w1, w2);
-            Func1<Observer<? super String>, Subscription> concatF = concat(observableOfObservables);
+            OnSubscribeFunc<String> concatF = concat(observableOfObservables);
 
             Observable<String> concat = Observable.create(concatF);
 
@@ -480,7 +480,7 @@ public final class OperationConcat {
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
-            Observable<Observable<String>> observableOfObservables = Observable.create(new Func1<Observer<? super Observable<String>>, Subscription>() {
+            Observable<Observable<String>> observableOfObservables = Observable.create(new OnSubscribeFunc<Observable<String>>() {
 
                 @Override
                 public Subscription call(Observer<? super Observable<String>> observer) {
@@ -584,7 +584,7 @@ public final class OperationConcat {
             Observer<String> aObserver = mock(Observer.class);
             @SuppressWarnings("unchecked")
             TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(w1, w2);
-            Func1<Observer<? super String>, Subscription> concatF = concat(observableOfObservables);
+            OnSubscribeFunc<String> concatF = concat(observableOfObservables);
 
             Observable<String> concat = Observable.create(concatF);
 

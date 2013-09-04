@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func1;
 
 /**
  * Converts a Future into an Observable.
@@ -39,7 +39,7 @@ import rx.util.functions.Func1;
  * <code>Observable.subscribe(Observer)</code> does nothing.
  */
 public class OperationToObservableFuture {
-    private static class ToObservableFuture<T> implements Func1<Observer<? super T>, Subscription> {
+    private static class ToObservableFuture<T> implements OnSubscribeFunc<T> {
         private final Future<? extends T> that;
         private final Long time;
         private final TimeUnit unit;
@@ -75,11 +75,11 @@ public class OperationToObservableFuture {
         }
     }
 
-    public static <T> Func1<Observer<? super T>, Subscription> toObservableFuture(final Future<? extends T> that) {
+    public static <T> OnSubscribeFunc<T> toObservableFuture(final Future<? extends T> that) {
         return new ToObservableFuture<T>(that);
     }
 
-    public static <T> Func1<Observer<? super T>, Subscription> toObservableFuture(final Future<? extends T> that, long time, TimeUnit unit) {
+    public static <T> OnSubscribeFunc<T> toObservableFuture(final Future<? extends T> that, long time, TimeUnit unit) {
         return new ToObservableFuture<T>(that, time, unit);
     }
 

@@ -27,9 +27,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
 
 /**
  * Returns an Observable that emits a single item, a list composed of all the items emitted by the
@@ -47,11 +47,11 @@ import rx.util.functions.Func1;
  */
 public final class OperationToObservableList<T> {
 
-    public static <T> Func1<Observer<? super List<T>>, Subscription> toObservableList(Observable<? extends T> that) {
+    public static <T> OnSubscribeFunc<List<T>> toObservableList(Observable<? extends T> that) {
         return new ToObservableList<T>(that);
     }
 
-    private static class ToObservableList<T> implements Func1<Observer<? super List<T>>, Subscription> {
+    private static class ToObservableList<T> implements OnSubscribeFunc<List<T>> {
 
         private final Observable<? extends T> that;
 

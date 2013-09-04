@@ -25,7 +25,6 @@ import rx.Subscription;
 import rx.observables.ConnectableObservable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
-import rx.util.functions.Func1;
 
 public class OperationMulticast {
     public static <T, R> ConnectableObservable<R> multicast(Observable<? extends T> source, final Subject<T, R> subject) {
@@ -41,7 +40,7 @@ public class OperationMulticast {
         private Subscription subscription;
 
         public MulticastConnectableObservable(Observable<? extends T> source, final Subject<T, R> subject) {
-            super(new Func1<Observer<? super R>, Subscription>() {
+            super(new OnSubscribeFunc<R>() {
                 @Override
                 public Subscription call(Observer<? super R> observer) {
                     return subject.subscribe(observer);

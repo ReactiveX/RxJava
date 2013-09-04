@@ -21,10 +21,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Action0;
-import rx.util.functions.Func1;
 
 /**
  * Registers an action to be called when an Observable invokes onComplete or onError.
@@ -52,8 +52,8 @@ public final class OperationFinally {
      *         the given action will be called.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN Observable.Finally method</a>
      */
-    public static <T> Func1<Observer<? super T>, Subscription> finallyDo(final Observable<? extends T> sequence, final Action0 action) {
-        return new Func1<Observer<? super T>, Subscription>() {
+    public static <T> OnSubscribeFunc<T> finallyDo(final Observable<? extends T> sequence, final Action0 action) {
+        return new OnSubscribeFunc<T>() {
             @Override
             public Subscription call(Observer<? super T> observer) {
                 return new Finally<T>(sequence, action).call(observer);
@@ -61,7 +61,7 @@ public final class OperationFinally {
         };
     }
 
-    private static class Finally<T> implements Func1<Observer<? super T>, Subscription> {
+    private static class Finally<T> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> sequence;
         private final Action0 finalAction;
 

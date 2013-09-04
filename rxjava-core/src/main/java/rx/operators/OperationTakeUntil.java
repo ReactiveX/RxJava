@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -89,7 +90,7 @@ public class OperationTakeUntil {
 
     }
 
-    private static class SourceObservable<T> implements Func1<Observer<? super Notification<T>>, Subscription> {
+    private static class SourceObservable<T> implements OnSubscribeFunc<Notification<T>> {
         private final Observable<? extends T> sequence;
 
         private SourceObservable(Observable<? extends T> sequence) {
@@ -117,7 +118,7 @@ public class OperationTakeUntil {
         }
     }
 
-    private static class OtherObservable<T, E> implements Func1<Observer<? super Notification<T>>, Subscription> {
+    private static class OtherObservable<T, E> implements OnSubscribeFunc<Notification<T>> {
         private final Observable<? extends E> sequence;
 
         private OtherObservable(Observable<? extends E> sequence) {

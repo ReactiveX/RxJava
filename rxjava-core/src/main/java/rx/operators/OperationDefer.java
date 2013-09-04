@@ -20,10 +20,10 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func0;
-import rx.util.functions.Func1;
 
 /**
  * Do not create the Observable until an Observer subscribes; create a fresh Observable on each
@@ -37,9 +37,9 @@ import rx.util.functions.Func1;
  */
 public final class OperationDefer {
 
-    public static <T> Func1<Observer<? super T>, Subscription> defer(final Func0<? extends Observable<? extends T>> observableFactory) {
+    public static <T> OnSubscribeFunc<T> defer(final Func0<? extends Observable<? extends T>> observableFactory) {
 
-        return new Func1<Observer<? super T>, Subscription>() {
+        return new OnSubscribeFunc<T>() {
             @Override
             public Subscription call(Observer<? super T> observer) {
                 Observable<? extends T> obs = observableFactory.call();

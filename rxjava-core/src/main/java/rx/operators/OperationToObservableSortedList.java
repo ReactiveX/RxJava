@@ -29,9 +29,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 /**
@@ -53,7 +53,7 @@ public final class OperationToObservableSortedList<T> {
      *             if T objects do not implement Comparable
      * @return an observable containing the sorted list
      */
-    public static <T> Func1<Observer<? super List<T>>, Subscription> toSortedList(Observable<? extends T> sequence) {
+    public static <T> OnSubscribeFunc<List<T>> toSortedList(Observable<? extends T> sequence) {
         return new ToObservableSortedList<T>(sequence);
     }
 
@@ -64,11 +64,11 @@ public final class OperationToObservableSortedList<T> {
      * @param sortFunction
      * @return an observable containing the sorted list
      */
-    public static <T> Func1<Observer<? super List<T>>, Subscription> toSortedList(Observable<? extends T> sequence, Func2<? super T, ? super T, Integer> sortFunction) {
+    public static <T> OnSubscribeFunc<List<T>> toSortedList(Observable<? extends T> sequence, Func2<? super T, ? super T, Integer> sortFunction) {
         return new ToObservableSortedList<T>(sequence, sortFunction);
     }
 
-    private static class ToObservableSortedList<T> implements Func1<Observer<? super List<T>>, Subscription> {
+    private static class ToObservableSortedList<T> implements OnSubscribeFunc<List<T>> {
 
         private final Observable<? extends T> that;
         private final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();

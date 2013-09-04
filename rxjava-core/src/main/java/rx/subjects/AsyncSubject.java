@@ -29,7 +29,6 @@ import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
-import rx.util.functions.Func1;
 
 /**
  * Subject that publishes only the last event to each {@link Observer} that has subscribed when the
@@ -70,7 +69,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
     public static <T> AsyncSubject<T> create() {
         final ConcurrentHashMap<Subscription, Observer<? super T>> observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
 
-        Func1<Observer<? super T>, Subscription> onSubscribe = new Func1<Observer<? super T>, Subscription>() {
+        OnSubscribeFunc<T> onSubscribe = new OnSubscribeFunc<T>() {
             @Override
             public Subscription call(Observer<? super T> observer) {
                 final SafeObservableSubscription subscription = new SafeObservableSubscription();
@@ -95,7 +94,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
     private final ConcurrentHashMap<Subscription, Observer<? super T>> observers;
     private final AtomicReference<T> currentValue;
 
-    protected AsyncSubject(Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers) {
+    protected AsyncSubject(OnSubscribeFunc<T> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers) {
         super(onSubscribe);
         this.observers = observers;
         this.currentValue = new AtomicReference<T>();

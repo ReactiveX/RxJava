@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -35,7 +36,6 @@ import rx.concurrency.Schedulers;
 import rx.concurrency.TestScheduler;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-import rx.util.functions.Func1;
 
 /**
  * Returns an Observable that emits the results of sampling the items emitted by the source
@@ -48,18 +48,18 @@ public final class OperationSample {
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> Func1<Observer<? super T>, Subscription> sample(final Observable<? extends T> source, long period, TimeUnit unit) {
+    public static <T> OnSubscribeFunc<T> sample(final Observable<? extends T> source, long period, TimeUnit unit) {
         return new Sample<T>(source, period, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
     }
 
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> Func1<Observer<? super T>, Subscription> sample(final Observable<? extends T> source, long period, TimeUnit unit, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> sample(final Observable<? extends T> source, long period, TimeUnit unit, Scheduler scheduler) {
         return new Sample<T>(source, period, unit, scheduler);
     }
     
-    private static class Sample<T> implements Func1<Observer<? super T>, Subscription> {
+    private static class Sample<T> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> source;
         private final long period;
         private final TimeUnit unit;
@@ -136,7 +136,7 @@ public final class OperationSample {
         
         @Test
         public void testSample() {
-            Observable<Long> source = Observable.create(new Func1<Observer<? super Long>, Subscription>() {
+            Observable<Long> source = Observable.create(new OnSubscribeFunc<Long>() {
                 @Override
                 public Subscription call(final Observer<? super Long> observer1) {
                     scheduler.schedule(new Action0() {

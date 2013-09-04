@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import rx.Observable.OnSubscribeFunc;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
@@ -50,7 +51,7 @@ public class ObservableTests {
     @Test
     public void testCreate() {
 
-        Observable<String> observable = Observable.create(new Func1<Observer<? super String>, Subscription>() {
+        Observable<String> observable = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
             public Subscription call(Observer<? super String> Observer) {
@@ -121,7 +122,7 @@ public class ObservableTests {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         final RuntimeException re = new RuntimeException("bad impl");
-        Observable<String> o = Observable.create(new Func1<Observer<? super String>, Subscription>() {
+        Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
             public Subscription call(Observer<? super String> t1) {
@@ -161,7 +162,7 @@ public class ObservableTests {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        Observable.create(new Func1<Observer<? super String>, Subscription>() {
+        Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
             public Subscription call(final Observer<? super String> observer) {
@@ -227,7 +228,7 @@ public class ObservableTests {
     public void testCustomObservableWithErrorInObserverSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        Observable.create(new Func1<Observer<? super String>, Subscription>() {
+        Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
             public Subscription call(Observer<? super String> observer) {
@@ -278,7 +279,7 @@ public class ObservableTests {
     public void testCustomObservableWithErrorInObservableSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        Observable.create(new Func1<Observer<? super String>, Subscription>() {
+        Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
             public Subscription call(Observer<? super String> observer) {
@@ -317,7 +318,7 @@ public class ObservableTests {
     @Test
     public void testPublish() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableObservable<String> o = Observable.create(new Func1<Observer<? super String>, Subscription>() {
+        ConnectableObservable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
             public Subscription call(final Observer<? super String> observer) {
@@ -371,7 +372,7 @@ public class ObservableTests {
     @Test
     public void testReplay() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableObservable<String> o = Observable.create(new Func1<Observer<? super String>, Subscription>() {
+        ConnectableObservable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
             public Subscription call(final Observer<? super String> observer) {
@@ -428,7 +429,7 @@ public class ObservableTests {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.create(new Func1<Observer<? super String>, Subscription>() {
+        Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
             public Subscription call(final Observer<? super String> observer) {
@@ -516,7 +517,7 @@ public class ObservableTests {
     public void testErrorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-        Observable.create(new Func1<Observer<? super String>, Subscription>() {
+        Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
             public Subscription call(final Observer<? super String> observer) {

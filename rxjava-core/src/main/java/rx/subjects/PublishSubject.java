@@ -70,7 +70,7 @@ public class PublishSubject<T> extends Subject<T, T> {
         final ConcurrentHashMap<Subscription, Observer<? super T>> observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
         final AtomicReference<Notification<? extends T>> terminalState = new AtomicReference<Notification<? extends T>>();
 
-        Func1<Observer<? super T>, Subscription> onSubscribe = new Func1<Observer<? super T>, Subscription>() {
+        OnSubscribeFunc<T> onSubscribe = new OnSubscribeFunc<T>() {
             @Override
             public Subscription call(Observer<? super T> observer) {
                 // shortcut check if terminal state exists already
@@ -132,7 +132,7 @@ public class PublishSubject<T> extends Subject<T, T> {
     private final ConcurrentHashMap<Subscription, Observer<? super T>> observers;
     private final AtomicReference<Notification<? extends T>> terminalState;
 
-    protected PublishSubject(Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers, AtomicReference<Notification<? extends T>> terminalState) {
+    protected PublishSubject(OnSubscribeFunc<T> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers, AtomicReference<Notification<? extends T>> terminalState) {
         super(onSubscribe);
         this.observers = observers;
         this.terminalState = terminalState;
@@ -205,7 +205,7 @@ public class PublishSubject<T> extends Subject<T, T> {
                 }
             });
 
-            Subscription sub = Observable.create(new Func1<Observer<? super Integer>, Subscription>() {
+            Subscription sub = Observable.create(new OnSubscribeFunc<Integer>() {
                 @Override
                 public Subscription call(final Observer<? super Integer> observer) {
                     final AtomicBoolean stop = new AtomicBoolean(false);

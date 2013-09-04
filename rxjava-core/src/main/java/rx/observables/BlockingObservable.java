@@ -60,7 +60,7 @@ import rx.util.functions.Func1;
  */
 public class BlockingObservable<T> extends Observable<T> {
 
-    protected BlockingObservable(Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe) {
+    protected BlockingObservable(OnSubscribeFunc<T> onSubscribe) {
         super(onSubscribe);
     }
     
@@ -76,7 +76,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * Convert an Observable into a BlockingObservable.
      */
     public static <T> BlockingObservable<T> from(final Observable<? extends T> o) {
-        return new BlockingObservable<T>(new Func1<Observer<? super T>, Subscription>() {
+        return new BlockingObservable<T>(new OnSubscribeFunc<T>() {
 
             @Override
             public Subscription call(Observer<? super T> observer) {
@@ -784,7 +784,7 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test(expected = TestException.class)
         public void testToIterableWithException() {
-            BlockingObservable<String> obs = BlockingObservable.from(create(new Func1<Observer<? super String>, Subscription>() {
+            BlockingObservable<String> obs = BlockingObservable.from(create(new OnSubscribeFunc<String>() {
 
                 @Override
                 public Subscription call(Observer<? super String> observer) {
@@ -807,7 +807,7 @@ public class BlockingObservable<T> extends Observable<T> {
         @Test
         public void testForEachWithError() {
             try {
-                BlockingObservable.from(Observable.create(new Func1<Observer<? super String>, Subscription>() {
+                BlockingObservable.from(Observable.create(new OnSubscribeFunc<String>() {
 
                     @Override
                     public Subscription call(final Observer<? super String> observer) {

@@ -15,12 +15,8 @@
  */
 package rx.swing.sources;
 
-import static java.util.Arrays.asList;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static java.util.Arrays.*;
+import static org.mockito.Mockito.*;
 
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -36,12 +32,12 @@ import org.mockito.InOrder;
 import org.mockito.Matchers;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 public enum KeyEventSource { ; // no instances
@@ -50,7 +46,7 @@ public enum KeyEventSource { ; // no instances
      * @see SwingObservable.fromKeyEvents(Component)
      */
     public static Observable<KeyEvent> fromKeyEventsOf(final Component component) {
-        return Observable.create(new Func1<Observer<? super KeyEvent>, Subscription>() {
+        return Observable.create(new OnSubscribeFunc<KeyEvent>() {
             @Override
             public Subscription call(final Observer<? super KeyEvent> observer) {
                 final KeyListener listener = new KeyListener() {

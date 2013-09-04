@@ -22,9 +22,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
 
 /**
  * Wraps an Observable in another Observable that ensures that the resulting Observable is
@@ -57,11 +57,11 @@ public final class OperationSynchronize<T> {
      * @param <T>
      * @return the wrapped synchronized observable sequence
      */
-    public static <T> Func1<Observer<? super T>, Subscription> synchronize(Observable<? extends T> observable) {
+    public static <T> OnSubscribeFunc<T> synchronize(Observable<? extends T> observable) {
         return new Synchronize<T>(observable);
     }
 
-    private static class Synchronize<T> implements Func1<Observer<? super T>, Subscription> {
+    private static class Synchronize<T> implements OnSubscribeFunc<T> {
 
         public Synchronize(Observable<? extends T> innerObservable) {
             this.innerObservable = innerObservable;

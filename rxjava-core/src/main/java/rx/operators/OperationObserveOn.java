@@ -27,12 +27,12 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.ImmediateScheduler;
 import rx.concurrency.Schedulers;
-import rx.util.functions.Func1;
 
 /**
  * Asynchronously notify Observers on the specified Scheduler.
@@ -41,11 +41,11 @@ import rx.util.functions.Func1;
  */
 public class OperationObserveOn {
 
-    public static <T> Func1<Observer<? super T>, Subscription> observeOn(Observable<? extends T> source, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> observeOn(Observable<? extends T> source, Scheduler scheduler) {
         return new ObserveOn<T>(source, scheduler);
     }
 
-    private static class ObserveOn<T> implements Func1<Observer<? super T>, Subscription> {
+    private static class ObserveOn<T> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> source;
         private final Scheduler scheduler;
 

@@ -28,10 +28,10 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 import rx.util.functions.Func3;
 import rx.util.functions.Func4;
@@ -59,14 +59,14 @@ import rx.util.functions.Functions;
  */
 public final class OperationZip {
 
-    public static <T1, T2, R> Func1<Observer<? super R>, Subscription> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> zipFunction) {
+    public static <T1, T2, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T1>(a, o1));
         a.addObserver(new ZipObserver<R, T2>(a, o2));
         return a;
     }
 
-    public static <T1, T2, T3, R> Func1<Observer<? super R>, Subscription> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
+    public static <T1, T2, T3, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T1>(a, o1));
         a.addObserver(new ZipObserver<R, T2>(a, o2));
@@ -74,7 +74,7 @@ public final class OperationZip {
         return a;
     }
 
-    public static <T1, T2, T3, T4, R> Func1<Observer<? super R>, Subscription> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
+    public static <T1, T2, T3, T4, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T1>(a, o1));
         a.addObserver(new ZipObserver<R, T2>(a, o2));
@@ -83,7 +83,7 @@ public final class OperationZip {
         return a;
     }
 
-    public static <T1, T2, T3, T4, T5, R> Func1<Observer<? super R>, Subscription> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
+    public static <T1, T2, T3, T4, T5, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T1>(a, o1));
         a.addObserver(new ZipObserver<R, T2>(a, o2));
@@ -93,7 +93,7 @@ public final class OperationZip {
         return a;
     }
 
-    public static <T1, T2, T3, T4, T5, T6, R> Func1<Observer<? super R>, Subscription> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6,
+    public static <T1, T2, T3, T4, T5, T6, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6,
             Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T1>(a, o1));
@@ -105,7 +105,7 @@ public final class OperationZip {
         return a;
     }
 
-    public static <T1, T2, T3, T4, T5, T6, T7, R> Func1<Observer<? super R>, Subscription> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7,
+    public static <T1, T2, T3, T4, T5, T6, T7, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7,
             Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T1>(a, o1));
@@ -118,7 +118,7 @@ public final class OperationZip {
         return a;
     }
 
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Func1<Observer<? super R>, Subscription> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
             Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T1>(a, o1));
@@ -132,7 +132,7 @@ public final class OperationZip {
         return a;
     }
 
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Func1<Observer<? super R>, Subscription> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
             Observable<? extends T9> o9, Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(zipFunction));
         a.addObserver(new ZipObserver<R, T1>(a, o1));
@@ -147,7 +147,7 @@ public final class OperationZip {
         return a;
     }
 
-    public static <R> Func1<Observer<? super R>, Subscription> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction) {
+    public static <R> OnSubscribeFunc<R> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(zipFunction);
         for (Observable<?> w : ws) {
             ZipObserver<R, Object> zipObserver = new ZipObserver<R, Object>(a, w);
@@ -204,7 +204,7 @@ public final class OperationZip {
      * 
      * @param <T>
      */
-    private static class Aggregator<T> implements Func1<Observer<? super T>, Subscription> {
+    private static class Aggregator<T> implements OnSubscribeFunc<T> {
 
         private volatile SynchronizedObserver<T> observer;
         private final FuncN<? extends T> zipFunction;

@@ -33,9 +33,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
 
 /**
  * Flattens a list of Observables into one Observable sequence, without any transformation.
@@ -55,9 +55,9 @@ public final class OperationMerge {
      * @return An observable sequence whose elements are the result of flattening the output from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">Observable.Merge(TSource) Method (IObservable(TSource)[])</a>
      */
-    public static <T> Func1<Observer<? super T>, Subscription> merge(final Observable<? extends Observable<? extends T>> o) {
+    public static <T> OnSubscribeFunc<T> merge(final Observable<? extends Observable<? extends T>> o) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new Func1<Observer<? super T>, Subscription>() {
+        return new OnSubscribeFunc<T>() {
 
             @Override
             public Subscription call(Observer<? super T> observer) {
@@ -66,12 +66,12 @@ public final class OperationMerge {
         };
     }
 
-    public static <T> Func1<Observer<? super T>, Subscription> merge(final Observable<? extends T>... sequences) {
+    public static <T> OnSubscribeFunc<T> merge(final Observable<? extends T>... sequences) {
         return merge(Arrays.asList(sequences));
     }
 
-    public static <T> Func1<Observer<? super T>, Subscription> merge(final List<? extends Observable<? extends T>> sequences) {
-        return merge(Observable.create(new Func1<Observer<? super Observable<? extends T>>, Subscription>() {
+    public static <T> OnSubscribeFunc<T> merge(final List<? extends Observable<? extends T>> sequences) {
+        return merge(Observable.create(new OnSubscribeFunc<Observable<? extends T>>() {
 
             private volatile boolean unsubscribed = false;
 
@@ -112,7 +112,7 @@ public final class OperationMerge {
      * 
      * @param <T>
      */
-    private static final class MergeObservable<T> implements Func1<Observer<? super T>, Subscription> {
+    private static final class MergeObservable<T> implements OnSubscribeFunc<T> {
         private final Observable<? extends Observable<? extends T>> sequences;
         private final MergeSubscription ourSubscription = new MergeSubscription();
         private AtomicBoolean stopped = new AtomicBoolean(false);
@@ -295,7 +295,7 @@ public final class OperationMerge {
             final Observable<String> o1 = new TestSynchronousObservable();
             final Observable<String> o2 = new TestSynchronousObservable();
 
-            Observable<Observable<String>> observableOfObservables = Observable.create(new Func1<Observer<? super Observable<String>>, Subscription>() {
+            Observable<Observable<String>> observableOfObservables = Observable.create(new OnSubscribeFunc<Observable<String>>() {
 
                 @Override
                 public Subscription call(Observer<? super Observable<String>> observer) {

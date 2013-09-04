@@ -113,8 +113,19 @@ public class Observable<T> {
 
     private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
-    private final Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe;
+    private final OnSubscribeFunc<T> onSubscribe;
 
+    /**
+     * Function interface for work to be performed when an {@link Observable} is subscribed to via {@link Observable#subscribe(Observer)}
+     * 
+     * @param <T>
+     */
+    public static interface OnSubscribeFunc<T> extends Function<T> {
+
+        public Subscription call(Observer<? super T> t1);
+
+    }
+    
     /**
      * Observable with Function to execute when subscribed to.
      * <p>
@@ -124,7 +135,7 @@ public class Observable<T> {
      * @param onSubscribe
      *            {@link Func1} to be executed when {@link #subscribe(Observer)} is called.
      */
-    protected Observable(Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe) {
+    protected Observable(OnSubscribeFunc<T> onSubscribe) {
         this.onSubscribe = onSubscribe;
     }
 
@@ -162,7 +173,7 @@ public class Observable<T> {
      */
     public Subscription subscribe(Observer<? super T> observer) {
         // allow the hook to intercept and/or decorate
-        Func1<? super Observer<? super T>, ? extends Subscription> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
+        OnSubscribeFunc<T> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
         // validate and proceed
         if (observer == null) {
             throw new IllegalArgumentException("observer can not be null");
@@ -402,7 +413,7 @@ public class Observable<T> {
      */
     private static class NeverObservable<T> extends Observable<T> {
         public NeverObservable() {
-            super(new Func1<Observer<? super T>, Subscription>() {
+            super(new OnSubscribeFunc<T>() {
 
                 @Override
                 public Subscription call(Observer<? super T> t1) {
@@ -422,7 +433,7 @@ public class Observable<T> {
     private static class ThrowObservable<T> extends Observable<T> {
 
         public ThrowObservable(final Throwable exception) {
-            super(new Func1<Observer<? super T>, Subscription>() {
+            super(new OnSubscribeFunc<T>() {
 
                 /**
                  * Accepts an {@link Observer} and calls its {@link Observer#onError onError} method.
@@ -466,7 +477,7 @@ public class Observable<T> {
      * @return an Observable that, when an {@link Observer} subscribes to it, will execute the given
      *         function
      */
-    public static <T> Observable<T> create(Func1<? super Observer<? super T>, ? extends Subscription> func) {
+    public static <T> Observable<T> create(OnSubscribeFunc<T> func) {
         return new Observable<T>(func);
     }
 

@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
@@ -48,7 +49,7 @@ import rx.util.functions.Functions;
  */
 public final class OperationGroupBy {
 
-    public static <K, T, R> Func1<Observer<? super GroupedObservable<K, R>>, Subscription> groupBy(Observable<? extends T> source, final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) {
+    public static <K, T, R> OnSubscribeFunc<GroupedObservable<K, R>> groupBy(Observable<? extends T> source, final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) {
 
         final Observable<KeyValue<K, R>> keyval = source.map(new Func1<T, KeyValue<K, R>>() {
             @Override
@@ -63,11 +64,11 @@ public final class OperationGroupBy {
         return new GroupBy<K, R>(keyval);
     }
 
-    public static <K, T> Func1<Observer<? super GroupedObservable<K, T>>, Subscription> groupBy(Observable<? extends T> source, final Func1<? super T, ? extends K> keySelector) {
+    public static <K, T> OnSubscribeFunc<GroupedObservable<K, T>> groupBy(Observable<? extends T> source, final Func1<? super T, ? extends K> keySelector) {
         return groupBy(source, keySelector, Functions.<T> identity());
     }
 
-    private static class GroupBy<K, V> implements Func1<Observer<? super GroupedObservable<K, V>>, Subscription> {
+    private static class GroupBy<K, V> implements OnSubscribeFunc<GroupedObservable<K, V>> {
 
         private final Observable<KeyValue<K, V>> source;
         private final ConcurrentHashMap<K, GroupedSubject<K, V>> groupedObservables = new ConcurrentHashMap<K, GroupedSubject<K, V>>();
@@ -174,7 +175,7 @@ public final class OperationGroupBy {
 
         static <K, T> GroupedSubject<K, T> create(final K key, final GroupBy<K, T> parent) {
             final AtomicReference<Observer<? super T>> subscribedObserver = new AtomicReference<Observer<? super T>>(OperationGroupBy.<T>emptyObserver());
-            return new GroupedSubject<K, T>(key, new Func1<Observer<? super T>, Subscription>() {
+            return new GroupedSubject<K, T>(key, new OnSubscribeFunc<T>() {
 
                 private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
@@ -200,7 +201,7 @@ public final class OperationGroupBy {
 
         private final AtomicReference<Observer<? super T>> subscribedObserver;
 
-        public GroupedSubject(K key, Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe, AtomicReference<Observer<? super T>> subscribedObserver) {
+        public GroupedSubject(K key, OnSubscribeFunc<T> onSubscribe, AtomicReference<Observer<? super T>> subscribedObserver) {
             super(key, onSubscribe);
             this.subscribedObserver = subscribedObserver;
         }
@@ -372,7 +373,7 @@ public final class OperationGroupBy {
             final int count = 100;
             final int groupCount = 2;
 
-            Observable<Event> es = Observable.create(new Func1<Observer<? super Event>, Subscription>() {
+            Observable<Event> es = Observable.create(new OnSubscribeFunc<Event>() {
 
                 @Override
                 public Subscription call(final Observer<? super Event> observer) {
@@ -460,7 +461,7 @@ public final class OperationGroupBy {
             final int count = 100;
             final int groupCount = 2;
 
-            Observable<Event> es = Observable.create(new Func1<Observer<? super Event>, Subscription>() {
+            Observable<Event> es = Observable.create(new OnSubscribeFunc<Event>() {
 
                 @Override
                 public Subscription call(final Observer<? super Event> observer) {

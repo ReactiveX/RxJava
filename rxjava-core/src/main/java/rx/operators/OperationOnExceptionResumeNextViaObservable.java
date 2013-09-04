@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -52,11 +53,11 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnExceptionResumeNextViaObservable<T> {
 
-    public static <T> Func1<Observer<? super T>, Subscription> onExceptionResumeNextViaObservable(Observable<? extends T> originalSequence, Observable<? extends T> resumeSequence) {
+    public static <T> OnSubscribeFunc<T> onExceptionResumeNextViaObservable(Observable<? extends T> originalSequence, Observable<? extends T> resumeSequence) {
         return new OnExceptionResumeNextViaObservable<T>(originalSequence, resumeSequence);
     }
 
-    private static class OnExceptionResumeNextViaObservable<T> implements Func1<Observer<? super T>, Subscription> {
+    private static class OnExceptionResumeNextViaObservable<T> implements OnSubscribeFunc<T> {
 
         private final Observable<? extends T> resumeSequence;
         private final Observable<? extends T> originalSequence;

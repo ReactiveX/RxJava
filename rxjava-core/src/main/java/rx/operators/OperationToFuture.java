@@ -28,10 +28,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func1;
 
 /**
  * Returns a Future representing the single value emitted by an Observable.
@@ -162,7 +162,7 @@ public class OperationToFuture {
 
     @Test
     public void testToFutureWithException() {
-        Observable<String> obs = Observable.create(new Func1<Observer<? super String>, Subscription>() {
+        Observable<String> obs = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
             public Subscription call(Observer<? super String> observer) {

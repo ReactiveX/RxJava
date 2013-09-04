@@ -25,9 +25,9 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
 
 /**
  * Returns an Observable that emits the last <code>count</code> items emitted by the source
@@ -37,8 +37,8 @@ import rx.util.functions.Func1;
  */
 public final class OperationTakeLast {
 
-    public static <T> Func1<Observer<? super T>, Subscription> takeLast(final Observable<? extends T> items, final int count) {
-        return new Func1<Observer<? super T>, Subscription>() {
+    public static <T> OnSubscribeFunc<T> takeLast(final Observable<? extends T> items, final int count) {
+        return new OnSubscribeFunc<T>() {
 
             @Override
             public Subscription call(Observer<? super T> observer) {
@@ -48,7 +48,7 @@ public final class OperationTakeLast {
         };
     }
 
-    private static class TakeLast<T> implements Func1<Observer<? super T>, Subscription> {
+    private static class TakeLast<T> implements OnSubscribeFunc<T> {
         private final int count;
         private final Observable<? extends T> items;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();

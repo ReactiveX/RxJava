@@ -25,10 +25,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func1;
 
 /**
  * Returns an Observable that emits the first <code>num</code> items emitted by the source
@@ -50,9 +50,9 @@ public final class OperationTake {
      * @param num
      * @return the specified number of contiguous values from the start of the given observable sequence
      */
-    public static <T> Func1<Observer<? super T>, Subscription> take(final Observable<? extends T> items, final int num) {
+    public static <T> OnSubscribeFunc<T> take(final Observable<? extends T> items, final int num) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new Func1<Observer<? super T>, Subscription>() {
+        return new OnSubscribeFunc<T>() {
 
             @Override
             public Subscription call(Observer<? super T> observer) {
@@ -73,7 +73,7 @@ public final class OperationTake {
      * 
      * @param <T>
      */
-    private static class Take<T> implements Func1<Observer<? super T>, Subscription> {
+    private static class Take<T> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> items;
         private final int num;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
@@ -186,7 +186,7 @@ public final class OperationTake {
 
         @Test
         public void testTakeDoesntLeakErrors() {
-            Observable<String> source = Observable.create(new Func1<Observer<? super String>, Subscription>()
+            Observable<String> source = Observable.create(new OnSubscribeFunc<String>()
             {
                 @Override
                 public Subscription call(Observer<? super String> observer)
@@ -213,7 +213,7 @@ public final class OperationTake {
         public void testTakeZeroDoesntLeakError() {
             final AtomicBoolean subscribed = new AtomicBoolean(false);
             final AtomicBoolean unSubscribed = new AtomicBoolean(false);
-            Observable<String> source = Observable.create(new Func1<Observer<? super String>, Subscription>()
+            Observable<String> source = Observable.create(new OnSubscribeFunc<String>()
             {
                 @Override
                 public Subscription call(Observer<? super String> observer)

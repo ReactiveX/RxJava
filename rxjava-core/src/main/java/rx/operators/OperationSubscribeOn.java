@@ -21,12 +21,12 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
 import rx.util.functions.Action0;
-import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 /**
@@ -36,11 +36,11 @@ import rx.util.functions.Func2;
  */
 public class OperationSubscribeOn {
 
-    public static <T> Func1<Observer<? super T>, Subscription> subscribeOn(Observable<? extends T> source, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> subscribeOn(Observable<? extends T> source, Scheduler scheduler) {
         return new SubscribeOn<T>(source, scheduler);
     }
 
-    private static class SubscribeOn<T> implements Func1<Observer<? super T>, Subscription> {
+    private static class SubscribeOn<T> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> source;
         private final Scheduler scheduler;
 

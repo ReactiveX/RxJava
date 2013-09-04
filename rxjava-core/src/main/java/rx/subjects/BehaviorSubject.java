@@ -29,7 +29,6 @@ import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
-import rx.util.functions.Func1;
 
 /**
  * Subject that publishes the most recent and all subsequent events to each subscribed {@link Observer}.
@@ -74,7 +73,7 @@ public class BehaviorSubject<T> extends Subject<T, T> {
 
         final AtomicReference<T> currentValue = new AtomicReference<T>(defaultValue);
 
-        Func1<Observer<? super T>, Subscription> onSubscribe = new Func1<Observer<? super T>, Subscription>() {
+        OnSubscribeFunc<T> onSubscribe = new OnSubscribeFunc<T>() {
             @Override
             public Subscription call(Observer<? super T> observer) {
                 final SafeObservableSubscription subscription = new SafeObservableSubscription();
@@ -101,7 +100,7 @@ public class BehaviorSubject<T> extends Subject<T, T> {
     private final ConcurrentHashMap<Subscription, Observer<? super T>> observers;
     private final AtomicReference<T> currentValue;
 
-    protected BehaviorSubject(AtomicReference<T> currentValue, Func1<? super Observer<? super T>, ? extends Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers) {
+    protected BehaviorSubject(AtomicReference<T> currentValue, OnSubscribeFunc<T> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers) {
         super(onSubscribe);
         this.currentValue = currentValue;
         this.observers = observers;

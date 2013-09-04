@@ -74,7 +74,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
         onSubscribe.wrap(new SubscriptionFunc());
     }
 
-    private static final class DelegateSubscriptionFunc<T> implements Func1<Observer<? super T>, Subscription>
+    private static final class DelegateSubscriptionFunc<T> implements OnSubscribeFunc<T>
     {
         private Func1<? super Observer<? super T>, ? extends Subscription> delegate = null;
 
