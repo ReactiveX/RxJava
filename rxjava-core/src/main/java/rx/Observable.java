@@ -127,7 +127,7 @@ public class Observable<T> {
     /**
      * Observable with Function to execute when subscribed to.
      * <p>
-     * NOTE: Use {@link #create(Func1)} to create an Observable instead of this method unless you
+     * NOTE: Use {@link #create(OnSubscribeFunc)} to create an Observable instead of this constructor unless you
      * specifically have a need for inheritance.
      * 
      * @param onSubscribe
