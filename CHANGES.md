@@ -1,5 +1,15 @@
 # RxJava Releases #
 
+### Version 0.12.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.12.0%22)) ###
+
+* [Pull 343](https://github.com/Netflix/RxJava/pull/343) Covariant Support with super/extends and `OnSubscribeFunc` as type for `Observable.create`
+* [Pull 337](https://github.com/Netflix/RxJava/pull/337) Operator: `window`
+* [Pull 348](https://github.com/Netflix/RxJava/pull/348) Rename `switchDo` to `switchOnNext` (deprecate `switchDo` for eventual deletion)
+* [Pull 348](https://github.com/Netflix/RxJava/pull/348) Delete `switchDo` instance method in preference for static
+* [Pull 346](https://github.com/Netflix/RxJava/pull/346) Remove duplicate static methods from `BlockingObservable` 
+* [Pull 346](https://github.com/Netflix/RxJava/pull/346) `BlockingObservable` no longer extends from `Observable`
+* [Pull 345](https://github.com/Netflix/RxJava/pull/345) Remove unnecessary constructor from `Observable`
+
 ### Version 0.11.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.11.2%22)) ###
 
 * [Commit ccf53e8]( https://github.com/Netflix/RxJava/commit/ccf53e84835d99136cce80a4c508bae787d5da45) Update to Scala 2.10.2
