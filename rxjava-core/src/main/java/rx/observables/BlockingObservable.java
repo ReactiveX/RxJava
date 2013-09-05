@@ -109,7 +109,7 @@ public class BlockingObservable<T> {
      * <p>
      * NOTE: This will block even if the Observable is asynchronous.
      * <p>
-     * This is similar to {@link #subscribe(Observer)}, but it blocks. Because it blocks it does
+     * This is similar to {@link Observable#subscribe(Observer)}, but it blocks. Because it blocks it does
      * not need the {@link Observer#onCompleted()} or {@link Observer#onError(Throwable)} methods.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
