@@ -61,6 +61,7 @@ import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
 import rx.operators.OperationToObservableList;
 import rx.operators.OperationToObservableSortedList;
+import rx.operators.OperationWindow;
 import rx.operators.OperationZip;
 import rx.operators.SafeObservableSubscription;
 import rx.operators.SafeObserver;
@@ -71,9 +72,9 @@ import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
-import rx.util.BufferClosing;
-import rx.util.BufferOpening;
+import rx.util.Closing;
 import rx.util.OnErrorNotImplementedException;
+import rx.util.Opening;
 import rx.util.Range;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
@@ -138,7 +139,6 @@ public class Observable<T> {
     }
 
     private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
-
 
     /**
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to
@@ -1036,7 +1036,7 @@ public class Observable<T> {
     public static <T1, T2, T3, T4, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
         return create(OperationZip.zip(o1, o2, o3, o4, zipFunction));
     }
-    
+
     /**
      * Returns an Observable that emits the results of a function of your choosing applied to
      * combinations of four items emitted, in sequence, by four other Observables.
@@ -1069,7 +1069,7 @@ public class Observable<T> {
     public static <T1, T2, T3, T4, T5, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
         return create(OperationZip.zip(o1, o2, o3, o4, o5, zipFunction));
     }
-    
+
     /**
      * Returns an Observable that emits the results of a function of your choosing applied to
      * combinations of four items emitted, in sequence, by four other Observables.
@@ -1105,7 +1105,7 @@ public class Observable<T> {
             Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipFunction) {
         return create(OperationZip.zip(o1, o2, o3, o4, o5, o6, zipFunction));
     }
-    
+
     /**
      * Returns an Observable that emits the results of a function of your choosing applied to
      * combinations of four items emitted, in sequence, by four other Observables.
@@ -1143,7 +1143,7 @@ public class Observable<T> {
             Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipFunction) {
         return create(OperationZip.zip(o1, o2, o3, o4, o5, o6, o7, zipFunction));
     }
-    
+
     /**
      * Returns an Observable that emits the results of a function of your choosing applied to
      * combinations of four items emitted, in sequence, by four other Observables.
@@ -1183,7 +1183,7 @@ public class Observable<T> {
             Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipFunction) {
         return create(OperationZip.zip(o1, o2, o3, o4, o5, o6, o7, o8, zipFunction));
     }
-    
+
     /**
      * Returns an Observable that emits the results of a function of your choosing applied to
      * combinations of four items emitted, in sequence, by four other Observables.
@@ -1254,7 +1254,7 @@ public class Observable<T> {
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <T1, T2, T3, T4, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, 
+    public static <T1, T2, T3, T4, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4,
             Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, combineFunction));
     }
@@ -1262,7 +1262,7 @@ public class Observable<T> {
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <T1, T2, T3, T4, T5, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, 
+    public static <T1, T2, T3, T4, T5, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5,
             Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, combineFunction));
     }
@@ -1270,7 +1270,7 @@ public class Observable<T> {
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <T1, T2, T3, T4, T5, T6, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, 
+    public static <T1, T2, T3, T4, T5, T6, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6,
             Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, combineFunction));
     }
@@ -1278,7 +1278,7 @@ public class Observable<T> {
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, 
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7,
             Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, combineFunction));
     }
@@ -1286,7 +1286,7 @@ public class Observable<T> {
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8, 
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
             Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, o8, combineFunction));
     }
@@ -1294,7 +1294,7 @@ public class Observable<T> {
     /**
      * @see #combineLatest(Observable, Observable, Func2)
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8, Observable<? extends T9> o9, 
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8, Observable<? extends T9> o9,
             Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, o8, o9, combineFunction));
     }
@@ -1303,18 +1303,18 @@ public class Observable<T> {
      * Creates an Observable which produces buffers of collected values.
      * 
      * <p>This Observable produces connected non-overlapping buffers. The current buffer is
-     * emitted and replaced with a new buffer when the Observable produced by the specified {@link Func0} produces a {@link BufferClosing} object. The * {@link Func0} will then
+     * emitted and replaced with a new buffer when the Observable produced by the specified {@link Func0} produces a {@link rx.util.Closing} object. The * {@link Func0} will then
      * be used to create a new Observable to listen for the end of the next buffer.
      * 
      * @param bufferClosingSelector
      *            The {@link Func0} which is used to produce an {@link Observable} for every buffer created.
-     *            When this {@link Observable} produces a {@link BufferClosing} object, the associated buffer
+     *            When this {@link Observable} produces a {@link rx.util.Closing} object, the associated buffer
      *            is emitted and replaced with a new one.
      * @return
      *         An {@link Observable} which produces connected non-overlapping buffers, which are emitted
-     *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link BufferClosing} object.
+     *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link rx.util.Closing} object.
      */
-    public Observable<List<T>> buffer(Func0<? extends Observable<? extends BufferClosing>> bufferClosingSelector) {
+    public Observable<List<T>> buffer(Func0<? extends Observable<? extends Closing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferClosingSelector));
     }
 
@@ -1322,21 +1322,21 @@ public class Observable<T> {
      * Creates an Observable which produces buffers of collected values.
      * 
      * <p>This Observable produces buffers. Buffers are created when the specified "bufferOpenings"
-     * Observable produces a {@link BufferOpening} object. Additionally the {@link Func0} argument
-     * is used to create an Observable which produces {@link BufferClosing} objects. When this
+     * Observable produces a {@link rx.util.Opening} object. Additionally the {@link Func0} argument
+     * is used to create an Observable which produces {@link rx.util.Closing} objects. When this
      * Observable produces such an object, the associated buffer is emitted.
      * 
      * @param bufferOpenings
-     *            The {@link Observable} which, when it produces a {@link BufferOpening} object, will cause
+     *            The {@link Observable} which, when it produces a {@link rx.util.Opening} object, will cause
      *            another buffer to be created.
      * @param bufferClosingSelector
      *            The {@link Func0} which is used to produce an {@link Observable} for every buffer created.
-     *            When this {@link Observable} produces a {@link BufferClosing} object, the associated buffer
+     *            When this {@link Observable} produces a {@link rx.util.Closing} object, the associated buffer
      *            is emitted.
      * @return
      *         An {@link Observable} which produces buffers which are created and emitted when the specified {@link Observable}s publish certain objects.
      */
-    public Observable<List<T>> buffer(Observable<? extends BufferOpening> bufferOpenings, Func1<? super BufferOpening, ? extends Observable<? extends BufferClosing>> bufferClosingSelector) {
+    public Observable<List<T>> buffer(Observable<? extends Opening> bufferOpenings, Func1<Opening, ? extends Observable<? extends Closing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferOpenings, bufferClosingSelector));
     }
 
@@ -1501,6 +1501,219 @@ public class Observable<T> {
      */
     public Observable<List<T>> buffer(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
         return create(OperationBuffer.buffer(this, timespan, timeshift, unit, scheduler));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces connected
+     * non-overlapping windows. The current window is emitted and replaced with a new window when the
+     * Observable produced by the specified {@link Func0} produces a {@link rx.util.Closing} object. The {@link Func0} will then be used to create a new Observable to listen for the end of the next
+     * window.
+     * 
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param closingSelector
+     *            The {@link Func0} which is used to produce an {@link Observable} for every window created.
+     *            When this {@link Observable} produces a {@link rx.util.Closing} object, the associated window
+     *            is emitted and replaced with a new one.
+     * @return
+     *         An {@link Observable} which produces connected non-overlapping windows, which are emitted
+     *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link rx.util.Closing} object.
+     */
+    public Observable<Observable<T>> window(Observable<? extends T> source, Func0<? extends Observable<? extends Closing>> closingSelector) {
+        return create(OperationWindow.window(source, closingSelector));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces windows.
+     * Chunks are created when the specified "windowOpenings" Observable produces a {@link rx.util.Opening} object.
+     * Additionally the {@link Func0} argument is used to create an Observable which produces {@link rx.util.Closing} objects. When this Observable produces such an object, the associated window is
+     * emitted.
+     * 
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param windowOpenings
+     *            The {@link Observable} which when it produces a {@link rx.util.Opening} object, will cause
+     *            another window to be created.
+     * @param closingSelector
+     *            The {@link Func0} which is used to produce an {@link Observable} for every window created.
+     *            When this {@link Observable} produces a {@link rx.util.Closing} object, the associated window
+     *            is emitted.
+     * @return
+     *         An {@link Observable} which produces windows which are created and emitted when the specified {@link Observable}s publish certain objects.
+     */
+    public Observable<Observable<T>> window(Observable<? extends T> source, Observable<? extends Opening> windowOpenings, Func1<Opening, ? extends Observable<? extends Closing>> closingSelector) {
+        return create(OperationWindow.window(source, windowOpenings, closingSelector));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces connected
+     * non-overlapping windows, each containing "count" elements. When the source Observable completes or
+     * encounters an error, the current window is emitted, and the event is propagated.
+     * 
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param count
+     *            The maximum size of each window before it should be emitted.
+     * @return
+     *         An {@link Observable} which produces connected non-overlapping windows containing at most
+     *         "count" produced values.
+     */
+    public Observable<Observable<T>> window(Observable<? extends T> source, int count) {
+        return create(OperationWindow.window(source, count));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces windows every
+     * "skip" values, each containing "count" elements. When the source Observable completes or encounters an error,
+     * the current window is emitted and the event is propagated.
+     * 
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param count
+     *            The maximum size of each window before it should be emitted.
+     * @param skip
+     *            How many produced values need to be skipped before starting a new window. Note that when "skip" and
+     *            "count" are equals that this is the same operation as {@link Observable#window(Observable, int)}.
+     * @return
+     *         An {@link Observable} which produces windows every "skipped" values containing at most
+     *         "count" produced values.
+     */
+    public Observable<Observable<T>> window(Observable<? extends T> source, int count, int skip) {
+        return create(OperationWindow.window(source, count, skip));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces connected
+     * non-overlapping windows, each of a fixed duration specified by the "timespan" argument. When the source
+     * Observable completes or encounters an error, the current window is emitted and the event is propagated.
+     * 
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each window is collecting values before it should be emitted, and
+     *            replaced with a new window.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @return
+     *         An {@link Observable} which produces connected non-overlapping windows with a fixed duration.
+     */
+    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit) {
+        return create(OperationWindow.window(source, timespan, unit));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces connected
+     * non-overlapping windows, each of a fixed duration specified by the "timespan" argument. When the source
+     * Observable completes or encounters an error, the current window is emitted and the event is propagated.
+     * 
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each window is collecting values before it should be emitted, and
+     *            replaced with a new window.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @param scheduler
+     *            The {@link Scheduler} to use when determining the end and start of a window.
+     * @return
+     *         An {@link Observable} which produces connected non-overlapping windows with a fixed duration.
+     */
+    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationWindow.window(source, timespan, unit, scheduler));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces connected
+     * non-overlapping windows, each of a fixed duration specified by the "timespan" argument or a maximum size
+     * specified by the "count" argument (which ever is reached first). When the source Observable completes
+     * or encounters an error, the current window is emitted and the event is propagated.
+     * 
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each window is collecting values before it should be emitted, and
+     *            replaced with a new window.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @param count
+     *            The maximum size of each window before it should be emitted.
+     * @return
+     *         An {@link Observable} which produces connected non-overlapping windows which are emitted after
+     *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
+     */
+    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit, int count) {
+        return create(OperationWindow.window(source, timespan, unit, count));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable produces connected
+     * non-overlapping windows, each of a fixed duration specified by the "timespan" argument or a maximum size
+     * specified by the "count" argument (which ever is reached first). When the source Observable completes
+     * or encounters an error, the current window is emitted and the event is propagated.
+     * 
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each window is collecting values before it should be emitted, and
+     *            replaced with a new window.
+     * @param unit
+     *            The unit of time which applies to the "timespan" argument.
+     * @param count
+     *            The maximum size of each window before it should be emitted.
+     * @param scheduler
+     *            The {@link Scheduler} to use when determining the end and start of a window.
+     * @return
+     *         An {@link Observable} which produces connected non-overlapping windows which are emitted after
+     *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
+     */
+    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit, int count, Scheduler scheduler) {
+        return create(OperationWindow.window(source, timespan, unit, count, scheduler));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable starts a new window
+     * periodically, which is determined by the "timeshift" argument. Each window is emitted after a fixed timespan
+     * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
+     * current window is emitted and the event is propagated.
+     * 
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each window is collecting values before it should be emitted.
+     * @param timeshift
+     *            The period of time after which a new window will be created.
+     * @param unit
+     *            The unit of time which applies to the "timespan" and "timeshift" argument.
+     * @return
+     *         An {@link Observable} which produces new windows periodically, and these are emitted after
+     *         a fixed timespan has elapsed.
+     */
+    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, long timeshift, TimeUnit unit) {
+        return create(OperationWindow.window(source, timespan, timeshift, unit));
+    }
+
+    /**
+     * Creates an Observable which produces windows of collected values. This Observable starts a new window
+     * periodically, which is determined by the "timeshift" argument. Each window is emitted after a fixed timespan
+     * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
+     * current window is emitted and the event is propagated.
+     * 
+     * @param source
+     *            The source {@link Observable} which produces values.
+     * @param timespan
+     *            The period of time each window is collecting values before it should be emitted.
+     * @param timeshift
+     *            The period of time after which a new window will be created.
+     * @param unit
+     *            The unit of time which applies to the "timespan" and "timeshift" argument.
+     * @param scheduler
+     *            The {@link Scheduler} to use when determining the end and start of a window.
+     * @return
+     *         An {@link Observable} which produces new windows periodically, and these are emitted after
+     *         a fixed timespan has elapsed.
+     */
+    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationWindow.window(source, timespan, timeshift, unit, scheduler));
     }
 
     /**
@@ -2271,7 +2484,7 @@ public class Observable<T> {
      * 
      * NOTE: If strong reasons for not depending on package names comes up then the implementation of this method can change to looking for a marker interface.
      * 
-     * @param f
+     * @param o
      * @return {@code true} if the given function is an internal implementation, and {@code false} otherwise.
      */
     private boolean isInternalImplementation(Object o) {
