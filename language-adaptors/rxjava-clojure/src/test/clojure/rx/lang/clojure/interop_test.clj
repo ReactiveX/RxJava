@@ -120,14 +120,16 @@
                                     (.onNext o 99)
                                     (.onCompleted o)
                                     (rx.subscriptions.Subscriptions/empty)))
-               (BlockingObservable/single)))))
+               .toBlockingObservable
+               .single))))
 
   (testing "can pass rx/fn to map and friends"
     (is (= (+ 1 4 9)
            (-> (Observable/from [1 2 3])
                (.map (rx/fn [v] (* v v)))
                (.reduce (rx/fn* +))
-               (BlockingObservable/single)))))
+           .toBlockingObservable
+           .single))))
 
   (testing "can pass rx/action to subscribe and friends"
     (let [finally-called (atom nil)

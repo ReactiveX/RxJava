@@ -324,8 +324,12 @@ def class ObservableTests {
             return Observable.from(1, 3, 2, 5, 4);
         }
 
-        public TestObservable getObservable() {
-            return new TestObservable(counter++);
+        public TestOnSubscribe getOnSubscribe() {
+            return new TestOnSubscribe(counter++);
+        }
+        
+        public Observable getObservable() {
+            return Observable.create(getOnSubscribe());
         }
     }
 
@@ -335,14 +339,14 @@ def class ObservableTests {
         public void received(Object o);
     }
 
-    def class TestObservable extends Observable<String> {
+    def class TestOnSubscribe implements OnSubscribeFunc<String> {
         private final int count;
 
-        public TestObservable(int count) {
+        public TestOnSubscribe(int count) {
             this.count = count;
         }
 
-        public Subscription subscribe(Observer<String> observer) {
+        public Subscription onSubscribe(Observer<String> observer) {
 
             observer.onNext("hello_" + count);
             observer.onCompleted();
