@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 package rx.operators;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observer;
@@ -26,22 +35,13 @@ import rx.util.functions.Action1;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * The base class for operations that break observables into "chunks". Currently buffers and windows.
  */
 public class ChunkedOperation {
     /**
      * This interface defines a way which specifies when to create a new internal {@link rx.operators.ChunkedOperation.Chunk} object.
-     *
+     * 
      */
     protected interface ChunkCreator {
         /**
@@ -58,16 +58,17 @@ public class ChunkedOperation {
 
     /**
      * This class represents a single chunk: A sequence of recorded values.
-     *
-     * @param <T> The type of objects which this {@link Chunk} can hold.
-     *        <C> The type of object being tracked by the {@link Chunk}
+     * 
+     * @param <T>
+     *            The type of objects which this {@link Chunk} can hold.
+     *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected abstract static class Chunk<T,C>  {
+    protected abstract static class Chunk<T, C> {
         protected final List<T> contents = new ArrayList<T>();
 
         /**
          * Appends a specified value to the {@link Chunk}.
-         *
+         * 
          * @param value
          *            The value to append to the {@link Chunk}.
          */
@@ -77,15 +78,15 @@ public class ChunkedOperation {
 
         /**
          * @return
-         *            The mutable underlying {@link C} which contains all the
-         *            recorded values in this {@link Chunk} object.
+         *         The mutable underlying {@link C} which contains all the
+         *         recorded values in this {@link Chunk} object.
          */
         abstract public C getContents();
 
         /**
          * @return
-         *            The size of the underlying {@link List} which contains all the
-         *            recorded values in this {@link Chunk} object.
+         *         The size of the underlying {@link List} which contains all the
+         *         recorded values in this {@link Chunk} object.
          */
         public int size() {
             return contents.size();
@@ -95,19 +96,20 @@ public class ChunkedOperation {
     /**
      * This class is an extension on the {@link rx.operators.ChunkedOperation.Chunks} class which only supports one
      * active (not yet emitted) internal {@link rx.operators.ChunkedOperation.Chunks} object.
-     *
-     * @param <T> The type of object all internal {@link rx.operators.ChunkedOperation.Chunks} objects record.
-     *        <C> The type of object being tracked by the {@link Chunk}
+     * 
+     * @param <T>
+     *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunks} objects record.
+     *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class NonOverlappingChunks<T,C> extends Chunks<T,C> {
+    protected static class NonOverlappingChunks<T, C> extends Chunks<T, C> {
 
         private final Object lock = new Object();
 
-        public NonOverlappingChunks(Observer<C> observer, Func0 chunkMaker) {
+        public NonOverlappingChunks(Observer<? super C> observer, Func0 chunkMaker) {
             super(observer, chunkMaker);
         }
 
-        public Chunk<T,C> emitAndReplaceChunk() {
+        public Chunk<T, C> emitAndReplaceChunk() {
             synchronized (lock) {
                 emitChunk(getChunk());
                 return createChunk();
@@ -126,12 +128,13 @@ public class ChunkedOperation {
      * This class is an extension on the {@link rx.operators.ChunkedOperation.Chunks} class which actually has no additional
      * behavior than its super class. Classes extending this class, are expected to support
      * two or more active (not yet emitted) internal {@link rx.operators.ChunkedOperation.Chunks} objects.
-     *
-     * @param <T> The type of object all internal {@link rx.operators.ChunkedOperation.Chunks} objects record.
-     *        <C> The type of object being tracked by the {@link rx.operators.ChunkedOperation.Chunk}
+     * 
+     * @param <T>
+     *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunks} objects record.
+     *            <C> The type of object being tracked by the {@link rx.operators.ChunkedOperation.Chunk}
      */
-    protected static class OverlappingChunks<T, C> extends Chunks<T,C> {
-        public OverlappingChunks(Observer<C> observer, Func0 chunkMaker) {
+    protected static class OverlappingChunks<T, C> extends Chunks<T, C> {
+        public OverlappingChunks(Observer<? super C> observer, Func0 chunkMaker) {
             super(observer, chunkMaker);
         }
     }
@@ -141,20 +144,21 @@ public class ChunkedOperation {
      * a has a maximum time to live and a maximum internal capacity. When the chunk has
      * reached the end of its life, or reached its maximum internal capacity it is
      * automatically emitted.
-     *
-     * @param <T> The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
-     *        <C> The type of object being tracked by the {@link Chunk}
+     * 
+     * @param <T>
+     *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
+     *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class TimeAndSizeBasedChunks<T,C> extends Chunks<T,C> {
+    protected static class TimeAndSizeBasedChunks<T, C> extends Chunks<T, C> {
 
-        private final ConcurrentMap<Chunk<T,C>, Subscription> subscriptions = new ConcurrentHashMap<Chunk<T,C>, Subscription>();
+        private final ConcurrentMap<Chunk<T, C>, Subscription> subscriptions = new ConcurrentHashMap<Chunk<T, C>, Subscription>();
 
         private final Scheduler scheduler;
         private final long maxTime;
         private final TimeUnit unit;
         private final int maxSize;
 
-        public TimeAndSizeBasedChunks(Observer<C> observer, Func0 chunkMaker, int maxSize, long maxTime, TimeUnit unit, Scheduler scheduler) {
+        public TimeAndSizeBasedChunks(Observer<? super C> observer, Func0 chunkMaker, int maxSize, long maxTime, TimeUnit unit, Scheduler scheduler) {
             super(observer, chunkMaker);
             this.maxSize = maxSize;
             this.maxTime = maxTime;
@@ -163,8 +167,8 @@ public class ChunkedOperation {
         }
 
         @Override
-        public Chunk<T,C> createChunk() {
-            final Chunk<T,C> chunk = super.createChunk();
+        public Chunk<T, C> createChunk() {
+            final Chunk<T, C> chunk = super.createChunk();
             subscriptions.put(chunk, scheduler.schedule(new Action0() {
                 @Override
                 public void call() {
@@ -175,7 +179,7 @@ public class ChunkedOperation {
         }
 
         @Override
-        public void emitChunk(Chunk<T,C> chunk) {
+        public void emitChunk(Chunk<T, C> chunk) {
             Subscription subscription = subscriptions.remove(chunk);
             if (subscription == null) {
                 // Chunk was already emitted.
@@ -191,7 +195,7 @@ public class ChunkedOperation {
         public void pushValue(T value) {
             super.pushValue(value);
 
-            Chunk<T,C> chunk;
+            Chunk<T, C> chunk;
             while ((chunk = getChunk()) != null) {
                 if (chunk.size() >= maxSize) {
                     emitChunk(chunk);
@@ -207,19 +211,20 @@ public class ChunkedOperation {
      * This class is an extension on the {@link rx.operators.ChunkedOperation.Chunks} class. Every internal chunk has
      * a has a maximum time to live. When the chunk has reached the end of its life it is
      * automatically emitted.
-     *
-     * @param <T> The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
-     *        <C> The type of object being tracked by the {@link Chunk}
+     * 
+     * @param <T>
+     *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
+     *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class TimeBasedChunks<T,C> extends OverlappingChunks<T,C> {
+    protected static class TimeBasedChunks<T, C> extends OverlappingChunks<T, C> {
 
-        private final ConcurrentMap<Chunk<T,C>, Subscription> subscriptions = new ConcurrentHashMap<Chunk<T,C>, Subscription>();
+        private final ConcurrentMap<Chunk<T, C>, Subscription> subscriptions = new ConcurrentHashMap<Chunk<T, C>, Subscription>();
 
         private final Scheduler scheduler;
         private final long time;
         private final TimeUnit unit;
 
-        public TimeBasedChunks(Observer<C> observer, Func0 chunkMaker, long time, TimeUnit unit, Scheduler scheduler) {
+        public TimeBasedChunks(Observer<? super C> observer, Func0 chunkMaker, long time, TimeUnit unit, Scheduler scheduler) {
             super(observer, chunkMaker);
             this.time = time;
             this.unit = unit;
@@ -227,8 +232,8 @@ public class ChunkedOperation {
         }
 
         @Override
-        public Chunk<T,C> createChunk() {
-            final Chunk<T,C> chunk = super.createChunk();
+        public Chunk<T, C> createChunk() {
+            final Chunk<T, C> chunk = super.createChunk();
             subscriptions.put(chunk, scheduler.schedule(new Action0() {
                 @Override
                 public void call() {
@@ -239,7 +244,7 @@ public class ChunkedOperation {
         }
 
         @Override
-        public void emitChunk(Chunk<T,C> chunk) {
+        public void emitChunk(Chunk<T, C> chunk) {
             subscriptions.remove(chunk);
             super.emitChunk(chunk);
         }
@@ -249,15 +254,16 @@ public class ChunkedOperation {
      * This class is an extension on the {@link rx.operators.ChunkedOperation.Chunks} class. Every internal chunk has
      * a fixed maximum capacity. When the chunk has reached its maximum capacity it is
      * automatically emitted.
-     *
-     * @param <T> The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
-     *        <C> The type of object being tracked by the {@link Chunk}
+     * 
+     * @param <T>
+     *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
+     *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class SizeBasedChunks<T,C> extends Chunks<T,C> {
+    protected static class SizeBasedChunks<T, C> extends Chunks<T, C> {
 
         private final int size;
 
-        public SizeBasedChunks(Observer<C> observer, Func0 chunkMaker, int size) {
+        public SizeBasedChunks(Observer<? super C> observer, Func0 chunkMaker, int size) {
             super(observer, chunkMaker);
             this.size = size;
         }
@@ -266,7 +272,7 @@ public class ChunkedOperation {
         public void pushValue(T value) {
             super.pushValue(value);
 
-            Chunk<T,C> chunk;
+            Chunk<T, C> chunk;
             while ((chunk = getChunk()) != null) {
                 if (chunk.size() >= size) {
                     emitChunk(chunk);
@@ -280,36 +286,36 @@ public class ChunkedOperation {
 
     /**
      * This class represents an object which contains and manages multiple {@link rx.operators.ChunkedOperation.Chunk} objects.
-     *
-     * @param <T> The type of objects which the internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
-     *        <C> The type of object being tracked by the {@link Chunk}
+     * 
+     * @param <T>
+     *            The type of objects which the internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
+     *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class Chunks<T,C> {
+    protected static class Chunks<T, C> {
 
-        private final Queue<Chunk<T,C>> chunks = new ConcurrentLinkedQueue<Chunk<T,C>>();
-        private final Observer<C> observer;
+        private final Queue<Chunk<T, C>> chunks = new ConcurrentLinkedQueue<Chunk<T, C>>();
+        private final Observer<? super C> observer;
         private final Func0<Chunk<T, C>> chunkMaker;
 
         /**
          * Constructs a new {@link ChunkedOperation.Chunks} object for the specified {@link rx.Observer}.
-         *
+         * 
          * @param observer
-         *            The {@link rx.Observer} to which this object will emit its internal
-         *            {@link rx.operators.ChunkedOperation.Chunk} objects to when requested.
+         *            The {@link rx.Observer} to which this object will emit its internal {@link rx.operators.ChunkedOperation.Chunk} objects to when requested.
          */
-        public Chunks(Observer<C> observer, Func0 chunkMaker) {
+        public Chunks(Observer<? super C> observer, Func0 chunkMaker) {
             this.observer = observer;
             this.chunkMaker = chunkMaker;
         }
 
         /**
          * This method will instantiate a new {@link rx.operators.ChunkedOperation.Chunk} object and register it internally.
-         *
+         * 
          * @return
-         *            The constructed empty {@link rx.operators.ChunkedOperation.Chunk} object.
+         *         The constructed empty {@link rx.operators.ChunkedOperation.Chunk} object.
          */
-        public Chunk<T,C> createChunk() {
-            Chunk<T,C> chunk = chunkMaker.call();
+        public Chunk<T, C> createChunk() {
+            Chunk<T, C> chunk = chunkMaker.call();
             chunks.add(chunk);
             return chunk;
         }
@@ -318,7 +324,7 @@ public class ChunkedOperation {
          * This method emits all not yet emitted {@link rx.operators.ChunkedOperation.Chunk} objects.
          */
         public void emitAllChunks() {
-            Chunk<T,C> chunk;
+            Chunk<T, C> chunk;
             while ((chunk = chunks.poll()) != null) {
                 observer.onNext(chunk.getContents());
             }
@@ -326,11 +332,11 @@ public class ChunkedOperation {
 
         /**
          * This method emits the specified {@link rx.operators.ChunkedOperation.Chunk} object.
-         *
+         * 
          * @param chunk
          *            The {@link rx.operators.ChunkedOperation.Chunk} to emit.
          */
-        public void emitChunk(Chunk<T,C> chunk) {
+        public void emitChunk(Chunk<T, C> chunk) {
             if (!chunks.remove(chunk)) {
                 // Concurrency issue: Chunk is already emitted!
                 return;
@@ -340,21 +346,21 @@ public class ChunkedOperation {
 
         /**
          * @return
-         *            The oldest (in case there are multiple) {@link rx.operators.ChunkedOperation.Chunk} object.
+         *         The oldest (in case there are multiple) {@link rx.operators.ChunkedOperation.Chunk} object.
          */
-        public Chunk<T,C> getChunk() {
+        public Chunk<T, C> getChunk() {
             return chunks.peek();
         }
 
         /**
          * This method pushes a value to all not yet emitted {@link rx.operators.ChunkedOperation.Chunk} objects.
-         *
+         * 
          * @param value
          *            The value to push to all not yet emitted {@link rx.operators.ChunkedOperation.Chunk} objects.
          */
         public void pushValue(T value) {
-            List<Chunk<T,C>> copy = new ArrayList<Chunk<T,C>>(chunks);
-            for (Chunk<T,C> chunk : copy) {
+            List<Chunk<T, C>> copy = new ArrayList<Chunk<T, C>>(chunks);
+            for (Chunk<T, C> chunk : copy) {
                 chunk.pushValue(value);
             }
         }
@@ -362,21 +368,22 @@ public class ChunkedOperation {
 
     /**
      * This {@link rx.operators.ChunkedOperation.ChunkObserver} object can be constructed using a {@link rx.operators.ChunkedOperation.Chunks} object,
-     * a {@link rx.Observer} object, and a {@link rx.operators.ChunkedOperation.ChunkCreator} object. The {@link rx.operators.ChunkedOperation.ChunkCreator}
-     * will manage the creation, and in some rare cases emission of internal {@link rx.operators.ChunkedOperation.Chunk} objects
-     * in the specified {@link rx.operators.ChunkedOperation.Chunks} object. Under normal circumstances the {@link rx.operators.ChunkedOperation.Chunks}
-     * object specifies when a created {@link rx.operators.ChunkedOperation.Chunk} is emitted.
-     *
-     * @param <T> The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
-     *        <C> The type of object being tracked by the {@link Chunk}
+     * a {@link rx.Observer} object, and a {@link rx.operators.ChunkedOperation.ChunkCreator} object. The {@link rx.operators.ChunkedOperation.ChunkCreator} will manage the creation, and in some rare
+     * cases emission of internal {@link rx.operators.ChunkedOperation.Chunk} objects
+     * in the specified {@link rx.operators.ChunkedOperation.Chunks} object. Under normal circumstances the {@link rx.operators.ChunkedOperation.Chunks} object specifies when a created
+     * {@link rx.operators.ChunkedOperation.Chunk} is emitted.
+     * 
+     * @param <T>
+     *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
+     *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class ChunkObserver<T,C> implements Observer<T> {
+    protected static class ChunkObserver<T, C> implements Observer<T> {
 
-        private final Chunks<T,C> chunks;
-        private final Observer<C> observer;
+        private final Chunks<T, C> chunks;
+        private final Observer<? super C> observer;
         private final ChunkCreator creator;
 
-        public ChunkObserver(Chunks<T,C> chunks, Observer<C> observer, ChunkCreator creator) {
+        public ChunkObserver(Chunks<T, C> chunks, Observer<? super C> observer, ChunkCreator creator) {
             this.observer = observer;
             this.creator = creator;
             this.chunks = chunks;
@@ -407,11 +414,12 @@ public class ChunkedOperation {
      * This {@link rx.operators.ChunkedOperation.ChunkCreator} creates a new {@link rx.operators.ChunkedOperation.Chunk} when it is initialized, but
      * provides no additional functionality. This class should primarily be used when the
      * internal {@link rx.operators.ChunkedOperation.Chunk} is closed externally.
-     *
-     * @param <T> The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
-     *        <C> The type of object being tracked by the {@link Chunk}
+     * 
+     * @param <T>
+     *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
+     *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class SingleChunkCreator<T,C> implements ChunkCreator {
+    protected static class SingleChunkCreator<T, C> implements ChunkCreator {
 
         public SingleChunkCreator(Chunks<T, C> chunks) {
             chunks.createChunk();
@@ -432,17 +440,18 @@ public class ChunkedOperation {
      * This {@link rx.operators.ChunkedOperation.ChunkCreator} creates a new {@link rx.operators.ChunkedOperation.Chunk} whenever it receives an
      * object from the provided {@link rx.Observable} created with the
      * chunkClosingSelector {@link rx.util.functions.Func0}.
-     *
-     * @param <T> The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
-     *        <C> The type of object being tracked by the {@link Chunk}
+     * 
+     * @param <T>
+     *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
+     *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class ObservableBasedSingleChunkCreator<T,C> implements ChunkCreator {
+    protected static class ObservableBasedSingleChunkCreator<T, C> implements ChunkCreator {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
-        private final Func0<Observable<Closing>> chunkClosingSelector;
+        private final Func0<? extends Observable<? extends Closing>> chunkClosingSelector;
         private final NonOverlappingChunks<T, C> chunks;
 
-        public ObservableBasedSingleChunkCreator(NonOverlappingChunks<T,C> chunks, Func0<Observable<Closing>> chunkClosingSelector) {
+        public ObservableBasedSingleChunkCreator(NonOverlappingChunks<T, C> chunks, Func0<? extends Observable<? extends Closing>> chunkClosingSelector) {
             this.chunks = chunks;
             this.chunkClosingSelector = chunkClosingSelector;
 
@@ -451,7 +460,7 @@ public class ChunkedOperation {
         }
 
         private void listenForChunkEnd() {
-            Observable<Closing> closingObservable = chunkClosingSelector.call();
+            Observable<? extends Closing> closingObservable = chunkClosingSelector.call();
             closingObservable.subscribe(new Action1<Closing>() {
                 @Override
                 public void call(Closing closing) {
@@ -474,23 +483,24 @@ public class ChunkedOperation {
 
     /**
      * This {@link rx.operators.ChunkedOperation.ChunkCreator} creates a new {@link rx.operators.ChunkedOperation.Chunk} whenever it receives
-     * an object from the provided chunkOpenings {@link rx.Observable}, and closes the corresponding
-     * {@link rx.operators.ChunkedOperation.Chunk} object when it receives an object from the provided {@link rx.Observable} created
+     * an object from the provided chunkOpenings {@link rx.Observable}, and closes the corresponding {@link rx.operators.ChunkedOperation.Chunk} object when it receives an object from the provided
+     * {@link rx.Observable} created
      * with the chunkClosingSelector {@link rx.util.functions.Func1}.
-     *
-     * @param <T> The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
-     *        <C> The type of object being tracked by the {@link Chunk}
+     * 
+     * @param <T>
+     *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
+     *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class ObservableBasedMultiChunkCreator<T,C> implements ChunkCreator {
+    protected static class ObservableBasedMultiChunkCreator<T, C> implements ChunkCreator {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        public ObservableBasedMultiChunkCreator(final OverlappingChunks<T,C> chunks, Observable<Opening> openings, final Func1<Opening, Observable<Closing>> chunkClosingSelector) {
+        public ObservableBasedMultiChunkCreator(final OverlappingChunks<T, C> chunks, Observable<? extends Opening> openings, final Func1<? super Opening, ? extends Observable<? extends Closing>> chunkClosingSelector) {
             subscription.wrap(openings.subscribe(new Action1<Opening>() {
                 @Override
                 public void call(Opening opening) {
                     final Chunk<T, C> chunk = chunks.createChunk();
-                    Observable<Closing> closingObservable = chunkClosingSelector.call(opening);
+                    Observable<? extends Closing> closingObservable = chunkClosingSelector.call(opening);
 
                     closingObservable.subscribe(new Action1<Closing>() {
                         @Override
@@ -516,15 +526,16 @@ public class ChunkedOperation {
     /**
      * This {@link rx.operators.ChunkedOperation.ChunkCreator} creates a new {@link rx.operators.ChunkedOperation.Chunk} every time after a fixed
      * period of time has elapsed.
-     *
-     * @param <T> The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
-     *        <C> The type of object being tracked by the {@link Chunk}
+     * 
+     * @param <T>
+     *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
+     *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class TimeBasedChunkCreator<T,C> implements ChunkCreator {
+    protected static class TimeBasedChunkCreator<T, C> implements ChunkCreator {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        public TimeBasedChunkCreator(final NonOverlappingChunks<T,C> chunks, long time, TimeUnit unit, Scheduler scheduler) {
+        public TimeBasedChunkCreator(final NonOverlappingChunks<T, C> chunks, long time, TimeUnit unit, Scheduler scheduler) {
             this.subscription.wrap(scheduler.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {
@@ -533,7 +544,7 @@ public class ChunkedOperation {
             }, 0, time, unit));
         }
 
-        public TimeBasedChunkCreator(final OverlappingChunks<T,C> chunks, long time, TimeUnit unit, Scheduler scheduler) {
+        public TimeBasedChunkCreator(final OverlappingChunks<T, C> chunks, long time, TimeUnit unit, Scheduler scheduler) {
             this.subscription.wrap(scheduler.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {
@@ -556,17 +567,18 @@ public class ChunkedOperation {
     /**
      * This {@link rx.operators.ChunkedOperation.ChunkCreator} creates a new {@link rx.operators.ChunkedOperation.Chunk} every time after it has
      * seen a certain amount of elements.
-     *
-     * @param <T> The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
-     *        <C> The type of object being tracked by the {@link Chunk}
+     * 
+     * @param <T>
+     *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
+     *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class SkippingChunkCreator<T,C> implements ChunkCreator {
+    protected static class SkippingChunkCreator<T, C> implements ChunkCreator {
 
         private final AtomicInteger skipped = new AtomicInteger(1);
-        private final Chunks<T,C> chunks;
+        private final Chunks<T, C> chunks;
         private final int skip;
 
-        public SkippingChunkCreator(Chunks<T,C> chunks, int skip) {
+        public SkippingChunkCreator(Chunks<T, C> chunks, int skip) {
             this.chunks = chunks;
             this.skip = skip;
         }
