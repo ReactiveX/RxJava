@@ -783,29 +783,28 @@ public class Observable<T> {
      *            the source Observable that emits Observables
      * @return an Observable that emits only the items emitted by the most recently published
      *         Observable
+     * @deprecated Being renamed to {@link #switchOnNext}
      */
+    @Deprecated
     public static <T> Observable<T> switchDo(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
-        // TODO should this static remain? I have left it because it is an Observable<Observable>
         return create(OperationSwitch.switchDo(sequenceOfSequences));
     }
 
     /**
-     * On an Observable that emits Observables, creates a single Observable that
+     * Given an Observable that emits Observables, creates a single Observable that
      * emits the items emitted by the most recently published of those Observables.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/switchDo.png">
      * 
+     * @param sequenceOfSequences
+     *            the source Observable that emits Observables
      * @return an Observable that emits only the items emitted by the most recently published
      *         Observable
-     * @throws ClassCastException
-     *             if sequence not of type {@code Observable<Observable<T>}
      */
-    @SuppressWarnings("unchecked")
-    public Observable<T> switchDo() {
-        // TODO can we come up with a better name than this? It should be 'switch' but that is reserved.
-        // Perhaps 'switchOnNext'?
-        return create(OperationSwitch.switchDo((Observable<? extends Observable<? extends T>>) this));
+    public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
+        return create(OperationSwitch.switchDo(sequenceOfSequences));
     }
+    
 
     /**
      * Accepts an Observable and wraps it in another Observable that ensures that the resulting
