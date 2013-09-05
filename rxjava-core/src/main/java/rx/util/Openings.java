@@ -15,13 +15,13 @@
  */
 package rx.util;
 
-public class BufferOpenings {
+public class Openings {
 
-    public static BufferOpening create() {
-        return new BufferOpening() {};
+    public static Opening create() {
+        return new Opening() {};
     }
 
-    private BufferOpenings() {
+    private Openings() {
         // Prevent instantation.
     }
 }

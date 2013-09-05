@@ -15,13 +15,6 @@
  */
 package rx.util;
 
-public class BufferClosings {
-
-    public static BufferClosing create() {
-        return new BufferClosing() {};
-    }
-
-    private BufferClosings() {
-        // Prevent instantation.
-    }
+public interface Opening {
+    // Tagging interface for objects which can open buffers.
 }
