@@ -495,7 +495,7 @@ public class ChunkedOperation {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        public ObservableBasedMultiChunkCreator(final OverlappingChunks<T, C> chunks, Observable<? extends Opening> openings, final Func1<? super Opening, ? extends Observable<? extends Closing>> chunkClosingSelector) {
+        public ObservableBasedMultiChunkCreator(final OverlappingChunks<T, C> chunks, Observable<? extends Opening> openings, final Func1<Opening, ? extends Observable<? extends Closing>> chunkClosingSelector) {
             subscription.wrap(openings.subscribe(new Action1<Opening>() {
                 @Override
                 public void call(Opening opening) {

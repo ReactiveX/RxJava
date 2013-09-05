@@ -1337,7 +1337,7 @@ public class Observable<T> {
      * @return
      *         An {@link Observable} which produces buffers which are created and emitted when the specified {@link Observable}s publish certain objects.
      */
-    public Observable<List<T>> buffer(Observable<? extends Opening> bufferOpenings, Func1<? super Opening, ? extends Observable<? extends Closing>> bufferClosingSelector) {
+    public Observable<List<T>> buffer(Observable<? extends Opening> bufferOpenings, Func1<Opening, ? extends Observable<? extends Closing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferOpenings, bufferClosingSelector));
     }
 
@@ -1520,7 +1520,7 @@ public class Observable<T> {
      *         An {@link Observable} which produces connected non-overlapping windows, which are emitted
      *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link rx.util.Closing} object.
      */
-    public Observable<Observable<T>> window(Observable<T> source, Func0<Observable<Closing>> closingSelector) {
+    public Observable<Observable<T>> window(Observable<? extends T> source, Func0<? extends Observable<? extends Closing>> closingSelector) {
         return create(OperationWindow.window(source, closingSelector));
     }
 
@@ -1542,7 +1542,7 @@ public class Observable<T> {
      * @return
      *         An {@link Observable} which produces windows which are created and emitted when the specified {@link Observable}s publish certain objects.
      */
-    public Observable<Observable<T>> window(Observable<T> source, Observable<Opening> windowOpenings, Func1<Opening, Observable<Closing>> closingSelector) {
+    public Observable<Observable<T>> window(Observable<? extends T> source, Observable<? extends Opening> windowOpenings, Func1<Opening, ? extends Observable<? extends Closing>> closingSelector) {
         return create(OperationWindow.window(source, windowOpenings, closingSelector));
     }
 
@@ -1559,7 +1559,7 @@ public class Observable<T> {
      *         An {@link Observable} which produces connected non-overlapping windows containing at most
      *         "count" produced values.
      */
-    public Observable<Observable<T>> window(Observable<T> source, int count) {
+    public Observable<Observable<T>> window(Observable<? extends T> source, int count) {
         return create(OperationWindow.window(source, count));
     }
 
@@ -1579,7 +1579,7 @@ public class Observable<T> {
      *         An {@link Observable} which produces windows every "skipped" values containing at most
      *         "count" produced values.
      */
-    public Observable<Observable<T>> window(Observable<T> source, int count, int skip) {
+    public Observable<Observable<T>> window(Observable<? extends T> source, int count, int skip) {
         return create(OperationWindow.window(source, count, skip));
     }
 
@@ -1598,7 +1598,7 @@ public class Observable<T> {
      * @return
      *         An {@link Observable} which produces connected non-overlapping windows with a fixed duration.
      */
-    public Observable<Observable<T>> window(Observable<T> source, long timespan, TimeUnit unit) {
+    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit) {
         return create(OperationWindow.window(source, timespan, unit));
     }
 
@@ -1619,7 +1619,7 @@ public class Observable<T> {
      * @return
      *         An {@link Observable} which produces connected non-overlapping windows with a fixed duration.
      */
-    public Observable<Observable<T>> window(Observable<T> source, long timespan, TimeUnit unit, Scheduler scheduler) {
+    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit, Scheduler scheduler) {
         return create(OperationWindow.window(source, timespan, unit, scheduler));
     }
 
@@ -1642,7 +1642,7 @@ public class Observable<T> {
      *         An {@link Observable} which produces connected non-overlapping windows which are emitted after
      *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
      */
-    public Observable<Observable<T>> window(Observable<T> source, long timespan, TimeUnit unit, int count) {
+    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit, int count) {
         return create(OperationWindow.window(source, timespan, unit, count));
     }
 
@@ -1667,7 +1667,7 @@ public class Observable<T> {
      *         An {@link Observable} which produces connected non-overlapping windows which are emitted after
      *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
      */
-    public Observable<Observable<T>> window(Observable<T> source, long timespan, TimeUnit unit, int count, Scheduler scheduler) {
+    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit, int count, Scheduler scheduler) {
         return create(OperationWindow.window(source, timespan, unit, count, scheduler));
     }
 
@@ -1689,7 +1689,7 @@ public class Observable<T> {
      *         An {@link Observable} which produces new windows periodically, and these are emitted after
      *         a fixed timespan has elapsed.
      */
-    public Observable<Observable<T>> window(Observable<T> source, long timespan, long timeshift, TimeUnit unit) {
+    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, long timeshift, TimeUnit unit) {
         return create(OperationWindow.window(source, timespan, timeshift, unit));
     }
 
@@ -1713,7 +1713,7 @@ public class Observable<T> {
      *         An {@link Observable} which produces new windows periodically, and these are emitted after
      *         a fixed timespan has elapsed.
      */
-    public Observable<Observable<T>> window(Observable<T> source, long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
+    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
         return create(OperationWindow.window(source, timespan, timeshift, unit, scheduler));
     }
 
