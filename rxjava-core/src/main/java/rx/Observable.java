@@ -1509,8 +1509,6 @@ public class Observable<T> {
      * Observable produced by the specified {@link Func0} produces a {@link rx.util.Closing} object. The {@link Func0} will then be used to create a new Observable to listen for the end of the next
      * window.
      * 
-     * @param source
-     *            The source {@link Observable} which produces values.
      * @param closingSelector
      *            The {@link Func0} which is used to produce an {@link Observable} for every window created.
      *            When this {@link Observable} produces a {@link rx.util.Closing} object, the associated window
@@ -1519,8 +1517,8 @@ public class Observable<T> {
      *         An {@link Observable} which produces connected non-overlapping windows, which are emitted
      *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link rx.util.Closing} object.
      */
-    public Observable<Observable<T>> window(Observable<? extends T> source, Func0<? extends Observable<? extends Closing>> closingSelector) {
-        return create(OperationWindow.window(source, closingSelector));
+    public Observable<Observable<T>> window(Func0<? extends Observable<? extends Closing>> closingSelector) {
+        return create(OperationWindow.window(this, closingSelector));
     }
 
     /**
@@ -1529,8 +1527,6 @@ public class Observable<T> {
      * Additionally the {@link Func0} argument is used to create an Observable which produces {@link rx.util.Closing} objects. When this Observable produces such an object, the associated window is
      * emitted.
      * 
-     * @param source
-     *            The source {@link Observable} which produces values.
      * @param windowOpenings
      *            The {@link Observable} which when it produces a {@link rx.util.Opening} object, will cause
      *            another window to be created.
@@ -1541,8 +1537,8 @@ public class Observable<T> {
      * @return
      *         An {@link Observable} which produces windows which are created and emitted when the specified {@link Observable}s publish certain objects.
      */
-    public Observable<Observable<T>> window(Observable<? extends T> source, Observable<? extends Opening> windowOpenings, Func1<Opening, ? extends Observable<? extends Closing>> closingSelector) {
-        return create(OperationWindow.window(source, windowOpenings, closingSelector));
+    public Observable<Observable<T>> window(Observable<? extends Opening> windowOpenings, Func1<Opening, ? extends Observable<? extends Closing>> closingSelector) {
+        return create(OperationWindow.window(this, windowOpenings, closingSelector));
     }
 
     /**
@@ -1550,16 +1546,14 @@ public class Observable<T> {
      * non-overlapping windows, each containing "count" elements. When the source Observable completes or
      * encounters an error, the current window is emitted, and the event is propagated.
      * 
-     * @param source
-     *            The source {@link Observable} which produces values.
      * @param count
      *            The maximum size of each window before it should be emitted.
      * @return
      *         An {@link Observable} which produces connected non-overlapping windows containing at most
      *         "count" produced values.
      */
-    public Observable<Observable<T>> window(Observable<? extends T> source, int count) {
-        return create(OperationWindow.window(source, count));
+    public Observable<Observable<T>> window(int count) {
+        return create(OperationWindow.window(this, count));
     }
 
     /**
@@ -1567,8 +1561,6 @@ public class Observable<T> {
      * "skip" values, each containing "count" elements. When the source Observable completes or encounters an error,
      * the current window is emitted and the event is propagated.
      * 
-     * @param source
-     *            The source {@link Observable} which produces values.
      * @param count
      *            The maximum size of each window before it should be emitted.
      * @param skip
@@ -1578,8 +1570,8 @@ public class Observable<T> {
      *         An {@link Observable} which produces windows every "skipped" values containing at most
      *         "count" produced values.
      */
-    public Observable<Observable<T>> window(Observable<? extends T> source, int count, int skip) {
-        return create(OperationWindow.window(source, count, skip));
+    public Observable<Observable<T>> window(int count, int skip) {
+        return create(OperationWindow.window(this, count, skip));
     }
 
     /**
@@ -1587,8 +1579,6 @@ public class Observable<T> {
      * non-overlapping windows, each of a fixed duration specified by the "timespan" argument. When the source
      * Observable completes or encounters an error, the current window is emitted and the event is propagated.
      * 
-     * @param source
-     *            The source {@link Observable} which produces values.
      * @param timespan
      *            The period of time each window is collecting values before it should be emitted, and
      *            replaced with a new window.
@@ -1597,8 +1587,8 @@ public class Observable<T> {
      * @return
      *         An {@link Observable} which produces connected non-overlapping windows with a fixed duration.
      */
-    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit) {
-        return create(OperationWindow.window(source, timespan, unit));
+    public Observable<Observable<T>> window(long timespan, TimeUnit unit) {
+        return create(OperationWindow.window(this, timespan, unit));
     }
 
     /**
@@ -1606,8 +1596,6 @@ public class Observable<T> {
      * non-overlapping windows, each of a fixed duration specified by the "timespan" argument. When the source
      * Observable completes or encounters an error, the current window is emitted and the event is propagated.
      * 
-     * @param source
-     *            The source {@link Observable} which produces values.
      * @param timespan
      *            The period of time each window is collecting values before it should be emitted, and
      *            replaced with a new window.
@@ -1618,8 +1606,8 @@ public class Observable<T> {
      * @return
      *         An {@link Observable} which produces connected non-overlapping windows with a fixed duration.
      */
-    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationWindow.window(source, timespan, unit, scheduler));
+    public Observable<Observable<T>> window(long timespan, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationWindow.window(this, timespan, unit, scheduler));
     }
 
     /**
@@ -1628,8 +1616,6 @@ public class Observable<T> {
      * specified by the "count" argument (which ever is reached first). When the source Observable completes
      * or encounters an error, the current window is emitted and the event is propagated.
      * 
-     * @param source
-     *            The source {@link Observable} which produces values.
      * @param timespan
      *            The period of time each window is collecting values before it should be emitted, and
      *            replaced with a new window.
@@ -1641,8 +1627,8 @@ public class Observable<T> {
      *         An {@link Observable} which produces connected non-overlapping windows which are emitted after
      *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
      */
-    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit, int count) {
-        return create(OperationWindow.window(source, timespan, unit, count));
+    public Observable<Observable<T>> window(long timespan, TimeUnit unit, int count) {
+        return create(OperationWindow.window(this, timespan, unit, count));
     }
 
     /**
@@ -1651,8 +1637,6 @@ public class Observable<T> {
      * specified by the "count" argument (which ever is reached first). When the source Observable completes
      * or encounters an error, the current window is emitted and the event is propagated.
      * 
-     * @param source
-     *            The source {@link Observable} which produces values.
      * @param timespan
      *            The period of time each window is collecting values before it should be emitted, and
      *            replaced with a new window.
@@ -1666,8 +1650,8 @@ public class Observable<T> {
      *         An {@link Observable} which produces connected non-overlapping windows which are emitted after
      *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
      */
-    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit, int count, Scheduler scheduler) {
-        return create(OperationWindow.window(source, timespan, unit, count, scheduler));
+    public Observable<Observable<T>> window(long timespan, TimeUnit unit, int count, Scheduler scheduler) {
+        return create(OperationWindow.window(this, timespan, unit, count, scheduler));
     }
 
     /**
@@ -1676,8 +1660,6 @@ public class Observable<T> {
      * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
      * current window is emitted and the event is propagated.
      * 
-     * @param source
-     *            The source {@link Observable} which produces values.
      * @param timespan
      *            The period of time each window is collecting values before it should be emitted.
      * @param timeshift
@@ -1688,8 +1670,8 @@ public class Observable<T> {
      *         An {@link Observable} which produces new windows periodically, and these are emitted after
      *         a fixed timespan has elapsed.
      */
-    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, long timeshift, TimeUnit unit) {
-        return create(OperationWindow.window(source, timespan, timeshift, unit));
+    public Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit) {
+        return create(OperationWindow.window(this, timespan, timeshift, unit));
     }
 
     /**
@@ -1698,8 +1680,6 @@ public class Observable<T> {
      * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
      * current window is emitted and the event is propagated.
      * 
-     * @param source
-     *            The source {@link Observable} which produces values.
      * @param timespan
      *            The period of time each window is collecting values before it should be emitted.
      * @param timeshift
@@ -1712,8 +1692,8 @@ public class Observable<T> {
      *         An {@link Observable} which produces new windows periodically, and these are emitted after
      *         a fixed timespan has elapsed.
      */
-    public Observable<Observable<T>> window(Observable<? extends T> source, long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationWindow.window(source, timespan, timeshift, unit, scheduler));
+    public Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationWindow.window(this, timespan, timeshift, unit, scheduler));
     }
 
     /**
