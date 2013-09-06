@@ -409,9 +409,188 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    */
   // public Observable<List<T>> buffer(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) 
 
-  /*
-   * TODO insert here all window operations once https://github.com/Netflix/RxJava/pull/349#issuecomment-23946707 is resolved
+  /**
+   * Creates an Observable which produces windows of collected values. This Observable produces connected
+   * non-overlapping windows. The current window is emitted and replaced with a new window when the
+   * Observable produced by the specified {@link Func0} produces a {@link rx.util.Closing} object. The {@link Func0} will then be used to create a new Observable to listen for the end of the next
+   * window.
+   * 
+   * @param closingSelector
+   *            The {@link Func0} which is used to produce an {@link Observable} for every window created.
+   *            When this {@link Observable} produces a {@link rx.util.Closing} object, the associated window
+   *            is emitted and replaced with a new one.
+   * @return
+   *         An {@link Observable} which produces connected non-overlapping windows, which are emitted
+   *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link rx.util.Closing} object.
    */
+  def window(closingSelector: () => Observable[Closing]): Observable[Observable[T]] = {
+    val func : rx.util.functions.Func0[_ <: rx.Observable[_ <: Closing]] = closingSelector().asJava
+    // type mismatch; found : rx.Observable[rx.Observable[_$4]] required: rx.Observable[rx.Observable[T]]
+    // val o: rx.Observable[rx.Observable[T]] = asJava.window(func)
+    val o = ??? // TODO
+    new Observable[rx.Observable[T]](o).map((x: rx.Observable[T]) => new Observable[T](x))
+  }
+  // public Observable<Observable<T>> window(Func0<? extends Observable<? extends Closing>> closingSelector) 
+
+  /**
+   * Creates an Observable which produces windows of collected values. This Observable produces windows.
+   * Chunks are created when the specified "windowOpenings" Observable produces a {@link rx.util.Opening} object.
+   * Additionally the {@link Func0} argument is used to create an Observable which produces {@link rx.util.Closing} objects. When this Observable produces such an object, the associated window is
+   * emitted.
+   * 
+   * @param windowOpenings
+   *            The {@link Observable} which when it produces a {@link rx.util.Opening} object, will cause
+   *            another window to be created.
+   * @param closingSelector
+   *            The {@link Func0} which is used to produce an {@link Observable} for every window created.
+   *            When this {@link Observable} produces a {@link rx.util.Closing} object, the associated window
+   *            is emitted.
+   * @return
+   *         An {@link Observable} which produces windows which are created and emitted when the specified {@link Observable}s publish certain objects.
+   */
+  // public Observable<Observable<T>> window(Observable<? extends Opening> windowOpenings, Func1<Opening, ? extends Observable<? extends Closing>> closingSelector) 
+
+  /**
+   * Creates an Observable which produces windows of collected values. This Observable produces connected
+   * non-overlapping windows, each containing "count" elements. When the source Observable completes or
+   * encounters an error, the current window is emitted, and the event is propagated.
+   * 
+   * @param count
+   *            The maximum size of each window before it should be emitted.
+   * @return
+   *         An {@link Observable} which produces connected non-overlapping windows containing at most
+   *         "count" produced values.
+   */
+  // public Observable<Observable<T>> window(int count) 
+
+  /**
+   * Creates an Observable which produces windows of collected values. This Observable produces windows every
+   * "skip" values, each containing "count" elements. When the source Observable completes or encounters an error,
+   * the current window is emitted and the event is propagated.
+   * 
+   * @param count
+   *            The maximum size of each window before it should be emitted.
+   * @param skip
+   *            How many produced values need to be skipped before starting a new window. Note that when "skip" and
+   *            "count" are equals that this is the same operation as {@link Observable#window(Observable, int)}.
+   * @return
+   *         An {@link Observable} which produces windows every "skipped" values containing at most
+   *         "count" produced values.
+   */
+  // public Observable<Observable<T>> window(int count, int skip) 
+
+  /**
+   * Creates an Observable which produces windows of collected values. This Observable produces connected
+   * non-overlapping windows, each of a fixed duration specified by the "timespan" argument. When the source
+   * Observable completes or encounters an error, the current window is emitted and the event is propagated.
+   * 
+   * @param timespan
+   *            The period of time each window is collecting values before it should be emitted, and
+   *            replaced with a new window.
+   * @param unit
+   *            The unit of time which applies to the "timespan" argument.
+   * @return
+   *         An {@link Observable} which produces connected non-overlapping windows with a fixed duration.
+   */
+  // public Observable<Observable<T>> window(long timespan, TimeUnit unit) 
+
+  /**
+   * Creates an Observable which produces windows of collected values. This Observable produces connected
+   * non-overlapping windows, each of a fixed duration specified by the "timespan" argument. When the source
+   * Observable completes or encounters an error, the current window is emitted and the event is propagated.
+   * 
+   * @param timespan
+   *            The period of time each window is collecting values before it should be emitted, and
+   *            replaced with a new window.
+   * @param unit
+   *            The unit of time which applies to the "timespan" argument.
+   * @param scheduler
+   *            The {@link Scheduler} to use when determining the end and start of a window.
+   * @return
+   *         An {@link Observable} which produces connected non-overlapping windows with a fixed duration.
+   */
+  // public Observable<Observable<T>> window(long timespan, TimeUnit unit, Scheduler scheduler) 
+
+  /**
+   * Creates an Observable which produces windows of collected values. This Observable produces connected
+   * non-overlapping windows, each of a fixed duration specified by the "timespan" argument or a maximum size
+   * specified by the "count" argument (which ever is reached first). When the source Observable completes
+   * or encounters an error, the current window is emitted and the event is propagated.
+   * 
+   * @param timespan
+   *            The period of time each window is collecting values before it should be emitted, and
+   *            replaced with a new window.
+   * @param unit
+   *            The unit of time which applies to the "timespan" argument.
+   * @param count
+   *            The maximum size of each window before it should be emitted.
+   * @return
+   *         An {@link Observable} which produces connected non-overlapping windows which are emitted after
+   *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
+   */
+  // public Observable<Observable<T>> window(long timespan, TimeUnit unit, int count) 
+
+  /**
+   * Creates an Observable which produces windows of collected values. This Observable produces connected
+   * non-overlapping windows, each of a fixed duration specified by the "timespan" argument or a maximum size
+   * specified by the "count" argument (which ever is reached first). When the source Observable completes
+   * or encounters an error, the current window is emitted and the event is propagated.
+   * 
+   * @param timespan
+   *            The period of time each window is collecting values before it should be emitted, and
+   *            replaced with a new window.
+   * @param unit
+   *            The unit of time which applies to the "timespan" argument.
+   * @param count
+   *            The maximum size of each window before it should be emitted.
+   * @param scheduler
+   *            The {@link Scheduler} to use when determining the end and start of a window.
+   * @return
+   *         An {@link Observable} which produces connected non-overlapping windows which are emitted after
+   *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
+   */
+  // public Observable<Observable<T>> window(long timespan, TimeUnit unit, int count, Scheduler scheduler) 
+
+  /**
+   * Creates an Observable which produces windows of collected values. This Observable starts a new window
+   * periodically, which is determined by the "timeshift" argument. Each window is emitted after a fixed timespan
+   * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
+   * current window is emitted and the event is propagated.
+   * 
+   * @param timespan
+   *            The period of time each window is collecting values before it should be emitted.
+   * @param timeshift
+   *            The period of time after which a new window will be created.
+   * @param unit
+   *            The unit of time which applies to the "timespan" and "timeshift" argument.
+   * @return
+   *         An {@link Observable} which produces new windows periodically, and these are emitted after
+   *         a fixed timespan has elapsed.
+   */
+  // public Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit) 
+
+  /**
+   * Creates an Observable which produces windows of collected values. This Observable starts a new window
+   * periodically, which is determined by the "timeshift" argument. Each window is emitted after a fixed timespan
+   * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
+   * current window is emitted and the event is propagated.
+   * 
+   * @param timespan
+   *            The period of time each window is collecting values before it should be emitted.
+   * @param timeshift
+   *            The period of time after which a new window will be created.
+   * @param unit
+   *            The unit of time which applies to the "timespan" and "timeshift" argument.
+   * @param scheduler
+   *            The {@link Scheduler} to use when determining the end and start of a window.
+   * @return
+   *         An {@link Observable} which produces new windows periodically, and these are emitted after
+   *         a fixed timespan has elapsed.
+   */
+  // public Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) 
+
+
+  
 
   /**
    * <p>
