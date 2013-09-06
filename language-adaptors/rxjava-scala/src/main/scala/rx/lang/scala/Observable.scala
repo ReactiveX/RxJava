@@ -18,12 +18,28 @@
 package rx.lang.scala
 
 /**
+ * Users should import rx.lang.scala.All._ and nothing else 
+ */
+object All {
+  // fix covariance/contravariance once and for all
+  type Timestamped[T] = rx.util.Timestamped[_ <: T]
+  type Observer[T] = rx.Observer[_ >: T]
+  type Notification[T] = rx.Notification[_ <: T]
+  // rx.Observable not here because we need its static methods, and users don't need it
+  
+  type Subscription = rx.Subscription
+  type Scheduler = rx.Scheduler
+}
+
+
+/**
  * The Observable interface that implements the Reactive Pattern.
  */
 class Observable[+T](val asJava: rx.Observable[_ <: T]) extends AnyVal {
-  import rx.{Observer, Subscription, Scheduler}
+  import All._
+  import rx.{Observable => JObservable}
   import ImplicitFunctionConversions._
-
+/*
   /**
    * An {@link Observer} must call an Observable's {@code subscribe} method in order to
    * receive items and notifications from the Observable.
@@ -49,7 +65,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T]) extends AnyVal {
    * @throws IllegalArgumentException
    *             if the {@link Observer} provided as the argument to {@code subscribe()} is {@code null}
    */
-  def subscribe(observer: Observer[_ >: T]): Subscription = {
+  def subscribe(observer: Observer[T]): Subscription = {
     asJava.subscribe(observer)
   }
   
@@ -79,10 +95,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T]) extends AnyVal {
    * @throws IllegalArgumentException
    *             if an argument to {@code subscribe()} is {@code null}
    */
-  def subscribe(observer: Observer[_ >: T], scheduler: Scheduler): Subscription = {
+  def subscribe(observer: Observer[T], scheduler: Scheduler): Subscription = {
     asJava.subscribe(observer, scheduler)
   }
-  
+  */
   def subscribe(onNext: T => Unit): Subscription = {
     asJava.subscribe(onNext)
   }
@@ -106,7 +122,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T]) extends AnyVal {
   def subscribe(onNext: T => Unit, scheduler: Scheduler): Subscription = {
     asJava.subscribe(onNext, scheduler)
   }
-  
+  /*
   /**
    * Returns a {@link ConnectableObservable} that upon connection causes the source Observable to
    * push results into the specified subject.
@@ -121,15 +137,63 @@ class Observable[+T](val asJava: rx.Observable[_ <: T]) extends AnyVal {
    */
   // public <R> ConnectableObservable<R> multicast(Subject<T, R> subject) TODO
   
+  /**
+   * TODO doc
+   */
+  def ++[U >: T](that: Observable[U]): Observable[U] = {
+    val o1: JObservable[_ <: U] = this.asJava
+    val o2: JObservable[_ <: U] = that.asJava
+    new Observable(JObservable.concat(o1, o2))
+  }
+  */
+
   
+  /**
+   * Wraps this Observable in another Observable that ensures that the resulting
+   * Observable is chronologically well-behaved.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/synchronize.png">
+   * <p>
+   * A well-behaved Observable does not interleave its invocations of the {@link Observer#onNext onNext}, {@link Observer#onCompleted onCompleted}, and {@link Observer#onError onError} methods of
+   * its {@link Observer}s; it invokes {@code onCompleted} or {@code onError} only once; and it never invokes {@code onNext} after invoking either {@code onCompleted} or {@code onError}.
+   * {@code synchronize} enforces this, and the Observable it returns invokes {@code onNext} and {@code onCompleted} or {@code onError} synchronously.
+   * 
+   * @param observable
+   *            the source Observable
+   * @param <T>
+   *            the type of item emitted by the source Observable
+   * @return an Observable that is a chronologically well-behaved version of the source
+   *         Observable, and that synchronously notifies its {@link Observer}s
+   */
+  // If 1st line commented, 2nd active: OK
+  // If 1st line active, 2nd commented: compiler crashes
+  //def synchronize: Observable[T] = {
+  def synchronize: Any = {
+    new Observable(JObservable.synchronize(asJava))
+  }
+  
+  /*
+  /**
+   * Wraps each item emitted by a source Observable in a {@link Timestamped} object.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/timestamp.png">
+   * 
+   * @return an Observable that emits timestamped items from the source Observable
+   */
+  def timestamp: Observable[Timestamped[T]] = {
+    new Observable(asJava.timestamp())
+  }
+  
+  */
   
 }
 
 object Observable {
   import scala.collection.JavaConverters._
-  import rx.{Observable => JObservable, Observer, Subscription}
+  import rx.lang.scala.All._
+  import rx.{Observable => JObservable}
   import ImplicitFunctionConversions._
-  
+  /*
   /**
    * Creates an Observable that will execute the given function when an {@link Observer} subscribes to it.
    * <p>
@@ -154,7 +218,7 @@ object Observable {
    * @return an Observable that, when an {@link Observer} subscribes to it, will execute the given
    *         function
    */
-  def apply[T](func: Observer[_ >: T] => Subscription): Observable[T] = {
+  def apply[T](func: Observer[T] => Subscription): Observable[T] = {
     new Observable(JObservable.create(func))
   }
   // corresponds to Java's
@@ -314,10 +378,116 @@ object Observable {
   // public static <T> Observable<T> merge(Observable<? extends T>... source) 
   // TODO decide if instance method mergeWith (?)
 
+  // There is no method corresponding to
+  // public static <T> Observable<T> concat(Observable<? extends T>... source) 
+  // because we have the instance method ++ instead
   
+  /**
+   * This behaves like {@link #merge(java.util.List)} except that if any of the merged Observables
+   * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+   * refrain from propagating that error notification until all of the merged Observables have
+   * finished emitting items.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+   * <p>
+   * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+   * Observers once.
+   * <p>
+   * This method allows an Observer to receive all successfully emitted items from all of the
+   * source Observables without being interrupted by an error notification from one of them.
+   * 
+   * @param source
+   *            a list of Observables
+   * @return an Observable that emits items that are the result of flattening the items emitted by
+   *         the {@code source} list of Observables
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+   */
+  // public static <T> Observable<T> mergeDelayError(List<? extends Observable<? extends T>> source) 
+  // TODO decide if instance method mergeWithDelayError (?)
+
+    /**
+   * This behaves like {@link #merge(Observable)} except that if any of the merged Observables
+   * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+   * refrain from propagating that error notification until all of the merged Observables have
+   * finished emitting items.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+   * <p>
+   * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+   * Observers once.
+   * <p>
+   * This method allows an Observer to receive all successfully emitted items from all of the
+   * source Observables without being interrupted by an error notification from one of them.
+   * 
+   * @param source
+   *            an Observable that emits Observables
+   * @return an Observable that emits items that are the result of flattening the items emitted by
+   *         the Observables emitted by the {@code source} Observable
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+   */
+  // public static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source) 
+  // TODO decide if instance method mergeWithDelayError (?)
   
+  /**
+   * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+   * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+   * refrain from propagating that error notification until all of the merged Observables have
+   * finished emitting items.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+   * <p>
+   * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+   * Observers once.
+   * <p>
+   * This method allows an Observer to receive all successfully emitted items from all of the
+   * source Observables without being interrupted by an error notification from one of them.
+   * 
+   * @param source
+   *            a series of Observables
+   * @return an Observable that emits items that are the result of flattening the items emitted by
+   *         the {@code source} Observables
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+   */
+  // public static <T> Observable<T> mergeDelayError(Observable<? extends T>... source) 
+  // TODO decide if instance method mergeWithDelayError (?)
   
+  /**
+   * Returns an Observable that never sends any items or notifications to an {@link Observer}.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/never.png">
+   * <p>
+   * This Observable is useful primarily for testing purposes.
+   * 
+   * @return an Observable that never sends any items or notifications to an {@link Observer}
+   */
+  def never: Observable[Nothing] = {
+    new Observable(JObservable.never())
+  }
   
+  // There is no method corresponding to
+  // public static <T> Observable<T> switchDo(Observable<? extends Observable<? extends T>> sequenceOfSequences) 
+  // because it's deprecated.
+  
+  /**
+   * Given an Observable that emits Observables, creates a single Observable that
+   * emits the items emitted by the most recently published of those Observables.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/switchDo.png">
+   * 
+   * @param sequenceOfSequences
+   *            the source Observable that emits Observables
+   * @return an Observable that emits only the items emitted by the most recently published
+   *         Observable
+   */
+  // public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) 
+  // TODO this has to be an instance method which is only available on Observable whose type
+  // parameter also is an Observable.
+  
+  // There is no method here corresponding to
+  // public static <T> Observable<T> synchronize(Observable<? extends T> observable) 
+  // because that's an instance method.
+
+*/  
 }
 
 /*
@@ -335,15 +505,26 @@ class UnitTestSuite extends JUnitSuite {
   import org.mockito.Matchers.any
   import org.mockito.Mockito._
   import org.mockito.{ MockitoAnnotations, Mock }
-  import rx.{Notification, Observer, Subscription}
-  import rx.observables.GroupedObservable
+  import rx.lang.scala.All._
+  /*
+  // Tests which needn't be run:
+  
+  def testCovariance = {
+    val o1: Observable[Nothing] = Observable()
+    val o2: Observable[Int] = o1
+    val o3: Observable[App] = o1
+    val o4: Observable[Any] = o2
+    val o5: Observable[Any] = o3
+  }
+  
+  // Tests which have to be run:
   
   @Test def testTest() = {
     val a: Observable[Int] = Observable()
     
-    println("testTest()")
+    println("testTest")
     assertEquals(4, Observable(1, 2, 3, 4).asJava.toBlockingObservable().last())
   }
-
+  */
 
 }
