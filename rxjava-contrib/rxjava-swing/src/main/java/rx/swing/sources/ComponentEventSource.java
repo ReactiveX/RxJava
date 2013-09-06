@@ -34,7 +34,7 @@ import rx.util.functions.Func1;
 public enum ComponentEventSource { ; // no instances
 
     /**
-     * @see SwingObservable.fromComponentEvents
+     * @see rx.observables.SwingObservable#fromComponentEvents
      */
     public static Observable<ComponentEvent> fromComponentEventsOf(final Component component) {
         return Observable.create(new OnSubscribeFunc<ComponentEvent>() {
@@ -74,7 +74,7 @@ public enum ComponentEventSource { ; // no instances
     }
     
     /**
-     * @see SwingObservable.fromResizing
+     * @see SwingObservable#fromResizing
      */
     public static Observable<Dimension> fromResizing(final Component component) {
         return fromComponentEventsOf(component).filter(RESIZED).map(new Func1<ComponentEvent, Dimension>() {
@@ -104,6 +104,5 @@ public enum ComponentEventSource { ; // no instances
         public Boolean call(ComponentEvent event) {
             return event.getID() == id;
         }
-        
     }
 }

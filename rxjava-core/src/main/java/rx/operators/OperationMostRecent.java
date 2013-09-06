@@ -16,7 +16,6 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,7 +25,6 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscription;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.util.Exceptions;
