@@ -2,6 +2,42 @@
 
 ### Version 0.12.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.12.0%22)) ###
 
+This version adds to the static typing changes in 0.11 and adds covariant/contravariant typing via super/extends generics.
+
+Additional cleanup was done, particularly related to `BlockingObservable`. Also the `window` operator was added.
+
+The largest breaking change is that `Observable.create` now accepts an `OnSubscribeFunc` rather than a `Func1`.
+
+This means that instead of this:
+
+```java
+public static <T> Observable<T> create(Func1<? super Observer<? super T>, ? extends Subscription> func)
+```
+
+it is now:
+
+```java
+public static <T> Observable<T> create(OnSubscribeFunc<T> func)
+```
+
+This was done to simplify the usage of `Observable.create` which was already verbose but made far worse by the `? super` generics.
+
+For example, instead of writing this:
+
+```java
+Observable.create(new Func1<Observer<? super SomeType>, Subscription>() {
+   /// body here
+}
+```
+
+it is now written as:
+
+```java
+Observable.create(new OnSubscribeFunc<SomeType>() {
+   /// body here
+}
+```
+
 * [Pull 343](https://github.com/Netflix/RxJava/pull/343) Covariant Support with super/extends and `OnSubscribeFunc` as type for `Observable.create`
 * [Pull 337](https://github.com/Netflix/RxJava/pull/337) Operator: `window`
 * [Pull 348](https://github.com/Netflix/RxJava/pull/348) Rename `switchDo` to `switchOnNext` (deprecate `switchDo` for eventual deletion)
