@@ -39,8 +39,9 @@ object All {
  * The Observable interface that implements the Reactive Pattern.
  */
 class Observable[+T](val asJava: rx.Observable[_ <: T])
-  // Uncommenting this line makes the compiler crash:
-  // extends AnyVal 
+  // Uncommenting this line combined with `new Observable(...)` instead of `new Observable[T](...)`
+  // makes the compiler crash
+  extends AnyVal 
 {
   import All._
   import rx.{Observable => JObservable}
@@ -128,7 +129,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def subscribe(onNext: T => Unit, scheduler: Scheduler): Subscription = {
     asJava.subscribe(onNext, scheduler)
   }
-  /*
+
   /**
    * Returns a {@link ConnectableObservable} that upon connection causes the source Observable to
    * push results into the specified subject.
@@ -149,9 +150,8 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def ++[U >: T](that: Observable[U]): Observable[U] = {
     val o1: JObservable[_ <: U] = this.asJava
     val o2: JObservable[_ <: U] = that.asJava
-    new Observable(JObservable.concat(o1, o2))
+    new Observable[U](JObservable.concat(o1, o2))
   }
-  */
 
   
   /**
@@ -172,7 +172,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         Observable, and that synchronously notifies its {@link Observer}s
    */
   def synchronize: Observable[T] = {
-    new Observable(JObservable.synchronize(asJava))
+    new Observable[T](JObservable.synchronize(asJava))
   }
   
   /**
