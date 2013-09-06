@@ -22,19 +22,22 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
-import rx.util.SynchronizedObserver;
-import rx.util.functions.Func1;
 
 /**
- * An observable that wraps an observable of the same type and then enforces the semantics
- * expected of a well-behaved observable.
+ * Wraps an Observable in another Observable that ensures that the resulting Observable is
+ * chronologically well-behaved.
  * <p>
- * An observable that ensures onNext, onCompleted, or onError calls on its subscribers are
- * not interleaved, onCompleted and onError are only called once respectively, and no
- * onNext calls follow onCompleted and onError calls.
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/synchronize.png">
+ * <p>
+ * A well-behaved Observable does not interleave its invocations of the <code>onNext</code>,
+ * <code>onCompleted</code>, and <code>onError</code> methods of its Observers; it invokes
+ * <code>onCompleted</code> or <code>onError</code> only once; and it never invokes
+ * <code>onNext</code> after invoking either <code>onCompleted</code> or <code>onError</code>. The
+ * synchronize operation enforces this, and the Observable it returns invokes <code>onNext</code>
+ * and <code>onCompleted</code> or <code>onError</code> synchronously.
  * <p>
  * NOTE: {@link Observable#create} already wraps Observables so this is generally redundant.
  * 
@@ -54,21 +57,21 @@ public final class OperationSynchronize<T> {
      * @param <T>
      * @return the wrapped synchronized observable sequence
      */
-    public static <T> Func1<Observer<T>, Subscription> synchronize(Observable<T> observable) {
+    public static <T> OnSubscribeFunc<T> synchronize(Observable<? extends T> observable) {
         return new Synchronize<T>(observable);
     }
 
-    private static class Synchronize<T> implements Func1<Observer<T>, Subscription> {
+    private static class Synchronize<T> implements OnSubscribeFunc<T> {
 
-        public Synchronize(Observable<T> innerObservable) {
+        public Synchronize(Observable<? extends T> innerObservable) {
             this.innerObservable = innerObservable;
         }
 
-        private Observable<T> innerObservable;
+        private Observable<? extends T> innerObservable;
         private SynchronizedObserver<T> atomicObserver;
 
-        public Subscription call(Observer<T> observer) {
-            AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        public Subscription onSubscribe(Observer<? super T> observer) {
+            SafeObservableSubscription subscription = new SafeObservableSubscription();
             atomicObserver = new SynchronizedObserver<T>(observer, subscription);
             return subscription.wrap(innerObservable.subscribe(atomicObserver));
         }
@@ -83,7 +86,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnCompletedAfterUnSubscribe() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -103,7 +106,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnNextAfterUnSubscribe() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -123,7 +126,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnErrorAfterUnSubscribe() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -134,7 +137,7 @@ public final class OperationSynchronize<T> {
             t.sendOnError(new RuntimeException("bad"));
 
             verify(w, times(1)).onNext("one");
-            verify(w, Mockito.never()).onError(any(Exception.class));
+            verify(w, Mockito.never()).onError(any(Throwable.class));
         }
 
         /**
@@ -143,7 +146,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnNextAfterOnError() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -155,7 +158,7 @@ public final class OperationSynchronize<T> {
             t.sendOnNext("two");
 
             verify(w, times(1)).onNext("one");
-            verify(w, times(1)).onError(any(Exception.class));
+            verify(w, times(1)).onError(any(Throwable.class));
             verify(w, Mockito.never()).onNext("two");
         }
 
@@ -165,7 +168,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnCompletedAfterOnError() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -177,7 +180,7 @@ public final class OperationSynchronize<T> {
             t.sendOnCompleted();
 
             verify(w, times(1)).onNext("one");
-            verify(w, times(1)).onError(any(Exception.class));
+            verify(w, times(1)).onError(any(Throwable.class));
             verify(w, Mockito.never()).onCompleted();
         }
 
@@ -187,7 +190,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnNextAfterOnCompleted() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -201,7 +204,7 @@ public final class OperationSynchronize<T> {
             verify(w, times(1)).onNext("one");
             verify(w, Mockito.never()).onNext("two");
             verify(w, times(1)).onCompleted();
-            verify(w, Mockito.never()).onError(any(Exception.class));
+            verify(w, Mockito.never()).onError(any(Throwable.class));
         }
 
         /**
@@ -210,7 +213,7 @@ public final class OperationSynchronize<T> {
         @Test
         public void testOnErrorAfterOnCompleted() {
             TestObservable t = new TestObservable(null);
-            Observable<String> st = Observable.create(synchronize(t));
+            Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
             @SuppressWarnings("unchecked")
             Observer<String> w = mock(Observer.class);
@@ -223,15 +226,15 @@ public final class OperationSynchronize<T> {
 
             verify(w, times(1)).onNext("one");
             verify(w, times(1)).onCompleted();
-            verify(w, Mockito.never()).onError(any(Exception.class));
+            verify(w, Mockito.never()).onError(any(Throwable.class));
         }
 
         /**
          * A Observable that doesn't do the right thing on UnSubscribe/Error/etc in that it will keep sending events down the pipe regardless of what happens.
          */
-        private static class TestObservable extends Observable<String> {
+        private static class TestObservable implements OnSubscribeFunc<String> {
 
-            Observer<String> observer = null;
+            Observer<? super String> observer = null;
 
             public TestObservable(Subscription s) {
             }
@@ -247,12 +250,12 @@ public final class OperationSynchronize<T> {
             }
 
             /* used to simulate subscription */
-            public void sendOnError(Exception e) {
+            public void sendOnError(Throwable e) {
                 observer.onError(e);
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 this.observer = observer;
                 return new Subscription() {
 

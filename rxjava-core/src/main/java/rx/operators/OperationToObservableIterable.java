@@ -24,31 +24,33 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func1;
 
 /**
- * Accepts an Iterable object and exposes it as an Observable.
- * 
- * @param <T>
- *            The type of the Iterable sequence.
+ * Converts an Iterable sequence into an Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/toObservable.png">
+ * <p>
+ * You can convert any object that supports the Iterable interface into an Observable that emits
+ * each item in the object, with the toObservable operation.
  */
 public final class OperationToObservableIterable<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> toObservableIterable(Iterable<T> list) {
+    public static <T> OnSubscribeFunc<T> toObservableIterable(Iterable<? extends T> list) {
         return new ToObservableIterable<T>(list);
     }
 
-    private static class ToObservableIterable<T> implements Func1<Observer<T>, Subscription> {
-        public ToObservableIterable(Iterable<T> list) {
+    private static class ToObservableIterable<T> implements OnSubscribeFunc<T> {
+        public ToObservableIterable(Iterable<? extends T> list) {
             this.iterable = list;
         }
 
-        public Iterable<T> iterable;
+        public Iterable<? extends T> iterable;
 
-        public Subscription call(Observer<T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             for (T item : iterable) {
                 observer.onNext(item);
             }
@@ -70,7 +72,7 @@ public final class OperationToObservableIterable<T> {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, times(1)).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
     }

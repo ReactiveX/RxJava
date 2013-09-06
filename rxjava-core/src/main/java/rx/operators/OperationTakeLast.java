@@ -25,47 +25,49 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
-import rx.util.functions.Func1;
 
 /**
- * Returns a specified number of contiguous elements from the end of an observable sequence.
+ * Returns an Observable that emits the last <code>count</code> items emitted by the source
+ * Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/last.png">
  */
 public final class OperationTakeLast {
 
-    public static <T> Func1<Observer<T>, Subscription> takeLast(final Observable<T> items, final int count) {
-        return new Func1<Observer<T>, Subscription>() {
+    public static <T> OnSubscribeFunc<T> takeLast(final Observable<? extends T> items, final int count) {
+        return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription call(Observer<T> observer) {
-                return new TakeLast<T>(items, count).call(observer);
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                return new TakeLast<T>(items, count).onSubscribe(observer);
             }
 
         };
     }
 
-    private static class TakeLast<T> implements Func1<Observer<T>, Subscription> {
+    private static class TakeLast<T> implements OnSubscribeFunc<T> {
         private final int count;
-        private final Observable<T> items;
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        private final Observable<? extends T> items;
+        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        TakeLast(final Observable<T> items, final int count) {
+        TakeLast(final Observable<? extends T> items, final int count) {
             this.count = count;
             this.items = items;
         }
 
-        public Subscription call(Observer<T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
         private class ItemObserver implements Observer<T> {
 
             private LinkedBlockingDeque<T> deque = new LinkedBlockingDeque<T>(count);
-            private final Observer<T> observer;
+            private final Observer<? super T> observer;
 
-            public ItemObserver(Observer<T> observer) {
+            public ItemObserver(Observer<? super T> observer) {
                 this.observer = observer;
             }
 
@@ -79,7 +81,7 @@ public final class OperationTakeLast {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 observer.onError(e);
             }
 
@@ -98,20 +100,20 @@ public final class OperationTakeLast {
 
         @Test
         public void testTakeLastEmpty() {
-            Observable<String> w = Observable.toObservable();
+            Observable<String> w = Observable.from();
             Observable<String> take = Observable.create(takeLast(w, 2));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             take.subscribe(aObserver);
             verify(aObserver, never()).onNext(any(String.class));
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
         @Test
         public void testTakeLast1() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> take = Observable.create(takeLast(w, 2));
 
             @SuppressWarnings("unchecked")
@@ -121,20 +123,20 @@ public final class OperationTakeLast {
             inOrder.verify(aObserver, times(1)).onNext("two");
             inOrder.verify(aObserver, times(1)).onNext("three");
             verify(aObserver, never()).onNext("one");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
         @Test
         public void testTakeLast2() {
-            Observable<String> w = Observable.toObservable("one");
+            Observable<String> w = Observable.from("one");
             Observable<String> take = Observable.create(takeLast(w, 10));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
             take.subscribe(aObserver);
             verify(aObserver, times(1)).onNext("one");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 

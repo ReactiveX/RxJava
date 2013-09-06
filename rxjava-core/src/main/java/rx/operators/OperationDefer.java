@@ -20,19 +20,29 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func0;
-import rx.util.functions.Func1;
 
+/**
+ * Do not create the Observable until an Observer subscribes; create a fresh Observable on each
+ * subscription.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/defer.png">
+ * <p>
+ * Pass defer an Observable factory function (a function that generates Observables), and defer will
+ * return an Observable that will call this function to generate its Observable sequence afresh
+ * each time a new Observer subscribes.
+ */
 public final class OperationDefer {
 
-    public static <T> Func1<Observer<T>, Subscription> defer(final Func0<Observable<T>> observableFactory) {
+    public static <T> OnSubscribeFunc<T> defer(final Func0<? extends Observable<? extends T>> observableFactory) {
 
-        return new Func1<Observer<T>, Subscription>() {
+        return new OnSubscribeFunc<T>() {
             @Override
-            public Subscription call(Observer<T> observer) {
-                Observable<T> obs = observableFactory.call();
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                Observable<? extends T> obs = observableFactory.call();
                 return obs.subscribe(observer);
             }
         };
@@ -42,7 +52,7 @@ public final class OperationDefer {
     public static class UnitTest {
         @Test
         @SuppressWarnings("unchecked")
-        public void testDefer() throws Exception {
+        public void testDefer() throws Throwable {
 
             Func0<Observable<String>> factory = mock(Func0.class);
 

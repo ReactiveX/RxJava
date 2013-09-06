@@ -29,13 +29,17 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 /**
- * Similar to toList in that it converts a sequence<T> into a List<T> except that it accepts a Function that will provide an implementation of Comparator.
+ * Return an Observable that emits the items emitted by the source Observable, in a sorted order
+ * (each item emitted by the Observable must implement Comparable with respect to all other items
+ * in the sequence, or you must pass in a sort function).
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/toSortedList.png">
  * 
  * @param <T>
  */
@@ -49,7 +53,7 @@ public final class OperationToObservableSortedList<T> {
      *             if T objects do not implement Comparable
      * @return an observable containing the sorted list
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> toSortedList(Observable<T> sequence) {
+    public static <T> OnSubscribeFunc<List<T>> toSortedList(Observable<? extends T> sequence) {
         return new ToObservableSortedList<T>(sequence);
     }
 
@@ -60,35 +64,35 @@ public final class OperationToObservableSortedList<T> {
      * @param sortFunction
      * @return an observable containing the sorted list
      */
-    public static <T> Func1<Observer<List<T>>, Subscription> toSortedList(Observable<T> sequence, Func2<T, T, Integer> sortFunction) {
+    public static <T> OnSubscribeFunc<List<T>> toSortedList(Observable<? extends T> sequence, Func2<? super T, ? super T, Integer> sortFunction) {
         return new ToObservableSortedList<T>(sequence, sortFunction);
     }
 
-    private static class ToObservableSortedList<T> implements Func1<Observer<List<T>>, Subscription> {
+    private static class ToObservableSortedList<T> implements OnSubscribeFunc<List<T>> {
 
-        private final Observable<T> that;
+        private final Observable<? extends T> that;
         private final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();
-        private final Func2<T, T, Integer> sortFunction;
+        private final Func2<? super T, ? super T, Integer> sortFunction;
 
         // unchecked as we're support Object for the default
         @SuppressWarnings("unchecked")
-        private ToObservableSortedList(Observable<T> that) {
+        private ToObservableSortedList(Observable<? extends T> that) {
             this(that, defaultSortFunction);
         }
 
-        private ToObservableSortedList(Observable<T> that, Func2<T, T, Integer> sortFunction) {
+        private ToObservableSortedList(Observable<? extends T> that, Func2<? super T, ? super T, Integer> sortFunction) {
             this.that = that;
             this.sortFunction = sortFunction;
         }
 
-        public Subscription call(final Observer<List<T>> observer) {
+        public Subscription onSubscribe(final Observer<? super List<T>> observer) {
             return that.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     // onNext can be concurrently executed so list must be thread-safe
                     list.add(value);
                 }
 
-                public void onError(Exception ex) {
+                public void onError(Throwable ex) {
                     observer.onError(ex);
                 }
 
@@ -112,7 +116,7 @@ public final class OperationToObservableSortedList<T> {
 
                         observer.onNext(Collections.unmodifiableList(l));
                         observer.onCompleted();
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         onError(e);
                     }
 
@@ -143,20 +147,20 @@ public final class OperationToObservableSortedList<T> {
 
         @Test
         public void testSortedList() {
-            Observable<Integer> w = Observable.toObservable(1, 3, 2, 5, 4);
+            Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
             Observable<List<Integer>> observable = Observable.create(toSortedList(w));
 
             @SuppressWarnings("unchecked")
             Observer<List<Integer>> aObserver = mock(Observer.class);
             observable.subscribe(aObserver);
             verify(aObserver, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
         @Test
         public void testSortedListWithCustomFunction() {
-            Observable<Integer> w = Observable.toObservable(1, 3, 2, 5, 4);
+            Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
             Observable<List<Integer>> observable = Observable.create(toSortedList(w, new Func2<Integer, Integer, Integer>() {
 
                 @Override
@@ -170,7 +174,7 @@ public final class OperationToObservableSortedList<T> {
             Observer<List<Integer>> aObserver = mock(Observer.class);
             observable.subscribe(aObserver);
             verify(aObserver, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 

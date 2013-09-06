@@ -27,25 +27,39 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
 
+/**
+ * Returns an Observable that emits a single item, a list composed of all the items emitted by the
+ * source Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/toList.png">
+ * <p>
+ * Normally, an Observable that returns multiple items will do so by invoking its Observer's
+ * <code>onNext</code> method for each such item. You can change this behavior, instructing the
+ * Observable to compose a list of all of these multiple items and then to invoke the Observer's
+ * <code>onNext</code> method once, passing it the entire list, by using the toList operator.
+ * <p>
+ * Be careful not to use this operator on Observables that emit infinite or very large numbers of
+ * items, as you do not have the option to unsubscribe.
+ */
 public final class OperationToObservableList<T> {
 
-    public static <T> Func1<Observer<List<T>>, Subscription> toObservableList(Observable<T> that) {
+    public static <T> OnSubscribeFunc<List<T>> toObservableList(Observable<? extends T> that) {
         return new ToObservableList<T>(that);
     }
 
-    private static class ToObservableList<T> implements Func1<Observer<List<T>>, Subscription> {
+    private static class ToObservableList<T> implements OnSubscribeFunc<List<T>> {
 
-        private final Observable<T> that;
+        private final Observable<? extends T> that;
 
-        public ToObservableList(Observable<T> that) {
+        public ToObservableList(Observable<? extends T> that) {
             this.that = that;
         }
 
-        public Subscription call(final Observer<List<T>> observer) {
+        public Subscription onSubscribe(final Observer<? super List<T>> observer) {
 
             return that.subscribe(new Observer<T>() {
                 final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();
@@ -54,7 +68,7 @@ public final class OperationToObservableList<T> {
                     list.add(value);
                 }
 
-                public void onError(Exception ex) {
+                public void onError(Throwable ex) {
                     observer.onError(ex);
                 }
 
@@ -71,7 +85,7 @@ public final class OperationToObservableList<T> {
                         // observer.onNext(Collections.unmodifiableList(l));
                         observer.onNext(l);
                         observer.onCompleted();
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         onError(e);
                     }
 
@@ -84,20 +98,20 @@ public final class OperationToObservableList<T> {
 
         @Test
         public void testList() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<List<String>> observable = Observable.create(toObservableList(w));
 
             @SuppressWarnings("unchecked")
             Observer<List<String>> aObserver = mock(Observer.class);
             observable.subscribe(aObserver);
             verify(aObserver, times(1)).onNext(Arrays.asList("one", "two", "three"));
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
         @Test
         public void testListMultipleObservers() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<List<String>> observable = Observable.create(toObservableList(w));
 
             @SuppressWarnings("unchecked")
@@ -111,11 +125,11 @@ public final class OperationToObservableList<T> {
             List<String> expected = Arrays.asList("one", "two", "three");
 
             verify(o1, times(1)).onNext(expected);
-            verify(o1, Mockito.never()).onError(any(Exception.class));
+            verify(o1, Mockito.never()).onError(any(Throwable.class));
             verify(o1, times(1)).onCompleted();
 
             verify(o2, times(1)).onNext(expected);
-            verify(o2, Mockito.never()).onError(any(Exception.class));
+            verify(o2, Mockito.never()).onError(any(Throwable.class));
             verify(o2, times(1)).onCompleted();
         }
     }

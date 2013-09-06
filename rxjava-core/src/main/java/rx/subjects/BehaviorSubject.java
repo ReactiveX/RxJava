@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,56 +26,57 @@ import org.mockito.Mockito;
 
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
+import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
-import rx.util.functions.Func1;
 
 /**
- * Subject that publishes the last and all subsequent events to each {@link Observer} that subscribes. 
+ * Subject that publishes the most recent and all subsequent events to each subscribed {@link Observer}.
+ *
  * <p>
  * Example usage:
  * <p>
  * <pre> {@code
- 
+
   // observer will receive all events.
   BehaviorSubject<Object> subject = BehaviorSubject.createWithDefaultValue("default");
   subject.subscribe(observer);
   subject.onNext("one");
   subject.onNext("two");
   subject.onNext("three");
- 
-  // observer will receive the "one", "two" and "three" events.
+
+  // observer will receive the "one", "two" and "three" events, but not "zero"
   BehaviorSubject<Object> subject = BehaviorSubject.createWithDefaultValue("default");
+  subject.onNext("zero");
   subject.onNext("one");
   subject.subscribe(observer);
   subject.onNext("two");
   subject.onNext("three");
- 
+
   } </pre>
- * 
+ *
  * @param <T>
  */
 public class BehaviorSubject<T> extends Subject<T, T> {
 
     /**
-     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each 
+     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each
      * {@link Observer} that subscribes to it.
-     *  
+     *
      * @param defaultValue
-     *            The value which will be published to any {@link Observer} as long as the 
+     *            The value which will be published to any {@link Observer} as long as the
      *            {@link BehaviorSubject} has not yet received any events.
      * @return the constructed {@link BehaviorSubject}.
      */
     public static <T> BehaviorSubject<T> createWithDefaultValue(T defaultValue) {
-        final ConcurrentHashMap<Subscription, Observer<T>> observers = new ConcurrentHashMap<Subscription, Observer<T>>();
+        final ConcurrentHashMap<Subscription, Observer<? super T>> observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
 
         final AtomicReference<T> currentValue = new AtomicReference<T>(defaultValue);
-        
-        Func1<Observer<T>, Subscription> onSubscribe = new Func1<Observer<T>, Subscription>() {
+
+        OnSubscribeFunc<T> onSubscribe = new OnSubscribeFunc<T>() {
             @Override
-            public Subscription call(Observer<T> observer) {
-                final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
                 subscription.wrap(new Subscription() {
                     @Override
@@ -96,25 +97,25 @@ public class BehaviorSubject<T> extends Subject<T, T> {
         return new BehaviorSubject<T>(currentValue, onSubscribe, observers);
     }
 
-    private final ConcurrentHashMap<Subscription, Observer<T>> observers;
+    private final ConcurrentHashMap<Subscription, Observer<? super T>> observers;
     private final AtomicReference<T> currentValue;
 
-    protected BehaviorSubject(AtomicReference<T> currentValue, Func1<Observer<T>, Subscription> onSubscribe, ConcurrentHashMap<Subscription, Observer<T>> observers) {
+    protected BehaviorSubject(AtomicReference<T> currentValue, OnSubscribeFunc<T> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers) {
         super(onSubscribe);
         this.currentValue = currentValue;
         this.observers = observers;
     }
-    
+
     @Override
     public void onCompleted() {
-        for (Observer<T> observer : observers.values()) {
+        for (Observer<? super T> observer : observers.values()) {
             observer.onCompleted();
         }
     }
 
     @Override
-    public void onError(Exception e) {
-        for (Observer<T> observer : observers.values()) {
+    public void onError(Throwable e) {
+        for (Observer<? super T> observer : observers.values()) {
             observer.onError(e);
         }
     }
@@ -122,14 +123,14 @@ public class BehaviorSubject<T> extends Subject<T, T> {
     @Override
     public void onNext(T args) {
         currentValue.set(args);
-        for (Observer<T> observer : observers.values()) {
+        for (Observer<? super T> observer : observers.values()) {
             observer.onNext(args);
         }
     }
 
     public static class UnitTest {
 
-        private final Exception testException = new Exception();
+        private final Throwable testException = new Throwable();
 
         @Test
         public void testThatObserverReceivesDefaultValueIfNothingWasPublished() {
@@ -198,7 +199,7 @@ public class BehaviorSubject<T> extends Subject<T, T> {
         {
             verify(aObserver, times(1)).onNext("default");
             verify(aObserver, times(1)).onNext("one");
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -224,7 +225,7 @@ public class BehaviorSubject<T> extends Subject<T, T> {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onError(testException);
         }
-        
+
         @Test
         public void testUnsubscribe()
         {
@@ -247,7 +248,7 @@ public class BehaviorSubject<T> extends Subject<T, T> {
                 @Override
                 public void call(BehaviorSubject<String> DefaultSubject)
                 {
-                    DefaultSubject.onError(new Exception());
+                    DefaultSubject.onError(new Throwable());
                 }
             }, new Action1<BehaviorSubject<String>>()
             {

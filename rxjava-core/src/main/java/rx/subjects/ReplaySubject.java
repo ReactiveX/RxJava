@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,31 +37,32 @@ import rx.util.functions.Func1;
 
 /**
  * Subject that retains all events and will replay them to an {@link Observer} that subscribes.
+ *
  * <p>
  * Example usage:
  * <p>
  * <pre> {@code
- 
+
   ReplaySubject<Object> subject = ReplaySubject.create();
   subject.onNext("one");
   subject.onNext("two");
   subject.onNext("three");
   subject.onCompleted();
-  
+
   // both of the following will get the onNext/onCompleted calls from above
   subject.subscribe(observer1);
   subject.subscribe(observer2);
- 
+
   } </pre>
- * 
+ *
  * @param <T>
  */
 public final class ReplaySubject<T> extends Subject<T, T>
 {
 
     private boolean isDone = false;
-    private Exception exception = null;
-    private final Map<Subscription, Observer<T>> subscriptions = new HashMap<Subscription, Observer<T>>();
+    private Throwable exception = null;
+    private final Map<Subscription, Observer<? super T>> subscriptions = new HashMap<Subscription, Observer<? super T>>();
     private final List<T> history = Collections.synchronizedList(new ArrayList<T>());
 
     public static <T> ReplaySubject<T> create() {
@@ -73,11 +74,11 @@ public final class ReplaySubject<T> extends Subject<T, T>
         onSubscribe.wrap(new SubscriptionFunc());
     }
 
-    private static final class DelegateSubscriptionFunc<T> implements Func1<Observer<T>, Subscription>
+    private static final class DelegateSubscriptionFunc<T> implements OnSubscribeFunc<T>
     {
-        private Func1<Observer<T>, Subscription> delegate = null;
+        private Func1<? super Observer<? super T>, ? extends Subscription> delegate = null;
 
-        public void wrap(Func1<Observer<T>, Subscription> delegate)
+        public void wrap(Func1<? super Observer<? super T>, ? extends Subscription> delegate)
         {
             if (this.delegate != null) {
                 throw new UnsupportedOperationException("delegate already set");
@@ -86,16 +87,16 @@ public final class ReplaySubject<T> extends Subject<T, T>
         }
 
         @Override
-        public Subscription call(Observer<T> observer)
+        public Subscription onSubscribe(Observer<? super T> observer)
         {
             return delegate.call(observer);
         }
     }
 
-    private class SubscriptionFunc implements Func1<Observer<T>, Subscription>
+    private class SubscriptionFunc implements Func1<Observer<? super T>, Subscription>
     {
         @Override
-        public Subscription call(Observer<T> observer) {
+        public Subscription call(Observer<? super T> observer) {
             int item = 0;
             Subscription subscription;
 
@@ -144,7 +145,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
     {
         synchronized (subscriptions) {
             isDone = true;
-            for (Observer<T> observer : new ArrayList<Observer<T>>(subscriptions.values())) {
+            for (Observer<? super T> observer : new ArrayList<Observer<? super T>>(subscriptions.values())) {
                 observer.onCompleted();
             }
             subscriptions.clear();
@@ -152,7 +153,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
     }
 
     @Override
-    public void onError(Exception e)
+    public void onError(Throwable e)
     {
         synchronized (subscriptions) {
             if (isDone) {
@@ -160,7 +161,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
             }
             isDone = true;
             exception = e;
-            for (Observer<T> observer : new ArrayList<Observer<T>>(subscriptions.values())) {
+            for (Observer<? super T> observer : new ArrayList<Observer<? super T>>(subscriptions.values())) {
                 observer.onError(e);
             }
             subscriptions.clear();
@@ -172,7 +173,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
     {
         synchronized (subscriptions) {
             history.add(args);
-            for (Observer<T> observer : new ArrayList<Observer<T>>(subscriptions.values())) {
+            for (Observer<? super T> observer : new ArrayList<Observer<? super T>>(subscriptions.values())) {
                 observer.onNext(args);
             }
         }
@@ -180,12 +181,12 @@ public final class ReplaySubject<T> extends Subject<T, T>
 
     public static class UnitTest {
 
-        private final Exception testException = new Exception();
+        private final Throwable testException = new Throwable();
 
         @SuppressWarnings("unchecked")
         @Test
         public void testCompleted() {
-            ReplaySubject<Object> subject = ReplaySubject.create();
+            ReplaySubject<String> subject = ReplaySubject.create();
 
             Observer<String> o1 = mock(Observer.class);
             subject.subscribe(o1);
@@ -197,7 +198,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
 
             subject.onNext("four");
             subject.onCompleted();
-            subject.onError(new Exception());
+            subject.onError(new Throwable());
 
             assertCompletedObserver(o1);
 
@@ -214,7 +215,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
             inOrder.verify(aObserver, times(1)).onNext("one");
             inOrder.verify(aObserver, times(1)).onNext("two");
             inOrder.verify(aObserver, times(1)).onNext("three");
-            inOrder.verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            inOrder.verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             inOrder.verify(aObserver, times(1)).onCompleted();
             inOrder.verifyNoMoreInteractions();
         }
@@ -222,7 +223,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
         @SuppressWarnings("unchecked")
         @Test
         public void testError() {
-            ReplaySubject<Object> subject = ReplaySubject.create();
+            ReplaySubject<String> subject = ReplaySubject.create();
 
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
@@ -233,7 +234,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
             subject.onError(testException);
 
             subject.onNext("four");
-            subject.onError(new Exception());
+            subject.onError(new Throwable());
             subject.onCompleted();
 
             assertErrorObserver(aObserver);
@@ -255,7 +256,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
         @SuppressWarnings("unchecked")
         @Test
         public void testSubscribeMidSequence() {
-            ReplaySubject<Object> subject = ReplaySubject.create();
+            ReplaySubject<String> subject = ReplaySubject.create();
 
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
@@ -279,7 +280,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
         @SuppressWarnings("unchecked")
         @Test
         public void testUnsubscribeFirstObserver() {
-            ReplaySubject<Object> subject = ReplaySubject.create();
+            ReplaySubject<String> subject = ReplaySubject.create();
 
             Observer<String> aObserver = mock(Observer.class);
             Subscription subscription = subject.subscribe(aObserver);
@@ -306,7 +307,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, Mockito.never()).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, Mockito.never()).onCompleted();
         }
 
@@ -332,7 +333,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
                 @Override
                 public void call(ReplaySubject<Object> repeatSubject)
                 {
-                    repeatSubject.onError(new Exception());
+                    repeatSubject.onError(new Throwable());
                 }
             }, new Action1<ReplaySubject<Object>>()
             {

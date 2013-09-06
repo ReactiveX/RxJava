@@ -25,13 +25,17 @@ import org.junit.Test;
 
 import rx.Notification;
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.Exceptions;
-import rx.util.functions.Func1;
 
 /**
+ * Returns an Iterator that iterates over all items emitted by a specified Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterator.png">
+ * <p>
  * @see <a href="https://github.com/Netflix/RxJava/issues/50">Issue #50</a>
  */
 public class OperationToIterator {
@@ -39,34 +43,32 @@ public class OperationToIterator {
     /**
      * Returns an iterator that iterates all values of the observable.
      * 
-     * @param that
-     *            an observable sequence to get an iterator for.
      * @param <T>
      *            the type of source.
      * @return the iterator that could be used to iterate over the elements of the observable.
      */
-    public static <T> Iterator<T> toIterator(Observable<T> that) {
-        final BlockingQueue<Notification<T>> notifications = new LinkedBlockingQueue<Notification<T>>();
+    public static <T> Iterator<T> toIterator(Observable<? extends T> source) {
+        final BlockingQueue<Notification<? extends T>> notifications = new LinkedBlockingQueue<Notification<? extends T>>();
 
-        Observable.materialize(that).subscribe(new Observer<Notification<T>>() {
+        source.materialize().subscribe(new Observer<Notification<? extends T>>() {
             @Override
             public void onCompleted() {
                 // ignore
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 // ignore
             }
 
             @Override
-            public void onNext(Notification<T> args) {
+            public void onNext(Notification<? extends T> args) {
                 notifications.offer(args);
             }
         });
 
         return new Iterator<T>() {
-            private Notification<T> buf;
+            private Notification<? extends T> buf;
 
             @Override
             public boolean hasNext() {
@@ -82,7 +84,7 @@ public class OperationToIterator {
                     buf = take();
                 }
                 if (buf.isOnError()) {
-                    throw Exceptions.propagate(buf.getException());
+                    throw Exceptions.propagate(buf.getThrowable());
                 }
 
                 T result = buf.getValue();
@@ -90,7 +92,7 @@ public class OperationToIterator {
                 return result;
             }
 
-            private Notification<T> take() {
+            private Notification<? extends T> take() {
                 try {
                     return notifications.take();
                 } catch (InterruptedException e) {
@@ -107,7 +109,7 @@ public class OperationToIterator {
 
     @Test
     public void testToIterator() {
-        Observable<String> obs = Observable.toObservable("one", "two", "three");
+        Observable<String> obs = Observable.from("one", "two", "three");
 
         Iterator<String> it = toIterator(obs);
 
@@ -126,10 +128,10 @@ public class OperationToIterator {
 
     @Test(expected = TestException.class)
     public void testToIteratorWithException() {
-        Observable<String> obs = Observable.create(new Func1<Observer<String>, Subscription>() {
+        Observable<String> obs = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription call(Observer<String> observer) {
+            public Subscription onSubscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new TestException());
                 return Subscriptions.empty();

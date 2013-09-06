@@ -23,11 +23,24 @@ import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
+/**
+ * Returns an Observable that applies a function to the first item emitted by a source Observable,
+ * then feeds the result of that function along with the second item emitted by an Observable into
+ * the same function, and so on until all items have been emitted by the source Observable,
+ * emitting the result of each of these iterations.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/scan.png">
+ * <p>
+ * This sort of function is sometimes called an accumulator.
+ * <p>
+ * Note that when you pass a seed to <code>scan()</code> the resulting Observable will emit that
+ * seed as its first emitted item.
+ */
 public final class OperationScan {
     /**
      * Applies an accumulator function over an observable sequence and returns each intermediate result with the specified source and accumulator.
@@ -42,7 +55,7 @@ public final class OperationScan {
      * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212007%28v=vs.103%29.aspx">Observable.Scan(TSource, TAccumulate) Method (IObservable(TSource), TAccumulate, Func(TAccumulate, TSource, TAccumulate))</a>
      */
-    public static <T, R> Func1<Observer<R>, Subscription> scan(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
+    public static <T, R> OnSubscribeFunc<R> scan(Observable<? extends T> sequence, R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
         return new Accumulator<T, R>(sequence, initialValue, accumulator);
     }
 
@@ -57,23 +70,23 @@ public final class OperationScan {
      * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx">Observable.Scan(TSource) Method (IObservable(TSource), Func(TSource, TSource, TSource))</a>
      */
-    public static <T> Func1<Observer<T>, Subscription> scan(Observable<T> sequence, Func2<T, T, T> accumulator) {
+    public static <T> OnSubscribeFunc<T> scan(Observable<? extends T> sequence, Func2<? super T, ? super T, ? extends T> accumulator) {
         return new AccuWithoutInitialValue<T>(sequence, accumulator);
     }
 
-    private static class AccuWithoutInitialValue<T> implements Func1<Observer<T>, Subscription> {
-        private final Observable<T> sequence;
-        private final Func2<T, T, T> accumulatorFunction;
+    private static class AccuWithoutInitialValue<T> implements OnSubscribeFunc<T> {
+        private final Observable<? extends T> sequence;
+        private final Func2<? super T, ? super T, ? extends T> accumulatorFunction;
         
         private AccumulatingObserver<T, T> accumulatingObserver;
         
-        private AccuWithoutInitialValue(Observable<T> sequence, Func2<T, T, T> accumulator) {
+        private AccuWithoutInitialValue(Observable<? extends T> sequence, Func2<? super T, ? super T, ? extends T> accumulator) {
             this.sequence = sequence;
             this.accumulatorFunction = accumulator;
         }
         
         @Override
-        public Subscription call(final Observer<T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             return sequence.subscribe(new Observer<T>() {
                 
                 // has to be synchronized so that the initial value is always sent only once.
@@ -88,7 +101,7 @@ public final class OperationScan {
                 }
                 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     observer.onError(e);
                 }
 
@@ -100,31 +113,31 @@ public final class OperationScan {
         }
     }
     
-    private static class Accumulator<T, R> implements Func1<Observer<R>, Subscription> {
-        private final Observable<T> sequence;
+    private static class Accumulator<T, R> implements OnSubscribeFunc<R> {
+        private final Observable<? extends T> sequence;
         private final R initialValue;
-        private final Func2<R, T, R> accumulatorFunction;
+        private final Func2<? super R, ? super T, ? extends R> accumulatorFunction;
 
-        private Accumulator(Observable<T> sequence, R initialValue, Func2<R, T, R> accumulator) {
+        private Accumulator(Observable<? extends T> sequence, R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
             this.sequence = sequence;
             this.initialValue = initialValue;
             this.accumulatorFunction = accumulator;
         }
 
         @Override
-        public Subscription call(final Observer<R> observer) {
+        public Subscription onSubscribe(final Observer<? super R> observer) {
             observer.onNext(initialValue);
             return sequence.subscribe(new AccumulatingObserver<T, R>(observer, initialValue, accumulatorFunction));
         }
     }
 
     private static class AccumulatingObserver<T, R> implements Observer<T> {
-        private final Observer<R> observer;
-        private final Func2<R, T, R> accumulatorFunction;
+        private final Observer<? super R> observer;
+        private final Func2<? super R, ? super T, ? extends R> accumulatorFunction;
 
         private R acc;
 
-        private AccumulatingObserver(Observer<R> observer, R initialValue, Func2<R, T, R> accumulator) {
+        private AccumulatingObserver(Observer<? super R> observer, R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
             this.observer = observer;
             this.accumulatorFunction = accumulator;
             
@@ -143,13 +156,13 @@ public final class OperationScan {
             try {
                 acc = accumulatorFunction.call(acc, value);
                 observer.onNext(acc);
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 observer.onError(ex);
             }
         }
         
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             observer.onError(e);
         }
         
@@ -171,7 +184,7 @@ public final class OperationScan {
             @SuppressWarnings("unchecked")
             Observer<String> observer = mock(Observer.class);
 
-            Observable<Integer> observable = Observable.toObservable(1, 2, 3);
+            Observable<Integer> observable = Observable.from(1, 2, 3);
 
             Observable<String> m = Observable.create(scan(observable, "", new Func2<String, Integer, String>() {
 
@@ -183,14 +196,14 @@ public final class OperationScan {
             }));
             m.subscribe(observer);
 
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
             verify(observer, times(1)).onNext("");
             verify(observer, times(1)).onNext("1");
             verify(observer, times(1)).onNext("12");
             verify(observer, times(1)).onNext("123");
             verify(observer, times(4)).onNext(anyString());
             verify(observer, times(1)).onCompleted();
-            verify(observer, never()).onError(any(Exception.class));
+            verify(observer, never()).onError(any(Throwable.class));
         }
 
         @Test
@@ -198,7 +211,7 @@ public final class OperationScan {
             @SuppressWarnings("unchecked")
             Observer<Integer> Observer = mock(Observer.class);
 
-            Observable<Integer> observable = Observable.toObservable(1, 2, 3);
+            Observable<Integer> observable = Observable.from(1, 2, 3);
 
             Observable<Integer> m = Observable.create(scan(observable, new Func2<Integer, Integer, Integer>() {
 
@@ -210,14 +223,14 @@ public final class OperationScan {
             }));
             m.subscribe(Observer);
 
-            verify(Observer, never()).onError(any(Exception.class));
+            verify(Observer, never()).onError(any(Throwable.class));
             verify(Observer, never()).onNext(0);
             verify(Observer, times(1)).onNext(1);
             verify(Observer, times(1)).onNext(3);
             verify(Observer, times(1)).onNext(6);
             verify(Observer, times(3)).onNext(anyInt());
             verify(Observer, times(1)).onCompleted();
-            verify(Observer, never()).onError(any(Exception.class));
+            verify(Observer, never()).onError(any(Throwable.class));
         }
 
         @Test
@@ -225,7 +238,7 @@ public final class OperationScan {
             @SuppressWarnings("unchecked")
             Observer<Integer> Observer = mock(Observer.class);
 
-            Observable<Integer> observable = Observable.toObservable(1);
+            Observable<Integer> observable = Observable.from(1);
 
             Observable<Integer> m = Observable.create(scan(observable, new Func2<Integer, Integer, Integer>() {
 
@@ -237,12 +250,12 @@ public final class OperationScan {
             }));
             m.subscribe(Observer);
 
-            verify(Observer, never()).onError(any(Exception.class));
+            verify(Observer, never()).onError(any(Throwable.class));
             verify(Observer, never()).onNext(0);
             verify(Observer, times(1)).onNext(1);
             verify(Observer, times(1)).onNext(anyInt());
             verify(Observer, times(1)).onCompleted();
-            verify(Observer, never()).onError(any(Exception.class));
+            verify(Observer, never()).onError(any(Throwable.class));
         }
     }
 

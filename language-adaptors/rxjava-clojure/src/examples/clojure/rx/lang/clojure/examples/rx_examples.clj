@@ -1,6 +1,21 @@
+;
+; Copyright 2013 Netflix, Inc.
+;  
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+; http://www.apache.org/licenses/LICENSE-2.0
+; 
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+;
 (ns rx.lang.clojure.examples.rx-examples
-  (:import rx.Observable rx.subscriptions.Subscriptions)
-  (:require [clj-http.client :as http]))
+  (:require [rx.lang.clojure.interop :as rx])
+  (:import rx.Observable rx.subscriptions.Subscriptions))
 
 ; NOTE on naming conventions. I'm using camelCase names (against clojure convention)
 ; in this file as I'm purposefully keeping functions and methods across
@@ -12,8 +27,8 @@
 
 (defn hello
   [& args]
-  (-> (Observable/toObservable args)
-    (.subscribe #(println (str "Hello " % "!")))))
+  (-> (Observable/from args)
+    (.subscribe (rx/action [v] (println (str "Hello " v "!"))))))
 
 ; To see output
 (comment
@@ -23,21 +38,12 @@
 ; Create Observable from Existing Data
 ; --------------------------------------------------
 
-(defn existingDataFromNumbers []
-  (Observable/toObservable [1 2 3 4 5 6]))
 
 (defn existingDataFromNumbersUsingFrom []
   (Observable/from [1 2 3 4 5 6]))
 
-(defn existingDataFromObjects []
-  (Observable/toObservable ["a" "b" "c"]))
-
 (defn existingDataFromObjectsUsingFrom []
   (Observable/from ["a" "b" "c"]))
-
-(defn existingDataFromList []
-  (let [list [5, 6, 7, 8]]
-    (Observable/toObservable list)))
 
 (defn existingDataFromListUsingFrom []
   (let [list [5, 6, 7, 8]]
@@ -56,7 +62,7 @@
 
   returns Observable<String>"
   (Observable/create
-    (fn [observer]
+    (rx/fn [observer]
       (doseq [x (range 50)] (-> observer (.onNext (str "value_" x))))
       ; after sending all values we complete the sequence
       (-> observer .onCompleted)
@@ -66,7 +72,7 @@
 
 ; To see output
 (comment
-  (.subscribe (customObservableBlocking) println))
+  (.subscribe (customObservableBlocking) (rx/action* println)))
 
 (defn customObservableNonBlocking []
   "This example shows a custom Observable that does not block
@@ -74,38 +80,18 @@
 
   returns Observable<String>"
   (Observable/create
-    (fn [observer]
+    (rx/fn [observer]
       (let [f (future
                 (doseq [x (range 50)]
                   (-> observer (.onNext (str "anotherValue_" x))))
                 ; after sending all values we complete the sequence
                 (-> observer .onCompleted))]
         ; return a subscription that cancels the future
-        (Subscriptions/create #(future-cancel f))))))
+        (Subscriptions/create (rx/action [] (future-cancel f)))))))
 
 ; To see output
 (comment
-  (.subscribe (customObservableNonBlocking) println))
-
-
-(defn fetchWikipediaArticleAsynchronously [wikipediaArticleNames]
-  "Fetch a list of Wikipedia articles asynchronously.
-
-   return Observable<String> of HTML"
-  (Observable/create
-    (fn [observer]
-      (let [f (future
-                (doseq [articleName wikipediaArticleNames]
-                  (-> observer (.onNext (http/get (str "http://en.wikipedia.org/wiki/" articleName)))))
-                ; after sending response to onnext we complete the sequence
-                (-> observer .onCompleted))]
-        ; a subscription that cancels the future if unsubscribed
-        (Subscriptions/create #(future-cancel f))))))
-
-; To see output
-(comment
-  (-> (fetchWikipediaArticleAsynchronously ["Tiger" "Elephant"])
-    (.subscribe #(println "--- Article ---\n" (subs (:body %) 0 125) "..."))))
+  (.subscribe (customObservableNonBlocking) (rx/action* println)))
 
 
 ; --------------------------------------------------
@@ -119,8 +105,8 @@
     (customObservableNonBlocking)
     (.skip 10)
     (.take 5)
-    (.map #(str % "_transformed"))
-    (.subscribe #(println "onNext =>" %))))
+    (.map (rx/fn [v] (str v "_transformed")))
+    (.subscribe (rx/action [v] (println "onNext =>" v)))))
 
 ; To see output
 (comment
@@ -136,7 +122,7 @@
 
   return Observable<Map>"
   (Observable/create
-    (fn [observer]
+    (rx/fn [observer]
       (let [f (future
                 (try
                   ; simulate fetching user data via network service call with latency
@@ -147,14 +133,14 @@
                   (-> observer .onCompleted)
                   (catch Exception e (-> observer (.onError e))))) ]
         ; a subscription that cancels the future if unsubscribed
-        (Subscriptions/create #(future-cancel f))))))
+        (Subscriptions/create (rx/action [] (future-cancel f)))))))
 
 (defn getVideoBookmark [userId, videoId]
   "Asynchronously fetch bookmark for video
 
   return Observable<Integer>"
   (Observable/create
-    (fn [observer]
+    (rx/fn [observer]
       (let [f (future
                 (try
                   ; simulate fetching user data via network service call with latency
@@ -165,13 +151,13 @@
                   (-> observer .onCompleted)
                   (catch Exception e (-> observer (.onError e)))))]
         ; a subscription that cancels the future if unsubscribed
-        (Subscriptions/create #(future-cancel f))))))
+        (Subscriptions/create (rx/action [] (future-cancel f)))))))
 
 (defn getVideoMetadata [videoId, preferredLanguage]
   "Asynchronously fetch movie metadata for a given language
   return Observable<Map>"
   (Observable/create
-    (fn [observer]
+    (rx/fn [observer]
       (let [f (future
                 (try
                   ; simulate fetching video data via network service call with latency
@@ -190,7 +176,7 @@
                   (-> observer .onCompleted)
                   (catch Exception e (-> observer (.onError e))))) ]
         ; a subscription that cancels the future if unsubscribed
-        (Subscriptions/create #(future-cancel f))))))
+        (Subscriptions/create (rx/action [] (future-cancel f)))))))
 
 
 (defn getVideoForUser [userId videoId]
@@ -200,24 +186,24 @@
   - user data
   return Observable<Map>"
   (let [user-observable           (-> (getUser userId)
-                                    (.map (fn [user] {:user-name (:name user)
+                                    (.map (rx/fn [user] {:user-name (:name user)
                                                       :language (:preferred-language user)})))
         bookmark-observable       (-> (getVideoBookmark userId videoId)
-                                    (.map (fn [bookmark] {:viewed-position (:position bookmark)})))
+                                    (.map (rx/fn [bookmark] {:viewed-position (:position bookmark)})))
         ; getVideoMetadata requires :language from user-observable so nest inside map function
         video-metadata-observable (-> user-observable
                                     (.mapMany
                                       ; fetch metadata after a response from user-observable is received
-                                      (fn [user-map]
+                                      (rx/fn [user-map]
                                         (getVideoMetadata videoId (:language user-map)))))]
     ; now combine 3 async sequences using zip
     (-> (Observable/zip bookmark-observable video-metadata-observable user-observable
-                        (fn [bookmark-map metadata-map user-map]
+                        (rx/fn [bookmark-map metadata-map user-map]
                           {:bookmark-map bookmark-map
                            :metadata-map metadata-map
                            :user-map user-map}))
       ; and transform into a single response object
-      (.map (fn [data]
+      (.map (rx/fn [data]
               {:video-id       videoId
                :video-metadata (:metadata-map data)
                :user-id        userId
@@ -231,37 +217,7 @@
 (comment
   (-> (getVideoForUser 12345 78965)
     (.subscribe
-      (fn [x] (println "--- Object ---\n" x))
-      (fn [e] (println "--- Error ---\n" e))
-      (fn [] (println "--- Completed ---")))))
-
-
-; --------------------------------------------------
-; Error Handling
-; --------------------------------------------------
-
-(defn fetchWikipediaArticleAsynchronouslyWithErrorHandling [wikipediaArticleNames]
-  "Fetch a list of Wikipedia articles asynchronously
-   with proper error handling.
-
-   return Observable<String> of HTML"
-  (Observable/create
-    (fn [observer]
-      (let [f (future
-                (try
-                  (doseq [articleName wikipediaArticleNames]
-                    (-> observer (.onNext (http/get (str "http://en.wikipedia.org/wiki/" articleName)))))
-                  ;(catch Exception e (prn "exception")))
-                  (catch Exception e (-> observer (.onError e))))
-                ; after sending response to onNext we complete the sequence
-                (-> observer .onCompleted))]
-        ; a subscription that cancels the future if unsubscribed
-        (Subscriptions/create #(future-cancel f))))))
-
-; To see output
-(comment
-  (-> (fetchWikipediaArticleAsynchronouslyWithErrorHandling ["Tiger" "NonExistentTitle" "Elephant"])
-    (.subscribe #(println "--- Article ---\n" (subs (:body %) 0 125) "...")
-                #(println "--- Error ---\n" (.getMessage %)))))
-
+      (rx/action [x] (println "--- Object ---\n" x))
+      (rx/action [e] (println "--- Error ---\n" e))
+      (rx/action [] (println "--- Completed ---")))))
 

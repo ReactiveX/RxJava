@@ -23,12 +23,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
 
 /**
- * Skips a specified number of contiguous values from the start of a Observable sequence and then returns the remaining values.
+ * Returns an Observable that skips the first <code>num</code> items emitted by the source
+ * Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/skip.png">
+ * <p>
+ * You can ignore the first <code>num</code> items emitted by an Observable and attend only to
+ * those items that come after, by modifying the Observable with the skip operation.
  */
 public final class OperationSkip {
 
@@ -41,13 +47,13 @@ public final class OperationSkip {
      * 
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229847(v=vs.103).aspx">Observable.Skip(TSource) Method</a>
      */
-    public static <T> Func1<Observer<T>, Subscription> skip(final Observable<T> items, final int num) {
+    public static <T> OnSubscribeFunc<T> skip(final Observable<? extends T> items, final int num) {
         // wrap in a Observable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new Func1<Observer<T>, Subscription>() {
+        return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription call(Observer<T> observer) {
-                return new Skip<T>(items, num).call(observer);
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                return new Skip<T>(items, num).onSubscribe(observer);
             }
 
         };
@@ -60,16 +66,16 @@ public final class OperationSkip {
      * 
      * @param <T>
      */
-    private static class Skip<T> implements Func1<Observer<T>, Subscription> {
+    private static class Skip<T> implements OnSubscribeFunc<T> {
         private final int num;
-        private final Observable<T> items;
+        private final Observable<? extends T> items;
 
-        Skip(final Observable<T> items, final int num) {
+        Skip(final Observable<? extends T> items, final int num) {
             this.num = num;
             this.items = items;
         }
 
-        public Subscription call(Observer<T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             return items.subscribe(new ItemObserver(observer));
         }
 
@@ -79,9 +85,9 @@ public final class OperationSkip {
         private class ItemObserver implements Observer<T> {
 
             private AtomicInteger counter = new AtomicInteger();
-            private final Observer<T> observer;
+            private final Observer<? super T> observer;
 
-            public ItemObserver(Observer<T> observer) {
+            public ItemObserver(Observer<? super T> observer) {
                 this.observer = observer;
             }
 
@@ -91,7 +97,7 @@ public final class OperationSkip {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 observer.onError(e);
             }
 
@@ -111,7 +117,7 @@ public final class OperationSkip {
 
         @Test
         public void testSkip1() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> skip = Observable.create(skip(w, 2));
 
             @SuppressWarnings("unchecked")
@@ -120,13 +126,13 @@ public final class OperationSkip {
             verify(aObserver, never()).onNext("one");
             verify(aObserver, never()).onNext("two");
             verify(aObserver, times(1)).onNext("three");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
         @Test
         public void testSkip2() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> skip = Observable.create(skip(w, 1));
 
             @SuppressWarnings("unchecked")
@@ -135,7 +141,7 @@ public final class OperationSkip {
             verify(aObserver, never()).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, times(1)).onNext("three");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 

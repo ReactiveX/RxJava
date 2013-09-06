@@ -18,7 +18,6 @@ package rx.operators;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperatorTester.UnitTest.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,14 +25,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.AtomicObservableSubscription;
-import rx.util.functions.Func1;
 
 /**
- * Returns a specified number of contiguous values from the start of an observable sequence.
+ * Returns an Observable that emits the first <code>num</code> items emitted by the source
+ * Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/take.png">
+ * <p>
+ * You can choose to pay attention only to the first <code>num</code> items emitted by an
+ * Observable by using the take operation. This operation returns an Observable that will invoke a
+ * subscribing Observer's <code>onNext</code> function a maximum of <code>num</code> times before
+ * invoking <code>onCompleted</code>.
  */
 public final class OperationTake {
 
@@ -44,13 +50,13 @@ public final class OperationTake {
      * @param num
      * @return the specified number of contiguous values from the start of the given observable sequence
      */
-    public static <T> Func1<Observer<T>, Subscription> take(final Observable<T> items, final int num) {
+    public static <T> OnSubscribeFunc<T> take(final Observable<? extends T> items, final int num) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new Func1<Observer<T>, Subscription>() {
+        return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription call(Observer<T> observer) {
-                return new Take<T>(items, num).call(observer);
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                return new Take<T>(items, num).onSubscribe(observer);
             }
 
         };
@@ -67,18 +73,18 @@ public final class OperationTake {
      * 
      * @param <T>
      */
-    private static class Take<T> implements Func1<Observer<T>, Subscription> {
-        private final Observable<T> items;
+    private static class Take<T> implements OnSubscribeFunc<T> {
+        private final Observable<? extends T> items;
         private final int num;
-        private final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        private Take(Observable<T> items, int num) {
+        private Take(Observable<? extends T> items, int num) {
             this.items = items;
             this.num = num;
         }
 
         @Override
-        public Subscription call(Observer<T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             if (num < 1) {
                 items.subscribe(new Observer<T>()
                 {
@@ -88,7 +94,7 @@ public final class OperationTake {
                     }
 
                     @Override
-                    public void onError(Exception e)
+                    public void onError(Throwable e)
                     {
                     }
 
@@ -105,11 +111,11 @@ public final class OperationTake {
         }
 
         private class ItemObserver implements Observer<T> {
-            private final Observer<T> observer;
+            private final Observer<? super T> observer;
 
             private final AtomicInteger counter = new AtomicInteger();
 
-            public ItemObserver(Observer<T> observer) {
+            public ItemObserver(Observer<? super T> observer) {
                 this.observer = observer;
             }
 
@@ -121,7 +127,7 @@ public final class OperationTake {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 if (counter.getAndSet(num) < num) {
                     observer.onError(e);
                 }
@@ -150,8 +156,8 @@ public final class OperationTake {
 
         @Test
         public void testTake1() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
-            Observable<String> take = Observable.create(assertTrustedObservable(take(w, 2)));
+            Observable<String> w = Observable.from("one", "two", "three");
+            Observable<String> take = Observable.create(take(w, 2));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -159,14 +165,14 @@ public final class OperationTake {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, never()).onNext("three");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
         @Test
         public void testTake2() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
-            Observable<String> take = Observable.create(assertTrustedObservable(take(w, 1)));
+            Observable<String> w = Observable.from("one", "two", "three");
+            Observable<String> take = Observable.create(take(w, 1));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -174,36 +180,46 @@ public final class OperationTake {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, never()).onNext("two");
             verify(aObserver, never()).onNext("three");
-            verify(aObserver, never()).onError(any(Exception.class));
+            verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
         @Test
         public void testTakeDoesntLeakErrors() {
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>()
+            Observable<String> source = Observable.create(new OnSubscribeFunc<String>()
             {
                 @Override
-                public Subscription call(Observer<String> observer)
+                public Subscription onSubscribe(Observer<? super String> observer)
                 {
                     observer.onNext("one");
-                    observer.onError(new Exception("test failed"));
+                    observer.onError(new Throwable("test failed"));
                     return Subscriptions.empty();
                 }
             });
-            Observable.create(assertTrustedObservable(take(source, 1))).last();
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+
+            Observable.create(take(source, 1)).subscribe(aObserver);
+
+            verify(aObserver, times(1)).onNext("one");
+            // even though onError is called we take(1) so shouldn't see it
+            verify(aObserver, never()).onError(any(Throwable.class));
+            verify(aObserver, times(1)).onCompleted();
+            verifyNoMoreInteractions(aObserver);
         }
 
         @Test
         public void testTakeZeroDoesntLeakError() {
             final AtomicBoolean subscribed = new AtomicBoolean(false);
             final AtomicBoolean unSubscribed = new AtomicBoolean(false);
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>()
+            Observable<String> source = Observable.create(new OnSubscribeFunc<String>()
             {
                 @Override
-                public Subscription call(Observer<String> observer)
+                public Subscription onSubscribe(Observer<? super String> observer)
                 {
                     subscribed.set(true);
-                    observer.onError(new Exception("test failed"));
+                    observer.onError(new Throwable("test failed"));
                     return new Subscription()
                     {
                         @Override
@@ -214,25 +230,36 @@ public final class OperationTake {
                     };
                 }
             });
-            Observable.create(assertTrustedObservable(take(source, 0))).lastOrDefault("ok");
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+
+            Observable.create(take(source, 0)).subscribe(aObserver);
             assertTrue("source subscribed", subscribed.get());
             assertTrue("source unsubscribed", unSubscribed.get());
+
+            verify(aObserver, never()).onNext(anyString());
+            // even though onError is called we take(0) so shouldn't see it
+            verify(aObserver, never()).onError(any(Throwable.class));
+            verify(aObserver, times(1)).onCompleted();
+            verifyNoMoreInteractions(aObserver);
         }
 
         @Test
         public void testUnsubscribeAfterTake() {
-            Subscription s = mock(Subscription.class);
-            TestObservable w = new TestObservable(s, "one", "two", "three");
+            final Subscription s = mock(Subscription.class);
+            TestObservableFunc f = new TestObservableFunc(s, "one", "two", "three");
+            Observable<String> w = Observable.create(f);
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
-            Observable<String> take = Observable.create(assertTrustedObservable(take(w, 1)));
+            Observable<String> take = Observable.create(take(w, 1));
             take.subscribe(aObserver);
 
             // wait for the Observable to complete
             try {
-                w.t.join();
-            } catch (Exception e) {
+                f.t.join();
+            } catch (Throwable e) {
                 e.printStackTrace();
                 fail(e.getMessage());
             }
@@ -241,22 +268,24 @@ public final class OperationTake {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, never()).onNext("two");
             verify(aObserver, never()).onNext("three");
+            verify(aObserver, times(1)).onCompleted();
             verify(s, times(1)).unsubscribe();
+            verifyNoMoreInteractions(aObserver);
         }
 
-        private static class TestObservable extends Observable<String> {
+        private static class TestObservableFunc implements OnSubscribeFunc<String> {
 
             final Subscription s;
             final String[] values;
             Thread t = null;
 
-            public TestObservable(Subscription s, String... values) {
+            public TestObservableFunc(Subscription s, String... values) {
                 this.s = s;
                 this.values = values;
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 
@@ -269,7 +298,7 @@ public final class OperationTake {
                                 observer.onNext(s);
                             }
                             observer.onCompleted();
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             throw new RuntimeException(e);
                         }
                     }

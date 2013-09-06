@@ -1,3 +1,18 @@
+/**
+ * Copyright 2013 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.operators;
 
 import static org.junit.Assert.*;
@@ -13,13 +28,18 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func1;
 
 /**
- * Convert an Observable into a Future.
+ * Returns a Future representing the single value emitted by an Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
+ * <p>
+ * The toFuture operation throws an exception if the Observable emits more than one item. If the
+ * Observable may emit more than item, use <code>toList().toFuture()</code>.
  */
 public class OperationToFuture {
 
@@ -32,11 +52,11 @@ public class OperationToFuture {
      *            the type of source.
      * @return the Future to retrieve a single elements from an Observable
      */
-    public static <T> Future<T> toFuture(Observable<T> that) {
+    public static <T> Future<T> toFuture(Observable<? extends T> that) {
 
         final CountDownLatch finished = new CountDownLatch(1);
         final AtomicReference<T> value = new AtomicReference<T>();
-        final AtomicReference<Exception> error = new AtomicReference<Exception>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
         final Subscription s = that.subscribe(new Observer<T>() {
 
@@ -46,7 +66,7 @@ public class OperationToFuture {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 error.compareAndSet(null, e);
                 finished.countDown();
             }
@@ -118,14 +138,14 @@ public class OperationToFuture {
 
     @Test
     public void testToFuture() throws InterruptedException, ExecutionException {
-        Observable<String> obs = Observable.toObservable("one");
+        Observable<String> obs = Observable.from("one");
         Future<String> f = toFuture(obs);
         assertEquals("one", f.get());
     }
 
     @Test
     public void testToFutureList() throws InterruptedException, ExecutionException {
-        Observable<String> obs = Observable.toObservable("one", "two", "three");
+        Observable<String> obs = Observable.from("one", "two", "three");
         Future<List<String>> f = toFuture(obs.toList());
         assertEquals("one", f.get().get(0));
         assertEquals("two", f.get().get(1));
@@ -134,7 +154,7 @@ public class OperationToFuture {
 
     @Test(expected = ExecutionException.class)
     public void testExceptionWithMoreThanOneElement() throws InterruptedException, ExecutionException {
-        Observable<String> obs = Observable.toObservable("one", "two");
+        Observable<String> obs = Observable.from("one", "two");
         Future<String> f = toFuture(obs);
         assertEquals("one", f.get());
         // we expect an exception since there are more than 1 element
@@ -142,10 +162,10 @@ public class OperationToFuture {
 
     @Test
     public void testToFutureWithException() {
-        Observable<String> obs = Observable.create(new Func1<Observer<String>, Subscription>() {
+        Observable<String> obs = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription call(Observer<String> observer) {
+            public Subscription onSubscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new TestException());
                 return Subscriptions.empty();
@@ -156,7 +176,7 @@ public class OperationToFuture {
         try {
             f.get();
             fail("expected exception");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             assertEquals(TestException.class, e.getCause().getClass());
         }
     }

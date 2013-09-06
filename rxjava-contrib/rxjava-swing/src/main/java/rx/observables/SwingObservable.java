@@ -15,8 +15,6 @@
  */
 package rx.observables;
 
-import static rx.Observable.filter;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -70,7 +68,7 @@ public enum SwingObservable { ; // no instances
      * @return Observable of key events.
      */
     public static Observable<KeyEvent> fromKeyEvents(Component component, final Set<Integer> keyCodes) {
-        return filter(fromKeyEvents(component), new Func1<KeyEvent, Boolean>() {
+        return fromKeyEvents(component).filter(new Func1<KeyEvent, Boolean>() {
             @Override
             public Boolean call(KeyEvent event) {
                 return keyCodes.contains(event.getKeyCode());

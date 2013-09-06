@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
+import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -27,13 +27,13 @@ import rx.util.functions.Func2;
  * Combines standard {@link Subscription#unsubscribe()} functionality with ability to skip execution if an unsubscribe occurs before the {@link #call()} method is invoked.
  */
 /* package */class DiscardableAction<T> implements Func1<Scheduler, Subscription>, Subscription {
-    private final Func2<Scheduler, T, Subscription> underlying;
+    private final Func2<? super Scheduler, ? super T, ? extends Subscription> underlying;
     private final T state;
 
-    private final AtomicObservableSubscription wrapper = new AtomicObservableSubscription();
+    private final SafeObservableSubscription wrapper = new SafeObservableSubscription();
     private final AtomicBoolean ready = new AtomicBoolean(true);
 
-    public DiscardableAction(T state, Func2<Scheduler, T, Subscription> underlying) {
+    public DiscardableAction(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> underlying) {
         this.state = state;
         this.underlying = underlying;
     }

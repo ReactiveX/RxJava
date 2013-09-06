@@ -1,32 +1,12 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
+apply plugin: 'maven'
 apply plugin: 'osgi'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
 dependencies {
-    compile 'org.slf4j:slf4j-api:1.7.0'
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
-}
-
-eclipse {
-  classpath {
-    // include 'provided' dependencies on the classpath
-    plusConfigurations += configurations.provided
-
-    downloadSources = true
-    downloadJavadoc = true
-  }
-}
-
-idea {
-	module {
-		// include 'provided' dependencies on the classpath
-		scopes.PROVIDED.plus += configurations.provided
-	}
 }
 
 javadoc {

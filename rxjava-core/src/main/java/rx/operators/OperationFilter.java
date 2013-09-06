@@ -22,43 +22,48 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
+/**
+ * Filters an Observable by discarding any items it emits that do not meet some test.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/filter.png">
+ */
 public final class OperationFilter<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> filter(Observable<T> that, Func1<T, Boolean> predicate) {
+    public static <T> OnSubscribeFunc<T> filter(Observable<? extends T> that, Func1<? super T, Boolean> predicate) {
         return new Filter<T>(that, predicate);
     }
 
-    private static class Filter<T> implements Func1<Observer<T>, Subscription> {
+    private static class Filter<T> implements OnSubscribeFunc<T> {
 
-        private final Observable<T> that;
-        private final Func1<T, Boolean> predicate;
+        private final Observable<? extends T> that;
+        private final Func1<? super T, Boolean> predicate;
 
-        public Filter(Observable<T> that, Func1<T, Boolean> predicate) {
+        public Filter(Observable<? extends T> that, Func1<? super T, Boolean> predicate) {
             this.that = that;
             this.predicate = predicate;
         }
 
-        public Subscription call(final Observer<T> observer) {
-            final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        public Subscription onSubscribe(final Observer<? super T> observer) {
+            final SafeObservableSubscription subscription = new SafeObservableSubscription();
             return subscription.wrap(that.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     try {
                         if (predicate.call(value)) {
                             observer.onNext(value);
                         }
-                    } catch (Exception ex) {
+                    } catch (Throwable ex) {
                         observer.onError(ex);
                         // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
                         subscription.unsubscribe();
                     }
                 }
 
-                public void onError(Exception ex) {
+                public void onError(Throwable ex) {
                     observer.onError(ex);
                 }
 
@@ -74,7 +79,7 @@ public final class OperationFilter<T> {
 
         @Test
         public void testFilter() {
-            Observable<String> w = Observable.toObservable("one", "two", "three");
+            Observable<String> w = Observable.from("one", "two", "three");
             Observable<String> observable = Observable.create(filter(w, new Func1<String, Boolean>() {
 
                 @Override
@@ -89,7 +94,7 @@ public final class OperationFilter<T> {
             verify(aObserver, Mockito.never()).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, Mockito.never()).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
     }

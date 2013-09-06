@@ -20,9 +20,9 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.operators.SafeObservableSubscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func2;
 
 /**
@@ -36,8 +36,8 @@ public class NewThreadScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action) {
-        final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+    public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
+        final SafeObservableSubscription subscription = new SafeObservableSubscription();
         final Scheduler _scheduler = this;
 
         Thread t = new Thread(new Runnable() {
@@ -53,7 +53,7 @@ public class NewThreadScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long delay, TimeUnit unit) {
+    public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delay, TimeUnit unit) {
         // we will use the system scheduler since it doesn't make sense to launch a new Thread and then sleep
         // we will instead schedule the event then launch the thread after the delay has passed
         final Scheduler _scheduler = this;

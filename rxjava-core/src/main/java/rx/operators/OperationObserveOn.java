@@ -27,43 +27,54 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
+import rx.concurrency.ImmediateScheduler;
 import rx.concurrency.Schedulers;
-import rx.util.functions.Func1;
 
+/**
+ * Asynchronously notify Observers on the specified Scheduler.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
+ */
 public class OperationObserveOn {
 
-    public static <T> Func1<Observer<T>, Subscription> observeOn(Observable<T> source, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> observeOn(Observable<? extends T> source, Scheduler scheduler) {
         return new ObserveOn<T>(source, scheduler);
     }
 
-    private static class ObserveOn<T> implements Func1<Observer<T>, Subscription> {
-        private final Observable<T> source;
+    private static class ObserveOn<T> implements OnSubscribeFunc<T> {
+        private final Observable<? extends T> source;
         private final Scheduler scheduler;
 
-        public ObserveOn(Observable<T> source, Scheduler scheduler) {
+        public ObserveOn(Observable<? extends T> source, Scheduler scheduler) {
             this.source = source;
             this.scheduler = scheduler;
         }
 
         @Override
-        public Subscription call(final Observer<T> observer) {
-            return source.subscribe(new ScheduledObserver<T>(observer, scheduler));
+        public Subscription onSubscribe(final Observer<? super T> observer) {
+            if (scheduler instanceof ImmediateScheduler) {
+                // do nothing if we request ImmediateScheduler so we don't invoke overhead
+                return source.subscribe(observer);
+            } else {
+                return source.subscribe(new ScheduledObserver<T>(observer, scheduler));
+            }
         }
     }
 
     public static class UnitTest {
 
+        /**
+         * This is testing a no-op path since it uses Schedulers.immediate() which will not do scheduling.
+         */
         @Test
         @SuppressWarnings("unchecked")
         public void testObserveOn() {
-
-            Scheduler scheduler = spy(OperatorTester.UnitTest.forwardingScheduler(Schedulers.immediate()));
-
             Observer<Integer> observer = mock(Observer.class);
-            Observable.create(observeOn(Observable.toObservable(1, 2, 3), scheduler)).subscribe(observer);
+            Observable.create(observeOn(Observable.from(1, 2, 3), Schedulers.immediate())).subscribe(observer);
 
             verify(observer, times(1)).onNext(1);
             verify(observer, times(1)).onNext(2);

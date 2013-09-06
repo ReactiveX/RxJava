@@ -15,12 +15,8 @@
  */
 package rx.swing.sources;
 
-import static java.util.Arrays.asList;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static java.util.Arrays.*;
+import static org.mockito.Mockito.*;
 
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -36,6 +32,7 @@ import org.mockito.InOrder;
 import org.mockito.Matchers;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -50,9 +47,9 @@ public enum KeyEventSource { ; // no instances
      * @see rx.observables.SwingObservable#fromKeyEvents(Component)
      */
     public static Observable<KeyEvent> fromKeyEventsOf(final Component component) {
-        return Observable.create(new Func1<Observer<KeyEvent>, Subscription>() {
+        return Observable.create(new OnSubscribeFunc<KeyEvent>() {
             @Override
-            public Subscription call(final Observer<KeyEvent> observer) {
+            public Subscription onSubscribe(final Observer<? super KeyEvent> observer) {
                 final KeyListener listener = new KeyListener() {
                     @Override
                     public void keyPressed(KeyEvent event) {
@@ -111,7 +108,7 @@ public enum KeyEventSource { ; // no instances
             }
         });
         
-        return Observable.<KeyEvent, Set<Integer>>scan(filteredKeyEvents, Collections.<Integer>emptySet(), new CollectKeys());
+        return filteredKeyEvents.scan(Collections.<Integer>emptySet(), new CollectKeys());
     }
     
     public static class UnitTest {
@@ -122,7 +119,7 @@ public enum KeyEventSource { ; // no instances
             @SuppressWarnings("unchecked")
             Action1<KeyEvent> action = mock(Action1.class);
             @SuppressWarnings("unchecked")
-            Action1<Exception> error = mock(Action1.class);
+            Action1<Throwable> error = mock(Action1.class);
             Action0 complete = mock(Action0.class);
             
             final KeyEvent event = mock(KeyEvent.class);
@@ -130,7 +127,7 @@ public enum KeyEventSource { ; // no instances
             Subscription sub = fromKeyEventsOf(comp).subscribe(action, error, complete);
             
             verify(action, never()).call(Matchers.<KeyEvent>any());
-            verify(error, never()).call(Matchers.<Exception>any());
+            verify(error, never()).call(Matchers.<Throwable>any());
             verify(complete, never()).call();
             
             fireKeyEvent(event);
@@ -142,7 +139,7 @@ public enum KeyEventSource { ; // no instances
             sub.unsubscribe();
             fireKeyEvent(event);
             verify(action, times(2)).call(Matchers.<KeyEvent>any());
-            verify(error, never()).call(Matchers.<Exception>any());
+            verify(error, never()).call(Matchers.<Throwable>any());
             verify(complete, never()).call();
         }
         
@@ -151,19 +148,19 @@ public enum KeyEventSource { ; // no instances
             @SuppressWarnings("unchecked")
             Action1<Set<Integer>> action = mock(Action1.class);
             @SuppressWarnings("unchecked")
-            Action1<Exception> error = mock(Action1.class);
+            Action1<Throwable> error = mock(Action1.class);
             Action0 complete = mock(Action0.class);
             
             Subscription sub = currentlyPressedKeysOf(comp).subscribe(action, error, complete);
             
             InOrder inOrder = inOrder(action);
             inOrder.verify(action, times(1)).call(Collections.<Integer>emptySet());
-            verify(error, never()).call(Matchers.<Exception>any());
+            verify(error, never()).call(Matchers.<Throwable>any());
             verify(complete, never()).call();
             
             fireKeyEvent(keyEvent(1, KeyEvent.KEY_PRESSED));
             inOrder.verify(action, times(1)).call(new HashSet<Integer>(asList(1)));
-            verify(error, never()).call(Matchers.<Exception>any());
+            verify(error, never()).call(Matchers.<Throwable>any());
             verify(complete, never()).call();
 
             fireKeyEvent(keyEvent(2, KeyEvent.KEY_PRESSED));
@@ -183,7 +180,7 @@ public enum KeyEventSource { ; // no instances
 
             fireKeyEvent(keyEvent(1, KeyEvent.KEY_PRESSED));
             inOrder.verify(action, never()).call(Matchers.<Set<Integer>>any());
-            verify(error, never()).call(Matchers.<Exception>any());
+            verify(error, never()).call(Matchers.<Throwable>any());
             verify(complete, never()).call();
         }
 

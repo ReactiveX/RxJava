@@ -16,11 +16,15 @@
 package rx.operators;
 
 import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
+import rx.Observable.OnSubscribeFunc;
 import rx.util.Timestamped;
 import rx.util.functions.Func1;
 
+/**
+ * Wraps each item emitted by a source Observable in a {@link Timestamped} object.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/timestamp.png">
+ */
 public final class OperationTimestamp {
 
     /**
@@ -32,7 +36,7 @@ public final class OperationTimestamp {
      *            the type of the input sequence.
      * @return a sequence of timestamped values created by adding timestamps to each item in the input sequence.
      */
-    public static <T> Func1<Observer<Timestamped<T>>, Subscription> timestamp(Observable<T> sequence) {
+    public static <T> OnSubscribeFunc<Timestamped<T>> timestamp(Observable<? extends T> sequence) {
         return OperationMap.map(sequence, new Func1<T, Timestamped<T>>() {
             @Override
             public Timestamped<T> call(T value) {

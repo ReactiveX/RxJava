@@ -27,14 +27,19 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
 import rx.util.Exceptions;
 
 /**
- * Samples the most recent value in an observable sequence.
+ * Returns an Iterable that always returns the item most recently emitted by an Observable, or a
+ * seed value if no item has yet been emitted.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.mostRecent.png">
  */
 public final class OperationMostRecent {
 
-    public static <T> Iterable<T> mostRecent(final Observable<T> source, T initialValue) {
+    public static <T> Iterable<T> mostRecent(final Observable<? extends T> source, T initialValue) {
 
         MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
         final MostRecentIterator<T> nextIterator = new MostRecentIterator<T>(mostRecentObserver);
@@ -65,8 +70,8 @@ public final class OperationMostRecent {
 
         @Override
         public T next() {
-            if (observer.getException() != null) {
-                throw Exceptions.propagate(observer.getException());
+            if (observer.getThrowable() != null) {
+                throw Exceptions.propagate(observer.getThrowable());
             }
             return observer.getRecentValue();
         }
@@ -80,7 +85,7 @@ public final class OperationMostRecent {
     private static class MostRecentObserver<T> implements Observer<T> {
         private final AtomicBoolean completed = new AtomicBoolean(false);
         private final AtomicReference<T> value;
-        private final AtomicReference<Exception> exception = new AtomicReference<Exception>();
+        private final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
 
         private MostRecentObserver(T value) {
             this.value = new AtomicReference<T>(value);
@@ -92,7 +97,7 @@ public final class OperationMostRecent {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             exception.set(e);
         }
 
@@ -101,15 +106,15 @@ public final class OperationMostRecent {
             value.set(args);
         }
 
-        public boolean isCompleted() {
+        private boolean isCompleted() {
             return completed.get();
         }
 
-        public Exception getException() {
+        private Throwable getThrowable() {
             return exception.get();
         }
 
-        public T getRecentValue() {
+        private T getRecentValue() {
             return value.get();
         }
 
@@ -118,8 +123,7 @@ public final class OperationMostRecent {
     public static class UnitTest {
         @Test
         public void testMostRecent() {
-            Subscription s = mock(Subscription.class);
-            TestObservable observable = new TestObservable(s);
+            Subject<String, String> observable = PublishSubject.create();
 
             Iterator<String> it = mostRecent(observable, "default").iterator();
 
@@ -127,25 +131,24 @@ public final class OperationMostRecent {
             assertEquals("default", it.next());
             assertEquals("default", it.next());
 
-            observable.sendOnNext("one");
+            observable.onNext("one");
             assertTrue(it.hasNext());
             assertEquals("one", it.next());
             assertEquals("one", it.next());
 
-            observable.sendOnNext("two");
+            observable.onNext("two");
             assertTrue(it.hasNext());
             assertEquals("two", it.next());
             assertEquals("two", it.next());
 
-            observable.sendOnCompleted();
+            observable.onCompleted();
             assertFalse(it.hasNext());
 
         }
 
         @Test(expected = TestException.class)
         public void testMostRecentWithException() {
-            Subscription s = mock(Subscription.class);
-            TestObservable observable = new TestObservable(s);
+            Subject<String, String> observable = PublishSubject.create();
 
             Iterator<String> it = mostRecent(observable, "default").iterator();
 
@@ -153,41 +156,10 @@ public final class OperationMostRecent {
             assertEquals("default", it.next());
             assertEquals("default", it.next());
 
-            observable.sendOnError(new TestException());
+            observable.onError(new TestException());
             assertTrue(it.hasNext());
 
             it.next();
-        }
-
-        private static class TestObservable extends Observable<String> {
-
-            Observer<String> observer = null;
-            Subscription s;
-
-            public TestObservable(Subscription s) {
-                this.s = s;
-            }
-
-            /* used to simulate subscription */
-            public void sendOnCompleted() {
-                observer.onCompleted();
-            }
-
-            /* used to simulate subscription */
-            public void sendOnNext(String value) {
-                observer.onNext(value);
-            }
-
-            /* used to simulate subscription */
-            public void sendOnError(Exception e) {
-                observer.onError(e);
-            }
-
-            @Override
-            public Subscription subscribe(final Observer<String> observer) {
-                this.observer = observer;
-                return s;
-            }
         }
 
         private static class TestException extends RuntimeException {

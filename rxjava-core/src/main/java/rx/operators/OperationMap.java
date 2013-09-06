@@ -15,11 +15,13 @@
  */
 package rx.operators;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,10 +29,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
+/**
+ * Applies a function of your choosing to every item emitted by an Observable, and returns this
+ * transformation as a new Observable.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/map.png">
+ */
 public final class OperationMap {
 
     /**
@@ -47,7 +56,7 @@ public final class OperationMap {
      *            the type of the output sequence.
      * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
      */
-    public static <T, R> Func1<Observer<R>, Subscription> map(Observable<T> sequence, Func1<T, R> func) {
+    public static <T, R> OnSubscribeFunc<R> map(Observable<? extends T> sequence, Func1<? super T, ? extends R> func) {
         return new MapObservable<T, R>(sequence, func);
     }
 
@@ -67,7 +76,7 @@ public final class OperationMap {
      *            the type of the output sequence.
      * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
      */
-    public static <T, R> Func1<Observer<R>, Subscription> mapMany(Observable<T> sequence, Func1<T, Observable<R>> func) {
+    public static <T, R> OnSubscribeFunc<R> mapMany(Observable<? extends T> sequence, Func1<? super T, ? extends Observable<? extends R>> func) {
         return OperationMerge.merge(Observable.create(map(sequence, func)));
     }
 
@@ -79,17 +88,17 @@ public final class OperationMap {
      * @param <R>
      *            the type of the output sequence.
      */
-    private static class MapObservable<T, R> implements Func1<Observer<R>, Subscription> {
-        public MapObservable(Observable<T> sequence, Func1<T, R> func) {
+    private static class MapObservable<T, R> implements OnSubscribeFunc<R> {
+        public MapObservable(Observable<? extends T> sequence, Func1<? super T, ? extends R> func) {
             this.sequence = sequence;
             this.func = func;
         }
 
-        private Observable<T> sequence;
+        private Observable<? extends T> sequence;
 
-        private Func1<T, R> func;
+        private Func1<? super T, ? extends R> func;
 
-        public Subscription call(Observer<R> observer) {
+        public Subscription onSubscribe(Observer<? super R> observer) {
             return sequence.subscribe(new MapObserver<T, R>(observer, func));
         }
     }
@@ -103,24 +112,21 @@ public final class OperationMap {
      *            the type of the inner observer items.
      */
     private static class MapObserver<T, R> implements Observer<T> {
-        public MapObserver(Observer<R> observer, Func1<T, R> func) {
+        public MapObserver(Observer<? super R> observer, Func1<? super T, ? extends R> func) {
             this.observer = observer;
             this.func = func;
         }
 
-        Observer<R> observer;
+        Observer<? super R> observer;
 
-        Func1<T, R> func;
+        Func1<? super T, ? extends R> func;
 
         public void onNext(T value) {
-            try {
-                observer.onNext(func.call(value));
-            } catch (Exception ex) {
-                observer.onError(ex);
-            }
+            // let the exception be thrown if func fails as a SafeObserver wrapping this will handle it
+            observer.onNext(func.call(value));
         }
 
-        public void onError(Exception ex) {
+        public void onError(Throwable ex) {
             observer.onError(ex);
         }
 
@@ -143,7 +149,7 @@ public final class OperationMap {
             Map<String, String> m1 = getMap("One");
             Map<String, String> m2 = getMap("Two");
             @SuppressWarnings("unchecked")
-            Observable<Map<String, String>> observable = Observable.toObservable(m1, m2);
+            Observable<Map<String, String>> observable = Observable.from(m1, m2);
 
             Observable<String> m = Observable.create(map(observable, new Func1<Map<String, String>, String>() {
 
@@ -155,7 +161,7 @@ public final class OperationMap {
             }));
             m.subscribe(stringObserver);
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(1)).onNext("OneFirst");
             verify(stringObserver, times(1)).onNext("TwoFirst");
             verify(stringObserver, times(1)).onCompleted();
@@ -165,7 +171,7 @@ public final class OperationMap {
         @Test
         public void testMapMany() {
             /* simulate a top-level async call which returns IDs */
-            Observable<Integer> ids = Observable.toObservable(1, 2);
+            Observable<Integer> ids = Observable.from(1, 2);
 
             /* now simulate the behavior to take those IDs and perform nested async calls based on them */
             Observable<String> m = Observable.create(mapMany(ids, new Func1<Integer, Observable<String>>() {
@@ -178,11 +184,11 @@ public final class OperationMap {
                     if (id == 1) {
                         Map<String, String> m1 = getMap("One");
                         Map<String, String> m2 = getMap("Two");
-                        subObservable = Observable.toObservable(m1, m2);
+                        subObservable = Observable.from(m1, m2);
                     } else {
                         Map<String, String> m3 = getMap("Three");
                         Map<String, String> m4 = getMap("Four");
-                        subObservable = Observable.toObservable(m3, m4);
+                        subObservable = Observable.from(m3, m4);
                     }
 
                     /* simulate kicking off the async call and performing a select on it to transform the data */
@@ -197,7 +203,7 @@ public final class OperationMap {
             }));
             m.subscribe(stringObserver);
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(1)).onNext("OneFirst");
             verify(stringObserver, times(1)).onNext("TwoFirst");
             verify(stringObserver, times(1)).onNext("ThreeFirst");
@@ -210,15 +216,15 @@ public final class OperationMap {
             Map<String, String> m1 = getMap("One");
             Map<String, String> m2 = getMap("Two");
             @SuppressWarnings("unchecked")
-            Observable<Map<String, String>> observable1 = Observable.toObservable(m1, m2);
+            Observable<Map<String, String>> observable1 = Observable.from(m1, m2);
 
             Map<String, String> m3 = getMap("Three");
             Map<String, String> m4 = getMap("Four");
             @SuppressWarnings("unchecked")
-            Observable<Map<String, String>> observable2 = Observable.toObservable(m3, m4);
+            Observable<Map<String, String>> observable2 = Observable.from(m3, m4);
 
             @SuppressWarnings("unchecked")
-            Observable<Observable<Map<String, String>>> observable = Observable.toObservable(observable1, observable2);
+            Observable<Observable<Map<String, String>>> observable = Observable.from(observable1, observable2);
 
             Observable<String> m = Observable.create(mapMany(observable, new Func1<Observable<Map<String, String>>, Observable<String>>() {
 
@@ -236,13 +242,47 @@ public final class OperationMap {
             }));
             m.subscribe(stringObserver);
 
-            verify(stringObserver, never()).onError(any(Exception.class));
+            verify(stringObserver, never()).onError(any(Throwable.class));
             verify(stringObserver, times(1)).onNext("OneFirst");
             verify(stringObserver, times(1)).onNext("TwoFirst");
             verify(stringObserver, times(1)).onNext("ThreeFirst");
             verify(stringObserver, times(1)).onNext("FourFirst");
             verify(stringObserver, times(1)).onCompleted();
 
+        }
+
+        @Test
+        public void testMapWithSynchronousObservableContainingError() {
+            Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
+            final AtomicInteger c1 = new AtomicInteger();
+            final AtomicInteger c2 = new AtomicInteger();
+            Observable<String> m = Observable.create(map(w, new Func1<String, String>() {
+                public String call(String s) {
+                    if ("fail".equals(s))
+                        throw new RuntimeException("Forced Failure");
+                    System.out.println("BadMapper:" + s);
+                    c1.incrementAndGet();
+                    return s;
+                }
+            })).map(new Func1<String, String>() {
+                public String call(String s) {
+                    System.out.println("SecondMapper:" + s);
+                    c2.incrementAndGet();
+                    return s;
+                }
+            });
+
+            m.subscribe(stringObserver);
+
+            verify(stringObserver, times(1)).onNext("one");
+            verify(stringObserver, never()).onNext("two");
+            verify(stringObserver, never()).onNext("three");
+            verify(stringObserver, never()).onCompleted();
+            verify(stringObserver, times(1)).onError(any(Throwable.class));
+
+            // we should have only returned 1 value: "one"
+            assertEquals(1, c1.get());
+            assertEquals(1, c2.get());
         }
 
         private Map<String, String> getMap(String prefix) {

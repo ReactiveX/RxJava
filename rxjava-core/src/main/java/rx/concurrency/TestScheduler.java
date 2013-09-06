@@ -30,11 +30,11 @@ public class TestScheduler extends Scheduler {
 
     private static class TimedAction<T> {
         private final long time;
-        private final Func2<Scheduler, T, Subscription> action;
+        private final Func2<? super Scheduler, ? super T, ? extends Subscription> action;
         private final T state;
         private final TestScheduler scheduler;
 
-        private TimedAction(TestScheduler scheduler, long time, Func2<Scheduler, T, Subscription> action, T state) {
+        private TimedAction(TestScheduler scheduler, long time, Func2<? super Scheduler, ? super T, ? extends Subscription> action, T state) {
             this.time = time;
             this.action = action;
             this.state = state;
@@ -80,7 +80,6 @@ public class TestScheduler extends Scheduler {
         while (!queue.isEmpty()) {
             TimedAction<?> current = queue.peek();
             if (current.time > targetTimeInNanos) {
-                time = targetTimeInNanos;
                 break;
             }
             time = current.time;
@@ -88,15 +87,16 @@ public class TestScheduler extends Scheduler {
             // because the queue can have wildcards we have to ignore the type T for the state
             ((Func2<Scheduler, Object, Subscription>) current.action).call(current.scheduler, current.state);
         }
+        time = targetTimeInNanos;
     }
 
     @Override
-    public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action) {
+    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
         return schedule(state, action, 0, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit) {
+    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
         queue.add(new TimedAction<T>(this, time + unit.toNanos(delayTime), action, state));
         return Subscriptions.empty();
     }

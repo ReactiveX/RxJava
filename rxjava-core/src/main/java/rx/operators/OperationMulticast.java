@@ -15,34 +15,34 @@
  */
 package rx.operators;
 
+import static org.mockito.Mockito.*;
+
 import org.junit.Test;
+
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
-import rx.util.functions.Func1;
-
-import static org.mockito.Mockito.*;
 
 public class OperationMulticast {
-    public static <T, R> ConnectableObservable<R> multicast(Observable<T> source, final Subject<T, R> subject) {
+    public static <T, R> ConnectableObservable<R> multicast(Observable<? extends T> source, final Subject<T, R> subject) {
         return new MulticastConnectableObservable<T, R>(source, subject);
     }
 
     private static class MulticastConnectableObservable<T, R> extends ConnectableObservable<R> {
         private final Object lock = new Object();
 
-        private final Observable<T> source;
+        private final Observable<? extends T> source;
         private final Subject<T, R> subject;
 
         private Subscription subscription;
 
-        public MulticastConnectableObservable(Observable<T> source, final Subject<T, R> subject) {
-            super(new Func1<Observer<R>, Subscription>() {
+        public MulticastConnectableObservable(Observable<? extends T> source, final Subject<T, R> subject) {
+            super(new OnSubscribeFunc<R>() {
                 @Override
-                public Subscription call(Observer<R> observer) {
+                public Subscription onSubscribe(Observer<? super R> observer) {
                     return subject.subscribe(observer);
                 }
             });
@@ -60,7 +60,7 @@ public class OperationMulticast {
                         }
 
                         @Override
-                        public void onError(Exception e) {
+                        public void onError(Throwable e) {
                             subject.onError(e);
                         }
 
@@ -93,7 +93,7 @@ public class OperationMulticast {
 
         @Test
         public void testMulticast() {
-            TestObservable source = new TestObservable();
+            Subject<String, String> source = PublishSubject.create();
 
             ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
                     PublishSubject.<String>create());
@@ -102,14 +102,14 @@ public class OperationMulticast {
             Observer<String> observer = mock(Observer.class);
             multicasted.subscribe(observer);
 
-            source.sendOnNext("one");
-            source.sendOnNext("two");
+            source.onNext("one");
+            source.onNext("two");
 
             multicasted.connect();
 
-            source.sendOnNext("three");
-            source.sendOnNext("four");
-            source.sendOnCompleted();
+            source.onNext("three");
+            source.onNext("four");
+            source.onCompleted();
 
             verify(observer, never()).onNext("one");
             verify(observer, never()).onNext("two");
@@ -121,7 +121,7 @@ public class OperationMulticast {
 
         @Test
         public void testMulticastConnectTwice() {
-            TestObservable source = new TestObservable();
+            Subject<String, String> source = PublishSubject.create();
 
             ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
                     PublishSubject.<String>create());
@@ -130,13 +130,13 @@ public class OperationMulticast {
             Observer<String> observer = mock(Observer.class);
             multicasted.subscribe(observer);
 
-            source.sendOnNext("one");
+            source.onNext("one");
 
             multicasted.connect();
             multicasted.connect();
 
-            source.sendOnNext("two");
-            source.sendOnCompleted();
+            source.onNext("two");
+            source.onCompleted();
 
             verify(observer, never()).onNext("one");
             verify(observer, times(1)).onNext("two");
@@ -146,7 +146,7 @@ public class OperationMulticast {
 
         @Test
         public void testMulticastDisconnect() {
-            TestObservable source = new TestObservable();
+            Subject<String, String> source = PublishSubject.create();
 
             ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
                     PublishSubject.<String>create());
@@ -155,85 +155,23 @@ public class OperationMulticast {
             Observer<String> observer = mock(Observer.class);
             multicasted.subscribe(observer);
 
-            source.sendOnNext("one");
+            source.onNext("one");
 
             Subscription connection = multicasted.connect();
-            source.sendOnNext("two");
+            source.onNext("two");
 
             connection.unsubscribe();
-            source.sendOnNext("three");
+            source.onNext("three");
 
             multicasted.connect();
-            source.sendOnNext("four");
-            source.sendOnCompleted();
+            source.onNext("four");
+            source.onCompleted();
 
             verify(observer, never()).onNext("one");
             verify(observer, times(1)).onNext("two");
             verify(observer, never()).onNext("three");
             verify(observer, times(1)).onNext("four");
             verify(observer, times(1)).onCompleted();
-
-        }
-
-
-        private static class TestObservable extends Observable<String> {
-
-            Observer<String> observer = new Observer<String>() {
-                @Override
-                public void onCompleted() {
-                    // Do nothing
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    // Do nothing
-                }
-
-                @Override
-                public void onNext(String args) {
-                    // Do nothing
-                }
-            };
-            Subscription s = new Subscription() {
-                @Override
-                public void unsubscribe() {
-                    observer = new Observer<String>() {
-                        @Override
-                        public void onCompleted() {
-                            // Do nothing
-                        }
-
-                        @Override
-                        public void onError(Exception e) {
-                            // Do nothing
-                        }
-
-                        @Override
-                        public void onNext(String args) {
-                            // Do nothing
-                        }
-                    };
-                }
-            };
-
-            public TestObservable() {
-            }
-
-            /* used to simulate subscription */
-            public void sendOnCompleted() {
-                observer.onCompleted();
-            }
-
-            /* used to simulate subscription */
-            public void sendOnNext(String value) {
-                observer.onNext(value);
-            }
-
-            @Override
-            public Subscription subscribe(final Observer<String> observer) {
-                this.observer = observer;
-                return s;
-            }
 
         }
 

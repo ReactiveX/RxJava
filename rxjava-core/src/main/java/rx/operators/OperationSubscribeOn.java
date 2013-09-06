@@ -15,39 +15,45 @@
  */
 package rx.operators;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 import org.junit.Test;
+
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
 import rx.util.functions.Action0;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-
+/**
+ * Asynchronously subscribes and unsubscribes Observers on the specified Scheduler.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/subscribeOn.png">
+ */
 public class OperationSubscribeOn {
 
-    public static <T> Func1<Observer<T>, Subscription> subscribeOn(Observable<T> source, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> subscribeOn(Observable<? extends T> source, Scheduler scheduler) {
         return new SubscribeOn<T>(source, scheduler);
     }
 
-    private static class SubscribeOn<T> implements Func1<Observer<T>, Subscription> {
-        private final Observable<T> source;
+    private static class SubscribeOn<T> implements OnSubscribeFunc<T> {
+        private final Observable<? extends T> source;
         private final Scheduler scheduler;
 
-        public SubscribeOn(Observable<T> source, Scheduler scheduler) {
+        public SubscribeOn(Observable<? extends T> source, Scheduler scheduler) {
             this.source = source;
             this.scheduler = scheduler;
         }
 
         @Override
-        public Subscription call(final Observer<T> observer) {
-            return scheduler.schedule(new Func0<Subscription>() {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
+            return scheduler.schedule(null, new Func2<Scheduler, T, Subscription>() {
                 @Override
-                public Subscription call() {
+                public Subscription call(Scheduler s, T t) {
                     return new ScheduledSubscription(source.subscribe(observer), scheduler);
                 }
             });
@@ -79,14 +85,14 @@ public class OperationSubscribeOn {
         @Test
         @SuppressWarnings("unchecked")
         public void testSubscribeOn() {
-            Observable<Integer> w = Observable.toObservable(1, 2, 3);
+            Observable<Integer> w = Observable.from(1, 2, 3);
 
             Scheduler scheduler = spy(OperatorTester.UnitTest.forwardingScheduler(Schedulers.immediate()));
 
             Observer<Integer> observer = mock(Observer.class);
             Subscription subscription = Observable.create(subscribeOn(w, scheduler)).subscribe(observer);
 
-            verify(scheduler, times(1)).schedule(any(Func0.class));
+            verify(scheduler, times(1)).schedule(isNull(), any(Func2.class));
             subscription.unsubscribe();
             verify(scheduler, times(1)).schedule(any(Action0.class));
             verifyNoMoreInteractions(scheduler);

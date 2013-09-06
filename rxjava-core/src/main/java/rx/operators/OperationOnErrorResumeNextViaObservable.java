@@ -25,50 +25,70 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.AtomicObservableSubscription;
 import rx.util.functions.Func1;
 
+/**
+ * Instruct an Observable to pass control to another Observable rather than invoking
+ * <code>onError</code> if it encounters an error.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/onErrorResumeNext.png">
+ * <p>
+ * By default, when an Observable encounters an error that prevents it from emitting the expected
+ * item to its Observer, the Observable invokes its Observer's <code>onError</code> method, and
+ * then quits without invoking any more of its Observer's methods. The onErrorResumeNext operation
+ * changes this behavior. If you pass an Observable (resumeSequence) to onErrorResumeNext, if the
+ * source Observable encounters an error, instead of invoking its Observer's <code>onError</code>
+ * method, it will instead relinquish control to this new Observable, which will invoke the
+ * Observer's <code>onNext</code> method if it is able to do so. In such a case, because no
+ * Observable necessarily invokes <code>onError</code>, the Observer may never know that an error
+ * happened.
+ * <p>
+ * You can use this to prevent errors from propagating or to supply fallback data should errors be
+ * encountered.
+ */
 public final class OperationOnErrorResumeNextViaObservable<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> onErrorResumeNextViaObservable(Observable<T> originalSequence, Observable<T> resumeSequence) {
+    public static <T> OnSubscribeFunc<T> onErrorResumeNextViaObservable(Observable<? extends T> originalSequence, Observable<? extends T> resumeSequence) {
         return new OnErrorResumeNextViaObservable<T>(originalSequence, resumeSequence);
     }
 
-    private static class OnErrorResumeNextViaObservable<T> implements Func1<Observer<T>, Subscription> {
+    private static class OnErrorResumeNextViaObservable<T> implements OnSubscribeFunc<T> {
 
-        private final Observable<T> resumeSequence;
-        private final Observable<T> originalSequence;
+        private final Observable<? extends T> resumeSequence;
+        private final Observable<? extends T> originalSequence;
 
-        public OnErrorResumeNextViaObservable(Observable<T> originalSequence, Observable<T> resumeSequence) {
+        public OnErrorResumeNextViaObservable(Observable<? extends T> originalSequence, Observable<? extends T> resumeSequence) {
             this.resumeSequence = resumeSequence;
             this.originalSequence = originalSequence;
         }
 
-        public Subscription call(final Observer<T> observer) {
-            final AtomicObservableSubscription subscription = new AtomicObservableSubscription();
+        public Subscription onSubscribe(final Observer<? super T> observer) {
+            final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
-            final AtomicReference<AtomicObservableSubscription> subscriptionRef = new AtomicReference<AtomicObservableSubscription>(subscription);
+            final AtomicReference<SafeObservableSubscription> subscriptionRef = new AtomicReference<SafeObservableSubscription>(subscription);
 
             // subscribe to the original Observable and remember the subscription
             subscription.wrap(originalSequence.subscribe(new Observer<T>() {
                 public void onNext(T value) {
-                    // forward the successful calls
-                    observer.onNext(value);
+                    // forward the successful calls unless resumed
+                    if (subscriptionRef.get()==subscription)
+                        observer.onNext(value);
                 }
 
                 /**
                  * Instead of passing the onError forward, we intercept and "resume" with the resumeSequence.
                  */
-                public void onError(Exception ex) {
+                public void onError(Throwable ex) {
                     /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
-                    AtomicObservableSubscription currentSubscription = subscriptionRef.get();
-                    // check that we have not been unsubscribed before we can process the error
-                    if (currentSubscription != null) {
+                    SafeObservableSubscription currentSubscription = subscriptionRef.get();
+                    // check that we have not been unsubscribed and not already resumed before we can process the error
+                    if (currentSubscription == subscription) {
                         /* error occurred, so switch subscription to the 'resumeSequence' */
-                        AtomicObservableSubscription innerSubscription = new AtomicObservableSubscription(resumeSequence.subscribe(observer));
+                        SafeObservableSubscription innerSubscription = new SafeObservableSubscription(resumeSequence.subscribe(observer));
                         /* we changed the sequence, so also change the subscription to the one of the 'resumeSequence' instead */
                         if (!subscriptionRef.compareAndSet(currentSubscription, innerSubscription)) {
                             // we failed to set which means 'subscriptionRef' was set to NULL via the unsubscribe below
@@ -79,8 +99,9 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                 }
 
                 public void onCompleted() {
-                    // forward the successful calls
-                    observer.onCompleted();
+                    // forward the successful calls unless resumed
+                    if (subscriptionRef.get()==subscription)
+                        observer.onCompleted();
                 }
             }));
 
@@ -101,8 +122,10 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
         @Test
         public void testResumeNext() {
             Subscription s = mock(Subscription.class);
-            TestObservable w = new TestObservable(s, "one");
-            Observable<String> resume = Observable.toObservable("twoResume", "threeResume");
+            // Trigger failure on second element
+            TestObservable f = new TestObservable(s, "one", "fail", "two", "three");
+            Observable<String> w = Observable.create(f);
+            Observable<String> resume = Observable.from("twoResume", "threeResume");
             Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
 
             @SuppressWarnings("unchecked")
@@ -110,22 +133,62 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             observable.subscribe(aObserver);
 
             try {
-                w.t.join();
+                f.t.join();
             } catch (InterruptedException e) {
                 fail(e.getMessage());
             }
 
-            verify(aObserver, Mockito.never()).onError(any(Exception.class));
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, Mockito.never()).onNext("two");
             verify(aObserver, Mockito.never()).onNext("three");
             verify(aObserver, times(1)).onNext("twoResume");
             verify(aObserver, times(1)).onNext("threeResume");
-
         }
 
-        private static class TestObservable extends Observable<String> {
+        @Test
+        public void testMapResumeAsyncNext() {
+            Subscription sr = mock(Subscription.class);
+            // Trigger multiple failures
+            Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
+            // Resume Observable is async
+            TestObservable f = new TestObservable(sr, "twoResume", "threeResume");
+            Observable<String> resume = Observable.create(f);
+
+            // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
+            //  rx.operator incl onErrorResumeNextViaObservable)
+            w = w.map(new Func1<String, String>() {
+                public String call(String s) {
+                    if ("fail".equals(s))
+                        throw new RuntimeException("Forced Failure");
+                    System.out.println("BadMapper:" + s);
+                    return s;
+                }
+            });
+
+            Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+            observable.subscribe(aObserver);
+
+            try {
+                f.t.join();
+            } catch (InterruptedException e) {
+                fail(e.getMessage());
+            }
+
+            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+            verify(aObserver, times(1)).onCompleted();
+            verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, Mockito.never()).onNext("two");
+            verify(aObserver, Mockito.never()).onNext("three");
+            verify(aObserver, times(1)).onNext("twoResume");
+            verify(aObserver, times(1)).onNext("threeResume");
+        }
+
+        private static class TestObservable implements OnSubscribeFunc<String> {
 
             final Subscription s;
             final String[] values;
@@ -137,7 +200,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 
@@ -146,11 +209,15 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                         try {
                             System.out.println("running TestObservable thread");
                             for (String s : values) {
+                                if ("fail".equals(s))
+                                    throw new RuntimeException("Forced Failure");
                                 System.out.println("TestObservable onNext: " + s);
                                 observer.onNext(s);
                             }
-                            throw new RuntimeException("Forced Failure");
-                        } catch (Exception e) {
+                            System.out.println("TestObservable onCompleted");
+                            observer.onCompleted();
+                        } catch (Throwable e) {
+                            System.out.println("TestObservable onError: " + e);
                             observer.onError(e);
                         }
                     }

@@ -30,6 +30,7 @@ import org.mockito.InOrder;
 import org.mockito.Matchers;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -44,9 +45,9 @@ public enum MouseEventSource { ; // no instances
      * @see rx.observables.SwingObservable#fromMouseEvents
      */
     public static Observable<MouseEvent> fromMouseEventsOf(final Component component) {
-        return Observable.create(new Func1<Observer<MouseEvent>, Subscription>() {
+        return Observable.create(new OnSubscribeFunc<MouseEvent>() {
             @Override
-            public Subscription call(final Observer<MouseEvent> observer) {
+            public Subscription onSubscribe(final Observer<? super MouseEvent> observer) {
                 final MouseListener listener = new MouseListener() {
                     @Override
                     public void mouseClicked(MouseEvent event) {
@@ -89,9 +90,9 @@ public enum MouseEventSource { ; // no instances
      * @see rx.observables.SwingObservable#fromMouseMotionEvents
      */
     public static Observable<MouseEvent> fromMouseMotionEventsOf(final Component component) {
-        return Observable.create(new Func1<Observer<MouseEvent>, Subscription>() {
+        return Observable.create(new OnSubscribeFunc<MouseEvent>() {
             @Override
-            public Subscription call(final Observer<MouseEvent> observer) {
+            public Subscription onSubscribe(final Observer<? super MouseEvent> observer) {
                 final MouseMotionListener listener = new MouseMotionListener() {
                     @Override
                     public void mouseDragged(MouseEvent event) {
@@ -159,7 +160,7 @@ public enum MouseEventSource { ; // no instances
             @SuppressWarnings("unchecked")
             Action1<Point> action = mock(Action1.class);
             @SuppressWarnings("unchecked")
-            Action1<Exception> error = mock(Action1.class);
+            Action1<Throwable> error = mock(Action1.class);
             Action0 complete = mock(Action0.class);
             
             Subscription sub = fromRelativeMouseMotion(comp).subscribe(action, error, complete);

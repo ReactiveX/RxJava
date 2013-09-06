@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,18 +35,22 @@ import org.junit.Test;
 
 import rx.Notification;
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 import rx.util.Exceptions;
-import rx.util.functions.Func1;
 
 /**
- * Samples the next value (blocking without buffering) from in an observable sequence.
+ * Returns an Iterable that blocks until the Observable emits another item, then returns that item.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.next.png">
  */
 public final class OperationNext {
 
-    public static <T> Iterable<T> next(final Observable<T> items) {
+    public static <T> Iterable<T> next(final Observable<? extends T> items) {
 
         NextObserver<T> nextObserver = new NextObserver<T>();
         final NextIterator<T> nextIterator = new NextIterator<T>(nextObserver);
@@ -63,9 +68,9 @@ public final class OperationNext {
 
     private static class NextIterator<T> implements Iterator<T> {
 
-        private final NextObserver<T> observer;
+        private final NextObserver<? extends T> observer;
 
-        private NextIterator(NextObserver<T> observer) {
+        private NextIterator(NextObserver<? extends T> observer) {
             this.observer = observer;
         }
 
@@ -97,8 +102,8 @@ public final class OperationNext {
         }
     }
 
-    private static class NextObserver<T> implements Observer<Notification<T>> {
-        private final BlockingQueue<Notification<T>> buf = new ArrayBlockingQueue<Notification<T>>(1);
+    private static class NextObserver<T> implements Observer<Notification<? extends T>> {
+        private final BlockingQueue<Notification<? extends T>> buf = new ArrayBlockingQueue<Notification<? extends T>>(1);
         private final AtomicBoolean waiting = new AtomicBoolean(false);
 
         @Override
@@ -107,17 +112,17 @@ public final class OperationNext {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             // ignore
         }
 
         @Override
-        public void onNext(Notification<T> args) {
+        public void onNext(Notification<? extends T> args) {
 
             if (waiting.getAndSet(false) || !args.isOnNext()) {
-                Notification<T> toOffer = args;
+                Notification<? extends T> toOffer = args;
                 while (!buf.offer(toOffer)) {
-                    Notification<T> concurrentItem = buf.poll();
+                    Notification<? extends T> concurrentItem = buf.poll();
 
                     // in case if we won race condition with onComplete/onError method
                     if (!concurrentItem.isOnNext()) {
@@ -133,14 +138,14 @@ public final class OperationNext {
         }
 
         public boolean isCompleted(boolean rethrowExceptionIfExists) {
-            Notification<T> lastItem = buf.peek();
+            Notification<? extends T> lastItem = buf.peek();
             if (lastItem == null) {
                 return false;
             }
 
             if (lastItem.isOnError()) {
                 if (rethrowExceptionIfExists) {
-                    throw Exceptions.propagate(lastItem.getException());
+                    throw Exceptions.propagate(lastItem.getThrowable());
                 } else {
                     return true;
                 }
@@ -150,10 +155,10 @@ public final class OperationNext {
         }
 
         public T takeNext() throws InterruptedException {
-            Notification<T> next = buf.take();
+            Notification<? extends T> next = buf.take();
 
             if (next.isOnError()) {
-                throw Exceptions.propagate(next.getException());
+                throw Exceptions.propagate(next.getThrowable());
             }
 
             if (next.isOnCompleted()) {
@@ -170,9 +175,8 @@ public final class OperationNext {
         private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
         @Test
-        public void testNext() throws Exception {
-            Subscription s = mock(Subscription.class);
-            final TestObservable obs = new TestObservable(s);
+        public void testNext() throws Throwable {
+            Subject<String, String> obs = PublishSubject.create();
 
             Iterator<String> it = next(obs).iterator();
 
@@ -180,27 +184,26 @@ public final class OperationNext {
 
             Future<String> next = nextAsync(it);
             Thread.sleep(100);
-            obs.sendOnNext("one");
+            obs.onNext("one");
             assertEquals("one", next.get());
 
             assertTrue(it.hasNext());
 
             next = nextAsync(it);
             Thread.sleep(100);
-            obs.sendOnNext("two");
+            obs.onNext("two");
             assertEquals("two", next.get());
 
             assertTrue(it.hasNext());
 
-            obs.sendOnCompleted();
+            obs.onCompleted();
 
             assertFalse(it.hasNext());
         }
 
         @Test(expected = TestException.class)
         public void testOnError() throws Throwable {
-            Subscription s = mock(Subscription.class);
-            final TestObservable obs = new TestObservable(s);
+            Subject<String, String> obs = PublishSubject.create();
 
             Iterator<String> it = next(obs).iterator();
 
@@ -208,14 +211,14 @@ public final class OperationNext {
 
             Future<String> next = nextAsync(it);
             Thread.sleep(100);
-            obs.sendOnNext("one");
+            obs.onNext("one");
             assertEquals("one", next.get());
 
             assertTrue(it.hasNext());
 
             next = nextAsync(it);
             Thread.sleep(100);
-            obs.sendOnError(new TestException());
+            obs.onError(new TestException());
 
             try {
                 next.get();
@@ -226,8 +229,7 @@ public final class OperationNext {
 
         @Test
         public void testOnErrorViaHasNext() throws Throwable {
-            Subscription s = mock(Subscription.class);
-            final TestObservable obs = new TestObservable(s);
+            Subject<String, String> obs = PublishSubject.create();
 
             Iterator<String> it = next(obs).iterator();
 
@@ -235,25 +237,25 @@ public final class OperationNext {
 
             Future<String> next = nextAsync(it);
             Thread.sleep(100);
-            obs.sendOnNext("one");
+            obs.onNext("one");
             assertEquals("one", next.get());
 
             assertTrue(it.hasNext());
 
             next = nextAsync(it);
             Thread.sleep(100);
-            obs.sendOnError(new TestException());
+            obs.onError(new TestException());
 
             // this should not throw an exception but instead just return false
             try {
                 assertFalse(it.hasNext());
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 fail("should not have received exception");
                 e.printStackTrace();
             }
         }
 
-        private Future<String> nextAsync(final Iterator<String> it) throws Exception {
+        private Future<String> nextAsync(final Iterator<String> it) throws Throwable {
 
             return executor.submit(new Callable<String>() {
 
@@ -262,38 +264,6 @@ public final class OperationNext {
                     return it.next();
                 }
             });
-        }
-
-        private static class TestObservable extends Observable<String> {
-
-            Observer<String> observer = null;
-            Subscription s;
-
-            public TestObservable(Subscription s) {
-                this.s = s;
-            }
-
-            /* used to simulate subscription */
-            public void sendOnCompleted() {
-                observer.onCompleted();
-            }
-
-            /* used to simulate subscription */
-            public void sendOnNext(String value) {
-                observer.onNext(value);
-            }
-
-            /* used to simulate subscription */
-            public void sendOnError(Exception e) {
-                observer.onError(e);
-            }
-
-            @Override
-            public Subscription subscribe(final Observer<String> observer) {
-                this.observer = observer;
-                return s;
-            }
-
         }
 
         @SuppressWarnings("serial")
@@ -306,17 +276,19 @@ public final class OperationNext {
          * 
          * This results in output such as => a: 1 b: 2 c: 89
          * 
-         * @throws Exception
+         * @throws Throwable
          */
         @Test
-        public void testNoBufferingOrBlockingOfSequence() throws Exception {
+        public void testNoBufferingOrBlockingOfSequence() throws Throwable {
             final CountDownLatch finished = new CountDownLatch(1);
+            final int COUNT = 30;
+            final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
             final AtomicBoolean running = new AtomicBoolean(true);
             final AtomicInteger count = new AtomicInteger(0);
-            final Observable<Integer> obs = Observable.create(new Func1<Observer<Integer>, Subscription>() {
+            final Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
 
                 @Override
-                public Subscription call(final Observer<Integer> o) {
+                public Subscription onSubscribe(final Observer<? super Integer> o) {
                     new Thread(new Runnable() {
 
                         @Override
@@ -324,10 +296,10 @@ public final class OperationNext {
                             try {
                                 while (running.get()) {
                                     o.onNext(count.incrementAndGet());
-                                    Thread.sleep(0, 100);
+                                    timeHasPassed.countDown();
                                 }
                                 o.onCompleted();
-                            } catch (Exception e) {
+                            } catch (Throwable e) {
                                 o.onError(e);
                             } finally {
                                 finished.countDown();
@@ -348,19 +320,14 @@ public final class OperationNext {
             // we should have a different value
             assertTrue("a and b should be different", a != b);
 
-            // wait for some time
-            Thread.sleep(100);
-            // make sure the counter in the observable has increased beyond b
-            while (count.get() <= (b + 10)) {
-                Thread.sleep(100);
-            }
+            // wait for some time (if times out we are blocked somewhere so fail ... set very high for very slow, constrained machines)
+            timeHasPassed.await(8000, TimeUnit.MILLISECONDS);
 
             assertTrue(it.hasNext());
-            int expectedHigherThan = count.get();
             int c = it.next();
 
             assertTrue("c should not just be the next in sequence", c != (b + 1));
-            assertTrue("expected that c [" + c + "] is higher than " + expectedHigherThan, c > expectedHigherThan);
+            assertTrue("expected that c [" + c + "] is higher than or equal to " + COUNT, c >= COUNT);
 
             assertTrue(it.hasNext());
 

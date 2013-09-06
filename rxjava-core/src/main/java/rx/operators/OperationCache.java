@@ -25,34 +25,36 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subjects.ReplaySubject;
 import rx.subscriptions.BooleanSubscription;
 import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 /**
- * Similar to {@link Observable#replay()} except that this auto-subscribes to the source sequence.
+ * This method has similar behavior to {@link Observable#replay()} except that this auto-subscribes
+ * to the source Observable rather than returning a connectable Observable.
  * <p>
- * This is useful when returning an Observable that you wish to cache responses but can't control the
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/cache.png">
+ * <p>
+ * This is useful with an Observable that you want to cache responses when you can't control the
  * subscribe/unsubscribe behavior of all the Observers.
  * <p>
- * NOTE: You sacrifice the ability to unsubscribe from the origin with this operator so be careful to not
- * use this on infinite or very large sequences that will use up memory. This is similar to
- * the {@link Observable#toList()} operator in this caution.
- * 
+ * NOTE: You sacrifice the ability to unsubscribe from the origin when you use this operator, so be
+ * careful not to use this operator on Observables that emit infinite or very large numbers of
+ * items, as this will use up memory.
  */
 public class OperationCache {
 
-    public static <T> Func1<Observer<T>, Subscription> cache(final Observable<T> source) {
-        return new Func1<Observer<T>, Subscription>() {
+    public static <T> OnSubscribeFunc<T> cache(final Observable<? extends T> source) {
+        return new OnSubscribeFunc<T>() {
 
             final AtomicBoolean subscribed = new AtomicBoolean(false);
             private final ReplaySubject<T> cache = ReplaySubject.create();
 
             @Override
-            public Subscription call(Observer<T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 if (subscribed.compareAndSet(false, true)) {
                     // subscribe to the source once
                     source.subscribe(cache);
@@ -74,10 +76,10 @@ public class OperationCache {
         @Test
         public void testCache() throws InterruptedException {
             final AtomicInteger counter = new AtomicInteger();
-            Observable<String> o = Observable.create(cache(Observable.create(new Func1<Observer<String>, Subscription>() {
+            Observable<String> o = Observable.create(cache(Observable.create(new OnSubscribeFunc<String>() {
 
                 @Override
-                public Subscription call(final Observer<String> observer) {
+                public Subscription onSubscribe(final Observer<? super String> observer) {
                     final BooleanSubscription subscription = new BooleanSubscription();
                     new Thread(new Runnable() {
 
