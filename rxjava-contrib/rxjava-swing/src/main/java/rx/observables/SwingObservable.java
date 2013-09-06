@@ -17,6 +17,7 @@ package rx.observables;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -106,6 +107,16 @@ public enum SwingObservable { ; // no instances
      */
     public static Observable<MouseEvent> fromMouseMotionEvents(Component component) {
         return MouseEventSource.fromMouseMotionEventsOf(component);
+    }
+    
+    /**
+     * Creates an observable corresponding to relative mouse motion.
+     * @param component
+     *            The component to register the observable for.
+     * @return A point whose x and y coordinate represent the relative horizontal and vertical mouse motion.
+     */
+    public static Observable<Point> fromRelativeMouseMotion(Component component) {
+        return MouseEventSource.fromRelativeMouseMotion(component);
     }
     
     /**
