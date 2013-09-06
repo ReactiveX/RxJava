@@ -670,6 +670,406 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   */
   // public Observable<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) 
 
+  /**
+   * Returns an Observable that applies a function of your choosing to the first item emitted by a
+   * source Observable, then feeds the result of that function along with the second item emitted
+   * by the source Observable into the same function, and so on until all items have been emitted
+   * by the source Observable, and emits the final result from the final call to your function as
+   * its sole item.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
+   * <p>
+   * This technique, which is called "reduce" or "aggregate" here, is sometimes called "fold,"
+   * "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance,
+   * has an <code>inject</code> method that does a similar operation on lists.
+   * 
+   * @param accumulator
+   *            An accumulator function to be invoked on each item emitted by the source
+   *            Observable, whose result will be used in the next accumulator call
+   * @return an Observable that emits a single item that is the result of accumulating the
+   *         output from the source Observable
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
+   * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+   */
+  def reduce[U >: T](f: (U, U) => U): Observable[U] = {
+    val func: rx.util.functions.Func2[_ >: U, _ >: U, _ <: U] = f
+    // new Observable(asJava.reduce(func))
+    ??? // TODO once reduce has correct signature in core
+  }
+  // public Observable<T> reduce(Func2<? super T, ? super T, ? extends T> accumulator) 
+
+  /**
+   * Returns a {@link ConnectableObservable} that shares a single subscription to the underlying
+   * Observable that will replay all of its items and notifications to any future {@link Observer}.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.png">
+   * 
+   * @return a {@link ConnectableObservable} that upon connection causes the source Observable to
+   *         emit items to its {@link Observer}s
+   */
+  def replay(): ConnectableObservable[T] = {
+    new ConnectableObservable[T](asJava.replay())
+  }
+
+  /**
+   * This method has similar behavior to {@link #replay} except that this auto-subscribes to
+   * the source Observable rather than returning a {@link ConnectableObservable}.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/cache.png">
+   * <p>
+   * This is useful when you want an Observable to cache responses and you can't control the
+   * subscribe/unsubscribe behavior of all the {@link Observer}s.
+   * <p>
+   * NOTE: You sacrifice the ability to unsubscribe from the origin when you use the
+   * <code>cache()</code> operator so be careful not to use this operator on Observables that
+   * emit an infinite or very large number of items that will use up memory.
+   * 
+   * @return an Observable that when first subscribed to, caches all of its notifications for
+   *         the benefit of subsequent subscribers.
+   */
+  def cache: Observable[T] = {
+    new Observable[T](asJava.cache())
+  }
+
+  /**
+   * Returns a {@link ConnectableObservable}, which waits until its {@link ConnectableObservable#connect connect} method is called before it begins emitting
+   * items to those {@link Observer}s that have subscribed to it.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/publishConnect.png">
+   * 
+   * @return a {@link ConnectableObservable} that upon connection causes the source Observable to
+   *         emit items to its {@link Observer}s
+   */
+  def publish: ConnectableObservable[T] = {
+    new ConnectableObservable[T](asJava.publish())
+  }
+
+  // There is no aggregate function with signature
+  // public Observable<T> aggregate(Func2<? super T, ? super T, ? extends T> accumulator)
+  // because that's called reduce in Scala.
+  
+  // TODO add Scala-like aggregate function
+  
+  /**
+   * Returns an Observable that applies a function of your choosing to the first item emitted by a
+   * source Observable, then feeds the result of that function along with the second item emitted
+   * by an Observable into the same function, and so on until all items have been emitted by the
+   * source Observable, emitting the final result from the final call to your function as its sole
+   * item.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduceSeed.png">
+   * <p>
+   * This technique, which is called "reduce" or "aggregate" here, is sometimes called "fold,"
+   * "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance,
+   * has an <code>inject</code> method that does a similar operation on lists.
+   * 
+   * @param initialValue
+   *            the initial (seed) accumulator value
+   * @param accumulator
+   *            an accumulator function to be invoked on each item emitted by the source
+   *            Observable, the result of which will be used in the next accumulator call
+   * @return an Observable that emits a single item that is the result of accumulating the output
+   *         from the items emitted by the source Observable
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
+   * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+   */
+  def fold[R](initialValue: R)(accumulator: (R, T) => R): Observable[R] = {
+    new Observable(asJava.reduce(initialValue, accumulator))
+  }
+  // corresponds to Java's
+  // public <R> Observable<R> reduce(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) 
+  // public <R> Observable<R> aggregate(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) 
+  
+  // There is no method like
+  // public Observable<T> scan(Func2<? super T, ? super T, ? extends T> accumulator)
+  // because scan has a seed in Scala
+  
+  /**
+   * Returns an Observable that emits the results of sampling the items emitted by the source
+   * Observable at a specified time interval.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/sample.png">
+   * 
+   * @param period
+   *            the sampling rate
+   * @param unit
+   *            the {@link TimeUnit} in which <code>period</code> is defined
+   * @return an Observable that emits the results of sampling the items emitted by the source
+   *         Observable at the specified time interval
+   */
+  // public Observable<T> sample(long period, TimeUnit unit)
+  // TODO what TimeUnit?
+
+  /**
+   * Returns an Observable that emits the results of sampling the items emitted by the source
+   * Observable at a specified time interval.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/sample.png">
+   * 
+   * @param period
+   *            the sampling rate
+   * @param unit
+   *            the {@link TimeUnit} in which <code>period</code> is defined
+   * @param scheduler
+   *            the {@link Scheduler} to use when sampling
+   * @return an Observable that emits the results of sampling the items emitted by the source
+   *         Observable at the specified time interval
+   */
+  // public Observable<T> sample(long period, TimeUnit unit, Scheduler scheduler) 
+  // TODO what TimeUnit?
+  
+    /**
+   * Returns an Observable that applies a function of your choosing to the first item emitted by a
+   * source Observable, then feeds the result of that function along with the second item emitted
+   * by an Observable into the same function, and so on until all items have been emitted by the
+   * source Observable, emitting the result of each of these iterations.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scanSeed.png">
+   * <p>
+   * This sort of function is sometimes called an accumulator.
+   * <p>
+   * Note that when you pass a seed to <code>scan()</code> the resulting Observable will emit
+   * that seed as its first emitted item.
+   * 
+   * @param initialValue
+   *            the initial (seed) accumulator value
+   * @param accumulator
+   *            an accumulator function to be invoked on each item emitted by the source
+   *            Observable, whose result will be emitted to {@link Observer}s via {@link Observer#onNext onNext} and used in the next accumulator call.
+   * @return an Observable that emits the results of each call to the accumulator function
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
+   */
+  def scan[R](initialValue: R)(accumulator: (R, T) => R): Observable[R] = {
+    new Observable(asJava.scan(initialValue, accumulator))
+  }
+  // corresponds to Scala's
+  // public <R> Observable<R> scan(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) 
+
+  /**
+   * Returns an Observable that emits a Boolean that indicates whether all of the items emitted by
+   * the source Observable satisfy a condition.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/all.png">
+   * 
+   * @param predicate
+   *            a function that evaluates an item and returns a Boolean
+   * @return an Observable that emits <code>true</code> if all items emitted by the source
+   *         Observable satisfy the predicate; otherwise, <code>false</code>
+   */
+  def forall(predicate: T => Boolean): Observable[Boolean] = {
+    // type mismatch; found : rx.Observable[java.lang.Boolean] required: rx.Observable[_ <: scala.Boolean]
+    // new Observable[Boolean](asJava.all(predicate))
+    // it's more fun in Scala:
+    this.map(predicate).fold(true)(_ && _)
+  }
+  // corresponds to Java's
+  // public Observable<Boolean> all(Func1<? super T, Boolean> predicate) 
+    
+  /**
+   * Returns an Observable that skips the first <code>num</code> items emitted by the source
+   * Observable and emits the remainder.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.png">
+   * <p>
+   * You can ignore the first <code>num</code> items emitted by an Observable and attend only to
+   * those items that come after, by modifying the Observable with the <code>skip</code> method.
+   * 
+   * @param num
+   *            the number of items to skip
+   * @return an Observable that is identical to the source Observable except that it does not
+   *         emit the first <code>num</code> items that the source emits
+   */
+  def drop(n: Int): Observable[T] = {
+    new Observable[T](asJava.skip(n))
+  }
+  // corresponds to Java's
+  // public Observable<T> skip(int num)
+
+  /**
+   * Returns an Observable that emits only the first <code>num</code> items emitted by the source
+   * Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.png">
+   * <p>
+   * This method returns an Observable that will invoke a subscribing {@link Observer}'s {@link Observer#onNext onNext} function a maximum of <code>num</code> times before invoking
+   * {@link Observer#onCompleted onCompleted}.
+   * 
+   * @param num
+   *            the number of items to take
+   * @return an Observable that emits only the first <code>num</code> items from the source
+   *         Observable, or all of the items from the source Observable if that Observable emits
+   *         fewer than <code>num</code> items
+   */
+  def take(n: Int): Observable[T] = {
+    new Observable[T](asJava.take(n))
+  }
+
+  /**
+   * Returns an Observable that emits items emitted by the source Observable so long as a
+   * specified condition is true.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhile.png">
+   * 
+   * @param predicate
+   *            a function that evaluates an item emitted by the source Observable and returns a
+   *            Boolean
+   * @return an Observable that emits the items from the source Observable so long as each item
+   *         satisfies the condition defined by <code>predicate</code>
+   */
+  def takeWhile(predicate: T => Boolean): Observable[T] = {
+    new Observable[T](asJava.takeWhile(predicate))
+  }
+  
+  /**
+   * Returns an Observable that emits the items emitted by a source Observable so long as a given
+   * predicate remains true, where the predicate can operate on both the item and its index
+   * relative to the complete sequence.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhileWithIndex.png">
+   * 
+   * @param predicate
+   *            a function to test each item emitted by the source Observable for a condition;
+   *            the second parameter of the function represents the index of the source item
+   * @return an Observable that emits items from the source Observable so long as the predicate
+   *         continues to return <code>true</code> for each item, then completes
+   */
+  // TODO: if we have zipWithIndex, takeWhileWithIndex is not needed any more
+  def takeWhileWithIndex(predicate: (T, Integer) => Boolean): Observable[T] = {
+    new Observable[T](asJava.takeWhileWithIndex(predicate))
+  }
+
+  /**
+   * Returns an Observable that emits only the last <code>count</code> items emitted by the source
+   * Observable.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/last.png">
+   * 
+   * @param count
+   *            the number of items to emit from the end of the sequence emitted by the source
+   *            Observable
+   * @return an Observable that emits only the last <code>count</code> items emitted by the source
+   *         Observable
+   */
+  def takeRight(n: Int): Observable[T] = {
+    new Observable[T](asJava.takeLast(n))
+  }
+  // corresponds to Java's
+  // public Observable<T> takeLast(final int count) 
+  
+  /**
+   * Returns an Observable that emits the items from the source Observable only until the
+   * <code>other</code> Observable emits an item.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeUntil.png">
+   * 
+   * @param that
+   *            the Observable whose first emitted item will cause <code>takeUntil</code> to stop
+   *            emitting items from the source Observable
+   * @param <E>
+   *            the type of items emitted by <code>other</code>
+   * @return an Observable that emits the items of the source Observable until such time as
+   *         <code>other</code> emits its first item
+   */
+  def takeUntil[E](that: Observable[E]): Observable[T] = {
+    new Observable[T](asJava.takeUntil(that.asJava))
+  } 
+ 
+  /**
+   * Returns an Observable that emits a single item, a list composed of all the items emitted by
+   * the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toList.png">
+   * <p>
+   * Normally, an Observable that returns multiple items will do so by invoking its {@link Observer}'s {@link Observer#onNext onNext} method for each such item. You can change
+   * this behavior, instructing the Observable to compose a list of all of these items and then to
+   * invoke the Observer's <code>onNext</code> function once, passing it the entire list, by
+   * calling the Observable's <code>toList</code> method prior to calling its {@link #subscribe} method.
+   * <p>
+   * Be careful not to use this operator on Observables that emit infinite or very large numbers
+   * of items, as you do not have the option to unsubscribe.
+   * 
+   * @return an Observable that emits a single item: a List containing all of the items emitted by
+   *         the source Observable.
+   */
+  /*
+   * TODO variance/immutable?
+  def toList: Observable[java.util.List[T]] = {
+    // new Observable[java.util.List[T]](asJava.toList())
+  }
+  */
+
+  // There are no toSortedList methods because Scala can sort itself
+  // public Observable<List<T>> toSortedList() 
+  // public Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) 
+
+  /**
+   * Emit a specified set of items before beginning to emit items from the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+   * 
+   * @param values
+   *            the items you want the modified Observable to emit first
+   * @return an Observable that exhibits the modified behavior
+   */
+  // TODO wait until core library does not need @SuppressWarnings("unchecked") anymore
+  // public Observable<T> startWith(T... values) 
+  
+  /**
+   * Groups the items emitted by an Observable according to a specified criterion, and emits these
+   * grouped items as {@link GroupedObservable}s, one GroupedObservable per group.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/groupBy.png">
+   * 
+   * @param keySelector
+   *            a function that extracts the key from an item
+   * @param elementSelector
+   *            a function to map a source item to an item in a {@link GroupedObservable}
+   * @param <K>
+   *            the key type
+   * @param <R>
+   *            the type of items emitted by the resulting {@link GroupedObservable}s
+   * @return an Observable that emits {@link GroupedObservable}s, each of which corresponds to a
+   *         unique key value and emits items representing items from the source Observable that
+   *         share that key value
+   */
+  /* TODO do we want to return Scala GroupedObservable or Java GroupedObservable ?
+  def groupBy[K,R](keySelector: T => K, elementSelector: T => R ): Observable[GroupedObservable[K,R]] = {
+    ???
+  }
+  */
+  // public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) 
+
+  /**
+   * Groups the items emitted by an Observable according to a specified criterion, and emits these
+   * grouped items as {@link GroupedObservable}s, one GroupedObservable per group.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/groupBy.png">
+   * 
+   * @param keySelector
+   *            a function that extracts the key for each item
+   * @param <K>
+   *            the key type
+   * @return an Observable that emits {@link GroupedObservable}s, each of which corresponds to a
+   *         unique key value and emits items representing items from the source Observable that
+   *         share that key value
+   */
+  /* TODO do we want to return Scala GroupedObservable or Java GroupedObservable ?
+  def groupBy[K](keySelector: T => K ): Observable[GroupedObservable[K,T]] = {
+    ???
+  }
+  */
+  // public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) 
+
+  /**
+   * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking
+   * operators).
+   * 
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">Blocking Observable Operators</a>
+   */
+  // TODO make Scala BlockingObservable
+  def toBlockingObservable: rx.observables.BlockingObservable[_ <: T] = {
+    asJava.toBlockingObservable()
+  }
   
 }
 
