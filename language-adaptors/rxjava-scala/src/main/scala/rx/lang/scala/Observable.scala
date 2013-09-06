@@ -22,10 +22,13 @@ package rx.lang.scala
  */
 object All {
   // fix covariance/contravariance once and for all
-  type Timestamped[T] = rx.util.Timestamped[_ <: T]
   type Observer[T] = rx.Observer[_ >: T]
   type Notification[T] = rx.Notification[_ <: T]
   // rx.Observable not here because we need its static methods, and users don't need it
+  
+  //
+  type Timestamped[T] = rx.util.Timestamped[T]
+  // type Timestamped[T] = rx.util.Timestamped[_ <: T]
   
   type Subscription = rx.Subscription
   type Scheduler = rx.Scheduler
@@ -35,7 +38,10 @@ object All {
 /**
  * The Observable interface that implements the Reactive Pattern.
  */
-class Observable[+T](val asJava: rx.Observable[_ <: T]) extends AnyVal {
+class Observable[+T](val asJava: rx.Observable[_ <: T])
+  // Uncommenting this line makes the compiler crash:
+  // extends AnyVal 
+{
   import All._
   import rx.{Observable => JObservable}
   import ImplicitFunctionConversions._
@@ -165,14 +171,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T]) extends AnyVal {
    * @return an Observable that is a chronologically well-behaved version of the source
    *         Observable, and that synchronously notifies its {@link Observer}s
    */
-  // If 1st line commented, 2nd active: OK
-  // If 1st line active, 2nd commented: compiler crashes
-  //def synchronize: Observable[T] = {
-  def synchronize: Any = {
+  def synchronize: Observable[T] = {
     new Observable(JObservable.synchronize(asJava))
   }
   
-  /*
   /**
    * Wraps each item emitted by a source Observable in a {@link Timestamped} object.
    * <p>
@@ -180,11 +182,13 @@ class Observable[+T](val asJava: rx.Observable[_ <: T]) extends AnyVal {
    * 
    * @return an Observable that emits timestamped items from the source Observable
    */
+  // TODO this can only work if Timestamped is used as Timestamped<? extends T> in core
+  /*
   def timestamp: Observable[Timestamped[T]] = {
     new Observable(asJava.timestamp())
   }
-  
   */
+  
   
 }
 
@@ -193,7 +197,7 @@ object Observable {
   import rx.lang.scala.All._
   import rx.{Observable => JObservable}
   import ImplicitFunctionConversions._
-  /*
+
   /**
    * Creates an Observable that will execute the given function when an {@link Observer} subscribes to it.
    * <p>
@@ -487,7 +491,7 @@ object Observable {
   // public static <T> Observable<T> synchronize(Observable<? extends T> observable) 
   // because that's an instance method.
 
-*/  
+
 }
 
 /*
@@ -506,7 +510,7 @@ class UnitTestSuite extends JUnitSuite {
   import org.mockito.Mockito._
   import org.mockito.{ MockitoAnnotations, Mock }
   import rx.lang.scala.All._
-  /*
+  
   // Tests which needn't be run:
   
   def testCovariance = {
@@ -525,6 +529,6 @@ class UnitTestSuite extends JUnitSuite {
     println("testTest")
     assertEquals(4, Observable(1, 2, 3, 4).asJava.toBlockingObservable().last())
   }
-  */
+  
 
 }
