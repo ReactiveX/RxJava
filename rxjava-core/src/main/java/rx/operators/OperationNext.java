@@ -16,7 +16,6 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -203,7 +202,7 @@ public final class OperationNext {
 
         @Test(expected = TestException.class)
         public void testOnError() throws Throwable {
-            Subject<String, String> obs = PublishSubject.create();;
+            Subject<String, String> obs = PublishSubject.create();
 
             Iterator<String> it = next(obs).iterator();
 

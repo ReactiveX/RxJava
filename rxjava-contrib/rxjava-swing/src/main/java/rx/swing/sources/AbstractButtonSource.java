@@ -29,7 +29,6 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.observables.SwingObservable;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -37,7 +36,7 @@ import rx.util.functions.Action1;
 public enum AbstractButtonSource { ; // no instances
 
     /**
-     * @see SwingObservable.fromButtonAction
+     * @see rx.observables.SwingObservable#fromButtonAction
      */
     public static Observable<ActionEvent> fromActionOf(final AbstractButton button) {
         return Observable.create(new OnSubscribeFunc<ActionEvent>() {

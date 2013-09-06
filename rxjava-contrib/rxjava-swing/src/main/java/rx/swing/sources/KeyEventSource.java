@@ -38,12 +38,13 @@ import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
+import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 public enum KeyEventSource { ; // no instances
 
     /**
-     * @see SwingObservable.fromKeyEvents(Component)
+     * @see rx.observables.SwingObservable#fromKeyEvents(Component)
      */
     public static Observable<KeyEvent> fromKeyEventsOf(final Component component) {
         return Observable.create(new OnSubscribeFunc<KeyEvent>() {
@@ -78,10 +79,10 @@ public enum KeyEventSource { ; // no instances
     }
 
     /**
-     * @see SwingObservable.fromKeyEvents(Component, Set)
+     * @see rx.observables.SwingObservable#fromPressedKeys(Component)
      */
     public static Observable<Set<Integer>> currentlyPressedKeysOf(Component component) {
-        return fromKeyEventsOf(component).<Set<Integer>>scan(new HashSet<Integer>(), new Func2<Set<Integer>, KeyEvent, Set<Integer>>() {
+        class CollectKeys implements Func2<Set<Integer>, KeyEvent, Set<Integer>>{
             @Override
             public Set<Integer> call(Set<Integer> pressedKeys, KeyEvent event) {
                 Set<Integer> afterEvent = new HashSet<Integer>(pressedKeys);
@@ -98,7 +99,16 @@ public enum KeyEventSource { ; // no instances
                 }
                 return afterEvent;
             }
+        }
+        
+        Observable<KeyEvent> filteredKeyEvents = fromKeyEventsOf(component).filter(new Func1<KeyEvent, Boolean>() {
+            @Override
+            public Boolean call(KeyEvent event) {
+                return event.getID() == KeyEvent.KEY_PRESSED || event.getID() == KeyEvent.KEY_RELEASED;
+            }
         });
+        
+        return filteredKeyEvents.scan(Collections.<Integer>emptySet(), new CollectKeys());
     }
     
     public static class UnitTest {
@@ -154,6 +164,7 @@ public enum KeyEventSource { ; // no instances
             verify(complete, never()).call();
 
             fireKeyEvent(keyEvent(2, KeyEvent.KEY_PRESSED));
+            fireKeyEvent(keyEvent(KeyEvent.VK_UNDEFINED, KeyEvent.KEY_TYPED));
             inOrder.verify(action, times(1)).call(new HashSet<Integer>(asList(1, 2)));
 
             fireKeyEvent(keyEvent(2, KeyEvent.KEY_RELEASED));

@@ -35,7 +35,6 @@ import rx.observables.ConnectableObservable;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 public class ObservableTests {
