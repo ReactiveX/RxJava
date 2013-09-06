@@ -23,15 +23,18 @@ package rx.lang.scala
 object All {
   // fix covariance/contravariance once and for all
   type Observer[T] = rx.Observer[_ >: T]
-  type Notification[T] = rx.Notification[_ <: T]
   // rx.Observable not here because we need its static methods, and users don't need it
   
-  //
-  type Timestamped[T] = rx.util.Timestamped[T]
-  // type Timestamped[T] = rx.util.Timestamped[_ <: T]
+  type Notification[T] = rx.Notification[_ <: T]
+  type Timestamped[T] = rx.util.Timestamped[_ <: T]
   
   type Subscription = rx.Subscription
   type Scheduler = rx.Scheduler
+
+  object util {
+    type Closing = rx.util.Closing
+    type Opening = rx.util.Opening
+  }
 }
 
 
@@ -44,6 +47,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   extends AnyVal 
 {
   import All._
+  import All.util._
   import rx.{Observable => JObservable}
   import ImplicitFunctionConversions._
 /*
@@ -189,11 +193,489 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   }
   */
   
+  /**
+   * TODO doc
+   */
+  def zip[U](that: Observable[U]): Observable[(T, U)] = {
+    new Observable[(T, U)](JObservable.zip(this.asJava, that.asJava, (t: T, u: U) => (t, u)))
+  }  
+  
+  // There is no method corresponding to
+  // public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second)
+  // because the Scala-idiomatic way of doing this is
+  // (first zip second) map (p => p._1 == p._2)
+  
+  // There is no method corresponding to  
+  // public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality)
+  // because the Scala-idiomatic way of doing this is
+  // (first zip second) map (p => equality(p._1, p._2))
+  
+  /**
+   * Creates an Observable which produces buffers of collected values.
+   * 
+   * <p>This Observable produces connected non-overlapping buffers. The current buffer is
+   * emitted and replaced with a new buffer when the Observable produced by the specified {@link Func0} produces a {@link rx.util.Closing} object. The * {@link Func0} will then
+   * be used to create a new Observable to listen for the end of the next buffer.
+   * 
+   * @param bufferClosingSelector
+   *            The {@link Func0} which is used to produce an {@link Observable} for every buffer created.
+   *            When this {@link Observable} produces a {@link rx.util.Closing} object, the associated buffer
+   *            is emitted and replaced with a new one.
+   * @return
+   *         An {@link Observable} which produces connected non-overlapping buffers, which are emitted
+   *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link rx.util.Closing} object.
+   */
+  // TODO 1: buffer does not work because Java returns a mutable java.util.List[T] which is invariant in T
+  // But in Scala, we would like to have an immutable List[T] which is covariant in T
+  // TODO 2: But even if we try to get a java.util.List[T], there is a problem
+  // -> core should respect covariance, but that's not the only problem
+  def buffer(bufferClosingSelector: () => Observable[Closing]) : Observable[List[T]] = {
+    val f: rx.util.functions.Func0[_ <: rx.Observable[_ <: Closing]] = bufferClosingSelector().asJava
+    // type mismatch; found : rx.Observable[java.util.List[_$3]] required: rx.Observable[_ <: java.util.List[T]]
+    // val o: rx.Observable[_ <: java.util.List[T]] = asJava.buffer(f)
+    val o: rx.Observable[_ <: java.util.List[T]] = ???
+    // type mismatch; found : rx.Observable[java.util.List[_$3]] required: rx.Observable[java.util.List[T]]
+    // val o2: rx.Observable[java.util.List[T]] = asJava.buffer(f)
+    val r = new Observable[java.util.List[T]](o)
+    ???
+  }
+  
+  // public Observable<List<T>> buffer(Func0<? extends Observable<? extends Closing>> bufferClosingSelector) 
+
+  /**
+   * Creates an Observable which produces buffers of collected values.
+   * 
+   * <p>This Observable produces buffers. Buffers are created when the specified "bufferOpenings"
+   * Observable produces a {@link rx.util.Opening} object. Additionally the {@link Func0} argument
+   * is used to create an Observable which produces {@link rx.util.Closing} objects. When this
+   * Observable produces such an object, the associated buffer is emitted.
+   * 
+   * @param bufferOpenings
+   *            The {@link Observable} which, when it produces a {@link rx.util.Opening} object, will cause
+   *            another buffer to be created.
+   * @param bufferClosingSelector
+   *            The {@link Func0} which is used to produce an {@link Observable} for every buffer created.
+   *            When this {@link Observable} produces a {@link rx.util.Closing} object, the associated buffer
+   *            is emitted.
+   * @return
+   *         An {@link Observable} which produces buffers which are created and emitted when the specified {@link Observable}s publish certain objects.
+   */
+  // public Observable<List<T>> buffer(Observable<? extends Opening> bufferOpenings, Func1<Opening, ? extends Observable<? extends Closing>> bufferClosingSelector) 
+
+  /**
+   * Creates an Observable which produces buffers of collected values.
+   * 
+   * <p>This Observable produces connected non-overlapping buffers, each containing "count"
+   * elements. When the source Observable completes or encounters an error, the current
+   * buffer is emitted, and the event is propagated.
+   * 
+   * @param count
+   *            The maximum size of each buffer before it should be emitted.
+   * @return
+   *         An {@link Observable} which produces connected non-overlapping buffers containing at most
+   *         "count" produced values.
+   */
+  // public Observable<List<T>> buffer(int count) 
+
+  /**
+   * Creates an Observable which produces buffers of collected values.
+   * 
+   * <p>This Observable produces buffers every "skip" values, each containing "count"
+   * elements. When the source Observable completes or encounters an error, the current
+   * buffer is emitted, and the event is propagated.
+   * 
+   * @param count
+   *            The maximum size of each buffer before it should be emitted.
+   * @param skip
+   *            How many produced values need to be skipped before starting a new buffer. Note that when "skip" and
+   *            "count" are equals that this is the same operation as {@link Observable#buffer(int)}.
+   * @return
+   *         An {@link Observable} which produces buffers every "skipped" values containing at most
+   *         "count" produced values.
+   */
+  // public Observable<List<T>> buffer(int count, int skip) 
+
+  /**
+   * Creates an Observable which produces buffers of collected values.
+   * 
+   * <p>This Observable produces connected non-overlapping buffers, each of a fixed duration
+   * specified by the "timespan" argument. When the source Observable completes or encounters
+   * an error, the current buffer is emitted and the event is propagated.
+   * 
+   * @param timespan
+   *            The period of time each buffer is collecting values before it should be emitted, and
+   *            replaced with a new buffer.
+   * @param unit
+   *            The unit of time which applies to the "timespan" argument.
+   * @return
+   *         An {@link Observable} which produces connected non-overlapping buffers with a fixed duration.
+   */
+  // public Observable<List<T>> buffer(long timespan, TimeUnit unit) 
+
+  /**
+   * Creates an Observable which produces buffers of collected values.
+   * 
+   * <p>This Observable produces connected non-overlapping buffers, each of a fixed duration
+   * specified by the "timespan" argument. When the source Observable completes or encounters
+   * an error, the current buffer is emitted and the event is propagated.
+   * 
+   * @param timespan
+   *            The period of time each buffer is collecting values before it should be emitted, and
+   *            replaced with a new buffer.
+   * @param unit
+   *            The unit of time which applies to the "timespan" argument.
+   * @param scheduler
+   *            The {@link Scheduler} to use when determining the end and start of a buffer.
+   * @return
+   *         An {@link Observable} which produces connected non-overlapping buffers with a fixed duration.
+   */
+  // public Observable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler) 
+
+  /**
+   * Creates an Observable which produces buffers of collected values. This Observable produces connected
+   * non-overlapping buffers, each of a fixed duration specified by the "timespan" argument or a maximum size
+   * specified by the "count" argument (which ever is reached first). When the source Observable completes
+   * or encounters an error, the current buffer is emitted and the event is propagated.
+   * 
+   * @param timespan
+   *            The period of time each buffer is collecting values before it should be emitted, and
+   *            replaced with a new buffer.
+   * @param unit
+   *            The unit of time which applies to the "timespan" argument.
+   * @param count
+   *            The maximum size of each buffer before it should be emitted.
+   * @return
+   *         An {@link Observable} which produces connected non-overlapping buffers which are emitted after
+   *         a fixed duration or when the buffer has reached maximum capacity (which ever occurs first).
+   */
+  // public Observable<List<T>> buffer(long timespan, TimeUnit unit, int count) 
+
+  /**
+   * Creates an Observable which produces buffers of collected values. This Observable produces connected
+   * non-overlapping buffers, each of a fixed duration specified by the "timespan" argument or a maximum size
+   * specified by the "count" argument (which ever is reached first). When the source Observable completes
+   * or encounters an error, the current buffer is emitted and the event is propagated.
+   * 
+   * @param timespan
+   *            The period of time each buffer is collecting values before it should be emitted, and
+   *            replaced with a new buffer.
+   * @param unit
+   *            The unit of time which applies to the "timespan" argument.
+   * @param count
+   *            The maximum size of each buffer before it should be emitted.
+   * @param scheduler
+   *            The {@link Scheduler} to use when determining the end and start of a buffer.
+   * @return
+   *         An {@link Observable} which produces connected non-overlapping buffers which are emitted after
+   *         a fixed duration or when the buffer has reached maximum capacity (which ever occurs first).
+   */
+  // public Observable<List<T>> buffer(long timespan, TimeUnit unit, int count, Scheduler scheduler) 
+
+  /**
+   * Creates an Observable which produces buffers of collected values. This Observable starts a new buffer
+   * periodically, which is determined by the "timeshift" argument. Each buffer is emitted after a fixed timespan
+   * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
+   * current buffer is emitted and the event is propagated.
+   * 
+   * @param timespan
+   *            The period of time each buffer is collecting values before it should be emitted.
+   * @param timeshift
+   *            The period of time after which a new buffer will be created.
+   * @param unit
+   *            The unit of time which applies to the "timespan" and "timeshift" argument.
+   * @return
+   *         An {@link Observable} which produces new buffers periodically, and these are emitted after
+   *         a fixed timespan has elapsed.
+   */
+  // public Observable<List<T>> buffer(long timespan, long timeshift, TimeUnit unit) 
+
+  /**
+   * Creates an Observable which produces buffers of collected values. This Observable starts a new buffer
+   * periodically, which is determined by the "timeshift" argument. Each buffer is emitted after a fixed timespan
+   * specified by the "timespan" argument. When the source Observable completes or encounters an error, the
+   * current buffer is emitted and the event is propagated.
+   * 
+   * @param timespan
+   *            The period of time each buffer is collecting values before it should be emitted.
+   * @param timeshift
+   *            The period of time after which a new buffer will be created.
+   * @param unit
+   *            The unit of time which applies to the "timespan" and "timeshift" argument.
+   * @param scheduler
+   *            The {@link Scheduler} to use when determining the end and start of a buffer.
+   * @return
+   *         An {@link Observable} which produces new buffers periodically, and these are emitted after
+   *         a fixed timespan has elapsed.
+   */
+  // public Observable<List<T>> buffer(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) 
+
+  /*
+   * TODO insert here all window operations once https://github.com/Netflix/RxJava/pull/349#issuecomment-23946707 is resolved
+   */
+
+  /**
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
+   * 
+   * @param predicate
+   *            a function that evaluates the items emitted by the source Observable, returning {@code true} if they pass the filter
+   * @return an Observable that emits only those items in the original Observable that the filter
+   *         evaluates as {@code true}
+   */
+  def filter(predicate: T => Boolean): Observable[T] = {
+    new Observable[T](asJava.filter(predicate))
+  }
+
+  /**
+   * Registers an {@link Action0} to be called when this Observable invokes {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/finallyDo.png">
+   * 
+   * @param action
+   *            an {@link Action0} to be invoked when the source Observable finishes
+   * @return an Observable that emits the same items as the source Observable, then invokes the {@link Action0}
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN: Observable.Finally Method</a>
+   */
+  def finallyDo(action: () => Unit): Observable[T] = {
+    new Observable[T](asJava.finallyDo(action))
+  } 
+
+  /**
+   * Creates a new Observable by applying a function that you supply to each item emitted by
+   * the source Observable, where that function returns an Observable, and then merging those
+   * resulting Observables and emitting the results of this merger.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/flatMap.png">
+   * <p>
+   * Note: {@code mapMany} and {@code flatMap} are equivalent.
+   * 
+   * @param func
+   *            a function that, when applied to an item emitted by the source Observable, returns
+   *            an Observable
+   * @return an Observable that emits the result of applying the transformation function to each
+   *         item emitted by the source Observable and merging the results of the Observables
+   *         obtained from this transformation.
+   * @see #mapMany(Func1)
+   */
+  def flatMap[R](f: T => Observable[R]): Observable[R] = {
+    new Observable[R](asJava.flatMap[R]((t: T) => f(t).asJava))
+  }
+  
+  // There is no method like
+  // public Observable<T> where(Func1<? super T, Boolean> predicate)
+  // because that's called filter in Scala.
+
+  /**
+   * Returns an Observable that applies the given function to each item emitted by an
+   * Observable and emits the result.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/map.png">
+   * 
+   * @param func
+   *            a function to apply to each item emitted by the Observable
+   * @return an Observable that emits the items from the source Observable, transformed by the
+   *         given function
+   */
+  def map[R](func: T => R): Observable[R] = {
+    new Observable[R](asJava.map(func))
+  }
+  
+  // There's no method like
+  // public <R> Observable<R> mapMany(Func1<? super T, ? extends Observable<? extends R>> func)
+  // because that's called flatMap in Scala.
+  
+  /**
+   * Turns all of the notifications from a source Observable into {@link Observer#onNext onNext} emissions, and marks them with their original notification types within {@link Notification} objects.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/materialize.png">
+   * 
+   * @return an Observable whose items are the result of materializing the items and
+   *         notifications of the source Observable
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">MSDN: Observable.materialize</a>
+   */
+  /*
+  def materialize: Observable[Notification[T]] = {
+    // new Observable[Notification[T]](asJava.materialize())
+    ??? // TODO check with covariance in core
+  } */
+
+  /**
+   * Asynchronously subscribes and unsubscribes Observers on the specified {@link Scheduler}.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/subscribeOn.png">
+   * 
+   * @param scheduler
+   *            the {@link Scheduler} to perform subscription and unsubscription actions on
+   * @return the source Observable modified so that its subscriptions and unsubscriptions happen
+   *         on the specified {@link Scheduler}
+   */
+  def subscribeOn(scheduler: Scheduler): Observable[T] = {
+    new Observable[T](asJava.subscribeOn(scheduler))
+  } 
+
+  /**
+   * Asynchronously notify {@link Observer}s on the specified {@link Scheduler}.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
+   * 
+   * @param scheduler
+   *            the {@link Scheduler} to notify {@link Observer}s on
+   * @return the source Observable modified so that its {@link Observer}s are notified on the
+   *         specified {@link Scheduler}
+   */
+  def observeOn(scheduler: Scheduler): Observable[T] = {
+    new Observable[T](asJava.observeOn(scheduler))
+  }
+ 
+  /**
+   * Returns an Observable that reverses the effect of {@link #materialize materialize} by
+   * transforming the {@link Notification} objects emitted by the source Observable into the items
+   * or notifications they represent.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/dematerialize.png">
+   * 
+   * @return an Observable that emits the items and notifications embedded in the {@link Notification} objects emitted by the source Observable
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">MSDN: Observable.dematerialize</a>
+   * @throws Throwable
+   *             if the source Observable is not of type {@code Observable<Notification<T>>}.
+   */
+  // @SuppressWarnings("unchecked")
+  // public <T2> Observable<T2> dematerialize() 
+  // TODO
+
+  /**
+   * Instruct an Observable to pass control to another Observable rather than invoking {@link Observer#onError onError} if it encounters an error.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorResumeNext.png">
+   * <p>
+   * By default, when an Observable encounters an error that prevents it from emitting the
+   * expected item to its {@link Observer}, the Observable invokes its Observer's
+   * <code>onError</code> method, and then quits without invoking any more of its Observer's
+   * methods. The <code>onErrorResumeNext</code> method changes this behavior. If you pass a
+   * function that returns an Observable (<code>resumeFunction</code>) to
+   * <code>onErrorResumeNext</code>, if the original Observable encounters an error, instead of
+   * invoking its Observer's <code>onError</code> method, it will instead relinquish control to
+   * the Observable returned from <code>resumeFunction</code>, which will invoke the Observer's {@link Observer#onNext onNext} method if it is able to do so. In such a case, because no
+   * Observable necessarily invokes <code>onError</code>, the Observer may never know that an
+   * error happened.
+   * <p>
+   * You can use this to prevent errors from propagating or to supply fallback data should errors
+   * be encountered.
+   * 
+   * @param resumeFunction
+   *            a function that returns an Observable that will take over if the source Observable
+   *            encounters an error
+   * @return the original Observable, with appropriately modified behavior
+   */
+  // Since T is a covariant type parameter, someone might treat `this` as an Observable[Any].
+  // Then they can call onErrorResumeNext(someFunc), with someFunc returning an Observable[Any].
+  // That's why the method signature below is not allowed
+  // TODO what to do about this?
+  /*
+  def onErrorResumeNext(resumeFunction: Throwable => Observable[T]): Observable[T] = {
+    new Observable(asJava.onErrorResumeNext((t: Throwable) => resumeFunction(t).asJava))
+  }
+  */
+  // public Observable<T> onErrorResumeNext(final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) 
+
+  /**
+   * Instruct an Observable to pass control to another Observable rather than invoking {@link Observer#onError onError} if it encounters an error.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorResumeNext.png">
+   * <p>
+   * By default, when an Observable encounters an error that prevents it from emitting the
+   * expected item to its {@link Observer}, the Observable invokes its Observer's
+   * <code>onError</code> method, and then quits without invoking any more of its Observer's
+   * methods. The <code>onErrorResumeNext</code> method changes this behavior. If you pass
+   * another Observable (<code>resumeSequence</code>) to an Observable's
+   * <code>onErrorResumeNext</code> method, if the original Observable encounters an error,
+   * instead of invoking its Observer's <code>onError</code> method, it will instead relinquish
+   * control to <code>resumeSequence</code> which will invoke the Observer's {@link Observer#onNext onNext} method if it is able to do so. In such a case, because no
+   * Observable necessarily invokes <code>onError</code>, the Observer may never know that an
+   * error happened.
+   * <p>
+   * You can use this to prevent errors from propagating or to supply fallback data should errors
+   * be encountered.
+   * 
+   * @param resumeSequence
+   *            a function that returns an Observable that will take over if the source Observable
+   *            encounters an error
+   * @return the original Observable, with appropriately modified behavior
+   */
+  // TODO same as above
+  // public Observable<T> onErrorResumeNext(final Observable<? extends T> resumeSequence) 
+
+  /**
+   * Instruct an Observable to pass control to another Observable rather than invoking {@link Observer#onError onError} if it encounters an error of type {@link java.lang.Exception}.
+   * <p>
+   * This differs from {@link #onErrorResumeNext} in that this one does not handle {@link java.lang.Throwable} or {@link java.lang.Error} but lets those continue through.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorResumeNext.png">
+   * <p>
+   * By default, when an Observable encounters an error that prevents it from emitting the
+   * expected item to its {@link Observer}, the Observable invokes its Observer's
+   * <code>onError</code> method, and then quits without invoking any more of its Observer's
+   * methods. The <code>onErrorResumeNext</code> method changes this behavior. If you pass
+   * another Observable (<code>resumeSequence</code>) to an Observable's
+   * <code>onErrorResumeNext</code> method, if the original Observable encounters an error,
+   * instead of invoking its Observer's <code>onError</code> method, it will instead relinquish
+   * control to <code>resumeSequence</code> which will invoke the Observer's {@link Observer#onNext onNext} method if it is able to do so. In such a case, because no
+   * Observable necessarily invokes <code>onError</code>, the Observer may never know that an
+   * error happened.
+   * <p>
+   * You can use this to prevent errors from propagating or to supply fallback data should errors
+   * be encountered.
+   * 
+   * @param resumeSequence
+   *            a function that returns an Observable that will take over if the source Observable
+   *            encounters an error
+   * @return the original Observable, with appropriately modified behavior
+   */
+  // TODO same as above
+  /*
+  def onExceptionResumeNext(resumeSequence: Observable[T]) = {
+    ???
+  }
+  */
+  // public Observable<T> onExceptionResumeNext(final Observable<? extends T> resumeSequence) 
+
+  /**
+   * Instruct an Observable to emit an item (returned by a specified function) rather than
+   * invoking {@link Observer#onError onError} if it encounters an error.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/onErrorReturn.png">
+   * <p>
+   * By default, when an Observable encounters an error that prevents it from emitting the
+   * expected item to its {@link Observer}, the Observable invokes its Observer's
+   * <code>onError</code> method, and then quits without invoking any more of its Observer's
+   * methods. The <code>onErrorReturn</code> method changes this behavior. If you pass a function
+   * (<code>resumeFunction</code>) to an Observable's <code>onErrorReturn</code> method, if the
+   * original Observable encounters an error, instead of invoking its Observer's
+   * <code>onError</code> method, it will instead pass the return value of
+   * <code>resumeFunction</code> to the Observer's {@link Observer#onNext onNext} method.
+   * <p>
+   * You can use this to prevent errors from propagating or to supply fallback data should errors
+   * be encountered.
+   * 
+   * @param resumeFunction
+   *            a function that returns an item that the new Observable will emit if the source
+   *            Observable encounters an error
+   * @return the original Observable with appropriately modified behavior
+   */
+  // TODO same as above
+  /*
+  def onErrorReturn(resumeFunction: Throwable => T): Observable[T] = {
+    ???
+  }
+  */
+  // public Observable<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) 
+
   
 }
 
 object Observable {
   import scala.collection.JavaConverters._
+  import scala.concurrent.Future
   import rx.lang.scala.All._
   import rx.{Observable => JObservable}
   import ImplicitFunctionConversions._
@@ -491,7 +973,70 @@ object Observable {
   // public static <T> Observable<T> synchronize(Observable<? extends T> observable) 
   // because that's an instance method.
 
+  def apply[T](f: Future[T]): Observable[T] = {
+    ??? // TODO convert Scala Future to Java Future
+  } 
+  // corresponds to
+  // public static <T> Observable<T> from(Future<? extends T> future)
+  
+  def apply[T](f: Future[T], scheduler: Scheduler): Observable[T] = {
+    ??? // TODO convert Scala Future to Java Future
+  }
+  // public static <T> Observable<T> from(Future<? extends T> future, Scheduler scheduler)
+  
+  // TODO which TimeUnit should we use? scala.actors.threadpool or java.util.concurrent?
+  def apply[T](f: Future[T], timeout: Long, unit: Nothing): Observable[T] = {
+    ??? // TODO convert Scala Future to Java Future
+  }
+  // corresponds to
+  // public static <T> Observable<T> from(Future<? extends T> future, long timeout, TimeUnit unit)
+  
+  // There is no method here corresponding to
+  // public static <T1, T2, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> zipFunction)
+  // because it's an instance method
+  
+  // There is no method corresponding to
+  // public static <T1, T2, T3, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction)
+  // because zip3 is not known in the Scala world
+  // Also applies to all zipN with N > 3 ;-)
 
+  /**
+   * Combines the given observables, emitting an event containing an aggregation of the latest values of each of the source observables
+   * each time an event is received from one of the source observables, where the aggregation is defined by the given function.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/combineLatest.png">
+   * 
+   * @param o1
+   *            The first source observable.
+   * @param o2
+   *            The second source observable.
+   * @param combineFunction
+   *            The aggregation function used to combine the source observable values.
+   * @return An Observable that combines the source Observables with the given combine function
+   */
+  // public static <T1, T2, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> combineFunction) 
+  // TODO do we want this as an instance method?
+  // TODO then decide about combineLatest with > 2 Observables
+  
+  // TODO what about these two?
+  // public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction)
+  // // public static <R> Observable<R> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction)
+  
+  
+}
+
+// Cannot yet have inner class because of this error message:
+// implementation restriction: nested class is not allowed in value class.
+// This restriction is planned to be removed in subsequent releases.  
+class WithFilter[+T] private[scala] (p: T => Boolean, wrapped: rx.Observable[_ <: T]) {
+  import ImplicitFunctionConversions._
+  
+  def map[B](f: T => B): Observable[B] = new Observable(wrapped.filter(p).map(f))
+  def flatMap[B](f: T => Observable[B]): Observable[B] = {
+    ??? // TODO
+  }
+  def foreach(f: T => Unit): Unit = wrapped.filter(p).toBlockingObservable.forEach(f)
+  def withFilter(p: T => Boolean): Observable[T] = new Observable(wrapped.filter(p))
 }
 
 /*
@@ -528,6 +1073,20 @@ class UnitTestSuite extends JUnitSuite {
     
     println("testTest")
     assertEquals(4, Observable(1, 2, 3, 4).asJava.toBlockingObservable().last())
+  }
+  
+  @Test def testSequenceEqualUnnecessary() {
+    // the sequenceEqual is unnecessary
+    val first = Observable(10, 11, 12)
+    val second = Observable(10, 11, 12)
+    
+    val b1 = (first zip second) map (p => p._1 == p._2)
+    
+    val equality = (a: Any, b: Any) => a == b
+    
+    val b2 = (first zip second) map (p => equality(p._1, p._2))
+    
+    // TODO assertions
   }
   
 
