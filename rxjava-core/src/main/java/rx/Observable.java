@@ -27,6 +27,7 @@ import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.operators.OperationAll;
+import rx.operators.OperationAverage;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCache;
 import rx.operators.OperationCombineLatest;
@@ -2095,6 +2096,43 @@ public class Observable<T> {
         return OperationSum.sumDoubles(source);
     }
     
+    /**
+     * Returns an Observable that computes the average of all elements in the source Observable.
+     * For an empty source, it causes an ArithmeticException.
+     * @param source
+     *            Source observable to compute the average of.      
+     * @return an Observable emitting the averageof all the elements of the source Observable 
+     *         as its single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
+     */
+    public static Observable<Integer> average(Observable<Integer> source) {
+        return OperationAverage.average(source);
+    }
+    
+    /**
+     * @see #average(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
+     */
+    public static Observable<Long> averageLongs(Observable<Long> source) {
+        return OperationAverage.averageLongs(source);
+    }
+
+    /**
+     * @see #average(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
+     */
+    public static Observable<Float> averageFloats(Observable<Float> source) {
+        return OperationAverage.averageFloats(source);
+    }
+
+    /**
+     * @see #average(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
+     */
+    public static Observable<Double> averageDoubles(Observable<Double> source) {
+        return OperationAverage.averageDoubles(source);
+    }
+
     /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the underlying
      * Observable that will replay all of its items and notifications to any future {@link Observer}.
