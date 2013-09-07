@@ -2044,6 +2044,21 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that counts the total number of elements in the source Observable.
+     * @return an Observable emitting the number of counted elements of the source Observable 
+     *         as its single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229470%28v=vs.103%29.aspx">MSDN: Observable.Count</a>
+     */
+    public Observable<Integer> count() {
+        return reduce(0, new Func2<Integer, T, Integer>() {
+            @Override
+            public Integer call(Integer t1, T t2) {
+                return t1 + 1;
+            }
+        });
+    }
+    
+    /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the underlying
      * Observable that will replay all of its items and notifications to any future {@link Observer}.
      * <p>

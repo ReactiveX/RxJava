@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable.OnSubscribeFunc;
@@ -69,10 +68,47 @@ public class ObservableTests {
         verify(aObserver, times(1)).onNext("one");
         verify(aObserver, times(1)).onNext("two");
         verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+        verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
     }
 
+    @Test
+    public void testCountAFewItems() {
+        Observable<String> observable = Observable.from("a", "b", "c", "d");
+        observable.count().subscribe(w);
+        // we should be called only once
+        verify(w, times(1)).onNext(anyInt());
+        verify(w).onNext(4);
+        verify(w, never()).onError(any(Throwable.class));
+        verify(w, times(1)).onCompleted();
+    }
+    
+    @Test
+    public void testCountZeroItems() {
+        Observable<String> observable = Observable.empty();
+        observable.count().subscribe(w);
+        // we should be called only once
+        verify(w, times(1)).onNext(anyInt());
+        verify(w).onNext(0);
+        verify(w, never()).onError(any(Throwable.class));
+        verify(w, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testCountError() {
+        Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
+            @Override
+            public Subscription onSubscribe(Observer<? super String> obsv) {
+                obsv.onError(new RuntimeException());
+                return Subscriptions.empty();
+            }
+        });
+        o.count().subscribe(w);
+        verify(w, never()).onNext(anyInt());
+        verify(w, never()).onCompleted();
+        verify(w, times(1)).onError(any(RuntimeException.class));
+    }
+    
     @Test
     public void testReduce() {
         Observable<Integer> observable = Observable.from(1, 2, 3, 4);
