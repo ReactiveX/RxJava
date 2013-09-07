@@ -1,5 +1,14 @@
 # RxJava Releases #
 
+### Version 0.12.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.12.2%22)) ###
+
+* [Pull 352](https://github.com/Netflix/RxJava/pull/352) Groovy Language Adaptor: Add Func5-9 and N to the wrapper
+
+### Version 0.12.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.12.1%22)) ###
+
+* [Pull 350](https://github.com/Netflix/RxJava/pull/350) Swing module enhancements
+* [Pull 351](https://github.com/Netflix/RxJava/pull/351) Fix Observable.window static/instance bug
+
 ### Version 0.12.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.12.0%22)) ###
 
 This version adds to the static typing changes in 0.11 and adds covariant/contravariant typing via super/extends generics.
