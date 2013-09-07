@@ -548,4 +548,38 @@ public class ObservableTests {
         assertNotNull(exception.get());
         assertEquals("failure", exception.get().getMessage());
     }
+    
+    @Test
+    public void testTakeWithErrorInObserver() {
+        final AtomicInteger count = new AtomicInteger();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        Observable.from("1", "2", "three", "4").take(3).subscribe(new Observer<String>() {
+
+            @Override
+            public void onCompleted() {
+                System.out.println("completed");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                error.set(e);
+                System.out.println("error");
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(String v) {
+                int num = Integer.parseInt(v);
+                System.out.println(num);
+                // doSomething(num);
+                count.incrementAndGet();
+            }
+
+        });
+        assertEquals(2, count.get());
+        assertNotNull(error.get());
+        if (!(error.get() instanceof NumberFormatException)) {
+            fail("It should be a NumberFormatException");
+        }
+    }
 }
