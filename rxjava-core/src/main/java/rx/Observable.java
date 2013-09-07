@@ -50,6 +50,7 @@ import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSubscribeOn;
+import rx.operators.OperationSum;
 import rx.operators.OperationSwitch;
 import rx.operators.OperationSynchronize;
 import rx.operators.OperationTake;
@@ -2056,6 +2057,42 @@ public class Observable<T> {
                 return t1 + 1;
             }
         });
+    }
+    
+    /**
+     * Returns an Observable that sums up the elements in the source Observable.
+     * @param source
+     *            Source observable to compute the sum of.      
+     * @return an Observable emitting the sum of all the elements of the source Observable 
+     *         as its single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
+     */
+    public static Observable<Integer> sum(Observable<Integer> source) {
+        return OperationSum.sum(source);
+    }
+    
+    /**
+     * @see #sum(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
+     */
+    public static Observable<Long> sumLongs(Observable<Long> source) {
+        return OperationSum.sumLongs(source);
+    }
+    
+    /**
+     * @see #sum(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
+     */
+    public static Observable<Float> sumFloats(Observable<Float> source) {
+        return OperationSum.sumFloats(source);
+    }
+    
+    /**
+     * @see #sum(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
+     */
+    public static Observable<Double> sumDoubles(Observable<Double> source) {
+        return OperationSum.sumDoubles(source);
     }
     
     /**
