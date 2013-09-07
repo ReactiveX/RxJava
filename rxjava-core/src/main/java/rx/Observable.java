@@ -27,6 +27,7 @@ import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.operators.OperationAll;
+import rx.operators.OperationAverage;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCache;
 import rx.operators.OperationCombineLatest;
@@ -50,6 +51,7 @@ import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSubscribeOn;
+import rx.operators.OperationSum;
 import rx.operators.OperationSwitch;
 import rx.operators.OperationSynchronize;
 import rx.operators.OperationTake;
@@ -2041,6 +2043,94 @@ public class Observable<T> {
      */
     public Observable<T> reduce(Func2<? super T, ? super T, ? extends T> accumulator) {
         return create(OperationScan.scan(this, accumulator)).takeLast(1);
+    }
+
+    /**
+     * Returns an Observable that counts the total number of elements in the source Observable.
+     * @return an Observable emitting the number of counted elements of the source Observable 
+     *         as its single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229470%28v=vs.103%29.aspx">MSDN: Observable.Count</a>
+     */
+    public Observable<Integer> count() {
+        return reduce(0, new Func2<Integer, T, Integer>() {
+            @Override
+            public Integer call(Integer t1, T t2) {
+                return t1 + 1;
+            }
+        });
+    }
+    
+    /**
+     * Returns an Observable that sums up the elements in the source Observable.
+     * @param source
+     *            Source observable to compute the sum of.      
+     * @return an Observable emitting the sum of all the elements of the source Observable 
+     *         as its single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
+     */
+    public static Observable<Integer> sum(Observable<Integer> source) {
+        return OperationSum.sum(source);
+    }
+    
+    /**
+     * @see #sum(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
+     */
+    public static Observable<Long> sumLongs(Observable<Long> source) {
+        return OperationSum.sumLongs(source);
+    }
+    
+    /**
+     * @see #sum(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
+     */
+    public static Observable<Float> sumFloats(Observable<Float> source) {
+        return OperationSum.sumFloats(source);
+    }
+    
+    /**
+     * @see #sum(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
+     */
+    public static Observable<Double> sumDoubles(Observable<Double> source) {
+        return OperationSum.sumDoubles(source);
+    }
+    
+    /**
+     * Returns an Observable that computes the average of all elements in the source Observable.
+     * For an empty source, it causes an ArithmeticException.
+     * @param source
+     *            Source observable to compute the average of.      
+     * @return an Observable emitting the averageof all the elements of the source Observable 
+     *         as its single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
+     */
+    public static Observable<Integer> average(Observable<Integer> source) {
+        return OperationAverage.average(source);
+    }
+    
+    /**
+     * @see #average(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
+     */
+    public static Observable<Long> averageLongs(Observable<Long> source) {
+        return OperationAverage.averageLongs(source);
+    }
+
+    /**
+     * @see #average(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
+     */
+    public static Observable<Float> averageFloats(Observable<Float> source) {
+        return OperationAverage.averageFloats(source);
+    }
+
+    /**
+     * @see #average(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
+     */
+    public static Observable<Double> averageDoubles(Observable<Double> source) {
+        return OperationAverage.averageDoubles(source);
     }
 
     /**
