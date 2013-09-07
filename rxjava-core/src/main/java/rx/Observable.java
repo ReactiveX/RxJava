@@ -49,6 +49,7 @@ import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
+import rx.operators.OperationSkipWhile;
 import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSwitch;
 import rx.operators.OperationSynchronize;
@@ -2339,6 +2340,34 @@ public class Observable<T> {
      */
     public <E> Observable<T> takeUntil(Observable<? extends E> other) {
         return OperationTakeUntil.takeUntil(this, other);
+    }
+
+    /**
+     * Returns an Observable that bypasses all items from the source Observable as long as the specified
+     * condition holds true. Emits all further source items as soon as the condition becomes false.
+     * @param predicate
+     *            A function to test each item emitted from the source Observable for a condition.
+     *            It receives the emitted item as first parameter and the index of the emitted item as
+     *            second parameter.
+     * @return an Observable that emits all items from the source Observable as soon as the condition
+     *         becomes false. 
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211631%28v=vs.103%29.aspx">MSDN: Observable.SkipWhile</a>
+     */
+    public Observable<T> skipWhileWithIndex(Func2<? super T, Integer, Boolean> predicate) {
+        return create(OperationSkipWhile.skipWhileWithIndex(this, predicate));
+    }
+
+    /**
+     * Returns an Observable that bypasses all items from the source Observable as long as the specified
+     * condition holds true. Emits all further source items as soon as the condition becomes false.
+     * @param predicate
+     *            A function to test each item emitted from the source Observable for a condition.
+     * @return an Observable that emits all items from the source Observable as soon as the condition
+     *         becomes false. 
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229685%28v=vs.103%29.aspx">MSDN: Observable.SkipWhile</a>
+     */
+    public Observable<T> skipWhile(Func1<? super T, Boolean> predicate) {
+        return create(OperationSkipWhile.skipWhile(this, predicate));
     }
 
     /**
