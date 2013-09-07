@@ -96,6 +96,28 @@ public final class OperationSum {
         }
 
         @Test
+        public void testSumOfAFewLongs() throws Throwable {
+            Observable<Long> src = Observable.from(1L, 2L, 3L, 4L, 5L);
+            sumLongs(src).subscribe(wl);
+
+            verify(wl, times(1)).onNext(anyLong());
+            verify(wl).onNext(15L);
+            verify(wl, never()).onError(any(Throwable.class));
+            verify(wl, times(1)).onCompleted();
+        }
+
+        @Test
+        public void testEmptySumLongs() throws Throwable {
+            Observable<Long> src = Observable.from();
+            sumLongs(src).subscribe(wl);
+
+            verify(wl, times(1)).onNext(anyLong());
+            verify(wl).onNext(0L);
+            verify(wl, never()).onError(any(Throwable.class));
+            verify(wl, times(1)).onCompleted();
+        }
+
+        @Test
         public void testSumOfAFewFloats() throws Throwable {
             Observable<Float> src = Observable.from(1.0f);
             sumFloats(src).subscribe(wf);
