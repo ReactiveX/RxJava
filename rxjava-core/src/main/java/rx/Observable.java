@@ -15,6 +15,8 @@
  */
 package rx;
 
+import static rx.util.functions.Functions.not;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -2275,6 +2277,26 @@ public class Observable<T> {
         return create(OperationTake.take(this, num));
     }
 
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable.
+     * @return an Observable that emits only the very first item from the source, or none if the
+     *         source Observable completes without emitting a single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
+     */
+    public Observable<T> first() {
+        return take(1);
+    }
+    
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable.
+     * @return an Observable that emits only the very first item from the source, or none if the
+     *         source Observable completes without emitting a single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
+     */
+    public Observable<T> first(Func1<? super T, Boolean> predicate) {
+        return skipWhile(not(predicate)).take(1);
+    }
+    
     /**
      * Returns an Observable that emits items emitted by the source Observable so long as a
      * specified condition is true.
