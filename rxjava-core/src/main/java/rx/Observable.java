@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +37,7 @@ import rx.operators.OperationDematerialize;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationGroupBy;
+import rx.operators.OperationInterval;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
@@ -65,6 +67,7 @@ import rx.operators.OperationWindow;
 import rx.operators.OperationZip;
 import rx.operators.SafeObservableSubscription;
 import rx.operators.SafeObserver;
+import rx.operators.OperationInterval.Interval;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
@@ -827,6 +830,35 @@ public class Observable<T> {
         return create(OperationSynchronize.synchronize(observable));
     }
 
+    
+    /**
+     * Emits an item each time interval (containing a sequential number).
+     * @param interval
+     *            Interval size in time units (see below).
+     * @param unit
+     *            Time units to use for the interval size.
+     * @return An Observable that emits an item each time interval.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229027%28v=vs.103%29.aspx">MSDN: Observable.Interval</a>
+     */
+    public static Observable<Long> interval(long interval, TimeUnit unit) {
+        return create(OperationInterval.interval(interval, unit));
+    }
+    
+    /**
+     * Emits an item each time interval (containing a sequential number).
+     * @param interval
+     *            Interval size in time units (see below).
+     * @param unit
+     *            Time units to use for the interval size.
+     * @param scheduler
+     *            The scheduler to use for scheduling the items.
+     * @return An Observable that emits an item each time interval.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh228911%28v=vs.103%29.aspx">MSDN: Observable.Interval</a>
+     */
+    public static Observable<Long> interval(long interval, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationInterval.interval(interval, unit, scheduler));
+    }
+    
     /**
      * Wraps each item emitted by a source Observable in a {@link Timestamped} object.
      * <p>
