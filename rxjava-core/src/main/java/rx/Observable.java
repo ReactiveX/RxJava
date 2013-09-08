@@ -15,6 +15,8 @@
  */
 package rx;
 
+import static rx.util.functions.Functions.not;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +37,7 @@ import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
+import rx.operators.OperationFirstOrDefault;
 import rx.operators.OperationGroupBy;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
@@ -49,6 +52,7 @@ import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
+import rx.operators.OperationSkipWhile;
 import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSwitch;
 import rx.operators.OperationSynchronize;
@@ -2275,6 +2279,58 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable.
+     * @return an Observable that emits only the very first item from the source, or none if the
+     *         source Observable completes without emitting a single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
+     */
+    public Observable<T> first() {
+        return take(1);
+    }
+    
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable
+     * that satisfies a given condition.
+     * @param predicate
+     *            The condition any source emitted item has to satisfy.
+     * @return an Observable that emits only the very first item satisfying the given condition from the source, 
+     *         or none if the source Observable completes without emitting a single matching item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
+     */
+    public Observable<T> first(Func1<? super T, Boolean> predicate) {
+        return skipWhile(not(predicate)).take(1);
+    }
+    
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable, or
+     * a default value.
+     * @param defaultValue
+     *            The default value to emit if the source Observable doesn't emit anything.
+     * @return an Observable that emits only the very first item from the source, or a default value 
+     *         if the source Observable completes without emitting a single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229320%28v=vs.103%29.aspx">MSDN: Observable.FirstOrDefault</a>
+     */
+    public Observable<T> firstOrDefault(T defaultValue) {
+        return create(OperationFirstOrDefault.firstOrDefault(this, defaultValue));
+    }
+
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable
+     * that satisfies a given condition, or a default value otherwise.
+     * @param predicate
+     *            The condition any source emitted item has to satisfy.
+     * @param defaultValue
+     *            The default value to emit if the source Observable doesn't emit anything that 
+     *            satisfies the given condition.
+     * @return an Observable that emits only the very first item from the source that satisfies the
+     *         given condition, or a default value otherwise.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229759%28v=vs.103%29.aspx">MSDN: Observable.FirstOrDefault</a>
+     */
+    public Observable<T> firstOrDefault(Func1<? super T, Boolean> predicate, T defaultValue) {
+        return create(OperationFirstOrDefault.firstOrDefault(this, predicate, defaultValue));
+    }
+
+    /**
      * Returns an Observable that emits items emitted by the source Observable so long as a
      * specified condition is true.
      * <p>
@@ -2339,6 +2395,34 @@ public class Observable<T> {
      */
     public <E> Observable<T> takeUntil(Observable<? extends E> other) {
         return OperationTakeUntil.takeUntil(this, other);
+    }
+
+    /**
+     * Returns an Observable that bypasses all items from the source Observable as long as the specified
+     * condition holds true. Emits all further source items as soon as the condition becomes false.
+     * @param predicate
+     *            A function to test each item emitted from the source Observable for a condition.
+     *            It receives the emitted item as first parameter and the index of the emitted item as
+     *            second parameter.
+     * @return an Observable that emits all items from the source Observable as soon as the condition
+     *         becomes false. 
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211631%28v=vs.103%29.aspx">MSDN: Observable.SkipWhile</a>
+     */
+    public Observable<T> skipWhileWithIndex(Func2<? super T, Integer, Boolean> predicate) {
+        return create(OperationSkipWhile.skipWhileWithIndex(this, predicate));
+    }
+
+    /**
+     * Returns an Observable that bypasses all items from the source Observable as long as the specified
+     * condition holds true. Emits all further source items as soon as the condition becomes false.
+     * @param predicate
+     *            A function to test each item emitted from the source Observable for a condition.
+     * @return an Observable that emits all items from the source Observable as soon as the condition
+     *         becomes false. 
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229685%28v=vs.103%29.aspx">MSDN: Observable.SkipWhile</a>
+     */
+    public Observable<T> skipWhile(Func1<? super T, Boolean> predicate) {
+        return create(OperationSkipWhile.skipWhile(this, predicate));
     }
 
     /**
