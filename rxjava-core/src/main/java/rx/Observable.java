@@ -18,6 +18,7 @@ package rx;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -529,24 +530,322 @@ public class Observable<T> {
     public static <T> Observable<T> from(Iterable<? extends T> iterable) {
         return create(OperationToObservableIterable.toObservableIterable(iterable));
     }
-
+    
     /**
      * Converts an Array into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire iterable sequence will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param array
+     *            the source sequence
+     * @param <T>
+     *            the type of items in the {@link Iterable} sequence and the type of items to be
+     *            emitted by the resulting Observable
+     * @return an Observable that emits each item in the source {@link Iterable} sequence
+     */
+    public static <T> Observable<T> from(T[] items) {
+        return create(OperationToObservableIterable.toObservableIterable(Arrays.asList(items)));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
      * 
      * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
      * it in not possible to unsubscribe from the sequence before it completes.
      * 
-     * @param items
-     *            the source Array
+     * @param t1
+     *            item
      * @param <T>
      *            the type of items in the Array, and the type of items to be emitted by the
      *            resulting Observable
      * @return an Observable that emits each item in the source Array
      */
-    public static <T> Observable<T> from(T... items) {
-        return create(OperationToObservableIterable.toObservableIterable(Arrays.asList(items)));
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1) {
+        return from(Arrays.asList(t1));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2) {
+        return from(Arrays.asList(t1, t2));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3) {
+        return from(Arrays.asList(t1, t2, t3));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4) {
+        return from(Arrays.asList(t1, t2, t3, t4));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param t5
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param t5
+     *            item
+     * @param t6
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param t5
+     *            item
+     * @param t6
+     *            item
+     * @param t7
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param t5
+     *            item
+     * @param t6
+     *            item
+     * @param t7
+     *            item
+     * @param t8
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param t5
+     *            item
+     * @param t6
+     *            item
+     * @param t7
+     *            item
+     * @param t8
+     *            item
+     * @param t9
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+    }
+    
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param t5
+     *            item
+     * @param t6
+     *            item
+     * @param t7
+     *            item
+     * @param t8
+     *            item
+     * @param t10
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9, T t10) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
     }
 
     /**

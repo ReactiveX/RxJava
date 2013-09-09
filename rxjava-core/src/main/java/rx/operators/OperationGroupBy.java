@@ -275,7 +275,7 @@ public final class OperationGroupBy {
 
         @Test
         public void testEmpty() {
-            Observable<String> source = Observable.from();
+            Observable<String> source = Observable.empty();
             Observable<GroupedObservable<Integer, String>> grouped = Observable.create(groupBy(source, length));
 
             Map<Integer, Collection<String>> map = toMap(grouped);

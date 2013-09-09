@@ -87,7 +87,7 @@ public final class OperationSum {
 
         @Test
         public void testEmptySum() throws Throwable {
-            Observable<Integer> src = Observable.from();
+            Observable<Integer> src = Observable.empty();
             sum(src).subscribe(w);
 
             verify(w, times(1)).onNext(anyInt());
@@ -109,7 +109,7 @@ public final class OperationSum {
 
         @Test
         public void testEmptySumLongs() throws Throwable {
-            Observable<Long> src = Observable.from();
+            Observable<Long> src = Observable.empty();
             sumLongs(src).subscribe(wl);
 
             verify(wl, times(1)).onNext(anyLong());
@@ -131,7 +131,7 @@ public final class OperationSum {
 
         @Test
         public void testEmptySumFloats() throws Throwable {
-            Observable<Float> src = Observable.from();
+            Observable<Float> src = Observable.empty();
             sumFloats(src).subscribe(wf);
 
             verify(wf, times(1)).onNext(anyFloat());
@@ -153,7 +153,7 @@ public final class OperationSum {
 
         @Test
         public void testEmptySumDoubles() throws Throwable {
-            Observable<Double> src = Observable.from();
+            Observable<Double> src = Observable.empty();
             sumDoubles(src).subscribe(wd);
 
             verify(wd, times(1)).onNext(anyDouble());

@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -44,6 +45,43 @@ public class ObservableTests {
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void fromArray() {
+        String[] items = new String[] { "one", "two", "three" };
+        assertEquals(new Integer(3), Observable.from(items).count().toBlockingObservable().single());
+        assertEquals("two", Observable.from(items).skip(1).take(1).toBlockingObservable().single());
+        assertEquals("three", Observable.from(items).takeLast(1).toBlockingObservable().single());
+    }
+
+    @Test
+    public void fromIterable() {
+        ArrayList<String> items = new ArrayList<String>();
+        items.add("one");
+        items.add("two");
+        items.add("three");
+
+        assertEquals(new Integer(3), Observable.from(items).count().toBlockingObservable().single());
+        assertEquals("two", Observable.from(items).skip(1).take(1).toBlockingObservable().single());
+        assertEquals("three", Observable.from(items).takeLast(1).toBlockingObservable().single());
+    }
+
+    @Test
+    public void fromArityArgs3() {
+        Observable<String> items = Observable.from("one", "two", "three");
+
+        assertEquals(new Integer(3), items.count().toBlockingObservable().single());
+        assertEquals("two", items.skip(1).take(1).toBlockingObservable().single());
+        assertEquals("three", items.takeLast(1).toBlockingObservable().single());
+    }
+
+    @Test
+    public void fromArityArgs1() {
+        Observable<String> items = Observable.from("one");
+
+        assertEquals(new Integer(1), items.count().toBlockingObservable().single());
+        assertEquals("one", items.takeLast(1).toBlockingObservable().single());
     }
 
     @Test
@@ -82,7 +120,7 @@ public class ObservableTests {
         verify(w, never()).onError(any(Throwable.class));
         verify(w, times(1)).onCompleted();
     }
-    
+
     @Test
     public void testCountZeroItems() {
         Observable<String> observable = Observable.empty();
@@ -108,7 +146,7 @@ public class ObservableTests {
         verify(w, never()).onCompleted();
         verify(w, times(1)).onError(any(RuntimeException.class));
     }
-    
+
     @Test
     public void testReduce() {
         Observable<Integer> observable = Observable.from(1, 2, 3, 4);
@@ -584,7 +622,7 @@ public class ObservableTests {
         assertNotNull(exception.get());
         assertEquals("failure", exception.get().getMessage());
     }
-    
+
     @Test
     public void testTakeWithErrorInObserver() {
         final AtomicInteger count = new AtomicInteger();
