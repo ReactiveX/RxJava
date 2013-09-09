@@ -26,12 +26,19 @@ object ImplicitFunctionConversions {
     import rx.util.functions._
     import rx.{Observer, Subscription}
     
-    implicit def scalaFunction1ToOnSubscribeFunc[T](f: Observer[_ >: T] => Subscription) =
+    implicit def scalaFunction1ToOnSubscribeFunc[T](f: rx.lang.scala.All.Observer[T] => Subscription) =
+        new rx.Observable.OnSubscribeFunc[T] {
+            def onSubscribe(obs: Observer[_ >: T]): Subscription = {
+              f(new rx.lang.scala.All.JavaObserverToScalaObserver(obs))
+            }
+        }
+    
+    /*implicit def scalaFunction1ToOnSubscribeFunc[T](f: Observer[_ >: T] => Subscription) =
         new rx.Observable.OnSubscribeFunc[T] {
             def onSubscribe(obs: Observer[_ >: T]): Subscription = {
               f(obs)
             }
-        }
+        }*/
     
     /**
      * Converts a by-name parameter to a Rx Func0

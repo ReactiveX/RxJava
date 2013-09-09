@@ -22,7 +22,26 @@ package rx.lang.scala
  */
 object All {
   // fix covariance/contravariance once and for all
-  type Observer[T] = rx.Observer[_ >: T]
+  
+  // type Observer[T] = rx.Observer[_ >: T] // T is not recognized as contravariant...
+  
+  trait Observer[-T] {
+    def onCompleted(): Unit
+    def onError(e: Throwable): Unit
+    def onNext(v: T): Unit
+  }
+  class ScalaObserverToJavaObserver[T](val asScala: Observer[T]) extends rx.Observer[T] {
+    def onCompleted(): Unit = asScala.onCompleted()
+    def onError(e: Throwable): Unit = asScala.onError(e)
+    def onNext(v: T): Unit = asScala.onNext(v)
+  }
+  class JavaObserverToScalaObserver[T](val asJava: rx.Observer[_ >: T]) extends Observer[T] { 
+    def onCompleted(): Unit = asJava.onCompleted()
+    def onError(e: Throwable): Unit = asJava.onError(e)
+    def onNext(v: T): Unit = asJava.onNext(v)
+  }
+  
+  
   // rx.Observable not here because we need its static methods, and users don't need it
   
   type Notification[T] = rx.Notification[_ <: T]
@@ -37,7 +56,6 @@ object All {
   }
 }
 
-
 /**
  * The Observable interface that implements the Reactive Pattern.
  */
@@ -50,7 +68,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   import All.util._
   import rx.{Observable => JObservable}
   import ImplicitFunctionConversions._
-/*
+
   /**
    * An {@link Observer} must call an Observable's {@code subscribe} method in order to
    * receive items and notifications from the Observable.
@@ -77,7 +95,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *             if the {@link Observer} provided as the argument to {@code subscribe()} is {@code null}
    */
   def subscribe(observer: Observer[T]): Subscription = {
-    asJava.subscribe(observer)
+    asJava.subscribe(new ScalaObserverToJavaObserver(observer))
   }
   
   /**
@@ -107,9 +125,9 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *             if an argument to {@code subscribe()} is {@code null}
    */
   def subscribe(observer: Observer[T], scheduler: Scheduler): Subscription = {
-    asJava.subscribe(observer, scheduler)
+    asJava.subscribe(new ScalaObserverToJavaObserver(observer), scheduler)
   }
-  */
+  
   def subscribe(onNext: T => Unit): Subscription = {
     asJava.subscribe(onNext)
   }
@@ -1284,6 +1302,8 @@ object Observable {
    *         function
    */
   def apply[T](func: Observer[T] => Subscription): Observable[T] = {
+    //val f1: rx.Observer[T] => Subscription = (o: rx.Observer[T]) => func(new JavaObserverToScalaObserver(o))
+    
     new Observable(JObservable.create(func))
   }
   // corresponds to Java's
