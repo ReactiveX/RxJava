@@ -70,7 +70,7 @@ public final class OperationMerge {
         return merge(Arrays.asList(sequences));
     }
 
-    public static <T> OnSubscribeFunc<T> merge(final List<? extends Observable<? extends T>> sequences) {
+    public static <T> OnSubscribeFunc<T> merge(final Iterable<? extends Observable<? extends T>> sequences) {
         return merge(Observable.create(new OnSubscribeFunc<Observable<? extends T>>() {
 
             private volatile boolean unsubscribed = false;

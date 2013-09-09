@@ -928,11 +928,11 @@ public class Observable<T> {
      * Observable, by using the <code>merge</code> method.
      * 
      * @param source
-     *            a list of Observables
+     *            an Iterable of Observables
      * @return an Observable that emits items that are the result of flattening the {@code source} list of Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge</a>
      */
-    public static <T> Observable<T> merge(List<? extends Observable<? extends T>> source) {
+    public static <T> Observable<T> merge(Iterable<? extends Observable<? extends T>> source) {
         return create(OperationMerge.merge(source));
     }
 
@@ -954,6 +954,28 @@ public class Observable<T> {
     public static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
         return create(OperationMerge.merge(source));
     }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2) {
+        return create(OperationMerge.merge(t1, t2));
+    }
 
     /**
      * Flattens a series of Observables into one Observable, without any transformation.
@@ -963,14 +985,206 @@ public class Observable<T> {
      * You can combine items emitted by multiple Observables so that they act like a single
      * Observable, by using the {@code merge} method.
      * 
-     * @param source
-     *            a series of Observables
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
      * @return an Observable that emits items that are the result of flattening the items emitted
      *         by the {@code source} Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> merge(Observable<? extends T>... source) {
-        return create(OperationMerge.merge(source));
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
+        return create(OperationMerge.merge(t1, t2, t3));
+    }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
+        return create(OperationMerge.merge(t1, t2, t3, t4));
+    }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
+        return create(OperationMerge.merge(t1, t2, t3, t4, t5));
+    }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
+        return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6));
+    }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @param t7
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
+        return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6, t7));
+    }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @param t7
+     *            an Observable to be merged
+     * @param t8
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
+        return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6, t7, t8));
+    }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @param t7
+     *            an Observable to be merged
+     * @param t8
+     *            an Observable to be merged
+     * @param t9
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
+        return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
     /**
