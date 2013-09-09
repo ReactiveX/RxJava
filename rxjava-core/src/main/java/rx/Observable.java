@@ -979,14 +979,232 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
      * 
-     * @param source
-     *            a series of Observables
+     * @param observables
+     *            an Observable of Observables
      * @return an Observable that emits items that are the result of combining the items emitted by
      *         the {@code source} Observables, one after the other
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
      */
-    public static <T> Observable<T> concat(Observable<? extends T>... source) {
-        return create(OperationConcat.concat(source));
+    public static <T> Observable<T> concat(Observable<Observable<T>> observables) {
+        return create(OperationConcat.concat(observables));
+    }
+    
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2) {
+        return create(OperationConcat.concat(t1, t2));
+    }
+
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
+        return create(OperationConcat.concat(t1, t2, t3));
+    }
+
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     * @param t4
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
+        return create(OperationConcat.concat(t1, t2, t3, t4));
+    }
+
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     * @param t4
+     *            an Observable to be concatenated
+     * @param t5
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
+        return create(OperationConcat.concat(t1, t2, t3, t4, t5));
+    }
+
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     * @param t4
+     *            an Observable to be concatenated
+     * @param t5
+     *            an Observable to be concatenated
+     * @param t6
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
+        return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6));
+    }
+
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     * @param t4
+     *            an Observable to be concatenated
+     * @param t5
+     *            an Observable to be concatenated
+     * @param t6
+     *            an Observable to be concatenated
+     * @param t7
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
+        return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6, t7));
+    }
+
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     * @param t4
+     *            an Observable to be concatenated
+     * @param t5
+     *            an Observable to be concatenated
+     * @param t6
+     *            an Observable to be concatenated
+     * @param t7
+     *            an Observable to be concatenated
+     * @param t8
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
+        return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6, t7, t8));
+    }
+
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     * @param t4
+     *            an Observable to be concatenated
+     * @param t5
+     *            an Observable to be concatenated
+     * @param t6
+     *            an Observable to be concatenated
+     * @param t7
+     *            an Observable to be concatenated
+     * @param t8
+     *            an Observable to be concatenated
+     * @param t9
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
+        return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
     /**
