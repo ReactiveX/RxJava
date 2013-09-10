@@ -1,4 +1,4 @@
-package rx.lang.scala.observables
+package rx.lang.scalaimpl
 
 import scala.collection.JavaConverters._
 

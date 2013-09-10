@@ -2,7 +2,7 @@
 /*
  * These function conversions are only used by the ScalaAdapter, users of RxScala don't need them.
  */
-package rx.lang.scala.internal
+package rx.lang.scalaimpl
 
 
 import java.{lang => jlang}
@@ -16,6 +16,8 @@ import rx.util.functions.Func4
 import java.{lang => jlang}
 import rx.Observer
 import rx.Subscription
+import java.{lang => jlang}
+import scala.language.implicitConversions
 
 object ImplicitFunctionConversions {
     // code below is copied from

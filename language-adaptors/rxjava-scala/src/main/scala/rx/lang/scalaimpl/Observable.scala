@@ -15,7 +15,9 @@
  */
 
 
-package rx.lang.scala
+package rx.lang.scalaimpl
+
+import org.scalatest.junit.JUnitSuite
 
 
 /**
@@ -29,9 +31,9 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   import scala.collection.JavaConverters._
   import scala.concurrent.duration.Duration
   import rx.{Observable => JObservable}
+  import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
-  import rx.lang.scala.observables._
-  import rx.lang.scala.internal.ImplicitFunctionConversions._
+  import rx.lang.scalaimpl.ImplicitFunctionConversions._
 
   /**
    * An {@link Observer} must call an Observable's {@code subscribe} method in order to
@@ -1258,7 +1260,9 @@ object Observable {
   import scala.concurrent.duration.Duration
   import scala.concurrent.Future
   import rx.{Observable => JObservable}
-  import rx.lang.scala.internal.ImplicitFunctionConversions._
+  import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
+  import rx.lang.scala.util._
+  import rx.lang.scalaimpl.ImplicitFunctionConversions._
 
   /**
    * Creates an Observable that will execute the given function when an {@link Observer} subscribes to it.
@@ -1598,8 +1602,8 @@ object Observable {
 // Cannot yet have inner class because of this error message:
 // implementation restriction: nested class is not allowed in value class.
 // This restriction is planned to be removed in subsequent releases.  
-class WithFilter[+T] private[scala] (p: T => Boolean, wrapped: rx.Observable[_ <: T]) {
-  import rx.lang.scala.internal.ImplicitFunctionConversions._
+class WithFilter[+T] private[scalaimpl] (p: T => Boolean, wrapped: rx.Observable[_ <: T]) {
+  import rx.lang.scalaimpl.ImplicitFunctionConversions._
   
   def map[B](f: T => B): Observable[B] = new Observable(wrapped.filter(p).map(f))
   def flatMap[B](f: T => Observable[B]): Observable[B] = {
@@ -1608,8 +1612,6 @@ class WithFilter[+T] private[scala] (p: T => Boolean, wrapped: rx.Observable[_ <
   def foreach(f: T => Unit): Unit = wrapped.filter(p).toBlockingObservable.forEach(f)
   def withFilter(p: T => Boolean): Observable[T] = new Observable(wrapped.filter(p))
 }
-
-import org.scalatest.junit.JUnitSuite
 
 class UnitTestSuite extends JUnitSuite {
   import scala.concurrent.duration._

@@ -1,8 +1,11 @@
-package rx.lang.scala
+package rx.lang.scalatests
 
 import org.scalatest.junit.JUnitSuite
+
+import rx.lang.scala._
 import scala.concurrent.duration._
 import org.junit.{Before, Test, Ignore}
+
 import org.junit.Assert._
 
 class RxScalaDemo extends JUnitSuite {
