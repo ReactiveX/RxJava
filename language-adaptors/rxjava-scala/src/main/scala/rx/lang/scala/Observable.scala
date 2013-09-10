@@ -726,9 +726,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * 
    * @return an Observable that emits the items and notifications embedded in the {@link Notification} objects emitted by the source Observable
    */
-  def dematerialize[Notif >: T <: Notification[U], U]: Observable[U] = {
-    val o: rx.Observable[Nothing] = asJava.dematerialize()
-    new Observable[U](o.asInstanceOf[rx.Observable[U]])
+  // with =:= it does not work, why?
+  def dematerialize[U](implicit evidence: T <:< Notification[U]): Observable[U] = {
+    val o = asJava.dematerialize[U]()
+    new Observable[U](o)
   }
   
   /**
@@ -1683,13 +1684,10 @@ class UnitTestSuite extends JUnitSuite {
   @Test def testDematerialize() {
     val o = Observable(1, 2, 3)
     val mat = o.materialize
-    val demat = mat.dematerialize[Notification[Int], Int]
+    val demat = mat.dematerialize
     
     // correctly rejected:
-    // val wrongDemat = mat.dematerialize[Notification[String], String]
-    
-    // inferring the type parameters is not (yet?) possible:
-    // val demat2 = mat.dematerialize
+    // val wrongDemat = Observable("hello").dematerialize
     
     assertEquals(demat.toBlockingObservable.toIterable().asScala.toList, List(1, 2, 3))
   }
