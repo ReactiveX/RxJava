@@ -27,6 +27,22 @@ public class ReduceTests {
 
     @Test
     public void reduceWithObjects() {
+        Observable<Movie> horrorMovies = Observable.<Movie> from(new HorrorMovie());
+
+        Func2<Movie, Movie, Movie> chooseSecondMovie =
+                new Func2<Movie, Movie, Movie>() {
+                    public Movie call(Movie t1, Movie t2) {
+                        return t2;
+                    }
+                };
+
+        Observable<Movie> reduceResult = Observable.create(OperationScan.scan(horrorMovies, chooseSecondMovie)).takeLast(1);
+
+        Observable<Movie> reduceResult2 = horrorMovies.reduce(chooseSecondMovie);
+    }
+
+    @Test
+    public void reduceWithCovariantObjects() {
         Observable<HorrorMovie> horrorMovies = Observable.from(new HorrorMovie());
 
         Func2<Movie, Movie, Movie> chooseSecondMovie =
@@ -61,8 +77,10 @@ public class ReduceTests {
                     }
                 };
 
+        Observable<Movie> reduceResult = Observable.create(OperationScan.scan(obs, chooseSecondMovie)).takeLast(1);
+
         //TODO this isn't compiling
-        //        Observable<Movie> reduceResult = obs.reduce((Func2<? super Movie, ? super Movie, ? extends Movie>) chooseSecondMovie); 
+        //        Observable<Movie> reduceResult2 = obs.reduce(chooseSecondMovie);
         // do something with reduceResult...
     }
 
