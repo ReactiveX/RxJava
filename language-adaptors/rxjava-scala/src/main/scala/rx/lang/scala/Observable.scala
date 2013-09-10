@@ -17,6 +17,15 @@
 
 package rx.lang.scala
 
+/*
+ * To remove all method bodies from Observable.java and to comment out the signatures,
+ * use this regex (works within Eclipse except for 1 long complex method)
+ * find: `^    public(.*)\{\s*?\n(.|\n)*?^    }`
+ * replace with: `    // public$1`
+ */
+
+import org.scalatest.junit.JUnitSuite
+
 /**
  * Users should import rx.lang.scala.All._ and nothing else 
  */
@@ -45,8 +54,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   extends AnyVal 
 {
   import scala.collection.JavaConverters._
+  import scala.concurrent.duration.Duration
   import All._
   import All.util._
+  import rx.lang.scala.observables._
   import rx.{Observable => JObservable}
   import ImplicitFunctionConversions._
 
@@ -756,17 +767,12 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *            encounters an error
    * @return the original Observable, with appropriately modified behavior
    */
-  // Since T is a covariant type parameter, someone might treat `this` as an Observable[Any].
-  // Then they can call onErrorResumeNext(someFunc), with someFunc returning an Observable[Any].
-  // That's why the method signature below is not allowed
-  // TODO what to do about this?
-  /*
-  def onErrorResumeNext(resumeFunction: Throwable => Observable[T]): Observable[T] = {
-    new Observable(asJava.onErrorResumeNext((t: Throwable) => resumeFunction(t).asJava))
+  def onErrorResumeNext[U >: T](resumeFunction: Throwable => Observable[U]): Observable[U] = {
+    val f: rx.util.functions.Func1[Throwable, rx.Observable[_ <: U]] = (t: Throwable) => resumeFunction(t).asJava
+    val f2 = f.asInstanceOf[rx.util.functions.Func1[Throwable, rx.Observable[Nothing]]]
+    new Observable[U](asJava.onErrorResumeNext(f2))
   }
-  */
-  // public Observable<T> onErrorResumeNext(final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) 
-
+  
   /**
    * Instruct an Observable to pass control to another Observable rather than invoking {@link Observer#onError onError} if it encounters an error.
    * <p>
@@ -791,8 +797,11 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *            encounters an error
    * @return the original Observable, with appropriately modified behavior
    */
-  // TODO same as above
-  // public Observable<T> onErrorResumeNext(final Observable<? extends T> resumeSequence) 
+  def onErrorResumeNext[U >: T](resumeSequence: Observable[U]): Observable[U] = {
+    val rSeq1: rx.Observable[_ <: U] = resumeSequence.asJava
+    val rSeq2: rx.Observable[Nothing] = rSeq1.asInstanceOf[rx.Observable[Nothing]]
+    new Observable[U](asJava.onErrorResumeNext(rSeq2))
+  }
 
   /**
    * Instruct an Observable to pass control to another Observable rather than invoking {@link Observer#onError onError} if it encounters an error of type {@link java.lang.Exception}.
@@ -819,14 +828,12 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *            a function that returns an Observable that will take over if the source Observable
    *            encounters an error
    * @return the original Observable, with appropriately modified behavior
-   */
-  // TODO same as above
-  /*
-  def onExceptionResumeNext(resumeSequence: Observable[T]) = {
-    ???
+   */ 
+  def onExceptionResumeNext[U >: T](resumeSequence: Observable[U]): Observable[U] = {
+    val rSeq1: rx.Observable[_ <: U] = resumeSequence.asJava
+    val rSeq2: rx.Observable[Nothing] = rSeq1.asInstanceOf[rx.Observable[Nothing]]
+    new Observable[U](asJava.onExceptionResumeNext(rSeq2))
   }
-  */
-  // public Observable<T> onExceptionResumeNext(final Observable<? extends T> resumeSequence) 
 
   /**
    * Instruct an Observable to emit an item (returned by a specified function) rather than
@@ -851,13 +858,11 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *            Observable encounters an error
    * @return the original Observable with appropriately modified behavior
    */
-  // TODO same as above
-  /*
-  def onErrorReturn(resumeFunction: Throwable => T): Observable[T] = {
-    ???
-  }
-  */
-  // public Observable<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) 
+  def onErrorReturn[U >: T](resumeFunction: Throwable => U): Observable[U] = {
+    val f1: rx.util.functions.Func1[Throwable, _ <: U] = resumeFunction
+    val f2 = f1.asInstanceOf[rx.util.functions.Func1[Throwable, Nothing]]
+    new Observable[U](asJava.onErrorReturn(f2))
+  } 
 
   /**
    * Returns an Observable that applies a function of your choosing to the first item emitted by a
@@ -882,10 +887,9 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    */
   def reduce[U >: T](f: (U, U) => U): Observable[U] = {
     val func: rx.util.functions.Func2[_ >: U, _ >: U, _ <: U] = f
-    // new Observable(asJava.reduce(func))
-    ??? // TODO once reduce has correct signature in core
-  }
-  // public Observable<T> reduce(Func2<? super T, ? super T, ? extends T> accumulator) 
+    val func2 = func.asInstanceOf[rx.util.functions.Func2[Any, Any, Nothing]]
+    new Observable[U](asJava.reduce(func2))
+  } 
 
   /**
    * Returns a {@link ConnectableObservable} that shares a single subscription to the underlying
@@ -986,8 +990,9 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return an Observable that emits the results of sampling the items emitted by the source
    *         Observable at the specified time interval
    */
-  // public Observable<T> sample(long period, TimeUnit unit)
-  // TODO what TimeUnit?
+  def sample(duration: Duration): Observable[T] = {
+    new Observable[T](asJava.sample(duration.length, duration.unit))
+  }
 
   /**
    * Returns an Observable that emits the results of sampling the items emitted by the source
@@ -1004,8 +1009,9 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return an Observable that emits the results of sampling the items emitted by the source
    *         Observable at the specified time interval
    */
-  // public Observable<T> sample(long period, TimeUnit unit, Scheduler scheduler) 
-  // TODO what TimeUnit?
+  def sample(duration: Duration, scheduler: Scheduler): Observable[T] = {
+    new Observable[T](asJava.sample(duration.length, duration.unit, scheduler))
+  }
   
     /**
    * Returns an Observable that applies a function of your choosing to the first item emitted by a
@@ -1181,7 +1187,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         the source Observable.
    */
   /*
-   * TODO variance/immutable?
+   * TODO Java list or Scala list?
   def toList: Observable[java.util.List[T]] = {
     // new Observable[java.util.List[T]](asJava.toList())
   }
@@ -1191,17 +1197,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   // public Observable<List<T>> toSortedList() 
   // public Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) 
 
-  /**
-   * Emit a specified set of items before beginning to emit items from the source Observable.
-   * <p>
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
-   * 
-   * @param values
-   *            the items you want the modified Observable to emit first
-   * @return an Observable that exhibits the modified behavior
-   */
-  // TODO wait until core library does not need @SuppressWarnings("unchecked") anymore
-  // public Observable<T> startWith(T... values) 
+  
+  // There is no method 
+  // def startWith[U >: T](values: U*): Observable[U]
+  // because we can just use ++ instead 
   
   /**
    * Groups the items emitted by an Observable according to a specified criterion, and emits these
@@ -1250,14 +1249,34 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   // public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) 
 
   /**
+   * Given an Observable that emits Observables, creates a single Observable that
+   * emits the items emitted by the most recently published of those Observables.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/switchDo.png">
+   * 
+   * @param sequenceOfSequences
+   *            the source Observable that emits Observables
+   * @return an Observable that emits only the items emitted by the most recently published
+   *         Observable
+   */
+  def switch[U](implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[U] = {
+    val o2: Observable[Observable[U]] = this
+    val o3: Observable[rx.Observable[_ <: U]] = o2.map(_.asJava)
+    val o4: rx.Observable[_ <: rx.Observable[_ <: U]] = o3.asJava
+    val o5 = rx.Observable.switchOnNext[U](o4)
+    new Observable[U](o5)
+  }
+  // TODO naming: follow C# (switch) or Java (switchOnNext)?
+  // public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) 
+  
+  /**
    * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking
    * operators).
    * 
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">Blocking Observable Operators</a>
    */
-  // TODO make Scala BlockingObservable
-  def toBlockingObservable: rx.observables.BlockingObservable[_ <: T] = {
-    asJava.toBlockingObservable()
+  def toBlockingObservable: BlockingObservable[T] = {
+    new BlockingObservable[T](asJava.toBlockingObservable())
   }
   
 }
@@ -1294,8 +1313,6 @@ object Observable {
    *         function
    */
   def apply[T](func: Observer[T] => Subscription): Observable[T] = {
-    //val f1: rx.Observer[T] => Subscription = (o: rx.Observer[T]) => func(new JavaObserverToScalaObserver(o))
-    
     new Observable(JObservable.create(func))
   }
   // corresponds to Java's
@@ -1351,7 +1368,6 @@ object Observable {
   // public static Observable<Integer> range(int start, int count) 
   // because the Scala collection library provides enough methods to create Iterables.
   // Examples: Observable(1 to 5), Observable(1 until 10)
-  
   
   /**
    * Returns an Observable that calls an Observable factory to create its Observable for each
@@ -1544,21 +1560,10 @@ object Observable {
   // There is no method corresponding to
   // public static <T> Observable<T> switchDo(Observable<? extends Observable<? extends T>> sequenceOfSequences) 
   // because it's deprecated.
-  
-  /**
-   * Given an Observable that emits Observables, creates a single Observable that
-   * emits the items emitted by the most recently published of those Observables.
-   * <p>
-   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/switchDo.png">
-   * 
-   * @param sequenceOfSequences
-   *            the source Observable that emits Observables
-   * @return an Observable that emits only the items emitted by the most recently published
-   *         Observable
-   */
-  // public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) 
-  // TODO this has to be an instance method which is only available on Observable whose type
-  // parameter also is an Observable.
+    
+  // There's no 
+  // public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences)
+  // here because that's an instance method.
   
   // There is no method here corresponding to
   // public static <T> Observable<T> synchronize(Observable<? extends T> observable) 
@@ -1612,8 +1617,7 @@ object Observable {
   // TODO what about these two?
   // public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction)
   // // public static <R> Observable<R> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction)
-  
-  
+
 }
 
 // Cannot yet have inner class because of this error message:
@@ -1630,18 +1634,8 @@ class WithFilter[+T] private[scala] (p: T => Boolean, wrapped: rx.Observable[_ <
   def withFilter(p: T => Boolean): Observable[T] = new Observable(wrapped.filter(p))
 }
 
-/*
- * To remove all method bodies from Observable.java and to comment out the signatures,
- * use this regex (works within Eclipse except for 1 long complex method)
- * find: `^    public(.*)\{\s*?\n(.|\n)*?^    }`
- * replace with: `    // public$1`
- */
-
-import org.scalatest.junit.JUnitSuite
-
 class UnitTestSuite extends JUnitSuite {
-  import scala.collection.JavaConverters._
-  import org.junit.{Before, Test}
+  import org.junit.{Before, Test, Ignore}
   import org.junit.Assert._
   import org.mockito.Matchers.any
   import org.mockito.Mockito._
@@ -1650,7 +1644,9 @@ class UnitTestSuite extends JUnitSuite {
   
   // Tests which needn't be run:
   
-  def testCovariance = {
+  @Ignore def testCovariance = {
+    println("hey, you shouldn't run this test")
+    
     val o1: Observable[Nothing] = Observable()
     val o2: Observable[Int] = o1
     val o3: Observable[App] = o1
@@ -1664,7 +1660,7 @@ class UnitTestSuite extends JUnitSuite {
     val a: Observable[Int] = Observable()
     
     println("testTest")
-    assertEquals(4, Observable(1, 2, 3, 4).asJava.toBlockingObservable().last())
+    assertEquals(4, Observable(1, 2, 3, 4).toBlockingObservable.last)
   }
   
   @Test def testSequenceEqualUnnecessary() {
@@ -1681,6 +1677,12 @@ class UnitTestSuite extends JUnitSuite {
     // TODO assertions
   }
   
+  @Test def testStartWithUnnecessary() {
+    val before = Observable(-2, -1, 0)
+    val source = Observable(1, 2, 3)
+    before ++ source
+  }
+  
   @Test def testDematerialize() {
     val o = Observable(1, 2, 3)
     val mat = o.materialize
@@ -1689,8 +1691,12 @@ class UnitTestSuite extends JUnitSuite {
     // correctly rejected:
     // val wrongDemat = Observable("hello").dematerialize
     
-    assertEquals(demat.toBlockingObservable.toIterable().asScala.toList, List(1, 2, 3))
+    assertEquals(demat.toBlockingObservable.toIterable.toList, List(1, 2, 3))
   }
   
-
+  @Test def testSwitchNoTiming() {
+    val o = Observable(Observable(1, 2), Observable(3, 4))
+    println(o.switch.toBlockingObservable.toIterable.toList)
+  }
+  
 }
