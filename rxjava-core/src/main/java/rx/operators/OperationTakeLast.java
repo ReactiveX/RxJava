@@ -100,7 +100,7 @@ public final class OperationTakeLast {
 
         @Test
         public void testTakeLastEmpty() {
-            Observable<String> w = Observable.from();
+            Observable<String> w = Observable.empty();
             Observable<String> take = Observable.create(takeLast(w, 2));
 
             @SuppressWarnings("unchecked")

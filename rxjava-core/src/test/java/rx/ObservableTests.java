@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,7 +28,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable.OnSubscribeFunc;
@@ -35,6 +35,7 @@ import rx.observables.ConnectableObservable;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
+import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 public class ObservableTests {
@@ -42,9 +43,53 @@ public class ObservableTests {
     @Mock
     Observer<Integer> w;
 
+    private static final Func1<Integer, Boolean> IS_EVEN = new Func1<Integer, Boolean>() {
+        @Override
+        public Boolean call(Integer value) {
+            return value % 2 == 0;
+        }
+    };
+
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void fromArray() {
+        String[] items = new String[] { "one", "two", "three" };
+        assertEquals(new Integer(3), Observable.from(items).count().toBlockingObservable().single());
+        assertEquals("two", Observable.from(items).skip(1).take(1).toBlockingObservable().single());
+        assertEquals("three", Observable.from(items).takeLast(1).toBlockingObservable().single());
+    }
+
+    @Test
+    public void fromIterable() {
+        ArrayList<String> items = new ArrayList<String>();
+        items.add("one");
+        items.add("two");
+        items.add("three");
+
+        assertEquals(new Integer(3), Observable.from(items).count().toBlockingObservable().single());
+        assertEquals("two", Observable.from(items).skip(1).take(1).toBlockingObservable().single());
+        assertEquals("three", Observable.from(items).takeLast(1).toBlockingObservable().single());
+    }
+
+    @Test
+    public void fromArityArgs3() {
+        Observable<String> items = Observable.from("one", "two", "three");
+
+        assertEquals(new Integer(3), items.count().toBlockingObservable().single());
+        assertEquals("two", items.skip(1).take(1).toBlockingObservable().single());
+        assertEquals("three", items.takeLast(1).toBlockingObservable().single());
+    }
+
+    @Test
+    public void fromArityArgs1() {
+        Observable<String> items = Observable.from("one");
+
+        assertEquals(new Integer(1), items.count().toBlockingObservable().single());
+        assertEquals("one", items.takeLast(1).toBlockingObservable().single());
     }
 
     @Test
@@ -69,8 +114,82 @@ public class ObservableTests {
         verify(aObserver, times(1)).onNext("one");
         verify(aObserver, times(1)).onNext("two");
         verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+        verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testCountAFewItems() {
+        Observable<String> observable = Observable.from("a", "b", "c", "d");
+        observable.count().subscribe(w);
+        // we should be called only once
+        verify(w, times(1)).onNext(anyInt());
+        verify(w).onNext(4);
+        verify(w, never()).onError(any(Throwable.class));
+        verify(w, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testCountZeroItems() {
+        Observable<String> observable = Observable.empty();
+        observable.count().subscribe(w);
+        // we should be called only once
+        verify(w, times(1)).onNext(anyInt());
+        verify(w).onNext(0);
+        verify(w, never()).onError(any(Throwable.class));
+        verify(w, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testCountError() {
+        Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
+            @Override
+            public Subscription onSubscribe(Observer<? super String> obsv) {
+                obsv.onError(new RuntimeException());
+                return Subscriptions.empty();
+            }
+        });
+        o.count().subscribe(w);
+        verify(w, never()).onNext(anyInt());
+        verify(w, never()).onCompleted();
+        verify(w, times(1)).onError(any(RuntimeException.class));
+    }
+
+    public void testFirstWithPredicateOfSome() {
+        Observable<Integer> observable = Observable.from(1, 3, 5, 4, 6, 3);
+        observable.first(IS_EVEN).subscribe(w);
+        verify(w, times(1)).onNext(anyInt());
+        verify(w).onNext(4);
+        verify(w, times(1)).onCompleted();
+        verify(w, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstWithPredicateOfNoneMatchingThePredicate() {
+        Observable<Integer> observable = Observable.from(1, 3, 5, 7, 9, 7, 5, 3, 1);
+        observable.first(IS_EVEN).subscribe(w);
+        verify(w, never()).onNext(anyInt());
+        verify(w, times(1)).onCompleted();
+        verify(w, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstOfSome() {
+        Observable<Integer> observable = Observable.from(1, 2, 3);
+        observable.first().subscribe(w);
+        verify(w, times(1)).onNext(anyInt());
+        verify(w).onNext(1);
+        verify(w, times(1)).onCompleted();
+        verify(w, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstOfNone() {
+        Observable<Integer> observable = Observable.empty();
+        observable.first().subscribe(w);
+        verify(w, never()).onNext(anyInt());
+        verify(w, times(1)).onCompleted();
+        verify(w, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -547,5 +666,39 @@ public class ObservableTests {
         latch.await(3000, TimeUnit.MILLISECONDS);
         assertNotNull(exception.get());
         assertEquals("failure", exception.get().getMessage());
+    }
+
+    @Test
+    public void testTakeWithErrorInObserver() {
+        final AtomicInteger count = new AtomicInteger();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        Observable.from("1", "2", "three", "4").take(3).subscribe(new Observer<String>() {
+
+            @Override
+            public void onCompleted() {
+                System.out.println("completed");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                error.set(e);
+                System.out.println("error");
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(String v) {
+                int num = Integer.parseInt(v);
+                System.out.println(num);
+                // doSomething(num);
+                count.incrementAndGet();
+            }
+
+        });
+        assertEquals(2, count.get());
+        assertNotNull(error.get());
+        if (!(error.get() instanceof NumberFormatException)) {
+            fail("It should be a NumberFormatException");
+        }
     }
 }

@@ -15,9 +15,12 @@
  */
 package rx;
 
+import static rx.util.functions.Functions.not;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +30,7 @@ import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.operators.OperationAll;
+import rx.operators.OperationAverage;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCache;
 import rx.operators.OperationCombineLatest;
@@ -35,7 +39,9 @@ import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
+import rx.operators.OperationFirstOrDefault;
 import rx.operators.OperationGroupBy;
+import rx.operators.OperationInterval;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
@@ -49,7 +55,9 @@ import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
+import rx.operators.OperationSkipWhile;
 import rx.operators.OperationSubscribeOn;
+import rx.operators.OperationSum;
 import rx.operators.OperationSwitch;
 import rx.operators.OperationSynchronize;
 import rx.operators.OperationTake;
@@ -525,24 +533,322 @@ public class Observable<T> {
     public static <T> Observable<T> from(Iterable<? extends T> iterable) {
         return create(OperationToObservableIterable.toObservableIterable(iterable));
     }
-
+    
     /**
      * Converts an Array into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire iterable sequence will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param array
+     *            the source sequence
+     * @param <T>
+     *            the type of items in the {@link Iterable} sequence and the type of items to be
+     *            emitted by the resulting Observable
+     * @return an Observable that emits each item in the source {@link Iterable} sequence
+     */
+    public static <T> Observable<T> from(T[] items) {
+        return create(OperationToObservableIterable.toObservableIterable(Arrays.asList(items)));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
      * 
      * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
      * it in not possible to unsubscribe from the sequence before it completes.
      * 
-     * @param items
-     *            the source Array
+     * @param t1
+     *            item
      * @param <T>
      *            the type of items in the Array, and the type of items to be emitted by the
      *            resulting Observable
      * @return an Observable that emits each item in the source Array
      */
-    public static <T> Observable<T> from(T... items) {
-        return create(OperationToObservableIterable.toObservableIterable(Arrays.asList(items)));
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1) {
+        return from(Arrays.asList(t1));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2) {
+        return from(Arrays.asList(t1, t2));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3) {
+        return from(Arrays.asList(t1, t2, t3));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4) {
+        return from(Arrays.asList(t1, t2, t3, t4));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param t5
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param t5
+     *            item
+     * @param t6
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param t5
+     *            item
+     * @param t6
+     *            item
+     * @param t7
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param t5
+     *            item
+     * @param t6
+     *            item
+     * @param t7
+     *            item
+     * @param t8
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8));
+    }
+
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param t5
+     *            item
+     * @param t6
+     *            item
+     * @param t7
+     *            item
+     * @param t8
+     *            item
+     * @param t9
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+    }
+    
+    /**
+     * Converts a series of items into an Observable.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+     * 
+     * <p>Implementation note: the entire array will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
+     * it in not possible to unsubscribe from the sequence before it completes.
+     * 
+     * @param t1
+     *            item
+     * @param t2
+     *            item
+     * @param t3
+     *            item
+     * @param t4
+     *            item
+     * @param t5
+     *            item
+     * @param t6
+     *            item
+     * @param t7
+     *            item
+     * @param t8
+     *            item
+     * @param t10
+     *            item
+     * @param <T>
+     *            the type of items in the Array, and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source Array
+     */
+    @SuppressWarnings("unchecked")
+    // suppress unchecked because we are using varargs inside the method
+    public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9, T t10) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
     }
 
     /**
@@ -617,23 +923,6 @@ public class Observable<T> {
     }
 
     /**
-     * Flattens a list of Observables into one Observable, without any transformation.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
-     * <p>
-     * You can combine the items emitted by multiple Observables so that they act like a single
-     * Observable, by using the <code>merge</code> method.
-     * 
-     * @param source
-     *            a list of Observables
-     * @return an Observable that emits items that are the result of flattening the {@code source} list of Observables
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge</a>
-     */
-    public static <T> Observable<T> merge(List<? extends Observable<? extends T>> source) {
-        return create(OperationMerge.merge(source));
-    }
-
-    /**
      * Flattens a sequence of Observables emitted by an Observable into one Observable, without any
      * transformation.
      * <p>
@@ -651,6 +940,28 @@ public class Observable<T> {
     public static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
         return create(OperationMerge.merge(source));
     }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2) {
+        return create(OperationMerge.merge(t1, t2));
+    }
 
     /**
      * Flattens a series of Observables into one Observable, without any transformation.
@@ -660,14 +971,206 @@ public class Observable<T> {
      * You can combine items emitted by multiple Observables so that they act like a single
      * Observable, by using the {@code merge} method.
      * 
-     * @param source
-     *            a series of Observables
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
      * @return an Observable that emits items that are the result of flattening the items emitted
      *         by the {@code source} Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> merge(Observable<? extends T>... source) {
-        return create(OperationMerge.merge(source));
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
+        return create(OperationMerge.merge(t1, t2, t3));
+    }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
+        return create(OperationMerge.merge(t1, t2, t3, t4));
+    }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
+        return create(OperationMerge.merge(t1, t2, t3, t4, t5));
+    }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
+        return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6));
+    }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @param t7
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
+        return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6, t7));
+    }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @param t7
+     *            an Observable to be merged
+     * @param t8
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
+        return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6, t7, t8));
+    }
+    
+    /**
+     * Flattens a series of Observables into one Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they act like a single
+     * Observable, by using the {@code merge} method.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @param t7
+     *            an Observable to be merged
+     * @param t8
+     *            an Observable to be merged
+     * @param t9
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted
+     *         by the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
+        return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
     /**
@@ -676,38 +1179,232 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
      * 
-     * @param source
-     *            a series of Observables
+     * @param observables
+     *            an Observable of Observables
      * @return an Observable that emits items that are the result of combining the items emitted by
      *         the {@code source} Observables, one after the other
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
      */
-    public static <T> Observable<T> concat(Observable<? extends T>... source) {
-        return create(OperationConcat.concat(source));
+    public static <T> Observable<T> concat(Observable<? extends Observable<? extends T>> observables) {
+        return create(OperationConcat.concat(observables));
+    }
+    
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2) {
+        return create(OperationConcat.concat(t1, t2));
     }
 
     /**
-     * This behaves like {@link #merge(java.util.List)} except that if any of the merged Observables
-     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
-     * refrain from propagating that error notification until all of the merged Observables have
-     * finished emitting items.
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
-     * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
-     * Observers once.
-     * <p>
-     * This method allows an Observer to receive all successfully emitted items from all of the
-     * source Observables without being interrupted by an error notification from one of them.
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
      * 
-     * @param source
-     *            a list of Observables
-     * @return an Observable that emits items that are the result of flattening the items emitted by
-     *         the {@code source} list of Observables
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
      */
-    public static <T> Observable<T> mergeDelayError(List<? extends Observable<? extends T>> source) {
-        return create(OperationMergeDelayError.mergeDelayError(source));
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
+        return create(OperationConcat.concat(t1, t2, t3));
+    }
+
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     * @param t4
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
+        return create(OperationConcat.concat(t1, t2, t3, t4));
+    }
+
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     * @param t4
+     *            an Observable to be concatenated
+     * @param t5
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
+        return create(OperationConcat.concat(t1, t2, t3, t4, t5));
+    }
+
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     * @param t4
+     *            an Observable to be concatenated
+     * @param t5
+     *            an Observable to be concatenated
+     * @param t6
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
+        return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6));
+    }
+
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     * @param t4
+     *            an Observable to be concatenated
+     * @param t5
+     *            an Observable to be concatenated
+     * @param t6
+     *            an Observable to be concatenated
+     * @param t7
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
+        return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6, t7));
+    }
+
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     * @param t4
+     *            an Observable to be concatenated
+     * @param t5
+     *            an Observable to be concatenated
+     * @param t6
+     *            an Observable to be concatenated
+     * @param t7
+     *            an Observable to be concatenated
+     * @param t8
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
+        return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6, t7, t8));
+    }
+
+    /**
+     * Returns an Observable that emits the items emitted by two or more Observables, one after the
+     * other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param t1
+     *            an Observable to be concatenated
+     * @param t2
+     *            an Observable to be concatenated
+     * @param t3
+     *            an Observable to be concatenated
+     * @param t4
+     *            an Observable to be concatenated
+     * @param t5
+     *            an Observable to be concatenated
+     * @param t6
+     *            an Observable to be concatenated
+     * @param t7
+     *            an Observable to be concatenated
+     * @param t8
+     *            an Observable to be concatenated
+     * @param t9
+     *            an Observable to be concatenated
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code source} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
+        return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
     /**
@@ -748,14 +1445,270 @@ public class Observable<T> {
      * This method allows an Observer to receive all successfully emitted items from all of the
      * source Observables without being interrupted by an error notification from one of them.
      * 
-     * @param source
-     *            a series of Observables
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
      * @return an Observable that emits items that are the result of flattening the items emitted by
      *         the {@code source} Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> mergeDelayError(Observable<? extends T>... source) {
-        return create(OperationMergeDelayError.mergeDelayError(source));
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @param t7
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @param t7
+     *            an Observable to be merged
+     * @param t8
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7, t8));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @param t7
+     *            an Observable to be merged
+     * @param t8
+     *            an Observable to be merged
+     * @param t9
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
     /**
@@ -827,6 +1780,35 @@ public class Observable<T> {
         return create(OperationSynchronize.synchronize(observable));
     }
 
+    
+    /**
+     * Emits an item each time interval (containing a sequential number).
+     * @param interval
+     *            Interval size in time units (see below).
+     * @param unit
+     *            Time units to use for the interval size.
+     * @return An Observable that emits an item each time interval.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229027%28v=vs.103%29.aspx">MSDN: Observable.Interval</a>
+     */
+    public static Observable<Long> interval(long interval, TimeUnit unit) {
+        return create(OperationInterval.interval(interval, unit));
+    }
+    
+    /**
+     * Emits an item each time interval (containing a sequential number).
+     * @param interval
+     *            Interval size in time units (see below).
+     * @param unit
+     *            Time units to use for the interval size.
+     * @param scheduler
+     *            The scheduler to use for scheduling the items.
+     * @return An Observable that emits an item each time interval.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh228911%28v=vs.103%29.aspx">MSDN: Observable.Interval</a>
+     */
+    public static Observable<Long> interval(long interval, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationInterval.interval(interval, unit, scheduler));
+    }
+    
     /**
      * Wraps each item emitted by a source Observable in a {@link Timestamped} object.
      * <p>
@@ -2044,6 +3026,94 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that counts the total number of elements in the source Observable.
+     * @return an Observable emitting the number of counted elements of the source Observable 
+     *         as its single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229470%28v=vs.103%29.aspx">MSDN: Observable.Count</a>
+     */
+    public Observable<Integer> count() {
+        return reduce(0, new Func2<Integer, T, Integer>() {
+            @Override
+            public Integer call(Integer t1, T t2) {
+                return t1 + 1;
+            }
+        });
+    }
+    
+    /**
+     * Returns an Observable that sums up the elements in the source Observable.
+     * @param source
+     *            Source observable to compute the sum of.      
+     * @return an Observable emitting the sum of all the elements of the source Observable 
+     *         as its single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
+     */
+    public static Observable<Integer> sum(Observable<Integer> source) {
+        return OperationSum.sum(source);
+    }
+    
+    /**
+     * @see #sum(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
+     */
+    public static Observable<Long> sumLongs(Observable<Long> source) {
+        return OperationSum.sumLongs(source);
+    }
+    
+    /**
+     * @see #sum(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
+     */
+    public static Observable<Float> sumFloats(Observable<Float> source) {
+        return OperationSum.sumFloats(source);
+    }
+    
+    /**
+     * @see #sum(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
+     */
+    public static Observable<Double> sumDoubles(Observable<Double> source) {
+        return OperationSum.sumDoubles(source);
+    }
+    
+    /**
+     * Returns an Observable that computes the average of all elements in the source Observable.
+     * For an empty source, it causes an ArithmeticException.
+     * @param source
+     *            Source observable to compute the average of.      
+     * @return an Observable emitting the averageof all the elements of the source Observable 
+     *         as its single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
+     */
+    public static Observable<Integer> average(Observable<Integer> source) {
+        return OperationAverage.average(source);
+    }
+    
+    /**
+     * @see #average(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
+     */
+    public static Observable<Long> averageLongs(Observable<Long> source) {
+        return OperationAverage.averageLongs(source);
+    }
+
+    /**
+     * @see #average(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
+     */
+    public static Observable<Float> averageFloats(Observable<Float> source) {
+        return OperationAverage.averageFloats(source);
+    }
+
+    /**
+     * @see #average(Observable)
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
+     */
+    public static Observable<Double> averageDoubles(Observable<Double> source) {
+        return OperationAverage.averageDoubles(source);
+    }
+
+    /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the underlying
      * Observable that will replay all of its items and notifications to any future {@link Observer}.
      * <p>
@@ -2256,6 +3326,63 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable.
+     * 
+     * @return an Observable that emits only the very first item from the source, or none if the
+     *         source Observable completes without emitting a single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
+     */
+    public Observable<T> first() {
+        return take(1);
+    }
+
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable
+     * that satisfies a given condition.
+     * 
+     * @param predicate
+     *            The condition any source emitted item has to satisfy.
+     * @return an Observable that emits only the very first item satisfying the given condition from the source,
+     *         or none if the source Observable completes without emitting a single matching item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
+     */
+    public Observable<T> first(Func1<? super T, Boolean> predicate) {
+        return skipWhile(not(predicate)).take(1);
+    }
+
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable, or
+     * a default value.
+     * 
+     * @param defaultValue
+     *            The default value to emit if the source Observable doesn't emit anything.
+     * @return an Observable that emits only the very first item from the source, or a default value
+     *         if the source Observable completes without emitting a single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229320%28v=vs.103%29.aspx">MSDN: Observable.FirstOrDefault</a>
+     */
+    public Observable<T> firstOrDefault(T defaultValue) {
+        return create(OperationFirstOrDefault.firstOrDefault(this, defaultValue));
+    }
+
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable
+     * that satisfies a given condition, or a default value otherwise.
+     * 
+     * @param predicate
+     *            The condition any source emitted item has to satisfy.
+     * @param defaultValue
+     *            The default value to emit if the source Observable doesn't emit anything that
+     *            satisfies the given condition.
+     * @return an Observable that emits only the very first item from the source that satisfies the
+     *         given condition, or a default value otherwise.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229759%28v=vs.103%29.aspx">MSDN: Observable.FirstOrDefault</a>
+     */
+    public Observable<T> firstOrDefault(Func1<? super T, Boolean> predicate, T defaultValue) {
+        return create(OperationFirstOrDefault.firstOrDefault(this, predicate, defaultValue));
+    }
+
+    
+    /**
      * Returns an Observable that emits only the first <code>num</code> items emitted by the source
      * Observable.
      * <p>
@@ -2308,6 +3435,33 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable.
+     * 
+     * @return an Observable that emits only the very first item from the source, or none if the
+     *         source Observable completes without emitting a single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
+     * @see {@link #first()}
+     */
+    public Observable<T> takeFirst() {
+        return first();
+    }
+    
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable
+     * that satisfies a given condition.
+     * 
+     * @param predicate
+     *            The condition any source emitted item has to satisfy.
+     * @return an Observable that emits only the very first item satisfying the given condition from the source,
+     *         or none if the source Observable completes without emitting a single matching item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
+     * @see {@link #first(Func1)}
+     */
+    public Observable<T> takeFirst(Func1<? super T, Boolean> predicate) {
+        return first(predicate);
+    }
+    
+    /**
      * Returns an Observable that emits only the last <code>count</code> items emitted by the source
      * Observable.
      * <p>
@@ -2339,6 +3493,34 @@ public class Observable<T> {
      */
     public <E> Observable<T> takeUntil(Observable<? extends E> other) {
         return OperationTakeUntil.takeUntil(this, other);
+    }
+
+    /**
+     * Returns an Observable that bypasses all items from the source Observable as long as the specified
+     * condition holds true. Emits all further source items as soon as the condition becomes false.
+     * @param predicate
+     *            A function to test each item emitted from the source Observable for a condition.
+     *            It receives the emitted item as first parameter and the index of the emitted item as
+     *            second parameter.
+     * @return an Observable that emits all items from the source Observable as soon as the condition
+     *         becomes false. 
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211631%28v=vs.103%29.aspx">MSDN: Observable.SkipWhile</a>
+     */
+    public Observable<T> skipWhileWithIndex(Func2<? super T, Integer, Boolean> predicate) {
+        return create(OperationSkipWhile.skipWhileWithIndex(this, predicate));
+    }
+
+    /**
+     * Returns an Observable that bypasses all items from the source Observable as long as the specified
+     * condition holds true. Emits all further source items as soon as the condition becomes false.
+     * @param predicate
+     *            A function to test each item emitted from the source Observable for a condition.
+     * @return an Observable that emits all items from the source Observable as soon as the condition
+     *         becomes false. 
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229685%28v=vs.103%29.aspx">MSDN: Observable.SkipWhile</a>
+     */
+    public Observable<T> skipWhile(Func1<? super T, Boolean> predicate) {
+        return create(OperationSkipWhile.skipWhile(this, predicate));
     }
 
     /**
@@ -2399,12 +3581,218 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
      * 
      * @param values
-     *            the items you want the modified Observable to emit first
+     *            Iterable of the items you want the modified Observable to emit first
      * @return an Observable that exhibits the modified behavior
      */
-    @SuppressWarnings("unchecked")
-    public Observable<T> startWith(T... values) {
+    public Observable<T> startWith(Iterable<T> values) {
         return concat(Observable.<T> from(values), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1) {
+        return concat(Observable.<T> from(t1), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2) {
+        return concat(Observable.<T> from(t1, t2), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3) {
+        return concat(Observable.<T> from(t1, t2, t3), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param t4
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3, T t4) {
+        return concat(Observable.<T> from(t1, t2, t3, t4), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param t4
+     *            item to include
+     * @param t5
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5) {
+        return concat(Observable.<T> from(t1, t2, t3, t4, t5), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param t4
+     *            item to include
+     * @param t5
+     *            item to include
+     * @param t6
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6) {
+        return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param t4
+     *            item to include
+     * @param t5
+     *            item to include
+     * @param t6
+     *            item to include
+     * @param t7
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7) {
+        return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6, t7), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param t4
+     *            item to include
+     * @param t5
+     *            item to include
+     * @param t6
+     *            item to include
+     * @param t7
+     *            item to include
+     * @param t8
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8) {
+        return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6, t7, t8), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param t4
+     *            item to include
+     * @param t5
+     *            item to include
+     * @param t6
+     *            item to include
+     * @param t7
+     *            item to include
+     * @param t8
+     *            item to include
+     * @param t9
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
+        return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6, t7, t8, t9), this);
     }
 
     /**

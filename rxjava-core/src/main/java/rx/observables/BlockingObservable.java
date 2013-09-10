@@ -387,7 +387,7 @@ public class BlockingObservable<T> {
 
         @Test
         public void testLastEmptyObservable() {
-            BlockingObservable<Object> obs = BlockingObservable.from(Observable.from());
+            BlockingObservable<Object> obs = BlockingObservable.from(Observable.empty());
 
             assertNull(obs.last());
         }
@@ -412,7 +412,7 @@ public class BlockingObservable<T> {
 
         @Test
         public void testLastOrDefault2() {
-            BlockingObservable<Object> observable = BlockingObservable.from(Observable.from());
+            BlockingObservable<Object> observable = BlockingObservable.from(Observable.empty());
             assertEquals("default", observable.lastOrDefault("default"));
         }
 
@@ -460,7 +460,7 @@ public class BlockingObservable<T> {
 
         @Test
         public void testSingleDefault() {
-            BlockingObservable<Object> observable = BlockingObservable.from(Observable.from());
+            BlockingObservable<Object> observable = BlockingObservable.from(Observable.empty());
             assertEquals("default", observable.singleOrDefault("default"));
         }
 

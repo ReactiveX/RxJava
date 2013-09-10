@@ -75,7 +75,7 @@ class OldUnitTestSuite extends JUnitSuite {
     }
     
     @Test def testSingleOrDefault {
-        assertEquals(0, Observable.from[Int]().toBlockingObservable.singleOrDefault(0))
+        assertEquals(0, Observable.empty[Int]().toBlockingObservable.singleOrDefault(0))
         assertEquals(1, Observable.from(1).toBlockingObservable.singleOrDefault(0))
         try {
             Observable.from(1, 2, 3).toBlockingObservable.singleOrDefault(0)
@@ -135,8 +135,7 @@ class OldUnitTestSuite extends JUnitSuite {
     @Test def testMerge {
         val observable1 = Observable.from(1, 2, 3)
         val observable2 = Observable.from(4, 5, 6)
-        val observableList = List(observable1, observable2).asJava
-        val merged = Observable.merge(observableList)
+        val merged = Observable.merge(observable1, observable2)
         assertSubscribeReceives(merged)(1, 2, 3, 4, 5, 6)
     }
     
@@ -232,13 +231,13 @@ class OldUnitTestSuite extends JUnitSuite {
     @Test def testLastOrDefault {
         val observable = Observable.from(1, 2, 3, 4)
         assertEquals(4, observable.toBlockingObservable.lastOrDefault(5))
-        assertEquals(5, Observable.from[Int]().toBlockingObservable.lastOrDefault(5))
+        assertEquals(5, Observable.empty[Int]().toBlockingObservable.lastOrDefault(5))
     }
     
     @Test def testLastOrDefaultPredicate {
         val observable = Observable.from(1, 2, 3, 4)
         assertEquals(3, observable.toBlockingObservable.lastOrDefault(5, isOdd))
-        assertEquals(5, Observable.from[Int]().toBlockingObservable.lastOrDefault(5, isOdd))
+        assertEquals(5, Observable.empty[Int]().toBlockingObservable.lastOrDefault(5, isOdd))
     }
     
     @Test def testMap {
