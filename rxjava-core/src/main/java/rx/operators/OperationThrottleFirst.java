@@ -19,6 +19,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -72,12 +73,23 @@ public final class OperationThrottleFirst {
         return new OnSubscribeFunc<T>() {
             @Override
             public Subscription onSubscribe(Observer<? super T> observer) {
-                return items.window(windowDuration, unit, scheduler).flatMap(new Func1<Observable<T>, Observable<T>>() {
+
+                final AtomicLong lastOnNext = new AtomicLong(0);
+                final long timeInMilliseconds = unit.toMillis(windowDuration);
+
+                return items.filter(new Func1<T, Boolean>() {
 
                     @Override
-                    public Observable<T> call(Observable<T> o) {
-                        return o.takeFirst();
+                    public Boolean call(T value) {
+                        long now = scheduler.now();
+                        if (lastOnNext.get() == 0 || now - lastOnNext.get() >= timeInMilliseconds) {
+                            lastOnNext.set(now);
+                            return Boolean.TRUE;
+                        } else {
+                            return Boolean.FALSE;
+                        }
                     }
+
                 }).subscribe(observer);
             }
         };

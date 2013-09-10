@@ -114,7 +114,9 @@ public final class OperationThrottleWithTimeout {
         private final AtomicReference<Subscription> lastScheduledNotification = new AtomicReference<Subscription>();
 
         public ThrottledObserver(Observer<? super T> observer, long timeout, TimeUnit unit, Scheduler scheduler) {
-            this.observer = observer;
+            // we need to synchronize the observer since the on* events can be coming from different
+            // threads and are thus non-deterministic and could be interleaved
+            this.observer = new SynchronizedObserver<T>(observer);
             this.timeout = timeout;
             this.unit = unit;
             this.scheduler = scheduler;
@@ -122,11 +124,22 @@ public final class OperationThrottleWithTimeout {
 
         @Override
         public void onCompleted() {
+            /*
+             * Cancel previous subscription if it has not already executed.
+             * Expected that some race-condition will occur as this is crossing over thread boundaries
+             * We are using SynchronizedObserver around 'observer' to handle interleaving and out-of-order calls.
+             */
+            lastScheduledNotification.get().unsubscribe();
             observer.onCompleted();
         }
 
         @Override
         public void onError(Throwable e) {
+            /*
+             * Cancel previous subscription if it has not already executed.
+             * Expected that some race-condition will occur as this is crossing over thread boundaries
+             * We are using SynchronizedObserver around 'observer' to handle interleaving and out-of-order calls.
+             */
             lastScheduledNotification.get().unsubscribe();
             observer.onError(e);
         }
