@@ -1811,11 +1811,12 @@ public class Observable<T> {
     }
     
     /**
-     * Throttles the {@link Observable} by dropping values which are followed by newer values before the timer has expired.
+     * Throttles by dropping all values that are followed by newer values before the timeout value expires. The timer reset on each `onNext` call.
+     * <p>
+     * NOTE: If the timeout is set higher than the rate of traffic then this will drop all data.
      * 
      * @param timeout
      *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
-     * 
      * @param unit
      *            The {@link TimeUnit} for the timeout.
      * 
@@ -1826,15 +1827,17 @@ public class Observable<T> {
     }
 
     /**
-     * Throttles the {@link Observable} by dropping values which are followed by newer values before the timer has expired.
+     * Throttles by dropping all values that are followed by newer values before the timeout value expires. The timer reset on each `onNext` call.
+     * <p>
+     * NOTE: If the timeout is set higher than the rate of traffic then this will drop all data.
      * 
      * @param timeout
      *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
      * @param unit
-     *            The {@link TimeUnit} for the timeout.
+     *            The unit of time for the specified timeout.
      * @param scheduler
-     *            The {@link Scheduler} to use when timing incoming values.
-     * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
+     *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
+     * @return Observable which performs the throttle operation.
      */
     public Observable<T> throttleWithTimeout(long timeout, TimeUnit unit, Scheduler scheduler) {
         return create(OperationThrottleWithTimeout.throttleWithTimeout(this, timeout, unit, scheduler));
