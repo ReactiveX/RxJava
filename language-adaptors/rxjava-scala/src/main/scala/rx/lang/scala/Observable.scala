@@ -22,30 +22,9 @@ package rx.lang.scala
  */
 object All {
   // fix covariance/contravariance once and for all
-  
-  // type Observer[T] = rx.Observer[_ >: T] // T is not recognized as contravariant...
-  
-  trait Observer[-T] {
-    def onCompleted(): Unit
-    def onError(e: Throwable): Unit
-    def onNext(v: T): Unit
-  }
-  class ScalaObserverToJavaObserver[T](val asScala: Observer[T]) extends rx.Observer[T] {
-    def onCompleted(): Unit = asScala.onCompleted()
-    def onError(e: Throwable): Unit = asScala.onError(e)
-    def onNext(v: T): Unit = asScala.onNext(v)
-  }
-  class JavaObserverToScalaObserver[T](val asJava: rx.Observer[_ >: T]) extends Observer[T] { 
-    def onCompleted(): Unit = asJava.onCompleted()
-    def onError(e: Throwable): Unit = asJava.onError(e)
-    def onNext(v: T): Unit = asJava.onNext(v)
-  }
-  
-  
-  // rx.Observable not here because we need its static methods, and users don't need it
-  
-  type Notification[T] = rx.Notification[_ <: T]
-  type Timestamped[T] = rx.util.Timestamped[_ <: T]
+  type Observer[-T] = rx.Observer[_ >: T]  
+  type Notification[+T] = rx.Notification[_ <: T]
+  type Timestamped[+T] = rx.util.Timestamped[_ <: T]
   
   type Subscription = rx.Subscription
   type Scheduler = rx.Scheduler
@@ -95,7 +74,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *             if the {@link Observer} provided as the argument to {@code subscribe()} is {@code null}
    */
   def subscribe(observer: Observer[T]): Subscription = {
-    asJava.subscribe(new ScalaObserverToJavaObserver(observer))
+    asJava.subscribe(observer)
   }
   
   /**
@@ -125,7 +104,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *             if an argument to {@code subscribe()} is {@code null}
    */
   def subscribe(observer: Observer[T], scheduler: Scheduler): Subscription = {
-    asJava.subscribe(new ScalaObserverToJavaObserver(observer), scheduler)
+    asJava.subscribe(observer, scheduler)
   }
   
   def subscribe(onNext: T => Unit): Subscription = {
@@ -166,8 +145,17 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    */
   // public <R> ConnectableObservable<R> multicast(Subject<T, R> subject) TODO
   
+  
   /**
-   * TODO doc
+   * Returns an Observable that first emits the items emitted by this, and then the items emitted
+   * by that.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+   * 
+   * @param that
+   *            an Observable to be appended
+   * @return an Observable that emits items that are the result of combining the items emitted by
+   *         this and that, one after the other
    */
   def ++[U >: T](that: Observable[U]): Observable[U] = {
     val o1: JObservable[_ <: U] = this.asJava
@@ -205,11 +193,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return an Observable that emits timestamped items from the source Observable
    */
   // TODO this can only work if Timestamped is used as Timestamped<? extends T> in core
-  /*
   def timestamp: Observable[Timestamped[T]] = {
-    new Observable(asJava.timestamp())
+    new Observable[Timestamped[T]](asJava.timestamp())
   }
-  */
+  
   
   /**
    * TODO doc
