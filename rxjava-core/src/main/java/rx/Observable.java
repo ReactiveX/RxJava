@@ -66,6 +66,7 @@ import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottle;
 import rx.operators.OperationThrottleWithTimeout;
+import rx.operators.OperationThrottleLast;
 import rx.operators.OperationTimestamp;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
@@ -1843,6 +1844,38 @@ public class Observable<T> {
     public Observable<T> throttleWithTimeout(long timeout, TimeUnit unit, Scheduler scheduler) {
         return create(OperationThrottleWithTimeout.throttleWithTimeout(this, timeout, unit, scheduler));
     }
+    
+    
+    /**
+     * Throttles the {@link Observable} by dropping values which are followed by newer values before the timer has expired.
+     * 
+     * @param timeout
+     *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * 
+     * @param unit
+     *            The {@link TimeUnit} for the timeout.
+     * 
+     * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
+     */
+    public Observable<T> throttleLast(long timeout, TimeUnit unit) {
+        return create(OperationThrottleLast.throttleLast(this, timeout, unit));
+    }
+
+    /**
+     * Throttles the {@link Observable} by dropping values which are followed by newer values before the timer has expired.
+     * 
+     * @param timeout
+     *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * @param unit
+     *            The {@link TimeUnit} for the timeout.
+     * @param scheduler
+     *            The {@link Scheduler} to use when timing incoming values.
+     * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
+     */
+    public Observable<T> throttleLast(long timeout, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationThrottleLast.throttleLast(this, timeout, unit, scheduler));
+    }
+    
 
     /**
      * Wraps each item emitted by a source Observable in a {@link Timestamped} object.
@@ -2301,6 +2334,7 @@ public class Observable<T> {
     }
 
     /**
+<<<<<<< HEAD
      * Throttles the {@link Observable} by dropping values which are followed by newer values before the timer has expired.
      * 
      * @param timeout    The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
@@ -2324,6 +2358,8 @@ public class Observable<T> {
     }
 
     /**
+=======
+>>>>>>> throttleLast
      * @see #combineLatest(Observable, Observable, Func2)
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
