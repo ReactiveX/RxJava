@@ -298,6 +298,31 @@ def class ObservableTests {
         verify(a, times(1)).received(true);
     }
     
+    
+    @Test
+    public void testZip() {
+        Observable o1 = Observable.from(1, 2, 3);
+        Observable o2 = Observable.from(4, 5, 6);
+        Observable o3 = Observable.from(7, 8, 9);
+        
+        List values = Observable.zip(o1, o2, o3, {a, b, c -> [a, b, c] }).toList().toBlockingObservable().single();
+        assertEquals([1, 4, 7], values.get(0));
+        assertEquals([2, 5, 8], values.get(1));
+        assertEquals([3, 6, 9], values.get(2));
+    }
+    
+    @Test
+    public void testZipWithIterable() {
+        Observable o1 = Observable.from(1, 2, 3);
+        Observable o2 = Observable.from(4, 5, 6);
+        Observable o3 = Observable.from(7, 8, 9);
+        
+        List values = Observable.zip([o1, o2, o3], {a, b, c -> [a, b, c] }).toList().toBlockingObservable().single();
+        assertEquals([1, 4, 7], values.get(0));
+        assertEquals([2, 5, 8], values.get(1));
+        assertEquals([3, 6, 9], values.get(2));
+    }
+    
     @Test
     public void testGroupBy() {
         int count=0;
