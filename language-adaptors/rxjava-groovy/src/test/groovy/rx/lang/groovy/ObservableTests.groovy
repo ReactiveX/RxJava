@@ -156,6 +156,30 @@ def class ObservableTests {
     }
 
     @Test
+    public void testFromWithIterable() {
+        def list = [1, 2, 3, 4, 5]
+        assertEquals(5, Observable.from(list).count().toBlockingObservable().single());
+    }
+    
+    @Test
+    public void testFromWithObjects() {
+        def list = [1, 2, 3, 4, 5]
+        // this should now treat these as 2 objects so have a count of 2
+        assertEquals(2, Observable.from(list, 6).count().toBlockingObservable().single());
+    }
+    
+    /**
+     * Check that two different single arg methods are selected correctly
+     */
+    @Test
+    public void testStartWith() {
+        def list = [10, 11, 12, 13, 14]
+        def startList = [1, 2, 3, 4, 5]
+        assertEquals(6, Observable.from(list).startWith(0).count().toBlockingObservable().single());
+        assertEquals(10, Observable.from(list).startWith(startList).count().toBlockingObservable().single());
+    }
+    
+    @Test
     public void testScriptWithOnNext() {
         new TestFactory().getObservable().subscribe({ result -> a.received(result)});
         verify(a).received("hello_1");

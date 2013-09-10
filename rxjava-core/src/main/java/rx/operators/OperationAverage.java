@@ -124,7 +124,7 @@ public final class OperationAverage {
 
         @Test
         public void testEmptyAverage() throws Throwable {
-            Observable<Integer> src = Observable.from();
+            Observable<Integer> src = Observable.empty();
             average(src).subscribe(w);
 
             verify(w, never()).onNext(anyInt());
@@ -145,7 +145,7 @@ public final class OperationAverage {
 
         @Test
         public void testEmptyAverageLongs() throws Throwable {
-            Observable<Long> src = Observable.from();
+            Observable<Long> src = Observable.empty();
             averageLongs(src).subscribe(wl);
 
             verify(wl, never()).onNext(anyLong());
@@ -166,7 +166,7 @@ public final class OperationAverage {
 
         @Test
         public void testEmptyAverageFloats() throws Throwable {
-            Observable<Float> src = Observable.from();
+            Observable<Float> src = Observable.empty();
             averageFloats(src).subscribe(wf);
 
             verify(wf, never()).onNext(anyFloat());
@@ -187,7 +187,7 @@ public final class OperationAverage {
 
         @Test
         public void testEmptyAverageDoubles() throws Throwable {
-            Observable<Double> src = Observable.from();
+            Observable<Double> src = Observable.empty();
             averageDoubles(src).subscribe(wd);
 
             verify(wd, never()).onNext(anyDouble());
