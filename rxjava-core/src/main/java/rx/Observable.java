@@ -1199,7 +1199,7 @@ public class Observable<T> {
      *         the {@code source} Observables, one after the other
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
      */
-    public static <T> Observable<T> concat(Observable<Observable<T>> observables) {
+    public static <T> Observable<T> concat(Observable<? extends Observable<? extends T>> observables) {
         return create(OperationConcat.concat(observables));
     }
     
