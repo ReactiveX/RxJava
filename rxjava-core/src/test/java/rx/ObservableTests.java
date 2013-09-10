@@ -35,12 +35,20 @@ import rx.observables.ConnectableObservable;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
+import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 public class ObservableTests {
 
     @Mock
     Observer<Integer> w;
+
+    private static final Func1<Integer, Boolean> IS_EVEN = new Func1<Integer, Boolean>() {
+        @Override
+        public Boolean call(Integer value) {
+            return value % 2 == 0;
+        }
+    };
 
     @Before
     public void before() {
@@ -145,6 +153,43 @@ public class ObservableTests {
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onCompleted();
         verify(w, times(1)).onError(any(RuntimeException.class));
+    }
+
+    public void testFirstWithPredicateOfSome() {
+        Observable<Integer> observable = Observable.from(1, 3, 5, 4, 6, 3);
+        observable.first(IS_EVEN).subscribe(w);
+        verify(w, times(1)).onNext(anyInt());
+        verify(w).onNext(4);
+        verify(w, times(1)).onCompleted();
+        verify(w, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstWithPredicateOfNoneMatchingThePredicate() {
+        Observable<Integer> observable = Observable.from(1, 3, 5, 7, 9, 7, 5, 3, 1);
+        observable.first(IS_EVEN).subscribe(w);
+        verify(w, never()).onNext(anyInt());
+        verify(w, times(1)).onCompleted();
+        verify(w, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstOfSome() {
+        Observable<Integer> observable = Observable.from(1, 2, 3);
+        observable.first().subscribe(w);
+        verify(w, times(1)).onNext(anyInt());
+        verify(w).onNext(1);
+        verify(w, times(1)).onCompleted();
+        verify(w, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstOfNone() {
+        Observable<Integer> observable = Observable.empty();
+        observable.first().subscribe(w);
+        verify(w, never()).onNext(anyInt());
+        verify(w, times(1)).onCompleted();
+        verify(w, never()).onError(any(Throwable.class));
     }
 
     @Test

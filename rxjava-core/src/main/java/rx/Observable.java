@@ -15,6 +15,8 @@
  */
 package rx;
 
+import static rx.util.functions.Functions.not;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,6 +39,7 @@ import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
+import rx.operators.OperationFirstOrDefault;
 import rx.operators.OperationGroupBy;
 import rx.operators.OperationInterval;
 import rx.operators.OperationMap;
@@ -3323,6 +3326,63 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable.
+     * 
+     * @return an Observable that emits only the very first item from the source, or none if the
+     *         source Observable completes without emitting a single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
+     */
+    public Observable<T> first() {
+        return take(1);
+    }
+
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable
+     * that satisfies a given condition.
+     * 
+     * @param predicate
+     *            The condition any source emitted item has to satisfy.
+     * @return an Observable that emits only the very first item satisfying the given condition from the source,
+     *         or none if the source Observable completes without emitting a single matching item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
+     */
+    public Observable<T> first(Func1<? super T, Boolean> predicate) {
+        return skipWhile(not(predicate)).take(1);
+    }
+
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable, or
+     * a default value.
+     * 
+     * @param defaultValue
+     *            The default value to emit if the source Observable doesn't emit anything.
+     * @return an Observable that emits only the very first item from the source, or a default value
+     *         if the source Observable completes without emitting a single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229320%28v=vs.103%29.aspx">MSDN: Observable.FirstOrDefault</a>
+     */
+    public Observable<T> firstOrDefault(T defaultValue) {
+        return create(OperationFirstOrDefault.firstOrDefault(this, defaultValue));
+    }
+
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable
+     * that satisfies a given condition, or a default value otherwise.
+     * 
+     * @param predicate
+     *            The condition any source emitted item has to satisfy.
+     * @param defaultValue
+     *            The default value to emit if the source Observable doesn't emit anything that
+     *            satisfies the given condition.
+     * @return an Observable that emits only the very first item from the source that satisfies the
+     *         given condition, or a default value otherwise.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229759%28v=vs.103%29.aspx">MSDN: Observable.FirstOrDefault</a>
+     */
+    public Observable<T> firstOrDefault(Func1<? super T, Boolean> predicate, T defaultValue) {
+        return create(OperationFirstOrDefault.firstOrDefault(this, predicate, defaultValue));
+    }
+
+    
+    /**
      * Returns an Observable that emits only the first <code>num</code> items emitted by the source
      * Observable.
      * <p>
@@ -3374,6 +3434,33 @@ public class Observable<T> {
         return create(OperationTakeWhile.takeWhileWithIndex(this, predicate));
     }
 
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable.
+     * 
+     * @return an Observable that emits only the very first item from the source, or none if the
+     *         source Observable completes without emitting a single item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
+     * @see {@link #first()}
+     */
+    public Observable<T> takeFirst() {
+        return first();
+    }
+    
+    /**
+     * Returns an Observable that emits only the very first item emitted by the source Observable
+     * that satisfies a given condition.
+     * 
+     * @param predicate
+     *            The condition any source emitted item has to satisfy.
+     * @return an Observable that emits only the very first item satisfying the given condition from the source,
+     *         or none if the source Observable completes without emitting a single matching item.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
+     * @see {@link #first(Func1)}
+     */
+    public Observable<T> takeFirst(Func1<? super T, Boolean> predicate) {
+        return first(predicate);
+    }
+    
     /**
      * Returns an Observable that emits only the last <code>count</code> items emitted by the source
      * Observable.
