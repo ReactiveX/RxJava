@@ -64,6 +64,7 @@ import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
+import rx.operators.OperationThrottle;
 import rx.operators.OperationTimestamp;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
@@ -2263,6 +2264,29 @@ public class Observable<T> {
     public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7,
             Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, combineFunction));
+    }
+
+    /**
+     * Throttles the {@link Observable} by dropping values which are followed by newer values before the timer has expired.
+     * 
+     * @param timeout    The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * @param unit       The {@link TimeUnit} for the timeout.
+     * @return An {@link Observable} which filters out values which are too quickly followed up with never values.
+     */
+    public Observable<T> throttle(long timeout, TimeUnit unit) {
+        return create(OperationThrottle.throttle(this, timeout, unit));
+    }
+
+    /**
+     * Throttles the {@link Observable} by dropping values which are followed by newer values before the timer has expired.
+     * 
+     * @param timeout    The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * @param unit       The {@link TimeUnit} for the timeout.
+     * @param scheduler  The {@link Scheduler} to use when timing incoming values.
+     * @return An {@link Observable} which filters out values which are too quickly followed up with never values.
+     */
+    public Observable<T> throttle(long timeout, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationThrottle.throttle(this, timeout, unit, scheduler));
     }
 
     /**
