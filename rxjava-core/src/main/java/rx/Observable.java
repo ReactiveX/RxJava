@@ -64,7 +64,7 @@ import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
-import rx.operators.OperationThrottleWithTimeout;
+import rx.operators.OperationDebounce;
 import rx.operators.OperationTimestamp;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
@@ -1811,9 +1811,17 @@ public class Observable<T> {
     }
     
     /**
-     * Throttles by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
+     * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
      * <p>
      * NOTE: If events keep firing faster than the timeout then no data will be emitted.
+     * <p>
+     * Information on debounce vs throttle:
+     * <p>
+     * <ul>
+     * <li>http://drupalmotion.com/article/debounce-and-throttle-visual-explanation</li>
+     * <li>http://unscriptable.com/2009/03/20/debouncing-javascript-methods/</li>
+     * <li>http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/</li>
+     * </ul>
      * 
      * @param timeout
      *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
@@ -1821,13 +1829,65 @@ public class Observable<T> {
      *            The {@link TimeUnit} for the timeout.
      * 
      * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
+     * @see {@link #throttleWithTimeout};
      */
-    public Observable<T> throttleWithTimeout(long timeout, TimeUnit unit) {
-        return create(OperationThrottleWithTimeout.throttleWithTimeout(this, timeout, unit));
+    public Observable<T> debounce(long timeout, TimeUnit unit) {
+        return create(OperationDebounce.debounce(this, timeout, unit));
     }
 
     /**
-     * Throttles by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
+     * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
+     * <p>
+     * NOTE: If events keep firing faster than the timeout then no data will be emitted.
+     * <p>
+     * Information on debounce vs throttle:
+     * <p>
+     * <ul>
+     * <li>http://drupalmotion.com/article/debounce-and-throttle-visual-explanation</li>
+     * <li>http://unscriptable.com/2009/03/20/debouncing-javascript-methods/</li>
+     * <li>http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/</li>
+     * </ul>
+     * 
+     * @param timeout
+     *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * @param unit
+     *            The unit of time for the specified timeout.
+     * @param scheduler
+     *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
+     * @return Observable which performs the throttle operation.
+     * @see {@link #throttleWithTimeout};
+     */
+    public Observable<T> debounce(long timeout, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationDebounce.debounce(this, timeout, unit));
+    }
+
+    /**
+     * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
+     * <p>
+     * NOTE: If events keep firing faster than the timeout then no data will be emitted.
+     * <p>
+     * Information on debounce vs throttle:
+     * <p>
+     * <ul>
+     * <li>http://drupalmotion.com/article/debounce-and-throttle-visual-explanation</li>
+     * <li>http://unscriptable.com/2009/03/20/debouncing-javascript-methods/</li>
+     * <li>http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/</li>
+     * </ul>
+     * 
+     * @param timeout
+     *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * @param unit
+     *            The {@link TimeUnit} for the timeout.
+     * 
+     * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
+     * @see {@link #debounce}
+     */
+    public Observable<T> throttleWithTimeout(long timeout, TimeUnit unit) {
+        return create(OperationDebounce.debounce(this, timeout, unit));
+    }
+
+    /**
+     * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
      * <p>
      * NOTE: If events keep firing faster than the timeout then no data will be emitted.
      * 
@@ -1838,11 +1898,12 @@ public class Observable<T> {
      * @param scheduler
      *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
      * @return Observable which performs the throttle operation.
+     * @see {@link #debounce}
      */
     public Observable<T> throttleWithTimeout(long timeout, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationThrottleWithTimeout.throttleWithTimeout(this, timeout, unit, scheduler));
+        return create(OperationDebounce.debounce(this, timeout, unit, scheduler));
     }
-    
+
     /**
      * Throttles by skipping value until `skipDuration` passes and then emits the next received value.
      * <p>

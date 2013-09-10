@@ -41,7 +41,7 @@ import rx.util.functions.Func1;
  * quickly followed up with other values. Values which are not followed up by other values within the specified timeout are published
  * as soon as the timeout expires.
  */
-public final class OperationThrottleWithTimeout {
+public final class OperationDebounce {
 
     /**
      * This operation filters out events which are published too quickly in succession. This is done by dropping events which are
@@ -56,8 +56,8 @@ public final class OperationThrottleWithTimeout {
      *            The unit of time for the specified timeout.
      * @return A {@link Func1} which performs the throttle operation.
      */
-    public static <T> OnSubscribeFunc<T> throttleWithTimeout(Observable<T> items, long timeout, TimeUnit unit) {
-        return throttleWithTimeout(items, timeout, unit, Schedulers.threadPoolForComputation());
+    public static <T> OnSubscribeFunc<T> debounce(Observable<T> items, long timeout, TimeUnit unit) {
+        return debounce(items, timeout, unit, Schedulers.threadPoolForComputation());
     }
 
     /**
@@ -75,23 +75,23 @@ public final class OperationThrottleWithTimeout {
      *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
      * @return A {@link Func1} which performs the throttle operation.
      */
-    public static <T> OnSubscribeFunc<T> throttleWithTimeout(final Observable<T> items, final long timeout, final TimeUnit unit, final Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> debounce(final Observable<T> items, final long timeout, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<T>() {
             @Override
             public Subscription onSubscribe(Observer<? super T> observer) {
-                return new Throttle<T>(items, timeout, unit, scheduler).onSubscribe(observer);
+                return new Debounce<T>(items, timeout, unit, scheduler).onSubscribe(observer);
             }
         };
     }
 
-    private static class Throttle<T> implements OnSubscribeFunc<T> {
+    private static class Debounce<T> implements OnSubscribeFunc<T> {
 
         private final Observable<T> items;
         private final long timeout;
         private final TimeUnit unit;
         private final Scheduler scheduler;
 
-        public Throttle(Observable<T> items, long timeout, TimeUnit unit, Scheduler scheduler) {
+        public Debounce(Observable<T> items, long timeout, TimeUnit unit, Scheduler scheduler) {
             this.items = items;
             this.timeout = timeout;
             this.unit = unit;
@@ -100,11 +100,11 @@ public final class OperationThrottleWithTimeout {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
-            return items.subscribe(new ThrottledObserver<T>(observer, timeout, unit, scheduler));
+            return items.subscribe(new DebounceObserver<T>(observer, timeout, unit, scheduler));
         }
     }
 
-    private static class ThrottledObserver<T> implements Observer<T> {
+    private static class DebounceObserver<T> implements Observer<T> {
 
         private final Observer<? super T> observer;
         private final long timeout;
@@ -113,7 +113,7 @@ public final class OperationThrottleWithTimeout {
 
         private final AtomicReference<Subscription> lastScheduledNotification = new AtomicReference<Subscription>();
 
-        public ThrottledObserver(Observer<? super T> observer, long timeout, TimeUnit unit, Scheduler scheduler) {
+        public DebounceObserver(Observer<? super T> observer, long timeout, TimeUnit unit, Scheduler scheduler) {
             // we need to synchronize the observer since the on* events can be coming from different
             // threads and are thus non-deterministic and could be interleaved
             this.observer = new SynchronizedObserver<T>(observer);
@@ -174,7 +174,7 @@ public final class OperationThrottleWithTimeout {
         }
 
         @Test
-        public void testThrottlingWithCompleted() {
+        public void testDebounceWithCompleted() {
             Observable<String> source = Observable.create(new OnSubscribeFunc<String>() {
                 @Override
                 public Subscription onSubscribe(Observer<? super String> observer) {
@@ -187,7 +187,7 @@ public final class OperationThrottleWithTimeout {
                 }
             });
 
-            Observable<String> sampled = Observable.create(OperationThrottleWithTimeout.throttleWithTimeout(source, 400, TimeUnit.MILLISECONDS, scheduler));
+            Observable<String> sampled = Observable.create(OperationDebounce.debounce(source, 400, TimeUnit.MILLISECONDS, scheduler));
             sampled.subscribe(observer);
 
             scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
@@ -201,7 +201,38 @@ public final class OperationThrottleWithTimeout {
         }
 
         @Test
-        public void testThrottlingWithError() {
+        public void testDebounceNeverEmits() {
+            Observable<String> source = Observable.create(new OnSubscribeFunc<String>() {
+                @Override
+                public Subscription onSubscribe(Observer<? super String> observer) {
+                    // all should be skipped since they are happening faster than the 200ms timeout
+                    publishNext(observer, 100, "a");    // Should be skipped
+                    publishNext(observer, 200, "b");    // Should be skipped
+                    publishNext(observer, 300, "c");    // Should be skipped
+                    publishNext(observer, 400, "d");    // Should be skipped
+                    publishNext(observer, 500, "e");    // Should be skipped
+                    publishNext(observer, 600, "f");    // Should be skipped
+                    publishNext(observer, 700, "g");    // Should be skipped
+                    publishNext(observer, 800, "h");    // Should be skipped
+                    publishCompleted(observer, 900);     // Should be published as soon as the timeout expires.
+
+                    return Subscriptions.empty();
+                }
+            });
+
+            Observable<String> sampled = Observable.create(OperationDebounce.debounce(source, 200, TimeUnit.MILLISECONDS, scheduler));
+            sampled.subscribe(observer);
+
+            scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
+            InOrder inOrder = inOrder(observer);
+            inOrder.verify(observer, times(0)).onNext(anyString());
+            scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
+            inOrder.verify(observer, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
+        }
+
+        @Test
+        public void testDebounceWithError() {
             Observable<String> source = Observable.create(new OnSubscribeFunc<String>() {
                 @Override
                 public Subscription onSubscribe(Observer<? super String> observer) {
@@ -214,7 +245,7 @@ public final class OperationThrottleWithTimeout {
                 }
             });
 
-            Observable<String> sampled = Observable.create(OperationThrottleWithTimeout.throttleWithTimeout(source, 400, TimeUnit.MILLISECONDS, scheduler));
+            Observable<String> sampled = Observable.create(OperationDebounce.debounce(source, 400, TimeUnit.MILLISECONDS, scheduler));
             sampled.subscribe(observer);
 
             scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
