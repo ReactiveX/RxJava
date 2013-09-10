@@ -64,6 +64,7 @@ import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
+import rx.operators.OperationThrottleFirst;
 import rx.operators.OperationTimestamp;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
@@ -1809,6 +1810,34 @@ public class Observable<T> {
         return create(OperationInterval.interval(interval, unit, scheduler));
     }
     
+    /**
+     * Throttles to first value in each window.
+     * 
+     * @param windowDuration
+     *            Duration of windows within with the first value will be chosen.
+     * @param unit
+     *            The unit of time for the specified timeout.
+     * @return Observable which performs the throttle operation.
+     */
+    public Observable<T> throttleFirst(long windowDuration, TimeUnit unit) {
+        return create(OperationThrottleFirst.throttleFirst(this, windowDuration, unit));
+    }
+
+    /**
+     * Throttles to first value in each window.
+     * 
+     * @param windowDuration
+     *            Duration of windows within with the first value will be chosen.
+     * @param unit
+     *            The unit of time for the specified timeout.
+     * @param scheduler
+     *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
+     * @return Observable which performs the throttle operation.
+     */
+    public Observable<T> throttleFirst(long windowDuration, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationThrottleFirst.throttleFirst(this, windowDuration, unit, scheduler));
+    }
+
     /**
      * Wraps each item emitted by a source Observable in a {@link Timestamped} object.
      * <p>
