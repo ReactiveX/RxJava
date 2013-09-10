@@ -1811,30 +1811,28 @@ public class Observable<T> {
     }
     
     /**
-     * Throttles the {@link Observable} by dropping values which are followed by newer values before the timer has expired.
+     * Throttles to last value in each window.
      * 
-     * @param timeout
-     *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
-     * 
+     * @param windowDuration
+     *            Duration of windows within with the first value will be chosen.
      * @param unit
-     *            The {@link TimeUnit} for the timeout.
-     * 
-     * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
+     *            The unit of time for the specified timeout.
+     * @return Observable which performs the throttle operation.
      */
     public Observable<T> throttleLast(long timeout, TimeUnit unit) {
         return create(OperationThrottleLast.throttleLast(this, timeout, unit));
     }
 
     /**
-     * Throttles the {@link Observable} by dropping values which are followed by newer values before the timer has expired.
+     * Throttles to last value in each window.
      * 
-     * @param timeout
-     *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * @param windowDuration
+     *            Duration of windows within with the first value will be chosen.
      * @param unit
-     *            The {@link TimeUnit} for the timeout.
+     *            The unit of time for the specified timeout.
      * @param scheduler
-     *            The {@link Scheduler} to use when timing incoming values.
-     * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
+     *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
+     * @return Observable which performs the throttle operation.
      */
     public Observable<T> throttleLast(long timeout, TimeUnit unit, Scheduler scheduler) {
         return create(OperationThrottleLast.throttleLast(this, timeout, unit, scheduler));
