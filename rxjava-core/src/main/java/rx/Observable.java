@@ -3279,12 +3279,218 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
      * 
      * @param values
-     *            the items you want the modified Observable to emit first
+     *            Iterable of the items you want the modified Observable to emit first
      * @return an Observable that exhibits the modified behavior
      */
-    @SuppressWarnings("unchecked")
-    public Observable<T> startWith(T... values) {
+    public Observable<T> startWith(Iterable<T> values) {
         return concat(Observable.<T> from(values), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1) {
+        return concat(Observable.<T> from(t1), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2) {
+        return concat(Observable.<T> from(t1, t2), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3) {
+        return concat(Observable.<T> from(t1, t2, t3), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param t4
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3, T t4) {
+        return concat(Observable.<T> from(t1, t2, t3, t4), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param t4
+     *            item to include
+     * @param t5
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5) {
+        return concat(Observable.<T> from(t1, t2, t3, t4, t5), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param t4
+     *            item to include
+     * @param t5
+     *            item to include
+     * @param t6
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6) {
+        return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param t4
+     *            item to include
+     * @param t5
+     *            item to include
+     * @param t6
+     *            item to include
+     * @param t7
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7) {
+        return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6, t7), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param t4
+     *            item to include
+     * @param t5
+     *            item to include
+     * @param t6
+     *            item to include
+     * @param t7
+     *            item to include
+     * @param t8
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8) {
+        return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6, t7, t8), this);
+    }
+    
+    /**
+     * Emit a specified set of items before beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param t1
+     *            item to include
+     * @param t2
+     *            item to include
+     * @param t3
+     *            item to include
+     * @param t4
+     *            item to include
+     * @param t5
+     *            item to include
+     * @param t6
+     *            item to include
+     * @param t7
+     *            item to include
+     * @param t8
+     *            item to include
+     * @param t9
+     *            item to include
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @return an Observable that exhibits the modified behavior
+     */
+    public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
+        return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6, t7, t8, t9), this);
     }
 
     /**
