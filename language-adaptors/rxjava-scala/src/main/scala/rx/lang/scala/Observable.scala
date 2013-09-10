@@ -33,6 +33,7 @@ object All {
     type Closing = rx.util.Closing
     type Opening = rx.util.Opening
   }
+ 
 }
 
 /**
@@ -43,6 +44,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   // makes the compiler crash
   extends AnyVal 
 {
+  import scala.collection.JavaConverters._
   import All._
   import All.util._
   import rx.{Observable => JObservable}
@@ -192,14 +194,15 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * 
    * @return an Observable that emits timestamped items from the source Observable
    */
-  // TODO this can only work if Timestamped is used as Timestamped<? extends T> in core
   def timestamp: Observable[Timestamped[T]] = {
     new Observable[Timestamped[T]](asJava.timestamp())
   }
   
-  
   /**
-   * TODO doc
+   * Returns an Observable formed from this Observable and another Observable by combining 
+   * corresponding elements in pairs. 
+   * The number of {@code onNext} invocations of the resulting {@code Observable[(T, U)]}
+   * is the minumum of the number of {@code onNext} invocations of {@code this} and {@code that}. 
    */
   def zip[U](that: Observable[U]): Observable[(T, U)] = {
     new Observable[(T, U)](JObservable.zip(this.asJava, that.asJava, (t: T, u: U) => (t, u)))
@@ -230,22 +233,26 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         An {@link Observable} which produces connected non-overlapping buffers, which are emitted
    *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link rx.util.Closing} object.
    */
-  // TODO 1: buffer does not work because Java returns a mutable java.util.List[T] which is invariant in T
-  // But in Scala, we would like to have an immutable List[T] which is covariant in T
-  // TODO 2: But even if we try to get a java.util.List[T], there is a problem
-  // -> core should respect covariance, but that's not the only problem
-  def buffer(bufferClosingSelector: () => Observable[Closing]) : Observable[List[T]] = {
+  def buffer(bufferClosingSelector: () => Observable[Closing]) : Observable[java.util.List[_ <: T]] = {
     val f: rx.util.functions.Func0[_ <: rx.Observable[_ <: Closing]] = bufferClosingSelector().asJava
-    // type mismatch; found : rx.Observable[java.util.List[_$3]] required: rx.Observable[_ <: java.util.List[T]]
-    // val o: rx.Observable[_ <: java.util.List[T]] = asJava.buffer(f)
-    val o: rx.Observable[_ <: java.util.List[T]] = ???
-    // type mismatch; found : rx.Observable[java.util.List[_$3]] required: rx.Observable[java.util.List[T]]
-    // val o2: rx.Observable[java.util.List[T]] = asJava.buffer(f)
-    val r = new Observable[java.util.List[T]](o)
-    ???
+    val oJava: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(f)
+    val oScala1: Observable[java.util.List[_]] = new Observable[java.util.List[_]](oJava)
+    oScala1.asInstanceOf[Observable[java.util.List[_ <: T]]]
   }
   
-  // public Observable<List<T>> buffer(Func0<? extends Observable<? extends Closing>> bufferClosingSelector) 
+  // TODO decide whether to return Java list or Scala list 
+  
+  def bufferReturningScalaList(bufferClosingSelector: () => Observable[Closing]) : Observable[List[T]] = {
+    val f: rx.util.functions.Func0[_ <: rx.Observable[_ <: Closing]] = bufferClosingSelector().asJava
+    val oJava: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(f)
+    val oScala1: Observable[java.util.List[_]] = new Observable[java.util.List[_]](oJava)
+    val oScala2 = oScala1.map((lJava: java.util.List[_]) => {
+      val bufferScala: scala.collection.mutable.Buffer[_] = lJava.asScala
+      val listScala: List[Any] = bufferScala.toList
+      listScala.asInstanceOf[List[T]]
+    })
+    oScala2
+  }
 
   /**
    * Creates an Observable which produces buffers of collected values.
@@ -265,6 +272,9 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return
    *         An {@link Observable} which produces buffers which are created and emitted when the specified {@link Observable}s publish certain objects.
    */
+  def buffer(bufferOpenings: Observable[Opening], bufferClosingSelector: Opening => Observable[Closing]): Observable[List[T]] = {
+    ???
+  }
   // public Observable<List<T>> buffer(Observable<? extends Opening> bufferOpenings, Func1<Opening, ? extends Observable<? extends Closing>> bufferClosingSelector) 
 
   /**
@@ -430,12 +440,13 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    */
   def window(closingSelector: () => Observable[Closing]): Observable[Observable[T]] = {
     val func : rx.util.functions.Func0[_ <: rx.Observable[_ <: Closing]] = closingSelector().asJava
-    // type mismatch; found : rx.Observable[rx.Observable[_$4]] required: rx.Observable[rx.Observable[T]]
-    // val o: rx.Observable[rx.Observable[T]] = asJava.window(func)
-    val o = ??? // TODO
-    new Observable[rx.Observable[T]](o).map((x: rx.Observable[T]) => new Observable[T](x))
+    val o1: rx.Observable[_ <: rx.Observable[_]] = asJava.window(func)
+    val o2 = new Observable[rx.Observable[_]](o1).map((x: rx.Observable[_]) => {
+      val x2 = x.asInstanceOf[rx.Observable[_ <: T]]
+      new Observable[T](x2)
+    })
+    o2
   }
-  // public Observable<Observable<T>> window(Func0<? extends Observable<? extends Closing>> closingSelector) 
 
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces windows.
@@ -594,9 +605,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    */
   // public Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) 
 
-
-  
-
   /**
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
@@ -677,11 +685,9 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         notifications of the source Observable
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">MSDN: Observable.materialize</a>
    */
-  /*
   def materialize: Observable[Notification[T]] = {
-    // new Observable[Notification[T]](asJava.materialize())
-    ??? // TODO check with covariance in core
-  } */
+    new Observable[Notification[T]](asJava.materialize())
+  }
 
   /**
    * Asynchronously subscribes and unsubscribes Observers on the specified {@link Scheduler}.
@@ -719,14 +725,12 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/dematerialize.png">
    * 
    * @return an Observable that emits the items and notifications embedded in the {@link Notification} objects emitted by the source Observable
-   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">MSDN: Observable.dematerialize</a>
-   * @throws Throwable
-   *             if the source Observable is not of type {@code Observable<Notification<T>>}.
    */
-  // @SuppressWarnings("unchecked")
-  // public <T2> Observable<T2> dematerialize() 
-  // TODO
-
+  def dematerialize[Notif >: T <: Notification[U], U]: Observable[U] = {
+    val o: rx.Observable[Nothing] = asJava.dematerialize()
+    new Observable[U](o.asInstanceOf[rx.Observable[U]])
+  }
+  
   /**
    * Instruct an Observable to pass control to another Observable rather than invoking {@link Observer#onError onError} if it encounters an error.
    * <p>
@@ -1635,6 +1639,7 @@ class WithFilter[+T] private[scala] (p: T => Boolean, wrapped: rx.Observable[_ <
 import org.scalatest.junit.JUnitSuite
 
 class UnitTestSuite extends JUnitSuite {
+  import scala.collection.JavaConverters._
   import org.junit.{Before, Test}
   import org.junit.Assert._
   import org.mockito.Matchers.any
@@ -1673,6 +1678,20 @@ class UnitTestSuite extends JUnitSuite {
     val b2 = (first zip second) map (p => equality(p._1, p._2))
     
     // TODO assertions
+  }
+  
+  @Test def testDematerialize() {
+    val o = Observable(1, 2, 3)
+    val mat = o.materialize
+    val demat = mat.dematerialize[Notification[Int], Int]
+    
+    // correctly rejected:
+    // val wrongDemat = mat.dematerialize[Notification[String], String]
+    
+    // inferring the type parameters is not (yet?) possible:
+    // val demat2 = mat.dematerialize
+    
+    assertEquals(demat.toBlockingObservable.toIterable().asScala.toList, List(1, 2, 3))
   }
   
 
