@@ -64,6 +64,7 @@ import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
+import rx.operators.OperationThrottleLast;
 import rx.operators.OperationTimestamp;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
@@ -1809,6 +1810,36 @@ public class Observable<T> {
         return create(OperationInterval.interval(interval, unit, scheduler));
     }
     
+    /**
+     * Throttles the {@link Observable} by dropping values which are followed by newer values before the timer has expired.
+     * 
+     * @param timeout
+     *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * 
+     * @param unit
+     *            The {@link TimeUnit} for the timeout.
+     * 
+     * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
+     */
+    public Observable<T> throttleLast(long timeout, TimeUnit unit) {
+        return create(OperationThrottleLast.throttleLast(this, timeout, unit));
+    }
+
+    /**
+     * Throttles the {@link Observable} by dropping values which are followed by newer values before the timer has expired.
+     * 
+     * @param timeout
+     *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * @param unit
+     *            The {@link TimeUnit} for the timeout.
+     * @param scheduler
+     *            The {@link Scheduler} to use when timing incoming values.
+     * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
+     */
+    public Observable<T> throttleLast(long timeout, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationThrottleLast.throttleLast(this, timeout, unit, scheduler));
+    }
+
     /**
      * Wraps each item emitted by a source Observable in a {@link Timestamped} object.
      * <p>
