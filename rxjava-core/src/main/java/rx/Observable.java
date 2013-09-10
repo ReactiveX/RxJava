@@ -4392,7 +4392,7 @@ public class Observable<T> {
      *
      * NOTE: If strong reasons for not depending on package names comes up then the implementation of this method can change to looking for a marker interface.
      *
-     * @param f
+     * @param o
      * @return {@code true} if the given function is an internal implementation, and {@code false} otherwise.
      */
     private boolean isInternalImplementation(Object o) {
