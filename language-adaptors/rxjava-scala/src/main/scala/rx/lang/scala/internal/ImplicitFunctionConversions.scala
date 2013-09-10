@@ -2,7 +2,7 @@
 /*
  * These function conversions are only used by the ScalaAdapter, users of RxScala don't need them.
  */
-package rx.lang.scala
+package rx.lang.scala.internal
 
 
 import java.{lang => jlang}
@@ -13,7 +13,9 @@ import rx.util.functions.Func1
 import rx.util.functions.Func2
 import rx.util.functions.Func3
 import rx.util.functions.Func4
-import scala.language.implicitConversions
+import java.{lang => jlang}
+import rx.Observer
+import rx.Subscription
 
 object ImplicitFunctionConversions {
     // code below is copied from
@@ -26,7 +28,7 @@ object ImplicitFunctionConversions {
     import rx.util.functions._
     import rx.{Observer, Subscription}
     
-    implicit def scalaFunction1ToOnSubscribeFunc[T](f: rx.lang.scala.All.Observer[T] => Subscription) =
+    implicit def scalaFunction1ToOnSubscribeFunc[T](f: rx.lang.scala.Observer[T] => Subscription) =
         new rx.Observable.OnSubscribeFunc[T] {
             def onSubscribe(obs: Observer[_ >: T]): Subscription = {
               f(obs)

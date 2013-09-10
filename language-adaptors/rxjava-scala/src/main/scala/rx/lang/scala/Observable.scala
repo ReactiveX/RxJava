@@ -17,33 +17,6 @@
 
 package rx.lang.scala
 
-/*
- * To remove all method bodies from Observable.java and to comment out the signatures,
- * use this regex (works within Eclipse except for 1 long complex method)
- * find: `^    public(.*)\{\s*?\n(.|\n)*?^    }`
- * replace with: `    // public$1`
- */
-
-import org.scalatest.junit.JUnitSuite
-
-/**
- * Users should import rx.lang.scala.All._ and nothing else 
- */
-object All {
-  // fix covariance/contravariance once and for all
-  type Observer[-T] = rx.Observer[_ >: T]  
-  type Notification[+T] = rx.Notification[_ <: T]
-  type Timestamped[+T] = rx.util.Timestamped[_ <: T]
-  
-  type Subscription = rx.Subscription
-  type Scheduler = rx.Scheduler
-
-  object util {
-    type Closing = rx.util.Closing
-    type Opening = rx.util.Opening
-  }
- 
-}
 
 /**
  * The Observable interface that implements the Reactive Pattern.
@@ -55,11 +28,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
 {
   import scala.collection.JavaConverters._
   import scala.concurrent.duration.Duration
-  import All._
-  import All.util._
-  import rx.lang.scala.observables._
   import rx.{Observable => JObservable}
-  import ImplicitFunctionConversions._
+  import rx.lang.scala.util._
+  import rx.lang.scala.observables._
+  import rx.lang.scala.internal.ImplicitFunctionConversions._
 
   /**
    * An {@link Observer} must call an Observable's {@code subscribe} method in order to
@@ -1283,10 +1255,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
 
 object Observable {
   import scala.collection.JavaConverters._
+  import scala.concurrent.duration.Duration
   import scala.concurrent.Future
-  import rx.lang.scala.All._
   import rx.{Observable => JObservable}
-  import ImplicitFunctionConversions._
+  import rx.lang.scala.internal.ImplicitFunctionConversions._
 
   /**
    * Creates an Observable that will execute the given function when an {@link Observer} subscribes to it.
@@ -1618,13 +1590,16 @@ object Observable {
   // public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction)
   // // public static <R> Observable<R> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction)
 
+  def interval(duration: Duration): Observable[Long] = {
+    (new Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit))).map(_.longValue())
+  }
 }
 
 // Cannot yet have inner class because of this error message:
 // implementation restriction: nested class is not allowed in value class.
 // This restriction is planned to be removed in subsequent releases.  
 class WithFilter[+T] private[scala] (p: T => Boolean, wrapped: rx.Observable[_ <: T]) {
-  import ImplicitFunctionConversions._
+  import rx.lang.scala.internal.ImplicitFunctionConversions._
   
   def map[B](f: T => B): Observable[B] = new Observable(wrapped.filter(p).map(f))
   def flatMap[B](f: T => Observable[B]): Observable[B] = {
@@ -1634,13 +1609,15 @@ class WithFilter[+T] private[scala] (p: T => Boolean, wrapped: rx.Observable[_ <
   def withFilter(p: T => Boolean): Observable[T] = new Observable(wrapped.filter(p))
 }
 
+import org.scalatest.junit.JUnitSuite
+
 class UnitTestSuite extends JUnitSuite {
+  import scala.concurrent.duration._
   import org.junit.{Before, Test, Ignore}
   import org.junit.Assert._
   import org.mockito.Matchers.any
   import org.mockito.Mockito._
   import org.mockito.{ MockitoAnnotations, Mock }
-  import rx.lang.scala.All._
   
   // Tests which needn't be run:
   
@@ -1656,33 +1633,6 @@ class UnitTestSuite extends JUnitSuite {
   
   // Tests which have to be run:
   
-  @Test def testTest() = {
-    val a: Observable[Int] = Observable()
-    
-    println("testTest")
-    assertEquals(4, Observable(1, 2, 3, 4).toBlockingObservable.last)
-  }
-  
-  @Test def testSequenceEqualUnnecessary() {
-    // the sequenceEqual is unnecessary
-    val first = Observable(10, 11, 12)
-    val second = Observable(10, 11, 12)
-    
-    val b1 = (first zip second) map (p => p._1 == p._2)
-    
-    val equality = (a: Any, b: Any) => a == b
-    
-    val b2 = (first zip second) map (p => equality(p._1, p._2))
-    
-    // TODO assertions
-  }
-  
-  @Test def testStartWithUnnecessary() {
-    val before = Observable(-2, -1, 0)
-    val source = Observable(1, 2, 3)
-    before ++ source
-  }
-  
   @Test def testDematerialize() {
     val o = Observable(1, 2, 3)
     val mat = o.materialize
@@ -1694,9 +1644,9 @@ class UnitTestSuite extends JUnitSuite {
     assertEquals(demat.toBlockingObservable.toIterable.toList, List(1, 2, 3))
   }
   
-  @Test def testSwitchNoTiming() {
-    val o = Observable(Observable(1, 2), Observable(3, 4))
-    println(o.switch.toBlockingObservable.toIterable.toList)
+  @Test def testTest() = {
+    val a: Observable[Int] = Observable()
+    assertEquals(4, Observable(1, 2, 3, 4).toBlockingObservable.last)
   }
   
 }
