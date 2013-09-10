@@ -17,12 +17,15 @@ package rx.operators;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
 import static org.mockito.Mockito.*;
@@ -38,6 +41,9 @@ public final class OperationRefCount<T> {
 
     private static class RefCount<T> implements Func1<Observer<T>, Subscription> {
         private final ConnectableObservable<T> innerConnectableObservable;
+        private final Object gate = new Object();
+        private int count = 0;
+        private Subscription connection = null;
 
         public RefCount(ConnectableObservable<T> innerConnectableObservable) {
             this.innerConnectableObservable = innerConnectableObservable;
@@ -45,10 +51,28 @@ public final class OperationRefCount<T> {
 
         @Override
         public Subscription call(Observer<T> observer) {
-            throw new UnsupportedOperationException();
+            final Subscription subscription = innerConnectableObservable.subscribe(observer);
+            synchronized (gate) {
+                if (count++ == 0) {
+                    connection = innerConnectableObservable.connect();
+                }
+            }
+            return Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    synchronized (gate) {
+                        if (--count == 0) {
+                            connection.unsubscribe();
+                            connection = null;
+                        }
+                    }
+                    subscription.unsubscribe();
+                }
+            });
         }
     }
 
+    @RunWith(JUnit4.class)
     public static class UnitTest {
 
         @Before
@@ -58,8 +82,10 @@ public final class OperationRefCount<T> {
 
         @Test
         public void subscriptionToUnderlyingOnFirstSubscription() {
+            @SuppressWarnings("unchecked")
             ConnectableObservable<Integer> connectable = mock(ConnectableObservable.class);
             Observable<Integer> refCounted = Observable.create(refCount(connectable));
+            @SuppressWarnings("unchecked")
             Observer<Integer> observer = mock(Observer.class);
             when(connectable.subscribe(observer)).thenReturn(Subscriptions.empty());
             when(connectable.connect()).thenReturn(Subscriptions.empty());
@@ -70,17 +96,53 @@ public final class OperationRefCount<T> {
 
         @Test
         public void noSubscriptionToUnderlyingOnSecondSubscription() {
-
+            @SuppressWarnings("unchecked")
+            ConnectableObservable<Integer> connectable = mock(ConnectableObservable.class);
+            Observable<Integer> refCounted = Observable.create(refCount(connectable));
+            @SuppressWarnings("unchecked")
+            Observer<Integer> observer = mock(Observer.class);
+            when(connectable.subscribe(observer)).thenReturn(Subscriptions.empty());
+            when(connectable.connect()).thenReturn(Subscriptions.empty());
+            refCounted.subscribe(observer);
+            refCounted.subscribe(observer);
+            verify(connectable, times(2)).subscribe(observer);
+            verify(connectable, times(1)).connect();
         }
 
         @Test
         public void unsubscriptionFromUnderlyingOnLastUnsubscription() {
-
+            @SuppressWarnings("unchecked")
+            ConnectableObservable<Integer> connectable = mock(ConnectableObservable.class);
+            Observable<Integer> refCounted = Observable.create(refCount(connectable));
+            @SuppressWarnings("unchecked")
+            Observer<Integer> observer = mock(Observer.class);
+            Subscription underlying = mock(Subscription.class);
+            when(connectable.subscribe(observer)).thenReturn(underlying);
+            Subscription connection = mock(Subscription.class);
+            when(connectable.connect()).thenReturn(connection);
+            Subscription first = refCounted.subscribe(observer);
+            first.unsubscribe();
+            verify(underlying, times(1)).unsubscribe();
+            verify(connection, times(1)).unsubscribe();
         }
 
         @Test
         public void noUnsubscriptionFromUnderlyingOnFirstUnsubscription() {
-
+            @SuppressWarnings("unchecked")
+            ConnectableObservable<Integer> connectable = mock(ConnectableObservable.class);
+            Observable<Integer> refCounted = Observable.create(refCount(connectable));
+            @SuppressWarnings("unchecked")
+            Observer<Integer> observer = mock(Observer.class);
+            Subscription underlying = mock(Subscription.class);
+            when(connectable.subscribe(observer)).thenReturn(underlying);
+            Subscription connection = mock(Subscription.class);
+            when(connectable.connect()).thenReturn(connection);
+            Subscription first = refCounted.subscribe(observer);
+            Subscription second = refCounted.subscribe(observer);
+            first.unsubscribe();
+            second.unsubscribe();
+            verify(underlying, times(2)).unsubscribe();
+            verify(connection, times(1)).unsubscribe();
         }
     }
 }
