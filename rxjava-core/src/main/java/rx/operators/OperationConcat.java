@@ -60,7 +60,7 @@ public final class OperationConcat {
         return concat(Observable.from(sequences));
     }
 
-    public static <T> OnSubscribeFunc<T> concat(final List<? extends Observable<? extends T>> sequences) {
+    public static <T> OnSubscribeFunc<T> concat(final Iterable<? extends Observable<? extends T>> sequences) {
         return concat(Observable.from(sequences));
     }
 
