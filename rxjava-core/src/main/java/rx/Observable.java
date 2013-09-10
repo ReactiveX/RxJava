@@ -920,23 +920,6 @@ public class Observable<T> {
     }
 
     /**
-     * Flattens a list of Observables into one Observable, without any transformation.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
-     * <p>
-     * You can combine the items emitted by multiple Observables so that they act like a single
-     * Observable, by using the <code>merge</code> method.
-     * 
-     * @param source
-     *            an Iterable of Observables
-     * @return an Observable that emits items that are the result of flattening the {@code source} list of Observables
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge</a>
-     */
-    public static <T> Observable<T> merge(Iterable<? extends Observable<? extends T>> source) {
-        return create(OperationMerge.merge(source));
-    }
-
-    /**
      * Flattens a sequence of Observables emitted by an Observable into one Observable, without any
      * transformation.
      * <p>
@@ -1422,30 +1405,6 @@ public class Observable<T> {
     }
 
     /**
-     * This behaves like {@link #merge(java.util.List)} except that if any of the merged Observables
-     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
-     * refrain from propagating that error notification until all of the merged Observables have
-     * finished emitting items.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
-     * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
-     * Observers once.
-     * <p>
-     * This method allows an Observer to receive all successfully emitted items from all of the
-     * source Observables without being interrupted by an error notification from one of them.
-     * 
-     * @param source
-     *            a list of Observables
-     * @return an Observable that emits items that are the result of flattening the items emitted by
-     *         the {@code source} list of Observables
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
-     */
-    public static <T> Observable<T> mergeDelayError(List<? extends Observable<? extends T>> source) {
-        return create(OperationMergeDelayError.mergeDelayError(source));
-    }
-
-    /**
      * This behaves like {@link #merge(Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
      * refrain from propagating that error notification until all of the merged Observables have
@@ -1483,14 +1442,270 @@ public class Observable<T> {
      * This method allows an Observer to receive all successfully emitted items from all of the
      * source Observables without being interrupted by an error notification from one of them.
      * 
-     * @param source
-     *            a series of Observables
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
      * @return an Observable that emits items that are the result of flattening the items emitted by
      *         the {@code source} Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
      */
-    public static <T> Observable<T> mergeDelayError(Observable<? extends T>... source) {
-        return create(OperationMergeDelayError.mergeDelayError(source));
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @param t7
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @param t7
+     *            an Observable to be merged
+     * @param t8
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7, t8));
+    }
+    
+    /**
+     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+     * refrain from propagating that error notification until all of the merged Observables have
+     * finished emitting items.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+     * Observers once.
+     * <p>
+     * This method allows an Observer to receive all successfully emitted items from all of the
+     * source Observables without being interrupted by an error notification from one of them.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @param t2
+     *            an Observable to be merged
+     * @param t3
+     *            an Observable to be merged
+     * @param t4
+     *            an Observable to be merged
+     * @param t5
+     *            an Observable to be merged
+     * @param t6
+     *            an Observable to be merged
+     * @param t7
+     *            an Observable to be merged
+     * @param t8
+     *            an Observable to be merged
+     * @param t9
+     *            an Observable to be merged
+     * @return an Observable that emits items that are the result of flattening the items emitted by
+     *         the {@code source} Observables
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
+     */
+    @SuppressWarnings("unchecked")
+    // suppress because the types are checked by the method signature before using a vararg
+    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
+        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
     /**

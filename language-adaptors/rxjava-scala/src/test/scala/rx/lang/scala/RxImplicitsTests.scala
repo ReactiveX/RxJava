@@ -135,8 +135,7 @@ class UnitTestSuite extends JUnitSuite {
     @Test def testMerge {
         val observable1 = Observable.from(1, 2, 3)
         val observable2 = Observable.from(4, 5, 6)
-        val observableList = List(observable1, observable2).asJava
-        val merged = Observable.merge(observableList)
+        val merged = Observable.merge(observable1, observable2)
         assertSubscribeReceives(merged)(1, 2, 3, 4, 5, 6)
     }
     
