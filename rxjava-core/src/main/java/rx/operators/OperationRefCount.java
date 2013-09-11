@@ -70,7 +70,6 @@ public final class OperationRefCount<T> {
             });
         }
 
-        @RunWith(JUnit4.class)
         public static class UnitTest {
 
             @Before
