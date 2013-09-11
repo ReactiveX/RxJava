@@ -453,15 +453,9 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         "count" produced values.
    */
   def window(count: Int): Observable[Observable[T]] = {
-    // this line makes the compiler crash (if it's the last line of the method):
-    // Observable.jObsOfJObsToScObsOfScObs(asJava.window(count))
-    
-    // this line gives an error:
-    // "type mismatch; found : rx.Observable[rx.Observable[_$1]] required: rx.Observable[rx.Observable[T]]"
-    // Observable.jObsOfJObsToScObsOfScObs(asJava.window(count) : JObservable[JObservable[T]])
-    
-    // workaround with a cast:
-    Observable.jObsOfJObsToScObsOfScObs(asJava.window(count).asInstanceOf[JObservable[JObservable[T]]])
+    // this unnecessary ascription is needed because of this bug (without, compiler crashes):
+    // https://issues.scala-lang.org/browse/SI-7818
+    Observable.jObsOfJObsToScObsOfScObs(asJava.window(count)) : Observable[Observable[T]]
   }
 
   /**
