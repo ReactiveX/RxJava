@@ -52,6 +52,7 @@ import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
+import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
@@ -3127,6 +3128,42 @@ public class Observable<T> {
      */
     public ConnectableObservable<T> replay() {
         return OperationMulticast.multicast(this, ReplaySubject.<T> create());
+    }
+    
+    /**
+     * Retry subscription to origin Observable upto given retry count.
+     * <p>
+     * If {@link Observer#onError} is invoked the source Observable will be re-subscribed to as many times as defined by retryCount.
+     * <p>
+     * Any {@link Observer#onNext} calls received on each attempt will be emitted and concatenated together.
+     * <p>
+     * For example, if an Observable fails on first time but emits [1, 2] then succeeds the second time and
+     * emits [1, 2, 3, 4, 5] then the complete output would be [1, 2, 1, 2, 3, 4, 5, onCompleted].
+     * 
+     * @param retryCount
+     *            Number of retry attempts before failing.
+     * @return Observable with retry logic.
+     */
+    public Observable<T> retry(int retryCount) {
+        return create(OperationRetry.retry(this, retryCount));
+    }
+
+    /**
+     * Retry subscription to origin Observable whenever onError is called (infinite retry count).
+     * <p>
+     * If {@link Observer#onError} is invoked the source Observable will be re-subscribed to.
+     * <p>
+     * Any {@link Observer#onNext} calls received on each attempt will be emitted and concatenated together.
+     * <p>
+     * For example, if an Observable fails on first time but emits [1, 2] then succeeds the second time and
+     * emits [1, 2, 3, 4, 5] then the complete output would be [1, 2, 1, 2, 3, 4, 5, onCompleted].
+     * 
+     * @param retryCount
+     *            Number of retry attempts before failing.
+     * @return Observable with retry logic.
+     */
+    public Observable<T> retry() {
+        return create(OperationRetry.retry(this));
     }
 
     /**
