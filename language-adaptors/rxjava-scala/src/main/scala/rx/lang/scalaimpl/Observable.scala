@@ -1243,6 +1243,25 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   // TODO naming: follow C# (switch) or Java (switchOnNext)?
   // public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) 
   
+ /**
+   * Flattens two Observables into one Observable, without any transformation.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+   * <p>
+   * You can combine items emitted by two Observables so that they act like a single
+   * Observable by using the {@code merge} method.
+   * 
+   * @param that
+   *            an Observable to be merged
+   * @return an Observable that emits items from {@code this} and {@code that} until 
+   *            {@code this} or {@code that} emits {@code onError} or {@code onComplete}.
+   */
+  def merge[U >: T](that: Observable[U]): Observable[U] = {
+    val thisJava: rx.Observable[_ <: U] = this.asJava
+    val thatJava: rx.Observable[_ <: U] = that.asJava
+    new Observable[U](rx.Observable.merge(thisJava, thatJava))
+  }
+  
   /**
    * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking
    * operators).
@@ -1410,7 +1429,7 @@ object Observable {
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge</a>
    */
   // public static <T> Observable<T> merge(List<? extends Observable<? extends T>> source) 
-  // TODO decide if instance method mergeWith (?)
+  // TODO do we need this or is the binary instance method merge sufficient?
   
     /**
    * Flattens a sequence of Observables emitted by an Observable into one Observable, without any
@@ -1428,7 +1447,6 @@ object Observable {
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
    */
   // public static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source)
-  // TODO decide if instance method mergeWith (?)
 
   /**
    * Flattens a series of Observables into one Observable, without any transformation.

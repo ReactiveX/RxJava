@@ -88,7 +88,8 @@ class RxScalaDemo extends JUnitSuite {
     val slowNumbers = Observable.interval(400 millis).take(5).map("slow " + _)
     val fastNumbers = Observable.interval(200 millis).take(10).map("fast " + _)
     
-    // TODO
+    (slowNumbers merge fastNumbers).subscribe(output(_))
+    sleep(2500)
   }
   
 }
