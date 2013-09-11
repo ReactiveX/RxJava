@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -152,32 +151,27 @@ public class RxJavaPlugins {
 
     public static class UnitTest {
 
-        @After
-        public void reset() {
-            // use private access to reset so we can test different initializations via the public static flow
-            RxJavaPlugins.getInstance().errorHandler.set(null);
-            RxJavaPlugins.getInstance().observableExecutionHook.set(null);
-        }
-
         @Test
         public void testErrorHandlerDefaultImpl() {
-            RxJavaErrorHandler impl = RxJavaPlugins.getInstance().getErrorHandler();
+            RxJavaErrorHandler impl = new RxJavaPlugins().getErrorHandler();
             assertTrue(impl instanceof RxJavaErrorHandlerDefault);
         }
 
         @Test
         public void testErrorHandlerViaRegisterMethod() {
-            RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandlerTestImpl());
-            RxJavaErrorHandler impl = RxJavaPlugins.getInstance().getErrorHandler();
+            RxJavaPlugins p = new RxJavaPlugins();
+            p.registerErrorHandler(new RxJavaErrorHandlerTestImpl());
+            RxJavaErrorHandler impl = p.getErrorHandler();
             assertTrue(impl instanceof RxJavaErrorHandlerTestImpl);
         }
 
         @Test
         public void testErrorHandlerViaProperty() {
             try {
+                RxJavaPlugins p = new RxJavaPlugins();
                 String fullClass = getFullClassNameForTestClass(RxJavaErrorHandlerTestImpl.class);
                 System.setProperty("rxjava.plugin.RxJavaErrorHandler.implementation", fullClass);
-                RxJavaErrorHandler impl = RxJavaPlugins.getInstance().getErrorHandler();
+                RxJavaErrorHandler impl = p.getErrorHandler();
                 assertTrue(impl instanceof RxJavaErrorHandlerTestImpl);
             } finally {
                 System.clearProperty("rxjava.plugin.RxJavaErrorHandler.implementation");
@@ -191,26 +185,29 @@ public class RxJavaPlugins {
 
         @Test
         public void testObservableExecutionHookDefaultImpl() {
-            RxJavaObservableExecutionHook impl = RxJavaPlugins.getInstance().getObservableExecutionHook();
+            RxJavaPlugins p = new RxJavaPlugins();
+            RxJavaObservableExecutionHook impl = p.getObservableExecutionHook();
             assertTrue(impl instanceof RxJavaObservableExecutionHookDefault);
         }
 
         @Test
         public void testObservableExecutionHookViaRegisterMethod() {
-            RxJavaPlugins.getInstance().registerObservableExecutionHook(new RxJavaObservableExecutionHookTestImpl());
-            RxJavaObservableExecutionHook impl = RxJavaPlugins.getInstance().getObservableExecutionHook();
+            RxJavaPlugins p = new RxJavaPlugins();
+            p.registerObservableExecutionHook(new RxJavaObservableExecutionHookTestImpl());
+            RxJavaObservableExecutionHook impl = p.getObservableExecutionHook();
             assertTrue(impl instanceof RxJavaObservableExecutionHookTestImpl);
         }
 
         @Test
         public void testObservableExecutionHookViaProperty() {
             try {
+                RxJavaPlugins p = new RxJavaPlugins();
                 String fullClass = getFullClassNameForTestClass(RxJavaObservableExecutionHookTestImpl.class);
                 System.setProperty("rxjava.plugin.RxJavaObservableExecutionHook.implementation", fullClass);
-                RxJavaObservableExecutionHook impl = RxJavaPlugins.getInstance().getObservableExecutionHook();
+                RxJavaObservableExecutionHook impl = p.getObservableExecutionHook();
                 assertTrue(impl instanceof RxJavaObservableExecutionHookTestImpl);
             } finally {
-                System.clearProperty("rxjava.plugin.RxJavaErrorHandler.implementation");
+                System.clearProperty("rxjava.plugin.RxJavaObservableExecutionHook.implementation");
             }
         }
 

@@ -38,7 +38,7 @@ import rx.util.functions.Func1;
 
 public abstract class ConnectableObservable<T> extends Observable<T> {
 
-    protected ConnectableObservable(Func1<Observer<T>, Subscription> onSubscribe) {
+    protected ConnectableObservable(OnSubscribeFunc<T> onSubscribe) {
         super(onSubscribe);
     }
 

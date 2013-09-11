@@ -22,9 +22,9 @@ import org.junit.Test;
 
 import rx.Notification;
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
 
 /**
  * Reverses the effect of {@link OperationMaterialize} by transforming the Notification objects
@@ -45,21 +45,21 @@ public final class OperationDematerialize {
      * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">Observable.Dematerialize(TSource) Method </a>
      */
-    public static <T> Func1<Observer<T>, Subscription> dematerialize(final Observable<Notification<T>> sequence) {
+    public static <T> OnSubscribeFunc<T> dematerialize(final Observable<? extends Notification<? extends T>> sequence) {
         return new DematerializeObservable<T>(sequence);
     }
 
-    private static class DematerializeObservable<T> implements Func1<Observer<T>, Subscription> {
+    private static class DematerializeObservable<T> implements OnSubscribeFunc<T> {
 
-        private final Observable<Notification<T>> sequence;
+        private final Observable<? extends Notification<? extends T>> sequence;
 
-        public DematerializeObservable(Observable<Notification<T>> sequence) {
+        public DematerializeObservable(Observable<? extends Notification<? extends T>> sequence) {
             this.sequence = sequence;
         }
 
         @Override
-        public Subscription call(final Observer<T> observer) {
-            return sequence.subscribe(new Observer<Notification<T>>() {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
+            return sequence.subscribe(new Observer<Notification<? extends T>>() {
                 @Override
                 public void onCompleted() {
                 }
@@ -69,7 +69,7 @@ public final class OperationDematerialize {
                 }
 
                 @Override
-                public void onNext(Notification<T> value) {
+                public void onNext(Notification<? extends T> value) {
                     switch (value.getKind()) {
                     case OnNext:
                         observer.onNext(value.getValue());
@@ -92,7 +92,7 @@ public final class OperationDematerialize {
         @SuppressWarnings("unchecked")
         public void testDematerialize1() {
             Observable<Notification<Integer>> notifications = Observable.from(1, 2).materialize();
-            Observable<Integer> dematerialize = Observable.dematerialize(notifications);
+            Observable<Integer> dematerialize = notifications.dematerialize();
 
             Observer<Integer> aObserver = mock(Observer.class);
             dematerialize.subscribe(aObserver);

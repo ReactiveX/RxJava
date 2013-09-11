@@ -47,14 +47,14 @@ public class CurrentThreadScheduler extends Scheduler {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     @Override
-    public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action) {
+    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
         DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
         enqueue(discardableAction, now());
         return discardableAction;
     }
 
     @Override
-    public <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
+    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long dueTime, TimeUnit unit) {
         long execTime = now() + unit.toMillis(dueTime);
 
         DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, new SleepingAction<T>(action, this, execTime));

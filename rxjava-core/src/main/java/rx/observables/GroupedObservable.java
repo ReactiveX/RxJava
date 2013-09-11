@@ -16,15 +16,13 @@
 package rx.observables;
 
 import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
 import rx.util.functions.Func1;
 
 /**
  * An {@link Observable} that has been grouped by a key whose value can be obtained using
  * {@link #getKey()} <p>
  *
- * @see Observable#groupBy(Observable, Func1)
+ * @see Observable#groupBy(Func1)
  *
  * @param <K> the type of the key
  * @param <T> the type of the elements in the group
@@ -32,7 +30,7 @@ import rx.util.functions.Func1;
 public class GroupedObservable<K, T> extends Observable<T> {
     private final K key;
 
-    public GroupedObservable(K key, Func1<Observer<T>, Subscription> onSubscribe) {
+    public GroupedObservable(K key, OnSubscribeFunc<T> onSubscribe) {
         super(onSubscribe);
         this.key = key;
     }

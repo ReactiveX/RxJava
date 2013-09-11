@@ -38,7 +38,6 @@ import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-import rx.util.functions.Func0;
 import rx.util.functions.Func2;
 
 /**
@@ -56,7 +55,7 @@ public final class SwingScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action) {
+    public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
         final AtomicReference<Subscription> sub = new AtomicReference<Subscription>();
         EventQueue.invokeLater(new Runnable() {
             @Override
@@ -76,7 +75,7 @@ public final class SwingScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedule(final T state, final Func2<Scheduler, T, Subscription> action, long dueTime, TimeUnit unit) {
+    public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long dueTime, TimeUnit unit) {
         final AtomicReference<Subscription> sub = new AtomicReference<Subscription>();
         long delay = unit.toMillis(dueTime);
         assertThatTheDelayIsValidForTheSwingTimer(delay);
@@ -114,7 +113,7 @@ public final class SwingScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedulePeriodically(T state, final Func2<Scheduler, T, Subscription> action, long initialDelay, long period, TimeUnit unit) {
+    public <T> Subscription schedulePeriodically(T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long initialDelay, long period, TimeUnit unit) {
         final AtomicReference<Timer> timer = new AtomicReference<Timer>();
 
         final long delay = unit.toMillis(period);
@@ -187,14 +186,12 @@ public final class SwingScheduler extends Scheduler {
             final CountDownLatch latch = new CountDownLatch(4);
 
             final Action0 innerAction = mock(Action0.class);
-            final Action0 unsubscribe = mock(Action0.class);
-            final Func0<Subscription> action = new Func0<Subscription>() {
+            final Action0 action = new Action0() {
                 @Override
-                public Subscription call() {
+                public void call() {
                     try {
                         innerAction.call();
                         assertTrue(SwingUtilities.isEventDispatchThread());
-                        return Subscriptions.create(unsubscribe);
                     } finally {
                         latch.countDown();
                     }
@@ -210,7 +207,6 @@ public final class SwingScheduler extends Scheduler {
             sub.unsubscribe();
             waitForEmptyEventQueue();
             verify(innerAction, times(4)).call();
-            verify(unsubscribe, times(4)).call();
         }
 
         @Test

@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -53,21 +54,21 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnErrorResumeNextViaFunction<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> onErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<Throwable, Observable<T>> resumeFunction) {
+    public static <T> OnSubscribeFunc<T> onErrorResumeNextViaFunction(Observable<? extends T> originalSequence, Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) {
         return new OnErrorResumeNextViaFunction<T>(originalSequence, resumeFunction);
     }
 
-    private static class OnErrorResumeNextViaFunction<T> implements Func1<Observer<T>, Subscription> {
+    private static class OnErrorResumeNextViaFunction<T> implements OnSubscribeFunc<T> {
 
-        private final Func1<Throwable, Observable<T>> resumeFunction;
-        private final Observable<T> originalSequence;
+        private final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction;
+        private final Observable<? extends T> originalSequence;
 
-        public OnErrorResumeNextViaFunction(Observable<T> originalSequence, Func1<Throwable, Observable<T>> resumeFunction) {
+        public OnErrorResumeNextViaFunction(Observable<? extends T> originalSequence, Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) {
             this.resumeFunction = resumeFunction;
             this.originalSequence = originalSequence;
         }
 
-        public Subscription call(final Observer<T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
             final AtomicReference<SafeObservableSubscription> subscriptionRef = new AtomicReference<SafeObservableSubscription>(new SafeObservableSubscription());
 
@@ -87,7 +88,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
                     // check that we have not been unsubscribed before we can process the error
                     if (currentSubscription != null) {
                         try {
-                            Observable<T> resumeSequence = resumeFunction.call(ex);
+                            Observable<? extends T> resumeSequence = resumeFunction.call(ex);
                             /* error occurred, so switch subscription to the 'resumeSequence' */
                             SafeObservableSubscription innerSubscription = new SafeObservableSubscription(resumeSequence.subscribe(observer));
                             /* we changed the sequence, so also change the subscription to the one of the 'resumeSequence' instead */
@@ -127,10 +128,10 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
         @Test
         public void testResumeNextWithSynchronousExecution() {
             final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
-            Observable<String> w = Observable.create(new Func1<Observer<String>, Subscription>() {
+            Observable<String> w = Observable.create(new OnSubscribeFunc<String>() {
 
                 @Override
-                public Subscription call(Observer<String> observer) {
+                public Subscription onSubscribe(Observer<? super String> observer) {
                     observer.onNext("one");
                     observer.onError(new Throwable("injected failure"));
                     return Subscriptions.empty();
@@ -176,7 +177,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
                 }
 
             };
-            Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(w, resume));
+            Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(Observable.create(w), resume));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -213,7 +214,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
                 }
 
             };
-            Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(w, resume));
+            Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(Observable.create(w), resume));
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -233,7 +234,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
             verify(aObserver, times(0)).onCompleted();
         }
 
-        private static class TestObservable extends Observable<String> {
+        private static class TestObservable implements OnSubscribeFunc<String> {
 
             final Subscription s;
             final String[] values;
@@ -245,7 +246,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

@@ -1,3 +1,18 @@
+/**
+ * Copyright 2013 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.observables;
 
 import static org.junit.Assert.*;
@@ -13,27 +28,24 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.operators.SafeObservableSubscription;
-import rx.operators.SafeObserver;
 import rx.operators.OperationMostRecent;
 import rx.operators.OperationNext;
 import rx.operators.OperationToFuture;
 import rx.operators.OperationToIterator;
+import rx.operators.SafeObservableSubscription;
+import rx.operators.SafeObserver;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
-import rx.util.functions.FuncN;
-import rx.util.functions.Functions;
 
 /**
  * An extension of {@link Observable} that provides blocking operators.
  * <p>
- * You construct a BlockingObservable from an Observable with {@link #from(Observable)} or
- * {@link Observable#toBlockingObservable()}
- * <p>
+ * You construct a BlockingObservable from an Observable with {@link #from(Observable)} or {@link Observable#toBlockingObservable()} <p>
  * The documentation for this interface makes use of a form of marble diagram that has been
  * modified to illustrate blocking operators. The following legend explains these marble diagrams:
  * <p>
@@ -45,202 +57,23 @@ import rx.util.functions.Functions;
  * 
  * @param <T>
  */
-public class BlockingObservable<T> extends Observable<T> {
+public class BlockingObservable<T> {
 
-    protected BlockingObservable(Func1<Observer<T>, Subscription> onSubscribe) {
-        super(onSubscribe);
-    }
-    
-    /**
-     * Used to prevent public instantiation
-     */
-    @SuppressWarnings("unused")
-    private BlockingObservable() {
-        // prevent public instantiation
+    private final Observable<? extends T> o;
+
+    private BlockingObservable(Observable<? extends T> o) {
+        this.o = o;
     }
 
     /**
      * Convert an Observable into a BlockingObservable.
      */
-    public static <T> BlockingObservable<T> from(final Observable<T> o) {
-        return new BlockingObservable<T>(new Func1<Observer<T>, Subscription>() {
-
-            @Override
-            public Subscription call(Observer<T> observer) {
-                return o.subscribe(observer);
-            }
-        });
+    public static <T> BlockingObservable<T> from(final Observable<? extends T> o) {
+        return new BlockingObservable<T>(o);
     }
 
-    /**
-     * Returns an {@link Iterator} that iterates over all items emitted by a specified
-     * {@link Observable}.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterator.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @param <T>
-     *            the type of items emitted by the source {@link Observable}
-     * @return an {@link Iterator} that can iterate over the items emitted by the {@link Observable}
-     */
-    public static <T> Iterator<T> toIterator(Observable<T> source) {
-        return OperationToIterator.toIterator(source);
-    }
-
-    /**
-     * Returns the last item emitted by a specified {@link Observable}.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @return the last item emitted by the source {@link Observable}
-     */
-    public static <T> T last(final Observable<T> source) {
-        return from(source).last();
-    }
-
-    /**
-     * Returns the last item emitted by an {@link Observable} that matches a given predicate.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the {@link Observable}
-     * @return the last item emitted by the {@link Observable} for which the predicate function
-     *         returns <code>true</code>
-     */
-    public static <T> T last(final Observable<T> source, final Func1<T, Boolean> predicate) {
-        return last(source.filter(predicate));
-    }
-
-    /**
-     * Returns the last item emitted by an {@link Observable} that matches a given predicate.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the {@link Observable}
-     * @return the last item emitted by the {@link Observable} for which the predicate function
-     *         returns <code>true</code>
-     */
-    public static <T> T last(final Observable<T> source, final Object predicate) {
-        return last(source.filter(predicate));
-    }
-
-    /**
-     * Returns the last item emitted by an {@link Observable}, or a default value if no item is
-     * emitted.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @param defaultValue
-     *            a default value to return if the {@link Observable} emits no items
-     * @param <T>
-     *            the type of items emitted by the {@link Observable}
-     * @return the last item emitted by an {@link Observable}, or the default value if no item is
-     *         emitted
-     */
-    public static <T> T lastOrDefault(Observable<T> source, T defaultValue) {
-        return from(source).lastOrDefault(defaultValue);
-    }
-
-    /**
-     * Returns the last item emitted by an {@link Observable} that matches a given predicate, or a
-     * default value if no such item is emitted.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @param defaultValue
-     *            a default value to return if the {@link Observable} emits no matching items
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the {@link Observable}
-     * @param <T>
-     *            the type of items emitted by the {@link Observable}
-     * @return the last item emitted by an {@link Observable} that matches the predicate, or the
-     *         default value if no matching item is emitted
-     */
-    public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Func1<T, Boolean> predicate) {
-        return lastOrDefault(source.filter(predicate), defaultValue);
-    }
-
-    /**
-     * Returns the last item emitted by an {@link Observable} that matches a given predicate, or a
-     * default value if no such item is emitted.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @param defaultValue
-     *            a default value to return if the {@link Observable} emits no matching items
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the {@link Observable}
-     * @param <T>
-     *            the type of items emitted by the {@link Observable}
-     * @return the last item emitted by an {@link Observable} that matches the predicate, or the
-     *         default value if no matching item is emitted
-     */
-    public static <T> T lastOrDefault(Observable<T> source, T defaultValue, Object predicate) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(predicate);
-
-        return lastOrDefault(source, defaultValue, new Func1<T, Boolean>() {
-            @Override
-            public Boolean call(T args) {
-                return (Boolean) _f.call(args);
-            }
-        });
-    }
-
-    /**
-     * Returns an {@link Iterable} that always returns the item most recently emitted by an
-     * {@link Observable}.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.mostRecent.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @param <T>
-     *            the type of items emitted by the {@link Observable}
-     * @param initialValue
-     *            the initial value that will be yielded by the {@link Iterable} sequence if the
-     *            {@link Observable} has not yet emitted an item
-     * @return an {@link Iterable} that on each iteration returns the item that the
-     *         {@link Observable} has most recently emitted
-     */
-    public static <T> Iterable<T> mostRecent(Observable<T> source, T initialValue) {
-        return OperationMostRecent.mostRecent(source, initialValue);
-    }
-
-    /**
-     * Returns an {@link Iterable} that blocks until the {@link Observable} emits another item,
-     * then returns that item.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.next.png">
-     * 
-     * @param items
-     *            the source {@link Observable}
-     * @param <T>
-     *            the type of items emitted by the {@link Observable}
-     * @return an {@link Iterable} that blocks upon each iteration until the {@link Observable}
-     *         emits a new item, whereupon the Iterable returns that item
-     */
-    public static <T> Iterable<T> next(Observable<T> items) {
-        return OperationNext.next(items);
-    }
-
-    private static <T> T _singleOrDefault(BlockingObservable<T> source, boolean hasDefault, T defaultValue) {
-        Iterator<T> it = source.toIterable().iterator();
+    private static <T> T _singleOrDefault(BlockingObservable<? extends T> source, boolean hasDefault, T defaultValue) {
+        Iterator<? extends T> it = source.toIterable().iterator();
 
         if (!it.hasNext()) {
             if (hasDefault) {
@@ -259,162 +92,24 @@ public class BlockingObservable<T> extends Observable<T> {
     }
 
     /**
-     * If the {@link Observable} completes after emitting a single item, return that item,
-     * otherwise throw an exception.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @return the single item emitted by the {@link Observable}
-     * @throws IllegalStateException
-     *             if the {@link Observable} does not emit exactly one item
-     */
-    public static <T> T single(Observable<T> source) {
-        return from(source).single();
-    }
-
-    /**
-     * If the {@link Observable} completes after emitting a single item that matches a given
-     * predicate, return that item, otherwise throw an exception.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the {@link Observable}
-     * @return the single item emitted by the source {@link Observable} that matches the predicate
-     * @throws IllegalStateException
-     *             if the {@link Observable} does not emit exactly one item that matches the
-     *             predicate
-     */
-    public static <T> T single(Observable<T> source, Func1<T, Boolean> predicate) {
-        return from(source).single(predicate);
-    }
-
-    /**
-     * If the {@link Observable} completes after emitting a single item that matches a given
-     * predicate, return that item, otherwise throw an exception.
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the {@link Observable}
-     * @return the single item emitted by the source {@link Observable} that matches the predicate
-     * @throws IllegalStateException
-     *             if the {@link Observable} does not emit exactly one item that matches the
-     *             predicate
-     */
-    public static <T> T single(Observable<T> source, Object predicate) {
-        return from(source).single(predicate);
-    }
-
-    /**
-     * If the {@link Observable} completes after emitting a single item, return that item, otherwise
-     * return a default value.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @param defaultValue
-     *            a default value to return if the {@link Observable} emits no items
-     * @return the single item emitted by the source {@link Observable}, or a default value if no
-     *         value is emitted
-     */
-    public static <T> T singleOrDefault(Observable<T> source, T defaultValue) {
-        return from(source).singleOrDefault(defaultValue);
-    }
-
-    /**
-     * If the {@link Observable} completes after emitting a single item that matches a given
-     * predicate, return that item, otherwise return a default value.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @param defaultValue
-     *            a default value to return if the {@link Observable} emits no matching items
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the {@link Observable}
-     * @return the single item emitted by the source {@link Observable} that matches the predicate,
-     *         or a default value if no such value is emitted
-     */
-    public static <T> T singleOrDefault(Observable<T> source, T defaultValue, Func1<T, Boolean> predicate) {
-        return from(source).singleOrDefault(defaultValue, predicate);
-    }
-
-    /**
-     * If the {@link Observable} completes after emitting a single item that matches a given
-     * predicate, return that item, otherwise return a default value.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @param defaultValue
-     *            a default value to return if the {@link Observable} emits no matching items
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the {@link Observable}
-     * @return the single item emitted by the source {@link Observable} that matches the predicate,
-     *         or a default value if no such value is emitted
-     */
-    public static <T> T singleOrDefault(Observable<T> source, T defaultValue, Object predicate) {
-        return from(source).singleOrDefault(defaultValue, predicate);
-    }
-
-    /**
-     * Returns a {@link Future} representing the single value emitted by an {@link Observable}.
-     * <p>
-     * <code>toFuture()</code> throws an exception if the {@link Observable} emits more than one
-     * item. If the Observable may emit more than item, use
-     * {@link Observable#toList toList()}.toFuture()</code>.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @return a Future that expects a single item to be emitted by the source {@link Observable}
-     */
-    public static <T> Future<T> toFuture(final Observable<T> source) {
-        return OperationToFuture.toFuture(source);
-    }
-
-    /**
-     * Converts an {@link Observable} into an {@link Iterable}.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterable.png">
-     * 
-     * @param source
-     *            the source {@link Observable}
-     * @return an {@link Iterable} version of the underlying {@link Observable}
-     */
-    public static <T> Iterable<T> toIterable(final Observable<T> source) {
-        return from(source).toIterable();
-    }
-
-    /**
      * Used for protecting against errors being thrown from {@link Observer} implementations and
      * ensuring onNext/onError/onCompleted contract compliance.
      * <p>
      * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect
      * calls to user code from within an operator"
      */
-    private Subscription protectivelyWrapAndSubscribe(Observer<T> o) {
+    private Subscription protectivelyWrapAndSubscribe(Observer<? super T> observer) {
         SafeObservableSubscription subscription = new SafeObservableSubscription();
-        return subscription.wrap(subscribe(new SafeObserver<T>(subscription, o)));
+        return subscription.wrap(o.subscribe(new SafeObserver<T>(subscription, observer)));
     }
-    
+
     /**
      * Invoke a method on each item emitted by the {@link Observable}; block until the Observable
      * completes.
      * <p>
      * NOTE: This will block even if the Observable is asynchronous.
      * <p>
-     * This is similar to {@link #subscribe(Observer)}, but it blocks. Because it blocks it does
+     * This is similar to {@link Observable#subscribe(Observer)}, but it blocks. Because it blocks it does
      * not need the {@link Observer#onCompleted()} or {@link Observer#onError(Throwable)} methods.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
@@ -424,7 +119,7 @@ public class BlockingObservable<T> extends Observable<T> {
      * @throws RuntimeException
      *             if an error occurs
      */
-    public void forEach(final Action1<T> onNext) {
+    public void forEach(final Action1<? super T> onNext) {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exceptionFromOnError = new AtomicReference<Throwable>();
 
@@ -477,54 +172,14 @@ public class BlockingObservable<T> extends Observable<T> {
     }
 
     /**
-     * Invoke a method on each item emitted by the {@link Observable}; block until the Observable
-     * completes.
-     * <p>
-     * NOTE: This will block even if the Observable is asynchronous.
-     * <p>
-     * This is similar to {@link #subscribe(Observer)}, but it blocks. Because it blocks it does
-     * not need the {@link Observer#onCompleted()} or {@link Observer#onError(Throwable)} methods.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
-     * 
-     * @param o
-     *            the {@link Action1} to invoke for every item emitted by the {@link Observable}
-     * @throws RuntimeException
-     *             if an error occurs
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void forEach(final Object o) {
-        if (o instanceof Action1) {
-            // in case a dynamic language is not correctly handling the overloaded methods and we receive an Action1 just forward to the correct method.
-            forEach((Action1) o);
-        }
-
-        // lookup and memoize onNext
-        if (o == null) {
-            throw new RuntimeException("onNext must be implemented");
-        }
-        final FuncN onNext = Functions.from(o);
-
-        forEach(new Action1() {
-
-            @Override
-            public void call(Object args) {
-                onNext.call(args);
-            }
-
-        });
-    }
-    
-    /**
-     * Returns an {@link Iterator} that iterates over all items emitted by a specified
-     * {@link Observable}.
+     * Returns an {@link Iterator} that iterates over all items emitted by a specified {@link Observable}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.getIterator.png">
      * 
      * @return an {@link Iterator} that can iterate over the items emitted by the {@link Observable}
      */
     public Iterator<T> getIterator() {
-        return OperationToIterator.toIterator(this);
+        return OperationToIterator.toIterator(o);
     }
 
     /**
@@ -551,29 +206,8 @@ public class BlockingObservable<T> extends Observable<T> {
      *            a predicate function to evaluate items emitted by the {@link Observable}
      * @return the last item emitted by the {@link Observable} that matches the predicate
      */
-    public T last(final Func1<T, Boolean> predicate) {
-        return last(this, predicate);
-    }
-
-    /**
-     * Returns the last item emitted by a specified {@link Observable} that matches a predicate.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
-     * 
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the {@link Observable}
-     * @return the last item emitted by the {@link Observable} that matches the predicate
-     */
-    public T last(final Object predicate) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(predicate);
-
-        return last(this, new Func1<T, Boolean>() {
-            @Override
-            public Boolean call(T args) {
-                return (Boolean) _f.call(args);
-            }
-        });
+    public T last(final Func1<? super T, Boolean> predicate) {
+        return from(o.filter(predicate)).last();
     }
 
     /**
@@ -616,41 +250,21 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the last item emitted by the {@link Observable} that matches the predicate, or the
      *         default value if no matching items are emitted
      */
-    public T lastOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
-        return lastOrDefault(this, defaultValue, predicate);
+    public T lastOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
+        return from(o.filter(predicate)).lastOrDefault(defaultValue);
     }
 
     /**
-     * Returns the last item emitted by a specified {@link Observable} that matches a predicate, or
-     * a default value if no such items are emitted.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png">
-     * 
-     * @param defaultValue
-     *            a default value to return if the {@link Observable} emits no matching items
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the {@link Observable}
-     * @return the last item emitted by the {@link Observable} that matches the predicate, or the
-     *         default value if no matching items are emitted
-     */
-    public T lastOrDefault(T defaultValue, Object predicate) {
-        return lastOrDefault(this, defaultValue, predicate);
-    }
-
-    /**
-     * Returns an {@link Iterable} that always returns the item most recently emitted by an
-     * {@link Observable}.
+     * Returns an {@link Iterable} that always returns the item most recently emitted by an {@link Observable}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.mostRecent.png">
      * 
      * @param initialValue
-     *            the initial value that will be yielded by the {@link Iterable} sequence if the
-     *            {@link Observable} has not yet emitted an item
-     * @return an {@link Iterable} that on each iteration returns the item that the
-     *         {@link Observable} has most recently emitted
+     *            the initial value that will be yielded by the {@link Iterable} sequence if the {@link Observable} has not yet emitted an item
+     * @return an {@link Iterable} that on each iteration returns the item that the {@link Observable} has most recently emitted
      */
     public Iterable<T> mostRecent(T initialValue) {
-        return mostRecent(this, initialValue);
+        return OperationMostRecent.mostRecent(o, initialValue);
     }
 
     /**
@@ -659,11 +273,10 @@ public class BlockingObservable<T> extends Observable<T> {
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.next.png">
      * 
-     * @return an {@link Iterable} that blocks upon each iteration until the {@link Observable}
-     *         emits a new item, whereupon the Iterable returns that item
+     * @return an {@link Iterable} that blocks upon each iteration until the {@link Observable} emits a new item, whereupon the Iterable returns that item
      */
     public Iterable<T> next() {
-        return next(this);
+        return OperationNext.next(o);
     }
 
     /**
@@ -688,30 +301,8 @@ public class BlockingObservable<T> extends Observable<T> {
      *            a predicate function to evaluate items emitted by the {@link Observable}
      * @return the single item emitted by the source {@link Observable} that matches the predicate
      */
-    public T single(Func1<T, Boolean> predicate) {
-        return _singleOrDefault(from(this.filter(predicate)), false, null);
-    }
-
-    /**
-     * If the {@link Observable} completes after emitting a single item that matches a given
-     * predicate, return that item, otherwise throw an exception.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
-     * 
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the {@link Observable}
-     * @return the single item emitted by the source {@link Observable} that matches the predicate
-     */
-    public T single(Object predicate) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(predicate);
-
-        return single(new Func1<T, Boolean>() {
-            @Override
-            public Boolean call(T t) {
-                return (Boolean) _f.call(t);
-            }
-        });
+    public T single(Func1<? super T, Boolean> predicate) {
+        return _singleOrDefault(from(o.filter(predicate)), false, null);
     }
 
     /**
@@ -743,50 +334,22 @@ public class BlockingObservable<T> extends Observable<T> {
      * @return the single item emitted by the {@link Observable} that matches the predicate, or the
      *         default value if no such items are emitted
      */
-    public T singleOrDefault(T defaultValue, Func1<T, Boolean> predicate) {
-        return _singleOrDefault(from(this.filter(predicate)), true, defaultValue);
-    }
-
-    /**
-     * If the {@link Observable} completes after emitting a single item that matches a predicate,
-     * return that item; if it emits more than one such item, throw an exception; if it emits no
-     * items, return a default value.
-     * <p>
-     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png">
-     * 
-     * @param defaultValue
-     *            a default value to return if the {@link Observable} emits no matching items
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the {@link Observable}
-     * @return the single item emitted by the {@link Observable} that matches the predicate, or the
-     *         default value if no such items are emitted
-     */
-    public T singleOrDefault(T defaultValue, final Object predicate) {
-        @SuppressWarnings("rawtypes")
-        final FuncN _f = Functions.from(predicate);
-
-        return singleOrDefault(defaultValue, new Func1<T, Boolean>() {
-            @Override
-            public Boolean call(T t) {
-                return (Boolean) _f.call(t);
-            }
-        });
+    public T singleOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
+        return _singleOrDefault(from(o.filter(predicate)), true, defaultValue);
     }
 
     /**
      * Returns a {@link Future} representing the single value emitted by an {@link Observable}.
      * <p>
      * <code>toFuture()</code> throws an exception if the Observable emits more than one item. If
-     * the Observable may emit more than item, use
-     * {@link Observable#toList toList()}.toFuture()</code>.
+     * the Observable may emit more than item, use {@link Observable#toList toList()}.toFuture()</code>.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
      * 
-     * @return a {@link Future} that expects a single item to be emitted by the source
-     *         {@link Observable}
+     * @return a {@link Future} that expects a single item to be emitted by the source {@link Observable}
      */
     public Future<T> toFuture() {
-        return toFuture(this);
+        return OperationToFuture.toFuture(o);
     }
 
     /**
@@ -824,14 +387,14 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test
         public void testLastEmptyObservable() {
-            BlockingObservable<Object> obs = BlockingObservable.from(Observable.from());
+            BlockingObservable<Object> obs = BlockingObservable.from(Observable.empty());
 
             assertNull(obs.last());
         }
 
         @Test
         public void testLastOrDefault() {
-            BlockingObservable<Integer> observable = BlockingObservable.from(from(1, 0, -1));
+            BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(1, 0, -1));
             int last = observable.lastOrDefault(-100, new Func1<Integer, Boolean>() {
                 @Override
                 public Boolean call(Integer args) {
@@ -843,19 +406,19 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test
         public void testLastOrDefault1() {
-            BlockingObservable<String> observable = BlockingObservable.from(from("one", "two", "three"));
+            BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
             assertEquals("three", observable.lastOrDefault("default"));
         }
 
         @Test
         public void testLastOrDefault2() {
-            BlockingObservable<Object> observable = BlockingObservable.from(from());
+            BlockingObservable<Object> observable = BlockingObservable.from(Observable.empty());
             assertEquals("default", observable.lastOrDefault("default"));
         }
 
         @Test
         public void testLastOrDefaultWithPredicate() {
-            BlockingObservable<Integer> observable = BlockingObservable.from(from(1, 0, -1));
+            BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(1, 0, -1));
             int last = observable.lastOrDefault(0, new Func1<Integer, Boolean>() {
                 @Override
                 public Boolean call(Integer args) {
@@ -868,7 +431,7 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test
         public void testLastOrDefaultWrongPredicate() {
-            BlockingObservable<Integer> observable = BlockingObservable.from(from(-1, -2, -3));
+            BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(-1, -2, -3));
             int last = observable.lastOrDefault(0, new Func1<Integer, Boolean>() {
                 @Override
                 public Boolean call(Integer args) {
@@ -891,19 +454,19 @@ public class BlockingObservable<T> extends Observable<T> {
         }
 
         public void testSingle() {
-            BlockingObservable<String> observable = BlockingObservable.from(from("one"));
+            BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one"));
             assertEquals("one", observable.single());
         }
 
         @Test
         public void testSingleDefault() {
-            BlockingObservable<Object> observable = BlockingObservable.from(from());
+            BlockingObservable<Object> observable = BlockingObservable.from(Observable.empty());
             assertEquals("default", observable.singleOrDefault("default"));
         }
 
         @Test(expected = IllegalStateException.class)
         public void testSingleDefaultPredicateMatchesMoreThanOne() {
-            BlockingObservable.from(from("one", "two")).singleOrDefault("default", new Func1<String, Boolean>() {
+            BlockingObservable.from(Observable.from("one", "two")).singleOrDefault("default", new Func1<String, Boolean>() {
                 @Override
                 public Boolean call(String args) {
                     return args.length() == 3;
@@ -913,7 +476,7 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test
         public void testSingleDefaultPredicateMatchesNothing() {
-            BlockingObservable<String> observable = BlockingObservable.from(from("one", "two"));
+            BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two"));
             String result = observable.singleOrDefault("default", new Func1<String, Boolean>() {
                 @Override
                 public Boolean call(String args) {
@@ -925,13 +488,13 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test(expected = IllegalStateException.class)
         public void testSingleDefaultWithMoreThanOne() {
-            BlockingObservable<String> observable = BlockingObservable.from(from("one", "two", "three"));
+            BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
             observable.singleOrDefault("default");
         }
 
         @Test
         public void testSingleWithPredicateDefault() {
-            BlockingObservable<String> observable = BlockingObservable.from(from("one", "two", "four"));
+            BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "four"));
             assertEquals("four", observable.single(new Func1<String, Boolean>() {
                 @Override
                 public Boolean call(String s) {
@@ -942,13 +505,13 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test(expected = IllegalStateException.class)
         public void testSingleWrong() {
-            BlockingObservable<Integer> observable = BlockingObservable.from(from(1, 2));
+            BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(1, 2));
             observable.single();
         }
 
         @Test(expected = IllegalStateException.class)
         public void testSingleWrongPredicate() {
-            BlockingObservable<Integer> observable = BlockingObservable.from(from(-1));
+            BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(-1));
             observable.single(new Func1<Integer, Boolean>() {
                 @Override
                 public Boolean call(Integer args) {
@@ -959,7 +522,7 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test
         public void testToIterable() {
-            BlockingObservable<String> obs = BlockingObservable.from(from("one", "two", "three"));
+            BlockingObservable<String> obs = BlockingObservable.from(Observable.from("one", "two", "three"));
 
             Iterator<String> it = obs.toIterable().iterator();
 
@@ -978,10 +541,10 @@ public class BlockingObservable<T> extends Observable<T> {
 
         @Test(expected = TestException.class)
         public void testToIterableWithException() {
-            BlockingObservable<String> obs = BlockingObservable.from(create(new Func1<Observer<String>, Subscription>() {
+            BlockingObservable<String> obs = BlockingObservable.from(Observable.create(new OnSubscribeFunc<String>() {
 
                 @Override
-                public Subscription call(Observer<String> observer) {
+                public Subscription onSubscribe(Observer<? super String> observer) {
                     observer.onNext("one");
                     observer.onError(new TestException());
                     return Subscriptions.empty();
@@ -997,14 +560,14 @@ public class BlockingObservable<T> extends Observable<T> {
             it.next();
 
         }
-        
+
         @Test
         public void testForEachWithError() {
             try {
-                BlockingObservable.from(Observable.create(new Func1<Observer<String>, Subscription>() {
+                BlockingObservable.from(Observable.create(new OnSubscribeFunc<String>() {
 
                     @Override
-                    public Subscription call(final Observer<String> observer) {
+                    public Subscription onSubscribe(final Observer<? super String> observer) {
                         final BooleanSubscription subscription = new BooleanSubscription();
                         new Thread(new Runnable() {
 

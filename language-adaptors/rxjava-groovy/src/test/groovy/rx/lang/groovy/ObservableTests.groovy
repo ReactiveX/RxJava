@@ -31,6 +31,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Notification;
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
@@ -58,7 +59,7 @@ def class ObservableTests {
 
     @Test
     public void testFilter() {
-        Observable.filter(Observable.from(1, 2, 3), {it >= 2}).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).filter({it >= 2}).subscribe({ result -> a.received(result)});
         verify(a, times(0)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(1)).received(3);
@@ -82,7 +83,7 @@ def class ObservableTests {
 
     @Test
     public void testMap2() {
-        Observable.map(Observable.from(1, 2, 3), {'hello_' + it}).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).map({'hello_' + it}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received("hello_" + 1);
         verify(a, times(1)).received("hello_" + 2);
         verify(a, times(1)).received("hello_" + 3);
@@ -90,7 +91,7 @@ def class ObservableTests {
 
     @Test
     public void testMaterialize() {
-        Observable.materialize(Observable.from(1, 2, 3)).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).materialize().subscribe({ result -> a.received(result)});
         // we expect 4 onNext calls: 3 for 1, 2, 3 ObservableNotification.OnNext and 1 for ObservableNotification.OnCompleted
         verify(a, times(4)).received(any(Notification.class));
         verify(a, times(0)).error(any(Exception.class));
@@ -155,6 +156,30 @@ def class ObservableTests {
     }
 
     @Test
+    public void testFromWithIterable() {
+        def list = [1, 2, 3, 4, 5]
+        assertEquals(5, Observable.from(list).count().toBlockingObservable().single());
+    }
+    
+    @Test
+    public void testFromWithObjects() {
+        def list = [1, 2, 3, 4, 5]
+        // this should now treat these as 2 objects so have a count of 2
+        assertEquals(2, Observable.from(list, 6).count().toBlockingObservable().single());
+    }
+    
+    /**
+     * Check that two different single arg methods are selected correctly
+     */
+    @Test
+    public void testStartWith() {
+        def list = [10, 11, 12, 13, 14]
+        def startList = [1, 2, 3, 4, 5]
+        assertEquals(6, Observable.from(list).startWith(0).count().toBlockingObservable().single());
+        assertEquals(10, Observable.from(list).startWith(startList).count().toBlockingObservable().single());
+    }
+    
+    @Test
     public void testScriptWithOnNext() {
         new TestFactory().getObservable().subscribe({ result -> a.received(result)});
         verify(a).received("hello_1");
@@ -162,7 +187,7 @@ def class ObservableTests {
 
     @Test
     public void testSkipTake() {
-        Observable.skip(Observable.from(1, 2, 3), 1).take(1).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).skip(1).take(1).subscribe({ result -> a.received(result)});
         verify(a, times(0)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(0)).received(3);
@@ -170,7 +195,7 @@ def class ObservableTests {
 
     @Test
     public void testSkip() {
-        Observable.skip(Observable.from(1, 2, 3), 2).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).skip(2).subscribe({ result -> a.received(result)});
         verify(a, times(0)).received(1);
         verify(a, times(0)).received(2);
         verify(a, times(1)).received(3);
@@ -178,7 +203,7 @@ def class ObservableTests {
 
     @Test
     public void testTake() {
-        Observable.take(Observable.from(1, 2, 3), 2).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).take(2).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(0)).received(3);
@@ -192,7 +217,7 @@ def class ObservableTests {
 
     @Test
     public void testTakeWhileViaGroovy() {
-        Observable.takeWhile(Observable.from(1, 2, 3), { x -> x < 3}).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).takeWhile( { x -> x < 3}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(0)).received(3);
@@ -200,7 +225,7 @@ def class ObservableTests {
 
     @Test
     public void testTakeWhileWithIndexViaGroovy() {
-        Observable.takeWhileWithIndex(Observable.from(1, 2, 3), { x, i -> i < 2}).subscribe({ result -> a.received(result)});
+        Observable.from(1, 2, 3).takeWhileWithIndex({ x, i -> i < 2}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(1);
         verify(a, times(1)).received(2);
         verify(a, times(0)).received(3);
@@ -213,23 +238,11 @@ def class ObservableTests {
     }
 
     @Test
-    public void testToSortedListStatic() {
-        Observable.toSortedList(Observable.from(1, 3, 2, 5, 4)).subscribe({ result -> a.received(result)});
-        verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
-    }
-
-    @Test
     public void testToSortedListWithFunction() {
         new TestFactory().getNumbers().toSortedList({a, b -> a - b}).subscribe({ result -> a.received(result)});
         verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
     }
 
-    @Test
-    public void testToSortedListWithFunctionStatic() {
-        Observable.toSortedList(Observable.from(1, 3, 2, 5, 4), {a, b -> a - b}).subscribe({ result -> a.received(result)});
-        verify(a, times(1)).received(Arrays.asList(1, 2, 3, 4, 5));
-    }
-    
     @Test
     public void testForEach() {
         Observable.create(new AsyncObservable()).toBlockingObservable().forEach({ result -> a.received(result)});
@@ -285,6 +298,31 @@ def class ObservableTests {
         verify(a, times(1)).received(true);
     }
     
+    
+    @Test
+    public void testZip() {
+        Observable o1 = Observable.from(1, 2, 3);
+        Observable o2 = Observable.from(4, 5, 6);
+        Observable o3 = Observable.from(7, 8, 9);
+        
+        List values = Observable.zip(o1, o2, o3, {a, b, c -> [a, b, c] }).toList().toBlockingObservable().single();
+        assertEquals([1, 4, 7], values.get(0));
+        assertEquals([2, 5, 8], values.get(1));
+        assertEquals([3, 6, 9], values.get(2));
+    }
+    
+    @Test
+    public void testZipWithIterable() {
+        Observable o1 = Observable.from(1, 2, 3);
+        Observable o2 = Observable.from(4, 5, 6);
+        Observable o3 = Observable.from(7, 8, 9);
+        
+        List values = Observable.zip([o1, o2, o3], {a, b, c -> [a, b, c] }).toList().toBlockingObservable().single();
+        assertEquals([1, 4, 7], values.get(0));
+        assertEquals([2, 5, 8], values.get(1));
+        assertEquals([3, 6, 9], values.get(2));
+    }
+    
     @Test
     public void testGroupBy() {
         int count=0;
@@ -308,9 +346,9 @@ def class ObservableTests {
     }
     
 
-    def class AsyncObservable implements Func1<Observer<Integer>, Subscription> {
+    def class AsyncObservable implements OnSubscribeFunc {
 
-        public Subscription call(final Observer<Integer> observer) {
+        public Subscription onSubscribe(final Observer<Integer> observer) {
             new Thread(new Runnable() {
                 public void run() {
                     try {
@@ -335,8 +373,12 @@ def class ObservableTests {
             return Observable.from(1, 3, 2, 5, 4);
         }
 
-        public TestObservable getObservable() {
-            return new TestObservable(counter++);
+        public TestOnSubscribe getOnSubscribe() {
+            return new TestOnSubscribe(counter++);
+        }
+        
+        public Observable getObservable() {
+            return Observable.create(getOnSubscribe());
         }
     }
 
@@ -346,14 +388,14 @@ def class ObservableTests {
         public void received(Object o);
     }
 
-    def class TestObservable extends Observable<String> {
+    def class TestOnSubscribe implements OnSubscribeFunc<String> {
         private final int count;
 
-        public TestObservable(int count) {
+        public TestOnSubscribe(int count) {
             this.count = count;
         }
 
-        public Subscription subscribe(Observer<String> observer) {
+        public Subscription onSubscribe(Observer<String> observer) {
 
             observer.onNext("hello_" + count);
             observer.onCompleted();

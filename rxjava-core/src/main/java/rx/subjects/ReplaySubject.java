@@ -62,7 +62,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
 
     private boolean isDone = false;
     private Throwable exception = null;
-    private final Map<Subscription, Observer<T>> subscriptions = new HashMap<Subscription, Observer<T>>();
+    private final Map<Subscription, Observer<? super T>> subscriptions = new HashMap<Subscription, Observer<? super T>>();
     private final List<T> history = Collections.synchronizedList(new ArrayList<T>());
 
     public static <T> ReplaySubject<T> create() {
@@ -74,11 +74,11 @@ public final class ReplaySubject<T> extends Subject<T, T>
         onSubscribe.wrap(new SubscriptionFunc());
     }
 
-    private static final class DelegateSubscriptionFunc<T> implements Func1<Observer<T>, Subscription>
+    private static final class DelegateSubscriptionFunc<T> implements OnSubscribeFunc<T>
     {
-        private Func1<Observer<T>, Subscription> delegate = null;
+        private Func1<? super Observer<? super T>, ? extends Subscription> delegate = null;
 
-        public void wrap(Func1<Observer<T>, Subscription> delegate)
+        public void wrap(Func1<? super Observer<? super T>, ? extends Subscription> delegate)
         {
             if (this.delegate != null) {
                 throw new UnsupportedOperationException("delegate already set");
@@ -87,16 +87,16 @@ public final class ReplaySubject<T> extends Subject<T, T>
         }
 
         @Override
-        public Subscription call(Observer<T> observer)
+        public Subscription onSubscribe(Observer<? super T> observer)
         {
             return delegate.call(observer);
         }
     }
 
-    private class SubscriptionFunc implements Func1<Observer<T>, Subscription>
+    private class SubscriptionFunc implements Func1<Observer<? super T>, Subscription>
     {
         @Override
-        public Subscription call(Observer<T> observer) {
+        public Subscription call(Observer<? super T> observer) {
             int item = 0;
             Subscription subscription;
 
@@ -145,7 +145,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
     {
         synchronized (subscriptions) {
             isDone = true;
-            for (Observer<T> observer : new ArrayList<Observer<T>>(subscriptions.values())) {
+            for (Observer<? super T> observer : new ArrayList<Observer<? super T>>(subscriptions.values())) {
                 observer.onCompleted();
             }
             subscriptions.clear();
@@ -161,7 +161,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
             }
             isDone = true;
             exception = e;
-            for (Observer<T> observer : new ArrayList<Observer<T>>(subscriptions.values())) {
+            for (Observer<? super T> observer : new ArrayList<Observer<? super T>>(subscriptions.values())) {
                 observer.onError(e);
             }
             subscriptions.clear();
@@ -173,7 +173,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
     {
         synchronized (subscriptions) {
             history.add(args);
-            for (Observer<T> observer : new ArrayList<Observer<T>>(subscriptions.values())) {
+            for (Observer<? super T> observer : new ArrayList<Observer<? super T>>(subscriptions.values())) {
                 observer.onNext(args);
             }
         }
@@ -186,7 +186,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
         @SuppressWarnings("unchecked")
         @Test
         public void testCompleted() {
-            ReplaySubject<Object> subject = ReplaySubject.create();
+            ReplaySubject<String> subject = ReplaySubject.create();
 
             Observer<String> o1 = mock(Observer.class);
             subject.subscribe(o1);
@@ -223,7 +223,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
         @SuppressWarnings("unchecked")
         @Test
         public void testError() {
-            ReplaySubject<Object> subject = ReplaySubject.create();
+            ReplaySubject<String> subject = ReplaySubject.create();
 
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
@@ -256,7 +256,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
         @SuppressWarnings("unchecked")
         @Test
         public void testSubscribeMidSequence() {
-            ReplaySubject<Object> subject = ReplaySubject.create();
+            ReplaySubject<String> subject = ReplaySubject.create();
 
             Observer<String> aObserver = mock(Observer.class);
             subject.subscribe(aObserver);
@@ -280,7 +280,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
         @SuppressWarnings("unchecked")
         @Test
         public void testUnsubscribeFirstObserver() {
-            ReplaySubject<Object> subject = ReplaySubject.create();
+            ReplaySubject<String> subject = ReplaySubject.create();
 
             Observer<String> aObserver = mock(Observer.class);
             Subscription subscription = subject.subscribe(aObserver);

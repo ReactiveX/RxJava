@@ -20,11 +20,11 @@ import rx.Subscription;
 import rx.util.functions.Func2;
 
 /* package */class SleepingAction<T> implements Func2<Scheduler, T, Subscription> {
-    private final Func2<Scheduler, T, Subscription> underlying;
+    private final Func2<? super Scheduler, ? super T, ? extends Subscription> underlying;
     private final Scheduler scheduler;
     private final long execTime;
 
-    public SleepingAction(Func2<Scheduler, T, Subscription> underlying, Scheduler scheduler, long execTime) {
+    public SleepingAction(Func2<? super Scheduler, ? super T, ? extends Subscription> underlying, Scheduler scheduler, long execTime) {
         this.underlying = underlying;
         this.scheduler = scheduler;
         this.execTime = execTime;

@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -52,21 +53,21 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnExceptionResumeNextViaObservable<T> {
 
-    public static <T> Func1<Observer<T>, Subscription> onExceptionResumeNextViaObservable(Observable<T> originalSequence, Observable<T> resumeSequence) {
+    public static <T> OnSubscribeFunc<T> onExceptionResumeNextViaObservable(Observable<? extends T> originalSequence, Observable<? extends T> resumeSequence) {
         return new OnExceptionResumeNextViaObservable<T>(originalSequence, resumeSequence);
     }
 
-    private static class OnExceptionResumeNextViaObservable<T> implements Func1<Observer<T>, Subscription> {
+    private static class OnExceptionResumeNextViaObservable<T> implements OnSubscribeFunc<T> {
 
-        private final Observable<T> resumeSequence;
-        private final Observable<T> originalSequence;
+        private final Observable<? extends T> resumeSequence;
+        private final Observable<? extends T> originalSequence;
 
-        public OnExceptionResumeNextViaObservable(Observable<T> originalSequence, Observable<T> resumeSequence) {
+        public OnExceptionResumeNextViaObservable(Observable<? extends T> originalSequence, Observable<? extends T> resumeSequence) {
             this.resumeSequence = resumeSequence;
             this.originalSequence = originalSequence;
         }
 
-        public Subscription call(final Observer<T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
@@ -129,7 +130,8 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
         public void testResumeNextWithException() {
             Subscription s = mock(Subscription.class);
             // Trigger failure on second element
-            TestObservable w = new TestObservable(s, "one", "EXCEPTION", "two", "three");
+            TestObservable f = new TestObservable(s, "one", "EXCEPTION", "two", "three");
+            Observable<String> w = Observable.create(f);
             Observable<String> resume = Observable.from("twoResume", "threeResume");
             Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
 
@@ -138,7 +140,7 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
             observable.subscribe(aObserver);
 
             try {
-                w.t.join();
+                f.t.join();
             } catch (InterruptedException e) {
                 fail(e.getMessage());
             }
@@ -157,7 +159,8 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
         public void testResumeNextWithRuntimeException() {
             Subscription s = mock(Subscription.class);
             // Trigger failure on second element
-            TestObservable w = new TestObservable(s, "one", "RUNTIMEEXCEPTION", "two", "three");
+            TestObservable f = new TestObservable(s, "one", "RUNTIMEEXCEPTION", "two", "three");
+            Observable<String> w = Observable.create(f);
             Observable<String> resume = Observable.from("twoResume", "threeResume");
             Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
 
@@ -166,7 +169,7 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
             observable.subscribe(aObserver);
 
             try {
-                w.t.join();
+                f.t.join();
             } catch (InterruptedException e) {
                 fail(e.getMessage());
             }
@@ -185,7 +188,8 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
         public void testThrowablePassesThru() {
             Subscription s = mock(Subscription.class);
             // Trigger failure on second element
-            TestObservable w = new TestObservable(s, "one", "THROWABLE", "two", "three");
+            TestObservable f = new TestObservable(s, "one", "THROWABLE", "two", "three");
+            Observable<String> w = Observable.create(f);
             Observable<String> resume = Observable.from("twoResume", "threeResume");
             Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
 
@@ -194,7 +198,7 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
             observable.subscribe(aObserver);
 
             try {
-                w.t.join();
+                f.t.join();
             } catch (InterruptedException e) {
                 fail(e.getMessage());
             }
@@ -213,7 +217,8 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
         public void testErrorPassesThru() {
             Subscription s = mock(Subscription.class);
             // Trigger failure on second element
-            TestObservable w = new TestObservable(s, "one", "ERROR", "two", "three");
+            TestObservable f = new TestObservable(s, "one", "ERROR", "two", "three");
+            Observable<String> w = Observable.create(f);
             Observable<String> resume = Observable.from("twoResume", "threeResume");
             Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
 
@@ -222,7 +227,7 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
             observable.subscribe(aObserver);
 
             try {
-                w.t.join();
+                f.t.join();
             } catch (InterruptedException e) {
                 fail(e.getMessage());
             }
@@ -243,7 +248,8 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
             // Trigger multiple failures
             Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
             // Resume Observable is async
-            TestObservable resume = new TestObservable(sr, "twoResume", "threeResume");
+            TestObservable f = new TestObservable(sr, "twoResume", "threeResume");
+            Observable<String> resume = Observable.create(f);
 
             // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
             //  rx.operator incl onErrorResumeNextViaObservable)
@@ -264,8 +270,8 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
 
             try {
                 // if the thread gets started (which it shouldn't if it's working correctly)
-                if (resume.t != null) {
-                    resume.t.join();
+                if (f.t != null) {
+                    f.t.join();
                 }
             } catch (InterruptedException e) {
                 fail(e.getMessage());
@@ -280,7 +286,7 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
             verify(aObserver, times(1)).onCompleted();
         }
 
-        private static class TestObservable extends Observable<String> {
+        private static class TestObservable implements OnSubscribeFunc<String> {
 
             final Subscription s;
             final String[] values;
@@ -292,7 +298,7 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

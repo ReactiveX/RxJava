@@ -15,10 +15,9 @@
  */
 package rx.observables;
 
-import static rx.Observable.filter;
-
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -69,7 +68,7 @@ public enum SwingObservable { ; // no instances
      * @return Observable of key events.
      */
     public static Observable<KeyEvent> fromKeyEvents(Component component, final Set<Integer> keyCodes) {
-        return filter(fromKeyEvents(component), new Func1<KeyEvent, Boolean>() {
+        return fromKeyEvents(component).filter(new Func1<KeyEvent, Boolean>() {
             @Override
             public Boolean call(KeyEvent event) {
                 return keyCodes.contains(event.getKeyCode());
@@ -108,6 +107,16 @@ public enum SwingObservable { ; // no instances
      */
     public static Observable<MouseEvent> fromMouseMotionEvents(Component component) {
         return MouseEventSource.fromMouseMotionEventsOf(component);
+    }
+    
+    /**
+     * Creates an observable corresponding to relative mouse motion.
+     * @param component
+     *            The component to register the observable for.
+     * @return A point whose x and y coordinate represent the relative horizontal and vertical mouse motion.
+     */
+    public static Observable<Point> fromRelativeMouseMotion(Component component) {
+        return MouseEventSource.fromRelativeMouseMotion(component);
     }
     
     /**

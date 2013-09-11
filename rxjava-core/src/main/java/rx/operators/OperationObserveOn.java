@@ -27,12 +27,12 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.ImmediateScheduler;
 import rx.concurrency.Schedulers;
-import rx.util.functions.Func1;
 
 /**
  * Asynchronously notify Observers on the specified Scheduler.
@@ -41,21 +41,21 @@ import rx.util.functions.Func1;
  */
 public class OperationObserveOn {
 
-    public static <T> Func1<Observer<T>, Subscription> observeOn(Observable<T> source, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> observeOn(Observable<? extends T> source, Scheduler scheduler) {
         return new ObserveOn<T>(source, scheduler);
     }
 
-    private static class ObserveOn<T> implements Func1<Observer<T>, Subscription> {
-        private final Observable<T> source;
+    private static class ObserveOn<T> implements OnSubscribeFunc<T> {
+        private final Observable<? extends T> source;
         private final Scheduler scheduler;
 
-        public ObserveOn(Observable<T> source, Scheduler scheduler) {
+        public ObserveOn(Observable<? extends T> source, Scheduler scheduler) {
             this.source = source;
             this.scheduler = scheduler;
         }
 
         @Override
-        public Subscription call(final Observer<T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             if (scheduler instanceof ImmediateScheduler) {
                 // do nothing if we request ImmediateScheduler so we don't invoke overhead
                 return source.subscribe(observer);

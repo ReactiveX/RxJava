@@ -18,7 +18,6 @@ package rx.operators;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperatorTester.UnitTest.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,10 +25,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func1;
 
 /**
  * Returns an Observable that emits the first <code>num</code> items emitted by the source
@@ -51,13 +50,13 @@ public final class OperationTake {
      * @param num
      * @return the specified number of contiguous values from the start of the given observable sequence
      */
-    public static <T> Func1<Observer<T>, Subscription> take(final Observable<T> items, final int num) {
+    public static <T> OnSubscribeFunc<T> take(final Observable<? extends T> items, final int num) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new Func1<Observer<T>, Subscription>() {
+        return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription call(Observer<T> observer) {
-                return new Take<T>(items, num).call(observer);
+            public Subscription onSubscribe(Observer<? super T> observer) {
+                return new Take<T>(items, num).onSubscribe(observer);
             }
 
         };
@@ -74,18 +73,18 @@ public final class OperationTake {
      * 
      * @param <T>
      */
-    private static class Take<T> implements Func1<Observer<T>, Subscription> {
-        private final Observable<T> items;
+    private static class Take<T> implements OnSubscribeFunc<T> {
+        private final Observable<? extends T> items;
         private final int num;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        private Take(Observable<T> items, int num) {
+        private Take(Observable<? extends T> items, int num) {
             this.items = items;
             this.num = num;
         }
 
         @Override
-        public Subscription call(Observer<T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             if (num < 1) {
                 items.subscribe(new Observer<T>()
                 {
@@ -112,11 +111,11 @@ public final class OperationTake {
         }
 
         private class ItemObserver implements Observer<T> {
-            private final Observer<T> observer;
+            private final Observer<? super T> observer;
 
             private final AtomicInteger counter = new AtomicInteger();
 
-            public ItemObserver(Observer<T> observer) {
+            public ItemObserver(Observer<? super T> observer) {
                 this.observer = observer;
             }
 
@@ -187,10 +186,10 @@ public final class OperationTake {
 
         @Test
         public void testTakeDoesntLeakErrors() {
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>()
+            Observable<String> source = Observable.create(new OnSubscribeFunc<String>()
             {
                 @Override
-                public Subscription call(Observer<String> observer)
+                public Subscription onSubscribe(Observer<? super String> observer)
                 {
                     observer.onNext("one");
                     observer.onError(new Throwable("test failed"));
@@ -214,10 +213,10 @@ public final class OperationTake {
         public void testTakeZeroDoesntLeakError() {
             final AtomicBoolean subscribed = new AtomicBoolean(false);
             final AtomicBoolean unSubscribed = new AtomicBoolean(false);
-            Observable<String> source = Observable.create(new Func1<Observer<String>, Subscription>()
+            Observable<String> source = Observable.create(new OnSubscribeFunc<String>()
             {
                 @Override
-                public Subscription call(Observer<String> observer)
+                public Subscription onSubscribe(Observer<? super String> observer)
                 {
                     subscribed.set(true);
                     observer.onError(new Throwable("test failed"));
@@ -248,8 +247,9 @@ public final class OperationTake {
 
         @Test
         public void testUnsubscribeAfterTake() {
-            Subscription s = mock(Subscription.class);
-            TestObservable w = new TestObservable(s, "one", "two", "three");
+            final Subscription s = mock(Subscription.class);
+            TestObservableFunc f = new TestObservableFunc(s, "one", "two", "three");
+            Observable<String> w = Observable.create(f);
 
             @SuppressWarnings("unchecked")
             Observer<String> aObserver = mock(Observer.class);
@@ -258,7 +258,7 @@ public final class OperationTake {
 
             // wait for the Observable to complete
             try {
-                w.t.join();
+                f.t.join();
             } catch (Throwable e) {
                 e.printStackTrace();
                 fail(e.getMessage());
@@ -273,19 +273,19 @@ public final class OperationTake {
             verifyNoMoreInteractions(aObserver);
         }
 
-        private static class TestObservable extends Observable<String> {
+        private static class TestObservableFunc implements OnSubscribeFunc<String> {
 
             final Subscription s;
             final String[] values;
             Thread t = null;
 
-            public TestObservable(Subscription s, String... values) {
+            public TestObservableFunc(Subscription s, String... values) {
                 this.s = s;
                 this.values = values;
             }
 
             @Override
-            public Subscription subscribe(final Observer<String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 System.out.println("TestObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

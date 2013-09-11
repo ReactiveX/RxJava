@@ -15,10 +15,7 @@
  */
 package rx.swing.sources;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,22 +26,22 @@ import org.junit.Test;
 import org.mockito.Matchers;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 public enum AbstractButtonSource { ; // no instances
 
     /**
-     * @see SwingObservable.fromButtonAction
+     * @see rx.observables.SwingObservable#fromButtonAction
      */
     public static Observable<ActionEvent> fromActionOf(final AbstractButton button) {
-        return Observable.create(new Func1<Observer<ActionEvent>, Subscription>() {
+        return Observable.create(new OnSubscribeFunc<ActionEvent>() {
             @Override
-            public Subscription call(final Observer<ActionEvent> observer) {
+            public Subscription onSubscribe(final Observer<? super ActionEvent> observer) {
                 final ActionListener listener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -69,7 +66,7 @@ public enum AbstractButtonSource { ; // no instances
             @SuppressWarnings("unchecked")
             Action1<ActionEvent> action = mock(Action1.class);
             @SuppressWarnings("unchecked")
-            Action1<Exception> error = mock(Action1.class);
+            Action1<Throwable> error = mock(Action1.class);
             Action0 complete = mock(Action0.class);
             
             final ActionEvent event = new ActionEvent(this, 1, "command");
@@ -85,7 +82,7 @@ public enum AbstractButtonSource { ; // no instances
             Subscription sub = fromActionOf(button).subscribe(action, error, complete);
             
             verify(action, never()).call(Matchers.<ActionEvent>any());
-            verify(error, never()).call(Matchers.<Exception>any());
+            verify(error, never()).call(Matchers.<Throwable>any());
             verify(complete, never()).call();
             
             button.testAction();
@@ -97,7 +94,7 @@ public enum AbstractButtonSource { ; // no instances
             sub.unsubscribe();
             button.testAction();
             verify(action, times(2)).call(Matchers.<ActionEvent>any());
-            verify(error, never()).call(Matchers.<Exception>any());
+            verify(error, never()).call(Matchers.<Throwable>any());
             verify(complete, never()).call();
         }
     }

@@ -32,9 +32,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
 
 /**
  * A thread-safe Observer for transitioning states in operators.
@@ -464,7 +464,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
          * This spawns a single thread for the subscribe execution
          * 
          */
-        private static class TestSingleThreadedObservable implements Func1<Observer<String>, Subscription> {
+        private static class TestSingleThreadedObservable implements OnSubscribeFunc<String> {
 
             final Subscription s;
             final String[] values;
@@ -476,7 +476,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
 
             }
 
-            public Subscription call(final Observer<String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 System.out.println("TestSingleThreadedObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 
@@ -515,7 +515,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
          * This spawns a thread for the subscription, then a separate thread for each onNext call.
          * 
          */
-        private static class TestMultiThreadedObservable implements Func1<Observer<String>, Subscription> {
+        private static class TestMultiThreadedObservable implements OnSubscribeFunc<String> {
 
             final Subscription s;
             final String[] values;
@@ -531,7 +531,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             }
 
             @Override
-            public Subscription call(final Observer<String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 System.out.println("TestMultiThreadedObservable subscribed to ...");
                 t = new Thread(new Runnable() {
 

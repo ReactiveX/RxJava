@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -33,7 +34,6 @@ import rx.concurrency.Schedulers;
 import rx.concurrency.TestScheduler;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-import rx.util.functions.Func1;
 
 /**
  * Returns an observable sequence that produces a value after each period.
@@ -44,18 +44,18 @@ public final class OperationInterval {
     /**
      * Creates an event each time interval.
      */
-    public static Func1<Observer<Long>, Subscription> interval(long interval, TimeUnit unit) {
+    public static OnSubscribeFunc<Long> interval(long interval, TimeUnit unit) {
         return new Interval(interval, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
     }
 
     /**
      * Creates an event each time interval.
      */
-    public static Func1<Observer<Long>, Subscription> interval(long interval, TimeUnit unit, Scheduler scheduler) {
+    public static OnSubscribeFunc<Long> interval(long interval, TimeUnit unit, Scheduler scheduler) {
         return new Interval(interval, unit, scheduler);
     }
 
-    private static class Interval implements Func1<Observer<Long>, Subscription> {
+    private static class Interval implements OnSubscribeFunc<Long> {
         private final long period;
         private final TimeUnit unit;
         private final Scheduler scheduler;
@@ -69,7 +69,7 @@ public final class OperationInterval {
         }
 
         @Override
-        public Subscription call(final Observer<Long> observer) {
+        public Subscription onSubscribe(final Observer<? super Long> observer) {
             final Subscription wrapped = scheduler.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {

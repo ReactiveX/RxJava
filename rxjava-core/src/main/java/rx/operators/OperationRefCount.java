@@ -26,7 +26,6 @@ import rx.Subscription;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-import rx.util.functions.Func1;
 
 import static org.mockito.Mockito.*;
 
@@ -35,11 +34,11 @@ import static org.mockito.Mockito.*;
  * as there is at least one subscription to the observable sequence.
  */
 public final class OperationRefCount<T> {
-    public static <T> Func1<Observer<T>, Subscription> refCount(ConnectableObservable<T> connectableObservable) {
+    public static <T> Observable.OnSubscribeFunc<T> refCount(ConnectableObservable<T> connectableObservable) {
         return new RefCount<T>(connectableObservable);
     }
 
-    private static class RefCount<T> implements Func1<Observer<T>, Subscription> {
+    private static class RefCount<T> implements Observable.OnSubscribeFunc<T> {
         private final ConnectableObservable<T> innerConnectableObservable;
         private final Object gate = new Object();
         private int count = 0;
@@ -50,7 +49,7 @@ public final class OperationRefCount<T> {
         }
 
         @Override
-        public Subscription call(Observer<T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             final Subscription subscription = innerConnectableObservable.subscribe(observer);
             synchronized (gate) {
                 if (count++ == 0) {
@@ -70,79 +69,79 @@ public final class OperationRefCount<T> {
                 }
             });
         }
-    }
 
-    @RunWith(JUnit4.class)
-    public static class UnitTest {
+        @RunWith(JUnit4.class)
+        public static class UnitTest {
 
-        @Before
-        public void setUp() {
-            MockitoAnnotations.initMocks(this);
-        }
+            @Before
+            public void setUp() {
+                MockitoAnnotations.initMocks(this);
+            }
 
-        @Test
-        public void subscriptionToUnderlyingOnFirstSubscription() {
-            @SuppressWarnings("unchecked")
-            ConnectableObservable<Integer> connectable = mock(ConnectableObservable.class);
-            Observable<Integer> refCounted = Observable.create(refCount(connectable));
-            @SuppressWarnings("unchecked")
-            Observer<Integer> observer = mock(Observer.class);
-            when(connectable.subscribe(observer)).thenReturn(Subscriptions.empty());
-            when(connectable.connect()).thenReturn(Subscriptions.empty());
-            refCounted.subscribe(observer);
-            verify(connectable, times(1)).subscribe(observer);
-            verify(connectable, times(1)).connect();
-        }
+            @Test
+            public void subscriptionToUnderlyingOnFirstSubscription() {
+                @SuppressWarnings("unchecked")
+                ConnectableObservable<Integer> connectable = mock(ConnectableObservable.class);
+                Observable<Integer> refCounted = Observable.create(refCount(connectable));
+                @SuppressWarnings("unchecked")
+                Observer<Integer> observer = mock(Observer.class);
+                when(connectable.subscribe(observer)).thenReturn(Subscriptions.empty());
+                when(connectable.connect()).thenReturn(Subscriptions.empty());
+                refCounted.subscribe(observer);
+                verify(connectable, times(1)).subscribe(observer);
+                verify(connectable, times(1)).connect();
+            }
 
-        @Test
-        public void noSubscriptionToUnderlyingOnSecondSubscription() {
-            @SuppressWarnings("unchecked")
-            ConnectableObservable<Integer> connectable = mock(ConnectableObservable.class);
-            Observable<Integer> refCounted = Observable.create(refCount(connectable));
-            @SuppressWarnings("unchecked")
-            Observer<Integer> observer = mock(Observer.class);
-            when(connectable.subscribe(observer)).thenReturn(Subscriptions.empty());
-            when(connectable.connect()).thenReturn(Subscriptions.empty());
-            refCounted.subscribe(observer);
-            refCounted.subscribe(observer);
-            verify(connectable, times(2)).subscribe(observer);
-            verify(connectable, times(1)).connect();
-        }
+            @Test
+            public void noSubscriptionToUnderlyingOnSecondSubscription() {
+                @SuppressWarnings("unchecked")
+                ConnectableObservable<Integer> connectable = mock(ConnectableObservable.class);
+                Observable<Integer> refCounted = Observable.create(refCount(connectable));
+                @SuppressWarnings("unchecked")
+                Observer<Integer> observer = mock(Observer.class);
+                when(connectable.subscribe(observer)).thenReturn(Subscriptions.empty());
+                when(connectable.connect()).thenReturn(Subscriptions.empty());
+                refCounted.subscribe(observer);
+                refCounted.subscribe(observer);
+                verify(connectable, times(2)).subscribe(observer);
+                verify(connectable, times(1)).connect();
+            }
 
-        @Test
-        public void unsubscriptionFromUnderlyingOnLastUnsubscription() {
-            @SuppressWarnings("unchecked")
-            ConnectableObservable<Integer> connectable = mock(ConnectableObservable.class);
-            Observable<Integer> refCounted = Observable.create(refCount(connectable));
-            @SuppressWarnings("unchecked")
-            Observer<Integer> observer = mock(Observer.class);
-            Subscription underlying = mock(Subscription.class);
-            when(connectable.subscribe(observer)).thenReturn(underlying);
-            Subscription connection = mock(Subscription.class);
-            when(connectable.connect()).thenReturn(connection);
-            Subscription first = refCounted.subscribe(observer);
-            first.unsubscribe();
-            verify(underlying, times(1)).unsubscribe();
-            verify(connection, times(1)).unsubscribe();
-        }
+            @Test
+            public void unsubscriptionFromUnderlyingOnLastUnsubscription() {
+                @SuppressWarnings("unchecked")
+                ConnectableObservable<Integer> connectable = mock(ConnectableObservable.class);
+                Observable<Integer> refCounted = Observable.create(refCount(connectable));
+                @SuppressWarnings("unchecked")
+                Observer<Integer> observer = mock(Observer.class);
+                Subscription underlying = mock(Subscription.class);
+                when(connectable.subscribe(observer)).thenReturn(underlying);
+                Subscription connection = mock(Subscription.class);
+                when(connectable.connect()).thenReturn(connection);
+                Subscription first = refCounted.subscribe(observer);
+                first.unsubscribe();
+                verify(underlying, times(1)).unsubscribe();
+                verify(connection, times(1)).unsubscribe();
+            }
 
-        @Test
-        public void noUnsubscriptionFromUnderlyingOnFirstUnsubscription() {
-            @SuppressWarnings("unchecked")
-            ConnectableObservable<Integer> connectable = mock(ConnectableObservable.class);
-            Observable<Integer> refCounted = Observable.create(refCount(connectable));
-            @SuppressWarnings("unchecked")
-            Observer<Integer> observer = mock(Observer.class);
-            Subscription underlying = mock(Subscription.class);
-            when(connectable.subscribe(observer)).thenReturn(underlying);
-            Subscription connection = mock(Subscription.class);
-            when(connectable.connect()).thenReturn(connection);
-            Subscription first = refCounted.subscribe(observer);
-            Subscription second = refCounted.subscribe(observer);
-            first.unsubscribe();
-            second.unsubscribe();
-            verify(underlying, times(2)).unsubscribe();
-            verify(connection, times(1)).unsubscribe();
+            @Test
+            public void noUnsubscriptionFromUnderlyingOnFirstUnsubscription() {
+                @SuppressWarnings("unchecked")
+                ConnectableObservable<Integer> connectable = mock(ConnectableObservable.class);
+                Observable<Integer> refCounted = Observable.create(refCount(connectable));
+                @SuppressWarnings("unchecked")
+                Observer<Integer> observer = mock(Observer.class);
+                Subscription underlying = mock(Subscription.class);
+                when(connectable.subscribe(observer)).thenReturn(underlying);
+                Subscription connection = mock(Subscription.class);
+                when(connectable.connect()).thenReturn(connection);
+                Subscription first = refCounted.subscribe(observer);
+                Subscription second = refCounted.subscribe(observer);
+                first.unsubscribe();
+                second.unsubscribe();
+                verify(underlying, times(2)).unsubscribe();
+                verify(connection, times(1)).unsubscribe();
+            }
         }
     }
 }

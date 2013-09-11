@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -35,7 +36,6 @@ import rx.concurrency.Schedulers;
 import rx.concurrency.TestScheduler;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-import rx.util.functions.Func1;
 
 /**
  * Returns an Observable that emits the results of sampling the items emitted by the source
@@ -48,19 +48,19 @@ public final class OperationSample {
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> Func1<Observer<T>, Subscription> sample(final Observable<T> source, long period, TimeUnit unit) {
+    public static <T> OnSubscribeFunc<T> sample(final Observable<? extends T> source, long period, TimeUnit unit) {
         return new Sample<T>(source, period, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
     }
 
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> Func1<Observer<T>, Subscription> sample(final Observable<T> source, long period, TimeUnit unit, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> sample(final Observable<? extends T> source, long period, TimeUnit unit, Scheduler scheduler) {
         return new Sample<T>(source, period, unit, scheduler);
     }
     
-    private static class Sample<T> implements Func1<Observer<T>, Subscription> {
-        private final Observable<T> source;
+    private static class Sample<T> implements OnSubscribeFunc<T> {
+        private final Observable<? extends T> source;
         private final long period;
         private final TimeUnit unit;
         private final Scheduler scheduler;
@@ -68,7 +68,7 @@ public final class OperationSample {
         private final AtomicBoolean hasValue = new AtomicBoolean();
         private final AtomicReference<T> latestValue = new AtomicReference<T>();
         
-        private Sample(Observable<T> source, long interval, TimeUnit unit, Scheduler scheduler) {
+        private Sample(Observable<? extends T> source, long interval, TimeUnit unit, Scheduler scheduler) {
             this.source = source;
             this.period = interval;
             this.unit = unit;
@@ -76,7 +76,7 @@ public final class OperationSample {
         }
 
         @Override
-        public Subscription call(final Observer<T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             Observable<Long> clock = Observable.create(OperationInterval.interval(period, unit, scheduler));
             final Subscription clockSubscription = clock.subscribe(new Observer<Long>() {
                 @Override
@@ -136,9 +136,9 @@ public final class OperationSample {
         
         @Test
         public void testSample() {
-            Observable<Long> source = Observable.create(new Func1<Observer<Long>, Subscription>() {
+            Observable<Long> source = Observable.create(new OnSubscribeFunc<Long>() {
                 @Override
-                public Subscription call(final Observer<Long> observer1) {
+                public Subscription onSubscribe(final Observer<? super Long> observer1) {
                     scheduler.schedule(new Action0() {
                         @Override
                         public void call() {
