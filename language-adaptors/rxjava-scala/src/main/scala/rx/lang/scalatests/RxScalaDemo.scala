@@ -9,7 +9,7 @@ import org.junit.{Before, Test, Ignore}
 
 import org.junit.Assert._
 
-@Ignore // Since this doesn't do automatic testing.
+//@Ignore // Since this doesn't do automatic testing.
 class RxScalaDemo extends JUnitSuite {
     
   def output(s: String): Unit = println(s)
@@ -90,6 +90,18 @@ class RxScalaDemo extends JUnitSuite {
     
     (slowNumbers merge fastNumbers).subscribe(output(_))
     sleep(2500)
+  }
+  
+  @Test def rangeAndBufferExample() {
+    val o = Observable(1 to 18)
+    o.buffer(5).subscribe((l: Seq[Int]) => println(l.mkString("[", ", ", "]")))
+  }
+  
+  @Test def windowExample() {
+    // this will be nicer once we have zipWithIndex
+    (for ((o, i) <- Observable(1 to 18).window(5) zip Observable(0 until 4); n <- o) 
+      yield s"Observable#$i emits $n")
+        .subscribe(output(_))
   }
   
 }

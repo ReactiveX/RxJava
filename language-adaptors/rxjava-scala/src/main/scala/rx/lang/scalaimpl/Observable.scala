@@ -18,6 +18,7 @@
 package rx.lang.scalaimpl
 
 import org.scalatest.junit.JUnitSuite
+import scala.collection.Seq
 
 
 /**
@@ -29,6 +30,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   extends AnyVal 
 {
   import scala.collection.JavaConverters._
+  import scala.collection.Seq
   import scala.concurrent.duration.Duration
   import rx.{Observable => JObservable}
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
@@ -218,25 +220,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         An {@link Observable} which produces connected non-overlapping buffers, which are emitted
    *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link rx.util.Closing} object.
    */
-  def buffer(bufferClosingSelector: () => Observable[Closing]) : Observable[java.util.List[_ <: T]] = {
+  def buffer(bufferClosingSelector: () => Observable[Closing]) : Observable[Seq[T]] = {
     val f: rx.util.functions.Func0[_ <: rx.Observable[_ <: Closing]] = bufferClosingSelector().asJava
-    val oJava: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(f)
-    val oScala1: Observable[java.util.List[_]] = new Observable[java.util.List[_]](oJava)
-    oScala1.asInstanceOf[Observable[java.util.List[_ <: T]]]
-  }
-  
-  // TODO decide whether to return Java list or Scala list 
-  
-  def bufferReturningScalaList(bufferClosingSelector: () => Observable[Closing]) : Observable[List[T]] = {
-    val f: rx.util.functions.Func0[_ <: rx.Observable[_ <: Closing]] = bufferClosingSelector().asJava
-    val oJava: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(f)
-    val oScala1: Observable[java.util.List[_]] = new Observable[java.util.List[_]](oJava)
-    val oScala2 = oScala1.map((lJava: java.util.List[_]) => {
-      val bufferScala: scala.collection.mutable.Buffer[_] = lJava.asScala
-      val listScala: List[Any] = bufferScala.toList
-      listScala.asInstanceOf[List[T]]
-    })
-    oScala2
+    val jObs: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(f)
+    Observable.jObsOfListToScObsOfSeq(jObs.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
 
   /**
@@ -275,7 +262,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         An {@link Observable} which produces connected non-overlapping buffers containing at most
    *         "count" produced values.
    */
-  // public Observable<List<T>> buffer(int count) 
+  def buffer(count: Int): Observable[Seq[T]] = {
+    val oJava: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(count)
+    Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
+  }
 
   /**
    * Creates an Observable which produces buffers of collected values.
@@ -462,7 +452,17 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         An {@link Observable} which produces connected non-overlapping windows containing at most
    *         "count" produced values.
    */
-  // public Observable<Observable<T>> window(int count) 
+  def window(count: Int): Observable[Observable[T]] = {
+    // this line makes the compiler crash (if it's the last line of the method):
+    // Observable.jObsOfJObsToScObsOfScObs(asJava.window(count))
+    
+    // this line gives an error:
+    // "type mismatch; found : rx.Observable[rx.Observable[_$1]] required: rx.Observable[rx.Observable[T]]"
+    // Observable.jObsOfJObsToScObsOfScObs(asJava.window(count) : JObservable[JObservable[T]])
+    
+    // workaround with a cast:
+    Observable.jObsOfJObsToScObsOfScObs(asJava.window(count).asInstanceOf[JObservable[JObservable[T]]])
+  }
 
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces windows every
@@ -941,7 +941,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
    */
   def fold[R](initialValue: R)(accumulator: (R, T) => R): Observable[R] = {
-    new Observable(asJava.reduce(initialValue, accumulator))
+    new Observable[R](asJava.reduce(initialValue, accumulator))
   }
   // corresponds to Java's
   // public <R> Observable<R> reduce(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) 
@@ -1009,7 +1009,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
    */
   def scan[R](initialValue: R)(accumulator: (R, T) => R): Observable[R] = {
-    new Observable(asJava.scan(initialValue, accumulator))
+    new Observable[R](asJava.scan(initialValue, accumulator))
   }
   // corresponds to Scala's
   // public <R> Observable<R> scan(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) 
@@ -1105,6 +1105,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   // TODO: if we have zipWithIndex, takeWhileWithIndex is not needed any more
   def takeWhileWithIndex(predicate: (T, Integer) => Boolean): Observable[T] = {
     new Observable[T](asJava.takeWhileWithIndex(predicate))
+  }
+  
+  def zipWithIndex: Observable[(T, Int)] = {
+    ???
   }
 
   /**
@@ -1276,13 +1280,26 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
 
 object Observable {
   import scala.collection.JavaConverters._
+  import scala.collection.immutable.Range
   import scala.concurrent.duration.Duration
   import scala.concurrent.Future
   import rx.{Observable => JObservable}
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
   import rx.lang.scalaimpl.ImplicitFunctionConversions._
-
+ 
+  private[scalaimpl] 
+  def jObsOfListToScObsOfSeq[T](jObs: rx.Observable[_ <: java.util.List[T]]): Observable[Seq[T]] = {
+    val oScala1: Observable[java.util.List[T]] = new Observable[java.util.List[T]](jObs)
+    oScala1.map((lJava: java.util.List[T]) => lJava.asScala)
+  }
+  
+  private[scalaimpl] 
+  def jObsOfJObsToScObsOfScObs[T](jObs: rx.Observable[_ <: rx.Observable[_ <: T]]): Observable[Observable[T]] = {
+    val oScala1: Observable[rx.Observable[_ <: T]] = new Observable[rx.Observable[_ <: T]](jObs)
+    oScala1.map((oJava: rx.Observable[_ <: T]) => new Observable[T](oJava))
+  }
+  
   /**
    * Creates an Observable that will execute the given function when an {@link Observer} subscribes to it.
    * <p>
@@ -1308,7 +1325,7 @@ object Observable {
    *         function
    */
   def apply[T](func: Observer[T] => Subscription): Observable[T] = {
-    new Observable(JObservable.create(func))
+    new Observable[T](JObservable.create(func))
   }
   // corresponds to Java's
   // public static <T> Observable<T> create(OnSubscribeFunc<T> func) 
@@ -1329,7 +1346,7 @@ object Observable {
    * @return an Observable that invokes the {@link Observer}'s {@link Observer#onError onError} method when the Observer subscribes to it
    */
   def apply(exception: Throwable): Observable[Nothing] = {
-    new Observable(JObservable.error(exception))
+    new Observable[Nothing](JObservable.error(exception))
   }
   // corresponds to Java's
   // public static <T> Observable<T> error(Throwable exception) 
@@ -1354,10 +1371,14 @@ object Observable {
    * @return an Observable that emits each item in the source Array
    */
   def apply[T](args: T*): Observable[T] = {     
-    new Observable(JObservable.from(args.toIterable.asJava))
+    new Observable[T](JObservable.from(args.toIterable.asJava))
   }
   // corresponds to Java's
   // public static <T> Observable<T> from(T... items) 
+  
+  def apply(range: Range): Observable[Int] = {
+    new Observable[Int](JObservable.from(range.toIterable.asJava))
+  }
   
   // There is no method corresponding to
   // public static Observable<Integer> range(int start, int count) 
@@ -1385,7 +1406,7 @@ object Observable {
    *         factory function
    */
   def defer[T](observable: => Observable[T]): Observable[T] = {
-    new Observable(JObservable.defer(observable.asJava))
+    new Observable[T](JObservable.defer(observable.asJava))
   }
   // corresponds to Java's
   // public static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) 
@@ -1410,7 +1431,7 @@ object Observable {
    * @return an Observable that emits a single item and then completes
    */
   def just[T](value: T): Observable[T] = {
-    new Observable(JObservable.just(value))
+    new Observable[T](JObservable.just(value))
   }
   // corresponds to Java's
   // public static <T> Observable<T> just(T value) 
@@ -1548,7 +1569,7 @@ object Observable {
    * @return an Observable that never sends any items or notifications to an {@link Observer}
    */
   def never: Observable[Nothing] = {
-    new Observable(JObservable.never())
+    new Observable[Nothing](JObservable.never())
   }
   
   // There is no method corresponding to
@@ -1623,12 +1644,12 @@ object Observable {
 class WithFilter[+T] private[scalaimpl] (p: T => Boolean, wrapped: rx.Observable[_ <: T]) {
   import rx.lang.scalaimpl.ImplicitFunctionConversions._
   
-  def map[B](f: T => B): Observable[B] = new Observable(wrapped.filter(p).map(f))
+  def map[B](f: T => B): Observable[B] = new Observable[B](wrapped.filter(p).map(f))
   def flatMap[B](f: T => Observable[B]): Observable[B] = {
     ??? // TODO
   }
   def foreach(f: T => Unit): Unit = wrapped.filter(p).toBlockingObservable.forEach(f)
-  def withFilter(p: T => Boolean): Observable[T] = new Observable(wrapped.filter(p))
+  def withFilter(p: T => Boolean): Observable[T] = new Observable[T](wrapped.filter(p))
 }
 
 class UnitTestSuite extends JUnitSuite {
