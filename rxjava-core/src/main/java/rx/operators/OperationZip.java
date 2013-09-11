@@ -147,7 +147,7 @@ public final class OperationZip {
         return a;
     }
 
-    public static <R> OnSubscribeFunc<R> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction) {
+    public static <R> OnSubscribeFunc<R> zip(Iterable<? extends Observable<?>> ws, FuncN<? extends R> zipFunction) {
         Aggregator<R> a = new Aggregator<R>(zipFunction);
         for (Observable<?> w : ws) {
             ZipObserver<R, Object> zipObserver = new ZipObserver<R, Object>(a, w);

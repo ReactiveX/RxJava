@@ -52,6 +52,7 @@ import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
+import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
@@ -1892,29 +1893,6 @@ public class Observable<T> {
     }
 
     /**
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
-     * new Observable will be the result of the function applied to the first item emitted by {@code w0} and the first item emitted by {@code w1}; the second item emitted by
-     * the new Observable will be the result of the function applied to the second item emitted by {@code w0} and the second item emitted by {@code w1}; and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations
-     * of the source Observable that emits the fewest items.
-     * 
-     * @param o1
-     *            one source Observable
-     * @param o2
-     *            another source Observable
-     * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source
-     *            Observables, results in an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
-     */
-    public static <T1, T2, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> zipFunction) {
-        return create(OperationZip.zip(o1, o2, zipFunction));
-    }
-
-    /**
      * Returns an Observable that emits Boolean values that indicate whether the pairs of items
      * emitted by two source Observables are equal.
      * <p>
@@ -1958,6 +1936,31 @@ public class Observable<T> {
      */
     public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality) {
         return zip(first, second, equality);
+    }
+
+    /**
+     * Returns an Observable that emits the results of a function of your choosing applied to
+     * combinations of two items emitted, in sequence, by two other Observables.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
+     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
+     * new Observable will be the result of the function applied to the first item emitted by {@code w0} and the first item emitted by {@code w1}; the second item emitted by
+     * the new Observable will be the result of the function applied to the second item emitted by {@code w0} and the second item emitted by {@code w1}; and so forth.
+     * <p>
+     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations
+     * of the source Observable that emits the fewest items.
+     * 
+     * @param o1
+     *            one source Observable
+     * @param o2
+     *            another source Observable
+     * @param zipFunction
+     *            a function that, when applied to an item emitted by each of the source
+     *            Observables, results in an item that will be emitted by the resulting Observable
+     * @return an Observable that emits the zipped results
+     */
+    public static <T1, T2, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> zipFunction) {
+        return create(OperationZip.zip(o1, o2, zipFunction));
     }
 
     /**
@@ -2021,7 +2024,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits the results of a function of your choosing applied to
-     * combinations of four items emitted, in sequence, by four other Observables.
+     * combinations of five items emitted, in sequence, by five other Observables.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
      * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
@@ -2054,7 +2057,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits the results of a function of your choosing applied to
-     * combinations of four items emitted, in sequence, by four other Observables.
+     * combinations of six items emitted, in sequence, by six other Observables.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
      * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
@@ -2090,7 +2093,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits the results of a function of your choosing applied to
-     * combinations of four items emitted, in sequence, by four other Observables.
+     * combinations of seven items emitted, in sequence, by seven other Observables.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
      * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
@@ -2128,7 +2131,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits the results of a function of your choosing applied to
-     * combinations of four items emitted, in sequence, by four other Observables.
+     * combinations of eight items emitted, in sequence, by eight other Observables.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
      * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
@@ -2168,7 +2171,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits the results of a function of your choosing applied to
-     * combinations of four items emitted, in sequence, by four other Observables.
+     * combinations of nine items emitted, in sequence, by nine other Observables.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
      * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
@@ -2680,7 +2683,8 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits the results of a function of your choosing applied to
-     * combinations of four items emitted, in sequence, by four other Observables.
+     * combinations of N items emitted, in sequence, by N other Observables as provided by an Iterable.
+     * 
      * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
      * new Observable will be the result of the function applied to the first item emitted by
      * all of the Observalbes; the second item emitted by the new Observable will be the result of
@@ -2727,7 +2731,7 @@ public class Observable<T> {
      *            Observables, results in an item that will be emitted by the resulting Observable
      * @return an Observable that emits the zipped results
      */
-    public static <R> Observable<R> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction) {
+    public static <R> Observable<R> zip(Iterable<? extends Observable<?>> ws, FuncN<? extends R> zipFunction) {
         return create(OperationZip.zip(ws, zipFunction));
     }
 
@@ -3124,6 +3128,42 @@ public class Observable<T> {
      */
     public ConnectableObservable<T> replay() {
         return OperationMulticast.multicast(this, ReplaySubject.<T> create());
+    }
+    
+    /**
+     * Retry subscription to origin Observable upto given retry count.
+     * <p>
+     * If {@link Observer#onError} is invoked the source Observable will be re-subscribed to as many times as defined by retryCount.
+     * <p>
+     * Any {@link Observer#onNext} calls received on each attempt will be emitted and concatenated together.
+     * <p>
+     * For example, if an Observable fails on first time but emits [1, 2] then succeeds the second time and
+     * emits [1, 2, 3, 4, 5] then the complete output would be [1, 2, 1, 2, 3, 4, 5, onCompleted].
+     * 
+     * @param retryCount
+     *            Number of retry attempts before failing.
+     * @return Observable with retry logic.
+     */
+    public Observable<T> retry(int retryCount) {
+        return create(OperationRetry.retry(this, retryCount));
+    }
+
+    /**
+     * Retry subscription to origin Observable whenever onError is called (infinite retry count).
+     * <p>
+     * If {@link Observer#onError} is invoked the source Observable will be re-subscribed to.
+     * <p>
+     * Any {@link Observer#onNext} calls received on each attempt will be emitted and concatenated together.
+     * <p>
+     * For example, if an Observable fails on first time but emits [1, 2] then succeeds the second time and
+     * emits [1, 2, 3, 4, 5] then the complete output would be [1, 2, 1, 2, 3, 4, 5, onCompleted].
+     * 
+     * @param retryCount
+     *            Number of retry attempts before failing.
+     * @return Observable with retry logic.
+     */
+    public Observable<T> retry() {
+        return create(OperationRetry.retry(this));
     }
 
     /**
