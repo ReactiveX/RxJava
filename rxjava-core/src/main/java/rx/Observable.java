@@ -1815,6 +1815,8 @@ public class Observable<T> {
      * <p>
      * NOTE: If events keep firing faster than the timeout then no data will be emitted.
      * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/debounce.png">
+     * <p>
      * Information on debounce vs throttle:
      * <p>
      * <ul>
@@ -1839,6 +1841,8 @@ public class Observable<T> {
      * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
      * <p>
      * NOTE: If events keep firing faster than the timeout then no data will be emitted.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/debounce.png">
      * <p>
      * Information on debounce vs throttle:
      * <p>
@@ -1866,6 +1870,8 @@ public class Observable<T> {
      * <p>
      * NOTE: If events keep firing faster than the timeout then no data will be emitted.
      * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleWithTimeout.png">
+     * <p>
      * Information on debounce vs throttle:
      * <p>
      * <ul>
@@ -1890,6 +1896,8 @@ public class Observable<T> {
      * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
      * <p>
      * NOTE: If events keep firing faster than the timeout then no data will be emitted.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleWithTimeout.png">
      * 
      * @param timeout
      *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
@@ -1908,6 +1916,8 @@ public class Observable<T> {
      * Throttles by skipping value until `skipDuration` passes and then emits the next received value.
      * <p>
      * This differs from {@link #throttleLast} in that this only tracks passage of time whereas {@link #throttleLast} ticks at scheduled intervals.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleFirst.png">
      * 
      * @param skipDuration
      *            Time to wait before sending another value after emitting last value.
@@ -1925,6 +1935,8 @@ public class Observable<T> {
      * Throttles by skipping value until `skipDuration` passes and then emits the next received value.
      * <p>
      * This differs from {@link #throttleLast} in that this only tracks passage of time whereas {@link #throttleLast} ticks at scheduled intervals.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleFirst.png">
      * 
      * @param skipDuration
      *            Time to wait before sending another value after emitting last value.
@@ -1942,6 +1954,8 @@ public class Observable<T> {
      * Throttles by returning the last value of each interval defined by 'intervalDuration'.
      * <p>
      * This differs from {@link #throttleFirst} in that this ticks along at a scheduled interval whereas {@link #throttleFirst} does not tick, it just tracks passage of time.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleLast.png">
      * 
      * @param intervalDuration
      *            Duration of windows within with the last value will be chosen.
@@ -1958,6 +1972,8 @@ public class Observable<T> {
      * Throttles by returning the last value of each interval defined by 'intervalDuration'.
      * <p>
      * This differs from {@link #throttleFirst} in that this ticks along at a scheduled interval whereas {@link #throttleFirst} does not tick, it just tracks passage of time.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleLast.png">
      * 
      * @param intervalDuration
      *            Duration of windows within with the last value will be chosen.
