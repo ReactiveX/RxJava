@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,7 +42,7 @@ public class CompositeSubscription implements Subscription {
      * TODO evaluate whether use of synchronized is a performance issue here and if it's worth using an atomic state machine or other non-locking approach
      */
     private AtomicBoolean unsubscribed = new AtomicBoolean(false);
-    private final ConcurrentLinkedQueue<Subscription> subscriptions = new ConcurrentLinkedQueue<Subscription>();
+    private final LinkedBlockingDeque<Subscription> subscriptions = new LinkedBlockingDeque<Subscription>();
 
     public CompositeSubscription(List<Subscription> subscriptions) {
         this.subscriptions.addAll(subscriptions);
@@ -64,6 +64,15 @@ public class CompositeSubscription implements Subscription {
         } else {
             subscriptions.add(s);
         }
+    }
+
+    /**
+     * Remove the last Subscription that was added.
+     * 
+     * @return Subscription or null if none exists
+     */
+    public synchronized Subscription removeLast() {
+        return subscriptions.pollLast();
     }
 
     @Override
