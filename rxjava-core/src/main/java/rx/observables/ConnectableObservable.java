@@ -54,6 +54,15 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @return a {@link Observable}
      */
     public Observable<T> refCount() {
-        return Observable.create(OperationRefCount.refCount(this));
+        return refCount(this);
+    }
+
+    /**
+     * Returns an observable sequence that stays connected to the source as long
+     * as there is at least one subscription to the observable sequence.
+     * @return a {@link Observable}
+     */
+    public static <T> Observable<T> refCount(ConnectableObservable<T> that) {
+        return Observable.create(OperationRefCount.refCount(that));
     }
 }
