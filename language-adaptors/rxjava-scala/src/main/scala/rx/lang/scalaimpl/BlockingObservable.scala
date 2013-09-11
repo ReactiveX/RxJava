@@ -36,5 +36,9 @@ class BlockingObservable[+T](val asJava: rx.observables.BlockingObservable[_ <: 
   def toIterable: Iterable[T] = {
     asJava.toIterable().asScala
   }
+  
+  def toList: List[T] = {
+    asJava.toIterable().asScala.toList
+  }
 
 }
