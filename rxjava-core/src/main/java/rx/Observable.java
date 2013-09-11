@@ -3193,7 +3193,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public <R> Observable<R> reduce(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
+    public <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator) {
         return create(OperationScan.scan(this, initialValue, accumulator)).takeLast(1);
     }
 
@@ -3204,7 +3204,7 @@ public class Observable<T> {
      * 
      * @see #reduce(Object, Func2)
      */
-    public <R> Observable<R> aggregate(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
+    public <R> Observable<R> aggregate(R initialValue, Func2<R, ? super T, R> accumulator) {
         return reduce(initialValue, accumulator);
     }
 
@@ -3288,7 +3288,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of each call to the accumulator function
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public <R> Observable<R> scan(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
+    public <R> Observable<R> scan(R initialValue, Func2<R, ? super T, R> accumulator) {
         return create(OperationScan.scan(this, initialValue, accumulator));
     }
 
