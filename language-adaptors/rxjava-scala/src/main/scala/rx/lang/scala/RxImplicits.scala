@@ -15,6 +15,11 @@
  */
 package rx.lang.scala
 
+/**
+ * This is the old Scala adaptor. It is kept here for backwards compatibility.
+ * The new adaptor is {@code rx.lang.scala.Observable}.
+ */
+@deprecated("use rx.lang.scala.Observable instead", "0.14")
 object RxImplicits {
     import java.{ lang => jlang }
     import language.implicitConversions

@@ -17,7 +17,10 @@ package rx.lang.scala
 
 import org.scalatest.junit.JUnitSuite
 
-class UnitTestSuite extends JUnitSuite {
+/**
+ * This is the test suite for the old Scala adaptor.
+ */
+class OldUnitTestSuite extends JUnitSuite {
     import rx.lang.scala.RxImplicits._
 
     import org.junit.{ Before, Test }
