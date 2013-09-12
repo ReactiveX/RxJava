@@ -11,16 +11,15 @@ import org.junit.Assert._
 
 //@Ignore // Since this doesn't do automatic testing.
 class RxScalaDemo extends JUnitSuite {
-    
-  def output(s: String): Unit = println(s)
-  
-  def sleep(ms: Long): Unit = Thread.sleep(ms)
-   
+
   @Test def intervalExample() {
-    println("hello")
-    Observable.interval(200 millis).take(5).subscribe((n: Long) => println("n = " + n))
-    // need to sleep here because otherwise JUnit kills the thread created by interval()
-    sleep(1200)
+    val o = Observable.interval(200 millis).take(5)
+    o.subscribe(n => println("n = " + n))
+    
+    // need to wait here because otherwise JUnit kills the thread created by interval()
+    waitFor(o)
+    
+    println("done")
   }
   
   def msTicks(start: Long, step: Long): Observable[Long] = {
@@ -33,15 +32,17 @@ class RxScalaDemo extends JUnitSuite {
   }
   
   @Test def testTicks() {
-    prefixedTicks(5000, 500, "t = ").take(5).subscribe(output(_))
-    sleep(3000)
+    val o = prefixedTicks(5000, 500, "t = ").take(5)
+    o.subscribe(output(_))
+    waitFor(o)
   }
   
   @Test def testSwitch() {
     // We do not have ultimate precision: Sometimes, 747 gets through, sometimes not
     val o = Observable.interval(1000 millis).map(n => prefixedTicks(0, 249, s"Observable#$n: "))
-    o.switch.take(16).subscribe(output(_))
-    sleep(5000)
+                 .switch.take(16)
+    o.subscribe(output(_))
+    waitFor(o)
   }
   
   @Test def testSwitchOnObservableOfInt() {
@@ -87,9 +88,9 @@ class RxScalaDemo extends JUnitSuite {
   @Test def mergeExample() {
     val slowNumbers = Observable.interval(400 millis).take(5).map("slow " + _)
     val fastNumbers = Observable.interval(200 millis).take(10).map("fast " + _)
-    
-    (slowNumbers merge fastNumbers).subscribe(output(_))
-    sleep(2500)
+    val o = (slowNumbers merge fastNumbers)
+    o.subscribe(output(_))
+    waitFor(o)
   }
   
   @Test def rangeAndBufferExample() {
@@ -106,6 +107,13 @@ class RxScalaDemo extends JUnitSuite {
   
   @Test def testReduce() {
     assertEquals(10, Observable(1, 2, 3, 4).reduce(_ + _).toBlockingObservable.single)
+  }
+  
+  def output(s: String): Unit = println(s)
+  
+  // blocks until obs has completed
+  def waitFor[T](obs: Observable[T]): Unit = {
+    obs.toBlockingObservable.last
   }
   
 }
