@@ -1,4 +1,4 @@
-package rx.lang.scalatests
+package rx.lang.scala.examples
 
 import rx.lang.scala.Observable
 

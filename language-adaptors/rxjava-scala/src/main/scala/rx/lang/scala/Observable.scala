@@ -15,10 +15,12 @@
  */
 
 
-package rx.lang.scalaimpl
+package rx.lang.scala
 
 import org.scalatest.junit.JUnitSuite
 import scala.collection.Seq
+import rx.lang.scala.observables.BlockingObservable
+import rx.lang.scala.observables.ConnectableObservable
 
 
 /**
@@ -35,7 +37,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   import rx.{Observable => JObservable}
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
-  import rx.lang.scalaimpl.ImplicitFunctionConversions._
+  import rx.lang.scala.internal.ImplicitFunctionConversions._
 
   /**
    * An {@link Observer} must call an Observable's {@code subscribe} method in order to
@@ -1438,15 +1440,15 @@ object Observable {
   import rx.{Observable => JObservable}
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
-  import rx.lang.scalaimpl.ImplicitFunctionConversions._
+  import rx.lang.scala.internal.ImplicitFunctionConversions._
  
-  private[scalaimpl] 
+  private[scala] 
   def jObsOfListToScObsOfSeq[T](jObs: rx.Observable[_ <: java.util.List[T]]): Observable[Seq[T]] = {
     val oScala1: Observable[java.util.List[T]] = new Observable[java.util.List[T]](jObs)
     oScala1.map((lJava: java.util.List[T]) => lJava.asScala)
   }
   
-  private[scalaimpl] 
+  private[scala] 
   def jObsOfJObsToScObsOfScObs[T](jObs: rx.Observable[_ <: rx.Observable[_ <: T]]): Observable[Observable[T]] = {
     val oScala1: Observable[rx.Observable[_ <: T]] = new Observable[rx.Observable[_ <: T]](jObs)
     oScala1.map((oJava: rx.Observable[_ <: T]) => new Observable[T](oJava))
@@ -1793,8 +1795,8 @@ object Observable {
 // Cannot yet have inner class because of this error message:
 // implementation restriction: nested class is not allowed in value class.
 // This restriction is planned to be removed in subsequent releases.  
-class WithFilter[+T] private[scalaimpl] (p: T => Boolean, wrapped: rx.Observable[_ <: T]) {
-  import rx.lang.scalaimpl.ImplicitFunctionConversions._
+class WithFilter[+T] private[scala] (p: T => Boolean, wrapped: rx.Observable[_ <: T]) {
+  import rx.lang.scala.internal.ImplicitFunctionConversions._
   
   def map[B](f: T => B): Observable[B] = new Observable[B](wrapped.filter(p).map(f))
   def flatMap[B](f: T => Observable[B]): Observable[B] = {

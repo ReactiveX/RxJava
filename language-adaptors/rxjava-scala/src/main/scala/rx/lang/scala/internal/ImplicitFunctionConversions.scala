@@ -2,7 +2,7 @@
 /*
  * These function conversions are only used by the ScalaAdapter, users of RxScala don't need them.
  */
-package rx.lang.scalaimpl
+package rx.lang.scala.internal
 
 
 import java.{lang => jlang}
