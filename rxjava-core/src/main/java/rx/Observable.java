@@ -2926,10 +2926,26 @@ public class Observable<T> {
         return create(OperationFilter.filter(this, predicate));
     }
 
+    /**
+     * Returns an Observable that forwards all distinct items emitted from the source Observable.
+     * 
+     * @return an Observable of distinct items
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229764%28v=vs.103%29.aspx">MSDN: Observable.distinct</a>
+     */
     public Observable<T> distinct() {
         return create(OperationDistinct.distinct(this));
     }
     
+    /**
+     * Returns an Observable that forwards all items emitted from the source Observable that are distinct according to
+     * a key selector function.
+     * 
+     * @param keySelector
+     *            a function that projects an emitted item to a key value which is used for deciding whether an item is
+     *            distinct from another one or not
+     * @return an Observable of distinct items
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244310%28v=vs.103%29.aspx">MSDN: Observable.distinct</a>
+     */
     public <U> Observable<T> distinct(Func1<? super T, ? extends U> keySelector) {
         return create(OperationDistinct.distinct(this, keySelector));
     }
