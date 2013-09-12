@@ -37,13 +37,12 @@ import rx.util.functions.Func1;
 import rx.util.functions.Functions;
 
 /**
- * Returns an Observable that emits the first item emitted by the source
- * Observable, or a default value if the source emits nothing.
+ * Returns an Observable that emits all sequentially distinct items emitted by the source.
  */
 public final class OperationDistinctUntilChanged {
 
     /**
-     * Returns an Observable that emits all sequentially distinct items emitted by the source
+     * Returns an Observable that emits all sequentially distinct items emitted by the source.
      * @param source
      *            The source Observable to emit the sequentially distinct items for.
      * @return A subscription function for creating the target Observable.
@@ -53,7 +52,7 @@ public final class OperationDistinctUntilChanged {
     }
     
     /**
-     * Returns an Observable that emits all sequentially distinct items emitted by the source
+     * Returns an Observable that emits all sequentially distinct items emitted by the source.
      * @param source
      *            The source Observable to emit the sequentially distinct items for.
      * @return A subscription function for creating the target Observable.
