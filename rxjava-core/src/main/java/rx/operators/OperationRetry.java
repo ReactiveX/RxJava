@@ -198,6 +198,6 @@ public class OperationRetry {
                 }
                 return Subscriptions.empty();
             }
-        };
+        }
     }
 }

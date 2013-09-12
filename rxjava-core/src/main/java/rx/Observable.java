@@ -1863,7 +1863,7 @@ public class Observable<T> {
      * @see {@link #throttleWithTimeout};
      */
     public Observable<T> debounce(long timeout, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationDebounce.debounce(this, timeout, unit));
+        return create(OperationDebounce.debounce(this, timeout, unit, scheduler));
     }
 
     /**
@@ -1924,8 +1924,6 @@ public class Observable<T> {
      *            Time to wait before sending another value after emitting last value.
      * @param unit
      *            The unit of time for the specified timeout.
-     * @param scheduler
-     *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
      * @return Observable which performs the throttle operation.
      */
     public Observable<T> throttleFirst(long windowDuration, TimeUnit unit) {
