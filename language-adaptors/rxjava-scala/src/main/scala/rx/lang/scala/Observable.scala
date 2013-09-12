@@ -151,7 +151,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def ++[U >: T](that: Observable[U]): Observable[U] = {
     val o1: JObservable[_ <: U] = this.asJava
     val o2: JObservable[_ <: U] = that.asJava
-    new Observable[U](JObservable.concat(o1, o2))
+    Observable(JObservable.concat(o1, o2))
   }
 
   
@@ -173,7 +173,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         Observable, and that synchronously notifies its {@link Observer}s
    */
   def synchronize: Observable[T] = {
-    new Observable[T](JObservable.synchronize(asJava))
+    Observable[T](JObservable.synchronize(asJava))
   }
   
   /**
@@ -184,7 +184,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return an Observable that emits timestamped items from the source Observable
    */
   def timestamp: Observable[Timestamped[T]] = {
-    new Observable[Timestamped[T]](asJava.timestamp())
+    Observable[Timestamped[T]](asJava.timestamp())
   }
   
   /**
@@ -194,7 +194,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * is the minumum of the number of {@code onNext} invocations of {@code this} and {@code that}. 
    */
   def zip[U](that: Observable[U]): Observable[(T, U)] = {
-    new Observable[(T, U)](JObservable.zip(this.asJava, that.asJava, (t: T, u: U) => (t, u)))
+    Observable[(T, U)](JObservable.zip[T, U, (T, U)](this.asJava, that.asJava, (t: T, u: U) => (t, u)))
   }  
   
   // There is no method corresponding to
@@ -420,7 +420,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     val o1: rx.Observable[_ <: rx.Observable[_]] = asJava.window(func)
     val o2 = new Observable[rx.Observable[_]](o1).map((x: rx.Observable[_]) => {
       val x2 = x.asInstanceOf[rx.Observable[_ <: T]]
-      new Observable[T](x2)
+      Observable[T](x2)
     })
     o2
   }
@@ -596,7 +596,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         evaluates as {@code true}
    */
   def filter(predicate: T => Boolean): Observable[T] = {
-    new Observable[T](asJava.filter(predicate))
+    Observable[T](asJava.filter(predicate))
   }
 
   /**
@@ -610,7 +610,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN: Observable.Finally Method</a>
    */
   def finallyDo(action: () => Unit): Observable[T] = {
-    new Observable[T](asJava.finallyDo(action))
+    Observable[T](asJava.finallyDo(action))
   } 
 
   /**
@@ -631,7 +631,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see #mapMany(Func1)
    */
   def flatMap[R](f: T => Observable[R]): Observable[R] = {
-    new Observable[R](asJava.flatMap[R]((t: T) => f(t).asJava))
+    Observable[R](asJava.flatMap[R]((t: T) => f(t).asJava))
   }
   
   // There is no method like
@@ -650,7 +650,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         given function
    */
   def map[R](func: T => R): Observable[R] = {
-    new Observable[R](asJava.map(func))
+    Observable[R](asJava.map[R](func))
   }
   
   // There's no method like
@@ -667,7 +667,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">MSDN: Observable.materialize</a>
    */
   def materialize: Observable[Notification[T]] = {
-    new Observable[Notification[T]](asJava.materialize())
+    Observable[Notification[T]](asJava.materialize())
   }
 
   /**
@@ -681,7 +681,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         on the specified {@link Scheduler}
    */
   def subscribeOn(scheduler: Scheduler): Observable[T] = {
-    new Observable[T](asJava.subscribeOn(scheduler))
+    Observable[T](asJava.subscribeOn(scheduler))
   } 
 
   /**
@@ -695,7 +695,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         specified {@link Scheduler}
    */
   def observeOn(scheduler: Scheduler): Observable[T] = {
-    new Observable[T](asJava.observeOn(scheduler))
+    Observable[T](asJava.observeOn(scheduler))
   }
  
   /**
@@ -710,7 +710,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   // with =:= it does not work, why?
   def dematerialize[U](implicit evidence: T <:< Notification[U]): Observable[U] = {
     val o = asJava.dematerialize[U]()
-    new Observable[U](o)
+    Observable[U](o)
   }
   
   /**
@@ -740,7 +740,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def onErrorResumeNext[U >: T](resumeFunction: Throwable => Observable[U]): Observable[U] = {
     val f: rx.util.functions.Func1[Throwable, rx.Observable[_ <: U]] = (t: Throwable) => resumeFunction(t).asJava
     val f2 = f.asInstanceOf[rx.util.functions.Func1[Throwable, rx.Observable[Nothing]]]
-    new Observable[U](asJava.onErrorResumeNext(f2))
+    Observable[U](asJava.onErrorResumeNext(f2))
   }
   
   /**
@@ -770,7 +770,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def onErrorResumeNext[U >: T](resumeSequence: Observable[U]): Observable[U] = {
     val rSeq1: rx.Observable[_ <: U] = resumeSequence.asJava
     val rSeq2: rx.Observable[Nothing] = rSeq1.asInstanceOf[rx.Observable[Nothing]]
-    new Observable[U](asJava.onErrorResumeNext(rSeq2))
+    Observable[U](asJava.onErrorResumeNext(rSeq2))
   }
 
   /**
@@ -802,7 +802,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def onExceptionResumeNext[U >: T](resumeSequence: Observable[U]): Observable[U] = {
     val rSeq1: rx.Observable[_ <: U] = resumeSequence.asJava
     val rSeq2: rx.Observable[Nothing] = rSeq1.asInstanceOf[rx.Observable[Nothing]]
-    new Observable[U](asJava.onExceptionResumeNext(rSeq2))
+    Observable[U](asJava.onExceptionResumeNext(rSeq2))
   }
 
   /**
@@ -831,7 +831,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def onErrorReturn[U >: T](resumeFunction: Throwable => U): Observable[U] = {
     val f1: rx.util.functions.Func1[Throwable, _ <: U] = resumeFunction
     val f2 = f1.asInstanceOf[rx.util.functions.Func1[Throwable, Nothing]]
-    new Observable[U](asJava.onErrorReturn(f2))
+    Observable[U](asJava.onErrorReturn(f2))
   } 
 
   /**
@@ -858,7 +858,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def reduce[U >: T](f: (U, U) => U): Observable[U] = {
     val func: rx.util.functions.Func2[_ >: U, _ >: U, _ <: U] = f
     val func2 = func.asInstanceOf[rx.util.functions.Func2[T, T, T]]
-    new Observable[U](asJava.asInstanceOf[rx.Observable[T]].reduce(func2))
+    Observable[U](asJava.asInstanceOf[rx.Observable[T]].reduce(func2))
   } 
 
   /**
@@ -891,7 +891,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         the benefit of subsequent subscribers.
    */
   def cache: Observable[T] = {
-    new Observable[T](asJava.cache())
+    Observable[T](asJava.cache())
   }
 
   /**
@@ -937,7 +937,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
    */
   def fold[R](initialValue: R)(accumulator: (R, T) => R): Observable[R] = {
-    new Observable[R](asJava.reduce(initialValue, accumulator))
+    Observable[R](asJava.reduce(initialValue, accumulator))
   }
   // corresponds to Java's
   // public <R> Observable<R> reduce(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) 
@@ -961,7 +961,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         Observable at the specified time interval
    */
   def sample(duration: Duration): Observable[T] = {
-    new Observable[T](asJava.sample(duration.length, duration.unit))
+    Observable[T](asJava.sample(duration.length, duration.unit))
   }
 
   /**
@@ -980,7 +980,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         Observable at the specified time interval
    */
   def sample(duration: Duration, scheduler: Scheduler): Observable[T] = {
-    new Observable[T](asJava.sample(duration.length, duration.unit, scheduler))
+    Observable[T](asJava.sample(duration.length, duration.unit, scheduler))
   }
   
     /**
@@ -1005,7 +1005,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
    */
   def scan[R](initialValue: R)(accumulator: (R, T) => R): Observable[R] = {
-    new Observable[R](asJava.scan(initialValue, accumulator))
+    Observable[R](asJava.scan(initialValue, accumulator))
   }
   // corresponds to Scala's
   // public <R> Observable<R> scan(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) 
@@ -1045,7 +1045,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         emit the first <code>num</code> items that the source emits
    */
   def drop(n: Int): Observable[T] = {
-    new Observable[T](asJava.skip(n))
+    Observable[T](asJava.skip(n))
   }
   // corresponds to Java's
   // public Observable<T> skip(int num)
@@ -1066,7 +1066,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         fewer than <code>num</code> items
    */
   def take(n: Int): Observable[T] = {
-    new Observable[T](asJava.take(n))
+    Observable[T](asJava.take(n))
   }
 
   /**
@@ -1082,7 +1082,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         satisfies the condition defined by <code>predicate</code>
    */
   def takeWhile(predicate: T => Boolean): Observable[T] = {
-    new Observable[T](asJava.takeWhile(predicate))
+    Observable[T](asJava.takeWhile(predicate))
   }
   
   /**
@@ -1100,7 +1100,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    */
   // TODO: if we have zipWithIndex, takeWhileWithIndex is not needed any more
   def takeWhileWithIndex(predicate: (T, Integer) => Boolean): Observable[T] = {
-    new Observable[T](asJava.takeWhileWithIndex(predicate))
+    Observable[T](asJava.takeWhileWithIndex(predicate))
   }
   
   def zipWithIndex: Observable[(T, Int)] = {
@@ -1120,7 +1120,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         Observable
    */
   def takeRight(n: Int): Observable[T] = {
-    new Observable[T](asJava.takeLast(n))
+    Observable[T](asJava.takeLast(n))
   }
   // corresponds to Java's
   // public Observable<T> takeLast(final int count) 
@@ -1140,7 +1140,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         <code>other</code> emits its first item
    */
   def takeUntil[E](that: Observable[E]): Observable[T] = {
-    new Observable[T](asJava.takeUntil(that.asJava))
+    Observable[T](asJava.takeUntil(that.asJava))
   } 
  
   /**
@@ -1238,7 +1238,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     val o3: Observable[rx.Observable[_ <: U]] = o2.map(_.asJava)
     val o4: rx.Observable[_ <: rx.Observable[_ <: U]] = o3.asJava
     val o5 = rx.Observable.switchOnNext[U](o4)
-    new Observable[U](o5)
+    Observable[U](o5)
   }
   // TODO naming: follow C# (switch) or Java (switchOnNext)?
   // public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) 
@@ -1259,7 +1259,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def merge[U >: T](that: Observable[U]): Observable[U] = {
     val thisJava: rx.Observable[_ <: U] = this.asJava
     val thatJava: rx.Observable[_ <: U] = that.asJava
-    new Observable[U](rx.Observable.merge(thisJava, thatJava))
+    Observable[U](rx.Observable.merge(thisJava, thatJava))
   }
 
   /**
@@ -1284,7 +1284,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see {@link #debounce}
    */
   def throttleWithTimeout(timeout: Duration): Observable[T] = {
-    new Observable[T](asJava.throttleWithTimeout(timeout.length, timeout.unit))
+    Observable[T](asJava.throttleWithTimeout(timeout.length, timeout.unit))
   }
 
   /**
@@ -1309,7 +1309,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see {@link #throttleWithTimeout};
    */
   def debounce(timeout: Duration): Observable[T] = {
-    new Observable[T](asJava.debounce(timeout.length, timeout.unit))
+    Observable[T](asJava.debounce(timeout.length, timeout.unit))
   }
 
   /**
@@ -1335,7 +1335,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see {@link #throttleWithTimeout};
    */
   def debounce(timeout: Duration, scheduler: Scheduler): Observable[T] = {
-    new Observable[T](asJava.debounce(timeout.length, timeout.unit, scheduler))
+    Observable[T](asJava.debounce(timeout.length, timeout.unit, scheduler))
   }
 
   /**
@@ -1353,7 +1353,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see {@link #debounce}
    */
   def throttleWithTimeout(timeout: Duration, scheduler: Scheduler): Observable[T] = {
-    new Observable[T](asJava.throttleWithTimeout(timeout.length, timeout.unit, scheduler))
+    Observable[T](asJava.throttleWithTimeout(timeout.length, timeout.unit, scheduler))
   }
 
   /**
@@ -1370,7 +1370,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return Observable which performs the throttle operation.
    */
   def throttleFirst(skipDuration: Duration, scheduler: Scheduler): Observable[T] = {
-    new Observable[T](asJava.throttleFirst(skipDuration.length, skipDuration.unit, scheduler))
+    Observable[T](asJava.throttleFirst(skipDuration.length, skipDuration.unit, scheduler))
   }
 
   /**
@@ -1385,7 +1385,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return Observable which performs the throttle operation.
    */
   def throttleFirst(skipDuration: Duration): Observable[T] = {
-    new Observable[T](asJava.throttleFirst(skipDuration.length, skipDuration.unit))
+    Observable[T](asJava.throttleFirst(skipDuration.length, skipDuration.unit))
   }
 
   /**
@@ -1401,7 +1401,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see {@link #sample(long, TimeUnit)}
    */
   def throttleLast(intervalDuration: Duration): Observable[T] = {
-    new Observable[T](asJava.throttleLast(intervalDuration.length, intervalDuration.unit))
+    Observable[T](asJava.throttleLast(intervalDuration.length, intervalDuration.unit))
   }
 
   /**
@@ -1417,7 +1417,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see {@link #sample(long, TimeUnit, Scheduler)}
    */
   def throttleLast(intervalDuration: Duration, scheduler: Scheduler): Observable[T] = {
-    new Observable[T](asJava.throttleLast(intervalDuration.length, intervalDuration.unit, scheduler))
+    Observable[T](asJava.throttleLast(intervalDuration.length, intervalDuration.unit, scheduler))
   }
   
   /**
@@ -1453,6 +1453,10 @@ object Observable {
     val oScala1: Observable[rx.Observable[_ <: T]] = new Observable[rx.Observable[_ <: T]](jObs)
     oScala1.map((oJava: rx.Observable[_ <: T]) => new Observable[T](oJava))
   }
+   
+  def apply[T](asJava: rx.Observable[_ <: T]): Observable[T] = {
+    new Observable[T](asJava)
+  }
   
   /**
    * Creates an Observable that will execute the given function when an {@link Observer} subscribes to it.
@@ -1479,7 +1483,7 @@ object Observable {
    *         function
    */
   def apply[T](func: Observer[T] => Subscription): Observable[T] = {
-    new Observable[T](JObservable.create(func))
+    Observable[T](JObservable.create(func))
   }
   // corresponds to Java's
   // public static <T> Observable<T> create(OnSubscribeFunc<T> func) 
@@ -1500,7 +1504,7 @@ object Observable {
    * @return an Observable that invokes the {@link Observer}'s {@link Observer#onError onError} method when the Observer subscribes to it
    */
   def apply(exception: Throwable): Observable[Nothing] = {
-    new Observable[Nothing](JObservable.error(exception))
+    Observable[Nothing](JObservable.error(exception))
   }
   // corresponds to Java's
   // public static <T> Observable<T> error(Throwable exception) 
@@ -1525,13 +1529,13 @@ object Observable {
    * @return an Observable that emits each item in the source Array
    */
   def apply[T](args: T*): Observable[T] = {     
-    new Observable[T](JObservable.from(args.toIterable.asJava))
+    Observable[T](JObservable.from(args.toIterable.asJava))
   }
   // corresponds to Java's
   // public static <T> Observable<T> from(T... items) 
   
   def apply(range: Range): Observable[Int] = {
-    new Observable[Int](JObservable.from(range.toIterable.asJava))
+    Observable[Int](JObservable.from(range.toIterable.asJava))
   }
   
   // There is no method corresponding to
@@ -1560,7 +1564,7 @@ object Observable {
    *         factory function
    */
   def defer[T](observable: => Observable[T]): Observable[T] = {
-    new Observable[T](JObservable.defer(observable.asJava))
+    Observable[T](JObservable.defer(observable.asJava))
   }
   // corresponds to Java's
   // public static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) 
@@ -1585,7 +1589,7 @@ object Observable {
    * @return an Observable that emits a single item and then completes
    */
   def just[T](value: T): Observable[T] = {
-    new Observable[T](JObservable.just(value))
+    Observable[T](JObservable.just(value))
   }
   // corresponds to Java's
   // public static <T> Observable<T> just(T value) 
@@ -1723,7 +1727,7 @@ object Observable {
    * @return an Observable that never sends any items or notifications to an {@link Observer}
    */
   def never: Observable[Nothing] = {
-    new Observable[Nothing](JObservable.never())
+    Observable[Nothing](JObservable.never())
   }
   
   // There is no method corresponding to
