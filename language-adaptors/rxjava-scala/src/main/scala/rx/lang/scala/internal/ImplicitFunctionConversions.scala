@@ -1,33 +1,71 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.lang.scala
+package rx.lang.scala.internal
+
+
+import java.{lang => jlang}
+import rx.util.functions.Action0
+import rx.util.functions.Action1
+import rx.util.functions.Func0
+import rx.util.functions.Func1
+import rx.util.functions.Func2
+import rx.util.functions.Func3
+import rx.util.functions.Func4
+import java.{lang => jlang}
+import rx.Observer
+import rx.Subscription
+import java.{lang => jlang}
+import scala.language.implicitConversions
 
 /**
- * This is the old Scala adaptor. It is kept here for backwards compatibility.
- * The new adaptor is {@code rx.lang.scala.Observable}.
+ * These function conversions are only used by the ScalaAdapter, users of RxScala don't need them.
  */
-@deprecated("use rx.lang.scala.Observable instead", "0.14")
-object RxImplicits {
+object ImplicitFunctionConversions {
+    // code below is copied from
+    // https://github.com/Netflix/RxJava/blob/master/language-adaptors/rxjava-scala/src/main/scala/rx/lang/scala/RxImplicits.scala
+    
     import java.{ lang => jlang }
     import language.implicitConversions
-
-    import rx.{ Observable, Observer, Subscription }
-    import rx.Observable.OnSubscribeFunc
+  
     import rx.observables.BlockingObservable
     import rx.util.functions._
+    import rx.{Observer, Subscription}
+    
+    implicit def scalaFunction1ToOnSubscribeFunc[T](f: rx.lang.scala.Observer[T] => Subscription) =
+        new rx.Observable.OnSubscribeFunc[T] {
+            def onSubscribe(obs: Observer[_ >: T]): Subscription = {
+              f(obs)
+            }
+        }
+    
+    /*implicit def scalaFunction1ToOnSubscribeFunc[T](f: Observer[_ >: T] => Subscription) =
+        new rx.Observable.OnSubscribeFunc[T] {
+            def onSubscribe(obs: Observer[_ >: T]): Subscription = {
+              f(obs)
+            }
+        }*/
+    
+    /**
+     * Converts a by-name parameter to a Rx Func0
+     */
+    implicit def scalaByNameParamToFunc0[B](param: => B): Func0[B] = 
+        new Func0[B]{
+            def call(): B = param
+        }
+    
     
     /**
      * Converts 0-arg function to Rx Action0
@@ -54,6 +92,14 @@ object RxImplicits {
         }
     
     /**
+     * Converts 2-arg predicate to Rx Func2[A, B, java.lang.Boolean]
+     */
+    implicit def scalaBooleanFunction2ToRxBooleanFunc1[A, B](f: ((A, B) => Boolean)): Func2[A, B, jlang.Boolean] =
+        new Func2[A, B, jlang.Boolean] {
+            def call(a: A, b: B): jlang.Boolean = f(a, b).booleanValue
+        }
+    
+    /**
      * Converts a specific function shape (used in takeWhile) to the equivalent Java types with an Rx Func2
      */
     implicit def convertTakeWhileFuncToRxFunc2[A](f: (A, Int) => Boolean): Func2[A, jlang.Integer, jlang.Boolean] =
@@ -62,7 +108,7 @@ object RxImplicits {
         }
     
     /**
-     * Converts a function shaped like compareTo into the equivalent Rx Func2
+     * Converts a function shaped ilke compareTo into the equivalent Rx Func2
      */
     implicit def convertComparisonFuncToRxFunc2[A](f: (A, A) => Int): Func2[A, A, jlang.Integer] =
         new Func2[A, A, jlang.Integer] {
@@ -105,28 +151,5 @@ object RxImplicits {
         new Func4[A, B, C, D, E] {
             def call(a: A, b: B, c: C, d: D) = f(a, b, c, d)
         }
-
-    implicit def onSubscribeFunc[A](f: (Observer[_ >: A]) => Subscription): OnSubscribeFunc[A] =
-        new OnSubscribeFunc[A] {
-            override def onSubscribe(a: Observer[_ >: A]) = f(a)
-        }
-
-    /**
-     * This implicit class implements all of the methods necessary for including Observables in a
-     * for-comprehension.  Note that return type is always Observable, so that the ScalaObservable
-     * type never escapes the for-comprehension
-     */
-    implicit class ScalaObservable[A](wrapped: Observable[A]) {
-        def map[B](f: A => B): Observable[B] = wrapped.map[B](f)
-        def flatMap[B](f: A => Observable[B]): Observable[B] = wrapped.mapMany(f)
-        def foreach(f: A => Unit): Unit = wrapped.toBlockingObservable.forEach(f)
-        def withFilter(p: A => Boolean): WithFilter = new WithFilter(p)
-
-        class WithFilter(p: A => Boolean) {
-            def map[B](f: A => B): Observable[B] = wrapped.filter(p).map(f)
-            def flatMap[B](f: A => Observable[B]): Observable[B] = wrapped.filter(p).flatMap(f)
-            def foreach(f: A => Unit): Unit = wrapped.filter(p).toBlockingObservable.forEach(f)
-            def withFilter(p: A => Boolean): Observable[A] = wrapped.filter(p)
-        }
-    }
+  
 }

@@ -1,17 +1,6 @@
 # Scala Adaptor for RxJava
 
-
-This adaptor allows 'fn' functions to be used and RxJava will know how to invoke them.
-
-This enables code such as:
-
-```scala
-Observable.from("1", "2", "3")
-  .take(2)
-  .subscribe((callback: String) => {
-      println(callback)
-  })
-```
+There's an old Scala adaptor ( `rx.lang.scala.RxImplicits` with test `rx.lang.scala.RxImplicitsTest` ), which is deprecated. All other classes in `rx.lang.scala` belong to the new adaptor.
 
 # Binaries
 
