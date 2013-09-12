@@ -1430,6 +1430,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     new BlockingObservable[T](asJava.toBlockingObservable())
   }
   
+  def withFilter(p: T => Boolean): WithFilter[T] = {
+    new WithFilter[T](p, asJava)
+  }
+  
 }
 
 object Observable {
@@ -1796,18 +1800,25 @@ object Observable {
   }
 }
 
-// Cannot yet have inner class because of this error message:
-// implementation restriction: nested class is not allowed in value class.
-// This restriction is planned to be removed in subsequent releases.  
-class WithFilter[+T] private[scala] (p: T => Boolean, wrapped: rx.Observable[_ <: T]) {
+// Cannot yet have inner class because of this error message: 
+// "implementation restriction: nested class is not allowed in value class.
+// This restriction is planned to be removed in subsequent releases."  
+class WithFilter[+T] private[scala] (p: T => Boolean, asJava: rx.Observable[_ <: T]) {
   import rx.lang.scala.internal.ImplicitFunctionConversions._
   
-  def map[B](f: T => B): Observable[B] = new Observable[B](wrapped.filter(p).map(f))
-  def flatMap[B](f: T => Observable[B]): Observable[B] = {
-    ??? // TODO
+  def map[B](f: T => B): Observable[B] = {
+    Observable[B](asJava.filter(p).map[B](f))
   }
-  def foreach(f: T => Unit): Unit = wrapped.filter(p).toBlockingObservable.forEach(f)
-  def withFilter(p: T => Boolean): Observable[T] = new Observable[T](wrapped.filter(p))
+  
+  def flatMap[B](f: T => Observable[B]): Observable[B] = {
+    Observable[B](asJava.filter(p).flatMap[B]((x: T) => f(x).asJava))
+  }
+  
+  def withFilter(q: T => Boolean): Observable[T] = {
+    Observable[T](asJava.filter((x: T) => p(x) && q(x)))
+  }
+  
+  // there is no foreach here, that's only available on BlockingObservable
 }
 
 class UnitTestSuite extends JUnitSuite {

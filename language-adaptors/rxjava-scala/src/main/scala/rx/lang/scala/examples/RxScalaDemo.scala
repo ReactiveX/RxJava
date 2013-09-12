@@ -119,6 +119,12 @@ class RxScalaDemo extends JUnitSuite {
     for (n <- numbers.toBlockingObservable) println(n+10)
   }
   
+  @Test def testForComprehension() {
+    val observables = Observable(Observable(1, 2, 3), Observable(10, 20, 30))
+    val squares = (for (o <- observables; i <- o if i % 2 == 0) yield i*i)
+    assertEquals(squares.toBlockingObservable.toList, List(4, 100, 400, 900))
+  }
+  
   def output(s: String): Unit = println(s)
   
   // blocks until obs has completed
