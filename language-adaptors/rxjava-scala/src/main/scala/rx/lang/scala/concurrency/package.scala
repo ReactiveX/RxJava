@@ -14,5 +14,6 @@ package object concurrency {
  */
   
   lazy val CurrentThreadScheduler = rx.concurrency.CurrentThreadScheduler.getInstance()
+  lazy val NewThreadScheduler = rx.concurrency.NewThreadScheduler.getInstance()
 
 }

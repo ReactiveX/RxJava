@@ -15,7 +15,6 @@ class BlockingObservable[+T](val asJava: rx.observables.BlockingObservable[_ <: 
     asJava.last() : T // useless ascription because of compiler bug
   }
 
-  // getIterator()
   // last(Func1<? super T, Boolean>)
   // lastOrDefault(T)
   // lastOrDefault(T, Func1<? super T, Boolean>)

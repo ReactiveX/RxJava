@@ -1,15 +1,14 @@
 package rx.lang.scala.examples
 
 import org.scalatest.junit.JUnitSuite
-
 import scala.language.postfixOps
 import rx.lang.scala._
 import scala.concurrent.duration._
 import org.junit.{Before, Test, Ignore}
-
 import org.junit.Assert._
+import rx.lang.scala.concurrency.NewThreadScheduler
 
-//@Ignore // Since this doesn't do automatic testing.
+@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
 
   @Test def intervalExample() {
@@ -51,9 +50,7 @@ class RxScalaDemo extends JUnitSuite {
     // val o = Observable(1, 2).switch
   }
 
-  @Test def testMyOwnSequenceEqual() {
-    // the sequenceEqual operation can be obtained like this:
-    
+  @Test def testObservableComparison() {
     val first = Observable(10, 11, 12)
     val second = Observable(10, 11, 12)
     
@@ -66,9 +63,7 @@ class RxScalaDemo extends JUnitSuite {
     assertTrue(b2.toBlockingObservable.single)
   }
   
-  @Test def testMyOwnSequenceEqualWithForComprehension() {
-    // the sequenceEqual operation can be obtained like this:
-    
+  @Test def testObservableComparisonWithForComprehension() {
     val first = Observable(10, 11, 12)
     val second = Observable(10, 11, 12)
     
@@ -123,6 +118,29 @@ class RxScalaDemo extends JUnitSuite {
     val observables = Observable(Observable(1, 2, 3), Observable(10, 20, 30))
     val squares = (for (o <- observables; i <- o if i % 2 == 0) yield i*i)
     assertEquals(squares.toBlockingObservable.toList, List(4, 100, 400, 900))
+  }
+  
+  @Test def testTwoSubscriptionsToOneInterval() {
+    // TODO this does not yet work as expected!
+    val o = Observable.interval(100 millis).take(8)
+    o.subscribe(
+        i => println(s"${i}a (on thread #${Thread.currentThread().getId()})")
+    )
+    o.subscribe(
+        i => println(s"${i}b (on thread #${Thread.currentThread().getId()})")
+    )
+    waitFor(o)
+  }
+  
+  @Test def schedulersExample() {
+    val o = Observable.interval(100 millis).take(8)
+    o.observeOn(NewThreadScheduler).subscribe(
+        i => println(s"${i}a (on thread #${Thread.currentThread().getId()})")
+    )
+    o.observeOn(NewThreadScheduler).subscribe(
+        i => println(s"${i}b (on thread #${Thread.currentThread().getId()})")
+    )
+    waitFor(o)
   }
   
   def output(s: String): Unit = println(s)

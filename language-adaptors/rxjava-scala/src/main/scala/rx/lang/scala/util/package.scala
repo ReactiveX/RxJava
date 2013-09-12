@@ -3,19 +3,26 @@ package rx.lang.scala
 package object util {
   type Closing = rx.util.Closing
 
-  // TODO rx.util.Closings
+  object Closings {
+    def create(): Closing = rx.util.Closings.create()
+  }
 
   type CompositeException = rx.util.CompositeException
 
-  // TODO rx.util.Exceptions
+  // TODO not sure if we need this in Scala
+  object Exceptions {
+    def propageate(ex: Throwable) = rx.util.Exceptions.propagate(ex)
+  }
 
   // rx.util.OnErrorNotImplementedException TODO what's this?
 
   type Opening = rx.util.Opening
 
-  // rx.util.Openings // TODO
+  object Openings {
+    def create(): Opening = rx.util.Openings.create()
+  }
 
-  // rx.util.Range // TODO do we need this? Or the Scala Range?
+  // rx.util.Range not needed because there's a standard Scala Range
 
   type Timestamped[+T] = rx.util.Timestamped[_ <: T]
   object Timestamped {

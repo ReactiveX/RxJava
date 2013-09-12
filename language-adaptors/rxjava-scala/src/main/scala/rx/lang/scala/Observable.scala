@@ -33,8 +33,9 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
 {
   import scala.collection.JavaConverters._
   import scala.collection.Seq
-  import scala.concurrent.duration.Duration
+  import scala.concurrent.duration.{Duration, TimeUnit}
   import rx.{Observable => JObservable}
+  import rx.util.functions._
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
   import rx.lang.scala.internal.ImplicitFunctionConversions._
@@ -223,7 +224,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link rx.util.Closing} object.
    */
   def buffer(bufferClosingSelector: () => Observable[Closing]) : Observable[Seq[T]] = {
-    val f: rx.util.functions.Func0[_ <: rx.Observable[_ <: Closing]] = bufferClosingSelector().asJava
+    val f: Func0[_ <: rx.Observable[_ <: Closing]] = bufferClosingSelector().asJava
     val jObs: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(f)
     Observable.jObsOfListToScObsOfSeq(jObs.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -246,10 +247,12 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return
    *         An {@link Observable} which produces buffers which are created and emitted when the specified {@link Observable}s publish certain objects.
    */
-  def buffer(bufferOpenings: Observable[Opening], bufferClosingSelector: Opening => Observable[Closing]): Observable[List[T]] = {
-    ???
+  def buffer(bufferOpenings: Observable[Opening], bufferClosingSelector: Opening => Observable[Closing]): Observable[Seq[T]] = {
+    val opening: rx.Observable[_ <: Opening] = bufferOpenings.asJava 
+    val closing: Func1[Opening, _ <: rx.Observable[_ <: Closing]] = (o: Opening) => bufferClosingSelector(o).asJava
+    val jObs: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(opening, closing)
+    Observable.jObsOfListToScObsOfSeq(jObs.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
-  // public Observable<List<T>> buffer(Observable<? extends Opening> bufferOpenings, Func1<Opening, ? extends Observable<? extends Closing>> bufferClosingSelector) 
 
   /**
    * Creates an Observable which produces buffers of collected values.
@@ -285,7 +288,28 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         An {@link Observable} which produces buffers every "skipped" values containing at most
    *         "count" produced values.
    */
-  // public Observable<List<T>> buffer(int count, int skip) 
+  def buffer(count: Int, skip: Int): Observable[Seq[T]] = {
+    val oJava: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(count, skip)
+    Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
+  }
+  
+  /**
+   * Creates an Observable which produces buffers of collected values.
+   * 
+   * <p>This Observable produces connected non-overlapping buffers, each of a fixed duration
+   * specified by the "timespan" argument. When the source Observable completes or encounters
+   * an error, the current buffer is emitted and the event is propagated.
+   * 
+   * @param timespan
+   *            The period of time each buffer is collecting values before it should be emitted, and
+   *            replaced with a new buffer.
+   * @return
+   *         An {@link Observable} which produces connected non-overlapping buffers with a fixed duration.
+   */
+  def buffer(timespan: Duration): Observable[Seq[T]] = {
+    val oJava: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(timespan.length, timespan.unit)
+    Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
+  }
 
   /**
    * Creates an Observable which produces buffers of collected values.
@@ -297,31 +321,15 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @param timespan
    *            The period of time each buffer is collecting values before it should be emitted, and
    *            replaced with a new buffer.
-   * @param unit
-   *            The unit of time which applies to the "timespan" argument.
-   * @return
-   *         An {@link Observable} which produces connected non-overlapping buffers with a fixed duration.
-   */
-  // public Observable<List<T>> buffer(long timespan, TimeUnit unit) 
-
-  /**
-   * Creates an Observable which produces buffers of collected values.
-   * 
-   * <p>This Observable produces connected non-overlapping buffers, each of a fixed duration
-   * specified by the "timespan" argument. When the source Observable completes or encounters
-   * an error, the current buffer is emitted and the event is propagated.
-   * 
-   * @param timespan
-   *            The period of time each buffer is collecting values before it should be emitted, and
-   *            replaced with a new buffer.
-   * @param unit
-   *            The unit of time which applies to the "timespan" argument.
    * @param scheduler
    *            The {@link Scheduler} to use when determining the end and start of a buffer.
    * @return
    *         An {@link Observable} which produces connected non-overlapping buffers with a fixed duration.
    */
-  // public Observable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler) 
+  def buffer(timespan: Duration, scheduler: Scheduler): Observable[Seq[T]] = {
+    val oJava: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(timespan.length, timespan.unit, scheduler)
+    Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
+  } 
 
   /**
    * Creates an Observable which produces buffers of collected values. This Observable produces connected
@@ -332,15 +340,16 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @param timespan
    *            The period of time each buffer is collecting values before it should be emitted, and
    *            replaced with a new buffer.
-   * @param unit
-   *            The unit of time which applies to the "timespan" argument.
    * @param count
    *            The maximum size of each buffer before it should be emitted.
    * @return
    *         An {@link Observable} which produces connected non-overlapping buffers which are emitted after
    *         a fixed duration or when the buffer has reached maximum capacity (which ever occurs first).
    */
-  // public Observable<List<T>> buffer(long timespan, TimeUnit unit, int count) 
+  def buffer(timespan: Duration, count: Int): Observable[Seq[T]] = {
+    val oJava: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(timespan.length, timespan.unit, count)
+    Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
+  }
 
   /**
    * Creates an Observable which produces buffers of collected values. This Observable produces connected
@@ -351,8 +360,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @param timespan
    *            The period of time each buffer is collecting values before it should be emitted, and
    *            replaced with a new buffer.
-   * @param unit
-   *            The unit of time which applies to the "timespan" argument.
    * @param count
    *            The maximum size of each buffer before it should be emitted.
    * @param scheduler
@@ -361,7 +368,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         An {@link Observable} which produces connected non-overlapping buffers which are emitted after
    *         a fixed duration or when the buffer has reached maximum capacity (which ever occurs first).
    */
-  // public Observable<List<T>> buffer(long timespan, TimeUnit unit, int count, Scheduler scheduler) 
+  def buffer(timespan: Duration, count: Int, scheduler: Scheduler): Observable[Seq[T]] = {
+    val oJava: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(timespan.length, timespan.unit, count, scheduler)
+    Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
+  }
 
   /**
    * Creates an Observable which produces buffers of collected values. This Observable starts a new buffer
@@ -373,14 +383,18 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *            The period of time each buffer is collecting values before it should be emitted.
    * @param timeshift
    *            The period of time after which a new buffer will be created.
-   * @param unit
-   *            The unit of time which applies to the "timespan" and "timeshift" argument.
    * @return
    *         An {@link Observable} which produces new buffers periodically, and these are emitted after
    *         a fixed timespan has elapsed.
    */
-  // public Observable<List<T>> buffer(long timespan, long timeshift, TimeUnit unit) 
-
+  def buffer(timespan: Duration, timeshift: Duration): Observable[Seq[T]] = {
+    val span: Long = timespan.length
+    val shift: Long = timespan.unit.convert(timeshift.length, timeshift.unit)
+    val unit: TimeUnit = timespan.unit
+    val oJava: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(span, shift, unit)
+    Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
+  } 
+  
   /**
    * Creates an Observable which produces buffers of collected values. This Observable starts a new buffer
    * periodically, which is determined by the "timeshift" argument. Each buffer is emitted after a fixed timespan
@@ -391,15 +405,19 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *            The period of time each buffer is collecting values before it should be emitted.
    * @param timeshift
    *            The period of time after which a new buffer will be created.
-   * @param unit
-   *            The unit of time which applies to the "timespan" and "timeshift" argument.
    * @param scheduler
    *            The {@link Scheduler} to use when determining the end and start of a buffer.
    * @return
    *         An {@link Observable} which produces new buffers periodically, and these are emitted after
    *         a fixed timespan has elapsed.
    */
-  // public Observable<List<T>> buffer(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) 
+  def buffer(timespan: Duration, timeshift: Duration, scheduler: Scheduler): Observable[Seq[T]] = {
+    val span: Long = timespan.length
+    val shift: Long = timespan.unit.convert(timeshift.length, timeshift.unit)
+    val unit: TimeUnit = timespan.unit
+    val oJava: rx.Observable[_ <: java.util.List[_]] = asJava.buffer(span, shift, unit, scheduler)
+    Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
+  } 
 
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces connected
@@ -416,7 +434,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         when the current {@link Observable} created with the {@link Func0} argument produces a {@link rx.util.Closing} object.
    */
   def window(closingSelector: () => Observable[Closing]): Observable[Observable[T]] = {
-    val func : rx.util.functions.Func0[_ <: rx.Observable[_ <: Closing]] = closingSelector().asJava
+    val func : Func0[_ <: rx.Observable[_ <: Closing]] = closingSelector().asJava
     val o1: rx.Observable[_ <: rx.Observable[_]] = asJava.window(func)
     val o2 = new Observable[rx.Observable[_]](o1).map((x: rx.Observable[_]) => {
       val x2 = x.asInstanceOf[rx.Observable[_ <: T]]
@@ -441,7 +459,11 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return
    *         An {@link Observable} which produces windows which are created and emitted when the specified {@link Observable}s publish certain objects.
    */
-  // public Observable<Observable<T>> window(Observable<? extends Opening> windowOpenings, Func1<Opening, ? extends Observable<? extends Closing>> closingSelector) 
+  def window(windowOpenings: Observable[Opening], closingSelector: Opening => Observable[Closing]) = {
+    Observable.jObsOfJObsToScObsOfScObs(
+        asJava.window(windowOpenings.asJava, (op: Opening) => closingSelector(op).asJava))
+             : Observable[Observable[T]] // SI-7818
+  } 
 
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces connected
@@ -474,7 +496,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         An {@link Observable} which produces windows every "skipped" values containing at most
    *         "count" produced values.
    */
-  // public Observable<Observable<T>> window(int count, int skip) 
+  def window(count: Int, skip: Int): Observable[Observable[T]] = {
+    Observable.jObsOfJObsToScObsOfScObs(asJava.window(count, skip))
+        : Observable[Observable[T]] // SI-7818
+  }
 
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces connected
@@ -484,12 +509,13 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @param timespan
    *            The period of time each window is collecting values before it should be emitted, and
    *            replaced with a new window.
-   * @param unit
-   *            The unit of time which applies to the "timespan" argument.
    * @return
    *         An {@link Observable} which produces connected non-overlapping windows with a fixed duration.
    */
-  // public Observable<Observable<T>> window(long timespan, TimeUnit unit) 
+  def window(timespan: Duration): Observable[Observable[T]] = {
+    Observable.jObsOfJObsToScObsOfScObs(asJava.window(timespan.length, timespan.unit))
+        : Observable[Observable[T]] // SI-7818
+  } 
 
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces connected
@@ -499,14 +525,15 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @param timespan
    *            The period of time each window is collecting values before it should be emitted, and
    *            replaced with a new window.
-   * @param unit
-   *            The unit of time which applies to the "timespan" argument.
    * @param scheduler
    *            The {@link Scheduler} to use when determining the end and start of a window.
    * @return
    *         An {@link Observable} which produces connected non-overlapping windows with a fixed duration.
    */
-  // public Observable<Observable<T>> window(long timespan, TimeUnit unit, Scheduler scheduler) 
+  def window(timespan: Duration, scheduler: Scheduler): Observable[Observable[T]] = {
+    Observable.jObsOfJObsToScObsOfScObs(asJava.window(timespan.length, timespan.unit, scheduler))
+        : Observable[Observable[T]] // SI-7818
+  } 
 
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces connected
@@ -517,15 +544,16 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @param timespan
    *            The period of time each window is collecting values before it should be emitted, and
    *            replaced with a new window.
-   * @param unit
-   *            The unit of time which applies to the "timespan" argument.
    * @param count
    *            The maximum size of each window before it should be emitted.
    * @return
    *         An {@link Observable} which produces connected non-overlapping windows which are emitted after
    *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
    */
-  // public Observable<Observable<T>> window(long timespan, TimeUnit unit, int count) 
+  def window(timespan: Duration, count: Int): Observable[Observable[T]] = {
+    Observable.jObsOfJObsToScObsOfScObs(asJava.window(timespan.length, timespan.unit, count))
+        : Observable[Observable[T]] // SI-7818
+  } 
 
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces connected
@@ -536,8 +564,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @param timespan
    *            The period of time each window is collecting values before it should be emitted, and
    *            replaced with a new window.
-   * @param unit
-   *            The unit of time which applies to the "timespan" argument.
    * @param count
    *            The maximum size of each window before it should be emitted.
    * @param scheduler
@@ -546,7 +572,10 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         An {@link Observable} which produces connected non-overlapping windows which are emitted after
    *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
    */
-  // public Observable<Observable<T>> window(long timespan, TimeUnit unit, int count, Scheduler scheduler) 
+  def window(timespan: Duration, count: Int, scheduler: Scheduler): Observable[Observable[T]] = {
+    Observable.jObsOfJObsToScObsOfScObs(asJava.window(timespan.length, timespan.unit, count, scheduler))
+        : Observable[Observable[T]] // SI-7818
+  } 
 
   /**
    * Creates an Observable which produces windows of collected values. This Observable starts a new window
@@ -558,13 +587,17 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *            The period of time each window is collecting values before it should be emitted.
    * @param timeshift
    *            The period of time after which a new window will be created.
-   * @param unit
-   *            The unit of time which applies to the "timespan" and "timeshift" argument.
    * @return
    *         An {@link Observable} which produces new windows periodically, and these are emitted after
    *         a fixed timespan has elapsed.
    */
-  // public Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit) 
+  def window(timespan: Duration, timeshift: Duration): Observable[Observable[T]] = {
+    val span: Long = timespan.length
+    val shift: Long = timespan.unit.convert(timeshift.length, timeshift.unit)
+    val unit: TimeUnit = timespan.unit
+    Observable.jObsOfJObsToScObsOfScObs(asJava.window(span, shift, unit))
+        : Observable[Observable[T]] // SI-7818
+  } 
 
   /**
    * Creates an Observable which produces windows of collected values. This Observable starts a new window
@@ -576,16 +609,20 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *            The period of time each window is collecting values before it should be emitted.
    * @param timeshift
    *            The period of time after which a new window will be created.
-   * @param unit
-   *            The unit of time which applies to the "timespan" and "timeshift" argument.
    * @param scheduler
    *            The {@link Scheduler} to use when determining the end and start of a window.
    * @return
    *         An {@link Observable} which produces new windows periodically, and these are emitted after
    *         a fixed timespan has elapsed.
    */
-  // public Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) 
-
+  def window(timespan: Duration, timeshift: Duration, scheduler: Scheduler): Observable[Observable[T]] = {
+    val span: Long = timespan.length
+    val shift: Long = timespan.unit.convert(timeshift.length, timeshift.unit)
+    val unit: TimeUnit = timespan.unit
+    Observable.jObsOfJObsToScObsOfScObs(asJava.window(span, shift, unit, scheduler))
+        : Observable[Observable[T]] // SI-7818
+  } 
+  
   /**
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
@@ -738,8 +775,8 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return the original Observable, with appropriately modified behavior
    */
   def onErrorResumeNext[U >: T](resumeFunction: Throwable => Observable[U]): Observable[U] = {
-    val f: rx.util.functions.Func1[Throwable, rx.Observable[_ <: U]] = (t: Throwable) => resumeFunction(t).asJava
-    val f2 = f.asInstanceOf[rx.util.functions.Func1[Throwable, rx.Observable[Nothing]]]
+    val f: Func1[Throwable, rx.Observable[_ <: U]] = (t: Throwable) => resumeFunction(t).asJava
+    val f2 = f.asInstanceOf[Func1[Throwable, rx.Observable[Nothing]]]
     Observable[U](asJava.onErrorResumeNext(f2))
   }
   
@@ -829,8 +866,8 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return the original Observable with appropriately modified behavior
    */
   def onErrorReturn[U >: T](resumeFunction: Throwable => U): Observable[U] = {
-    val f1: rx.util.functions.Func1[Throwable, _ <: U] = resumeFunction
-    val f2 = f1.asInstanceOf[rx.util.functions.Func1[Throwable, Nothing]]
+    val f1: Func1[Throwable, _ <: U] = resumeFunction
+    val f2 = f1.asInstanceOf[Func1[Throwable, Nothing]]
     Observable[U](asJava.onErrorReturn(f2))
   } 
 
@@ -856,8 +893,8 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
    */
   def reduce[U >: T](f: (U, U) => U): Observable[U] = {
-    val func: rx.util.functions.Func2[_ >: U, _ >: U, _ <: U] = f
-    val func2 = func.asInstanceOf[rx.util.functions.Func2[T, T, T]]
+    val func: Func2[_ >: U, _ >: U, _ <: U] = f
+    val func2 = func.asInstanceOf[Func2[T, T, T]]
     Observable[U](asJava.asInstanceOf[rx.Observable[T]].reduce(func2))
   } 
 
@@ -1102,10 +1139,12 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def takeWhileWithIndex(predicate: (T, Integer) => Boolean): Observable[T] = {
     Observable[T](asJava.takeWhileWithIndex(predicate))
   }
-  
+
+  /* TODO zipWithIndex once it's in RxJava
   def zipWithIndex: Observable[(T, Int)] = {
     ???
   }
+  */
 
   /**
    * Returns an Observable that emits only the last <code>count</code> items emitted by the source
@@ -1160,17 +1199,16 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return an Observable that emits a single item: a List containing all of the items emitted by
    *         the source Observable.
    */
-  /*
-   * TODO Java list or Scala list?
-  def toList: Observable[java.util.List[T]] = {
-    // new Observable[java.util.List[T]](asJava.toList())
+  def toSeq: Observable[Seq[T]] = {
+    Observable.jObsOfListToScObsOfSeq(asJava.toList())
+        : Observable[Seq[T]] // SI-7818
   }
-  */
+  // corresponds to Java's method
+  // public Observable<List<T>> toList() {
 
   // There are no toSortedList methods because Scala can sort itself
   // public Observable<List<T>> toSortedList() 
   // public Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) 
-
   
   // There is no method 
   // def startWith[U >: T](values: U*): Observable[U]
@@ -1194,7 +1232,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         unique key value and emits items representing items from the source Observable that
    *         share that key value
    */
-  /* TODO do we want to return Scala GroupedObservable or Java GroupedObservable ?
+  /* TODO make a Scala GroupedObservable and groupBy
   def groupBy[K,R](keySelector: T => K, elementSelector: T => R ): Observable[GroupedObservable[K,R]] = {
     ???
   }
@@ -1215,7 +1253,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         unique key value and emits items representing items from the source Observable that
    *         share that key value
    */
-  /* TODO do we want to return Scala GroupedObservable or Java GroupedObservable ?
+  /* TODO 
   def groupBy[K](keySelector: T => K ): Observable[GroupedObservable[K,T]] = {
     ???
   }
@@ -1598,55 +1636,8 @@ object Observable {
   // corresponds to Java's
   // public static <T> Observable<T> just(T value) 
   
-  /**
-   * Flattens a list of Observables into one Observable, without any transformation.
-   * <p>
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
-   * <p>
-   * You can combine the items emitted by multiple Observables so that they act like a single
-   * Observable, by using the <code>merge</code> method.
-   * 
-   * @param source
-   *            a list of Observables
-   * @return an Observable that emits items that are the result of flattening the {@code source} list of Observables
-   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge</a>
-   */
-  // public static <T> Observable<T> merge(List<? extends Observable<? extends T>> source) 
-  // TODO do we need this or is the binary instance method merge sufficient?
-  
-    /**
-   * Flattens a sequence of Observables emitted by an Observable into one Observable, without any
-   * transformation.
-   * <p>
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
-   * <p>
-   * You can combine the items emitted by multiple Observables so that they act like a single
-   * Observable, by using the {@code merge} method.
-   * 
-   * @param source
-   *            an Observable that emits Observables
-   * @return an Observable that emits items that are the result of flattening the items emitted
-   *         by the Observables emitted by the {@code source} Observable
-   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
-   */
-  // public static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source)
-
-  /**
-   * Flattens a series of Observables into one Observable, without any transformation.
-   * <p>
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
-   * <p>
-   * You can combine items emitted by multiple Observables so that they act like a single
-   * Observable, by using the {@code merge} method.
-   * 
-   * @param source
-   *            a series of Observables
-   * @return an Observable that emits items that are the result of flattening the items emitted
-   *         by the {@code source} Observables
-   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
-   */
-  // public static <T> Observable<T> merge(Observable<? extends T>... source) 
-  // TODO decide if instance method mergeWith (?)
+  // TODO we have merge and concat (++) as binary instance methods, but do we also need them as
+  // static methods with arity > 2?
 
   // There is no method corresponding to
   // public static <T> Observable<T> concat(Observable<? extends T>... source) 
@@ -1746,21 +1737,26 @@ object Observable {
   // public static <T> Observable<T> synchronize(Observable<? extends T> observable) 
   // because that's an instance method.
 
+  /*
   def apply[T](f: Future[T]): Observable[T] = {
     ??? // TODO convert Scala Future to Java Future
   } 
+  */
   // corresponds to
   // public static <T> Observable<T> from(Future<? extends T> future)
   
+  /*
   def apply[T](f: Future[T], scheduler: Scheduler): Observable[T] = {
     ??? // TODO convert Scala Future to Java Future
   }
+  */
   // public static <T> Observable<T> from(Future<? extends T> future, Scheduler scheduler)
   
-  // TODO which TimeUnit should we use? scala.actors.threadpool or java.util.concurrent?
-  def apply[T](f: Future[T], timeout: Long, unit: Nothing): Observable[T] = {
+  /*
+  def apply[T](f: Future[T], duration: Duration): Observable[T] = {
     ??? // TODO convert Scala Future to Java Future
   }
+  */
   // corresponds to
   // public static <T> Observable<T> from(Future<? extends T> future, long timeout, TimeUnit unit)
   
@@ -1793,7 +1789,7 @@ object Observable {
   
   // TODO what about these two?
   // public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction)
-  // // public static <R> Observable<R> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction)
+  // public static <R> Observable<R> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction)
 
   def interval(duration: Duration): Observable[Long] = {
     (new Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit))).map(_.longValue())
