@@ -109,6 +109,16 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(10, Observable(1, 2, 3, 4).reduce(_ + _).toBlockingObservable.single)
   }
   
+  @Test def testForeach() {
+    val numbers = Observable.interval(200 millis).take(3)
+    
+    // foreach is not available on normal Observables:
+    // for (n <- numbers) println(n+10)
+    
+    // but on BlockingObservable, it is:
+    for (n <- numbers.toBlockingObservable) println(n+10)
+  }
+  
   def output(s: String): Unit = println(s)
   
   // blocks until obs has completed

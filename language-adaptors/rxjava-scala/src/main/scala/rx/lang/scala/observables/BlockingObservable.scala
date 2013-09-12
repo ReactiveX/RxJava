@@ -1,26 +1,29 @@
 package rx.lang.scala.observables
 
 import scala.collection.JavaConverters._
+import rx.lang.scala.internal.ImplicitFunctionConversions._
 
 class BlockingObservable[+T](val asJava: rx.observables.BlockingObservable[_ <: T]) 
-  // extends AnyVal 
+  extends AnyVal 
 {
-    
-  // forEach(Action1<? super T>)
-  // getIterator()
-  
-  def last: T = {
-    asJava.last()
+
+  def foreach(f: T => Unit): Unit = {
+    asJava.forEach(f)
   }
-  
+
+  def last: T = {
+    asJava.last() : T // useless ascription because of compiler bug
+  }
+
+  // getIterator()
   // last(Func1<? super T, Boolean>)
   // lastOrDefault(T)
   // lastOrDefault(T, Func1<? super T, Boolean>)
   // mostRecent(T)
   // next()
-  
+
   def single: T = {
-    asJava.single()
+    asJava.single() : T // useless ascription because of compiler bug
   }
   
   // single(Func1<? super T, Boolean>)
@@ -34,11 +37,11 @@ class BlockingObservable[+T](val asJava: rx.observables.BlockingObservable[_ <: 
   // toFuture()
   
   def toIterable: Iterable[T] = {
-    asJava.toIterable().asScala
+    asJava.toIterable().asScala : Iterable[T] // useless ascription because of compiler bug
   }
   
   def toList: List[T] = {
-    asJava.toIterable().asScala.toList
+    asJava.toIterable().asScala.toList : List[T] // useless ascription because of compiler bug
   }
 
 }
