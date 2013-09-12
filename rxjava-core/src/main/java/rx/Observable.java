@@ -36,6 +36,7 @@ import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
+import rx.operators.OperationDistinct;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFirstOrDefault;
@@ -2925,6 +2926,14 @@ public class Observable<T> {
         return create(OperationFilter.filter(this, predicate));
     }
 
+    public Observable<T> distinct() {
+        return create(OperationDistinct.distinct(this));
+    }
+    
+    public <U> Observable<T> distinct(Func1<? super T, ? extends U> keySelector) {
+        return create(OperationDistinct.distinct(this, keySelector));
+    }
+    
     /**
      * Registers an {@link Action0} to be called when this Observable invokes {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
      * <p>
