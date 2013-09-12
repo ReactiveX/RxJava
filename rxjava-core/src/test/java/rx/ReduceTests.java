@@ -25,6 +25,7 @@ public class ReduceTests {
         assertEquals(6, value);
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void reduceWithObjects() {
         Observable<Movie> horrorMovies = Observable.<Movie> from(new HorrorMovie());
@@ -41,9 +42,15 @@ public class ReduceTests {
         Observable<Movie> reduceResult2 = horrorMovies.reduce(chooseSecondMovie);
     }
 
+    /**
+     * Reduce consumes and produces T so can't do covariance.
+     * 
+     * https://github.com/Netflix/RxJava/issues/360#issuecomment-24203016
+     */
+    @SuppressWarnings("unused")
     @Test
     public void reduceWithCovariantObjects() {
-        Observable<HorrorMovie> horrorMovies = Observable.from(new HorrorMovie());
+        Observable<Movie> horrorMovies = Observable.<Movie> from(new HorrorMovie());
 
         Func2<Movie, Movie, Movie> chooseSecondMovie =
                 new Func2<Movie, Movie, Movie>() {
@@ -52,24 +59,25 @@ public class ReduceTests {
                     }
                 };
 
-        Observable<Movie> reduceResult = Observable.create(OperationScan.scan(horrorMovies, chooseSecondMovie)).takeLast(1);
-
-        //TODO this isn't compiling
-        //        Observable<Movie> reduceResult2 = horrorMovies.reduce(chooseSecondMovie);
+        Observable<Movie> reduceResult2 = horrorMovies.reduce(chooseSecondMovie);
     }
 
+    /**
+     * Reduce consumes and produces T so can't do covariance.
+     * 
+     * https://github.com/Netflix/RxJava/issues/360#issuecomment-24203016
+     */
     @Test
     public void reduceCovariance() {
-        Observable<HorrorMovie> horrorMovies = Observable.from(new HorrorMovie());
-
-        // do something with horrorMovies, relying on the fact that all are HorrorMovies
-        // and not just any Movies...
-
-        // pass it to library (works because it takes Observable<? extends Movie>)
+        // must type it to <Movie>
+        Observable<Movie> horrorMovies = Observable.<Movie> from(new HorrorMovie());
         libraryFunctionActingOnMovieObservables(horrorMovies);
     }
 
-    public void libraryFunctionActingOnMovieObservables(Observable<? extends Movie> obs) {
+    /*
+     * This accepts <Movie> instead of <? super Movie> since `reduce` can't handle covariants
+     */
+    public void libraryFunctionActingOnMovieObservables(Observable<Movie> obs) {
         Func2<Movie, Movie, Movie> chooseSecondMovie =
                 new Func2<Movie, Movie, Movie>() {
                     public Movie call(Movie t1, Movie t2) {
@@ -77,11 +85,7 @@ public class ReduceTests {
                     }
                 };
 
-        Observable<Movie> reduceResult = Observable.create(OperationScan.scan(obs, chooseSecondMovie)).takeLast(1);
-
-        //TODO this isn't compiling
-        //        Observable<Movie> reduceResult2 = obs.reduce(chooseSecondMovie);
-        // do something with reduceResult...
+        obs.reduce(chooseSecondMovie);
     }
 
 }

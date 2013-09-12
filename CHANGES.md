@@ -1,5 +1,20 @@
 # RxJava Releases #
 
+### Version 0.13.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.13.0%22)) ###
+
+This release has some minor changes related to varargs that could break backwards compatibility 
+if directly passing arrays but for most this release should not be breaking.
+
+* [Pull 354](https://github.com/Netflix/RxJava/pull/354) Operators: Count, Sum, Average
+* [Pull 355](https://github.com/Netflix/RxJava/pull/355) Operators: skipWhile and skipWhileWithIndex
+* [Pull 356](https://github.com/Netflix/RxJava/pull/356) Operator: Interval
+* [Pull 357](https://github.com/Netflix/RxJava/pull/357) Operators: first and firstOrDefault
+* [Pull 368](https://github.com/Netflix/RxJava/pull/368) Operators: Throttle and Debounce
+* [Pull 371](https://github.com/Netflix/RxJava/pull/371) Operator: Retry
+* [Pull 370](https://github.com/Netflix/RxJava/pull/370) Change zip method signature from Collection to Iterable
+* [Pull 369](https://github.com/Netflix/RxJava/pull/369) Generics Improvements: co/contra-variance
+* [Pull 361](https://github.com/Netflix/RxJava/pull/361) Remove use of varargs from API
+
 ### Version 0.12.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.12.2%22)) ###
 
 * [Pull 352](https://github.com/Netflix/RxJava/pull/352) Groovy Language Adaptor: Add Func5-9 and N to the wrapper

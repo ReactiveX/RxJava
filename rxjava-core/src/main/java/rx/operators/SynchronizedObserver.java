@@ -73,6 +73,16 @@ public final class SynchronizedObserver<T> implements Observer<T> {
         this.observer = Observer;
         this.subscription = subscription;
     }
+    
+    /**
+     * Used when synchronizing an Observer without access to the subscription.
+     * 
+     * @param Observer
+     */
+    public SynchronizedObserver(Observer<? super T> Observer) {
+        this.observer = Observer;
+        this.subscription = new SafeObservableSubscription();
+    }
 
     public void onNext(T arg) {
         if (finished || finishRequested || subscription.isUnsubscribed()) {

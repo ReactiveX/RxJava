@@ -15,12 +15,11 @@
  */
 package rx;
 
-import static rx.util.functions.Functions.not;
+import static rx.util.functions.Functions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -65,6 +64,8 @@ import rx.operators.OperationTake;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
+import rx.operators.OperationThrottleFirst;
+import rx.operators.OperationDebounce;
 import rx.operators.OperationTimestamp;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
@@ -1811,6 +1812,182 @@ public class Observable<T> {
     }
     
     /**
+     * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
+     * <p>
+     * NOTE: If events keep firing faster than the timeout then no data will be emitted.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/debounce.png">
+     * <p>
+     * Information on debounce vs throttle:
+     * <p>
+     * <ul>
+     * <li>http://drupalmotion.com/article/debounce-and-throttle-visual-explanation</li>
+     * <li>http://unscriptable.com/2009/03/20/debouncing-javascript-methods/</li>
+     * <li>http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/</li>
+     * </ul>
+     * 
+     * @param timeout
+     *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * @param unit
+     *            The {@link TimeUnit} for the timeout.
+     * 
+     * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
+     * @see {@link #throttleWithTimeout};
+     */
+    public Observable<T> debounce(long timeout, TimeUnit unit) {
+        return create(OperationDebounce.debounce(this, timeout, unit));
+    }
+
+    /**
+     * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
+     * <p>
+     * NOTE: If events keep firing faster than the timeout then no data will be emitted.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/debounce.png">
+     * <p>
+     * Information on debounce vs throttle:
+     * <p>
+     * <ul>
+     * <li>http://drupalmotion.com/article/debounce-and-throttle-visual-explanation</li>
+     * <li>http://unscriptable.com/2009/03/20/debouncing-javascript-methods/</li>
+     * <li>http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/</li>
+     * </ul>
+     * 
+     * @param timeout
+     *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * @param unit
+     *            The unit of time for the specified timeout.
+     * @param scheduler
+     *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
+     * @return Observable which performs the throttle operation.
+     * @see {@link #throttleWithTimeout};
+     */
+    public Observable<T> debounce(long timeout, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationDebounce.debounce(this, timeout, unit));
+    }
+
+    /**
+     * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
+     * <p>
+     * NOTE: If events keep firing faster than the timeout then no data will be emitted.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleWithTimeout.png">
+     * <p>
+     * Information on debounce vs throttle:
+     * <p>
+     * <ul>
+     * <li>http://drupalmotion.com/article/debounce-and-throttle-visual-explanation</li>
+     * <li>http://unscriptable.com/2009/03/20/debouncing-javascript-methods/</li>
+     * <li>http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/</li>
+     * </ul>
+     * 
+     * @param timeout
+     *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * @param unit
+     *            The {@link TimeUnit} for the timeout.
+     * 
+     * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
+     * @see {@link #debounce}
+     */
+    public Observable<T> throttleWithTimeout(long timeout, TimeUnit unit) {
+        return create(OperationDebounce.debounce(this, timeout, unit));
+    }
+
+    /**
+     * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
+     * <p>
+     * NOTE: If events keep firing faster than the timeout then no data will be emitted.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleWithTimeout.png">
+     * 
+     * @param timeout
+     *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+     * @param unit
+     *            The unit of time for the specified timeout.
+     * @param scheduler
+     *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
+     * @return Observable which performs the throttle operation.
+     * @see {@link #debounce}
+     */
+    public Observable<T> throttleWithTimeout(long timeout, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationDebounce.debounce(this, timeout, unit, scheduler));
+    }
+
+    /**
+     * Throttles by skipping value until `skipDuration` passes and then emits the next received value.
+     * <p>
+     * This differs from {@link #throttleLast} in that this only tracks passage of time whereas {@link #throttleLast} ticks at scheduled intervals.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleFirst.png">
+     * 
+     * @param skipDuration
+     *            Time to wait before sending another value after emitting last value.
+     * @param unit
+     *            The unit of time for the specified timeout.
+     * @param scheduler
+     *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
+     * @return Observable which performs the throttle operation.
+     */
+    public Observable<T> throttleFirst(long windowDuration, TimeUnit unit) {
+        return create(OperationThrottleFirst.throttleFirst(this, windowDuration, unit));
+    }
+
+    /**
+     * Throttles by skipping value until `skipDuration` passes and then emits the next received value.
+     * <p>
+     * This differs from {@link #throttleLast} in that this only tracks passage of time whereas {@link #throttleLast} ticks at scheduled intervals.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleFirst.png">
+     * 
+     * @param skipDuration
+     *            Time to wait before sending another value after emitting last value.
+     * @param unit
+     *            The unit of time for the specified timeout.
+     * @param scheduler
+     *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
+     * @return Observable which performs the throttle operation.
+     */
+    public Observable<T> throttleFirst(long skipDuration, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationThrottleFirst.throttleFirst(this, skipDuration, unit, scheduler));
+    }
+
+    /**
+     * Throttles by returning the last value of each interval defined by 'intervalDuration'.
+     * <p>
+     * This differs from {@link #throttleFirst} in that this ticks along at a scheduled interval whereas {@link #throttleFirst} does not tick, it just tracks passage of time.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleLast.png">
+     * 
+     * @param intervalDuration
+     *            Duration of windows within with the last value will be chosen.
+     * @param unit
+     *            The unit of time for the specified interval.
+     * @return Observable which performs the throttle operation.
+     * @see {@link #sample(long, TimeUnit)}
+     */
+    public Observable<T> throttleLast(long intervalDuration, TimeUnit unit) {
+        return sample(intervalDuration, unit);
+    }
+
+    /**
+     * Throttles by returning the last value of each interval defined by 'intervalDuration'.
+     * <p>
+     * This differs from {@link #throttleFirst} in that this ticks along at a scheduled interval whereas {@link #throttleFirst} does not tick, it just tracks passage of time.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleLast.png">
+     * 
+     * @param intervalDuration
+     *            Duration of windows within with the last value will be chosen.
+     * @param unit
+     *            The unit of time for the specified interval.
+     * @return Observable which performs the throttle operation.
+     * @see {@link #sample(long, TimeUnit, Scheduler)}
+     */
+    public Observable<T> throttleLast(long intervalDuration, TimeUnit unit, Scheduler scheduler) {
+        return sample(intervalDuration, unit, scheduler);
+    }
+
+    /**
      * Wraps each item emitted by a source Observable in a {@link Timestamped} object.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/timestamp.png">
@@ -3025,7 +3202,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public Observable<T> reduce(Func2<? super T, ? super T, ? extends T> accumulator) {
+    public Observable<T> reduce(Func2<T, T, T> accumulator) {
         return create(OperationScan.scan(this, accumulator)).takeLast(1);
     }
 
@@ -3206,7 +3383,7 @@ public class Observable<T> {
      * 
      * @see #reduce(Func2)
      */
-    public Observable<T> aggregate(Func2<? super T, ? super T, ? extends T> accumulator) {
+    public Observable<T> aggregate(Func2<T, T, T> accumulator) {
         return reduce(accumulator);
     }
 
@@ -3233,7 +3410,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public <R> Observable<R> reduce(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
+    public <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator) {
         return create(OperationScan.scan(this, initialValue, accumulator)).takeLast(1);
     }
 
@@ -3244,7 +3421,7 @@ public class Observable<T> {
      * 
      * @see #reduce(Object, Func2)
      */
-    public <R> Observable<R> aggregate(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
+    public <R> Observable<R> aggregate(R initialValue, Func2<R, ? super T, R> accumulator) {
         return reduce(initialValue, accumulator);
     }
 
@@ -3267,7 +3444,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of each call to the accumulator function
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public Observable<T> scan(Func2<? super T, ? super T, ? extends T> accumulator) {
+    public Observable<T> scan(Func2<T, T, T> accumulator) {
         return create(OperationScan.scan(this, accumulator));
     }
 
@@ -3328,7 +3505,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of each call to the accumulator function
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v%3Dvs.103).aspx">MSDN: Observable.Scan</a>
      */
-    public <R> Observable<R> scan(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
+    public <R> Observable<R> scan(R initialValue, Func2<R, ? super T, R> accumulator) {
         return create(OperationScan.scan(this, initialValue, accumulator));
     }
 
