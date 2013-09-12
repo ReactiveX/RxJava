@@ -1259,6 +1259,164 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     val thatJava: rx.Observable[_ <: U] = that.asJava
     new Observable[U](rx.Observable.merge(thisJava, thatJava))
   }
+
+  /**
+   * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
+   * <p>
+   * NOTE: If events keep firing faster than the timeout then no data will be emitted.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleWithTimeout.png">
+   * <p>
+   * Information on debounce vs throttle:
+   * <p>
+   * <ul>
+   * <li>http://drupalmotion.com/article/debounce-and-throttle-visual-explanation</li>
+   * <li>http://unscriptable.com/2009/03/20/debouncing-javascript-methods/</li>
+   * <li>http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/</li>
+   * </ul>
+   *
+   * @param timeout
+   *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+   *
+   * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
+   * @see {@link #debounce}
+   */
+  def throttleWithTimeout(timeout: Duration): Observable[T] = {
+    new Observable[T](asJava.throttleWithTimeout(timeout.length, timeout.unit))
+  }
+
+  /**
+   * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
+   * <p>
+   * NOTE: If events keep firing faster than the timeout then no data will be emitted.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/debounce.png">
+   * <p>
+   * Information on debounce vs throttle:
+   * <p>
+   * <ul>
+   * <li>http://drupalmotion.com/article/debounce-and-throttle-visual-explanation</li>
+   * <li>http://unscriptable.com/2009/03/20/debouncing-javascript-methods/</li>
+   * <li>http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/</li>
+   * </ul>
+   *
+   * @param timeout
+   *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+   *
+   * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
+   * @see {@link #throttleWithTimeout};
+   */
+  def debounce(timeout: Duration): Observable[T] = {
+    new Observable[T](asJava.debounce(timeout.length, timeout.unit))
+  }
+
+  /**
+   * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
+   * <p>
+   * NOTE: If events keep firing faster than the timeout then no data will be emitted.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/debounce.png">
+   * <p>
+   * Information on debounce vs throttle:
+   * <p>
+   * <ul>
+   * <li>http://drupalmotion.com/article/debounce-and-throttle-visual-explanation</li>
+   * <li>http://unscriptable.com/2009/03/20/debouncing-javascript-methods/</li>
+   * <li>http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/</li>
+   * </ul>
+   *
+   * @param timeout
+   *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+   * @param scheduler
+   *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
+   * @return Observable which performs the throttle operation.
+   * @see {@link #throttleWithTimeout};
+   */
+  def debounce(timeout: Duration, scheduler: Scheduler): Observable[T] = {
+    new Observable[T](asJava.debounce(timeout.length, timeout.unit, scheduler))
+  }
+
+  /**
+   * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
+   * <p>
+   * NOTE: If events keep firing faster than the timeout then no data will be emitted.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleWithTimeout.png">
+   *
+   * @param timeout
+   *            The time each value has to be 'the most recent' of the {@link Observable} to ensure that it's not dropped.
+   * @param scheduler
+   *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
+   * @return Observable which performs the throttle operation.
+   * @see {@link #debounce}
+   */
+  def throttleWithTimeout(timeout: Duration, scheduler: Scheduler): Observable[T] = {
+    new Observable[T](asJava.throttleWithTimeout(timeout.length, timeout.unit, scheduler))
+  }
+
+  /**
+   * Throttles by skipping value until `skipDuration` passes and then emits the next received value.
+   * <p>
+   * This differs from {@link #throttleLast} in that this only tracks passage of time whereas {@link #throttleLast} ticks at scheduled intervals.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleFirst.png">
+   *
+   * @param skipDuration
+   *            Time to wait before sending another value after emitting last value.
+   * @param scheduler
+   *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
+   * @return Observable which performs the throttle operation.
+   */
+  def throttleFirst(skipDuration: Duration, scheduler: Scheduler): Observable[T] = {
+    new Observable[T](asJava.throttleFirst(skipDuration.length, skipDuration.unit, scheduler))
+  }
+
+  /**
+   * Throttles by skipping value until `skipDuration` passes and then emits the next received value.
+   * <p>
+   * This differs from {@link #throttleLast} in that this only tracks passage of time whereas {@link #throttleLast} ticks at scheduled intervals.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleFirst.png">
+   *
+   * @param skipDuration
+   *            Time to wait before sending another value after emitting last value.
+   * @return Observable which performs the throttle operation.
+   */
+  def throttleFirst(skipDuration: Duration): Observable[T] = {
+    new Observable[T](asJava.throttleFirst(skipDuration.length, skipDuration.unit))
+  }
+
+  /**
+   * Throttles by returning the last value of each interval defined by 'intervalDuration'.
+   * <p>
+   * This differs from {@link #throttleFirst} in that this ticks along at a scheduled interval whereas {@link #throttleFirst} does not tick, it just tracks passage of time.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleLast.png">
+   *
+   * @param intervalDuration
+   *            Duration of windows within with the last value will be chosen.
+   * @return Observable which performs the throttle operation.
+   * @see {@link #sample(long, TimeUnit)}
+   */
+  def throttleLast(intervalDuration: Duration): Observable[T] = {
+    new Observable[T](asJava.throttleLast(intervalDuration.length, intervalDuration.unit))
+  }
+
+  /**
+   * Throttles by returning the last value of each interval defined by 'intervalDuration'.
+   * <p>
+   * This differs from {@link #throttleFirst} in that this ticks along at a scheduled interval whereas {@link #throttleFirst} does not tick, it just tracks passage of time.
+   * <p>
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleLast.png">
+   *
+   * @param intervalDuration
+   *            Duration of windows within with the last value will be chosen.
+   * @return Observable which performs the throttle operation.
+   * @see {@link #sample(long, TimeUnit, Scheduler)}
+   */
+  def throttleLast(intervalDuration: Duration, scheduler: Scheduler): Observable[T] = {
+    new Observable[T](asJava.throttleLast(intervalDuration.length, intervalDuration.unit, scheduler))
+  }
   
   /**
    * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking
