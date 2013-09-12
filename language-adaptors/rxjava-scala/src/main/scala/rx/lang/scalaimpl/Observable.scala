@@ -855,8 +855,8 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    */
   def reduce[U >: T](f: (U, U) => U): Observable[U] = {
     val func: rx.util.functions.Func2[_ >: U, _ >: U, _ <: U] = f
-    val func2 = func.asInstanceOf[rx.util.functions.Func2[Any, Any, Nothing]]
-    new Observable[U](asJava.reduce(func2))
+    val func2 = func.asInstanceOf[rx.util.functions.Func2[T, T, T]]
+    new Observable[U](asJava.asInstanceOf[rx.Observable[T]].reduce(func2))
   } 
 
   /**

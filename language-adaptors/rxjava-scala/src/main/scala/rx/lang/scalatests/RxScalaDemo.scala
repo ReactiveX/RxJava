@@ -104,4 +104,8 @@ class RxScalaDemo extends JUnitSuite {
         .subscribe(output(_))
   }
   
+  @Test def testReduce() {
+    assertEquals(10, Observable(1, 2, 3, 4).reduce(_ + _).toBlockingObservable.single)
+  }
+  
 }
