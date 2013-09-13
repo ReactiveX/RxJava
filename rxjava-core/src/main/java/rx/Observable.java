@@ -3031,9 +3031,27 @@ public class Observable<T> {
      *            a function to apply to each item emitted by the Observable
      * @return an Observable that emits the items from the source Observable, transformed by the
      *         given function
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244306%28v=vs.103%29.aspx">MSDN: Observable.Select</a>
      */
     public <R> Observable<R> map(Func1<? super T, ? extends R> func) {
         return create(OperationMap.map(this, func));
+    }
+
+    /**
+     * Returns an Observable that applies the given function to each item emitted by an
+     * Observable and emits the result.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/map.png">
+     * 
+     * @param func
+     *            a function to apply to each item emitted by the Observable. The function takes the
+     *            index of the emitted item as additional parameter.
+     * @return an Observable that emits the items from the source Observable, transformed by the
+     *         given function
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244311%28v=vs.103%29.aspx">MSDN: Observable.Select</a>
+     */
+    public <R> Observable<R> mapWithIndex(Func2<? super T, Integer, ? extends R> func) {
+        return create(OperationMap.mapWithIndex(this, func));
     }
 
     /**
