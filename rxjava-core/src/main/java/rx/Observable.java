@@ -35,6 +35,7 @@ import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
+import rx.operators.OperationDistinctUntilChanged;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFirstOrDefault;
@@ -2920,6 +2921,30 @@ public class Observable<T> {
      */
     public Observable<T> filter(Func1<? super T, Boolean> predicate) {
         return create(OperationFilter.filter(this, predicate));
+    }
+
+    /**
+     * Returns an Observable that forwards all sequentially distinct items emitted from the source Observable.
+     * 
+     * @return an Observable of sequentially distinct items
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229494%28v=vs.103%29.aspx">MSDN: Observable.distinctUntilChanged</a>
+     */
+    public Observable<T> distinctUntilChanged() {
+        return create(OperationDistinctUntilChanged.distinctUntilChanged(this));
+    }
+
+    /**
+     * Returns an Observable that forwards all items emitted from the source Observable that are sequentially distinct according to
+     * a key selector function.
+     * 
+     * @param keySelector
+     *            a function that projects an emitted item to a key value which is used for deciding whether an item is sequentially
+     *            distinct from another one or not
+     * @return an Observable of sequentially distinct items
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229508%28v=vs.103%29.aspx">MSDN: Observable.distinctUntilChanged</a>
+     */
+    public <U> Observable<T> distinctUntilChanged(Func1<? super T, ? extends U> keySelector) {
+        return create(OperationDistinctUntilChanged.distinctUntilChanged(this, keySelector));
     }
 
     /**
