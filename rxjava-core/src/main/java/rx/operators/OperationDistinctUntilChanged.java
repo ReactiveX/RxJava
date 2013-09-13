@@ -161,6 +161,8 @@ public final class OperationDistinctUntilChanged {
     public static class UnitTest {
         @Mock
         Observer<? super String> w;
+        @Mock
+        Observer<? super String> w2;
         
         // nulls lead to exceptions
         final Func1<String, String> TO_UPPER_WITH_EXCEPTION = new Func1<String, String>() {
@@ -294,6 +296,30 @@ public final class OperationDistinctUntilChanged {
             inOrder.verify(w, times(1)).onCompleted();
             inOrder.verify(w, never()).onNext(anyString());
             verify(w, never()).onError(any(Throwable.class));
+        }
+
+        @Test
+        public void testDistinctUntilChangedWithComparatorAndKeySelectorandTwoSubscriptions() {
+            Observable<String> src = from("a", "b", "x", "aa", "bb", "c", "ddd");
+            create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w);
+            InOrder inOrder = inOrder(w); 
+            inOrder.verify(w, times(1)).onNext("a");
+            inOrder.verify(w, times(1)).onNext("x");
+            create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w2);
+            inOrder.verify(w, times(1)).onNext("c");
+            inOrder.verify(w, times(1)).onNext("ddd");
+            inOrder.verify(w, times(1)).onCompleted();
+            inOrder.verify(w, never()).onNext(anyString());
+            verify(w, never()).onError(any(Throwable.class));
+            
+            InOrder inOrder2 = inOrder(w2); 
+            inOrder2.verify(w2, times(1)).onNext("a");
+            inOrder2.verify(w2, times(1)).onNext("x");
+            inOrder2.verify(w2, times(1)).onNext("c");
+            inOrder2.verify(w2, times(1)).onNext("ddd");
+            inOrder2.verify(w2, times(1)).onCompleted();
+            inOrder2.verify(w2, never()).onNext(anyString());
+            verify(w2, never()).onError(any(Throwable.class));
         }
     }
 }
