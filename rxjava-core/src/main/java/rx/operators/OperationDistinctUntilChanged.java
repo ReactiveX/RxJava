@@ -133,18 +133,13 @@ public final class OperationDistinctUntilChanged {
                 @Override
                 public void onNext(T next) {
                     U lastKey = lastEmittedKey;
-                    try {
-                        U nextKey = keySelector.call(next);
-                        lastEmittedKey = nextKey;
-                        if (!hasEmitted) {
-                            hasEmitted = true;
-                            observer.onNext(next);
-                        } else if (equalityComparator.compare(lastKey, nextKey) != 0) {
-                            observer.onNext(next);
-                        }
-                    } catch (Throwable t) {
-                        // keySelector is a user function, may throw something
-                        observer.onError(t);
+                    U nextKey = keySelector.call(next);
+                    lastEmittedKey = nextKey;
+                    if (!hasEmitted) {
+                        hasEmitted = true;
+                        observer.onNext(next);
+                    } else if (equalityComparator.compare(lastKey, nextKey) != 0) {
+                        observer.onNext(next);
                     }
                 }
             });

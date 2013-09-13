@@ -120,15 +120,10 @@ public final class OperationDistinct {
 
                 @Override
                 public void onNext(T next) {
-                    try {
-                        U nextKey = keySelector.call(next);
-                        if (!emittedKeys.contains(nextKey)) {
-                            emittedKeys.add(nextKey);
-                            observer.onNext(next);
-                        }
-                    } catch (Throwable t) {
-                        // keySelector is a user function, may throw something
-                        observer.onError(t);
+                    U nextKey = keySelector.call(next);
+                    if (!emittedKeys.contains(nextKey)) {
+                        emittedKeys.add(nextKey);
+                        observer.onNext(next);
                     }
                 }
             });
@@ -172,15 +167,10 @@ public final class OperationDistinct {
 
                 @Override
                 public void onNext(T next) {
-                    try {
-                        U nextKey = keySelector.call(next);
-                        if (!alreadyEmitted(nextKey)) {
-                            emittedKeys.add(nextKey);
-                            observer.onNext(next);
-                        }
-                    } catch (Throwable t) {
-                        // keySelector and comparator are user functions, may throw something
-                        observer.onError(t);
+                    U nextKey = keySelector.call(next);
+                    if (!alreadyEmitted(nextKey)) {
+                        emittedKeys.add(nextKey);
+                        observer.onNext(next);
                     }
                 }
                 
