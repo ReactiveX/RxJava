@@ -146,6 +146,13 @@ public final class OperationDistinctUntilChanged {
             }
         };
         
+        final Comparator<String> COMPARE_LENGTH = new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                return s1.length() - s2.length();
+            }
+        };
+        
         @Before
         public void before() {
             initMocks(this);
@@ -232,6 +239,20 @@ public final class OperationDistinctUntilChanged {
             verify(w, times(1)).onError(any(NullPointerException.class));
             inOrder.verify(w, never()).onNext(anyString());
             inOrder.verify(w, never()).onCompleted();
+        }
+        
+        @Test
+        public void testDistinctUntilChangedWithComparator() {
+            Observable<String> src = from("a", "b", "c", "aa", "bb", "c", "ddd");
+            create(distinctUntilChanged(src, COMPARE_LENGTH)).subscribe(w);
+            InOrder inOrder = inOrder(w); 
+            inOrder.verify(w, times(1)).onNext("a");
+            inOrder.verify(w, times(1)).onNext("aa");
+            inOrder.verify(w, times(1)).onNext("c");
+            inOrder.verify(w, times(1)).onNext("ddd");
+            inOrder.verify(w, times(1)).onCompleted();
+            inOrder.verify(w, never()).onNext(anyString());
+            verify(w, never()).onError(any(Throwable.class));
         }
     }
 }
