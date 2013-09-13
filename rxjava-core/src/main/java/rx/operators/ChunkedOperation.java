@@ -61,7 +61,8 @@ public class ChunkedOperation {
      * 
      * @param <T>
      *            The type of objects which this {@link Chunk} can hold.
-     *            <C> The type of object being tracked by the {@link Chunk}
+     * @param <C> 
+     *            The type of object being tracked by the {@link Chunk}
      */
     protected abstract static class Chunk<T, C> {
         protected final List<T> contents = new ArrayList<T>();
@@ -78,7 +79,7 @@ public class ChunkedOperation {
 
         /**
          * @return
-         *         The mutable underlying {@link C} which contains all the
+         *         The mutable underlying {@code C} which contains all the
          *         recorded values in this {@link Chunk} object.
          */
         abstract public C getContents();

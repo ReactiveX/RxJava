@@ -148,7 +148,6 @@ public final class OperationMap {
         public void testMap() {
             Map<String, String> m1 = getMap("One");
             Map<String, String> m2 = getMap("Two");
-            @SuppressWarnings("unchecked")
             Observable<Map<String, String>> observable = Observable.from(m1, m2);
 
             Observable<String> m = Observable.create(map(observable, new Func1<Map<String, String>, String>() {
@@ -176,7 +175,6 @@ public final class OperationMap {
             /* now simulate the behavior to take those IDs and perform nested async calls based on them */
             Observable<String> m = Observable.create(mapMany(ids, new Func1<Integer, Observable<String>>() {
 
-                @SuppressWarnings("unchecked")
                 @Override
                 public Observable<String> call(Integer id) {
                     /* simulate making a nested async call which creates another Observable */
@@ -215,15 +213,12 @@ public final class OperationMap {
         public void testMapMany2() {
             Map<String, String> m1 = getMap("One");
             Map<String, String> m2 = getMap("Two");
-            @SuppressWarnings("unchecked")
             Observable<Map<String, String>> observable1 = Observable.from(m1, m2);
 
             Map<String, String> m3 = getMap("Three");
             Map<String, String> m4 = getMap("Four");
-            @SuppressWarnings("unchecked")
             Observable<Map<String, String>> observable2 = Observable.from(m3, m4);
 
-            @SuppressWarnings("unchecked")
             Observable<Observable<Map<String, String>>> observable = Observable.from(observable1, observable2);
 
             Observable<String> m = Observable.create(mapMany(observable, new Func1<Observable<Map<String, String>>, Observable<String>>() {

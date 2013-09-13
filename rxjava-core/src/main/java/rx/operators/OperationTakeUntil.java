@@ -50,12 +50,6 @@ public class OperationTakeUntil {
         Observable<Notification<T>> s = Observable.create(new SourceObservable<T>(source));
         Observable<Notification<T>> o = Observable.create(new OtherObservable<T, E>(other));
 
-        @SuppressWarnings("unchecked")
-        /**
-         * In JDK 7 we could use 'varargs' instead of 'unchecked'.
-         * See http://stackoverflow.com/questions/1445233/is-it-possible-to-solve-the-a-generic-array-of-t-is-created-for-a-varargs-param
-         * and http://hg.openjdk.java.net/jdk7/tl/langtools/rev/46cf751559ae 
-         */
         Observable<Notification<T>> result = Observable.merge(s, o);
 
         return result.takeWhile(new Func1<Notification<T>, Boolean>() {

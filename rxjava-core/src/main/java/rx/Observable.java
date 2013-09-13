@@ -19,7 +19,6 @@ import static rx.util.functions.Functions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -544,7 +543,7 @@ public class Observable<T> {
      * <p>Implementation note: the entire iterable sequence will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned,
      * it in not possible to unsubscribe from the sequence before it completes.
      * 
-     * @param array
+     * @param items
      *            the source sequence
      * @param <T>
      *            the type of items in the {@link Iterable} sequence and the type of items to be
@@ -1434,7 +1433,7 @@ public class Observable<T> {
     }
 
     /**
-     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * This behaves like {@link #merge(Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
      * refrain from propagating that error notification until all of the merged Observables have
      * finished emitting items.
@@ -1462,7 +1461,7 @@ public class Observable<T> {
     }
     
     /**
-     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * This behaves like {@link #merge(Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
      * refrain from propagating that error notification until all of the merged Observables have
      * finished emitting items.
@@ -1492,7 +1491,7 @@ public class Observable<T> {
     }
     
     /**
-     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
      * refrain from propagating that error notification until all of the merged Observables have
      * finished emitting items.
@@ -1524,7 +1523,7 @@ public class Observable<T> {
     }
     
     /**
-     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
      * refrain from propagating that error notification until all of the merged Observables have
      * finished emitting items.
@@ -1558,7 +1557,7 @@ public class Observable<T> {
     }
     
     /**
-     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
      * refrain from propagating that error notification until all of the merged Observables have
      * finished emitting items.
@@ -1594,7 +1593,7 @@ public class Observable<T> {
     }
     
     /**
-     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
      * refrain from propagating that error notification until all of the merged Observables have
      * finished emitting items.
@@ -1632,7 +1631,7 @@ public class Observable<T> {
     }
     
     /**
-     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
      * refrain from propagating that error notification until all of the merged Observables have
      * finished emitting items.
@@ -1672,7 +1671,7 @@ public class Observable<T> {
     }
     
     /**
-     * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
      * refrain from propagating that error notification until all of the merged Observables have
      * finished emitting items.
@@ -1832,7 +1831,7 @@ public class Observable<T> {
      *            The {@link TimeUnit} for the timeout.
      * 
      * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
-     * @see {@link #throttleWithTimeout};
+     * @see #throttleWithTimeout(long, TimeUnit)
      */
     public Observable<T> debounce(long timeout, TimeUnit unit) {
         return create(OperationDebounce.debounce(this, timeout, unit));
@@ -1860,10 +1859,10 @@ public class Observable<T> {
      * @param scheduler
      *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
      * @return Observable which performs the throttle operation.
-     * @see {@link #throttleWithTimeout};
+     * @see #throttleWithTimeout(long, TimeUnit, Scheduler)
      */
     public Observable<T> debounce(long timeout, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationDebounce.debounce(this, timeout, unit));
+        return create(OperationDebounce.debounce(this, timeout, unit, scheduler));
     }
 
     /**
@@ -1887,7 +1886,7 @@ public class Observable<T> {
      *            The {@link TimeUnit} for the timeout.
      * 
      * @return An {@link Observable} which filters out values which are too quickly followed up with newer values.
-     * @see {@link #debounce}
+     * @see #debounce(long, TimeUnit)
      */
     public Observable<T> throttleWithTimeout(long timeout, TimeUnit unit) {
         return create(OperationDebounce.debounce(this, timeout, unit));
@@ -1907,7 +1906,7 @@ public class Observable<T> {
      * @param scheduler
      *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
      * @return Observable which performs the throttle operation.
-     * @see {@link #debounce}
+     * @see #debounce(long, TimeUnit, Scheduler)
      */
     public Observable<T> throttleWithTimeout(long timeout, TimeUnit unit, Scheduler scheduler) {
         return create(OperationDebounce.debounce(this, timeout, unit, scheduler));
@@ -1920,12 +1919,10 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleFirst.png">
      * 
-     * @param skipDuration
+     * @param windowDuration
      *            Time to wait before sending another value after emitting last value.
      * @param unit
      *            The unit of time for the specified timeout.
-     * @param scheduler
-     *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
      * @return Observable which performs the throttle operation.
      */
     public Observable<T> throttleFirst(long windowDuration, TimeUnit unit) {
@@ -1963,7 +1960,7 @@ public class Observable<T> {
      * @param unit
      *            The unit of time for the specified interval.
      * @return Observable which performs the throttle operation.
-     * @see {@link #sample(long, TimeUnit)}
+     * @see #sample(long, TimeUnit)
      */
     public Observable<T> throttleLast(long intervalDuration, TimeUnit unit) {
         return sample(intervalDuration, unit);
@@ -1981,7 +1978,7 @@ public class Observable<T> {
      * @param unit
      *            The unit of time for the specified interval.
      * @return Observable which performs the throttle operation.
-     * @see {@link #sample(long, TimeUnit, Scheduler)}
+     * @see #sample(long, TimeUnit, Scheduler)
      */
     public Observable<T> throttleLast(long intervalDuration, TimeUnit unit, Scheduler scheduler) {
         return sample(intervalDuration, unit, scheduler);
@@ -2727,7 +2724,7 @@ public class Observable<T> {
      *            The maximum size of each window before it should be emitted.
      * @param skip
      *            How many produced values need to be skipped before starting a new window. Note that when "skip" and
-     *            "count" are equals that this is the same operation as {@link Observable#window(Observable, int)}.
+     *            "count" are equals that this is the same operation as {@link #window(int)}.
      * @return
      *         An {@link Observable} which produces windows every "skipped" values containing at most
      *         "count" produced values.
@@ -3334,9 +3331,6 @@ public class Observable<T> {
      * <p>
      * For example, if an Observable fails on first time but emits [1, 2] then succeeds the second time and
      * emits [1, 2, 3, 4, 5] then the complete output would be [1, 2, 1, 2, 3, 4, 5, onCompleted].
-     * 
-     * @param retryCount
-     *            Number of retry attempts before failing.
      * @return Observable with retry logic.
      */
     public Observable<T> retry() {
@@ -3657,7 +3651,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item from the source, or none if the
      *         source Observable completes without emitting a single item.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
-     * @see {@link #first()}
+     * @see #first()
      */
     public Observable<T> takeFirst() {
         return first();
@@ -3672,7 +3666,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item satisfying the given condition from the source,
      *         or none if the source Observable completes without emitting a single matching item.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177%28v=vs.103%29.aspx">MSDN: Observable.First</a>
-     * @see {@link #first(Func1)}
+     * @see #first(Func1)
      */
     public Observable<T> takeFirst(Func1<? super T, Boolean> predicate) {
         return first(predicate);
@@ -3812,8 +3806,6 @@ public class Observable<T> {
      * 
      * @param t1
      *            item to include
-     * @param values
-     *            Iterable of the items you want the modified Observable to emit first
      * @return an Observable that exhibits the modified behavior
      */
     public Observable<T> startWith(T t1) {
@@ -3829,8 +3821,6 @@ public class Observable<T> {
      *            item to include
      * @param t2
      *            item to include
-     * @param values
-     *            Iterable of the items you want the modified Observable to emit first
      * @return an Observable that exhibits the modified behavior
      */
     public Observable<T> startWith(T t1, T t2) {
@@ -3848,8 +3838,6 @@ public class Observable<T> {
      *            item to include
      * @param t3
      *            item to include
-     * @param values
-     *            Iterable of the items you want the modified Observable to emit first
      * @return an Observable that exhibits the modified behavior
      */
     public Observable<T> startWith(T t1, T t2, T t3) {
@@ -3869,8 +3857,6 @@ public class Observable<T> {
      *            item to include
      * @param t4
      *            item to include
-     * @param values
-     *            Iterable of the items you want the modified Observable to emit first
      * @return an Observable that exhibits the modified behavior
      */
     public Observable<T> startWith(T t1, T t2, T t3, T t4) {
@@ -3892,8 +3878,6 @@ public class Observable<T> {
      *            item to include
      * @param t5
      *            item to include
-     * @param values
-     *            Iterable of the items you want the modified Observable to emit first
      * @return an Observable that exhibits the modified behavior
      */
     public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5) {
@@ -3917,8 +3901,6 @@ public class Observable<T> {
      *            item to include
      * @param t6
      *            item to include
-     * @param values
-     *            Iterable of the items you want the modified Observable to emit first
      * @return an Observable that exhibits the modified behavior
      */
     public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6) {
@@ -3944,8 +3926,6 @@ public class Observable<T> {
      *            item to include
      * @param t7
      *            item to include
-     * @param values
-     *            Iterable of the items you want the modified Observable to emit first
      * @return an Observable that exhibits the modified behavior
      */
     public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7) {
@@ -3973,8 +3953,6 @@ public class Observable<T> {
      *            item to include
      * @param t8
      *            item to include
-     * @param values
-     *            Iterable of the items you want the modified Observable to emit first
      * @return an Observable that exhibits the modified behavior
      */
     public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8) {
@@ -4004,8 +3982,6 @@ public class Observable<T> {
      *            item to include
      * @param t9
      *            item to include
-     * @param values
-     *            Iterable of the items you want the modified Observable to emit first
      * @return an Observable that exhibits the modified behavior
      */
     public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {

@@ -287,7 +287,6 @@ public final class OperationGroupBy {
         public void testError() {
             Observable<String> sourceStrings = Observable.from("one", "two", "three", "four", "five", "six");
             Observable<String> errorSource = Observable.error(new RuntimeException("forced failure"));
-            @SuppressWarnings("unchecked")
             Observable<String> source = Observable.concat(sourceStrings, errorSource);
 
             Observable<GroupedObservable<Integer, String>> grouped = Observable.create(groupBy(source, length));
