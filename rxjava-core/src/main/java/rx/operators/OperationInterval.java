@@ -32,6 +32,7 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
 import rx.concurrency.TestScheduler;
+import rx.observables.ConnectableObservable;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 
@@ -98,6 +99,7 @@ public final class OperationInterval {
         public void before() {
             scheduler = new TestScheduler();
             observer = mock(Observer.class);
+            observer2 = mock(Observer.class);
         }
         
         @Test
