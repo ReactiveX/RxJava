@@ -1,5 +1,14 @@
 # RxJava Releases #
 
+### Version 0.13.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.13.1%22)) ###
+
+This release includes a new Scala adaptor as part of the effort from issue https://github.com/Netflix/RxJava/issues/336 pursuing idiomatic Scala support.
+
+* [Pull 376](https://github.com/Netflix/RxJava/pull/376) Idiomatic Scala Adaptor
+* [Pull 375](https://github.com/Netflix/RxJava/pull/375) Operator: Distinct
+* [Pull 374](https://github.com/Netflix/RxJava/pull/374) Operator: DistinctUntilChanged
+* [Pull 373](https://github.com/Netflix/RxJava/pull/373) Fixes and Cleanup
+
 ### Version 0.13.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.13.0%22)) ###
 
 This release has some minor changes related to varargs that could break backwards compatibility 
