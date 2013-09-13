@@ -43,6 +43,14 @@ import rx.util.functions.Functions;
  */
 public final class OperationDistinctUntilChanged {
 
+    /**
+     * Returns an Observable that emits all sequentially distinct items emitted by the source.
+     * @param source
+     *            The source Observable to emit the sequentially distinct items for.
+     * @param equalityComparator
+     *            The comparator to use for deciding whether to consider two items as equal or not.
+     * @return A subscription function for creating the target Observable.
+     */
     public static <T> OnSubscribeFunc<T> distinctUntilChanged(Observable<? extends T> source, Comparator<T> equalityComparator) {
         return new DistinctUntilChanged<T, T>(source, Functions.<T>identity(), equalityComparator);
     }
@@ -51,6 +59,22 @@ public final class OperationDistinctUntilChanged {
      * Returns an Observable that emits all sequentially distinct items emitted by the source.
      * @param source
      *            The source Observable to emit the sequentially distinct items for.
+     * @param keySelector
+     *            The function to select the key to use for the equality checks.
+     * @param equalityComparator
+     *            The comparator to use for deciding whether to consider the two item keys as equal or not.
+     * @return A subscription function for creating the target Observable.
+     */
+    public static <T, U> OnSubscribeFunc<T> distinctUntilChanged(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
+        return new DistinctUntilChanged<T, U>(source, keySelector, equalityComparator);
+    }
+    
+    /**
+     * Returns an Observable that emits all sequentially distinct items emitted by the source.
+     * @param source
+     *            The source Observable to emit the sequentially distinct items for.
+     * @param keySelector
+     *            The function to select the key to use for the equality checks.
      * @return A subscription function for creating the target Observable.
      */
     public static <T, U> OnSubscribeFunc<T> distinctUntilChanged(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector) {
@@ -142,6 +166,9 @@ public final class OperationDistinctUntilChanged {
         final Func1<String, String> TO_UPPER_WITH_EXCEPTION = new Func1<String, String>() {
             @Override
             public String call(String s) {
+                if (s.equals("x")) {
+                    return "xx";
+                }
                 return s.toUpperCase();
             }
         };
@@ -248,6 +275,20 @@ public final class OperationDistinctUntilChanged {
             InOrder inOrder = inOrder(w); 
             inOrder.verify(w, times(1)).onNext("a");
             inOrder.verify(w, times(1)).onNext("aa");
+            inOrder.verify(w, times(1)).onNext("c");
+            inOrder.verify(w, times(1)).onNext("ddd");
+            inOrder.verify(w, times(1)).onCompleted();
+            inOrder.verify(w, never()).onNext(anyString());
+            verify(w, never()).onError(any(Throwable.class));
+        }
+
+        @Test
+        public void testDistinctUntilChangedWithComparatorAndKeySelector() {
+            Observable<String> src = from("a", "b", "x", "aa", "bb", "c", "ddd");
+            create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w);
+            InOrder inOrder = inOrder(w); 
+            inOrder.verify(w, times(1)).onNext("a");
+            inOrder.verify(w, times(1)).onNext("x");
             inOrder.verify(w, times(1)).onNext("c");
             inOrder.verify(w, times(1)).onNext("ddd");
             inOrder.verify(w, times(1)).onCompleted();

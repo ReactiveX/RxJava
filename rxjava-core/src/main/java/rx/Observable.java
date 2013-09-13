@@ -19,6 +19,7 @@ import static rx.util.functions.Functions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -2946,6 +2947,35 @@ public class Observable<T> {
      */
     public <U> Observable<T> distinctUntilChanged(Func1<? super T, ? extends U> keySelector) {
         return create(OperationDistinctUntilChanged.distinctUntilChanged(this, keySelector));
+    }
+
+    /**
+     * Returns an Observable that forwards all items emitted from the source Observable that are sequentially distinct according to
+     * a comparator.
+     * 
+     * @param equalityComparator
+     *            a comparator for deciding whether two emitted items are equal or not
+     * @return an Observable of sequentially distinct items
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229508%28v=vs.103%29.aspx">MSDN: Observable.distinctUntilChanged</a>
+     */
+    public <U> Observable<T> distinctUntilChanged(Comparator<T> equalityComparator) {
+        return create(OperationDistinctUntilChanged.distinctUntilChanged(this, equalityComparator));
+    }
+
+    /**
+     * Returns an Observable that forwards all items emitted from the source Observable that are sequentially distinct according to
+     * a key selector function and a comparator.
+     * 
+     * @param keySelector
+     *            a function that projects an emitted item to a key value which is used for deciding whether an item is sequentially
+     *            distinct from another one or not
+     * @param equalityComparator
+     *            a comparator for deciding whether two emitted item keys are equal or not
+     * @return an Observable of sequentially distinct items
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229508%28v=vs.103%29.aspx">MSDN: Observable.distinctUntilChanged</a>
+     */
+    public <U> Observable<T> distinctUntilChanged(Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
+        return create(OperationDistinctUntilChanged.distinctUntilChanged(this, keySelector, equalityComparator));
     }
 
     /**
