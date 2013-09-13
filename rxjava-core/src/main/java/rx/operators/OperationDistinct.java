@@ -22,7 +22,10 @@ import static rx.Observable.create;
 import static rx.Observable.empty;
 import static rx.Observable.from;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -55,6 +58,30 @@ public final class OperationDistinct {
      */
     public static <T, U> OnSubscribeFunc<T> distinct(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector) {
         return new Distinct<T, U>(source, keySelector);
+    }
+    
+    /**
+     * Returns an Observable that emits all distinct items emitted by the source
+     * @param source
+     *            The source Observable to emit the distinct items for.
+     * @param equalityComparator
+     *            The comparator to use for deciding whether to consider two items as equal or not.
+     * @return A subscription function for creating the target Observable.
+     */
+    public static <T> OnSubscribeFunc<T> distinct(Observable<? extends T> source, Comparator<T> equalityComparator) {
+        return new DistinctWithComparator<T, T>(source, Functions.<T>identity(), equalityComparator);
+    }
+    
+    /**
+     * Returns an Observable that emits all distinct items emitted by the source
+     * @param source
+     *            The source Observable to emit the distinct items for.
+     * @param equalityComparator
+     *            The comparator to use for deciding whether to consider the two item keys as equal or not.
+     * @return A subscription function for creating the target Observable.
+     */
+    public static <T, U> OnSubscribeFunc<T> distinct(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
+        return new DistinctWithComparator<T, U>(source, keySelector, equalityComparator);
     }
     
     /**
@@ -115,6 +142,67 @@ public final class OperationDistinct {
         }
     }
     
+    private static class DistinctWithComparator<T, U> implements OnSubscribeFunc<T> {
+        private final Observable<? extends T> source;
+        private final Func1<? super T, ? extends U> keySelector;
+        private final Comparator<U> equalityComparator;
+        
+        private DistinctWithComparator(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
+            this.source = source;
+            this.keySelector = keySelector;
+            this.equalityComparator = equalityComparator;
+        }
+
+        @Override
+        public Subscription onSubscribe(final Observer<? super T> observer) {
+            final Subscription sourceSub = source.subscribe(new Observer<T>() {
+                
+                // due to the totally arbitrary equality comparator, we can't use anything more efficient than lists here 
+                private final List<U> emittedKeys = new ArrayList<U>();
+                
+                @Override
+                public void onCompleted() {
+                    observer.onCompleted();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    observer.onError(e);
+                }
+
+                @Override
+                public void onNext(T next) {
+                    try {
+                        U nextKey = keySelector.call(next);
+                        if (!alreadyEmitted(nextKey)) {
+                            emittedKeys.add(nextKey);
+                            observer.onNext(next);
+                        }
+                    } catch (Throwable t) {
+                        // keySelector and comparator are user functions, may throw something
+                        observer.onError(t);
+                    }
+                }
+                
+                private boolean alreadyEmitted(U newKey) {
+                    for (U key: emittedKeys) {
+                        if (equalityComparator.compare(key, newKey) == 0) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            });
+            
+            return Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    sourceSub.unsubscribe();
+                }
+            });
+        }
+    }
+    
     public static class UnitTest {
         @Mock
         Observer<? super String> w;
@@ -123,7 +211,17 @@ public final class OperationDistinct {
         final Func1<String, String> TO_UPPER_WITH_EXCEPTION = new Func1<String, String>() {
             @Override
             public String call(String s) {
+                if (s.equals("x")) {
+                    return "XX";
+                }
                 return s.toUpperCase();
+            }
+        };
+        
+        final Comparator<String> COMPARE_LENGTH = new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                return s1.length() - s2.length();
             }
         };
         
@@ -177,6 +275,36 @@ public final class OperationDistinct {
             inOrder.verify(w, times(1)).onNext("B");
             inOrder.verify(w, times(1)).onNext("c");
             inOrder.verify(w, times(1)).onNext("E");
+            inOrder.verify(w, times(1)).onCompleted();
+            inOrder.verify(w, never()).onNext(anyString());
+            verify(w, never()).onError(any(Throwable.class));
+        }
+
+        @Test
+        public void testDistinctOfNormalSourceWithComparator() {
+            Observable<String> src = from("1", "12", "123", "aaa", "321", "12", "21", "1", "12345");
+            create(distinct(src, COMPARE_LENGTH)).subscribe(w);
+
+            InOrder inOrder = inOrder(w); 
+            inOrder.verify(w, times(1)).onNext("1");
+            inOrder.verify(w, times(1)).onNext("12");
+            inOrder.verify(w, times(1)).onNext("123");
+            inOrder.verify(w, times(1)).onNext("12345");
+            inOrder.verify(w, times(1)).onCompleted();
+            inOrder.verify(w, never()).onNext(anyString());
+            verify(w, never()).onError(any(Throwable.class));
+        }
+
+        @Test
+        public void testDistinctOfNormalSourceWithKeySelectorAndComparator() {
+            Observable<String> src = from("a", "x", "ab", "abc", "cba", "de", "x", "a", "abcd");
+            create(distinct(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w);
+
+            InOrder inOrder = inOrder(w); 
+            inOrder.verify(w, times(1)).onNext("a");
+            inOrder.verify(w, times(1)).onNext("x");
+            inOrder.verify(w, times(1)).onNext("abc");
+            inOrder.verify(w, times(1)).onNext("abcd");
             inOrder.verify(w, times(1)).onCompleted();
             inOrder.verify(w, never()).onNext(anyString());
             verify(w, never()).onError(any(Throwable.class));
