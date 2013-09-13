@@ -22,6 +22,8 @@ import static rx.Observable.create;
 import static rx.Observable.empty;
 import static rx.Observable.from;
 
+import java.util.Comparator;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -41,6 +43,10 @@ import rx.util.functions.Functions;
  */
 public final class OperationDistinctUntilChanged {
 
+    public static <T> OnSubscribeFunc<T> distinctUntilChanged(Observable<? extends T> source, Comparator<T> equalityComparator) {
+        return new DistinctUntilChanged<T, T>(source, Functions.<T>identity(), equalityComparator);
+    }
+    
     /**
      * Returns an Observable that emits all sequentially distinct items emitted by the source.
      * @param source
@@ -48,7 +54,7 @@ public final class OperationDistinctUntilChanged {
      * @return A subscription function for creating the target Observable.
      */
     public static <T, U> OnSubscribeFunc<T> distinctUntilChanged(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector) {
-        return new DistinctUntilChanged<T, U>(source, keySelector);
+        return new DistinctUntilChanged<T, U>(source, keySelector, new DefaultEqualityComparator<U>());
     }
     
     /**
@@ -58,16 +64,30 @@ public final class OperationDistinctUntilChanged {
      * @return A subscription function for creating the target Observable.
      */
     public static <T> OnSubscribeFunc<T> distinctUntilChanged(Observable<? extends T> source) {
-        return new DistinctUntilChanged<T, T>(source, Functions.<T>identity());
+        return new DistinctUntilChanged<T, T>(source, Functions.<T>identity(), new DefaultEqualityComparator<T>());
+    }
+
+    // does not define a useful ordering; it's only used for equality tests here
+    private static class DefaultEqualityComparator<T> implements Comparator<T> {
+        @Override
+        public int compare(T t1, T t2) {
+            if (t1 == null) {
+                return t2 == null ? 0 : 1;
+            } else {
+                return t1.equals(t2) ? 0 : 1;
+            }
+        }
     }
     
     private static class DistinctUntilChanged<T, U> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> source;
         private final Func1<? super T, ? extends U> keySelector;
+        private final Comparator<U> equalityComparator;
         
-        private DistinctUntilChanged(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector) {
+        private DistinctUntilChanged(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
             this.source = source;
             this.keySelector = keySelector;
+            this.equalityComparator = equalityComparator;
         }
 
         @Override
@@ -95,16 +115,8 @@ public final class OperationDistinctUntilChanged {
                         if (!hasEmitted) {
                             hasEmitted = true;
                             observer.onNext(next);
-                        } else {
-                            if (lastKey == null) {
-                                if (nextKey != null) {
-                                    observer.onNext(next);
-                                }
-                            } else {
-                                if (!lastKey.equals(nextKey)) {
-                                    observer.onNext(next);
-                                }
-                            }
+                        } else if (equalityComparator.compare(lastKey, nextKey) != 0) {
+                            observer.onNext(next);
                         }
                     } catch (Throwable t) {
                         // keySelector is a user function, may throw something
