@@ -91,6 +91,7 @@ public final class OperationInterval {
     public static class UnitTest {
         private TestScheduler scheduler;
         private Observer<Long> observer;
+        private Observer<Long> observer2;
         
         @Before
         @SuppressWarnings("unchecked") // due to mocking
@@ -122,6 +123,45 @@ public final class OperationInterval {
             verify(observer, never()).onNext(2L);
             verify(observer, times(1)).onCompleted();
             verify(observer, never()).onError(any(Throwable.class));
+        }
+        
+        @Test
+        public void testWithMultipleSubscribersStartingAtSameTime() {
+            Observable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler));
+            Subscription sub1 = w.subscribe(observer);
+            Subscription sub2 = w.subscribe(observer2);
+
+            verify(observer, never()).onNext(anyLong());
+            verify(observer2, never()).onNext(anyLong());
+            
+            scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
+            
+            InOrder inOrder1 = inOrder(observer);
+            InOrder inOrder2 = inOrder(observer2);
+            
+            inOrder1.verify(observer, times(1)).onNext(0L);
+            inOrder1.verify(observer, times(1)).onNext(1L);
+            inOrder1.verify(observer, never()).onNext(2L);
+            verify(observer, never()).onCompleted();
+            verify(observer, never()).onError(any(Throwable.class));
+
+            inOrder2.verify(observer2, times(1)).onNext(0L);
+            inOrder2.verify(observer2, times(1)).onNext(1L);
+            inOrder2.verify(observer2, never()).onNext(2L);
+            verify(observer2, never()).onCompleted();
+            verify(observer2, never()).onError(any(Throwable.class));
+
+            sub1.unsubscribe();
+            sub2.unsubscribe();
+            scheduler.advanceTimeTo(4, TimeUnit.SECONDS);
+
+            verify(observer, never()).onNext(2L);
+            verify(observer, times(1)).onCompleted();
+            verify(observer, never()).onError(any(Throwable.class));
+
+            verify(observer2, never()).onNext(2L);
+            verify(observer2, times(1)).onCompleted();
+            verify(observer2, never()).onError(any(Throwable.class));
         }
     }
 }
