@@ -122,7 +122,6 @@ public class PerformanceTest {
         System.out.println("nonCompositionalTestWithArrayOfFunctionsTotalTime: " + nonCompositionalTestWithArrayOfFunctionsTotalTime.get());
     }
 
-    @SuppressWarnings("unchecked")
     public void runCompositionTestWithMultipleOperations(AtomicLong aggregateTime, Integer[] values) {
         System.out.println("runCompositionTestWithMultipleOperations");
 
