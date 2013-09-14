@@ -23,7 +23,7 @@ import org.junit.{Before, Test, Ignore}
 import org.junit.Assert._
 import rx.lang.scala.concurrency.NewThreadScheduler
 
-@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
+//@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
 
   @Test def intervalExample() {
@@ -156,6 +156,49 @@ class RxScalaDemo extends JUnitSuite {
         i => println(s"${i}b (on thread #${Thread.currentThread().getId()})")
     )
     waitFor(o)
+  }
+  
+  def sampleAllUntilComplete[T](o: Observable[T], period: Duration): Observable[T] = {
+    for ((element, tick) <- o zip Observable.interval(period)) yield element
+  }
+  
+  @Ignore //TODO
+  @Test def groupByExample() {
+    import Olympics._
+    // `: _*` converts list to varargs
+    val medals = Observable[Medal](Olympics.mountainBikeMedals : _*)
+    
+    // 1 second = 4 years :D
+    val medalsByYear = sampleAllUntilComplete(medals.groupBy(_.year), 1 seconds)
+    
+    /*
+    val t = (for ((year, medals) <- medalsByYear) yield medals).flatMap(ms => ms)
+    t.subscribe(println(_))
+    */
+    
+    val timedMedals = for ((year, medals) <- medalsByYear; medal <- medals) yield medal 
+    
+    timedMedals.subscribe(println(_)) // doesn't print ???
+    
+    Thread.sleep(5000)
+    
+    /*
+    medalsByYear.subscribe(p => println(p._1))
+    
+    //waitFor(medalsByYear)
+    
+    val byCountry = medals.groupBy(_.country)
+    
+    def score(medals: Observable[Medal]) = medals.fold((0, 0, 0))((s, m) => (s, m.medal) match {
+      case ((gold, silver, bronze), "Gold") => (gold+1, silver, bronze)
+      case ((gold, silver, bronze), "Silver") => (gold, silver+1, bronze)
+      case ((gold, silver, bronze), "Bronze") => (gold, silver, bronze+1)
+    })    
+    
+    val scores = for ((country, medals) <- byCountry) yield (country, score(medals))
+    
+    println(scores.toBlockingObservable.toList)
+    */
   }
   
   def output(s: String): Unit = println(s)
