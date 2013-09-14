@@ -20,6 +20,7 @@ import static rx.util.functions.Functions.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +36,7 @@ import rx.operators.OperationCache;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDefer;
+import rx.operators.OperationDelay;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinctUntilChanged;
 import rx.operators.OperationDistinct;
@@ -3551,6 +3553,64 @@ public class Observable<T> {
         return create(OperationScan.scan(this, accumulator));
     }
 
+    /**
+     * Returns an Observable that emits the results of shifting the items emitted by the source
+     * Observable by a specified delay. Only errors emitted by the source Observable are not delayed.
+     * @param delay
+     *            the delay to shift the source by
+     * @param unit
+     *            the {@link TimeUnit} in which <code>period</code> is defined
+     * @return the source Observable, but shifted by the specified delay
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229810%28v=vs.103%29.aspx">MSDN: Observable.Delay</a>
+     */
+    public Observable<T> delay(long delay, TimeUnit unit) {
+        return create(OperationDelay.delay(this, delay, unit));
+    }
+    
+    /**
+     * Returns an Observable that emits the results of shifting the items emitted by the source
+     * Observable by a specified delay. Only errors emitted by the source Observable are not delayed.
+     * @param delay
+     *            the delay to shift the source by
+     * @param unit
+     *            the {@link TimeUnit} in which <code>period</code> is defined
+     * @param scheduler
+     *            the {@link Scheduler} to use for delaying
+     * @return the source Observable, but shifted by the specified delay
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229280(v=vs.103).aspx">MSDN: Observable.Delay</a>
+     */
+    public Observable<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationDelay.delay(this, delay, unit, scheduler));
+    }
+    
+    /**
+     * Returns an Observable that emits the results of shifting the items emitted by the source
+     * Observable by a delay specified by the due time at which to begin emitting. 
+     * Only errors emitted by the source Observable are not delayed.
+     * @param dueTime
+     *            the due time at which to start emitting
+     * @return the source Observable, but shifted by the specified delay
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229677(v=vs.103).aspx">MSDN: Observable.Delay</a>
+     */
+    public Observable<T> delay(Date dueTime) {
+        return create(OperationDelay.delay(this, dueTime));
+    }
+    
+    /**
+     * Returns an Observable that emits the results of shifting the items emitted by the source
+     * Observable by a delay specified by the due time at which to begin emitting. 
+     * Only errors emitted by the source Observable are not delayed.
+     * @param dueTime
+     *            the due time at which to start emitting
+     * @param scheduler
+     *            the {@link Scheduler} to use for delaying
+     * @return the source Observable, but shifted by the specified delay
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229250(v=vs.103).aspx">MSDN: Observable.Delay</a>
+     */
+    public Observable<T> delay(Date dueTime, Scheduler scheduler) {
+        return create(OperationDelay.delay(this, dueTime, scheduler));
+    }
+    
     /**
      * Returns an Observable that emits the results of sampling the items emitted by the source
      * Observable at a specified time interval.
