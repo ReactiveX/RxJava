@@ -1215,51 +1215,25 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   // because we can just use ++ instead 
   
   /**
-   * Groups the items emitted by an Observable according to a specified criterion, and emits these
-   * grouped items as {@link GroupedObservable}s, one GroupedObservable per group.
-   * <p>
-   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/groupBy.png">
+   * Groups the items emitted by this Observable according to a specified discriminator function.
    * 
-   * @param keySelector
+   * @param f
    *            a function that extracts the key from an item
-   * @param elementSelector
-   *            a function to map a source item to an item in a {@link GroupedObservable}
    * @param <K>
-   *            the key type
-   * @param <R>
-   *            the type of items emitted by the resulting {@link GroupedObservable}s
-   * @return an Observable that emits {@link GroupedObservable}s, each of which corresponds to a
-   *         unique key value and emits items representing items from the source Observable that
-   *         share that key value
+   *            the type of keys returned by the discriminator function.
+   * @return an Observable that emits {@code (key, observable)} pairs, where {@code observable}
+   *         contains all items for which {@code f} returned {@code key}.
    */
-  /* TODO make a Scala GroupedObservable and groupBy
-  def groupBy[K,R](keySelector: T => K, elementSelector: T => R ): Observable[GroupedObservable[K,R]] = {
-    ???
+  def groupBy[K](f: T => K): Observable[(K, Observable[T])] = {
+    val o1 = asJava.groupBy[K](f) : rx.Observable[_ <: rx.observables.GroupedObservable[K, _ <: T]] 
+    val func = (o: rx.observables.GroupedObservable[K, _ <: T]) => (o.getKey(), Observable[T](o))
+    Observable[(K, Observable[T])](o1.map[(K, Observable[T])](func))
   }
-  */
+
+  // There's no method corresponding to
   // public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) 
-
-  /**
-   * Groups the items emitted by an Observable according to a specified criterion, and emits these
-   * grouped items as {@link GroupedObservable}s, one GroupedObservable per group.
-   * <p>
-   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/groupBy.png">
-   * 
-   * @param keySelector
-   *            a function that extracts the key for each item
-   * @param <K>
-   *            the key type
-   * @return an Observable that emits {@link GroupedObservable}s, each of which corresponds to a
-   *         unique key value and emits items representing items from the source Observable that
-   *         share that key value
-   */
-  /* TODO 
-  def groupBy[K](keySelector: T => K ): Observable[GroupedObservable[K,T]] = {
-    ???
-  }
-  */
-  // public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) 
-
+  // because this can be obtained by combining groupBy and map (as in Scala)
+  
   /**
    * Given an Observable that emits Observables, creates a single Observable that
    * emits the items emitted by the most recently published of those Observables.
