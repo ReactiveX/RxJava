@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static rx.Observable.interval;
 
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,7 +50,26 @@ public final class OperationDelay {
      * Delays the observable sequence by the given time interval.
      */
     public static <T> OnSubscribeFunc<T> delay(final Observable<? extends T> source, long delay, TimeUnit unit) {
-        return new Delay<T>(source, delay, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
+        return delay(source, delay, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
+    }
+
+    /**
+     * Delays the observable sequence by a time interval so that it starts at the given due time.
+     */
+    public static <T> OnSubscribeFunc<T> delay(final Observable<? extends T> source, Date dueTime) {
+        return delay(source, dueTime, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
+    }
+    
+    /**
+     * Delays the observable sequence by a time interval so that it starts at the given due time.
+     */
+    public static <T> OnSubscribeFunc<T> delay(final Observable<? extends T> source, Date dueTime, final Scheduler scheduler) {
+        long scheduledTime = dueTime.getTime();
+        long delay = scheduledTime - scheduler.now();
+        if (delay < 0L) {
+            delay = 0L;
+        }
+        return new Delay<T>(source, delay, TimeUnit.MILLISECONDS, scheduler);
     }
 
     /**
@@ -58,7 +78,7 @@ public final class OperationDelay {
     public static <T> OnSubscribeFunc<T> delay(final Observable<? extends T> source, final long period, final TimeUnit unit, final Scheduler scheduler) {
         return new Delay<T>(source, period, unit, scheduler);
     }
-  
+
     private static class Delay<T> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> source;
         private final long delay;
@@ -167,6 +187,25 @@ public final class OperationDelay {
             scheduler.advanceTimeTo(3500L, TimeUnit.MILLISECONDS);
             inOrder.verify(observer, times(1)).onNext(2L);
             verify(observer, times(1)).onCompleted();
+            verify(observer, never()).onError(any(Throwable.class));
+        }
+        
+        @Test
+        public void testDelayWithDueTime() {
+            Observable<Long> source = interval(1L, TimeUnit.SECONDS, scheduler).first();
+            Observable<Long> delayed = Observable.create(OperationDelay.delay(source, new Date(1500L), scheduler));
+            delayed.subscribe(observer);
+            
+            InOrder inOrder = inOrder(observer);
+            
+            scheduler.advanceTimeTo(2499L, TimeUnit.MILLISECONDS);
+            verify(observer, never()).onNext(anyLong());
+            verify(observer, never()).onCompleted();
+            
+            scheduler.advanceTimeTo(2500L, TimeUnit.MILLISECONDS);
+            inOrder.verify(observer, times(1)).onNext(0L);
+            inOrder.verify(observer, times(1)).onCompleted();
+            
             verify(observer, never()).onError(any(Throwable.class));
         }
         
