@@ -55,7 +55,7 @@ public final class OperationDelay {
     /**
      * Delays the observable sequence by the given time interval.
      */
-    public static <T> OnSubscribeFunc<T> delay(final Observable<? extends T> source, long period, TimeUnit unit, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> delay(final Observable<? extends T> source, final long period, final TimeUnit unit, final Scheduler scheduler) {
         return new Delay<T>(source, period, unit, scheduler);
     }
   
@@ -92,6 +92,7 @@ public final class OperationDelay {
                 @Override
                 public void onError(Throwable e) {
                     // errors get propagated without delay
+                    errorOccurred.set(true);
                     observer.onError(e);
                 }
         
@@ -118,6 +119,8 @@ public final class OperationDelay {
     public static class UnitTest {
         @Mock
         private Observer<Long> observer;
+        @Mock
+        private Observer<Long> observer2;
 
         private TestScheduler scheduler;
 
@@ -226,6 +229,47 @@ public final class OperationDelay {
             inOrder.verify(observer, never()).onNext(anyLong());
             inOrder.verify(observer, never()).onError(any(Throwable.class));
             verify(observer, never()).onCompleted();
+        }
+        
+        @Test
+        public void testDelayWithMultipleSubscriptions() {
+            Observable<Long> source = interval(1L, TimeUnit.SECONDS, scheduler).take(3);
+            Observable<Long> delayed = Observable.create(OperationDelay.delay(source, 500L, TimeUnit.MILLISECONDS, scheduler));
+            delayed.subscribe(observer);
+            delayed.subscribe(observer2);
+            
+            InOrder inOrder = inOrder(observer);
+            InOrder inOrder2 = inOrder(observer2);
+            
+            scheduler.advanceTimeTo(1499L, TimeUnit.MILLISECONDS);
+            verify(observer, never()).onNext(anyLong());
+            verify(observer2, never()).onNext(anyLong());
+
+            scheduler.advanceTimeTo(1500L, TimeUnit.MILLISECONDS);
+            inOrder.verify(observer, times(1)).onNext(0L);
+            inOrder2.verify(observer2, times(1)).onNext(0L);
+
+            scheduler.advanceTimeTo(2499L, TimeUnit.MILLISECONDS);
+            inOrder.verify(observer, never()).onNext(anyLong());
+            inOrder2.verify(observer2, never()).onNext(anyLong());
+            
+            scheduler.advanceTimeTo(2500L, TimeUnit.MILLISECONDS);
+            inOrder.verify(observer, times(1)).onNext(1L);
+            inOrder2.verify(observer2, times(1)).onNext(1L);
+
+            verify(observer, never()).onCompleted();
+            verify(observer2, never()).onCompleted();
+
+            scheduler.advanceTimeTo(3500L, TimeUnit.MILLISECONDS);
+            inOrder.verify(observer, times(1)).onNext(2L);
+            inOrder2.verify(observer2, times(1)).onNext(2L);
+            inOrder.verify(observer, never()).onNext(anyLong());
+            inOrder2.verify(observer2, never()).onNext(anyLong());
+            inOrder.verify(observer, times(1)).onCompleted();
+            inOrder2.verify(observer2, times(1)).onCompleted();
+
+            verify(observer, never()).onError(any(Throwable.class));
+            verify(observer2, never()).onError(any(Throwable.class));
         }
     }
 }
