@@ -50,14 +50,14 @@ public final class OperationDelay {
      * Delays the observable sequence by the given time interval.
      */
     public static <T> OnSubscribeFunc<T> delay(final Observable<? extends T> source, long delay, TimeUnit unit) {
-        return delay(source, delay, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
+        return delay(source, delay, unit, Schedulers.threadPoolForComputation());
     }
 
     /**
      * Delays the observable sequence by a time interval so that it starts at the given due time.
      */
     public static <T> OnSubscribeFunc<T> delay(final Observable<? extends T> source, Date dueTime) {
-        return delay(source, dueTime, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
+        return delay(source, dueTime, Schedulers.threadPoolForComputation());
     }
     
     /**
