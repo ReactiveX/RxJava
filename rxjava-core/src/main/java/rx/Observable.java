@@ -77,6 +77,7 @@ import rx.operators.OperationWindow;
 import rx.operators.OperationZip;
 import rx.operators.SafeObservableSubscription;
 import rx.operators.SafeObserver;
+import rx.operators.OperationAny;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
@@ -4186,5 +4187,37 @@ public class Observable<T> {
         Package p = o.getClass().getPackage(); // it can be null
         return p != null && p.getName().startsWith("rx.operators");
     }
+
+//    /**
+//     * Returns an {@link Observable} that emits <code>true</code> if the source
+//     * {@link Observable} is not empty, otherwise <code>false</code>.
+//     * 
+//     * @param source
+//     *            The source {@link Observable} to check if not empty.
+//     * @return A subscription function for creating the target Observable.
+//     * @see <a href=
+//     *      "http://msdn.microsoft.com/en-us/library/hh229905(v=vs.103).aspx"
+//     *      >MSDN: Observable.Any</a>
+//     */
+//    public Observable<Boolean> any() {
+//        return create(OperationAny.any(this));
+//    }
+//
+//    /**
+//     * Returns an {@link Observable} that emits <code>true</code> if all items
+//     * of the source {@link Observable} satisfy the given condition, otherwise
+//     * <code>false</code>.
+//     * 
+//     * @param predicate
+//     *            The condition all items have to satisfy.
+//     * @return A subscription function for creating the target Observable.
+//     * 
+//     * @see <a href=
+//     *      "http://msdn.microsoft.com/en-us/library/hh211993(v=vs.103).aspx"
+//     *      >MSDN: Observable.Any</a>
+//     */
+//    public Observable<Boolean> any(Func1<? super T, Boolean> predicate) {
+//        return create(OperationAny.any(this, predicate));
+//    }
 
 }
