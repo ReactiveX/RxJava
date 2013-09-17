@@ -16,7 +16,6 @@
 package rx.subjects;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -273,7 +272,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, times(1)).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+            verify(aObserver, Mockito.never()).onError(org.mockito.Matchers.any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -340,7 +339,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             verify(aObserver, Mockito.never()).onNext("one");
             verify(aObserver, Mockito.never()).onNext("two");
             verify(aObserver, times(1)).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+            verify(aObserver, Mockito.never()).onError(org.mockito.Matchers.any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -374,7 +373,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, Mockito.never()).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+            verify(aObserver, Mockito.never()).onError(org.mockito.Matchers.any(Throwable.class));
             verify(aObserver, Mockito.never()).onCompleted();
         }
 
@@ -404,7 +403,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             inOrder.verify(anObserver, times(1)).onNext("one");
             inOrder.verify(anObserver, times(1)).onNext("two");
             inOrder.verify(anObserver, times(1)).onCompleted();
-            inOrder.verify(anObserver, Mockito.never()).onError(any(Throwable.class));
+            inOrder.verify(anObserver, Mockito.never()).onError(org.mockito.Matchers.any(Throwable.class));
 
             @SuppressWarnings("unchecked")
             Observer<String> anotherObserver = mock(Observer.class);
@@ -414,7 +413,7 @@ public class PublishSubject<T> extends Subject<T, T> {
             inOrder.verify(anotherObserver, Mockito.never()).onNext("one");
             inOrder.verify(anotherObserver, Mockito.never()).onNext("two");
             inOrder.verify(anotherObserver, times(1)).onCompleted();
-            inOrder.verify(anotherObserver, Mockito.never()).onError(any(Throwable.class));
+            inOrder.verify(anotherObserver, Mockito.never()).onError(org.mockito.Matchers.any(Throwable.class));
         }
 
         @Test

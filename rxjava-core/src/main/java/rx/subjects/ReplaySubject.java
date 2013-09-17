@@ -15,7 +15,6 @@
  */
 package rx.subjects;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -215,7 +214,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
             inOrder.verify(aObserver, times(1)).onNext("one");
             inOrder.verify(aObserver, times(1)).onNext("two");
             inOrder.verify(aObserver, times(1)).onNext("three");
-            inOrder.verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+            inOrder.verify(aObserver, Mockito.never()).onError(org.mockito.Matchers.any(Throwable.class));
             inOrder.verify(aObserver, times(1)).onCompleted();
             inOrder.verifyNoMoreInteractions();
         }
@@ -307,7 +306,7 @@ public final class ReplaySubject<T> extends Subject<T, T>
             verify(aObserver, times(1)).onNext("one");
             verify(aObserver, times(1)).onNext("two");
             verify(aObserver, Mockito.never()).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+            verify(aObserver, Mockito.never()).onError(org.mockito.Matchers.any(Throwable.class));
             verify(aObserver, Mockito.never()).onCompleted();
         }
 

@@ -168,7 +168,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
         private void assertCompletedObserver(Observer<String> aObserver)
         {
             verify(aObserver, times(1)).onNext("three");
-            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+            verify(aObserver, Mockito.never()).onError(org.mockito.Matchers.any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
@@ -221,7 +221,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
         private void assertNoOnNextEventsReceived(Observer<String> aObserver)
         {
             verify(aObserver, Mockito.never()).onNext(anyString());
-            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+            verify(aObserver, Mockito.never()).onError(org.mockito.Matchers.any(Throwable.class));
             verify(aObserver, Mockito.never()).onCompleted();
         }
 
