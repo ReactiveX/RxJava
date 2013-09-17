@@ -17,8 +17,8 @@ import rx.Subscription;
 import rx.util.functions.Func1;
 
 /**
- * Returns an {@link Observable} that emits <code>true</code> if all items of an
- * observable sequence satisfy a condition, otherwise <code>false</code>.
+ * Returns an {@link Observable} that emits <code>true</code> if any element of
+ * an observable sequence satisfies a condition, otherwise <code>false</code>.
  */
 public final class OperationAny {
 
@@ -36,15 +36,16 @@ public final class OperationAny {
     }
 
     /**
-     * Returns an {@link Observable} that emits <code>true</code> if all items
-     * of the source {@link Observable} satisfy the given condition, otherwise
-     * <code>false</code>.
+     * Returns an {@link Observable} that emits <code>true</code> if any element
+     * of the source {@link Observable} satisfies the given condition, otherwise
+     * <code>false</code>. Note: always emit <code>false</code> if the source
+     * {@link Observable} is empty.
      * 
      * @param source
-     *            The source {@link Observable} to check if all items in it
-     *            satisfy the given condition
+     *            The source {@link Observable} to check if any element
+     *            satisfies the given condition.
      * @param predicate
-     *            The condition all items have to satisfy.
+     *            The condition to test every element.
      * @return A subscription function for creating the target Observable.
      */
     public static <T> OnSubscribeFunc<Boolean> any(
@@ -71,16 +72,13 @@ public final class OperationAny {
                 private final AtomicBoolean hasEmitted = new AtomicBoolean(
                         false);
 
-                private volatile boolean isNotEmpty = false;
-
                 @Override
                 public void onNext(T value) {
-                    isNotEmpty = true;
                     try {
                         if (hasEmitted.get() == false) {
-                            if (predicate.call(value) == false
+                            if (predicate.call(value) == true
                                     && hasEmitted.getAndSet(true) == false) {
-                                observer.onNext(false);
+                                observer.onNext(true);
                                 observer.onCompleted();
                                 // this will work if the sequence is
                                 // asynchronous, it
@@ -106,7 +104,7 @@ public final class OperationAny {
                 @Override
                 public void onCompleted() {
                     if (!hasEmitted.get()) {
-                        observer.onNext(isNotEmpty);
+                        observer.onNext(false);
                         observer.onCompleted();
                     }
                 }
@@ -164,13 +162,13 @@ public final class OperationAny {
 
         @Test
         public void testAnyWithPredicate1() {
-            Observable<Integer> w = Observable.from(1, 2);
+            Observable<Integer> w = Observable.from(1, 2, 3);
             Observable<Boolean> observable = Observable.create(any(w,
                     new Func1<Integer, Boolean>() {
 
                         @Override
                         public Boolean call(Integer t1) {
-                            return t1 < 3;
+                            return t1 < 2;
                         }
                     }));
 
@@ -192,7 +190,7 @@ public final class OperationAny {
 
                         @Override
                         public Boolean call(Integer t1) {
-                            return t1 < 3;
+                            return t1 < 1;
                         }
                     }));
 

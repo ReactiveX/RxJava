@@ -4192,8 +4192,6 @@ public class Observable<T> {
      * Returns an {@link Observable} that emits <code>true</code> if the source
      * {@link Observable} is not empty, otherwise <code>false</code>.
      * 
-     * @param source
-     *            The source {@link Observable} to check if not empty.
      * @return A subscription function for creating the target Observable.
      * @see <a href=
      *      "http://msdn.microsoft.com/en-us/library/hh229905(v=vs.103).aspx"
@@ -4204,17 +4202,18 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an {@link Observable} that emits <code>true</code> if all items
-     * of the source {@link Observable} satisfy the given condition, otherwise
-     * <code>false</code>.
+     * Returns an {@link Observable} that emits <code>true</code> if any element
+     * of the source {@link Observable} satisfies the given condition, otherwise
+     * <code>false</code>. Note: always emit <code>false</code> if the source
+     * {@link Observable} is empty.
      * 
      * @param predicate
-     *            The condition all items have to satisfy.
+     *            The condition to test every element.
      * @return A subscription function for creating the target Observable.
-     * 
      * @see <a href=
      *      "http://msdn.microsoft.com/en-us/library/hh211993(v=vs.103).aspx"
-     *      >MSDN: Observable.Any</a>
+     *      >MSDN: Observable.Any</a> Note: the description in this page is
+     *      wrong.
      */
     public Observable<Boolean> any(Func1<? super T, Boolean> predicate) {
         return create(OperationAny.any(this, predicate));
