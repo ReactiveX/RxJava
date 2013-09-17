@@ -158,47 +158,53 @@ class RxScalaDemo extends JUnitSuite {
     waitFor(o)
   }
   
-  def sampleAllUntilComplete[T](o: Observable[T], period: Duration): Observable[T] = {
-    for ((element, tick) <- o zip Observable.interval(period)) yield element
+  @Test def testGroupByThenFlatMap() {
+    val m = Observable(1, 2, 3, 4)
+    val g = m.groupBy(i => i % 2)
+    val t = g.flatMap((p: (Int, Observable[Int])) => p._2)
+    assertEquals(List(1, 2, 3, 4), t.toBlockingObservable.toList)    
   }
   
-  @Ignore //TODO
+  @Test def testGroupByThenFlatMapByForComprehension() {
+    val m = Observable(1, 2, 3, 4)
+    val g = m.groupBy(i => i % 2)
+    val t = for ((i, o) <- g; n <- o) yield n
+    assertEquals(List(1, 2, 3, 4), t.toBlockingObservable.toList)    
+  }
+  
+  @Test def testGroupByThenFlatMapByForComprehensionWithTiming() {
+    val m = Observable.interval(100 millis).take(4)
+    val g = m.groupBy(i => i % 2)
+    val t = for ((i, o) <- g; n <- o) yield n
+    assertEquals(List(0, 1, 2, 3), t.toBlockingObservable.toList)    
+  }
+  
+  @Test def groupByExampleTest() {
+    val medalsByCountry = Olympics.mountainBikeMedals.groupBy(medal => medal.country)
+    
+    val firstMedalOfEachCountry =
+      medalsByCountry.flatMap((p: (String, Observable[Olympics.Medal])) => p._2.take(1))
+      
+    firstMedalOfEachCountry.subscribe(medal => {
+      println(s"${medal.country} wins its first medal in ${medal.year}")
+    })
+    
+    //waitFor(firstMedalOfEachCountry)
+    Thread.sleep(20000)
+  }
+  
+  @Ignore  // TODO this test one does not terminate!
   @Test def groupByExample() {
-    import Olympics._
-    // `: _*` converts list to varargs
-    val medals = Observable[Medal](Olympics.mountainBikeMedals : _*)
+    val medalsByCountry = Olympics.mountainBikeMedals.groupBy(medal => medal.country)
     
-    // 1 second = 4 years :D
-    val medalsByYear = sampleAllUntilComplete(medals.groupBy(_.year), 1 seconds)
+    val firstMedalOfEachCountry = 
+      for ((country, medals) <- medalsByCountry; firstMedal <- medals.take(1)) yield firstMedal
+      
+    firstMedalOfEachCountry.subscribe(medal => {
+      println(s"${medal.country} wins its first medal in ${medal.year}")
+    })
     
-    /*
-    val t = (for ((year, medals) <- medalsByYear) yield medals).flatMap(ms => ms)
-    t.subscribe(println(_))
-    */
-    
-    val timedMedals = for ((year, medals) <- medalsByYear; medal <- medals) yield medal 
-    
-    timedMedals.subscribe(println(_)) // doesn't print ???
-    
-    Thread.sleep(5000)
-    
-    /*
-    medalsByYear.subscribe(p => println(p._1))
-    
-    //waitFor(medalsByYear)
-    
-    val byCountry = medals.groupBy(_.country)
-    
-    def score(medals: Observable[Medal]) = medals.fold((0, 0, 0))((s, m) => (s, m.medal) match {
-      case ((gold, silver, bronze), "Gold") => (gold+1, silver, bronze)
-      case ((gold, silver, bronze), "Silver") => (gold, silver+1, bronze)
-      case ((gold, silver, bronze), "Bronze") => (gold, silver, bronze+1)
-    })    
-    
-    val scores = for ((country, medals) <- byCountry) yield (country, score(medals))
-    
-    println(scores.toBlockingObservable.toList)
-    */
+    waitFor(firstMedalOfEachCountry)
   }
   
   def output(s: String): Unit = println(s)
