@@ -191,6 +191,44 @@ class RxScalaDemo extends JUnitSuite {
     waitFor(firstMedalOfEachCountry)
   }
   
+  @Test def exampleWithoutPublish() {
+    val unshared = Observable(1 to 4)
+    unshared.subscribe(n => println(s"subscriber 1 gets $n"))
+    unshared.subscribe(n => println(s"subscriber 2 gets $n"))
+  }
+  
+  @Test def exampleWithPublish() {
+    val unshared = Observable(1 to 4)
+    val (startFunc, shared) = unshared.publish
+    shared.subscribe(n => println(s"subscriber 1 gets $n"))
+    shared.subscribe(n => println(s"subscriber 2 gets $n"))
+    startFunc()
+  }
+  
+  def doLater(waitTime: Duration, action: () => Unit): Unit = {
+    Observable.interval(waitTime).take(1).subscribe(_ => action())
+  }
+  
+  @Test def exampleWithoutReplay() {
+    val numbers = Observable.interval(1000 millis).take(6)
+    val (startFunc, sharedNumbers) = numbers.publish
+    sharedNumbers.subscribe(n => println(s"subscriber 1 gets $n"))
+    startFunc()
+    // subscriber 2 misses 0, 1, 2!
+    doLater(3500 millis, () => { sharedNumbers.subscribe(n => println(s"subscriber 2 gets $n")) })
+    waitFor(sharedNumbers)
+  }
+  
+  @Test def exampleWithReplay() {
+    val numbers = Observable.interval(1000 millis).take(6)
+    val (startFunc, sharedNumbers) = numbers.replay
+    sharedNumbers.subscribe(n => println(s"subscriber 1 gets $n"))
+    startFunc()
+    // subscriber 2 subscribes later but still gets all numbers
+    doLater(3500 millis, () => { sharedNumbers.subscribe(n => println(s"subscriber 2 gets $n")) })
+    waitFor(sharedNumbers)
+  }
+  
   def output(s: String): Unit = println(s)
   
   // blocks until obs has completed

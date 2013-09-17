@@ -20,7 +20,6 @@ package rx.lang.scala
 import org.scalatest.junit.JUnitSuite
 import scala.collection.Seq
 import rx.lang.scala.observables.BlockingObservable
-import rx.lang.scala.observables.ConnectableObservable
 
 
 /**
@@ -38,6 +37,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   import rx.util.functions._
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
+  import rx.lang.scala.subjects.Subject
   import rx.lang.scala.ImplicitFunctionConversions._
 
   /**
@@ -132,11 +132,13 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *            into
    * @param <R>
    *            result type
-   * @return a {@link ConnectableObservable} that upon connection causes the source Observable to
-   *         push results into the specified {@link Subject}
+   * @return a pair of a start function and an {@link Observable} such that when the start function
+   *         is called, the Observable starts to push results into the specified {@link Subject}
    */
-  // public <R> ConnectableObservable<R> multicast(Subject<T, R> subject) TODO
-  
+  def multicast[R](subject: Subject[T, R]): (() => Subscription, Observable[R]) = {
+    val javaCO = asJava.multicast[R](subject)
+    (() => javaCO.connect(), Observable[R](javaCO))
+  }
   
   /**
    * Returns an Observable that first emits the items emitted by this, and then the items emitted
@@ -904,11 +906,12 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.png">
    * 
-   * @return a {@link ConnectableObservable} that upon connection causes the source Observable to
-   *         emit items to its {@link Observer}s
+   * @return a pair of a start function and an {@link Observable} such that when the start function
+   *         is called, the Observable starts to emit items to its {@link Observer}s
    */
-  def replay(): ConnectableObservable[T] = {
-    new ConnectableObservable[T](asJava.replay())
+  def replay(): (() => Subscription, Observable[T]) = {
+    val javaCO = asJava.replay()
+    (() => javaCO.connect(), Observable[T](javaCO))
   }
 
   /**
@@ -937,11 +940,12 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * <p>
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/publishConnect.png">
    * 
-   * @return a {@link ConnectableObservable} that upon connection causes the source Observable to
-   *         emit items to its {@link Observer}s
+   * @return a pair of a start function and an {@link Observable} such that when the start function
+   *         is called, the Observable starts to emit items to its {@link Observer}s
    */
-  def publish: ConnectableObservable[T] = {
-    new ConnectableObservable[T](asJava.publish())
+  def publish: (() => Subscription, Observable[T]) = {
+    val javaCO = asJava.publish()
+    (() => javaCO.connect(), Observable[T](javaCO))
   }
 
   // There is no aggregate function with signature
