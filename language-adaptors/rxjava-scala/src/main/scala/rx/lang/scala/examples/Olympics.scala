@@ -49,7 +49,12 @@ object Olympics {
   val neverUsedDummyMedal = Medal(3333, "?", "?", "?", "?", "?")
   
   def fourYearsEmpty: Observable[Medal] = {
-    Observable.interval(fourYears).take(1).map(i => neverUsedDummyMedal).filter(m => false)
+    // TODO this should return an observable which emits nothing during fourYears and then completes
+    // Because of https://github.com/Netflix/RxJava/issues/388, we get non-terminating tests
+    // So we don't use this:
+    // Observable.interval(fourYears).take(1).map(i => neverUsedDummyMedal).filter(m => false)
+    // But we just return empty, which completes immediately
+    Observable()
   }
   
 }

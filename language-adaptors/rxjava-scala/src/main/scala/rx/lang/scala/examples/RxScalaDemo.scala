@@ -136,7 +136,6 @@ class RxScalaDemo extends JUnitSuite {
   }
   
   @Test def testTwoSubscriptionsToOneInterval() {
-    // TODO this does not yet work as expected!
     val o = Observable.interval(100 millis).take(8)
     o.subscribe(
         i => println(s"${i}a (on thread #${Thread.currentThread().getId()})")
@@ -178,22 +177,7 @@ class RxScalaDemo extends JUnitSuite {
     val t = for ((i, o) <- g; n <- o) yield n
     assertEquals(List(0, 1, 2, 3), t.toBlockingObservable.toList)    
   }
-  
-  @Test def groupByExampleTest() {
-    val medalsByCountry = Olympics.mountainBikeMedals.groupBy(medal => medal.country)
-    
-    val firstMedalOfEachCountry =
-      medalsByCountry.flatMap((p: (String, Observable[Olympics.Medal])) => p._2.take(1))
-      
-    firstMedalOfEachCountry.subscribe(medal => {
-      println(s"${medal.country} wins its first medal in ${medal.year}")
-    })
-    
-    //waitFor(firstMedalOfEachCountry)
-    Thread.sleep(20000)
-  }
-  
-  @Ignore  // TODO this test one does not terminate!
+
   @Test def groupByExample() {
     val medalsByCountry = Olympics.mountainBikeMedals.groupBy(medal => medal.country)
     
