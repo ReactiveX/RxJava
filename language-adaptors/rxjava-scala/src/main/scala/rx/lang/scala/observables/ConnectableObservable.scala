@@ -20,6 +20,6 @@ class ConnectableObservable[+T](val asJava: rx.observables.ConnectableObservable
   import rx.lang.scala._
   import rx.lang.scala.util._
   import rx.{Observable => JObservable}
-  import rx.lang.scala.internal.ImplicitFunctionConversions._
+  import rx.lang.scala.ImplicitFunctionConversions._
   
 }

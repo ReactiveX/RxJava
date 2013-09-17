@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.lang.scala.internal
+package rx.lang.scala
 
 
 import java.{lang => jlang}
@@ -25,10 +25,6 @@ import rx.util.functions.Func2
 import rx.util.functions.Func3
 import rx.util.functions.Func4
 import java.{lang => jlang}
-import rx.Observer
-import rx.Subscription
-import java.{lang => jlang}
-import scala.language.implicitConversions
 
 /**
  * These function conversions are only used by the ScalaAdapter, users of RxScala don't need them.

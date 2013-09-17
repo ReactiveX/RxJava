@@ -38,7 +38,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   import rx.util.functions._
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
-  import rx.lang.scala.internal.ImplicitFunctionConversions._
+  import rx.lang.scala.ImplicitFunctionConversions._
 
   /**
    * An {@link Observer} must call an Observable's {@code subscribe} method in order to
@@ -1456,7 +1456,7 @@ object Observable {
   import rx.{Observable => JObservable}
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
-  import rx.lang.scala.internal.ImplicitFunctionConversions._
+  import rx.lang.scala.ImplicitFunctionConversions._
  
   private[scala] 
   def jObsOfListToScObsOfSeq[T](jObs: rx.Observable[_ <: java.util.List[T]]): Observable[Seq[T]] = {
@@ -1774,7 +1774,7 @@ object Observable {
 // "implementation restriction: nested class is not allowed in value class.
 // This restriction is planned to be removed in subsequent releases."  
 class WithFilter[+T] private[scala] (p: T => Boolean, asJava: rx.Observable[_ <: T]) {
-  import rx.lang.scala.internal.ImplicitFunctionConversions._
+  import rx.lang.scala.ImplicitFunctionConversions._
   
   def map[B](f: T => B): Observable[B] = {
     Observable[B](asJava.filter(p).map[B](f))

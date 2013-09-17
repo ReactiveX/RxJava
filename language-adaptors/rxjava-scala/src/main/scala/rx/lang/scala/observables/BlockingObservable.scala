@@ -16,7 +16,7 @@
 package rx.lang.scala.observables
 
 import scala.collection.JavaConverters._
-import rx.lang.scala.internal.ImplicitFunctionConversions._
+import rx.lang.scala.ImplicitFunctionConversions._
 
 class BlockingObservable[+T](val asJava: rx.observables.BlockingObservable[_ <: T]) 
   extends AnyVal 
