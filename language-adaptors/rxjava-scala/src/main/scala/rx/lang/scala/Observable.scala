@@ -20,7 +20,6 @@ package rx.lang.scala
 import org.scalatest.junit.JUnitSuite
 import scala.collection.Seq
 import rx.lang.scala.observables.BlockingObservable
-import rx.lang.scala.observables.ConnectableObservable
 
 
 /**
@@ -38,7 +37,8 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   import rx.util.functions._
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
-  import rx.lang.scala.internal.ImplicitFunctionConversions._
+  import rx.lang.scala.subjects.Subject
+  import rx.lang.scala.ImplicitFunctionConversions._
 
   /**
    * An {@link Observer} must call an Observable's {@code subscribe} method in order to
@@ -132,11 +132,13 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *            into
    * @param <R>
    *            result type
-   * @return a {@link ConnectableObservable} that upon connection causes the source Observable to
-   *         push results into the specified {@link Subject}
+   * @return a pair of a start function and an {@link Observable} such that when the start function
+   *         is called, the Observable starts to push results into the specified {@link Subject}
    */
-  // public <R> ConnectableObservable<R> multicast(Subject<T, R> subject) TODO
-  
+  def multicast[R](subject: Subject[T, R]): (() => Subscription, Observable[R]) = {
+    val javaCO = asJava.multicast[R](subject)
+    (() => javaCO.connect(), Observable[R](javaCO))
+  }
   
   /**
    * Returns an Observable that first emits the items emitted by this, and then the items emitted
@@ -904,11 +906,12 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.png">
    * 
-   * @return a {@link ConnectableObservable} that upon connection causes the source Observable to
-   *         emit items to its {@link Observer}s
+   * @return a pair of a start function and an {@link Observable} such that when the start function
+   *         is called, the Observable starts to emit items to its {@link Observer}s
    */
-  def replay(): ConnectableObservable[T] = {
-    new ConnectableObservable[T](asJava.replay())
+  def replay(): (() => Subscription, Observable[T]) = {
+    val javaCO = asJava.replay()
+    (() => javaCO.connect(), Observable[T](javaCO))
   }
 
   /**
@@ -937,11 +940,12 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * <p>
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/publishConnect.png">
    * 
-   * @return a {@link ConnectableObservable} that upon connection causes the source Observable to
-   *         emit items to its {@link Observer}s
+   * @return a pair of a start function and an {@link Observable} such that when the start function
+   *         is called, the Observable starts to emit items to its {@link Observer}s
    */
-  def publish: ConnectableObservable[T] = {
-    new ConnectableObservable[T](asJava.publish())
+  def publish: (() => Subscription, Observable[T]) = {
+    val javaCO = asJava.publish()
+    (() => javaCO.connect(), Observable[T](javaCO))
   }
 
   // There is no aggregate function with signature
@@ -1215,51 +1219,25 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   // because we can just use ++ instead 
   
   /**
-   * Groups the items emitted by an Observable according to a specified criterion, and emits these
-   * grouped items as {@link GroupedObservable}s, one GroupedObservable per group.
-   * <p>
-   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/groupBy.png">
+   * Groups the items emitted by this Observable according to a specified discriminator function.
    * 
-   * @param keySelector
+   * @param f
    *            a function that extracts the key from an item
-   * @param elementSelector
-   *            a function to map a source item to an item in a {@link GroupedObservable}
    * @param <K>
-   *            the key type
-   * @param <R>
-   *            the type of items emitted by the resulting {@link GroupedObservable}s
-   * @return an Observable that emits {@link GroupedObservable}s, each of which corresponds to a
-   *         unique key value and emits items representing items from the source Observable that
-   *         share that key value
+   *            the type of keys returned by the discriminator function.
+   * @return an Observable that emits {@code (key, observable)} pairs, where {@code observable}
+   *         contains all items for which {@code f} returned {@code key}.
    */
-  /* TODO make a Scala GroupedObservable and groupBy
-  def groupBy[K,R](keySelector: T => K, elementSelector: T => R ): Observable[GroupedObservable[K,R]] = {
-    ???
+  def groupBy[K](f: T => K): Observable[(K, Observable[T])] = {
+    val o1 = asJava.groupBy[K](f) : rx.Observable[_ <: rx.observables.GroupedObservable[K, _ <: T]] 
+    val func = (o: rx.observables.GroupedObservable[K, _ <: T]) => (o.getKey(), Observable[T](o))
+    Observable[(K, Observable[T])](o1.map[(K, Observable[T])](func))
   }
-  */
+
+  // There's no method corresponding to
   // public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) 
-
-  /**
-   * Groups the items emitted by an Observable according to a specified criterion, and emits these
-   * grouped items as {@link GroupedObservable}s, one GroupedObservable per group.
-   * <p>
-   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/groupBy.png">
-   * 
-   * @param keySelector
-   *            a function that extracts the key for each item
-   * @param <K>
-   *            the key type
-   * @return an Observable that emits {@link GroupedObservable}s, each of which corresponds to a
-   *         unique key value and emits items representing items from the source Observable that
-   *         share that key value
-   */
-  /* TODO 
-  def groupBy[K](keySelector: T => K ): Observable[GroupedObservable[K,T]] = {
-    ???
-  }
-  */
-  // public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) 
-
+  // because this can be obtained by combining groupBy and map (as in Scala)
+  
   /**
    * Given an Observable that emits Observables, creates a single Observable that
    * emits the items emitted by the most recently published of those Observables.
@@ -1482,7 +1460,7 @@ object Observable {
   import rx.{Observable => JObservable}
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
-  import rx.lang.scala.internal.ImplicitFunctionConversions._
+  import rx.lang.scala.ImplicitFunctionConversions._
  
   private[scala] 
   def jObsOfListToScObsOfSeq[T](jObs: rx.Observable[_ <: java.util.List[T]]): Observable[Seq[T]] = {
@@ -1800,7 +1778,7 @@ object Observable {
 // "implementation restriction: nested class is not allowed in value class.
 // This restriction is planned to be removed in subsequent releases."  
 class WithFilter[+T] private[scala] (p: T => Boolean, asJava: rx.Observable[_ <: T]) {
-  import rx.lang.scala.internal.ImplicitFunctionConversions._
+  import rx.lang.scala.ImplicitFunctionConversions._
   
   def map[B](f: T => B): Observable[B] = {
     Observable[B](asJava.filter(p).map[B](f))
@@ -1852,7 +1830,7 @@ class UnitTestSuite extends JUnitSuite {
   
   @Test def testTest() = {
     val a: Observable[Int] = Observable()
-    assertEquals(4, Observable(1, 2, 3, 4).toBlockingObservable.last)
+    assertEquals(4, Observable(1, 2, 3, 4).toBlockingObservable.toIterable.last)
   }
   
 }
