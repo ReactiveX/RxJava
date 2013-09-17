@@ -23,7 +23,7 @@ import org.junit.{Before, Test, Ignore}
 import org.junit.Assert._
 import rx.lang.scala.concurrency.NewThreadScheduler
 
-//@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
+@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
 
   @Test def intervalExample() {
@@ -229,11 +229,17 @@ class RxScalaDemo extends JUnitSuite {
     waitFor(sharedNumbers)
   }
   
+  @Test def testSingleOption() {
+    assertEquals(None,    Observable(1, 2).toBlockingObservable.singleOption)
+    assertEquals(Some(1), Observable(1)   .toBlockingObservable.singleOption)
+    assertEquals(None,    Observable()    .toBlockingObservable.singleOption)
+  }  
+    
   def output(s: String): Unit = println(s)
   
   // blocks until obs has completed
   def waitFor[T](obs: Observable[T]): Unit = {
-    obs.toBlockingObservable.last
+    obs.toBlockingObservable.toIterable.last
   }
   
 }

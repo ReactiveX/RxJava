@@ -1830,7 +1830,7 @@ class UnitTestSuite extends JUnitSuite {
   
   @Test def testTest() = {
     val a: Observable[Int] = Observable()
-    assertEquals(4, Observable(1, 2, 3, 4).toBlockingObservable.last)
+    assertEquals(4, Observable(1, 2, 3, 4).toBlockingObservable.toIterable.last)
   }
   
 }
