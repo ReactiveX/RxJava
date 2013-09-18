@@ -38,6 +38,7 @@ import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinctUntilChanged;
 import rx.operators.OperationDistinct;
+import rx.operators.OperationElementAt;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFirstOrDefault;
@@ -4186,5 +4187,45 @@ public class Observable<T> {
         Package p = o.getClass().getPackage(); // it can be null
         return p != null && p.getName().startsWith("rx.operators");
     }
+    
+    /**
+     * Returns the element at a specified index in a sequence.
+     * 
+     * @param index
+     *            The zero-based index of the element to retrieve.
+     * 
+     * @return An observable sequence that produces the element at the specified
+     *         position in the source sequence.
+     * 
+     * @throws IndexOutOfBoundsException
+     *             Index is greater than or equal to the number of elements in
+     *             the source sequence.
+     * @throws IndexOutOfBoundsException
+     *             Index is less than 0.
+     */
+    public Observable<T> elementAt(int index) {
+        return create(OperationElementAt.elementAt(this, index));
+    }
 
+    /**
+     * Returns the element at a specified index in a sequence or the default
+     * value if the index is out of range.
+     * 
+     * @param index
+     *            The zero-based index of the element to retrieve.
+     * @param defaultValue
+     *            The default value.
+     * 
+     * @return An observable sequence that produces the element at the specified
+     *         position in the source sequence, or the default value if the
+     *         index is outside the bounds of the source sequence.
+     * 
+     * @throws IndexOutOfBoundsException
+     *             Index is less than 0.
+     */
+    public Observable<T> elementAtOrDefault(int index, T defaultValue) {
+        return create(OperationElementAt.elementAtOrDefault(this, index,
+                defaultValue));
+    }
+    
 }
