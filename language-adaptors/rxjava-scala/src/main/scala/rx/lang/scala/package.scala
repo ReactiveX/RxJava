@@ -53,12 +53,6 @@ rx.plugins.RxJavaErrorHandler
 rx.plugins.RxJavaObservableExecutionHook
 rx.plugins.RxJavaPlugins
 
-rx.subjects.AsyncSubject
-rx.subjects.BehaviorSubject
-rx.subjects.PublishSubject
-rx.subjects.ReplaySubject
-rx.subjects.Subject
-
 rx.subscriptions.BooleanSubscription
 rx.subscriptions.CompositeSubscription
 rx.subscriptions.Subscriptions

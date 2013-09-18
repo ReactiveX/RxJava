@@ -136,7 +136,6 @@ class RxScalaDemo extends JUnitSuite {
   }
   
   @Test def testTwoSubscriptionsToOneInterval() {
-    // TODO this does not yet work as expected!
     val o = Observable.interval(100 millis).take(8)
     o.subscribe(
         i => println(s"${i}a (on thread #${Thread.currentThread().getId()})")
@@ -158,11 +157,89 @@ class RxScalaDemo extends JUnitSuite {
     waitFor(o)
   }
   
+  @Test def testGroupByThenFlatMap() {
+    val m = Observable(1, 2, 3, 4)
+    val g = m.groupBy(i => i % 2)
+    val t = g.flatMap((p: (Int, Observable[Int])) => p._2)
+    assertEquals(List(1, 2, 3, 4), t.toBlockingObservable.toList)    
+  }
+  
+  @Test def testGroupByThenFlatMapByForComprehension() {
+    val m = Observable(1, 2, 3, 4)
+    val g = m.groupBy(i => i % 2)
+    val t = for ((i, o) <- g; n <- o) yield n
+    assertEquals(List(1, 2, 3, 4), t.toBlockingObservable.toList)    
+  }
+  
+  @Test def testGroupByThenFlatMapByForComprehensionWithTiming() {
+    val m = Observable.interval(100 millis).take(4)
+    val g = m.groupBy(i => i % 2)
+    val t = for ((i, o) <- g; n <- o) yield n
+    assertEquals(List(0, 1, 2, 3), t.toBlockingObservable.toList)    
+  }
+
+  @Test def groupByExample() {
+    val medalsByCountry = Olympics.mountainBikeMedals.groupBy(medal => medal.country)
+    
+    val firstMedalOfEachCountry = 
+      for ((country, medals) <- medalsByCountry; firstMedal <- medals.take(1)) yield firstMedal
+      
+    firstMedalOfEachCountry.subscribe(medal => {
+      println(s"${medal.country} wins its first medal in ${medal.year}")
+    })
+    
+    waitFor(firstMedalOfEachCountry)
+  }
+  
+  @Test def exampleWithoutPublish() {
+    val unshared = Observable(1 to 4)
+    unshared.subscribe(n => println(s"subscriber 1 gets $n"))
+    unshared.subscribe(n => println(s"subscriber 2 gets $n"))
+  }
+  
+  @Test def exampleWithPublish() {
+    val unshared = Observable(1 to 4)
+    val (startFunc, shared) = unshared.publish
+    shared.subscribe(n => println(s"subscriber 1 gets $n"))
+    shared.subscribe(n => println(s"subscriber 2 gets $n"))
+    startFunc()
+  }
+  
+  def doLater(waitTime: Duration, action: () => Unit): Unit = {
+    Observable.interval(waitTime).take(1).subscribe(_ => action())
+  }
+  
+  @Test def exampleWithoutReplay() {
+    val numbers = Observable.interval(1000 millis).take(6)
+    val (startFunc, sharedNumbers) = numbers.publish
+    sharedNumbers.subscribe(n => println(s"subscriber 1 gets $n"))
+    startFunc()
+    // subscriber 2 misses 0, 1, 2!
+    doLater(3500 millis, () => { sharedNumbers.subscribe(n => println(s"subscriber 2 gets $n")) })
+    waitFor(sharedNumbers)
+  }
+  
+  @Test def exampleWithReplay() {
+    val numbers = Observable.interval(1000 millis).take(6)
+    val (startFunc, sharedNumbers) = numbers.replay
+    sharedNumbers.subscribe(n => println(s"subscriber 1 gets $n"))
+    startFunc()
+    // subscriber 2 subscribes later but still gets all numbers
+    doLater(3500 millis, () => { sharedNumbers.subscribe(n => println(s"subscriber 2 gets $n")) })
+    waitFor(sharedNumbers)
+  }
+  
+  @Test def testSingleOption() {
+    assertEquals(None,    Observable(1, 2).toBlockingObservable.singleOption)
+    assertEquals(Some(1), Observable(1)   .toBlockingObservable.singleOption)
+    assertEquals(None,    Observable()    .toBlockingObservable.singleOption)
+  }  
+    
   def output(s: String): Unit = println(s)
   
   // blocks until obs has completed
   def waitFor[T](obs: Observable[T]): Unit = {
-    obs.toBlockingObservable.last
+    obs.toBlockingObservable.toIterable.last
   }
   
 }

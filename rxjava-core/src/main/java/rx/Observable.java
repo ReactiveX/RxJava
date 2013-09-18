@@ -397,7 +397,7 @@ public class Observable<T> {
      * @return a {@link ConnectableObservable} that upon connection causes the source Observable to
      *         push results into the specified {@link Subject}
      */
-    public <R> ConnectableObservable<R> multicast(Subject<T, R> subject) {
+    public <R> ConnectableObservable<R> multicast(Subject<? super T, ? extends R> subject) {
         return OperationMulticast.multicast(this, subject);
     }
 

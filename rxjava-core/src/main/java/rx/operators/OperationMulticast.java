@@ -27,7 +27,7 @@ import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
 public class OperationMulticast {
-    public static <T, R> ConnectableObservable<R> multicast(Observable<? extends T> source, final Subject<T, R> subject) {
+    public static <T, R> ConnectableObservable<R> multicast(Observable<? extends T> source, final Subject<? super T, ? extends R> subject) {
         return new MulticastConnectableObservable<T, R>(source, subject);
     }
 
@@ -35,11 +35,11 @@ public class OperationMulticast {
         private final Object lock = new Object();
 
         private final Observable<? extends T> source;
-        private final Subject<T, R> subject;
+        private final Subject<? super T, ? extends R> subject;
 
         private Subscription subscription;
 
-        public MulticastConnectableObservable(Observable<? extends T> source, final Subject<T, R> subject) {
+        public MulticastConnectableObservable(Observable<? extends T> source, final Subject<? super T, ? extends R> subject) {
             super(new OnSubscribeFunc<R>() {
                 @Override
                 public Subscription onSubscribe(Observer<? super R> observer) {
