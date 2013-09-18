@@ -233,7 +233,33 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(None,    Observable(1, 2).toBlockingObservable.singleOption)
     assertEquals(Some(1), Observable(1)   .toBlockingObservable.singleOption)
     assertEquals(None,    Observable()    .toBlockingObservable.singleOption)
-  }  
+  }
+  
+  // We can't put a general average method into Observable.scala, because Scala's Numeric
+  // does not have scalar multiplication (we would need to calculate (1.0/numberOfElements)*sum)
+  def doubleAverage(o: Observable[Double]): Observable[Double] = {
+    for ((finalSum, finalCount) <- o.fold((0.0, 0))({case ((sum, count), elem) => (sum+elem, count+1)}))
+      yield finalSum / finalCount
+  }
+  
+  @Test def averageExample() {
+    println(doubleAverage(Observable()).toBlockingObservable.single)
+    println(doubleAverage(Observable(0)).toBlockingObservable.single)
+    println(doubleAverage(Observable(4.44)).toBlockingObservable.single)
+    println(doubleAverage(Observable(1, 2, 3.5)).toBlockingObservable.single)
+  }
+  
+  @Test def testSum() {
+    assertEquals(10, Observable(1, 2, 3, 4).sum.toBlockingObservable.single)
+    assertEquals(6, Observable(4, 2).sum.toBlockingObservable.single)
+    assertEquals(0, Observable[Int]().sum.toBlockingObservable.single)
+  }
+  
+  @Test def testProduct() {
+    assertEquals(24, Observable(1, 2, 3, 4).product.toBlockingObservable.single)
+    assertEquals(8, Observable(4, 2).product.toBlockingObservable.single)
+    assertEquals(1, Observable[Int]().product.toBlockingObservable.single)
+  }
     
   def output(s: String): Unit = println(s)
   

@@ -12,6 +12,10 @@ import java.lang.reflect.Modifier
 class CompletenessTest extends JUnitSuite {
   
   val unnecessary = "[considered unnecessary in Scala land]"
+    
+  val averageProblem = "[We can't have a general average method because Scala's Numeric does not have " +
+     "scalar multiplication (we would need to calculate (1.0/numberOfElements)*sum). " + 
+     "You can use fold instead to accumulate sum and numberOfElements and divide at the end.]"
   
   val correspondence = defaultMethodCorrespondence ++ Map(
       // manually added entries for Java instance methods
@@ -44,6 +48,10 @@ class CompletenessTest extends JUnitSuite {
       "window(Long, Long, TimeUnit, Scheduler)" -> "window(Duration, Duration, Scheduler)",
       
       // manually added entries for Java static methods
+      "average(Observable[Integer])" -> averageProblem,
+      "averageDoubles(Observable[Double])" -> averageProblem,
+      "averageFloats(Observable[Float])" -> averageProblem,
+      "averageLongs(Observable[Long])" -> averageProblem,
       "create(OnSubscribeFunc[T])" -> "apply(Observer[T] => Subscription)",
       "defer(Func0[_ <: Observable[_ <: T]])" -> "defer(=> Observable[T])",
       "empty()" -> "apply(T*)",
@@ -55,6 +63,10 @@ class CompletenessTest extends JUnitSuite {
       "range(Int, Int)" -> "apply(Range)",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "[use (first zip second) map (p => p._1 == p._2)]",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T], Func2[_ >: T, _ >: T, Boolean])" -> "[use (first zip second) map (p => equality(p._1, p._2))]",
+      "sum(Observable[Integer])" -> "sum(Numeric[U])",
+      "sumDoubles(Observable[Double])" -> "sum(Numeric[U])",
+      "sumFloats(Observable[Float])" -> "sum(Numeric[U])",
+      "sumLongs(Observable[Long])" -> "sum(Numeric[U])",
       "switchDo(Observable[_ <: Observable[_ <: T]])" -> "switch",
       "synchronize(Observable[_ <: T])" -> "synchronize",
       "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method zip and map]"

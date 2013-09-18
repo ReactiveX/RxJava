@@ -198,8 +198,20 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    */
   def zip[U](that: Observable[U]): Observable[(T, U)] = {
     Observable[(T, U)](JObservable.zip[T, U, (T, U)](this.asJava, that.asJava, (t: T, u: U) => (t, u)))
-  }  
+  }
   
+  /**
+   * Zips this Observable with its indices.
+   * 
+   * @return An Observable emitting pairs consisting of all elements of this Observable paired with 
+   *         their index. Indices start at 0.
+   */
+  def zipWithIndex: Observable[(T, Int)] = {
+    val fScala: (T, Integer) => (T, Int) = (elem: T, index: Integer) => (elem, index)
+    val fJava : Func2[_ >: T, Integer, _ <: (T, Int)] = fScala
+    Observable[(T, Int)](asJava.mapWithIndex[(T, Int)](fJava))
+  }
+    
   /**
    * Creates an Observable which produces buffers of collected values.
    * 
@@ -1384,7 +1396,27 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def throttleLast(intervalDuration: Duration, scheduler: Scheduler): Observable[T] = {
     Observable[T](asJava.throttleLast(intervalDuration.length, intervalDuration.unit, scheduler))
   }
+
+  /**
+   * Returns an Observable that sums up the elements of this Observable.
+   * 
+   * @return an Observable emitting the sum of all the elements of the source Observable
+   *         as its single item.
+   */
+  def sum[U >: T](implicit num: Numeric[U]): Observable[U] = {
+    fold(num.zero)(num.plus)
+  }
   
+  /**
+   * Returns an Observable that multiplies up the elements of this Observable.
+   * 
+   * @return an Observable emitting the product of all the elements of the source Observable
+   *         as its single item.
+   */
+  def product[U >: T](implicit num: Numeric[U]): Observable[U] = {
+    fold(num.one)(num.times)
+  }
+
   /**
    * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking
    * operators).
