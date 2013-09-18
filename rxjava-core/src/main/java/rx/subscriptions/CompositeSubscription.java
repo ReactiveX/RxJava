@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,16 +42,22 @@ public class CompositeSubscription implements Subscription {
      * TODO evaluate whether use of synchronized is a performance issue here and if it's worth using an atomic state machine or other non-locking approach
      */
     private AtomicBoolean unsubscribed = new AtomicBoolean(false);
-    private final LinkedBlockingDeque<Subscription> subscriptions = new LinkedBlockingDeque<Subscription>();
+    private final ConcurrentHashMap<Subscription, Boolean> subscriptions = new ConcurrentHashMap<Subscription, Boolean>();
 
     public CompositeSubscription(List<Subscription> subscriptions) {
-        this.subscriptions.addAll(subscriptions);
+        for (Subscription s : subscriptions) {
+            this.subscriptions.put(s, Boolean.TRUE);
+        }
     }
 
     public CompositeSubscription(Subscription... subscriptions) {
         for (Subscription s : subscriptions) {
-            this.subscriptions.add(s);
+            this.subscriptions.put(s, Boolean.TRUE);
         }
+    }
+
+    public void remove(Subscription s) {
+        this.subscriptions.remove(s);
     }
 
     public boolean isUnsubscribed() {
@@ -62,24 +68,15 @@ public class CompositeSubscription implements Subscription {
         if (unsubscribed.get()) {
             s.unsubscribe();
         } else {
-            subscriptions.add(s);
+            subscriptions.put(s, Boolean.TRUE);
         }
-    }
-
-    /**
-     * Remove the last Subscription that was added.
-     * 
-     * @return Subscription or null if none exists
-     */
-    public synchronized Subscription removeLast() {
-        return subscriptions.pollLast();
     }
 
     @Override
     public synchronized void unsubscribe() {
         if (unsubscribed.compareAndSet(false, true)) {
             Collection<Throwable> es = null;
-            for (Subscription s : subscriptions) {
+            for (Subscription s : subscriptions.keySet()) {
                 try {
                     s.unsubscribe();
                 } catch (Throwable e) {

@@ -16,21 +16,28 @@
 package rx.operators;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Notification;
 import rx.Observer;
 import rx.Scheduler;
-import rx.util.functions.Action0;
+import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
+import rx.util.functions.Func2;
 
 /* package */class ScheduledObserver<T> implements Observer<T> {
     private final Observer<? super T> underlying;
     private final Scheduler scheduler;
+    private final CompositeSubscription parentSubscription;
+    private final EventLoop eventLoop = new EventLoop();
 
     private final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
-    private final AtomicInteger counter = new AtomicInteger(0);
+    private final AtomicBoolean started = new AtomicBoolean();
 
-    public ScheduledObserver(Observer<? super T> underlying, Scheduler scheduler) {
+    public ScheduledObserver(CompositeSubscription s, Observer<? super T> underlying, Scheduler scheduler) {
+        this.parentSubscription = s;
         this.underlying = underlying;
         this.scheduler = scheduler;
     }
@@ -50,46 +57,83 @@ import rx.util.functions.Action0;
         enqueue(new Notification<T>(args));
     }
 
+    final AtomicInteger counter = new AtomicInteger();
+
     private void enqueue(Notification<? extends T> notification) {
-        // this must happen before 'counter' is used to provide synchronization between threads
+        // this must happen before synchronization between threads
         queue.offer(notification);
 
-        // we now use counter to atomically determine if we need to start processing or not
-        // it will be 0 if it's the first notification or the scheduler has finished processing work
-        // and we need to start doing it again
-        if (counter.getAndIncrement() == 0) {
-            processQueue();
+        /**
+         * If the counter is currently at 0 (before incrementing with this addition)
+         * we will schedule the work.
+         */
+        if (counter.getAndIncrement() <= 0) {
+            if (!started.get() && started.compareAndSet(false, true)) {
+                // first time we use the parent scheduler to start the event loop
+                MultipleAssignmentSubscription recursiveSubscription = new MultipleAssignmentSubscription();
+                parentSubscription.add(scheduler.schedule(recursiveSubscription, eventLoop));
+                parentSubscription.add(recursiveSubscription);
+            } else {
+                // subsequent times we reschedule existing one
+                eventLoop.reschedule();
+            }
         }
     }
 
-    private void processQueue() {
-        scheduler.schedule(new Action0() {
-            @Override
-            public void call() {
-                Notification<? extends T> not = queue.poll();
+    private class EventLoop implements Func2<Scheduler, MultipleAssignmentSubscription, Subscription> {
 
-                switch (not.getKind()) {
-                case OnNext:
-                    underlying.onNext(not.getValue());
-                    break;
-                case OnError:
-                    underlying.onError(not.getThrowable());
-                    break;
-                case OnCompleted:
-                    underlying.onCompleted();
-                    break;
-                default:
-                    throw new IllegalStateException("Unknown kind of notification " + not);
+        volatile Scheduler _recursiveScheduler;
+        volatile MultipleAssignmentSubscription _recursiveSubscription;
 
-                }
+        public void reschedule() {
+            _recursiveSubscription.setSubscription(_recursiveScheduler.schedule(_recursiveSubscription, this));
+        }
 
-                // decrement count and if we still have work to do
-                // recursively schedule ourselves to process again
-                if (counter.decrementAndGet() > 0) {
-                    scheduler.schedule(this);
-                }
-
+        @Override
+        public Subscription call(Scheduler s, MultipleAssignmentSubscription recursiveSubscription) {
+            /*
+             * --------------------------------------------------------------------------------------
+             * Set these the first time through so we can externally trigger recursive execution again
+             */
+            if (_recursiveScheduler == null) {
+                _recursiveScheduler = s;
             }
-        });
+            if (_recursiveSubscription == null) {
+                _recursiveSubscription = recursiveSubscription;
+            }
+            /*
+             * Back to regular flow
+             * --------------------------------------------------------------------------------------
+             */
+
+            do {
+                Notification<? extends T> notification = queue.poll();
+                // if we got a notification, send it
+                if (notification != null) {
+
+                    // if unsubscribed stop working
+                    if (parentSubscription.isUnsubscribed()) {
+                        return parentSubscription;
+                    }
+                    // process notification
+
+                    switch (notification.getKind()) {
+                    case OnNext:
+                        underlying.onNext(notification.getValue());
+                        break;
+                    case OnError:
+                        underlying.onError(notification.getThrowable());
+                        break;
+                    case OnCompleted:
+                        underlying.onCompleted();
+                        break;
+                    default:
+                        throw new IllegalStateException("Unknown kind of notification " + notification);
+                    }
+                }
+            } while (counter.decrementAndGet() > 0);
+
+            return parentSubscription;
+        }
     }
 }
