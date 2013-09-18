@@ -13,8 +13,8 @@ class CompletenessTest extends JUnitSuite {
   
   val unnecessary = "[considered unnecessary in Scala land]"
   
-  val correspondence = defaultInstanceMethodCorrespondence ++ Map(
-      // manually added entries
+  val correspondence = defaultMethodCorrespondence ++ Map(
+      // manually added entries for Java instance methods
       "aggregate(Func2[T, T, T])" -> "reduce((U, U) => U)",
       "aggregate(R, Func2[R, _ >: T, R])" -> "fold(R)((R, T) => R)",
       "all(Func1[_ >: T, Boolean])" -> "forall(T => Boolean)",
@@ -40,11 +40,38 @@ class CompletenessTest extends JUnitSuite {
       "toSortedList(Func2[_ >: T, _ >: T, Integer])" -> unnecessary,
       "where(Func1[_ >: T, Boolean])" -> "filter(T => Boolean)",
       "window(Long, Long, TimeUnit)" -> "window(Duration, Duration)",
-      "window(Long, Long, TimeUnit, Scheduler)" -> "window(Duration, Duration, Scheduler)"
+      "window(Long, Long, TimeUnit, Scheduler)" -> "window(Duration, Duration, Scheduler)",
+      
+      // manually added entries for Java static methods
+      "create(OnSubscribeFunc[T])" -> "apply(Observer[T] => Subscription)",
+      "defer(Func0[_ <: Observable[_ <: T]])" -> "defer(=> Observable[T])",
+      "empty()" -> "apply(T*)",
+      "error(Throwable)" -> "apply(Throwable)",
+      "from(Array[T])" -> "apply(T*)",
+      "from(Iterable[_ <: T])" -> "apply(T*)", 
+      "merge(Observable[_ <: T], Observable[_ <: T])" -> "merge(Observable[T])",
+      "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[T])",
+      "range(Int, Int)" -> "apply(Range)",
+      "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "[use (first zip second) map (p => p._1 == p._2)]",
+      "sequenceEqual(Observable[_ <: T], Observable[_ <: T], Func2[_ >: T, _ >: T, Boolean])" -> "[use (first zip second) map (p => equality(p._1, p._2))]",
+      "switchDo(Observable[_ <: Observable[_ <: T]])" -> "switch",
+      "synchronize(Observable[_ <: T])" -> "synchronize",
+      "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method zip and map]"
   ) ++ List.iterate("T", 9)(s => s + ", T").map(
       // all 9 overloads of startWith:
       "startWith(" + _ + ")" -> "[unnecessary because we can just use ++ instead]"
-  ).toMap
+  ).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
+      // concat 2-9
+      "concat(" + _ + ")" -> "[unnecessary because we can use ++ instead]"
+  ).drop(1).toMap ++ List.iterate("T", 10)(s => s + ", T").map(
+      // all 10 overloads of from:
+      "from(" + _ + ")" -> "apply(T*)"
+  ).toMap ++ (3 to 9).map(i => {
+    // zip3-9:
+    val obsArgs = (1 to i).map(j => s"Observable[_ <: T$j], ").mkString("")
+    val funcParams = (1 to i).map(j => s"_ >: T$j, ").mkString("")
+    ("zip(" + obsArgs + "Func" + i + "[" + funcParams + "_ <: R])", unnecessary)
+  }).toMap
     
   def removePackage(s: String) = s.replaceAll("(\\w+\\.)+(\\w+)", "$2")
   
@@ -71,20 +98,11 @@ class CompletenessTest extends JUnitSuite {
     .filter(! _.contains("$extension"))
   }
   
-  def getStaticJavaMethods(className: String): Iterable[String] = {
-    val c = Class.forName(className)
-    for (method <- c.getMethods() if Modifier.isStatic(method.getModifiers)) yield {
-      method.getName + method.getParameterTypes().map(_.getSimpleName()).mkString("(", ", ", ")")
-    }
-  }
+  // also applicable for Java types
+  def getPublicInstanceAndCompanionMethods(tp: Type): Iterable[String] = 
+    getPublicInstanceMethods(tp) ++
+      getPublicInstanceMethods(tp.typeSymbol.companionSymbol.typeSignature)
   
-  def getObservableCompanionMethods: Iterable[String] = {
-    val tp = typeOf[rx.lang.scala.Observable.type]
-    getPublicInstanceMethods(tp.typeSymbol.companionSymbol.typeSignature)
-    // TODO how can we filter out instance methods which were put into companion because 
-    // of extends AnyVal in a way which does not depend on implementation-chosen name '$extension'?
-    .filter(! _.contains("$extension"))
-  }
   
   def printMethodSet(title: String, tp: Type) {
     println("\n" + title)
@@ -92,21 +110,25 @@ class CompletenessTest extends JUnitSuite {
     getPublicInstanceMethods(tp).toList.sorted.foreach(println(_))
   }
   
+  @Ignore // because spams output
   @Test def printJavaInstanceMethods: Unit = {
     printMethodSet("Instance methods of rx.Observable", 
                    typeOf[rx.Observable[_]])
   }
   
+  @Ignore // because spams output
   @Test def printScalaInstanceMethods: Unit = {
     printMethodSet("Instance methods of rx.lang.scala.Observable", 
                    typeOf[rx.lang.scala.Observable[_]])
   }
   
+  @Ignore // because spams output
   @Test def printJavaStaticMethods: Unit = {
     printMethodSet("Static methods of rx.Observable", 
                    typeOf[rx.Observable[_]].typeSymbol.companionSymbol.typeSignature)
   }
   
+  @Ignore // because spams output
   @Test def printScalaCompanionMethods: Unit = {
     printMethodSet("Companion methods of rx.lang.scala.Observable",
                    typeOf[rx.lang.scala.Observable.type])
@@ -125,25 +147,36 @@ class CompletenessTest extends JUnitSuite {
      .replaceAllLiterally("_ >: ", "")
      .replaceAll("(\\w+)\\(\\)", "$1")
   }
-  
-  def defaultInstanceMethodCorrespondence: Map[String, String] = {
-    val instanceMethods = getPublicInstanceMethods(typeOf[rx.Observable[_]]).toList.sorted
-    val tuples = for (javaM <- instanceMethods) yield (javaM, javaMethodSignatureToScala(javaM))
+
+  def defaultMethodCorrespondence: Map[String, String] = {
+    val allMethods = getPublicInstanceAndCompanionMethods(typeOf[rx.Observable[_]])      
+    val tuples = for (javaM <- allMethods) yield (javaM, javaMethodSignatureToScala(javaM))
     tuples.toMap
   }
   
-  @Test def printDefaultInstanceMethodCorrespondence: Unit = {
-    println("\nDefault Instance Method Correspondence")
-    println(  "--------------------------------------\n")
-    val c = SortedMap(defaultInstanceMethodCorrespondence.toSeq : _*)
+  @Ignore // because spams output
+  @Test def printDefaultMethodCorrespondence: Unit = {
+    println("\nDefault Method Correspondence")
+    println(  "-----------------------------\n")
+    val c = SortedMap(defaultMethodCorrespondence.toSeq : _*)
     val len = c.keys.map(_.length).max + 2
     for ((javaM, scalaM) <- c) {
       println(s"""      %-${len}s -> %s,""".format("\"" + javaM + "\"", "\"" + scalaM + "\"")) 
     }
   }
   
+  @Ignore // because spams output
+  @Test def printCorrectedMethodCorrespondence: Unit = {
+    println("\nCorrected Method Correspondence")
+    println(  "-------------------------------\n")
+    val c = SortedMap(correspondence.toSeq : _*)
+    for ((javaM, scalaM) <- c) {
+      println("%s -> %s,".format("\"" + javaM + "\"", "\"" + scalaM + "\"")) 
+    }
+  }
+  
   def checkMethodPresence(expectedMethods: Iterable[String], tp: Type): Unit = {
-    val actualMethods = getPublicInstanceMethods(tp).toSet
+    val actualMethods = getPublicInstanceAndCompanionMethods(tp).toSet
     val expMethodsSorted = expectedMethods.toList.sorted
     var good = 0
     var bad = 0
@@ -161,7 +194,7 @@ class CompletenessTest extends JUnitSuite {
     println("\nTesting that all mentioned Scala methods exist")
     println(  "----------------------------------------------\n")
     
-    val actualMethods = getPublicInstanceMethods(typeOf[rx.lang.scala.Observable[_]]).toSet
+    val actualMethods = getPublicInstanceAndCompanionMethods(typeOf[rx.lang.scala.Observable[_]]).toSet
     var good = 0
     var bad = 0
     for ((javaM, scalaM) <- SortedMap(correspondence.toSeq :_*)) { 
@@ -175,18 +208,18 @@ class CompletenessTest extends JUnitSuite {
       }
     }
     val status = if (bad == 0) "SUCCESS" else "BAD"
-    println(s"$status: $bad out of ${bad+good} methods were not found in Scala Observable")
+    println(s"\n$status: $bad out of ${bad+good} methods were not found in Scala Observable")
+  }
+   
+  @Test def checkJavaMethodPresence: Unit = {
+    println("\nTesting that all mentioned Java methods exist")
+    println(  "---------------------------------------------\n")
+    checkMethodPresence(correspondence.keys, typeOf[rx.Observable[_]])
   }
   
   @Ignore // because we prefer the verbose version
   @Test def checkScalaMethodPresence: Unit = {
     checkMethodPresence(correspondence.values, typeOf[rx.lang.scala.Observable[_]])
-  }
-  
-  @Test def checkJavaMethodPresence: Unit = {
-    println("\nTesting that all mentioned Java methods exist")
-    println(  "---------------------------------------------\n")
-    checkMethodPresence(correspondence.keys, typeOf[rx.Observable[_]])
   }
   
 }
