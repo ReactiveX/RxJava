@@ -7,6 +7,7 @@ import rx.util.functions._
 import scala.collection.SortedSet
 import scala.collection.SortedMap
 import org.junit.Ignore
+import java.lang.reflect.Modifier
 
 class CompletenessTest extends JUnitSuite {
   
@@ -65,22 +66,50 @@ class CompletenessTest extends JUnitSuite {
     // declarations: => only those declared in Observable
     // members => also those of superclasses
     methodMembersToMethodStrings(tp.declarations.filter(m => m.isMethod && m.isPublic))
+    // TODO how can we filter out instance methods which were put into companion because 
+    // of extends AnyVal in a way which does not depend on implementation-chosen name '$extension'?
+    .filter(! _.contains("$extension"))
   }
   
-  def getStaticMethods(tp: Type): Iterable[String] = {
-    ???
-  }  
+  def getStaticJavaMethods(className: String): Iterable[String] = {
+    val c = Class.forName(className)
+    for (method <- c.getMethods() if Modifier.isStatic(method.getModifiers)) yield {
+      method.getName + method.getParameterTypes().map(_.getSimpleName()).mkString("(", ", ", ")")
+    }
+  }
+  
+  def getObservableCompanionMethods: Iterable[String] = {
+    val tp = typeOf[rx.lang.scala.Observable.type]
+    getPublicInstanceMethods(tp.typeSymbol.companionSymbol.typeSignature)
+    // TODO how can we filter out instance methods which were put into companion because 
+    // of extends AnyVal in a way which does not depend on implementation-chosen name '$extension'?
+    .filter(! _.contains("$extension"))
+  }
+  
+  def printMethodSet(title: String, tp: Type) {
+    println("\n" + title)
+    println(title.map(_ => '-') + "\n")
+    getPublicInstanceMethods(tp).toList.sorted.foreach(println(_))
+  }
   
   @Test def printJavaInstanceMethods: Unit = {
-    println("\nInstance methods of rx.Observable")
-    println(  "---------------------------------\n")
-    getPublicInstanceMethods(typeOf[rx.Observable[_]]).toList.sorted.foreach(println(_))
+    printMethodSet("Instance methods of rx.Observable", 
+                   typeOf[rx.Observable[_]])
   }
   
   @Test def printScalaInstanceMethods: Unit = {
-    println("\nInstance methods of rx.lang.scala.Observable")
-    println(  "--------------------------------------------\n")
-    getPublicInstanceMethods(typeOf[rx.lang.scala.Observable[_]]).toList.sorted.foreach(s => println(s))
+    printMethodSet("Instance methods of rx.lang.scala.Observable", 
+                   typeOf[rx.lang.scala.Observable[_]])
+  }
+  
+  @Test def printJavaStaticMethods: Unit = {
+    printMethodSet("Static methods of rx.Observable", 
+                   typeOf[rx.Observable[_]].typeSymbol.companionSymbol.typeSignature)
+  }
+  
+  @Test def printScalaCompanionMethods: Unit = {
+    printMethodSet("Companion methods of rx.lang.scala.Observable",
+                   typeOf[rx.lang.scala.Observable.type])
   }
   
   def javaMethodSignatureToScala(s: String): String = {
@@ -111,13 +140,6 @@ class CompletenessTest extends JUnitSuite {
     for ((javaM, scalaM) <- c) {
       println(s"""      %-${len}s -> %s,""".format("\"" + javaM + "\"", "\"" + scalaM + "\"")) 
     }
-  }
-  
-  @Ignore // Does not yet work
-  @Test def printJavaStaticMethods: Unit = {
-    println("\nStatic methods of rx.Observable")
-    println(  "-------------------------------\n")
-    getStaticMethods(typeOf[rx.Observable[_]]).toList.sorted.foreach(println(_))
   }
   
   def checkMethodPresence(expectedMethods: Iterable[String], tp: Type): Unit = {
