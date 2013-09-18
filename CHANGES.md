@@ -1,5 +1,13 @@
 # RxJava Releases #
 
+### Version 0.13.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.13.2%22)) ###
+
+* [Pull 389](https://github.com/Netflix/RxJava/pull/389) Scala Adaptor Improvements
+* [Pull 382](https://github.com/Netflix/RxJava/pull/382) Removing deprecated RxImplicits from rxjava-scala
+* [Pull 381](https://github.com/Netflix/RxJava/pull/381) Operator: mapWithIndex
+* [Pull 380](https://github.com/Netflix/RxJava/pull/380) Implemented `distinct` and `distinctUntilChanged` variants using a comparator
+* [Pull 379](https://github.com/Netflix/RxJava/pull/379) Make `interval` work with multiple subscribers
+
 ### Version 0.13.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.13.1%22)) ###
 
 This release includes a new Scala adaptor as part of the effort from issue https://github.com/Netflix/RxJava/issues/336 pursuing idiomatic Scala support.
