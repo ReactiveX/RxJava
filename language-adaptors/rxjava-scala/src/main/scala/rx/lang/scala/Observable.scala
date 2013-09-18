@@ -200,16 +200,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     Observable[(T, U)](JObservable.zip[T, U, (T, U)](this.asJava, that.asJava, (t: T, u: U) => (t, u)))
   }  
   
-  // There is no method corresponding to
-  // public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second)
-  // because the Scala-idiomatic way of doing this is
-  // (first zip second) map (p => p._1 == p._2)
-  
-  // There is no method corresponding to  
-  // public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality)
-  // because the Scala-idiomatic way of doing this is
-  // (first zip second) map (p => equality(p._1, p._2))
-  
   /**
    * Creates an Observable which produces buffers of collected values.
    * 
@@ -673,10 +663,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     Observable[R](asJava.flatMap[R]((t: T) => f(t).asJava))
   }
   
-  // There is no method like
-  // public Observable<T> where(Func1<? super T, Boolean> predicate)
-  // because that's called filter in Scala.
-
   /**
    * Returns an Observable that applies the given function to each item emitted by an
    * Observable and emits the result.
@@ -691,10 +677,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def map[R](func: T => R): Observable[R] = {
     Observable[R](asJava.map[R](func))
   }
-  
-  // There's no method like
-  // public <R> Observable<R> mapMany(Func1<? super T, ? extends Observable<? extends R>> func)
-  // because that's called flatMap in Scala.
   
   /**
    * Turns all of the notifications from a source Observable into {@link Observer#onNext onNext} emissions, and marks them with their original notification types within {@link Notification} objects.
@@ -948,10 +930,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     (() => javaCO.connect(), Observable[T](javaCO))
   }
 
-  // There is no aggregate function with signature
-  // public Observable<T> aggregate(Func2<? super T, ? super T, ? extends T> accumulator)
-  // because that's called reduce in Scala.
-  
   // TODO add Scala-like aggregate function
   
   /**
@@ -980,13 +958,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def fold[R](initialValue: R)(accumulator: (R, T) => R): Observable[R] = {
     Observable[R](asJava.reduce(initialValue, accumulator))
   }
-  // corresponds to Java's
-  // public <R> Observable<R> reduce(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) 
-  // public <R> Observable<R> aggregate(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) 
-  
-  // There is no method like
-  // public Observable<T> scan(Func2<? super T, ? super T, ? extends T> accumulator)
-  // because scan has a seed in Scala
   
   /**
    * Returns an Observable that emits the results of sampling the items emitted by the source
@@ -1024,7 +995,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     Observable[T](asJava.sample(duration.length, duration.unit, scheduler))
   }
   
-    /**
+  /**
    * Returns an Observable that applies a function of your choosing to the first item emitted by a
    * source Observable, then feeds the result of that function along with the second item emitted
    * by an Observable into the same function, and so on until all items have been emitted by the
@@ -1048,8 +1019,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def scan[R](initialValue: R)(accumulator: (R, T) => R): Observable[R] = {
     Observable[R](asJava.scan(initialValue, accumulator))
   }
-  // corresponds to Scala's
-  // public <R> Observable<R> scan(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) 
 
   /**
    * Returns an Observable that emits a Boolean that indicates whether all of the items emitted by
@@ -1068,8 +1037,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     // it's more fun in Scala:
     this.map(predicate).fold(true)(_ && _)
   }
-  // corresponds to Java's
-  // public Observable<Boolean> all(Func1<? super T, Boolean> predicate) 
     
   /**
    * Returns an Observable that skips the first <code>num</code> items emitted by the source
@@ -1088,8 +1055,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def drop(n: Int): Observable[T] = {
     Observable[T](asJava.skip(n))
   }
-  // corresponds to Java's
-  // public Observable<T> skip(int num)
 
   /**
    * Returns an Observable that emits only the first <code>num</code> items emitted by the source
@@ -1165,8 +1130,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def takeRight(n: Int): Observable[T] = {
     Observable[T](asJava.takeLast(n))
   }
-  // corresponds to Java's
-  // public Observable<T> takeLast(final int count) 
   
   /**
    * Returns an Observable that emits the items from the source Observable only until the
@@ -1207,16 +1170,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     Observable.jObsOfListToScObsOfSeq(asJava.toList())
         : Observable[Seq[T]] // SI-7818
   }
-  // corresponds to Java's method
-  // public Observable<List<T>> toList() {
-
-  // There are no toSortedList methods because Scala can sort itself
-  // public Observable<List<T>> toSortedList() 
-  // public Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) 
-  
-  // There is no method 
-  // def startWith[U >: T](values: U*): Observable[U]
-  // because we can just use ++ instead 
   
   /**
    * Groups the items emitted by this Observable according to a specified discriminator function.
@@ -1233,10 +1186,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     val func = (o: rx.observables.GroupedObservable[K, _ <: T]) => (o.getKey(), Observable[T](o))
     Observable[(K, Observable[T])](o1.map[(K, Observable[T])](func))
   }
-
-  // There's no method corresponding to
-  // public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) 
-  // because this can be obtained by combining groupBy and map (as in Scala)
   
   /**
    * Given an Observable that emits Observables, creates a single Observable that
@@ -1505,12 +1454,6 @@ object Observable {
   def apply[T](func: Observer[T] => Subscription): Observable[T] = {
     Observable[T](JObservable.create(func))
   }
-  // corresponds to Java's
-  // public static <T> Observable<T> create(OnSubscribeFunc<T> func) 
-  
-  // Java's
-  // public static <T> Observable<T> empty()
-  // is not needed in Scala because it's a special case of varargs apply
   
   /**
    * Returns an Observable that invokes an {@link Observer}'s {@link Observer#onError onError} method when the Observer subscribes to it
@@ -1526,12 +1469,6 @@ object Observable {
   def apply(exception: Throwable): Observable[Nothing] = {
     Observable[Nothing](JObservable.error(exception))
   }
-  // corresponds to Java's
-  // public static <T> Observable<T> error(Throwable exception) 
-  
-  // There is no method corresponding to
-  // public static <T> Observable<T> from(Iterable<? extends T> iterable) 
-  // because Scala automatically uses the varargs apply for this
 
   /**
    * Converts a sequence of values into an Observable.
@@ -1551,17 +1488,10 @@ object Observable {
   def apply[T](args: T*): Observable[T] = {     
     Observable[T](JObservable.from(args.toIterable.asJava))
   }
-  // corresponds to Java's
-  // public static <T> Observable<T> from(T... items) 
   
   def apply(range: Range): Observable[Int] = {
     Observable[Int](JObservable.from(range.toIterable.asJava))
   }
-  
-  // There is no method corresponding to
-  // public static Observable<Integer> range(int start, int count) 
-  // because the Scala collection library provides enough methods to create Iterables.
-  // Examples: Observable(1 to 5), Observable(1 until 10)
   
   /**
    * Returns an Observable that calls an Observable factory to create its Observable for each
@@ -1586,8 +1516,6 @@ object Observable {
   def defer[T](observable: => Observable[T]): Observable[T] = {
     Observable[T](JObservable.defer(observable.asJava))
   }
-  // corresponds to Java's
-  // public static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) 
 
   /**
    * Returns an Observable that emits a single item and then completes.
@@ -1611,16 +1539,10 @@ object Observable {
   def just[T](value: T): Observable[T] = {
     Observable[T](JObservable.just(value))
   }
-  // corresponds to Java's
-  // public static <T> Observable<T> just(T value) 
   
   // TODO we have merge and concat (++) as binary instance methods, but do we also need them as
   // static methods with arity > 2?
 
-  // There is no method corresponding to
-  // public static <T> Observable<T> concat(Observable<? extends T>... source) 
-  // because we have the instance method ++ instead
-  
   /**
    * This behaves like {@link #merge(java.util.List)} except that if any of the merged Observables
    * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
@@ -1703,49 +1625,23 @@ object Observable {
     Observable[Nothing](JObservable.never())
   }
   
-  // There is no method corresponding to
-  // public static <T> Observable<T> switchDo(Observable<? extends Observable<? extends T>> sequenceOfSequences) 
-  // because it's deprecated.
-    
-  // There's no 
-  // public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences)
-  // here because that's an instance method.
-  
-  // There is no method here corresponding to
-  // public static <T> Observable<T> synchronize(Observable<? extends T> observable) 
-  // because that's an instance method.
-
   /*
   def apply[T](f: Future[T]): Observable[T] = {
     ??? // TODO convert Scala Future to Java Future
   } 
   */
-  // corresponds to
-  // public static <T> Observable<T> from(Future<? extends T> future)
   
   /*
   def apply[T](f: Future[T], scheduler: Scheduler): Observable[T] = {
     ??? // TODO convert Scala Future to Java Future
   }
   */
-  // public static <T> Observable<T> from(Future<? extends T> future, Scheduler scheduler)
   
   /*
   def apply[T](f: Future[T], duration: Duration): Observable[T] = {
     ??? // TODO convert Scala Future to Java Future
   }
   */
-  // corresponds to
-  // public static <T> Observable<T> from(Future<? extends T> future, long timeout, TimeUnit unit)
-  
-  // There is no method here corresponding to
-  // public static <T1, T2, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> zipFunction)
-  // because it's an instance method
-  
-  // There is no method corresponding to
-  // public static <T1, T2, T3, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction)
-  // because zip3 is not known in the Scala world
-  // Also applies to all zipN with N > 3 ;-)
 
   /**
    * Combines the given observables, emitting an event containing an aggregation of the latest values of each of the source observables

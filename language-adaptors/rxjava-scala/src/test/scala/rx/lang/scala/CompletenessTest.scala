@@ -35,6 +35,7 @@ class CompletenessTest extends JUnitSuite {
       "skipWhile(Func1[_ >: T, Boolean])" -> "dropWhile(T => Boolean)",
       "skipWhileWithIndex(Func2[_ >: T, Integer, Boolean])" -> unnecessary,
       "startWith(Iterable[T])" -> "[unnecessary because we can just use ++ instead]",
+      "takeLast(Int)" -> "takeRight(Int)",
       "toList()" -> "toSeq",
       "toSortedList()" -> unnecessary,
       "toSortedList(Func2[_ >: T, _ >: T, Integer])" -> unnecessary,
