@@ -1240,6 +1240,26 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   }
 
   /**
+   * Flattens the sequence of Observables emitted by {@code this} into one Observable, without any
+   * transformation.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+   * <p>
+   * You can combine the items emitted by multiple Observables so that they act like a single
+   * Observable, by using the {@code merge} method.
+   *
+   * @return an Observable that emits items that are the result of flattening the items emitted
+   *         by the Observables emitted by {@code this}
+   */
+  def merge[U](implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[U] = {
+    val o2: Observable[Observable[U]] = this
+    val o3: Observable[rx.Observable[_ <: U]] = o2.map(_.asJava)
+    val o4: rx.Observable[_ <: rx.Observable[_ <: U]] = o3.asJava
+    val o5 = rx.Observable.merge[U](o4)
+    Observable[U](o5)
+  }
+
+  /**
    * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
    * <p>
    * NOTE: If events keep firing faster than the timeout then no data will be emitted.

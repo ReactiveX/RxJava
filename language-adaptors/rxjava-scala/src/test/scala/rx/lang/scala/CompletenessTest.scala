@@ -58,7 +58,8 @@ class CompletenessTest extends JUnitSuite {
       "error(Throwable)" -> "apply(Throwable)",
       "from(Array[T])" -> "apply(T*)",
       "from(Iterable[_ <: T])" -> "apply(T*)", 
-      "merge(Observable[_ <: T], Observable[_ <: T])" -> "merge(Observable[T])",
+      "merge(Observable[_ <: T], Observable[_ <: T])" -> "merge(Observable[U])",
+      "merge(Observable[_ <: Observable[_ <: T]])" -> "merge(<:<[Observable[T], Observable[Observable[U]]])",
       "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[T])",
       "range(Int, Int)" -> "apply(Range)",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "[use (first zip second) map (p => p._1 == p._2)]",
@@ -67,8 +68,8 @@ class CompletenessTest extends JUnitSuite {
       "sumDoubles(Observable[Double])" -> "sum(Numeric[U])",
       "sumFloats(Observable[Float])" -> "sum(Numeric[U])",
       "sumLongs(Observable[Long])" -> "sum(Numeric[U])",
+      "synchronize(Observable[T])" -> "synchronize",
       "switchDo(Observable[_ <: Observable[_ <: T]])" -> "switch",
-      "synchronize(Observable[_ <: T])" -> "synchronize",
       "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method zip and map]"
   ) ++ List.iterate("T", 9)(s => s + ", T").map(
       // all 9 overloads of startWith:
@@ -84,8 +85,11 @@ class CompletenessTest extends JUnitSuite {
     val obsArgs = (1 to i).map(j => s"Observable[_ <: T$j], ").mkString("")
     val funcParams = (1 to i).map(j => s"_ >: T$j, ").mkString("")
     ("zip(" + obsArgs + "Func" + i + "[" + funcParams + "_ <: R])", unnecessary)
-  }).toMap
-    
+  }).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
+      // merge 3-9:
+      "merge(" + _ + ")" -> "[unnecessary because we can use Observable(o1, o2, ...).merge instead]"
+  ).drop(2).toMap
+  
   def removePackage(s: String) = s.replaceAll("(\\w+\\.)+(\\w+)", "$2")
   
   def methodMembersToMethodStrings(members: Iterable[Symbol]): Iterable[String] = {

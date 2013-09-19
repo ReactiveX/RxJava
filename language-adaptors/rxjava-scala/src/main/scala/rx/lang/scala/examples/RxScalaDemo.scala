@@ -95,13 +95,32 @@ class RxScalaDemo extends JUnitSuite {
     println((before ++ source).toBlockingObservable.toList)
   }
 
-  @Test def mergeExample() {
+  @Test def mergeTwoExample() {
     val slowNumbers = Observable.interval(400 millis).take(5).map("slow " + _)
     val fastNumbers = Observable.interval(200 millis).take(10).map("fast " + _)
     val o = (slowNumbers merge fastNumbers)
     o.subscribe(output(_))
     waitFor(o)
   }
+  
+  def myInterval(period: Long): Observable[String] = {
+    Observable.interval(period.millis).map(n => s"Obs-$period emits $n")
+  }
+  
+  @Test def mergeManyExample() {
+    val o = Observable.interval(500 millis).map(n => myInterval((n+1)*100))
+    val stopper = Observable.interval(5 seconds)
+    o.merge.takeUntil(stopper).toBlockingObservable.foreach(println(_))
+  }
+  
+  @Test def mergeSomeExample() {
+    // To merge some observables which are all known already:
+    Observable(
+        Observable.interval(200 millis), 
+        Observable.interval(400 millis), 
+        Observable.interval(800 millis)
+    ).merge.take(12).toBlockingObservable.foreach(println(_))
+  }    
   
   @Test def rangeAndBufferExample() {
     val o = Observable(1 to 18)
@@ -178,6 +197,29 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(List(0, 1, 2, 3), t.toBlockingObservable.toList)    
   }
 
+  @Test def timingTest() {
+    val firstOnly = false
+    val numbersByModulo3 = Observable.interval(1000 millis).take(9).groupBy(_ % 3)
+    
+    (for ((modulo, numbers) <- numbersByModulo3) yield {
+      println("Observable for modulo" + modulo + " started")
+      
+      if (firstOnly) numbers.take(1) else numbers
+    }).merge.toBlockingObservable.foreach(println(_)) 
+  }
+  
+  @Test def timingTest1() {
+    val numbersByModulo3 = Observable.interval(1000 millis).take(9).groupBy(_ % 3)
+    
+    val t0 = System.currentTimeMillis
+    
+    (for ((modulo, numbers) <- numbersByModulo3) yield {
+      println("Observable for modulo" + modulo + " started at t = " + (System.currentTimeMillis - t0))
+      numbers.take(1) // <- TODO very unexpected
+      //numbers
+    }).merge.toBlockingObservable.foreach(println(_))
+  }
+  
   @Test def groupByExample() {
     val medalsByCountry = Olympics.mountainBikeMedals.groupBy(medal => medal.country)
     
@@ -189,6 +231,13 @@ class RxScalaDemo extends JUnitSuite {
     })
     
     waitFor(firstMedalOfEachCountry)
+  }
+  
+  @Test def olympicsExample() {
+    val (go, medals) = Olympics.mountainBikeMedals.publish
+    medals.subscribe(println(_))
+    go()
+    waitFor(medals)    
   }
   
   @Test def exampleWithoutPublish() {
@@ -260,7 +309,7 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(8, Observable(4, 2).product.toBlockingObservable.single)
     assertEquals(1, Observable[Int]().product.toBlockingObservable.single)
   }
-    
+  
   def output(s: String): Unit = println(s)
   
   // blocks until obs has completed
