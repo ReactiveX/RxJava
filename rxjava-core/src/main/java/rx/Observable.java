@@ -34,10 +34,11 @@ import rx.operators.OperationBuffer;
 import rx.operators.OperationCache;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
+import rx.operators.OperationDebounce;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
-import rx.operators.OperationDistinctUntilChanged;
 import rx.operators.OperationDistinct;
+import rx.operators.OperationDistinctUntilChanged;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFirstOrDefault;
@@ -53,6 +54,7 @@ import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
+import rx.operators.OperationParallel;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
@@ -67,7 +69,6 @@ import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
-import rx.operators.OperationDebounce;
 import rx.operators.OperationTimestamp;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
@@ -1773,15 +1774,13 @@ public class Observable<T> {
      * its {@link Observer}s; it invokes {@code onCompleted} or {@code onError} only once; and it never invokes {@code onNext} after invoking either {@code onCompleted} or {@code onError}.
      * {@code synchronize} enforces this, and the Observable it returns invokes {@code onNext} and {@code onCompleted} or {@code onError} synchronously.
      * 
-     * @param observable
-     *            the source Observable
      * @param <T>
      *            the type of item emitted by the source Observable
      * @return an Observable that is a chronologically well-behaved version of the source
      *         Observable, and that synchronously notifies its {@link Observer}s
      */
-    public static <T> Observable<T> synchronize(Observable<? extends T> observable) {
-        return create(OperationSynchronize.synchronize(observable));
+    public Observable<T> synchronize() {
+        return create(OperationSynchronize.synchronize(this));
     }
 
     
@@ -3484,6 +3483,31 @@ public class Observable<T> {
         return create(OperationCache.cache(this));
     }
 
+    /**
+     * Perform work in parallel by sharding an {@code Observable<T>} on a {@link Schedulers#threadPoolForComputation()} {@link Scheduler} and return an {@code Observable<R>} with the output.
+     * 
+     * @param f
+     *            a {@link Func1} that applies Observable operators to {@code Observable<T>} in parallel and returns an {@code Observable<R>}
+     * @return an Observable with the output of the {@link Func1} executed on a {@link Scheduler}
+     */
+    public <R> Observable<R> parallel(Func1<Observable<T>, Observable<R>> f) {
+        return OperationParallel.parallel(this, f);
+    }
+
+    /**
+     * Perform work in parallel by sharding an {@code Observable<T>} on a {@link Scheduler} and return an {@code Observable<R>} with the output.
+     * 
+     * @param f
+     *            a {@link Func1} that applies Observable operators to {@code Observable<T>} in parallel and returns an {@code Observable<R>}
+     * @param s
+     *            a {@link Scheduler} to perform the work on.
+     * @return an Observable with the output of the {@link Func1} executed on a {@link Scheduler}
+     */
+    
+    public <R> Observable<R> parallel(final Func1<Observable<T>, Observable<R>> f, final Scheduler s) {
+        return OperationParallel.parallel(this, f, s);
+    }
+    
     /**
      * Returns a {@link ConnectableObservable}, which waits until its {@link ConnectableObservable#connect connect} method is called before it begins emitting
      * items to those {@link Observer}s that have subscribed to it.
