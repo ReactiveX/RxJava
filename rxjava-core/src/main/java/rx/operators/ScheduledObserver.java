@@ -32,10 +32,12 @@ import rx.util.functions.Func2;
     private final Scheduler scheduler;
     private final CompositeSubscription parentSubscription;
     private final EventLoop eventLoop = new EventLoop();
-
-    private final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
+    final AtomicInteger counter = new AtomicInteger();
     private final AtomicBoolean started = new AtomicBoolean();
 
+    private final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
+    
+    
     public ScheduledObserver(CompositeSubscription s, Observer<? super T> underlying, Scheduler scheduler) {
         this.parentSubscription = s;
         this.underlying = underlying;
@@ -56,8 +58,6 @@ import rx.util.functions.Func2;
     public void onNext(final T args) {
         enqueue(new Notification<T>(args));
     }
-
-    final AtomicInteger counter = new AtomicInteger();
 
     private void enqueue(Notification<? extends T> notification) {
         // this must happen before synchronization between threads
