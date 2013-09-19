@@ -176,7 +176,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    *         Observable, and that synchronously notifies its {@link Observer}s
    */
   def synchronize: Observable[T] = {
-    Observable[T](JObservable.synchronize(asJava))
+    Observable[T](asJava.synchronize)
   }
   
   /**

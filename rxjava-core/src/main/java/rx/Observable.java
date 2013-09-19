@@ -1783,6 +1783,13 @@ public class Observable<T> {
         return create(OperationSynchronize.synchronize(this));
     }
 
+    /**
+     * @deprecated Replaced with instance method. 
+     */
+    @Deprecated
+    public static <T> Observable<T> synchronize(Observable<T> source) {
+        return create(OperationSynchronize.synchronize(source));
+    }
     
     /**
      * Emits an item each time interval (containing a sequential number).
