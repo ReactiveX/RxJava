@@ -46,7 +46,7 @@ public final class OperationInterval {
      * Creates an event each time interval.
      */
     public static OnSubscribeFunc<Long> interval(long interval, TimeUnit unit) {
-        return interval(interval, unit, Schedulers.executor(Executors.newSingleThreadScheduledExecutor()));
+        return interval(interval, unit, Schedulers.threadPoolForComputation());
     }
 
     /**
