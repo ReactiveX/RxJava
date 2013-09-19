@@ -199,6 +199,8 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def zip[U](that: Observable[U]): Observable[(T, U)] = {
     Observable[(T, U)](JObservable.zip[T, U, (T, U)](this.asJava, that.asJava, (t: T, u: U) => (t, u)))
   }
+    
+  // public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction) {
   
   /**
    * Zips this Observable with its indices.
@@ -1069,6 +1071,21 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   }
 
   /**
+   * Returns an Observable that bypasses all items from the source Observable as long as the specified
+   * condition holds true. Emits all further source items as soon as the condition becomes false.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipWhile.png">
+   *
+   * @param predicate
+   *            A function to test each item emitted from the source Observable for a condition.
+   * @return an Observable that emits all items from the source Observable as soon as the condition
+   *         becomes false.
+   */
+  def dropWhile(predicate: T => Boolean): Observable[T] = {
+    Observable[T](asJava.skipWhile(predicate))
+  }
+
+  /**
    * Returns an Observable that emits only the first <code>num</code> items emitted by the source
    * Observable.
    * <p>
@@ -1436,6 +1453,56 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def product[U >: T](implicit num: Numeric[U]): Observable[U] = {
     fold(num.one)(num.times)
   }
+  
+  /**
+   * TODO doc&test
+   */
+  def firstOrElse[U >: T](default: => U): Observable[U] = {
+    this.materialize.take(1).map((n: Notification[T]) => {
+      if (n.getKind() == rx.Notification.Kind.OnNext)
+        n.getValue
+      else
+        default
+    })
+  }
+  
+  // TODO which of these two find variants do we want?
+  
+  /**
+   * Finds the first element of the list satisfying a predicate, if any.
+   * @param p 
+   *        the predicate used to test elements.
+   * @return an Observable emitting an Option containing the first element in the source 
+   *         Observable that satisfies p, or None if none exists or onError was called.
+   */  
+  def find(p: T => Boolean): Observable[Option[T]] = {
+    this.filter(p).materialize.take(1).map((n: Notification[T]) => {
+      if (n.getKind() == rx.Notification.Kind.OnNext)
+        Some(n.getValue())
+      else
+        None
+    })
+  }
+  
+  /**
+   * Finds the first element of the list satisfying a predicate, if any.
+   * @param p 
+   *        the predicate used to test elements.
+   * @return an Observable emitting an Option containing the first element in the source 
+   *         Observable that satisfies p, or None if none exists.
+   */  
+  private def findWhichTransmitsError(p: T => Boolean): Observable[Option[T]] = {
+    val o: Observable[Notification[Option[T]]] = 
+      this.filter(p).materialize.take(1).map((n: Notification[T]) => {
+      if (n.getKind() == rx.Notification.Kind.OnCompleted)
+        Notification(None)
+      else if (n.getKind() == rx.Notification.Kind.OnNext)
+        Notification(Some(n.getValue()))
+      else 
+        Notification(n.getThrowable())
+    })    
+    o.dematerialize
+  }
 
   /**
    * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking
@@ -1461,6 +1528,7 @@ object Observable {
   import rx.{Observable => JObservable}
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
+  import rx.util.functions._
   import rx.lang.scala.ImplicitFunctionConversions._
  
   private[scala] 
@@ -1676,19 +1744,19 @@ object Observable {
   def never: Observable[Nothing] = {
     Observable[Nothing](JObservable.never())
   }
-  
+
   /*
   def apply[T](f: Future[T]): Observable[T] = {
     ??? // TODO convert Scala Future to Java Future
   } 
   */
-  
+
   /*
   def apply[T](f: Future[T], scheduler: Scheduler): Observable[T] = {
     ??? // TODO convert Scala Future to Java Future
   }
   */
-  
+
   /*
   def apply[T](f: Future[T], duration: Duration): Observable[T] = {
     ??? // TODO convert Scala Future to Java Future
@@ -1700,7 +1768,7 @@ object Observable {
    * each time an event is received from one of the source observables, where the aggregation is defined by the given function.
    * <p>
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/combineLatest.png">
-   * 
+   *
    * @param o1
    *            The first source observable.
    * @param o2
@@ -1712,14 +1780,57 @@ object Observable {
   // public static <T1, T2, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> combineFunction) 
   // TODO do we want this as an instance method?
   // TODO then decide about combineLatest with > 2 Observables
-  
+
   // TODO what about these two?
   // public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction)
   // public static <R> Observable<R> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction)
 
+  /**
+   * Given a Seq of N observables, returns an observable that emits Seqs of N elements each.
+   * The first emitted Seq will contain the first element of each source observable,
+   * the second Seq the second element of each source observable, and so on.
+   * 
+   * @param observables
+   *            A Seq of source Observables
+   * @return an Observable that emits the zipped Seqs
+   */
+  def zip[T](observables: Seq[Observable[T]]): Observable[Seq[T]] = {
+    val f: FuncN[Seq[T]] = (args: Seq[java.lang.Object]) => {
+      val asSeq: Seq[Object] = args.toSeq
+      asSeq.asInstanceOf[Seq[T]]
+    }
+    val list = observables.map(_.asJava).asJava
+    val o = rx.Observable.zip(list, f)
+    Observable[Seq[T]](o)
+  }
+  
+  /**
+   * Given an Observable emitting N source observables, returns an observable that emits Seqs of N elements each.
+   * The first emitted Seq will contain the first element of each source observable,
+   * the second Seq the second element of each source observable, and so on.
+   * 
+   * @param observables
+   *            An Observable emitting N source Observables
+   * @return an Observable that emits the zipped Seqs
+   */
+  def zip[T](observables: Observable[Observable[T]]): Observable[Seq[T]] = {
+    val f: FuncN[Seq[T]] = (args: Seq[java.lang.Object]) => {
+      val asSeq: Seq[Object] = args.toSeq
+      asSeq.asInstanceOf[Seq[T]]
+    }
+    val list = observables.map(_.asJava).asJava
+    val o = rx.Observable.zip(list, f)
+    Observable[Seq[T]](o)
+  }
+  
   def interval(duration: Duration): Observable[Long] = {
     (new Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit))).map(_.longValue())
   }
+  
+  def interval(duration: Duration, scheduler: Scheduler): Observable[Long] = {
+    (new Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit, scheduler))).map(_.longValue())
+  }
+  
 }
 
 // Cannot yet have inner class because of this error message: 
@@ -1774,6 +1885,14 @@ class UnitTestSuite extends JUnitSuite {
     // val wrongDemat = Observable("hello").dematerialize
     
     assertEquals(demat.toBlockingObservable.toIterable.toList, List(1, 2, 3))
+  }
+  
+  @Test def testFind() {
+    assertEquals(Some(3), Observable(1, 3, 5).find(_ >= 2).toBlockingObservable.single)
+    assertEquals(Some(1), Observable(1, 3, 5).find(_ => true).toBlockingObservable.single)
+    assertEquals(None, Observable(1, 3, 5).find(_ > 10).toBlockingObservable.single)
+    assertEquals(None, Observable(new Exception()).find((i: Int) => i > 10).toBlockingObservable.single)
+    assertEquals(None, Observable().find((i: Int) => i > 10).toBlockingObservable.single)
   }
   
   @Test def testTest() = {

@@ -16,6 +16,9 @@ class CompletenessTest extends JUnitSuite {
   val averageProblem = "[We can't have a general average method because Scala's Numeric does not have " +
      "scalar multiplication (we would need to calculate (1.0/numberOfElements)*sum). " + 
      "You can use fold instead to accumulate sum and numberOfElements and divide at the end.]"
+     
+  val commentForFirst = "[use take(1)]"
+  val commentForFirstWithPredicate = "[use .dropWhile(!condition).take(1) or use find(condition)]"
   
   val correspondence = defaultMethodCorrespondence ++ Map(
       // manually added entries for Java instance methods
@@ -25,8 +28,13 @@ class CompletenessTest extends JUnitSuite {
       "buffer(Long, Long, TimeUnit)" -> "buffer(Duration, Duration)",
       "buffer(Long, Long, TimeUnit, Scheduler)" -> "buffer(Duration, Duration, Scheduler)",
       "dematerialize()" -> "dematerialize(<:<[T, Notification[U]])",
+      "first()" -> commentForFirst,
+      "first(Func1[_ >: T, Boolean])" -> commentForFirstWithPredicate,
+      //"firstOrDefault(T)" -> 
+      "firstOrDefault(Func1[_ >: T, Boolean], T)" -> "[use find and map instead]", // TODO maybe firstOrElse method?
       "groupBy(Func1[_ >: T, _ <: K], Func1[_ >: T, _ <: R])" -> "groupBy(T => K)",
       "mapMany(Func1[_ >: T, _ <: Observable[_ <: R]])" -> "flatMap(T => Observable[R])",
+      "mapWithIndex(Func2[_ >: T, Integer, _ <: R])" -> "[combine zipWithIndex with map or with a for comprehension]",
       "onErrorResumeNext(Func1[Throwable, _ <: Observable[_ <: T]])" -> "onErrorResumeNext(Throwable => Observable[U])",
       "onErrorResumeNext(Observable[_ <: T])" -> "onErrorResumeNext(Observable[U])",
       "onErrorReturn(Func1[Throwable, _ <: T])" -> "onErrorReturn(Throwable => U)",
@@ -39,6 +47,8 @@ class CompletenessTest extends JUnitSuite {
       "skipWhile(Func1[_ >: T, Boolean])" -> "dropWhile(T => Boolean)",
       "skipWhileWithIndex(Func2[_ >: T, Integer, Boolean])" -> unnecessary,
       "startWith(Iterable[T])" -> "[unnecessary because we can just use ++ instead]",
+      "takeFirst()" -> commentForFirst,
+      "takeFirst(Func1[_ >: T, Boolean])" -> commentForFirstWithPredicate,
       "takeLast(Int)" -> "takeRight(Int)",
       "toList()" -> "toSeq",
       "toSortedList()" -> unnecessary,
@@ -70,7 +80,9 @@ class CompletenessTest extends JUnitSuite {
       "sumLongs(Observable[Long])" -> "sum(Numeric[U])",
       "synchronize(Observable[T])" -> "synchronize",
       "switchDo(Observable[_ <: Observable[_ <: T]])" -> "switch",
-      "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method zip and map]"
+      "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method zip and map]",
+      "zip(Observable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use zip in companion object and map]",
+      "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use zip in companion object and map]"
   ) ++ List.iterate("T", 9)(s => s + ", T").map(
       // all 9 overloads of startWith:
       "startWith(" + _ + ")" -> "[unnecessary because we can just use ++ instead]"

@@ -23,7 +23,7 @@ import org.junit.{Before, Test, Ignore}
 import org.junit.Assert._
 import rx.lang.scala.concurrency.NewThreadScheduler
 
-@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
+//@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
 
   @Test def intervalExample() {
@@ -308,6 +308,36 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(24, Observable(1, 2, 3, 4).product.toBlockingObservable.single)
     assertEquals(8, Observable(4, 2).product.toBlockingObservable.single)
     assertEquals(1, Observable[Int]().product.toBlockingObservable.single)
+  }
+  
+  @Test def mapWithIndexExample() {
+    // We don't need mapWithIndex because we already have zipWithIndex, which we can easily
+    // combine with map:
+    Observable("a", "b", "c").zipWithIndex.map(pair => pair._1 + " has index " + pair._2)
+        .toBlockingObservable.foreach(println(_))
+        
+    // Or even nicer with for-comprehension syntax:
+    (for ((letter, index) <- Observable("a", "b", "c").zipWithIndex) yield letter + " has index " + index)
+        .toBlockingObservable.foreach(println(_))
+  }
+  
+  // source Observables are in a List:
+  @Test def zipManySeqExample() {
+    val observables = List(Observable(1, 2), Observable(10, 20), Observable(100, 200))
+    (for (seq <- Observable.zip(observables)) yield seq.mkString("(", ", ", ")"))
+        .toBlockingObservable.foreach(println(_))
+  }
+  
+  // source Observables are in an Observable:
+  @Test def zipManyObservableExample() {
+    val observables = Observable(Observable(1, 2), Observable(10, 20), Observable(100, 200))
+    (for (seq <- Observable.zip(observables)) yield seq.mkString("(", ", ", ")"))
+        .toBlockingObservable.foreach(println(_))
+  }
+  
+  @Test def takeFirstWithCondition() {
+    val condition: Int => Boolean = _ >= 3
+    assertEquals(3, Observable(1, 2, 3, 4).dropWhile(!condition(_)).take(1).toBlockingObservable.single)
   }
   
   def output(s: String): Unit = println(s)
