@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -33,6 +34,8 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.ImmediateScheduler;
 import rx.concurrency.Schedulers;
+import rx.subscriptions.CompositeSubscription;
+import rx.util.functions.Func2;
 
 /**
  * Asynchronously notify Observers on the specified Scheduler.
@@ -60,7 +63,9 @@ public class OperationObserveOn {
                 // do nothing if we request ImmediateScheduler so we don't invoke overhead
                 return source.subscribe(observer);
             } else {
-                return source.subscribe(new ScheduledObserver<T>(observer, scheduler));
+                CompositeSubscription s = new CompositeSubscription();
+                s.add(source.subscribe(new ScheduledObserver<T>(s, observer, scheduler)));
+                return s;
             }
         }
     }
