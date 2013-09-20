@@ -346,6 +346,28 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(10, Observable(-1, 0, 1).filter(condition).firstOrElse(10).toBlockingObservable.single)
   }
   
+  def square(x: Int): Int = {
+    println(s"$x*$x is being calculated on thread ${Thread.currentThread().getId()}")
+    Thread.sleep(100) // calculating a square is heavy work :)
+    x*x
+  }
+  
+  def work(o1: Observable[Int]): Observable[String] = {
+    println(s"map() is being called on thread ${Thread.currentThread().getId()}")
+    o1.map(i => s"The square of $i is ${square(i)}")
+  }
+  
+  @Test def parallelExample() {  
+    val t0 = System.currentTimeMillis()
+    Observable(1 to 10).parallel(work(_)).toBlockingObservable.foreach(println(_))
+    println(s"Work took ${System.currentTimeMillis()-t0} ms")
+  }
+  
+  @Test def exampleWithoutParallel() {
+    val t0 = System.currentTimeMillis()
+    work(Observable(1 to 10)).toBlockingObservable.foreach(println(_))
+    println(s"Work took ${System.currentTimeMillis()-t0} ms")
+  }
   
   def output(s: String): Unit = println(s)
   

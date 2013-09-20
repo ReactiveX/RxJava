@@ -1674,6 +1674,34 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def toBlockingObservable: BlockingObservable[T] = {
     new BlockingObservable[T](asJava.toBlockingObservable())
   }
+
+  /**
+   * Perform work in parallel by sharding an {@code Observable<T>} on a {@link Schedulers#threadPoolForComputation()} {@link Scheduler} and return an {@code Observable<R>} with the output.
+   *
+   * @param f
+   *            a {@link Func1} that applies Observable operators to {@code Observable<T>} in parallel and returns an {@code Observable<R>}
+   * @return an Observable with the output of the function executed on a {@link Scheduler}
+   */
+  def parallel[R](f: Observable[T] => Observable[R]): Observable[R] = {
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => f(Observable[T](jo)).asJava.asInstanceOf[rx.Observable[R]]
+    Observable[R](asJava.asInstanceOf[rx.Observable[T]].parallel[R](fJava))
+  }
+
+  /**
+   * Perform work in parallel by sharding an {@code Observable<T>} on a {@link Scheduler} and return an {@code Observable<R>} with the output.
+   *
+   * @param f
+   *            a {@link Func1} that applies Observable operators to {@code Observable<T>} in parallel and returns an {@code Observable<R>}
+   * @param s
+   *            a {@link Scheduler} to perform the work on.
+   * @return an Observable with the output of the {@link Func1} executed on a {@link Scheduler}
+   */
+  def parallel[R](f: Observable[T] => Observable[R], scheduler: Scheduler): Observable[R] = {
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => f(Observable[T](jo)).asJava.asInstanceOf[rx.Observable[R]]
+    Observable[R](asJava.asInstanceOf[rx.Observable[T]].parallel[R](fJava, scheduler))
+  }  
   
   def withFilter(p: T => Boolean): WithFilter[T] = {
     new WithFilter[T](p, asJava)

@@ -40,6 +40,8 @@ class CompletenessTest extends JUnitSuite {
       "onErrorResumeNext(Observable[_ <: T])" -> "onErrorResumeNext(Observable[U])",
       "onErrorReturn(Func1[Throwable, _ <: T])" -> "onErrorReturn(Throwable => U)",
       "onExceptionResumeNext(Observable[_ <: T])" -> "onExceptionResumeNext(Observable[U])",
+      "parallel(Func1[Observable[T], Observable[R]])" -> "parallel(Observable[T] => Observable[R])",
+      "parallel(Func1[Observable[T], Observable[R]], Scheduler)" -> "parallel(Observable[T] => Observable[R], Scheduler)",
       "reduce(Func2[T, T, T])" -> "reduce((U, U) => U)",
       "reduce(R, Func2[R, _ >: T, R])" -> "fold(R)((R, T) => R)",
       "scan(Func2[T, T, T])" -> unnecessary,
@@ -169,7 +171,7 @@ class CompletenessTest extends JUnitSuite {
   def javaMethodSignatureToScala(s: String): String = {
     s.replaceAllLiterally("Long, TimeUnit", "Duration")
      .replaceAll("Action0", "() => Unit")
-     // nested [] can't be parsed with regex, but we still do it, please forgive us ;-)
+     // nested [] can't be parsed with regex, so these will have to be added manually
      .replaceAll("Action1\\[([^]]*)\\]", "$1 => Unit")
      .replaceAll("Action2\\[([^]]*), ([^]]*)\\]", "($1, $2) => Unit")
      .replaceAll("Func0\\[([^]]*)\\]", "() => $1")
