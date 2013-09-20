@@ -17,11 +17,6 @@
 
 package rx.lang.scala
 
-import org.scalatest.junit.JUnitSuite
-import scala.collection.Seq
-import rx.lang.scala.observables.BlockingObservable
-
-
 /**
  * The Observable interface that implements the Reactive Pattern.
  */
@@ -38,6 +33,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
   import rx.lang.scala.subjects.Subject
+  import rx.lang.scala.observables.BlockingObservable
   import rx.lang.scala.ImplicitFunctionConversions._
 
   /**
@@ -157,7 +153,23 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     Observable(JObservable.concat(o1, o2))
   }
 
-  
+  /**
+   * Returns an Observable that emits the items emitted by two or more Observables, one after the
+   * other.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+   *
+   * @return an Observable that emits items that are the result of combining the items emitted by
+   *         the source Observables, one after the other
+   */
+  def concat[U](implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[U] = {
+    val o2: Observable[Observable[U]] = this
+    val o3: Observable[rx.Observable[_ <: U]] = o2.map(_.asJava)
+    val o4: rx.Observable[_ <: rx.Observable[_ <: U]] = o3.asJava
+    val o5 = rx.Observable.concat[U](o4)
+    Observable[U](o5)
+  }
+
   /**
    * Wraps this Observable in another Observable that ensures that the resulting
    * Observable is chronologically well-behaved.
@@ -198,18 +210,22 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    */
   def zip[U](that: Observable[U]): Observable[(T, U)] = {
     Observable[(T, U)](JObservable.zip[T, U, (T, U)](this.asJava, that.asJava, (t: T, u: U) => (t, u)))
-  }  
+  }
+    
+  // public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction) {
   
-  // There is no method corresponding to
-  // public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second)
-  // because the Scala-idiomatic way of doing this is
-  // (first zip second) map (p => p._1 == p._2)
-  
-  // There is no method corresponding to  
-  // public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality)
-  // because the Scala-idiomatic way of doing this is
-  // (first zip second) map (p => equality(p._1, p._2))
-  
+  /**
+   * Zips this Observable with its indices.
+   * 
+   * @return An Observable emitting pairs consisting of all elements of this Observable paired with 
+   *         their index. Indices start at 0.
+   */
+  def zipWithIndex: Observable[(T, Int)] = {
+    val fScala: (T, Integer) => (T, Int) = (elem: T, index: Integer) => (elem, index)
+    val fJava : Func2[_ >: T, Integer, _ <: (T, Int)] = fScala
+    Observable[(T, Int)](asJava.mapWithIndex[(T, Int)](fJava))
+  }
+    
   /**
    * Creates an Observable which produces buffers of collected values.
    * 
@@ -673,10 +689,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     Observable[R](asJava.flatMap[R]((t: T) => f(t).asJava))
   }
   
-  // There is no method like
-  // public Observable<T> where(Func1<? super T, Boolean> predicate)
-  // because that's called filter in Scala.
-
   /**
    * Returns an Observable that applies the given function to each item emitted by an
    * Observable and emits the result.
@@ -691,10 +703,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def map[R](func: T => R): Observable[R] = {
     Observable[R](asJava.map[R](func))
   }
-  
-  // There's no method like
-  // public <R> Observable<R> mapMany(Func1<? super T, ? extends Observable<? extends R>> func)
-  // because that's called flatMap in Scala.
   
   /**
    * Turns all of the notifications from a source Observable into {@link Observer#onNext onNext} emissions, and marks them with their original notification types within {@link Notification} objects.
@@ -909,7 +917,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return a pair of a start function and an {@link Observable} such that when the start function
    *         is called, the Observable starts to emit items to its {@link Observer}s
    */
-  def replay(): (() => Subscription, Observable[T]) = {
+  def replay: (() => Subscription, Observable[T]) = {
     val javaCO = asJava.replay()
     (() => javaCO.connect(), Observable[T](javaCO))
   }
@@ -948,10 +956,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     (() => javaCO.connect(), Observable[T](javaCO))
   }
 
-  // There is no aggregate function with signature
-  // public Observable<T> aggregate(Func2<? super T, ? super T, ? extends T> accumulator)
-  // because that's called reduce in Scala.
-  
   // TODO add Scala-like aggregate function
   
   /**
@@ -980,13 +984,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def fold[R](initialValue: R)(accumulator: (R, T) => R): Observable[R] = {
     Observable[R](asJava.reduce(initialValue, accumulator))
   }
-  // corresponds to Java's
-  // public <R> Observable<R> reduce(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) 
-  // public <R> Observable<R> aggregate(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) 
-  
-  // There is no method like
-  // public Observable<T> scan(Func2<? super T, ? super T, ? extends T> accumulator)
-  // because scan has a seed in Scala
   
   /**
    * Returns an Observable that emits the results of sampling the items emitted by the source
@@ -1024,7 +1021,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     Observable[T](asJava.sample(duration.length, duration.unit, scheduler))
   }
   
-    /**
+  /**
    * Returns an Observable that applies a function of your choosing to the first item emitted by a
    * source Observable, then feeds the result of that function along with the second item emitted
    * by an Observable into the same function, and so on until all items have been emitted by the
@@ -1048,8 +1045,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def scan[R](initialValue: R)(accumulator: (R, T) => R): Observable[R] = {
     Observable[R](asJava.scan(initialValue, accumulator))
   }
-  // corresponds to Scala's
-  // public <R> Observable<R> scan(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) 
 
   /**
    * Returns an Observable that emits a Boolean that indicates whether all of the items emitted by
@@ -1068,8 +1063,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     // it's more fun in Scala:
     this.map(predicate).fold(true)(_ && _)
   }
-  // corresponds to Java's
-  // public Observable<Boolean> all(Func1<? super T, Boolean> predicate) 
     
   /**
    * Returns an Observable that skips the first <code>num</code> items emitted by the source
@@ -1088,8 +1081,21 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def drop(n: Int): Observable[T] = {
     Observable[T](asJava.skip(n))
   }
-  // corresponds to Java's
-  // public Observable<T> skip(int num)
+
+  /**
+   * Returns an Observable that bypasses all items from the source Observable as long as the specified
+   * condition holds true. Emits all further source items as soon as the condition becomes false.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipWhile.png">
+   *
+   * @param predicate
+   *            A function to test each item emitted from the source Observable for a condition.
+   * @return an Observable that emits all items from the source Observable as soon as the condition
+   *         becomes false.
+   */
+  def dropWhile(predicate: T => Boolean): Observable[T] = {
+    Observable[T](asJava.skipWhile(predicate))
+  }
 
   /**
    * Returns an Observable that emits only the first <code>num</code> items emitted by the source
@@ -1139,16 +1145,9 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return an Observable that emits items from the source Observable so long as the predicate
    *         continues to return <code>true</code> for each item, then completes
    */
-  // TODO: if we have zipWithIndex, takeWhileWithIndex is not needed any more
   def takeWhileWithIndex(predicate: (T, Integer) => Boolean): Observable[T] = {
     Observable[T](asJava.takeWhileWithIndex(predicate))
   }
-
-  /* TODO zipWithIndex once it's in RxJava
-  def zipWithIndex: Observable[(T, Int)] = {
-    ???
-  }
-  */
 
   /**
    * Returns an Observable that emits only the last <code>count</code> items emitted by the source
@@ -1165,8 +1164,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def takeRight(n: Int): Observable[T] = {
     Observable[T](asJava.takeLast(n))
   }
-  // corresponds to Java's
-  // public Observable<T> takeLast(final int count) 
   
   /**
    * Returns an Observable that emits the items from the source Observable only until the
@@ -1207,16 +1204,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     Observable.jObsOfListToScObsOfSeq(asJava.toList())
         : Observable[Seq[T]] // SI-7818
   }
-  // corresponds to Java's method
-  // public Observable<List<T>> toList() {
-
-  // There are no toSortedList methods because Scala can sort itself
-  // public Observable<List<T>> toSortedList() 
-  // public Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) 
-  
-  // There is no method 
-  // def startWith[U >: T](values: U*): Observable[U]
-  // because we can just use ++ instead 
   
   /**
    * Groups the items emitted by this Observable according to a specified discriminator function.
@@ -1233,10 +1220,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     val func = (o: rx.observables.GroupedObservable[K, _ <: T]) => (o.getKey(), Observable[T](o))
     Observable[(K, Observable[T])](o1.map[(K, Observable[T])](func))
   }
-
-  // There's no method corresponding to
-  // public <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) 
-  // because this can be obtained by combining groupBy and map (as in Scala)
   
   /**
    * Given an Observable that emits Observables, creates a single Observable that
@@ -1256,8 +1239,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     val o5 = rx.Observable.switchOnNext[U](o4)
     Observable[U](o5)
   }
-  // TODO naming: follow C# (switch) or Java (switchOnNext)?
-  // public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) 
+  // Naming: We follow C# (switch), not Java (switchOnNext), because Java just had to avoid clash with keyword
   
  /**
    * Flattens two Observables into one Observable, without any transformation.
@@ -1276,6 +1258,88 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     val thisJava: rx.Observable[_ <: U] = this.asJava
     val thatJava: rx.Observable[_ <: U] = that.asJava
     Observable[U](rx.Observable.merge(thisJava, thatJava))
+  }
+
+  /**
+   * This behaves like {@link #merge(Observable)} except that if any of the merged Observables
+   * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+   * refrain from propagating that error notification until all of the merged Observables have
+   * finished emitting items.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+   * <p>
+   * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+   * Observers once.
+   * <p>
+   * This method allows an Observer to receive all successfully emitted items from all of the
+   * source Observables without being interrupted by an error notification from one of them.
+   *
+   * @param that
+   *            an Observable to be merged
+   * @return an Observable that emits items that are the result of flattening the items emitted by
+   *         {$code this} and {$code that}
+   */
+  def mergeDelayError[U >: T](that: Observable[U]): Observable[U] = {
+    Observable[U](rx.Observable.mergeDelayError[U](this.asJava, that.asJava))
+  }
+
+  /**
+   * Flattens the sequence of Observables emitted by {@code this} into one Observable, without any
+   * transformation.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+   * <p>
+   * You can combine the items emitted by multiple Observables so that they act like a single
+   * Observable by using this method.
+   *
+   * @return an Observable that emits items that are the result of flattening the items emitted
+   *         by the Observables emitted by {@code this}
+   */
+  def flatten[U](implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[U] = {
+    val o2: Observable[Observable[U]] = this
+    val o3: Observable[rx.Observable[_ <: U]] = o2.map(_.asJava)
+    val o4: rx.Observable[_ <: rx.Observable[_ <: U]] = o3.asJava
+    val o5 = rx.Observable.merge[U](o4)
+    Observable[U](o5)
+  }
+
+  /**
+   * This behaves like {@link #flatten(<:<)} except that if any of the merged Observables
+   * notify of an error via {@link Observer#onError onError}, this method will
+   * refrain from propagating that error notification until all of the merged Observables have
+   * finished emitting items.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+   * <p>
+   * Even if multiple merged Observables send {@code onError} notifications, this method will only invoke the {@code onError} method of its
+   * Observers once.
+   * <p>
+   * This method allows an Observer to receive all successfully emitted items from all of the
+   * source Observables without being interrupted by an error notification from one of them.
+   *
+   * @return an Observable that emits items that are the result of flattening the items emitted by
+   *         the Observables emitted by the this Observable
+   */
+  def flattenDelayError[U](implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[U] = {
+    val o2: Observable[Observable[U]] = this
+    val o3: Observable[rx.Observable[_ <: U]] = o2.map(_.asJava)
+    val o4: rx.Observable[_ <: rx.Observable[_ <: U]] = o3.asJava
+    val o5 = rx.Observable.mergeDelayError[U](o4)
+    Observable[U](o5)
+  }
+
+  /**
+   * Combines two observables, emitting a pair of the latest values of each of
+   * the source observables each time an event is received from one of the source observables, where the
+   * aggregation is defined by the given function.
+   *
+   * @param that
+   *            The second source observable.
+   * @return An Observable that combines the source Observables
+   */
+  def combineLatest[U](that: Observable[U]): Observable[(T, U)] = {
+    val f: Func2[_ >: T, _ >: U, _ <: (T, U)] = (t: T, u: U) => (t, u)
+    Observable[(T, U)](rx.Observable.combineLatest[T, U, (T, U)](this.asJava, that.asJava, f))
   }
 
   /**
@@ -1435,16 +1499,260 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def throttleLast(intervalDuration: Duration, scheduler: Scheduler): Observable[T] = {
     Observable[T](asJava.throttleLast(intervalDuration.length, intervalDuration.unit, scheduler))
   }
+
+  /**
+   * Returns an Observable that sums up the elements of this Observable.
+   * 
+   * @return an Observable emitting the sum of all the elements of the source Observable
+   *         as its single item.
+   */
+  def sum[U >: T](implicit num: Numeric[U]): Observable[U] = {
+    fold(num.zero)(num.plus)
+  }
+  
+  /**
+   * Returns an Observable that multiplies up the elements of this Observable.
+   * 
+   * @return an Observable emitting the product of all the elements of the source Observable
+   *         as its single item.
+   */
+  def product[U >: T](implicit num: Numeric[U]): Observable[U] = {
+    fold(num.one)(num.times)
+  }
+
+  /**
+   * Returns an Observable that emits only the very first item emitted by the source Observable, or
+   * a default value if the source Observable is empty.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstOrDefault.png">
+   *
+   * @param defaultValue
+   *            The default value to emit if the source Observable doesn't emit anything.
+   *            This is a by-name parameter, so it is only evaluated if the source Observable doesn't emit anything.
+   * @return an Observable that emits only the very first item from the source, or a default value
+   *         if the source Observable completes without emitting any item.
+   */
+  def firstOrElse[U >: T](default: => U): Observable[U] = {
+    this.take(1).fold[Option[U]](None)((v: Option[U], e: U) => Some(e)).map({
+      case Some(element) => element
+      case None => default
+    })
+  }
+
+  /**
+   * Returns an Observable that emits only the very first item emitted by the source Observable.
+   * This is just a shorthand for {@code take(1)}.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
+   *
+   * @return an Observable that emits only the very first item from the source, or none if the
+   *         source Observable completes without emitting a single item.
+   */
+  def first: Observable[T] = {
+    take(1)
+  }
+
+  /**
+   * Returns an Observable that forwards all sequentially distinct items emitted from the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.png">
+   *
+   * @return an Observable of sequentially distinct items
+   */
+  def distinctUntilChanged: Observable[T] = {
+    Observable[T](asJava.distinctUntilChanged)
+  }
+
+  /**
+   * Returns an Observable that forwards all items emitted from the source Observable that are sequentially
+   * distinct according to a key selector function.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.key.png">
+   *
+   * @param keySelector
+   *            a function that projects an emitted item to a key value which is used for deciding whether an item is sequentially
+   *            distinct from another one or not
+   * @return an Observable of sequentially distinct items
+   */
+  def distinctUntilChanged[U](keySelector: T => U): Observable[T] = {
+    Observable[T](asJava.distinctUntilChanged[U](keySelector))
+  }
+
+  /**
+   * Returns an Observable that forwards all items emitted from the source Observable that are sequentially
+   * distinct according to an equality function.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.png">
+   *
+   * @param equality
+   *            an equality function for deciding whether two emitted items are equal or not
+   * @return an Observable of sequentially distinct items
+   */
+  // def distinctUntilChanged[U](equality: (T, T) => Boolean): Observable[T] = {
+  //   TODO once https://github.com/Netflix/RxJava/issues/395 is fixed
+  // }
+
+  /**
+   * Returns an Observable that forwards all items emitted from the source Observable that are sequentially
+   * distinct according to a key selector function and a comparator.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.key.png">
+   *
+   * @param keySelector
+   *            a function that projects an emitted item to a key value which is used for deciding whether an item is sequentially
+   *            distinct from another one or not
+   * @param equality
+   *            an equality function for deciding whether two emitted item keys are equal or not
+   * @return an Observable of sequentially distinct items
+   */
+  // def distinctUntilChanged[U](keySelector: T => U, equality: (T, T) => Boolean): Observable[T] = {
+  //   TODO once https://github.com/Netflix/RxJava/issues/395 is fixed
+  // }
+
+  /**
+   * Returns an Observable that forwards all distinct items emitted from the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.png">
+   *
+   * @return an Observable of distinct items
+   */
+  def distinct: Observable[T] = {
+    Observable[T](asJava.distinct())
+  }
+
+  /**
+   * Returns an Observable that forwards all items emitted from the source Observable that are distinct according
+   * to a comparator.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.png">
+   *
+   * @param equality
+   *            an equality function for deciding whether two emitted items are equal or not
+   * @return an Observable of distinct items
+   */
+  // def distinct(equality: (T, T) => Boolean): Observable[T] = {
+  //   TODO once https://github.com/Netflix/RxJava/issues/395 is fixed
+  // }
+
+  /**
+   * Returns an Observable that forwards all items emitted from the source Observable that are distinct according
+   * to a key selector function.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.key.png">
+   *
+   * @param keySelector
+   *            a function that projects an emitted item to a key value which is used for deciding whether an item is
+   *            distinct from another one or not
+   * @return an Observable of distinct items
+   */
+  def distinct[U](keySelector: T => U): Observable[T] = {
+    Observable[T](asJava.distinct[U](keySelector))
+  }
+
+  /**
+   * Returns an Observable that forwards all items emitted from the source Observable that are distinct according
+   * to a key selector function and a comparator.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.key.png">
+   *
+   * @param keySelector
+   *            a function that projects an emitted item to a key value which is used for deciding whether an item is
+   *            distinct from another one or not
+   * @param equality
+   *            an equality function for deciding whether two emitted item keys are equal or not
+   * @return an Observable of distinct items
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229050(v=vs.103).aspx">MSDN: Observable.distinct</a>
+   */
+  // def distinct[U](keySelector: T => U, equality: (T, T) => Boolean): Observable[T] = {
+  //   TODO once https://github.com/Netflix/RxJava/issues/395 is fixed
+  //}
+
+  /**
+   * Returns an Observable that counts the total number of elements in the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/count.png">
+   *
+   * @return an Observable emitting the number of counted elements of the source Observable
+   *         as its single item.
+   */
+  def length: Observable[Int] = {
+    Observable[Integer](asJava.count()).map(_.intValue())
+  }
+
+  /**
+   * Retry subscription to origin Observable upto given retry count.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
+   * <p>
+   * If {@link Observer#onError} is invoked the source Observable will be re-subscribed to as many times as defined by retryCount.
+   * <p>
+   * Any {@link Observer#onNext} calls received on each attempt will be emitted and concatenated together.
+   * <p>
+   * For example, if an Observable fails on first time but emits [1, 2] then succeeds the second time and
+   * emits [1, 2, 3, 4, 5] then the complete output would be [1, 2, 1, 2, 3, 4, 5, onCompleted].
+   *
+   * @param retryCount
+   *            Number of retry attempts before failing.
+   * @return Observable with retry logic.
+   */
+  def retry(retryCount: Int): Observable[T] = {
+    Observable[T](asJava.retry(retryCount))
+  }
+
+  /**
+   * Retry subscription to origin Observable whenever onError is called (infinite retry count).
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
+   * <p>
+   * If {@link Observer#onError} is invoked the source Observable will be re-subscribed to.
+   * <p>
+   * Any {@link Observer#onNext} calls received on each attempt will be emitted and concatenated together.
+   * <p>
+   * For example, if an Observable fails on first time but emits [1, 2] then succeeds the second time and
+   * emits [1, 2, 3, 4, 5] then the complete output would be [1, 2, 1, 2, 3, 4, 5, onCompleted].
+   * @return Observable with retry logic.
+   */
+  def retry: Observable[T] = {
+    Observable[T](asJava.retry())
+  }
   
   /**
    * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking
    * operators).
-   * 
+   *
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">Blocking Observable Operators</a>
    */
   def toBlockingObservable: BlockingObservable[T] = {
     new BlockingObservable[T](asJava.toBlockingObservable())
   }
+
+  /**
+   * Perform work in parallel by sharding an {@code Observable<T>} on a {@link Schedulers#threadPoolForComputation()} {@link Scheduler} and return an {@code Observable<R>} with the output.
+   *
+   * @param f
+   *            a {@link Func1} that applies Observable operators to {@code Observable<T>} in parallel and returns an {@code Observable<R>}
+   * @return an Observable with the output of the function executed on a {@link Scheduler}
+   */
+  def parallel[R](f: Observable[T] => Observable[R]): Observable[R] = {
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => f(Observable[T](jo)).asJava.asInstanceOf[rx.Observable[R]]
+    Observable[R](asJava.asInstanceOf[rx.Observable[T]].parallel[R](fJava))
+  }
+
+  /**
+   * Perform work in parallel by sharding an {@code Observable<T>} on a {@link Scheduler} and return an {@code Observable<R>} with the output.
+   *
+   * @param f
+   *            a {@link Func1} that applies Observable operators to {@code Observable<T>} in parallel and returns an {@code Observable<R>}
+   * @param s
+   *            a {@link Scheduler} to perform the work on.
+   * @return an Observable with the output of the {@link Func1} executed on a {@link Scheduler}
+   */
+  def parallel[R](f: Observable[T] => Observable[R], scheduler: Scheduler): Observable[R] = {
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => f(Observable[T](jo)).asJava.asInstanceOf[rx.Observable[R]]
+    Observable[R](asJava.asInstanceOf[rx.Observable[T]].parallel[R](fJava, scheduler))
+  }  
   
   def withFilter(p: T => Boolean): WithFilter[T] = {
     new WithFilter[T](p, asJava)
@@ -1456,10 +1764,10 @@ object Observable {
   import scala.collection.JavaConverters._
   import scala.collection.immutable.Range
   import scala.concurrent.duration.Duration
-  import scala.concurrent.Future
   import rx.{Observable => JObservable}
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
+  import rx.util.functions._
   import rx.lang.scala.ImplicitFunctionConversions._
  
   private[scala] 
@@ -1505,12 +1813,6 @@ object Observable {
   def apply[T](func: Observer[T] => Subscription): Observable[T] = {
     Observable[T](JObservable.create(func))
   }
-  // corresponds to Java's
-  // public static <T> Observable<T> create(OnSubscribeFunc<T> func) 
-  
-  // Java's
-  // public static <T> Observable<T> empty()
-  // is not needed in Scala because it's a special case of varargs apply
   
   /**
    * Returns an Observable that invokes an {@link Observer}'s {@link Observer#onError onError} method when the Observer subscribes to it
@@ -1523,15 +1825,9 @@ object Observable {
    *            the type of the items (ostensibly) emitted by the Observable
    * @return an Observable that invokes the {@link Observer}'s {@link Observer#onError onError} method when the Observer subscribes to it
    */
-  def apply(exception: Throwable): Observable[Nothing] = {
-    Observable[Nothing](JObservable.error(exception))
+  def apply[T](exception: Throwable): Observable[T] = {
+    Observable[T](JObservable.error(exception))
   }
-  // corresponds to Java's
-  // public static <T> Observable<T> error(Throwable exception) 
-  
-  // There is no method corresponding to
-  // public static <T> Observable<T> from(Iterable<? extends T> iterable) 
-  // because Scala automatically uses the varargs apply for this
 
   /**
    * Converts a sequence of values into an Observable.
@@ -1551,17 +1847,10 @@ object Observable {
   def apply[T](args: T*): Observable[T] = {     
     Observable[T](JObservable.from(args.toIterable.asJava))
   }
-  // corresponds to Java's
-  // public static <T> Observable<T> from(T... items) 
   
   def apply(range: Range): Observable[Int] = {
     Observable[Int](JObservable.from(range.toIterable.asJava))
   }
-  
-  // There is no method corresponding to
-  // public static Observable<Integer> range(int start, int count) 
-  // because the Scala collection library provides enough methods to create Iterables.
-  // Examples: Observable(1 to 5), Observable(1 until 10)
   
   /**
    * Returns an Observable that calls an Observable factory to create its Observable for each
@@ -1586,8 +1875,6 @@ object Observable {
   def defer[T](observable: => Observable[T]): Observable[T] = {
     Observable[T](JObservable.defer(observable.asJava))
   }
-  // corresponds to Java's
-  // public static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) 
 
   /**
    * Returns an Observable that emits a single item and then completes.
@@ -1611,84 +1898,6 @@ object Observable {
   def just[T](value: T): Observable[T] = {
     Observable[T](JObservable.just(value))
   }
-  // corresponds to Java's
-  // public static <T> Observable<T> just(T value) 
-  
-  // TODO we have merge and concat (++) as binary instance methods, but do we also need them as
-  // static methods with arity > 2?
-
-  // There is no method corresponding to
-  // public static <T> Observable<T> concat(Observable<? extends T>... source) 
-  // because we have the instance method ++ instead
-  
-  /**
-   * This behaves like {@link #merge(java.util.List)} except that if any of the merged Observables
-   * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
-   * refrain from propagating that error notification until all of the merged Observables have
-   * finished emitting items.
-   * <p>
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
-   * <p>
-   * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
-   * Observers once.
-   * <p>
-   * This method allows an Observer to receive all successfully emitted items from all of the
-   * source Observables without being interrupted by an error notification from one of them.
-   * 
-   * @param source
-   *            a list of Observables
-   * @return an Observable that emits items that are the result of flattening the items emitted by
-   *         the {@code source} list of Observables
-   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
-   */
-  // public static <T> Observable<T> mergeDelayError(List<? extends Observable<? extends T>> source) 
-  // TODO decide if instance method mergeWithDelayError (?)
-
-    /**
-   * This behaves like {@link #merge(Observable)} except that if any of the merged Observables
-   * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
-   * refrain from propagating that error notification until all of the merged Observables have
-   * finished emitting items.
-   * <p>
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
-   * <p>
-   * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
-   * Observers once.
-   * <p>
-   * This method allows an Observer to receive all successfully emitted items from all of the
-   * source Observables without being interrupted by an error notification from one of them.
-   * 
-   * @param source
-   *            an Observable that emits Observables
-   * @return an Observable that emits items that are the result of flattening the items emitted by
-   *         the Observables emitted by the {@code source} Observable
-   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
-   */
-  // public static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source) 
-  // TODO decide if instance method mergeWithDelayError (?)
-  
-  /**
-   * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
-   * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
-   * refrain from propagating that error notification until all of the merged Observables have
-   * finished emitting items.
-   * <p>
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
-   * <p>
-   * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
-   * Observers once.
-   * <p>
-   * This method allows an Observer to receive all successfully emitted items from all of the
-   * source Observables without being interrupted by an error notification from one of them.
-   * 
-   * @param source
-   *            a series of Observables
-   * @return an Observable that emits items that are the result of flattening the items emitted by
-   *         the {@code source} Observables
-   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
-   */
-  // public static <T> Observable<T> mergeDelayError(Observable<? extends T>... source) 
-  // TODO decide if instance method mergeWithDelayError (?)
   
   /**
    * Returns an Observable that never sends any items or notifications to an {@link Observer}.
@@ -1702,76 +1911,71 @@ object Observable {
   def never: Observable[Nothing] = {
     Observable[Nothing](JObservable.never())
   }
-  
-  // There is no method corresponding to
-  // public static <T> Observable<T> switchDo(Observable<? extends Observable<? extends T>> sequenceOfSequences) 
-  // because it's deprecated.
-    
-  // There's no 
-  // public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences)
-  // here because that's an instance method.
-  
-  // There is no method here corresponding to
-  // public static <T> Observable<T> synchronize(Observable<? extends T> observable) 
-  // because that's an instance method.
 
-  /*
+  // TODO also support Scala Futures, but think well before. Do we want to Future and Observable
+  // to share a common base interface?
+  
+  // private because it's not RxScala's responsability to provide this alias
+  private type Future[+T] = java.util.concurrent.Future[_ <: T]
+  
   def apply[T](f: Future[T]): Observable[T] = {
-    ??? // TODO convert Scala Future to Java Future
+    Observable[T](rx.Observable.from(f))
   } 
-  */
-  // corresponds to
-  // public static <T> Observable<T> from(Future<? extends T> future)
-  
-  /*
+
   def apply[T](f: Future[T], scheduler: Scheduler): Observable[T] = {
-    ??? // TODO convert Scala Future to Java Future
+    Observable[T](rx.Observable.from(f, scheduler))
   }
-  */
-  // public static <T> Observable<T> from(Future<? extends T> future, Scheduler scheduler)
-  
-  /*
+
   def apply[T](f: Future[T], duration: Duration): Observable[T] = {
-    ??? // TODO convert Scala Future to Java Future
+    Observable[T](rx.Observable.from(f, duration.length, duration.unit))
   }
-  */
-  // corresponds to
-  // public static <T> Observable<T> from(Future<? extends T> future, long timeout, TimeUnit unit)
-  
-  // There is no method here corresponding to
-  // public static <T1, T2, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> zipFunction)
-  // because it's an instance method
-  
-  // There is no method corresponding to
-  // public static <T1, T2, T3, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction)
-  // because zip3 is not known in the Scala world
-  // Also applies to all zipN with N > 3 ;-)
 
   /**
-   * Combines the given observables, emitting an event containing an aggregation of the latest values of each of the source observables
-   * each time an event is received from one of the source observables, where the aggregation is defined by the given function.
-   * <p>
-   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/combineLatest.png">
+   * Given a Seq of N observables, returns an observable that emits Seqs of N elements each.
+   * The first emitted Seq will contain the first element of each source observable,
+   * the second Seq the second element of each source observable, and so on.
    * 
-   * @param o1
-   *            The first source observable.
-   * @param o2
-   *            The second source observable.
-   * @param combineFunction
-   *            The aggregation function used to combine the source observable values.
-   * @return An Observable that combines the source Observables with the given combine function
+   * @param observables
+   *            A Seq of source Observables
+   * @return an Observable that emits the zipped Seqs
    */
-  // public static <T1, T2, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> combineFunction) 
-  // TODO do we want this as an instance method?
-  // TODO then decide about combineLatest with > 2 Observables
+  def zip[T](observables: Seq[Observable[T]]): Observable[Seq[T]] = {
+    val f: FuncN[Seq[T]] = (args: Seq[java.lang.Object]) => {
+      val asSeq: Seq[Object] = args.toSeq
+      asSeq.asInstanceOf[Seq[T]]
+    }
+    val list = observables.map(_.asJava).asJava
+    val o = rx.Observable.zip(list, f)
+    Observable[Seq[T]](o)
+  }
   
-  // TODO what about these two?
-  // public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction)
-  // public static <R> Observable<R> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction)
-
+  /**
+   * Given an Observable emitting N source observables, returns an observable that emits Seqs of N elements each.
+   * The first emitted Seq will contain the first element of each source observable,
+   * the second Seq the second element of each source observable, and so on.
+   * 
+   * @param observables
+   *            An Observable emitting N source Observables
+   * @return an Observable that emits the zipped Seqs
+   */
+  def zip[T](observables: Observable[Observable[T]]): Observable[Seq[T]] = {
+    val f: FuncN[Seq[T]] = (args: Seq[java.lang.Object]) => {
+      val asSeq: Seq[Object] = args.toSeq
+      asSeq.asInstanceOf[Seq[T]]
+    }
+    val list = observables.map(_.asJava).asJava
+    val o = rx.Observable.zip(list, f)
+    Observable[Seq[T]](o)
+  }
+  
   def interval(duration: Duration): Observable[Long] = {
     (new Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit))).map(_.longValue())
   }
+  
+  def interval(duration: Duration, scheduler: Scheduler): Observable[Long] = {
+    (new Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit, scheduler))).map(_.longValue())
+  }
+  
 }
 
 // Cannot yet have inner class because of this error message: 
@@ -1795,7 +1999,7 @@ class WithFilter[+T] private[scala] (p: T => Boolean, asJava: rx.Observable[_ <:
   // there is no foreach here, that's only available on BlockingObservable
 }
 
-class UnitTestSuite extends JUnitSuite {
+class UnitTestSuite extends org.scalatest.junit.JUnitSuite {
   import scala.concurrent.duration._
   import org.junit.{Before, Test, Ignore}
   import org.junit.Assert._
@@ -1826,6 +2030,40 @@ class UnitTestSuite extends JUnitSuite {
     // val wrongDemat = Observable("hello").dematerialize
     
     assertEquals(demat.toBlockingObservable.toIterable.toList, List(1, 2, 3))
+  }
+    
+  // Test that Java's firstOrDefault propagates errors.
+  // If this changes (i.e. it suppresses errors and returns default) then Scala's firstOrElse
+  // should be changed accordingly.
+  @Test def testJavaFirstOrDefault() {
+    assertEquals(1, rx.Observable.from(1, 2).firstOrDefault(10).toBlockingObservable().single)
+    assertEquals(10, rx.Observable.empty().firstOrDefault(10).toBlockingObservable().single)
+    val msg = "msg6251"
+    var receivedMsg = "none"
+    try {
+      rx.Observable.error(new Exception(msg)).firstOrDefault(10).toBlockingObservable().single
+    } catch {
+      case e: Exception => receivedMsg = e.getCause().getMessage()
+    }
+    assertEquals(receivedMsg, msg)
+  }
+  
+  @Test def testFirstOrElse() {
+    def mustNotBeCalled: String = error("this method should not be called")
+    def mustBeCalled: String = "this is the default value"
+    assertEquals("hello", Observable("hello").firstOrElse(mustNotBeCalled).toBlockingObservable.single)
+    assertEquals("this is the default value", Observable().firstOrElse(mustBeCalled).toBlockingObservable.single)
+  }
+  
+  @Test def testFirstOrElseWithError() {
+    val msg = "msg6251"
+    var receivedMsg = "none"
+    try {
+      Observable[Int](new Exception(msg)).firstOrElse(10).toBlockingObservable.single
+    } catch {
+      case e: Exception => receivedMsg = e.getCause().getMessage()
+    }
+    assertEquals(receivedMsg, msg)
   }
   
   @Test def testTest() = {

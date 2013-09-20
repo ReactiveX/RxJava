@@ -23,7 +23,7 @@ import org.junit.{Before, Test, Ignore}
 import org.junit.Assert._
 import rx.lang.scala.concurrency.NewThreadScheduler
 
-@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
+//@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
 
   @Test def intervalExample() {
@@ -95,13 +95,32 @@ class RxScalaDemo extends JUnitSuite {
     println((before ++ source).toBlockingObservable.toList)
   }
 
-  @Test def mergeExample() {
+  @Test def mergeTwoExample() {
     val slowNumbers = Observable.interval(400 millis).take(5).map("slow " + _)
     val fastNumbers = Observable.interval(200 millis).take(10).map("fast " + _)
     val o = (slowNumbers merge fastNumbers)
     o.subscribe(output(_))
     waitFor(o)
   }
+  
+  def myInterval(period: Long): Observable[String] = {
+    Observable.interval(period.millis).map(n => s"Obs-$period emits $n")
+  }
+  
+  @Test def flattenManyExample() {
+    val o = Observable.interval(500 millis).map(n => myInterval((n+1)*100))
+    val stopper = Observable.interval(5 seconds)
+    o.flatten.takeUntil(stopper).toBlockingObservable.foreach(println(_))
+  }
+  
+  @Test def fattenSomeExample() {
+    // To merge some observables which are all known already:
+    Observable(
+        Observable.interval(200 millis), 
+        Observable.interval(400 millis), 
+        Observable.interval(800 millis)
+    ).flatten.take(12).toBlockingObservable.foreach(println(_))
+  }    
   
   @Test def rangeAndBufferExample() {
     val o = Observable(1 to 18)
@@ -178,6 +197,29 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(List(0, 1, 2, 3), t.toBlockingObservable.toList)    
   }
 
+  @Test def timingTest() {
+    val firstOnly = false
+    val numbersByModulo3 = Observable.interval(1000 millis).take(9).groupBy(_ % 3)
+    
+    (for ((modulo, numbers) <- numbersByModulo3) yield {
+      println("Observable for modulo" + modulo + " started")
+      
+      if (firstOnly) numbers.take(1) else numbers
+    }).flatten.toBlockingObservable.foreach(println(_)) 
+  }
+  
+  @Test def timingTest1() {
+    val numbersByModulo3 = Observable.interval(1000 millis).take(9).groupBy(_ % 3)
+    
+    val t0 = System.currentTimeMillis
+    
+    (for ((modulo, numbers) <- numbersByModulo3) yield {
+      println("Observable for modulo" + modulo + " started at t = " + (System.currentTimeMillis - t0))
+      numbers.take(1) // <- TODO very unexpected
+      //numbers
+    }).flatten.toBlockingObservable.foreach(println(_))
+  }
+  
   @Test def groupByExample() {
     val medalsByCountry = Olympics.mountainBikeMedals.groupBy(medal => medal.country)
     
@@ -189,6 +231,13 @@ class RxScalaDemo extends JUnitSuite {
     })
     
     waitFor(firstMedalOfEachCountry)
+  }
+  
+  @Test def olympicsExample() {
+    val (go, medals) = Olympics.mountainBikeMedals.publish
+    medals.subscribe(println(_))
+    go()
+    waitFor(medals)    
   }
   
   @Test def exampleWithoutPublish() {
@@ -233,8 +282,99 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(None,    Observable(1, 2).toBlockingObservable.singleOption)
     assertEquals(Some(1), Observable(1)   .toBlockingObservable.singleOption)
     assertEquals(None,    Observable()    .toBlockingObservable.singleOption)
-  }  
-    
+  }
+  
+  // We can't put a general average method into Observable.scala, because Scala's Numeric
+  // does not have scalar multiplication (we would need to calculate (1.0/numberOfElements)*sum)
+  def doubleAverage(o: Observable[Double]): Observable[Double] = {
+    for ((finalSum, finalCount) <- o.fold((0.0, 0))({case ((sum, count), elem) => (sum+elem, count+1)}))
+      yield finalSum / finalCount
+  }
+  
+  @Test def averageExample() {
+    println(doubleAverage(Observable()).toBlockingObservable.single)
+    println(doubleAverage(Observable(0)).toBlockingObservable.single)
+    println(doubleAverage(Observable(4.44)).toBlockingObservable.single)
+    println(doubleAverage(Observable(1, 2, 3.5)).toBlockingObservable.single)
+  }
+  
+  @Test def testSum() {
+    assertEquals(10, Observable(1, 2, 3, 4).sum.toBlockingObservable.single)
+    assertEquals(6, Observable(4, 2).sum.toBlockingObservable.single)
+    assertEquals(0, Observable[Int]().sum.toBlockingObservable.single)
+  }
+  
+  @Test def testProduct() {
+    assertEquals(24, Observable(1, 2, 3, 4).product.toBlockingObservable.single)
+    assertEquals(8, Observable(4, 2).product.toBlockingObservable.single)
+    assertEquals(1, Observable[Int]().product.toBlockingObservable.single)
+  }
+  
+  @Test def mapWithIndexExample() {
+    // We don't need mapWithIndex because we already have zipWithIndex, which we can easily
+    // combine with map:
+    Observable("a", "b", "c").zipWithIndex.map(pair => pair._1 + " has index " + pair._2)
+        .toBlockingObservable.foreach(println(_))
+        
+    // Or even nicer with for-comprehension syntax:
+    (for ((letter, index) <- Observable("a", "b", "c").zipWithIndex) yield letter + " has index " + index)
+        .toBlockingObservable.foreach(println(_))
+  }
+  
+  // source Observables are in a List:
+  @Test def zipManySeqExample() {
+    val observables = List(Observable(1, 2), Observable(10, 20), Observable(100, 200))
+    (for (seq <- Observable.zip(observables)) yield seq.mkString("(", ", ", ")"))
+        .toBlockingObservable.foreach(println(_))
+  }
+  
+  // source Observables are in an Observable:
+  @Test def zipManyObservableExample() {
+    val observables = Observable(Observable(1, 2), Observable(10, 20), Observable(100, 200))
+    (for (seq <- Observable.zip(observables)) yield seq.mkString("(", ", ", ")"))
+        .toBlockingObservable.foreach(println(_))
+  }
+  
+  @Test def takeFirstWithCondition() {
+    val condition: Int => Boolean = _ >= 3
+    assertEquals(3, Observable(1, 2, 3, 4).filter(condition).first.toBlockingObservable.single)
+  }
+  
+  @Test def firstOrDefaultWithCondition() {
+    val condition: Int => Boolean = _ >= 3
+    assertEquals(3, Observable(1, 2, 3, 4).filter(condition).firstOrElse(10).toBlockingObservable.single)
+    assertEquals(10, Observable(-1, 0, 1).filter(condition).firstOrElse(10).toBlockingObservable.single)
+  }
+  
+  def square(x: Int): Int = {
+    println(s"$x*$x is being calculated on thread ${Thread.currentThread().getId()}")
+    Thread.sleep(100) // calculating a square is heavy work :)
+    x*x
+  }
+  
+  def work(o1: Observable[Int]): Observable[String] = {
+    println(s"map() is being called on thread ${Thread.currentThread().getId()}")
+    o1.map(i => s"The square of $i is ${square(i)}")
+  }
+  
+  @Test def parallelExample() {  
+    val t0 = System.currentTimeMillis()
+    Observable(1 to 10).parallel(work(_)).toBlockingObservable.foreach(println(_))
+    println(s"Work took ${System.currentTimeMillis()-t0} ms")
+  }
+  
+  @Test def exampleWithoutParallel() {
+    val t0 = System.currentTimeMillis()
+    work(Observable(1 to 10)).toBlockingObservable.foreach(println(_))
+    println(s"Work took ${System.currentTimeMillis()-t0} ms")
+  }
+  
+  @Test def toSortedList() {
+    assertEquals(Seq(7, 8, 9, 10), Observable(10, 7, 8, 9).toSeq.map(_.sorted).toBlockingObservable.single)
+    val f = (a: Int, b: Int) => b < a
+    assertEquals(Seq(10, 9, 8, 7), Observable(10, 7, 8, 9).toSeq.map(_.sortWith(f)).toBlockingObservable.single)
+  }
+  
   def output(s: String): Unit = println(s)
   
   // blocks until obs has completed

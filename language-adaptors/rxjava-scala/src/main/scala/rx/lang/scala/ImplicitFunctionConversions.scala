@@ -73,6 +73,11 @@ object ImplicitFunctionConversions {
     new Func2[A, B, jlang.Boolean] {
       def call(a: A, b: B): jlang.Boolean = f(a, b).booleanValue
     }
+  
+  implicit def scalaFuncNToRxFuncN[R](f: Seq[java.lang.Object] => R): FuncN[R] =
+    new FuncN[R] {
+      def call(args: java.lang.Object*): R = f(args)
+    }
 
   /**
    * Converts a specific function shape (used in takeWhile) to the equivalent Java types with an Rx Func2
