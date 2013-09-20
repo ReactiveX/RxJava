@@ -8,6 +8,8 @@ import scala.collection.SortedSet
 import scala.collection.SortedMap
 import org.junit.Ignore
 import java.lang.reflect.Modifier
+import java.util.Date
+import java.util.Calendar
 
 class CompletenessTest extends JUnitSuite {
   
@@ -15,11 +17,11 @@ class CompletenessTest extends JUnitSuite {
     
   val deprecated = "[deprecated in RxJava]"
     
-  val averageProblem = "[We can't have a general average method because Scala's Numeric does not have " +
-     "scalar multiplication (we would need to calculate (1.0/numberOfElements)*sum). " + 
-     "You can use fold instead to accumulate sum and numberOfElements and divide at the end.]"
+  val averageProblem = "[We can't have a general average method because Scala's `Numeric` does not have " +
+     "scalar multiplication (we would need to calculate `(1.0/numberOfElements)*sum`). " + 
+     "You can use `fold` instead to accumulate `sum` and `numberOfElements` and divide at the end.]"
      
-  val commentForFirstWithPredicate = "[use .filter(condition).first]"
+  val commentForFirstWithPredicate = "[use `.filter(condition).first`]"
   
   val correspondence = defaultMethodCorrespondence ++ Map(
       // manually added entries for Java instance methods
@@ -32,10 +34,10 @@ class CompletenessTest extends JUnitSuite {
       "dematerialize()" -> "dematerialize(<:<[T, Notification[U]])",
       "first(Func1[_ >: T, Boolean])" -> commentForFirstWithPredicate,
       "firstOrDefault(T)" -> "firstOrElse(=> U)", 
-      "firstOrDefault(Func1[_ >: T, Boolean], T)" -> "[use .filter(condition).firstOrElse(default)]",
-      "groupBy(Func1[_ >: T, _ <: K], Func1[_ >: T, _ <: R])" -> "groupBy(T => K)",
+      "firstOrDefault(Func1[_ >: T, Boolean], T)" -> "[use `.filter(condition).firstOrElse(default)`]",
+      "groupBy(Func1[_ >: T, _ <: K], Func1[_ >: T, _ <: R])" -> "[use `groupBy` and `map`]",
       "mapMany(Func1[_ >: T, _ <: Observable[_ <: R]])" -> "flatMap(T => Observable[R])",
-      "mapWithIndex(Func2[_ >: T, Integer, _ <: R])" -> "[combine zipWithIndex with map or with a for comprehension]",
+      "mapWithIndex(Func2[_ >: T, Integer, _ <: R])" -> "[combine `zipWithIndex` with `map` or with a for comprehension]",
       "onErrorResumeNext(Func1[Throwable, _ <: Observable[_ <: T]])" -> "onErrorResumeNext(Throwable => Observable[U])",
       "onErrorResumeNext(Observable[_ <: T])" -> "onErrorResumeNext(Observable[U])",
       "onErrorReturn(Func1[Throwable, _ <: T])" -> "onErrorReturn(Throwable => U)",
@@ -49,13 +51,13 @@ class CompletenessTest extends JUnitSuite {
       "skip(Int)" -> "drop(Int)",
       "skipWhile(Func1[_ >: T, Boolean])" -> "dropWhile(T => Boolean)",
       "skipWhileWithIndex(Func2[_ >: T, Integer, Boolean])" -> unnecessary,
-      "startWith(Iterable[T])" -> "[unnecessary because we can just use ++ instead]",
+      "startWith(Iterable[T])" -> "[unnecessary because we can just use `++` instead]",
       "takeFirst()" -> "first",
       "takeFirst(Func1[_ >: T, Boolean])" -> commentForFirstWithPredicate,
       "takeLast(Int)" -> "takeRight(Int)",
       "toList()" -> "toSeq",
-      "toSortedList()" -> unnecessary,
-      "toSortedList(Func2[_ >: T, _ >: T, Integer])" -> unnecessary,
+      "toSortedList()" -> "[Sorting is already done in Scala's collection library, use `.toSeq.map(_.sorted)`]",
+      "toSortedList(Func2[_ >: T, _ >: T, Integer])" -> "[Sorting is already done in Scala's collection library, use `.toSeq.map(_.sortWith(f))`]",
       "where(Func1[_ >: T, Boolean])" -> "filter(T => Boolean)",
       "window(Long, Long, TimeUnit)" -> "window(Duration, Duration)",
       "window(Long, Long, TimeUnit, Scheduler)" -> "window(Duration, Duration, Scheduler)",
@@ -81,8 +83,8 @@ class CompletenessTest extends JUnitSuite {
       "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[U])",
       "mergeDelayError(Observable[_ <: Observable[_ <: T]])" -> "flattenDelayError(<:<[Observable[T], Observable[Observable[U]]])",
       "range(Int, Int)" -> "apply(Range)",
-      "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "[use (first zip second) map (p => p._1 == p._2)]",
-      "sequenceEqual(Observable[_ <: T], Observable[_ <: T], Func2[_ >: T, _ >: T, Boolean])" -> "[use (first zip second) map (p => equality(p._1, p._2))]",
+      "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "[use `(first zip second) map (p => p._1 == p._2)`]",
+      "sequenceEqual(Observable[_ <: T], Observable[_ <: T], Func2[_ >: T, _ >: T, Boolean])" -> "[use `(first zip second) map (p => equality(p._1, p._2))`]",
       "sum(Observable[Integer])" -> "sum(Numeric[U])",
       "sumDoubles(Observable[Double])" -> "sum(Numeric[U])",
       "sumFloats(Observable[Float])" -> "sum(Numeric[U])",
@@ -90,15 +92,15 @@ class CompletenessTest extends JUnitSuite {
       "synchronize(Observable[T])" -> "synchronize",
       "switchDo(Observable[_ <: Observable[_ <: T]])" -> deprecated,
       "switchOnNext(Observable[_ <: Observable[_ <: T]])" -> "switch(<:<[Observable[T], Observable[Observable[U]]])",
-      "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method zip and map]",
-      "zip(Observable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use zip in companion object and map]",
-      "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use zip in companion object and map]"
+      "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method `zip` and `map`]",
+      "zip(Observable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]",
+      "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]"
   ) ++ List.iterate("T", 9)(s => s + ", T").map(
       // all 9 overloads of startWith:
-      "startWith(" + _ + ")" -> "[unnecessary because we can just use ++ instead]"
+      "startWith(" + _ + ")" -> "[unnecessary because we can just use `++` instead]"
   ).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
       // concat 2-9
-      "concat(" + _ + ")" -> "[unnecessary because we can use ++ instead or Observable(o1, o2, ...).concat]"
+      "concat(" + _ + ")" -> "[unnecessary because we can use `++` instead or `Observable(o1, o2, ...).concat`]"
   ).drop(1).toMap ++ List.iterate("T", 10)(s => s + ", T").map(
       // all 10 overloads of from:
       "from(" + _ + ")" -> "apply(T*)"
@@ -109,10 +111,10 @@ class CompletenessTest extends JUnitSuite {
     ("zip(" + obsArgs + "Func" + i + "[" + funcParams + "_ <: R])", unnecessary)
   }).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
       // merge 3-9:
-      "merge(" + _ + ")" -> "[unnecessary because we can use Observable(o1, o2, ...).flatten instead]"
+      "merge(" + _ + ")" -> "[unnecessary because we can use `Observable(o1, o2, ...).flatten` instead]"
   ).drop(2).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
       // mergeDelayError 3-9:
-      "mergeDelayError(" + _ + ")" -> "[unnecessary because we can use Observable(o1, o2, ...).flattenDelayError instead]"
+      "mergeDelayError(" + _ + ")" -> "[unnecessary because we can use `Observable(o1, o2, ...).flattenDelayError` instead]"
   ).drop(2).toMap ++ (3 to 9).map(i => {
     // combineLatest 3-9:
     val obsArgs = (1 to i).map(j => s"Observable[_ <: T$j], ").mkString("")
@@ -257,6 +259,12 @@ class CompletenessTest extends JUnitSuite {
     val status = if (bad == 0) "SUCCESS" else "BAD"
     println(s"\n$status: $bad out of ${bad+good} methods were not found in Scala Observable")
   }
+  
+  def setTodoForMissingMethods(corresp: Map[String, String]): Map[String, String] = {
+    val actualMethods = getPublicInstanceAndCompanionMethods(typeOf[rx.lang.scala.Observable[_]]).toSet
+    for ((javaM, scalaM) <- corresp) yield
+      (javaM, if (actualMethods.contains(scalaM) || scalaM.charAt(0) == '[') scalaM else "[**TODO: missing**]")
+  }
    
   @Test def checkJavaMethodPresence: Unit = {
     println("\nTesting that all mentioned Java methods exist")
@@ -267,6 +275,56 @@ class CompletenessTest extends JUnitSuite {
   @Ignore // because we prefer the verbose version
   @Test def checkScalaMethodPresence: Unit = {
     checkMethodPresence(correspondence.values, typeOf[rx.lang.scala.Observable[_]])
+  }
+  
+  def scalaToJavaSignature(s: String) = 
+    s.replaceAllLiterally("_ <:", "? extends")
+     .replaceAllLiterally("_ >:", "? super")
+     .replaceAllLiterally("[", "<")
+     .replaceAllLiterally("]", ">")
+     .replaceAllLiterally("Array<T>", "T[]")
+  
+  def escapeJava(s: String) =
+    s.replaceAllLiterally("<", "&lt;")
+     .replaceAllLiterally(">", "&gt;")
+    
+  @Test def printMarkdownCorrespondenceTable() {
+    def isInteresting(p: (String, String)): Boolean =
+      p._1.replaceAllLiterally("()", "") != p._2
+    def groupingKey(p: (String, String)): (String, String) = 
+      (if (p._1.startsWith("average")) "average" else p._1.takeWhile(_ != '('), p._2)
+    def formatJavaCol(name: String, alternatives: Iterable[String]): String = {
+      alternatives.toList.sorted.map(scalaToJavaSignature(_)).map(s => {
+        if (s.length > 50) {
+          val toolTip = escapeJava(s)
+          "<span title=\"" + toolTip + "\"><code>" + name + "(...)</code></span>"
+        } else {
+          "`" + s + "`"
+        }
+      }).mkString("<br/>")
+    }
+    def formatScalaCol(s: String): String = 
+      if (s.startsWith("[") && s.endsWith("]")) s.drop(1).dropRight(1) else "`" + s + "`"
+    def escape(s: String) = s.replaceAllLiterally("[", "&lt;").replaceAllLiterally("]", "&gt;")
+    
+    println("""
+## Comparison of Scala Observable and Java Observable
+   
+Note: 
+*    This table contains both static methods and instance methods.
+*    If a signature is too long, move your mouse over it to get the full signature.
+
+   
+| Java Method | Scala Method |
+|-------------|--------------|""")
+    
+    val ps = setTodoForMissingMethods(correspondence)
+
+    (for (((javaName, scalaCol), pairs) <- ps.groupBy(groupingKey(_)).toList.sortBy(_._1._1)) yield {
+      "| " + formatJavaCol(javaName, pairs.map(_._1)) + " | " + formatScalaCol(scalaCol) + " |"
+    }).foreach(println(_))
+    println(s"\nThis table was generated on ${Calendar.getInstance().getTime()}.")
+    println(s"**Do not edit**. Instead, edit `${getClass().getCanonicalName()}`.")
   }
   
 }

@@ -369,6 +369,12 @@ class RxScalaDemo extends JUnitSuite {
     println(s"Work took ${System.currentTimeMillis()-t0} ms")
   }
   
+  @Test def toSortedList() {
+    assertEquals(Seq(7, 8, 9, 10), Observable(10, 7, 8, 9).toSeq.map(_.sorted).toBlockingObservable.single)
+    val f = (a: Int, b: Int) => b < a
+    assertEquals(Seq(10, 9, 8, 7), Observable(10, 7, 8, 9).toSeq.map(_.sortWith(f)).toBlockingObservable.single)
+  }
+  
   def output(s: String): Unit = println(s)
   
   // blocks until obs has completed
