@@ -287,7 +287,8 @@ class CompletenessTest extends JUnitSuite {
   def escapeJava(s: String) =
     s.replaceAllLiterally("<", "&lt;")
      .replaceAllLiterally(">", "&gt;")
-    
+  
+  @Ignore // because spams output
   @Test def printMarkdownCorrespondenceTable() {
     def isInteresting(p: (String, String)): Boolean =
       p._1.replaceAllLiterally("()", "") != p._2
