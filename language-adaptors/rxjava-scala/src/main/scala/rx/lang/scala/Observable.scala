@@ -1485,11 +1485,126 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def first: Observable[T] = {
     take(1)
   }
-  
+
+  /**
+   * Returns an Observable that forwards all sequentially distinct items emitted from the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.png">
+   *
+   * @return an Observable of sequentially distinct items
+   */
+  def distinctUntilChanged: Observable[T] = {
+    Observable[T](asJava.distinctUntilChanged)
+  }
+
+  /**
+   * Returns an Observable that forwards all items emitted from the source Observable that are sequentially
+   * distinct according to a key selector function.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.key.png">
+   *
+   * @param keySelector
+   *            a function that projects an emitted item to a key value which is used for deciding whether an item is sequentially
+   *            distinct from another one or not
+   * @return an Observable of sequentially distinct items
+   */
+  def distinctUntilChanged[U](keySelector: T => U): Observable[T] = {
+    Observable[T](asJava.distinctUntilChanged[U](keySelector))
+  }
+
+  /**
+   * Returns an Observable that forwards all items emitted from the source Observable that are sequentially
+   * distinct according to an equality function.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.png">
+   *
+   * @param equality
+   *            an equality function for deciding whether two emitted items are equal or not
+   * @return an Observable of sequentially distinct items
+   */
+  // def distinctUntilChanged[U](equality: (T, T) => Boolean): Observable[T] = {
+  //   TODO once https://github.com/Netflix/RxJava/issues/395 is fixed
+  // }
+
+  /**
+   * Returns an Observable that forwards all items emitted from the source Observable that are sequentially
+   * distinct according to a key selector function and a comparator.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.key.png">
+   *
+   * @param keySelector
+   *            a function that projects an emitted item to a key value which is used for deciding whether an item is sequentially
+   *            distinct from another one or not
+   * @param equality
+   *            an equality function for deciding whether two emitted item keys are equal or not
+   * @return an Observable of sequentially distinct items
+   */
+  // def distinctUntilChanged[U](keySelector: T => U, equality: (T, T) => Boolean): Observable[T] = {
+  //   TODO once https://github.com/Netflix/RxJava/issues/395 is fixed
+  // }
+
+  /**
+   * Returns an Observable that forwards all distinct items emitted from the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.png">
+   *
+   * @return an Observable of distinct items
+   */
+  def distinct: Observable[T] = {
+    Observable[T](asJava.distinct())
+  }
+
+  /**
+   * Returns an Observable that forwards all items emitted from the source Observable that are distinct according
+   * to a comparator.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.png">
+   *
+   * @param equality
+   *            an equality function for deciding whether two emitted items are equal or not
+   * @return an Observable of distinct items
+   */
+  // def distinct(equality: (T, T) => Boolean): Observable[T] = {
+  //   TODO once https://github.com/Netflix/RxJava/issues/395 is fixed
+  // }
+
+  /**
+   * Returns an Observable that forwards all items emitted from the source Observable that are distinct according
+   * to a key selector function.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.key.png">
+   *
+   * @param keySelector
+   *            a function that projects an emitted item to a key value which is used for deciding whether an item is
+   *            distinct from another one or not
+   * @return an Observable of distinct items
+   */
+  def distinct[U](keySelector: T => U): Observable[T] = {
+    Observable[T](asJava.distinct[U](keySelector))
+  }
+
+  /**
+   * Returns an Observable that forwards all items emitted from the source Observable that are distinct according
+   * to a key selector function and a comparator.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.key.png">
+   *
+   * @param keySelector
+   *            a function that projects an emitted item to a key value which is used for deciding whether an item is
+   *            distinct from another one or not
+   * @param equality
+   *            an equality function for deciding whether two emitted item keys are equal or not
+   * @return an Observable of distinct items
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229050(v=vs.103).aspx">MSDN: Observable.distinct</a>
+   */
+  // def distinct[U](keySelector: T => U, equality: (T, T) => Boolean): Observable[T] = {
+  //   TODO once https://github.com/Netflix/RxJava/issues/395 is fixed
+  //}
+
   /**
    * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking
    * operators).
-   * 
+   *
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">Blocking Observable Operators</a>
    */
   def toBlockingObservable: BlockingObservable[T] = {
