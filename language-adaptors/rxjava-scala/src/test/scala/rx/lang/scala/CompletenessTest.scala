@@ -17,8 +17,7 @@ class CompletenessTest extends JUnitSuite {
      "scalar multiplication (we would need to calculate (1.0/numberOfElements)*sum). " + 
      "You can use fold instead to accumulate sum and numberOfElements and divide at the end.]"
      
-  val commentForFirst = "[use take(1)]"
-  val commentForFirstWithPredicate = "[use .dropWhile(!condition).take(1) or use find(condition)]"
+  val commentForFirstWithPredicate = "[use .filter(condition).first]"
   
   val correspondence = defaultMethodCorrespondence ++ Map(
       // manually added entries for Java instance methods
@@ -28,10 +27,9 @@ class CompletenessTest extends JUnitSuite {
       "buffer(Long, Long, TimeUnit)" -> "buffer(Duration, Duration)",
       "buffer(Long, Long, TimeUnit, Scheduler)" -> "buffer(Duration, Duration, Scheduler)",
       "dematerialize()" -> "dematerialize(<:<[T, Notification[U]])",
-      "first()" -> commentForFirst,
       "first(Func1[_ >: T, Boolean])" -> commentForFirstWithPredicate,
-      //"firstOrDefault(T)" -> 
-      "firstOrDefault(Func1[_ >: T, Boolean], T)" -> "[use find and map instead]", // TODO maybe firstOrElse method?
+      "firstOrDefault(T)" -> "firstOrElse(=> U)", 
+      "firstOrDefault(Func1[_ >: T, Boolean], T)" -> "[use .filter(condition).firstOrElse(default)]",
       "groupBy(Func1[_ >: T, _ <: K], Func1[_ >: T, _ <: R])" -> "groupBy(T => K)",
       "mapMany(Func1[_ >: T, _ <: Observable[_ <: R]])" -> "flatMap(T => Observable[R])",
       "mapWithIndex(Func2[_ >: T, Integer, _ <: R])" -> "[combine zipWithIndex with map or with a for comprehension]",
@@ -47,7 +45,7 @@ class CompletenessTest extends JUnitSuite {
       "skipWhile(Func1[_ >: T, Boolean])" -> "dropWhile(T => Boolean)",
       "skipWhileWithIndex(Func2[_ >: T, Integer, Boolean])" -> unnecessary,
       "startWith(Iterable[T])" -> "[unnecessary because we can just use ++ instead]",
-      "takeFirst()" -> commentForFirst,
+      "takeFirst()" -> "first",
       "takeFirst(Func1[_ >: T, Boolean])" -> commentForFirstWithPredicate,
       "takeLast(Int)" -> "takeRight(Int)",
       "toList()" -> "toSeq",

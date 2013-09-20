@@ -337,8 +337,15 @@ class RxScalaDemo extends JUnitSuite {
   
   @Test def takeFirstWithCondition() {
     val condition: Int => Boolean = _ >= 3
-    assertEquals(3, Observable(1, 2, 3, 4).dropWhile(!condition(_)).take(1).toBlockingObservable.single)
+    assertEquals(3, Observable(1, 2, 3, 4).filter(condition).first.toBlockingObservable.single)
   }
+  
+  @Test def firstOrDefaultWithCondition() {
+    val condition: Int => Boolean = _ >= 3
+    assertEquals(3, Observable(1, 2, 3, 4).filter(condition).firstOrElse(10).toBlockingObservable.single)
+    assertEquals(10, Observable(-1, 0, 1).filter(condition).firstOrElse(10).toBlockingObservable.single)
+  }
+  
   
   def output(s: String): Unit = println(s)
   

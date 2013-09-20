@@ -1453,57 +1453,39 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   def product[U >: T](implicit num: Numeric[U]): Observable[U] = {
     fold(num.one)(num.times)
   }
-  
+
   /**
-   * TODO doc&test
+   * Returns an Observable that emits only the very first item emitted by the source Observable, or
+   * a default value if the source Observable is empty.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstOrDefault.png">
+   *
+   * @param defaultValue
+   *            The default value to emit if the source Observable doesn't emit anything.
+   *            This is a by-name parameter, so it is only evaluated if the source Observable doesn't emit anything.
+   * @return an Observable that emits only the very first item from the source, or a default value
+   *         if the source Observable completes without emitting any item.
    */
   def firstOrElse[U >: T](default: => U): Observable[U] = {
-    this.materialize.take(1).map((n: Notification[T]) => {
-      if (n.getKind() == rx.Notification.Kind.OnNext)
-        n.getValue
-      else
-        default
+    this.take(1).fold[Option[U]](None)((v: Option[U], e: U) => Some(e)).map({
+      case Some(element) => element
+      case None => default
     })
-  }
-  
-  // TODO which of these two find variants do we want?
-  
-  /**
-   * Finds the first element of the list satisfying a predicate, if any.
-   * @param p 
-   *        the predicate used to test elements.
-   * @return an Observable emitting an Option containing the first element in the source 
-   *         Observable that satisfies p, or None if none exists or onError was called.
-   */  
-  def find(p: T => Boolean): Observable[Option[T]] = {
-    this.filter(p).materialize.take(1).map((n: Notification[T]) => {
-      if (n.getKind() == rx.Notification.Kind.OnNext)
-        Some(n.getValue())
-      else
-        None
-    })
-  }
-  
-  /**
-   * Finds the first element of the list satisfying a predicate, if any.
-   * @param p 
-   *        the predicate used to test elements.
-   * @return an Observable emitting an Option containing the first element in the source 
-   *         Observable that satisfies p, or None if none exists.
-   */  
-  private def findWhichTransmitsError(p: T => Boolean): Observable[Option[T]] = {
-    val o: Observable[Notification[Option[T]]] = 
-      this.filter(p).materialize.take(1).map((n: Notification[T]) => {
-      if (n.getKind() == rx.Notification.Kind.OnCompleted)
-        Notification(None)
-      else if (n.getKind() == rx.Notification.Kind.OnNext)
-        Notification(Some(n.getValue()))
-      else 
-        Notification(n.getThrowable())
-    })    
-    o.dematerialize
   }
 
+  /**
+   * Returns an Observable that emits only the very first item emitted by the source Observable.
+   * This is just a shorthand for {@code take(1)}.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
+   *
+   * @return an Observable that emits only the very first item from the source, or none if the
+   *         source Observable completes without emitting a single item.
+   */
+  def first: Observable[T] = {
+    take(1)
+  }
+  
   /**
    * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking
    * operators).
@@ -1586,8 +1568,8 @@ object Observable {
    *            the type of the items (ostensibly) emitted by the Observable
    * @return an Observable that invokes the {@link Observer}'s {@link Observer#onError onError} method when the Observer subscribes to it
    */
-  def apply(exception: Throwable): Observable[Nothing] = {
-    Observable[Nothing](JObservable.error(exception))
+  def apply[T](exception: Throwable): Observable[T] = {
+    Observable[T](JObservable.error(exception))
   }
 
   /**
@@ -1886,13 +1868,39 @@ class UnitTestSuite extends JUnitSuite {
     
     assertEquals(demat.toBlockingObservable.toIterable.toList, List(1, 2, 3))
   }
+    
+  // Test that Java's firstOrDefault propagates errors.
+  // If this changes (i.e. it suppresses errors and returns default) then Scala's firstOrElse
+  // should be changed accordingly.
+  @Test def testJavaFirstOrDefault() {
+    assertEquals(1, rx.Observable.from(1, 2).firstOrDefault(10).toBlockingObservable().single)
+    assertEquals(10, rx.Observable.empty().firstOrDefault(10).toBlockingObservable().single)
+    val msg = "msg6251"
+    var receivedMsg = "none"
+    try {
+      rx.Observable.error(new Exception(msg)).firstOrDefault(10).toBlockingObservable().single
+    } catch {
+      case e: Exception => receivedMsg = e.getCause().getMessage()
+    }
+    assertEquals(receivedMsg, msg)
+  }
   
-  @Test def testFind() {
-    assertEquals(Some(3), Observable(1, 3, 5).find(_ >= 2).toBlockingObservable.single)
-    assertEquals(Some(1), Observable(1, 3, 5).find(_ => true).toBlockingObservable.single)
-    assertEquals(None, Observable(1, 3, 5).find(_ > 10).toBlockingObservable.single)
-    assertEquals(None, Observable(new Exception()).find((i: Int) => i > 10).toBlockingObservable.single)
-    assertEquals(None, Observable().find((i: Int) => i > 10).toBlockingObservable.single)
+  @Test def testFirstOrElse() {
+    def mustNotBeCalled: String = error("this method should not be called")
+    def mustBeCalled: String = "this is the default value"
+    assertEquals("hello", Observable("hello").firstOrElse(mustNotBeCalled).toBlockingObservable.single)
+    assertEquals("this is the default value", Observable().firstOrElse(mustBeCalled).toBlockingObservable.single)
+  }
+  
+  @Test def testFirstOrElseWithError() {
+    val msg = "msg6251"
+    var receivedMsg = "none"
+    try {
+      Observable[Int](new Exception(msg)).firstOrElse(10).toBlockingObservable.single
+    } catch {
+      case e: Exception => receivedMsg = e.getCause().getMessage()
+    }
+    assertEquals(receivedMsg, msg)
   }
   
   @Test def testTest() = {
