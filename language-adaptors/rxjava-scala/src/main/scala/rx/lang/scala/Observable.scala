@@ -1272,6 +1272,29 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   }
 
   /**
+   * This behaves like {@link #merge(Observable)} except that if any of the merged Observables
+   * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
+   * refrain from propagating that error notification until all of the merged Observables have
+   * finished emitting items.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+   * <p>
+   * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
+   * Observers once.
+   * <p>
+   * This method allows an Observer to receive all successfully emitted items from all of the
+   * source Observables without being interrupted by an error notification from one of them.
+   *
+   * @param that
+   *            an Observable to be merged
+   * @return an Observable that emits items that are the result of flattening the items emitted by
+   *         {$code this} and {$code that}
+   */
+  def mergeDelayError[U >: T](that: Observable[U]): Observable[U] = {
+    Observable[U](rx.Observable.mergeDelayError[U](this.asJava, that.asJava))
+  }
+
+  /**
    * Flattens the sequence of Observables emitted by {@code this} into one Observable, without any
    * transformation.
    * <p>
@@ -1288,6 +1311,31 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     val o3: Observable[rx.Observable[_ <: U]] = o2.map(_.asJava)
     val o4: rx.Observable[_ <: rx.Observable[_ <: U]] = o3.asJava
     val o5 = rx.Observable.merge[U](o4)
+    Observable[U](o5)
+  }
+
+  /**
+   * This behaves like {@link #flatten(<:<)} except that if any of the merged Observables
+   * notify of an error via {@link Observer#onError onError}, this method will
+   * refrain from propagating that error notification until all of the merged Observables have
+   * finished emitting items.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+   * <p>
+   * Even if multiple merged Observables send {@code onError} notifications, this method will only invoke the {@code onError} method of its
+   * Observers once.
+   * <p>
+   * This method allows an Observer to receive all successfully emitted items from all of the
+   * source Observables without being interrupted by an error notification from one of them.
+   *
+   * @return an Observable that emits items that are the result of flattening the items emitted by
+   *         the Observables emitted by the this Observable
+   */
+  def flattenDelayError[U](implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[U] = {
+    val o2: Observable[Observable[U]] = this
+    val o3: Observable[rx.Observable[_ <: U]] = o2.map(_.asJava)
+    val o4: rx.Observable[_ <: rx.Observable[_ <: U]] = o3.asJava
+    val o5 = rx.Observable.mergeDelayError[U](o4)
     Observable[U](o5)
   }
 

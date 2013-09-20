@@ -74,7 +74,8 @@ class CompletenessTest extends JUnitSuite {
       "from(Iterable[_ <: T])" -> "apply(T*)", 
       "merge(Observable[_ <: T], Observable[_ <: T])" -> "merge(Observable[U])",
       "merge(Observable[_ <: Observable[_ <: T]])" -> "flatten(<:<[Observable[T], Observable[Observable[U]]])",
-      "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[T])",
+      "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[U])",
+      "mergeDelayError(Observable[_ <: Observable[_ <: T]])" -> "flattenDelayError(<:<[Observable[T], Observable[Observable[U]]])",
       "range(Int, Int)" -> "apply(Range)",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "[use (first zip second) map (p => p._1 == p._2)]",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T], Func2[_ >: T, _ >: T, Boolean])" -> "[use (first zip second) map (p => equality(p._1, p._2))]",
@@ -105,6 +106,9 @@ class CompletenessTest extends JUnitSuite {
   }).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
       // merge 3-9:
       "merge(" + _ + ")" -> "[unnecessary because we can use Observable(o1, o2, ...).flatten instead]"
+  ).drop(2).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
+      // mergeDelayError 3-9:
+      "mergeDelayError(" + _ + ")" -> "[unnecessary because we can use Observable(o1, o2, ...).flattenDelayError instead]"
   ).drop(2).toMap
   
   def removePackage(s: String) = s.replaceAll("(\\w+\\.)+(\\w+)", "$2")
