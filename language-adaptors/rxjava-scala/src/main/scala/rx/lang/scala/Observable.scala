@@ -157,7 +157,23 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     Observable(JObservable.concat(o1, o2))
   }
 
-  
+  /**
+   * Returns an Observable that emits the items emitted by two or more Observables, one after the
+   * other.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+   *
+   * @return an Observable that emits items that are the result of combining the items emitted by
+   *         the source Observables, one after the other
+   */
+  def concat[U](implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[U] = {
+    val o2: Observable[Observable[U]] = this
+    val o3: Observable[rx.Observable[_ <: U]] = o2.map(_.asJava)
+    val o4: rx.Observable[_ <: rx.Observable[_ <: U]] = o3.asJava
+    val o5 = rx.Observable.concat[U](o4)
+    Observable[U](o5)
+  }
+
   /**
    * Wraps this Observable in another Observable that ensures that the resulting
    * Observable is chronologically well-behaved.
@@ -905,7 +921,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return a pair of a start function and an {@link Observable} such that when the start function
    *         is called, the Observable starts to emit items to its {@link Observer}s
    */
-  def replay(): (() => Subscription, Observable[T]) = {
+  def replay: (() => Subscription, Observable[T]) = {
     val javaCO = asJava.replay()
     (() => javaCO.connect(), Observable[T](javaCO))
   }
@@ -1234,8 +1250,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     val o5 = rx.Observable.switchOnNext[U](o4)
     Observable[U](o5)
   }
-  // TODO naming: follow C# (switch) or Java (switchOnNext)?
-  // public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) 
+  // Naming: We follow C# (switch), not Java (switchOnNext), because Java just had to avoid clash with keyword
   
  /**
    * Flattens two Observables into one Observable, without any transformation.
@@ -1263,12 +1278,12 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
    * <p>
    * You can combine the items emitted by multiple Observables so that they act like a single
-   * Observable, by using the {@code merge} method.
+   * Observable by using this method.
    *
    * @return an Observable that emits items that are the result of flattening the items emitted
    *         by the Observables emitted by {@code this}
    */
-  def merge[U](implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[U] = {
+  def flatten[U](implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[U] = {
     val o2: Observable[Observable[U]] = this
     val o3: Observable[rx.Observable[_ <: U]] = o2.map(_.asJava)
     val o4: rx.Observable[_ <: rx.Observable[_ <: U]] = o3.asJava
@@ -1602,6 +1617,55 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   //}
 
   /**
+   * Returns an Observable that counts the total number of elements in the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/count.png">
+   *
+   * @return an Observable emitting the number of counted elements of the source Observable
+   *         as its single item.
+   */
+  def length: Observable[Int] = {
+    Observable[Integer](asJava.count()).map(_.intValue())
+  }
+
+  /**
+   * Retry subscription to origin Observable upto given retry count.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
+   * <p>
+   * If {@link Observer#onError} is invoked the source Observable will be re-subscribed to as many times as defined by retryCount.
+   * <p>
+   * Any {@link Observer#onNext} calls received on each attempt will be emitted and concatenated together.
+   * <p>
+   * For example, if an Observable fails on first time but emits [1, 2] then succeeds the second time and
+   * emits [1, 2, 3, 4, 5] then the complete output would be [1, 2, 1, 2, 3, 4, 5, onCompleted].
+   *
+   * @param retryCount
+   *            Number of retry attempts before failing.
+   * @return Observable with retry logic.
+   */
+  def retry(retryCount: Int): Observable[T] = {
+    Observable[T](asJava.retry(retryCount))
+  }
+
+  /**
+   * Retry subscription to origin Observable whenever onError is called (infinite retry count).
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
+   * <p>
+   * If {@link Observer#onError} is invoked the source Observable will be re-subscribed to.
+   * <p>
+   * Any {@link Observer#onNext} calls received on each attempt will be emitted and concatenated together.
+   * <p>
+   * For example, if an Observable fails on first time but emits [1, 2] then succeeds the second time and
+   * emits [1, 2, 3, 4, 5] then the complete output would be [1, 2, 1, 2, 3, 4, 5, onCompleted].
+   * @return Observable with retry logic.
+   */
+  def retry: Observable[T] = {
+    Observable[T](asJava.retry())
+  }
+  
+  /**
    * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking
    * operators).
    *
@@ -1756,9 +1820,6 @@ object Observable {
   def just[T](value: T): Observable[T] = {
     Observable[T](JObservable.just(value))
   }
-  
-  // TODO we have merge and concat (++) as binary instance methods, but do we also need them as
-  // static methods with arity > 2?
 
   /**
    * This behaves like {@link #merge(java.util.List)} except that if any of the merged Observables

@@ -13,6 +13,8 @@ class CompletenessTest extends JUnitSuite {
   
   val unnecessary = "[considered unnecessary in Scala land]"
     
+  val deprecated = "[deprecated in RxJava]"
+    
   val averageProblem = "[We can't have a general average method because Scala's Numeric does not have " +
      "scalar multiplication (we would need to calculate (1.0/numberOfElements)*sum). " + 
      "You can use fold instead to accumulate sum and numberOfElements and divide at the end.]"
@@ -26,6 +28,7 @@ class CompletenessTest extends JUnitSuite {
       "all(Func1[_ >: T, Boolean])" -> "forall(T => Boolean)",
       "buffer(Long, Long, TimeUnit)" -> "buffer(Duration, Duration)",
       "buffer(Long, Long, TimeUnit, Scheduler)" -> "buffer(Duration, Duration, Scheduler)",
+      "count()" -> "length",
       "dematerialize()" -> "dematerialize(<:<[T, Notification[U]])",
       "first(Func1[_ >: T, Boolean])" -> commentForFirstWithPredicate,
       "firstOrDefault(T)" -> "firstOrElse(=> U)", 
@@ -61,13 +64,14 @@ class CompletenessTest extends JUnitSuite {
       "averageFloats(Observable[Float])" -> averageProblem,
       "averageLongs(Observable[Long])" -> averageProblem,
       "create(OnSubscribeFunc[T])" -> "apply(Observer[T] => Subscription)",
+      "concat(Observable[_ <: Observable[_ <: T]])" -> "concat(<:<[Observable[T], Observable[Observable[U]]])",
       "defer(Func0[_ <: Observable[_ <: T]])" -> "defer(=> Observable[T])",
       "empty()" -> "apply(T*)",
       "error(Throwable)" -> "apply(Throwable)",
       "from(Array[T])" -> "apply(T*)",
       "from(Iterable[_ <: T])" -> "apply(T*)", 
       "merge(Observable[_ <: T], Observable[_ <: T])" -> "merge(Observable[U])",
-      "merge(Observable[_ <: Observable[_ <: T]])" -> "merge(<:<[Observable[T], Observable[Observable[U]]])",
+      "merge(Observable[_ <: Observable[_ <: T]])" -> "flatten(<:<[Observable[T], Observable[Observable[U]]])",
       "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[T])",
       "range(Int, Int)" -> "apply(Range)",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "[use (first zip second) map (p => p._1 == p._2)]",
@@ -77,7 +81,8 @@ class CompletenessTest extends JUnitSuite {
       "sumFloats(Observable[Float])" -> "sum(Numeric[U])",
       "sumLongs(Observable[Long])" -> "sum(Numeric[U])",
       "synchronize(Observable[T])" -> "synchronize",
-      "switchDo(Observable[_ <: Observable[_ <: T]])" -> "switch",
+      "switchDo(Observable[_ <: Observable[_ <: T]])" -> deprecated,
+      "switchOnNext(Observable[_ <: Observable[_ <: T]])" -> "switch(<:<[Observable[T], Observable[Observable[U]]])",
       "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method zip and map]",
       "zip(Observable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use zip in companion object and map]",
       "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use zip in companion object and map]"
@@ -86,7 +91,7 @@ class CompletenessTest extends JUnitSuite {
       "startWith(" + _ + ")" -> "[unnecessary because we can just use ++ instead]"
   ).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
       // concat 2-9
-      "concat(" + _ + ")" -> "[unnecessary because we can use ++ instead]"
+      "concat(" + _ + ")" -> "[unnecessary because we can use ++ instead or Observable(o1, o2, ...).concat]"
   ).drop(1).toMap ++ List.iterate("T", 10)(s => s + ", T").map(
       // all 10 overloads of from:
       "from(" + _ + ")" -> "apply(T*)"
@@ -97,7 +102,7 @@ class CompletenessTest extends JUnitSuite {
     ("zip(" + obsArgs + "Func" + i + "[" + funcParams + "_ <: R])", unnecessary)
   }).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
       // merge 3-9:
-      "merge(" + _ + ")" -> "[unnecessary because we can use Observable(o1, o2, ...).merge instead]"
+      "merge(" + _ + ")" -> "[unnecessary because we can use Observable(o1, o2, ...).flatten instead]"
   ).drop(2).toMap
   
   def removePackage(s: String) = s.replaceAll("(\\w+\\.)+(\\w+)", "$2")

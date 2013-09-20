@@ -107,19 +107,19 @@ class RxScalaDemo extends JUnitSuite {
     Observable.interval(period.millis).map(n => s"Obs-$period emits $n")
   }
   
-  @Test def mergeManyExample() {
+  @Test def flattenManyExample() {
     val o = Observable.interval(500 millis).map(n => myInterval((n+1)*100))
     val stopper = Observable.interval(5 seconds)
-    o.merge.takeUntil(stopper).toBlockingObservable.foreach(println(_))
+    o.flatten.takeUntil(stopper).toBlockingObservable.foreach(println(_))
   }
   
-  @Test def mergeSomeExample() {
+  @Test def fattenSomeExample() {
     // To merge some observables which are all known already:
     Observable(
         Observable.interval(200 millis), 
         Observable.interval(400 millis), 
         Observable.interval(800 millis)
-    ).merge.take(12).toBlockingObservable.foreach(println(_))
+    ).flatten.take(12).toBlockingObservable.foreach(println(_))
   }    
   
   @Test def rangeAndBufferExample() {
@@ -205,7 +205,7 @@ class RxScalaDemo extends JUnitSuite {
       println("Observable for modulo" + modulo + " started")
       
       if (firstOnly) numbers.take(1) else numbers
-    }).merge.toBlockingObservable.foreach(println(_)) 
+    }).flatten.toBlockingObservable.foreach(println(_)) 
   }
   
   @Test def timingTest1() {
@@ -217,7 +217,7 @@ class RxScalaDemo extends JUnitSuite {
       println("Observable for modulo" + modulo + " started at t = " + (System.currentTimeMillis - t0))
       numbers.take(1) // <- TODO very unexpected
       //numbers
-    }).merge.toBlockingObservable.foreach(println(_))
+    }).flatten.toBlockingObservable.foreach(println(_))
   }
   
   @Test def groupByExample() {
