@@ -17,11 +17,6 @@
 
 package rx.lang.scala
 
-import org.scalatest.junit.JUnitSuite
-import scala.collection.Seq
-import rx.lang.scala.observables.BlockingObservable
-
-
 /**
  * The Observable interface that implements the Reactive Pattern.
  */
@@ -38,6 +33,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
   import rx.lang.scala.subjects.Subject
+  import rx.lang.scala.observables.BlockingObservable
   import rx.lang.scala.ImplicitFunctionConversions._
 
   /**
@@ -1149,16 +1145,9 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return an Observable that emits items from the source Observable so long as the predicate
    *         continues to return <code>true</code> for each item, then completes
    */
-  // TODO: if we have zipWithIndex, takeWhileWithIndex is not needed any more
   def takeWhileWithIndex(predicate: (T, Integer) => Boolean): Observable[T] = {
     Observable[T](asJava.takeWhileWithIndex(predicate))
   }
-
-  /* TODO zipWithIndex once it's in RxJava
-  def zipWithIndex: Observable[(T, Int)] = {
-    ???
-  }
-  */
 
   /**
    * Returns an Observable that emits only the last <code>count</code> items emitted by the source
@@ -1337,6 +1326,20 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
     val o4: rx.Observable[_ <: rx.Observable[_ <: U]] = o3.asJava
     val o5 = rx.Observable.mergeDelayError[U](o4)
     Observable[U](o5)
+  }
+
+  /**
+   * Combines two observables, emitting a pair of the latest values of each of
+   * the source observables each time an event is received from one of the source observables, where the
+   * aggregation is defined by the given function.
+   *
+   * @param that
+   *            The second source observable.
+   * @return An Observable that combines the source Observables
+   */
+  def combineLatest[U](that: Observable[U]): Observable[(T, U)] = {
+    val f: Func2[_ >: T, _ >: U, _ <: (T, U)] = (t: T, u: U) => (t, u)
+    Observable[(T, U)](rx.Observable.combineLatest[T, U, (T, U)](this.asJava, that.asJava, f))
   }
 
   /**
@@ -1761,7 +1764,6 @@ object Observable {
   import scala.collection.JavaConverters._
   import scala.collection.immutable.Range
   import scala.concurrent.duration.Duration
-  import scala.concurrent.Future
   import rx.{Observable => JObservable}
   import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
@@ -1896,75 +1898,6 @@ object Observable {
   def just[T](value: T): Observable[T] = {
     Observable[T](JObservable.just(value))
   }
-
-  /**
-   * This behaves like {@link #merge(java.util.List)} except that if any of the merged Observables
-   * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
-   * refrain from propagating that error notification until all of the merged Observables have
-   * finished emitting items.
-   * <p>
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
-   * <p>
-   * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
-   * Observers once.
-   * <p>
-   * This method allows an Observer to receive all successfully emitted items from all of the
-   * source Observables without being interrupted by an error notification from one of them.
-   * 
-   * @param source
-   *            a list of Observables
-   * @return an Observable that emits items that are the result of flattening the items emitted by
-   *         the {@code source} list of Observables
-   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
-   */
-  // public static <T> Observable<T> mergeDelayError(List<? extends Observable<? extends T>> source) 
-  // TODO decide if instance method mergeWithDelayError (?)
-
-    /**
-   * This behaves like {@link #merge(Observable)} except that if any of the merged Observables
-   * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
-   * refrain from propagating that error notification until all of the merged Observables have
-   * finished emitting items.
-   * <p>
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
-   * <p>
-   * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
-   * Observers once.
-   * <p>
-   * This method allows an Observer to receive all successfully emitted items from all of the
-   * source Observables without being interrupted by an error notification from one of them.
-   * 
-   * @param source
-   *            an Observable that emits Observables
-   * @return an Observable that emits items that are the result of flattening the items emitted by
-   *         the Observables emitted by the {@code source} Observable
-   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
-   */
-  // public static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source) 
-  // TODO decide if instance method mergeWithDelayError (?)
-  
-  /**
-   * This behaves like {@link #merge(Observable...)} except that if any of the merged Observables
-   * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
-   * refrain from propagating that error notification until all of the merged Observables have
-   * finished emitting items.
-   * <p>
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
-   * <p>
-   * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of its
-   * Observers once.
-   * <p>
-   * This method allows an Observer to receive all successfully emitted items from all of the
-   * source Observables without being interrupted by an error notification from one of them.
-   * 
-   * @param source
-   *            a series of Observables
-   * @return an Observable that emits items that are the result of flattening the items emitted by
-   *         the {@code source} Observables
-   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">MSDN: Observable.Merge Method</a>
-   */
-  // public static <T> Observable<T> mergeDelayError(Observable<? extends T>... source) 
-  // TODO decide if instance method mergeWithDelayError (?)
   
   /**
    * Returns an Observable that never sends any items or notifications to an {@link Observer}.
@@ -1979,45 +1912,23 @@ object Observable {
     Observable[Nothing](JObservable.never())
   }
 
-  /*
+  // TODO also support Scala Futures, but think well before. Do we want to Future and Observable
+  // to share a common base interface?
+  
+  // private because it's not RxScala's responsability to provide this alias
+  private type Future[+T] = java.util.concurrent.Future[_ <: T]
+  
   def apply[T](f: Future[T]): Observable[T] = {
-    ??? // TODO convert Scala Future to Java Future
+    Observable[T](rx.Observable.from(f))
   } 
-  */
 
-  /*
   def apply[T](f: Future[T], scheduler: Scheduler): Observable[T] = {
-    ??? // TODO convert Scala Future to Java Future
+    Observable[T](rx.Observable.from(f, scheduler))
   }
-  */
 
-  /*
   def apply[T](f: Future[T], duration: Duration): Observable[T] = {
-    ??? // TODO convert Scala Future to Java Future
+    Observable[T](rx.Observable.from(f, duration.length, duration.unit))
   }
-  */
-
-  /**
-   * Combines the given observables, emitting an event containing an aggregation of the latest values of each of the source observables
-   * each time an event is received from one of the source observables, where the aggregation is defined by the given function.
-   * <p>
-   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/combineLatest.png">
-   *
-   * @param o1
-   *            The first source observable.
-   * @param o2
-   *            The second source observable.
-   * @param combineFunction
-   *            The aggregation function used to combine the source observable values.
-   * @return An Observable that combines the source Observables with the given combine function
-   */
-  // public static <T1, T2, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> combineFunction) 
-  // TODO do we want this as an instance method?
-  // TODO then decide about combineLatest with > 2 Observables
-
-  // TODO what about these two?
-  // public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction)
-  // public static <R> Observable<R> zip(Collection<? extends Observable<?>> ws, FuncN<? extends R> zipFunction)
 
   /**
    * Given a Seq of N observables, returns an observable that emits Seqs of N elements each.
@@ -2088,7 +1999,7 @@ class WithFilter[+T] private[scala] (p: T => Boolean, asJava: rx.Observable[_ <:
   // there is no foreach here, that's only available on BlockingObservable
 }
 
-class UnitTestSuite extends JUnitSuite {
+class UnitTestSuite extends org.scalatest.junit.JUnitSuite {
   import scala.concurrent.duration._
   import org.junit.{Before, Test, Ignore}
   import org.junit.Assert._

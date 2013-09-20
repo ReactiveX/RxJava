@@ -66,12 +66,16 @@ class CompletenessTest extends JUnitSuite {
       "averageFloats(Observable[Float])" -> averageProblem,
       "averageLongs(Observable[Long])" -> averageProblem,
       "create(OnSubscribeFunc[T])" -> "apply(Observer[T] => Subscription)",
+      "combineLatest(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "combineLatest(Observable[U])",
       "concat(Observable[_ <: Observable[_ <: T]])" -> "concat(<:<[Observable[T], Observable[Observable[U]]])",
       "defer(Func0[_ <: Observable[_ <: T]])" -> "defer(=> Observable[T])",
       "empty()" -> "apply(T*)",
       "error(Throwable)" -> "apply(Throwable)",
       "from(Array[T])" -> "apply(T*)",
       "from(Iterable[_ <: T])" -> "apply(T*)", 
+      "from(Future[_ <: T])" -> "apply(Future[T])",
+      "from(Future[_ <: T], Long, TimeUnit)" -> "apply(Future[T], Duration)",
+      "from(Future[_ <: T], Scheduler)" -> "apply(Future[T], Scheduler)",
       "merge(Observable[_ <: T], Observable[_ <: T])" -> "merge(Observable[U])",
       "merge(Observable[_ <: Observable[_ <: T]])" -> "flatten(<:<[Observable[T], Observable[Observable[U]]])",
       "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[U])",
@@ -109,7 +113,12 @@ class CompletenessTest extends JUnitSuite {
   ).drop(2).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
       // mergeDelayError 3-9:
       "mergeDelayError(" + _ + ")" -> "[unnecessary because we can use Observable(o1, o2, ...).flattenDelayError instead]"
-  ).drop(2).toMap
+  ).drop(2).toMap ++ (3 to 9).map(i => {
+    // combineLatest 3-9:
+    val obsArgs = (1 to i).map(j => s"Observable[_ <: T$j], ").mkString("")
+    val funcParams = (1 to i).map(j => s"_ >: T$j, ").mkString("")
+    ("combineLatest(" + obsArgs + "Func" + i + "[" + funcParams + "_ <: R])", "[If C# doesn't need it, Scala doesn't need it either ;-)]")
+  }).toMap
   
   def removePackage(s: String) = s.replaceAll("(\\w+\\.)+(\\w+)", "$2")
   
