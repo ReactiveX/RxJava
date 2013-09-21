@@ -15,7 +15,6 @@
  */
 package rx.subjects;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -200,7 +199,7 @@ public class BehaviorSubject<T> extends Subject<T, T> {
         {
             verify(aObserver, times(1)).onNext("default");
             verify(aObserver, times(1)).onNext("one");
-            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+            verify(aObserver, Mockito.never()).onError(org.mockito.Matchers.any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
 
