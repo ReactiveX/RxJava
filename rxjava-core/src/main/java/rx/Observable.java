@@ -3140,6 +3140,22 @@ public class Observable<T> {
     }
     
     /**
+     * Returns an {@link Observable} that emits <code>true</code> if any element of the source {@link Observable} satisfies 
+     * the given condition, otherwise <code>false</code>. Note: always emit <code>false</code> if the source {@link Observable} is empty.
+     * <p>
+     * In Rx.Net this is the <code>any</code> operator but renamed in RxJava to better match Java naming idioms.
+     * 
+     * @param predicate
+     *            The condition to test every element.
+     * @return A subscription function for creating the target Observable.
+     * @see <a href= "http://msdn.microsoft.com/en-us/library/hh211993(v=vs.103).aspx" >MSDN: Observable.Any</a> Note: the description in this page is
+     *      wrong.
+     */
+    public Observable<Boolean> exists(Func1<? super T, Boolean> predicate) {
+        return create(OperationAny.exists(this, predicate));
+    }
+    
+    /**
      * Registers an {@link Action0} to be called when this Observable invokes {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/finallyDo.png">
@@ -4320,7 +4336,19 @@ public class Observable<T> {
     public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) {
         return create(OperationGroupBy.groupBy(this, keySelector));
     }
-
+    
+    /**
+     * Returns an {@link Observable} that emits <code>true</code> if the source {@link Observable} is empty, otherwise <code>false</code>.
+     * <p>
+     * In Rx.Net this is negated as the <code>any</code> operator but renamed in RxJava to better match Java naming idioms.
+     * 
+     * @return A subscription function for creating the target Observable.
+     * @see <a href= "http://msdn.microsoft.com/en-us/library/hh229905(v=vs.103).aspx" >MSDN: Observable.Any</a>
+     */
+    public Observable<Boolean> isEmpty() {
+        return create(OperationAny.isEmpty(this));
+    }
+    
     /**
      * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking
      * operators).
@@ -4351,37 +4379,6 @@ public class Observable<T> {
         // we treat the following package as "internal" and don't wrap it
         Package p = o.getClass().getPackage(); // it can be null
         return p != null && p.getName().startsWith("rx.operators");
-    }
-
-    /**
-     * Returns an {@link Observable} that emits <code>true</code> if the source
-     * {@link Observable} is not empty, otherwise <code>false</code>.
-     * 
-     * @return A subscription function for creating the target Observable.
-     * @see <a href=
-     *      "http://msdn.microsoft.com/en-us/library/hh229905(v=vs.103).aspx"
-     *      >MSDN: Observable.Any</a>
-     */
-    public Observable<Boolean> any() {
-        return create(OperationAny.any(this));
-    }
-
-    /**
-     * Returns an {@link Observable} that emits <code>true</code> if any element
-     * of the source {@link Observable} satisfies the given condition, otherwise
-     * <code>false</code>. Note: always emit <code>false</code> if the source
-     * {@link Observable} is empty.
-     * 
-     * @param predicate
-     *            The condition to test every element.
-     * @return A subscription function for creating the target Observable.
-     * @see <a href=
-     *      "http://msdn.microsoft.com/en-us/library/hh211993(v=vs.103).aspx"
-     *      >MSDN: Observable.Any</a> Note: the description in this page is
-     *      wrong.
-     */
-    public Observable<Boolean> any(Func1<? super T, Boolean> predicate) {
-        return create(OperationAny.any(this, predicate));
     }
 
 }
