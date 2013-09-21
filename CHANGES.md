@@ -1,5 +1,9 @@
 # RxJava Releases #
 
+### Version 0.13.5
+
+* Upload to Sonatype failed so version skipped
+
 ### Version 0.13.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.13.4%22)) ###
 
 * [Pull 393](https://github.com/Netflix/RxJava/pull/393) Parallel Operator & ObserveOn/ScheduledObserver Fixes
