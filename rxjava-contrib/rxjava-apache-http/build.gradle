@@ -1,0 +1,20 @@
+apply plugin: 'osgi'
+
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
+dependencies {
+    compile project(':rxjava-core')
+    compile 'org.apache.httpcomponents:httpclient:4.3'
+    compile 'org.apache.httpcomponents:httpcore-nio:4.3'
+    compile 'org.apache.httpcomponents:httpasyncclient:4.0-beta4'
+}
+
+jar {
+    manifest {
+        name = 'rxjava-apache-http'
+        instruction 'Bundle-Vendor', 'Netflix'
+        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
+    }
+}
