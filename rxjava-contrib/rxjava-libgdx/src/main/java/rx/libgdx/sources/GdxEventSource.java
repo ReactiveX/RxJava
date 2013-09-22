@@ -15,19 +15,7 @@
  */
 package rx.libgdx.sources;
 
-import static org.mockito.Mockito.*;
-
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-
-import javax.swing.JPanel;
-
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Matchers;
+import static rx.Observable.create;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -36,70 +24,148 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.libgdx.events.GdxInputEvent;
 import rx.libgdx.events.InputEvent;
+import rx.libgdx.events.KeyDownEvent;
+import rx.libgdx.events.KeyTypedEvent;
+import rx.libgdx.events.KeyUpEvent;
+import rx.libgdx.events.MouseMovedEvent;
+import rx.libgdx.events.ScrolledEvent;
+import rx.libgdx.events.TouchDownEvent;
+import rx.libgdx.events.TouchDraggedEvent;
+import rx.libgdx.events.TouchUpEvent;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-import rx.util.functions.Action1;
 import rx.util.functions.Func1;
-import rx.util.functions.Func2;
 
 public enum GdxEventSource { ; // no instances
 
     /**
-     * @see rx.observables.GdxObservable#fromMouseEvents
+     * @see rx.observables.GdxObservable#fromInput
      */
-    public static Observable<InputEvent> fromMouseEventsOf(final Component component) {
-        final InputProcessor current = Gdx.input.getInputProcessor();
-        Gdx.app.getInput().setInputProcessor(new InputProcessor() {
+    public static Observable<InputEvent> fromInput() {
+        return create(new OnSubscribeFunc<InputEvent>() {
             @Override
-            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-                if (!current.touchUp(screenX, screenY, pointer, button)) {
-                  
-                }
-            }
-            
-            @Override
-            public boolean touchDragged(int screenX, int screenY, int pointer) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-            
-            @Override
-            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-            
-            @Override
-            public boolean scrolled(int amount) {
-                return current.scrolled(amount);
-            }
-            
-            @Override
-            public boolean mouseMoved(int screenX, int screenY) {
-                return current.mouseMoved(screenX, screenY);
-            }
-            
-            @Override
-            public boolean keyUp(int keycode) {
-                return current.keyUp(keycode);
-            }
-            
-            @Override
-            public boolean keyTyped(char character) {
-                return current.keyTyped(character);
-            }
-            
-            @Override
-            public boolean keyDown(int keycode) {
-                return current.keyDown(keycode);
+            public Subscription onSubscribe(final Observer<? super InputEvent> observer) {
+                final InputProcessor wrapped = Gdx.input.getInputProcessor();
+                Gdx.app.getInput().setInputProcessor(new InputProcessor() {
+                    @Override
+                    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+                        if (!wrapped.touchUp(screenX, screenY, pointer, button)) {
+                            observer.onNext(new TouchUpEvent(screenX, screenY, pointer, button));
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                        if (!wrapped.touchDown(screenX, screenY, pointer, button)) {
+                            observer.onNext(new TouchDownEvent(screenX, screenY, pointer, button));
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public boolean touchDragged(int screenX, int screenY, int pointer) {
+                        if (!wrapped.touchDragged(screenX, screenY, pointer)) {
+                            observer.onNext(new TouchDraggedEvent(screenX, screenY, pointer));
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public boolean keyDown(int keycode) {
+                        if (!wrapped.keyDown(keycode)) {
+                            observer.onNext(new KeyDownEvent(keycode));
+                        }
+                        return true;
+                    }
+              
+                    @Override
+                    public boolean keyUp(int keycode) {
+                        if (!wrapped.keyUp(keycode)) {
+                            observer.onNext(new KeyUpEvent(keycode));
+                        }
+                        return true;
+                    }
+              
+                    @Override
+                    public boolean keyTyped(char character) {
+                        if (!wrapped.keyTyped(character)) {
+                            observer.onNext(new KeyTypedEvent(character));
+                        }
+                        return true;
+                    }
+              
+                    @Override
+                    public boolean mouseMoved(int screenX, int screenY) {
+                        if (!wrapped.mouseMoved(screenX, screenY)) {
+                            observer.onNext(new MouseMovedEvent(screenX, screenY));
+                        }
+                        return true;
+                    }
+              
+                    @Override
+                    public boolean scrolled(int amount) {
+                        if (!wrapped.scrolled(amount)) {
+                            observer.onNext(new ScrolledEvent(amount));
+                        }
+                        return true;
+                    }
+                });
+                
+                return Subscriptions.create(new Action0() {
+                    @Override
+                    public void call() {
+                        Gdx.app.getInput().setInputProcessor(wrapped);
+                    }
+                });
             }
         });
-        
-        // TODO
-        
-        return null;
+    }
+
+    public static Observable<TouchUpEvent> touchUp(Observable<InputEvent> source) {
+        return filtered(source, TouchUpEvent.class);
     }
     
+    public static Observable<TouchDownEvent> touchDown(Observable<InputEvent> source) {
+        return filtered(source, TouchDownEvent.class);
+    }
+  
+    public static Observable<TouchDraggedEvent> touchDragged(Observable<InputEvent> source) {
+        return filtered(source, TouchDraggedEvent.class);
+    }
+
+    public static Observable<MouseMovedEvent> mouseMoved(Observable<InputEvent> source) {
+        return filtered(source, MouseMovedEvent.class);
+    }
+
+    public static Observable<ScrolledEvent> scrolled(Observable<InputEvent> source) {
+        return filtered(source, ScrolledEvent.class);
+    }
+
+    public static Observable<KeyTypedEvent> keyTyped(Observable<InputEvent> source) {
+        return filtered(source, KeyTypedEvent.class);
+    }
+
+    public static Observable<KeyUpEvent> keyUp(Observable<InputEvent> source) {
+        return filtered(source, KeyUpEvent.class);
+    }
+
+    public static Observable<KeyDownEvent> keyDown(Observable<InputEvent> source) {
+        return filtered(source, KeyDownEvent.class);
+    }
+  
+    private static <T extends InputEvent> Observable<T> filtered(Observable<InputEvent> source, final Class<T> clazz) {
+        return source.filter(new Func1<InputEvent, Boolean>() {
+            @Override
+            public Boolean call(InputEvent event) {
+                return clazz.isInstance(event);
+            }
+        }).map(new Func1<InputEvent, T>() {
+            @Override
+            public T call(InputEvent event) {
+                return clazz.cast(event);
+            }
+        });
+    }
 }

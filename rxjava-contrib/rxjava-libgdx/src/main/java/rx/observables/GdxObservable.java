@@ -15,11 +15,9 @@
  */
 package rx.observables;
 
-import java.awt.Dimension;
-
-import com.badlogic.gdx.Application;
-
 import rx.Observable;
+import rx.libgdx.events.InputEvent;
+import rx.libgdx.sources.GdxEventSource;
 
 /**
  * Allows creating observables from various sources specific to libgdx. 
@@ -27,14 +25,12 @@ import rx.Observable;
 public enum GdxObservable { ; // no instances
 
     /**
-     * Creates an observable corresponding to component resize events.
+     * Creates an observable corresponding to the game's input events.
+     * Publish this and convert to the more specific input events you require.
      * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable emitting the current size of the given component after each resize event.
+     * @return Observable emitting all input events.
      */
-    public static Observable<Dimension> fromResizing(Application app) {
-// FIXME       return ApplicationEventSource.fromResizing(app);
-      return null;
+    public static Observable<InputEvent> fromInput() {
+        return GdxEventSource.fromInput();
     }
 }

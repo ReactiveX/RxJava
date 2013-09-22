@@ -15,15 +15,20 @@
  */
 package rx.libgdx.events;
 
-public abstract class TouchEvent extends ScreenCoordsEvent {
-    private final int pointer;
-
-    public TouchEvent(int screenX, int screenY, int pointer) {
-        super(screenX, screenY);
-        this.pointer = pointer;
-    }
+abstract class ScreenCoordsEvent implements InputEvent {
+    private final int screenX;
+    private final int screenY;
     
-    public int getPointer() {
-        return pointer;
+    public ScreenCoordsEvent(int screenX, int screenY) {
+        this.screenX = screenX;
+        this.screenY = screenY;
+    }
+
+    public int getScreenX() {
+        return screenX;
+    }
+
+    public int getScreenY() {
+        return screenY;
     }
 }
