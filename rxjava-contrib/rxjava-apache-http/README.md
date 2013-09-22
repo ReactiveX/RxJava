@@ -81,7 +81,7 @@ Execute a request and transform the `byte[]` reponse to a `String`:
         });
 ```
 
-### Streaming Http GET with ServerSentEvents (text/event-stream) Response
+### Streaming Http GET with [Server-Sent Events (text/event-stream)](http://www.w3.org/TR/eventsource/) Response
 
 Execute a request and transform the `byte[]` response of each event to a `String`:
 
