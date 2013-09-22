@@ -32,4 +32,55 @@ and for Ivy:
 <dependency org="com.netflix.rxjava" name="rxjava-apache-http" rev="x.y.z" />
 ```
 
-# Sample usage
+# Sample Usage
+
+### Create a Request
+
+```java
+ObservableHttp.createGet("http://www.wikipedia.com", httpClient).toObservable();
+ObservableHttp.createRequest(HttpAsyncMethods.createGet("http://www.wikipedia.com"), httpClient).toObservable();
+```
+
+### Http Client
+
+A basic default client:
+
+```java
+CloseableHttpAsyncClient httpClient = HttpAsyncClients.createDefault();
+```
+
+or a custom client with configuration options:
+
+```java
+final RequestConfig requestConfig = RequestConfig.custom()
+        .setSocketTimeout(3000)
+        .setConnectTimeout(3000).build();
+final CloseableHttpAsyncClient httpclient = HttpAsyncClients.custom()
+        .setDefaultRequestConfig(requestConfig)
+        .setMaxConnPerRoute(20)
+        .setMaxConnTotal(50)
+        .build();
+```
+
+### Normal Http GET
+
+Execute a request and transform the `byte[]` reponse to a `String`:
+
+```groovy
+        ObservableHttp.createRequest(HttpAsyncMethods.createGet("http://www.wikipedia.com"), client)
+        .toObservable()
+        .flatMap({ ObservableHttpResponse response ->
+                return response.getContent().map({ byte[] bb ->
+                        return new String(bb);
+                });
+        })
+        .toBlockingObservable()
+        .forEach({ String resp -> 
+                println(resp);
+        });
+```
+
+
+
+
+
