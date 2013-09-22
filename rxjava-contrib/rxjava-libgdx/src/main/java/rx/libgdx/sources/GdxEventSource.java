@@ -40,7 +40,7 @@ import rx.util.functions.Func1;
 public enum GdxEventSource { ; // no instances
 
     /**
-     * @see rx.observables.GdxObservable#fromInput
+     * @see rx.GdxObservable#fromInput
      */
     public static Observable<InputEvent> fromInput() {
         return create(new OnSubscribeFunc<InputEvent>() {
@@ -123,34 +123,74 @@ public enum GdxEventSource { ; // no instances
         });
     }
 
+    /**
+     * Returns all "Touch Up" events. Use this after publishing via {@link rx.GdxObservable#fromInput}.
+     * @param source The observable of input events to use as source.
+     * @return An observable emitting "Touch Up" events.
+     */
     public static Observable<TouchUpEvent> touchUp(Observable<InputEvent> source) {
         return filtered(source, TouchUpEvent.class);
     }
     
+    /**
+     * Returns all "Touch Down" events. Use this after publishing via {@link rx.GdxObservable#fromInput}.
+     * @param source The observable of input events to use as source.
+     * @return An observable emitting "Touch Down" events.
+     */
     public static Observable<TouchDownEvent> touchDown(Observable<InputEvent> source) {
         return filtered(source, TouchDownEvent.class);
     }
   
+    /**
+     * Returns all "Touch Dragged" events. Use this after publishing via {@link rx.GdxObservable#fromInput}.
+     * @param source The observable of input events to use as source.
+     * @return An observable emitting "Touch Dragged" events.
+     */
     public static Observable<TouchDraggedEvent> touchDragged(Observable<InputEvent> source) {
         return filtered(source, TouchDraggedEvent.class);
     }
 
+    /**
+     * Returns all "Mouse Moved" events. Use this after publishing via {@link rx.GdxObservable#fromInput}.
+     * @param source The observable of input events to use as source.
+     * @return An observable emitting "Mouse Moved" events.
+     */
     public static Observable<MouseMovedEvent> mouseMoved(Observable<InputEvent> source) {
         return filtered(source, MouseMovedEvent.class);
     }
 
+    /**
+     * Returns all "Scrolled" events. Use this after publishing via {@link rx.GdxObservable#fromInput}.
+     * @param source The observable of input events to use as source.
+     * @return An observable emitting "Scrolled" events.
+     */
     public static Observable<ScrolledEvent> scrolled(Observable<InputEvent> source) {
         return filtered(source, ScrolledEvent.class);
     }
 
+    /**
+     * Returns all "Key Typed" events. Use this after publishing via {@link rx.GdxObservable#fromInput}.
+     * @param source The observable of input events to use as source.
+     * @return An observable emitting "Key Typed" events.
+     */
     public static Observable<KeyTypedEvent> keyTyped(Observable<InputEvent> source) {
         return filtered(source, KeyTypedEvent.class);
     }
 
+    /**
+     * Returns all "Key Up" events. Use this after publishing via {@link rx.GdxObservable#fromInput}.
+     * @param source The observable of input events to use as source.
+     * @return An observable emitting "Key Up" events.
+     */
     public static Observable<KeyUpEvent> keyUp(Observable<InputEvent> source) {
         return filtered(source, KeyUpEvent.class);
     }
 
+    /**
+     * Returns all "Key Down" events. Use this after publishing via {@link rx.GdxObservable#fromInput}.
+     * @param source The observable of input events to use as source.
+     * @return An observable emitting "Key Down" events.
+     */
     public static Observable<KeyDownEvent> keyDown(Observable<InputEvent> source) {
         return filtered(source, KeyDownEvent.class);
     }
