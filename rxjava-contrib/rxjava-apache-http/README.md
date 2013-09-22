@@ -8,8 +8,8 @@ Other Content-Types will be returned as a single call to `Observer.onNext`.
 
 Main Classes:
 
-- (ObservableHttp)[https://github.com/Netflix/RxJava/blob/master/rxjava-contrib/rxjava-apache-http/src/main/java/rx/apache/http/ObservableHttp.java]
-- (ObservableHttpResponse)[https://github.com/Netflix/RxJava/blob/master/rxjava-contrib/rxjava-apache-http/src/main/java/rx/apache/http/ObservableHttpResponse.java]
+- [ObservableHttp](https://github.com/Netflix/RxJava/blob/master/rxjava-contrib/rxjava-apache-http/src/main/java/rx/apache/http/ObservableHttp.java)
+- [ObservableHttpResponse](https://github.com/Netflix/RxJava/blob/master/rxjava-contrib/rxjava-apache-http/src/main/java/rx/apache/http/ObservableHttpResponse.java)
 
 
 # Binaries
