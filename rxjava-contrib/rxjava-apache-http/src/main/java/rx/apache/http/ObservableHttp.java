@@ -143,7 +143,7 @@ public class ObservableHttp<T> {
                 final CompositeSubscription parentSubscription = new CompositeSubscription();
 
                 // return a Subscription that wraps the Future so it can be cancelled
-                parentSubscription.add(Subscriptions.create(client.execute(requestProducer, new ResponseConsumerDelegate(observer, parentSubscription),
+                parentSubscription.add(Subscriptions.from(client.execute(requestProducer, new ResponseConsumerDelegate(observer, parentSubscription),
                         new FutureCallback<HttpResponse>() {
 
                             @Override
