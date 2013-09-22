@@ -15,8 +15,11 @@
  */
 package rx;
 
+import com.badlogic.gdx.physics.box2d.World;
+
 import rx.Observable;
 import rx.libgdx.events.InputEvent;
+import rx.libgdx.events.box2d.ContactEvent;
 import rx.libgdx.sources.GdxEventSource;
 
 /**
@@ -32,5 +35,16 @@ public enum GdxObservable { ; // no instances
      */
     public static Observable<InputEvent> fromInput() {
         return GdxEventSource.fromInput();
+    }
+
+    /**
+     * Creates an observable corresponding to the game's physics contact events (using Box2D).
+     * Publish this and convert to the more specific contact events you require.
+     *
+     * @param world The Box2D physics world to listen to. 
+     * @return Observable emitting all contact events.
+     */
+    public static Observable<ContactEvent> fromBox2DContact(World world) {
+        return GdxEventSource.fromBox2DContact(world);
     }
 }

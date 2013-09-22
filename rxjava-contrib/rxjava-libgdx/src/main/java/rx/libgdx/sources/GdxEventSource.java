@@ -17,8 +17,15 @@ package rx.libgdx.sources;
 
 import static rx.Observable.create;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.World;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
@@ -33,12 +40,101 @@ import rx.libgdx.events.ScrolledEvent;
 import rx.libgdx.events.TouchDownEvent;
 import rx.libgdx.events.TouchDraggedEvent;
 import rx.libgdx.events.TouchUpEvent;
+import rx.libgdx.events.box2d.BeginContactEvent;
+import rx.libgdx.events.box2d.ContactEvent;
+import rx.libgdx.events.box2d.EndContactEvent;
+import rx.libgdx.events.box2d.PostSolveContactEvent;
+import rx.libgdx.events.box2d.PreSolveContactEvent;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
 public enum GdxEventSource { ; // no instances
 
+    /**
+     * @see rx.GdxObservable#fromBox2DContact
+     */
+    public static Observable<ContactEvent> fromBox2DContact(final World world) {
+        return create(new OnSubscribeFunc<ContactEvent>() {
+            private final AtomicBoolean subscribed = new AtomicBoolean(true);
+            @Override
+            public Subscription onSubscribe(final Observer<? super ContactEvent> observer) {
+                world.setContactListener(new ContactListener() {
+                    @Override
+                    public void beginContact(Contact contact) {
+                        if (subscribed.get()) {
+                            observer.onNext(new BeginContactEvent(contact));
+                        }
+                    }
+  
+                    @Override
+                    public void endContact(Contact contact) {
+                        if (subscribed.get()) {
+                            observer.onNext(new EndContactEvent(contact));
+                        }
+                    }
+  
+                    @Override
+                    public void preSolve(Contact contact, Manifold oldManifold) {
+                      if (subscribed.get()) {
+                          observer.onNext(new PreSolveContactEvent(contact, oldManifold));
+                      }
+                    }
+  
+                    @Override
+                    public void postSolve(Contact contact, ContactImpulse impulse) {
+                        if (subscribed.get()) {
+                            observer.onNext(new PostSolveContactEvent(contact, impulse));
+                        }
+                    }
+                });
+                
+                return Subscriptions.create(new Action0() {
+                    @Override
+                    public void call() {
+                        subscribed.set(false);
+                    }
+                });
+            }
+        });
+    }
+    
+    /**
+     * Returns all "Begin Contact" events. Use this after publishing via {@link rx.GdxObservable#fromBox2DContact}.
+     * @param source The observable of contact events to use as source.
+     * @return An observable emitting "Begin Contact" events.
+     */
+    public static Observable<BeginContactEvent> beginContact(Observable<ContactEvent> source) {
+        return filtered(source, BeginContactEvent.class);
+    }
+    
+    /**
+     * Returns all "End Contact" events. Use this after publishing via {@link rx.GdxObservable#fromBox2DContact}.
+     * @param source The observable of contact events to use as source.
+     * @return An observable emitting "End Contact" events.
+     */
+    public static Observable<EndContactEvent> endContact(Observable<ContactEvent> source) {
+        return filtered(source, EndContactEvent.class);
+    }
+    
+    /**
+     * Returns all "PreSolve" events. Use this after publishing via {@link rx.GdxObservable#fromBox2DContact}.
+     * @param source The observable of contact events to use as source.
+     * @return An observable emitting "PreSolve" events.
+     */
+    public static Observable<PreSolveContactEvent> preSolve(Observable<ContactEvent> source) {
+        return filtered(source, PreSolveContactEvent.class);
+    }
+    
+    /**
+     * Returns all "PostSolve" events. Use this after publishing via {@link rx.GdxObservable#fromBox2DContact}.
+     * @param source The observable of contact events to use as source.
+     * @return An observable emitting "PostSolve" events.
+     */
+    public static Observable<PostSolveContactEvent> postSolve(Observable<ContactEvent> source) {
+        return filtered(source, PostSolveContactEvent.class);
+    }
+    
     /**
      * @see rx.GdxObservable#fromInput
      */
@@ -195,15 +291,15 @@ public enum GdxEventSource { ; // no instances
         return filtered(source, KeyDownEvent.class);
     }
   
-    private static <T extends InputEvent> Observable<T> filtered(Observable<InputEvent> source, final Class<T> clazz) {
-        return source.filter(new Func1<InputEvent, Boolean>() {
+    private static <U, T extends U> Observable<T> filtered(Observable<U> source, final Class<T> clazz) {
+        return source.filter(new Func1<U, Boolean>() {
             @Override
-            public Boolean call(InputEvent event) {
+            public Boolean call(U event) {
                 return clazz.isInstance(event);
             }
-        }).map(new Func1<InputEvent, T>() {
+        }).map(new Func1<U, T>() {
             @Override
-            public T call(InputEvent event) {
+            public T call(U event) {
                 return clazz.cast(event);
             }
         });
