@@ -76,10 +76,29 @@ Execute a request and transform the `byte[]` reponse to a `String`:
         })
         .toBlockingObservable()
         .forEach({ String resp -> 
+                // this will be invoked once with the response
                 println(resp);
         });
 ```
 
+### Streaming Http GET with ServerSentEvents (text/event-stream) Response
+
+Execute a request and transform the `byte[]` response of each event to a `String`:
+
+```groovy
+        ObservableHttp.createRequest(HttpAsyncMethods.createGet("http://hostname/event.stream"), client)
+        .toObservable()
+        .flatMap({ ObservableHttpResponse response ->
+                return response.getContent().map({ byte[] bb ->
+                        return new String(bb);
+                });
+        })
+        .toBlockingObservable()
+        .forEach({ String resp -> 
+                // this will be invoked for each event
+                println(resp);
+        });
+```
 
 
 
