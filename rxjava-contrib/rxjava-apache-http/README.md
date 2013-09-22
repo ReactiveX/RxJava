@@ -54,7 +54,7 @@ or a custom client with configuration options:
 ```java
 final RequestConfig requestConfig = RequestConfig.custom()
         .setSocketTimeout(3000)
-        .setConnectTimeout(3000).build();
+        .setConnectTimeout(500).build();
 final CloseableHttpAsyncClient httpclient = HttpAsyncClients.custom()
         .setDefaultRequestConfig(requestConfig)
         .setMaxConnPerRoute(20)
