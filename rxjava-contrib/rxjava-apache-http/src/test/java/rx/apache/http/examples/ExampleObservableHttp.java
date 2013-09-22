@@ -77,41 +77,40 @@ public class ExampleObservableHttp {
 
     protected static void executeStreamingViaObservableHttpWithForEach(final HttpAsyncClient client) throws URISyntaxException, IOException, InterruptedException {
         System.out.println("---- executeStreamingViaObservableHttpWithForEach");
-        for (int i = 0; i < 5; i++) {
-            final int c = i + 1;
-            ObservableHttp.createRequest(HttpAsyncMethods.createGet("http://ec2-54-211-91-164.compute-1.amazonaws.com:8077/eventbus.stream?topic=hystrix-metrics"), client)
-                    .toObservable()
-                    .flatMap(new Func1<ObservableHttpResponse, Observable<String>>() {
+        // URL against https://github.com/Netflix/Hystrix/tree/master/hystrix-examples-webapp
+        // More information at https://github.com/Netflix/Hystrix/tree/master/hystrix-contrib/hystrix-metrics-event-stream
+        ObservableHttp.createRequest(HttpAsyncMethods.createGet("http://localhost:8989/hystrix-examples-webapp/hystrix.stream"), client)
+                .toObservable()
+                .flatMap(new Func1<ObservableHttpResponse, Observable<String>>() {
 
-                        @Override
-                        public Observable<String> call(ObservableHttpResponse response) {
-                            return response.getContent().map(new Func1<byte[], String>() {
+                    @Override
+                    public Observable<String> call(ObservableHttpResponse response) {
+                        return response.getContent().map(new Func1<byte[], String>() {
 
-                                @Override
-                                public String call(byte[] bb) {
-                                    return new String(bb);
-                                }
+                            @Override
+                            public String call(byte[] bb) {
+                                return new String(bb);
+                            }
 
-                            });
-                        }
-                    })
-                    .filter(new Func1<String, Boolean>() {
+                        });
+                    }
+                })
+                .filter(new Func1<String, Boolean>() {
 
-                        @Override
-                        public Boolean call(String t1) {
-                            return !t1.startsWith(": ping");
-                        }
-                    })
-                    .take(3)
-                    .toBlockingObservable()
-                    .forEach(new Action1<String>() {
+                    @Override
+                    public Boolean call(String t1) {
+                        return !t1.startsWith(": ping");
+                    }
+                })
+                .take(3)
+                .toBlockingObservable()
+                .forEach(new Action1<String>() {
 
-                        @Override
-                        public void call(String resp) {
-                            System.out.println("Response [" + c + "]: " + resp + " (" + resp.length() + ")");
-                        }
-                    });
-        }
+                    @Override
+                    public void call(String resp) {
+                        System.out.println(resp);
+                    }
+                });
     }
 
 }
