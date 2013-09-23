@@ -1,5 +1,23 @@
 # RxJava Releases #
 
+### Version 0.14.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.1%22)) ###
+
+* [Pull 402](https://github.com/Netflix/RxJava/pull/402) rxjava-apache-http improvements
+
+### Version 0.14.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.0%22)) ###
+
+Further progress to the Scala adaptor and a handful of new operators.
+
+Bump to 0.14.0 due to small breaking change to `distinct` operator removing overloaded methods with `Comparator`. These methods were added in 0.13.2 and determined to be incorrect.
+
+This release also includes a new contrib module, [rxjava-apache-http](https://github.com/Netflix/RxJava/tree/master/rxjava-contrib/rxjava-apache-http) that provides an Observable API to the Apache HttpAsyncClient.
+
+* [Pull 396](https://github.com/Netflix/RxJava/pull/396) Add missing methods to Scala Adaptor
+* [Pull 390](https://github.com/Netflix/RxJava/pull/390) Operators: ElementAt and ElementAtOrDefault
+* [Pull 398](https://github.com/Netflix/RxJava/pull/398) Operators: IsEmpty and Exists (instead of Any)
+* [Pull 397](https://github.com/Netflix/RxJava/pull/397) Observable API for Apache HttpAsyncClient 4.0
+* [Pull 400](https://github.com/Netflix/RxJava/pull/400) Removing `comparator` overloads of `distinct`
+
 ### Version 0.13.5
 
 * Upload to Sonatype failed so version skipped
