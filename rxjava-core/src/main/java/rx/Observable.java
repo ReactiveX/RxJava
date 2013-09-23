@@ -3874,6 +3874,8 @@ public class Observable<T> {
      * @return An observable sequence that contains the specified default value
      *         if the source is empty; otherwise, the elements of the source
      *         itself.
+     *
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229624(v=vs.103).aspx">MSDN: Observable.DefaultIfEmpty</a>
      */
     public Observable<T> defaultIfEmpty(T defaultValue) {
         return create(OperationDefaultIfEmpty.defaultIfEmpty(this, defaultValue));
