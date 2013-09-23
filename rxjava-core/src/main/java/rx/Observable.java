@@ -33,6 +33,7 @@ import rx.operators.OperationAny;
 import rx.operators.OperationAverage;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCache;
+import rx.operators.OperationCast;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDebounce;
@@ -4335,18 +4336,18 @@ public class Observable<T> {
     /**
      * Converts the elements of an observable sequence to the specified type.
      *
+     * @param klass
+     *            The target class type which the elements will be converted to.
+     *
      * @return An observable sequence that contains each element of the source
      *         sequence converted to the specified type.
      *
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211842(v=vs.103).aspx">MSDN: Observable.Cast</a>
+     * @see <a
+     *      href="http://msdn.microsoft.com/en-us/library/hh211842(v=vs.103).aspx">MSDN:
+     *      Observable.Cast</a>
      */
-    public <R> Observable<R> cast() {
-        return map(new Func1<T, R>() {
-            @SuppressWarnings("unchecked")
-            public R call(T t) {
-                return (R) t;
-            }
-        });
+    public <R> Observable<R> cast(final Class<R> klass) {
+        return create(OperationCast.cast(this, klass));
     }
 
     /**
