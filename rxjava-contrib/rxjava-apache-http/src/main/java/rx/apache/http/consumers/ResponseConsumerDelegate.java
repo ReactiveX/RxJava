@@ -52,7 +52,9 @@ public class ResponseConsumerDelegate extends AbstractAsyncResponseConsumer<Http
     @Override
     protected void onResponseReceived(HttpResponse response) throws HttpException, IOException {
         // when we receive the response with headers we evaluate what type of consumer we want
-        if (response.getFirstHeader("Content-Type").getValue().equals("text/event-stream")) {
+        if (response.getFirstHeader("Content-Type").getValue().contains("text/event-stream")) {
+            // use 'contains' instead of equals since Content-Type can contain additional information
+            // such as charset ... see here: http://www.w3.org/International/O-HTTP-charset
             consumer = new ResponseConsumerEventStream(observer, subscription);
         } else {
             consumer = new ResponseConsumerBasic(observer, subscription);
