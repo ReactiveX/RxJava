@@ -4366,7 +4366,7 @@ public class Observable<T> {
     public <R> Observable<R> ofType(final Class<R> klass) {
         return filter(new Func1<T, Boolean>() {
             public Boolean call(T t) {
-                return klass.isAssignableFrom(t.getClass());
+                return klass.isInstance(t);
             }
         }).cast(klass);
     }
