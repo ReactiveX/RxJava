@@ -4351,6 +4351,27 @@ public class Observable<T> {
     }
 
     /**
+     * Filters the elements of an observable sequence based on the specified
+     * type.
+     *
+     * @param klass
+     *            The class type to filter the elements in the source sequence
+     *            on.
+     *
+     * @return An observable sequence that contains elements from the input
+     *         sequence of type klass.
+     *
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229380(v=vs.103).aspx">MSDN: Observable.OfType</a>
+     */
+    public <R> Observable<R> ofType(final Class<R> klass) {
+        return filter(new Func1<T, Boolean>() {
+            public Boolean call(T t) {
+                return klass.isAssignableFrom(t.getClass());
+            }
+        }).cast(klass);
+    }
+
+    /**
      * Whether a given {@link Function} is an internal implementation inside rx.* packages or not.
      * <p>
      * For why this is being used see https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
