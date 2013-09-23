@@ -25,12 +25,32 @@ import java.awt.event.MouseEvent;
 import java.util.Set;
 
 import javax.swing.AbstractButton;
+import javax.swing.JTabbedPane;
+import javax.swing.JViewport;
+import javax.swing.JMenu;
+import javax.swing.JProgressBar;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.MenuSelectionManager;
+import javax.swing.ButtonModel;
+import javax.swing.BoundedRangeModel;
+import javax.swing.DefaultButtonModel;
+import javax.swing.DefaultBoundedRangeModel;
+import javax.swing.SingleSelectionModel;
+import javax.swing.DefaultSingleSelectionModel;
+import javax.swing.SpinnerModel;
+import javax.swing.AbstractSpinnerModel;
+import javax.swing.colorchooser.ColorSelectionModel;
+import javax.swing.text.Caret;
+import javax.swing.text.Style;
+import javax.swing.text.StyleContext;
+import javax.swing.text.DefaultCaret;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import rx.Observable;
-import rx.swing.sources.AbstractButtonSource;
-import rx.swing.sources.ComponentEventSource;
-import rx.swing.sources.KeyEventSource;
-import rx.swing.sources.MouseEventSource;
+import rx.swing.sources.*;
 import rx.util.functions.Func1;
 
 /**
@@ -140,4 +160,439 @@ public enum SwingObservable { ; // no instances
     public static Observable<Dimension> fromResizing(Component component) {
         return ComponentEventSource.fromResizing(component);
     }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param w
+     *            Wrapper around the component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(ChangeEventSource.ChangeEventComponentWrapper w) {
+        return ChangeEventSource.fromChangeEventsOf(w);
+    }
+    
+    // There is no common base interface for all components with {add/remove}ChangeListener methods.
+    // So we have to add a fromChangeEvents overload for each component which fires ChangeEvents.
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final AbstractButton component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final JTabbedPane component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final JViewport component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final JMenu component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final JProgressBar component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final JSlider component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final JSpinner component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final MenuSelectionManager component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final ButtonModel component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final BoundedRangeModel component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final DefaultButtonModel component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final DefaultBoundedRangeModel component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final SingleSelectionModel component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final DefaultSingleSelectionModel component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final SpinnerModel component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final AbstractSpinnerModel component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final ColorSelectionModel component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final Caret component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final Style component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final StyleContext component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+    
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(final DefaultCaret component) {
+        return fromChangeEvents(new ChangeEventSource.ChangeEventComponentWrapper() {
+            @Override
+            public void addChangeListener(ChangeListener l) {
+                component.addChangeListener(l);
+            }
+            @Override
+            public void removeChangeListener(ChangeListener l) {
+                component.removeChangeListener(l);
+            }
+        });
+    }
+
 }
