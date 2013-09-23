@@ -1,3 +1,13 @@
+buildscript {
+    repositories() {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:0.6.+'
+    }
+}
+
 apply plugin: 'kotlin'
 apply plugin: 'osgi'
 
