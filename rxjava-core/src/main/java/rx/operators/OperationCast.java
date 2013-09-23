@@ -20,14 +20,8 @@ public class OperationCast {
     public static <T, R> OnSubscribeFunc<R> cast(
             Observable<? extends T> source, final Class<R> klass) {
         return OperationMap.map(source, new Func1<T, R>() {
-            @SuppressWarnings("unchecked")
             public R call(T t) {
-                if (klass.isAssignableFrom(t.getClass())) {
-                    return (R) t;
-                } else {
-                    throw new ClassCastException(t.getClass()
-                            + " cannot be cast to " + klass);
-                }
+                return klass.cast(t);
             }
         });
     }
