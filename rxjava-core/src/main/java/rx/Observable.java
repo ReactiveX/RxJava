@@ -4333,6 +4333,23 @@ public class Observable<T> {
     }
 
     /**
+     * Converts the elements of an observable sequence to the specified type.
+     *
+     * @return An observable sequence that contains each element of the source
+     *         sequence converted to the specified type.
+     *
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211842(v=vs.103).aspx">MSDN: Observable.Cast</a>
+     */
+    public <R> Observable<R> cast() {
+        return map(new Func1<T, R>() {
+            @SuppressWarnings("unchecked")
+            public R call(T t) {
+                return (R) t;
+            }
+        });
+    }
+
+    /**
      * Whether a given {@link Function} is an internal implementation inside rx.* packages or not.
      * <p>
      * For why this is being used see https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
