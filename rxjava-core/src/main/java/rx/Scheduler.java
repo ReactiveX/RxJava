@@ -212,10 +212,21 @@ public abstract class Scheduler {
     }
 
     /**
-     * Returns the scheduler's notion of current absolute time in milliseconds.
+     * @return the scheduler's notion of current absolute time in milliseconds.
      */
     public long now() {
         return System.currentTimeMillis();
+    }
+
+    /**
+     * Parallelism available to a Scheduler.
+     * <p>
+     * This defaults to {@code Runtime.getRuntime().availableProcessors()} but can be overridden for use cases such as scheduling work on a computer cluster.
+     * 
+     * @return the scheduler's available degree of parallelism.
+     */
+    public int degreeOfParallelism() {
+        return Runtime.getRuntime().availableProcessors();
     }
 
     public static class UnitTest {

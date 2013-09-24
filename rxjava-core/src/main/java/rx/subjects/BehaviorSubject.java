@@ -15,7 +15,6 @@
  */
 package rx.subjects;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,7 +31,8 @@ import rx.util.functions.Func0;
 
 /**
  * Subject that publishes the most recent and all subsequent events to each subscribed {@link Observer}.
- *
+ * <p>
+ * <img src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.BehaviorSubject.png">
  * <p>
  * Example usage:
  * <p>

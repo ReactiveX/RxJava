@@ -15,7 +15,6 @@
  */
 package rx.subjects;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -37,7 +36,8 @@ import rx.util.functions.Func1;
 
 /**
  * Subject that retains all events and will replay them to an {@link Observer} that subscribes.
- *
+ * <p>
+ * <img src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.ReplaySubject.png">
  * <p>
  * Example usage:
  * <p>

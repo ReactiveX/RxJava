@@ -16,7 +16,6 @@
 package rx.subjects;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -45,7 +44,8 @@ import rx.util.functions.Func1;
 
 /**
  * Subject that, once and {@link Observer} has subscribed, publishes all subsequent events to the subscriber.
- *
+ * <p>
+ * <img src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.PublishSubject.png">
  * <p>
  * Example usage:
  * <p>

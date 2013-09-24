@@ -1,5 +1,69 @@
 # RxJava Releases #
 
+### Version 0.14.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.1%22)) ###
+
+* [Pull 402](https://github.com/Netflix/RxJava/pull/402) rxjava-apache-http improvements
+
+### Version 0.14.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.0%22)) ###
+
+Further progress to the Scala adaptor and a handful of new operators.
+
+Bump to 0.14.0 due to small breaking change to `distinct` operator removing overloaded methods with `Comparator`. These methods were added in 0.13.2 and determined to be incorrect.
+
+This release also includes a new contrib module, [rxjava-apache-http](https://github.com/Netflix/RxJava/tree/master/rxjava-contrib/rxjava-apache-http) that provides an Observable API to the Apache HttpAsyncClient.
+
+* [Pull 396](https://github.com/Netflix/RxJava/pull/396) Add missing methods to Scala Adaptor
+* [Pull 390](https://github.com/Netflix/RxJava/pull/390) Operators: ElementAt and ElementAtOrDefault
+* [Pull 398](https://github.com/Netflix/RxJava/pull/398) Operators: IsEmpty and Exists (instead of Any)
+* [Pull 397](https://github.com/Netflix/RxJava/pull/397) Observable API for Apache HttpAsyncClient 4.0
+* [Pull 400](https://github.com/Netflix/RxJava/pull/400) Removing `comparator` overloads of `distinct`
+
+### Version 0.13.5
+
+* Upload to Sonatype failed so version skipped
+
+### Version 0.13.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.13.4%22)) ###
+
+* [Pull 393](https://github.com/Netflix/RxJava/pull/393) Parallel Operator & ObserveOn/ScheduledObserver Fixes
+* [Pull 394](https://github.com/Netflix/RxJava/pull/394) Change Interval and Sample default Scheduler
+* [Pull 391](https://github.com/Netflix/RxJava/pull/391) Fix OSGI support for rxjava-scala
+
+### Version 0.13.3
+
+* Upload to Sonatype failed so version skipped
+
+### Version 0.13.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.13.2%22)) ###
+
+* [Pull 389](https://github.com/Netflix/RxJava/pull/389) Scala Adaptor Improvements
+* [Pull 382](https://github.com/Netflix/RxJava/pull/382) Removing deprecated RxImplicits from rxjava-scala
+* [Pull 381](https://github.com/Netflix/RxJava/pull/381) Operator: mapWithIndex
+* [Pull 380](https://github.com/Netflix/RxJava/pull/380) Implemented `distinct` and `distinctUntilChanged` variants using a comparator
+* [Pull 379](https://github.com/Netflix/RxJava/pull/379) Make `interval` work with multiple subscribers
+
+### Version 0.13.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.13.1%22)) ###
+
+This release includes a new Scala adaptor as part of the effort from issue https://github.com/Netflix/RxJava/issues/336 pursuing idiomatic Scala support.
+
+* [Pull 376](https://github.com/Netflix/RxJava/pull/376) Idiomatic Scala Adaptor
+* [Pull 375](https://github.com/Netflix/RxJava/pull/375) Operator: Distinct
+* [Pull 374](https://github.com/Netflix/RxJava/pull/374) Operator: DistinctUntilChanged
+* [Pull 373](https://github.com/Netflix/RxJava/pull/373) Fixes and Cleanup
+
+### Version 0.13.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.13.0%22)) ###
+
+This release has some minor changes related to varargs that could break backwards compatibility 
+if directly passing arrays but for most this release should not be breaking.
+
+* [Pull 354](https://github.com/Netflix/RxJava/pull/354) Operators: Count, Sum, Average
+* [Pull 355](https://github.com/Netflix/RxJava/pull/355) Operators: skipWhile and skipWhileWithIndex
+* [Pull 356](https://github.com/Netflix/RxJava/pull/356) Operator: Interval
+* [Pull 357](https://github.com/Netflix/RxJava/pull/357) Operators: first and firstOrDefault
+* [Pull 368](https://github.com/Netflix/RxJava/pull/368) Operators: Throttle and Debounce
+* [Pull 371](https://github.com/Netflix/RxJava/pull/371) Operator: Retry
+* [Pull 370](https://github.com/Netflix/RxJava/pull/370) Change zip method signature from Collection to Iterable
+* [Pull 369](https://github.com/Netflix/RxJava/pull/369) Generics Improvements: co/contra-variance
+* [Pull 361](https://github.com/Netflix/RxJava/pull/361) Remove use of varargs from API
+
 ### Version 0.12.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.12.2%22)) ###
 
 * [Pull 352](https://github.com/Netflix/RxJava/pull/352) Groovy Language Adaptor: Add Func5-9 and N to the wrapper

@@ -26,11 +26,13 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
 import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
+import rx.util.functions.Func2;
 
 public class OperationRetry {
 
@@ -58,17 +60,19 @@ public class OperationRetry {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
-            subscription.add(Schedulers.currentThread().schedule(attemptSubscription(observer)));
+            MultipleAssignmentSubscription rescursiveSubscription = new MultipleAssignmentSubscription();
+            subscription.add(Schedulers.currentThread().schedule(rescursiveSubscription, attemptSubscription(observer)));
+            subscription.add(rescursiveSubscription);
             return subscription;
         }
 
-        private Action0 attemptSubscription(final Observer<? super T> observer) {
-            return new Action0() {
+        private Func2<Scheduler, MultipleAssignmentSubscription, Subscription> attemptSubscription(final Observer<? super T> observer) {
+            return new Func2<Scheduler, MultipleAssignmentSubscription, Subscription>() {
 
                 @Override
-                public void call() {
+                public Subscription call(final Scheduler scheduler, final MultipleAssignmentSubscription rescursiveSubscription) {
                     attempts.incrementAndGet();
-                    source.subscribe(new Observer<T>() {
+                    return source.subscribe(new Observer<T>() {
 
                         @Override
                         public void onCompleted() {
@@ -79,10 +83,8 @@ public class OperationRetry {
                         public void onError(Throwable e) {
                             if ((retryCount == INFINITE_RETRY || attempts.get() <= retryCount) && !subscription.isUnsubscribed()) {
                                 // retry again
-                                // remove the last subscription since we have completed (so as we retry we don't build up a huge list)
-                                subscription.removeLast();
-                                // add the new subscription and schedule a retry
-                                subscription.add(Schedulers.currentThread().schedule(attemptSubscription(observer)));
+                                // add the new subscription and schedule a retry recursively
+                                rescursiveSubscription.setSubscription(scheduler.schedule(rescursiveSubscription, attemptSubscription(observer)));
                             } else {
                                 // give up and pass the failure
                                 observer.onError(e);
@@ -96,6 +98,7 @@ public class OperationRetry {
                     });
 
                 }
+
             };
         }
 
@@ -157,7 +160,7 @@ public class OperationRetry {
             inOrder.verify(observer, times(1)).onCompleted();
             inOrder.verifyNoMoreInteractions();
         }
-        
+
         @Test
         public void testInfiniteRetry() {
             int NUM_FAILURES = 20;
@@ -198,6 +201,6 @@ public class OperationRetry {
                 }
                 return Subscriptions.empty();
             }
-        };
+        }
     }
 }
