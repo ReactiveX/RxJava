@@ -83,6 +83,7 @@ import rx.operators.SafeObserver;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
+import rx.subjects.AsyncSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
@@ -3632,6 +3633,14 @@ public class Observable<T> {
      */
     public ConnectableObservable<T> publish() {
         return OperationMulticast.multicast(this, PublishSubject.<T> create());
+    }
+
+    /**
+     * Returns a {@link ConnectableObservable} that shares a single subscription that contains the last notification only.
+     * @return a {@link ConnectableObservable}
+     */
+    public ConnectableObservable<T> publishLast() {
+        return OperationMulticast.multicast(this, AsyncSubject.<T> create());
     }
 
     /**
