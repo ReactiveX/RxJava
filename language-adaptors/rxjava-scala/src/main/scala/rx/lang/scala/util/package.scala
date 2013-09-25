@@ -45,7 +45,8 @@ package object util {
 
   class Timestamped[+T](val asJava: rx.util.Timestamped[_ <: T]) {}
   
-  object Timestamped {
+  // TODO rename this to Timestamped without making scalac crash
+  object TimestampedObject {
     def apply[T](timestampMillis: Long, value: T): Timestamped[T] = {
       new Timestamped(new rx.util.Timestamped(timestampMillis, value))
     }
