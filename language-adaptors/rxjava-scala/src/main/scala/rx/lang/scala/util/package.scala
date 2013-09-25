@@ -43,11 +43,15 @@ package object util {
   
   // rx.util.Range not needed because there's a standard Scala Range
 
-  implicit class Timestamped[+T](val asJava: rx.util.Timestamped[_ <: T]) {}
+  class Timestamped[+T](val asJava: rx.util.Timestamped[_ <: T]) {}
   
   object Timestamped {
     def apply[T](timestampMillis: Long, value: T): Timestamped[T] = {
-      new rx.util.Timestamped(timestampMillis, value)
+      new Timestamped(new rx.util.Timestamped(timestampMillis, value))
+    }
+    
+    def apply[T](asJava: rx.util.Timestamped[_ <: T]): Timestamped[T] = {
+      new Timestamped(asJava)
     }
     
     def unapply[T](v: Timestamped[T]): Option[(Long, T)] = unapply(v.asJava)
