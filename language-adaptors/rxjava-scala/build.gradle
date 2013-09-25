@@ -58,6 +58,11 @@ tasks.compileExamplesScala {
     classpath = classpath + files(compileScala.destinationDir) + (configurations.compile + configurations.provided)
 }
 
+// Add RxJava core to Scaladoc input:
+// tasks.scaladoc.source(project(':rxjava-core').tasks.getByPath(':rxjava-core:compileJava').source)
+// println("-------")
+// println(tasks.scaladoc.source.asPath)
+
 task test(overwrite: true, dependsOn: testClasses) << {
     ant.taskdef(name: 'scalatest',
             classname: 'org.scalatest.tools.ScalaTestAntTask',
