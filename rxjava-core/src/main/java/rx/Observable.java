@@ -1823,6 +1823,27 @@ public class Observable<T> {
     }
 
     /**
+     * Accepts an Observable and wraps it in another Observable that ensures that the resulting
+     * Observable is chronologically well-behaved. This is accomplished by acquiring a mutual-exclusion lock for the object provided as the lock parameter.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/synchronize.png">
+     * <p>
+     * A well-behaved Observable does not interleave its invocations of the {@link Observer#onNext onNext}, {@link Observer#onCompleted onCompleted}, and {@link Observer#onError onError} methods of
+     * its {@link Observer}s; it invokes {@code onCompleted} or {@code onError} only once; and it never invokes {@code onNext} after invoking either {@code onCompleted} or {@code onError}.
+     * {@code synchronize} enforces this, and the Observable it returns invokes {@code onNext} and {@code onCompleted} or {@code onError} synchronously.
+     *
+     * @param lock
+     *            The lock object to synchronize each observer call on
+     * @param <T>
+     *            the type of item emitted by the source Observable
+     * @return an Observable that is a chronologically well-behaved version of the source
+     *         Observable, and that synchronously notifies its {@link Observer}s
+     */
+    public Observable<T> synchronize(Object lock) {
+        return create(OperationSynchronize.synchronize(this, lock));
+    }
+
+    /**
      * @deprecated Replaced with instance method. 
      */
     @Deprecated
