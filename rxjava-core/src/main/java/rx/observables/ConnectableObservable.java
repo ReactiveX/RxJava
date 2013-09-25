@@ -18,6 +18,8 @@ package rx.observables;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.operators.OperationRefCount;
+import rx.util.functions.Func1;
 
 /**
  * A ConnectableObservable resembles an ordinary {@link Observable}, except that it does not begin
@@ -46,4 +48,22 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      */
     public abstract Subscription connect();
 
+    /**
+     * Returns an observable sequence that stays connected to the source as long
+     * as there is at least one subscription to the observable sequence.
+     * @return a {@link Observable}
+     */
+    public Observable<T> refCount() {
+        return refCount(this);
+    }
+
+    /**
+     * Returns an observable sequence that stays connected to the source as long
+     * as there is at least one subscription to the observable sequence.
+     * @return a {@link Observable}
+     * @param that a {@link ConnectableObservable}
+     */
+    public static <T> Observable<T> refCount(ConnectableObservable<T> that) {
+        return Observable.create(OperationRefCount.refCount(that));
+    }
 }

@@ -85,6 +85,7 @@ import rx.operators.SafeObserver;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
+import rx.subjects.AsyncSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
@@ -3658,6 +3659,14 @@ public class Observable<T> {
     }
 
     /**
+     * Returns a {@link ConnectableObservable} that shares a single subscription that contains the last notification only.
+     * @return a {@link ConnectableObservable}
+     */
+    public ConnectableObservable<T> publishLast() {
+        return OperationMulticast.multicast(this, AsyncSubject.<T> create());
+    }
+
+    /**
      * Synonymous with <code>reduce()</code>.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/aggregate.png">
@@ -4414,7 +4423,7 @@ public class Observable<T> {
      * For why this is being used see https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
      * 
      * NOTE: If strong reasons for not depending on package names comes up then the implementation of this method can change to looking for a marker interface.
-     * 
+     *
      * @param o
      * @return {@code true} if the given function is an internal implementation, and {@code false} otherwise.
      */
