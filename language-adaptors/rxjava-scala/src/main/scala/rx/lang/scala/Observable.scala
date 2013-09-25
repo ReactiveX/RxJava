@@ -2049,7 +2049,7 @@ class UnitTestSuite extends org.scalatest.junit.JUnitSuite {
   }
   
   @Test def testFirstOrElse() {
-    def mustNotBeCalled: String = error("this method should not be called")
+    def mustNotBeCalled: String = sys.error("this method should not be called")
     def mustBeCalled: String = "this is the default value"
     assertEquals("hello", Observable("hello").firstOrElse(mustNotBeCalled).toBlockingObservable.single)
     assertEquals("this is the default value", Observable().firstOrElse(mustBeCalled).toBlockingObservable.single)
@@ -2069,6 +2069,7 @@ class UnitTestSuite extends org.scalatest.junit.JUnitSuite {
   @Test def testTest() = {
     val a: Observable[Int] = Observable()
     assertEquals(4, Observable(1, 2, 3, 4).toBlockingObservable.toIterable.last)
+    println("This UnitTestSuite.testTest() for rx.lang.scala.Observable")
   }
   
 }

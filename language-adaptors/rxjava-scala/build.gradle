@@ -13,9 +13,21 @@ tasks.withType(ScalaCompile) {
 }
 
 sourceSets { 
+	main { 
+        scala { 
+            srcDir 'src/main/scala'
+        }
+    }
     test { 
         scala { 
             srcDir 'src/main/scala'
+            srcDir 'src/test/scala'
+            srcDir 'src/examples/scala'
+        }
+    }
+    examples { 
+        scala { 
+            srcDir 'src/examples/scala'
         }
     }
 }
@@ -32,6 +44,10 @@ dependencies {
 
 tasks.compileScala {  
     classpath = classpath + (configurations.compile + configurations.provided)
+}
+
+tasks.compileExamplesScala {  
+    classpath = classpath + files(compileScala.destinationDir) + (configurations.compile + configurations.provided)
 }
 
 task test(overwrite: true, dependsOn: testClasses) << {
