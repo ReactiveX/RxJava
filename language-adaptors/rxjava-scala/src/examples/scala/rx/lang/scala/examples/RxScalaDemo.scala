@@ -22,6 +22,7 @@ import scala.concurrent.duration._
 import org.junit.{Before, Test, Ignore}
 import org.junit.Assert._
 import rx.lang.scala.concurrency.NewThreadScheduler
+import rx.lang.scala.util.Timestamped
 
 @Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
@@ -373,6 +374,13 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(Seq(7, 8, 9, 10), Observable(10, 7, 8, 9).toSeq.map(_.sorted).toBlockingObservable.single)
     val f = (a: Int, b: Int) => b < a
     assertEquals(Seq(10, 9, 8, 7), Observable(10, 7, 8, 9).toSeq.map(_.sortWith(f)).toBlockingObservable.single)
+  }
+  
+  @Test def timestampExample() {
+    val timestamped = Observable.interval(100 millis).take(3).timestamp.toBlockingObservable
+    for (Timestamped(millis, value) <- timestamped if value > 0) {
+      println(value + " at t = " + millis)
+    }
   }
   
   def output(s: String): Unit = println(s)

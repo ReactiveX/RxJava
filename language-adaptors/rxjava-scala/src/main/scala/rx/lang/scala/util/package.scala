@@ -16,33 +16,45 @@
 package rx.lang.scala
 
 package object util {
-  type Closing = rx.util.Closing
 
-  object Closings {
-    def create(): Closing = rx.util.Closings.create()
-  }
-
-  type CompositeException = rx.util.CompositeException
-
-  // TODO not sure if we need this in Scala
-  object Exceptions {
-    def propageate(ex: Throwable) = rx.util.Exceptions.propagate(ex)
-  }
-
-  // rx.util.OnErrorNotImplementedException TODO what's this?
-
+  /**
+   * Tagging interface for objects which can open buffers.
+   * @see [[Observable.buffer]]
+   */
   type Opening = rx.util.Opening
 
-  object Openings {
-    def create(): Opening = rx.util.Openings.create()
-  }
+  /**
+   * Creates an object which can open buffers.
+   * @see [[Observable.buffer]]
+   */
+  def Opening() = rx.util.Openings.create()
+  
+  /**
+   * Tagging interface for objects which can close buffers.
+   * @see [[Observable.buffer]]
+   */
+  type Closing = rx.util.Closing
 
+  /**
+   * Creates an object which can close buffers.
+   * @see [[Observable.buffer]]
+   */
+  def Closing() = rx.util.Closings.create()
+  
   // rx.util.Range not needed because there's a standard Scala Range
 
-  type Timestamped[+T] = rx.util.Timestamped[_ <: T]
+  implicit class Timestamped[+T](val asJava: rx.util.Timestamped[_ <: T]) {}
+  
   object Timestamped {
     def apply[T](timestampMillis: Long, value: T): Timestamped[T] = {
       new rx.util.Timestamped(timestampMillis, value)
     }
+    
+    def unapply[T](v: Timestamped[T]): Option[(Long, T)] = unapply(v.asJava)
+    
+    def unapply[T](v: rx.util.Timestamped[_ <: T]): Option[(Long, T)] = {
+      Some((v.getTimestampMillis, v.getValue))
+    }
   }
+  
 }

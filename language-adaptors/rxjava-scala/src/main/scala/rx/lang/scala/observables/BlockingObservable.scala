@@ -18,6 +18,11 @@ package rx.lang.scala.observables
 import scala.collection.JavaConverters._
 import rx.lang.scala.ImplicitFunctionConversions._
 
+/**
+ * An Observable that provides blocking operators.
+ * 
+ * You can obtain a BlockingObservable from an Observable using [[Observable.toBlockingObservable]]
+ */
 class BlockingObservable[+T](val asJava: rx.observables.BlockingObservable[_ <: T]) 
   extends AnyVal 
 {
@@ -25,12 +30,12 @@ class BlockingObservable[+T](val asJava: rx.observables.BlockingObservable[_ <: 
   /**
    * Invoke a method on each item emitted by the {@link Observable}; block until the Observable
    * completes.
-   * <p>
+   * 
    * NOTE: This will block even if the Observable is asynchronous.
-   * <p>
+   * 
    * This is similar to {@link Observable#subscribe(Observer)}, but it blocks. Because it blocks it does
    * not need the {@link Observer#onCompleted()} or {@link Observer#onError(Throwable)} methods.
-   * <p>
+   * 
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
    *
    * @param onNext
@@ -40,6 +45,10 @@ class BlockingObservable[+T](val asJava: rx.observables.BlockingObservable[_ <: 
    */
   def foreach(f: T => Unit): Unit = {
     asJava.forEach(f);
+  }
+  
+  def withFilter(p: T => Boolean): WithFilter[T] = {
+    new WithFilter[T](p, asJava)
   }
 
   // last                 -> use toIterable.last
@@ -118,3 +127,23 @@ class BlockingObservable[+T](val asJava: rx.observables.BlockingObservable[_ <: 
   }
 
 }
+
+// Cannot yet have inner class because of this error message: 
+// "implementation restriction: nested class is not allowed in value class.
+// This restriction is planned to be removed in subsequent releases."  
+class WithFilter[+T] private[observables] (p: T => Boolean, asJava: rx.observables.BlockingObservable[_ <: T]) {
+  import rx.lang.scala.ImplicitFunctionConversions._
+  
+  // there's no map and flatMap here, they're only available on Observable
+  
+  def withFilter(q: T => Boolean) = new WithFilter[T]((x: T) => p(x) && q(x), asJava)
+  
+  def foreach(f: T => Unit): Unit = {
+    asJava.forEach((e: T) => {
+      if (p(e)) f(e)
+    })
+  }
+  
+}
+
+
