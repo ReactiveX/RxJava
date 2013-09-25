@@ -20,6 +20,8 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -701,4 +703,42 @@ public class ObservableTests {
             fail("It should be a NumberFormatException");
         }
     }
+    
+    @Test
+    public void testOfType() {
+        Observable<String> observable = Observable.from(1, "abc", false, 2L).ofType(String.class);
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, never()).onNext(1);
+        verify(aObserver, times(1)).onNext("abc");
+        verify(aObserver, never()).onNext(false);
+        verify(aObserver, never()).onNext(2L);
+        verify(aObserver, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testOfTypeWithPolymorphism() {
+        ArrayList<Integer> l1 = new ArrayList<Integer>();
+        l1.add(1);
+        LinkedList<Integer> l2 = new LinkedList<Integer>();
+        l2.add(2);
+
+        @SuppressWarnings("rawtypes")
+        Observable<List> observable = Observable.<Object>from(l1, l2, "123").ofType(List.class);
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, times(1)).onNext(l1);
+        verify(aObserver, times(1)).onNext(l2);
+        verify(aObserver, never()).onNext("123");
+        verify(aObserver, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+
 }
