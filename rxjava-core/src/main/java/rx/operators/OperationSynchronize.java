@@ -58,21 +58,46 @@ public final class OperationSynchronize<T> {
      * @return the wrapped synchronized observable sequence
      */
     public static <T> OnSubscribeFunc<T> synchronize(Observable<? extends T> observable) {
-        return new Synchronize<T>(observable);
+        return new Synchronize<T>(observable, null);
+    }
+
+    /**
+     * Accepts an observable and wraps it in another observable which ensures that the resulting observable is well-behaved.
+     * This is accomplished by acquiring a mutual-exclusion lock for the object provided as the lock parameter.
+     *
+     * A well-behaved observable ensures onNext, onCompleted, or onError calls to its subscribers are
+     * not interleaved, onCompleted and onError are only called once respectively, and no
+     * onNext calls follow onCompleted and onError calls.
+     *
+     * @param observable
+     * @param lock
+     *            The lock object to synchronize each observer call on
+     * @param <T>
+     * @return the wrapped synchronized observable sequence
+     */
+    public static <T> OnSubscribeFunc<T> synchronize(Observable<? extends T> observable, Object lock) {
+        return new Synchronize<T>(observable, lock);
     }
 
     private static class Synchronize<T> implements OnSubscribeFunc<T> {
 
-        public Synchronize(Observable<? extends T> innerObservable) {
+        public Synchronize(Observable<? extends T> innerObservable, Object lock) {
             this.innerObservable = innerObservable;
+            this.lock = lock;
         }
 
         private Observable<? extends T> innerObservable;
         private SynchronizedObserver<T> atomicObserver;
+        private Object lock;
 
         public Subscription onSubscribe(Observer<? super T> observer) {
             SafeObservableSubscription subscription = new SafeObservableSubscription();
-            atomicObserver = new SynchronizedObserver<T>(observer, subscription);
+            if(lock == null) {
+                atomicObserver = new SynchronizedObserver<T>(observer, subscription);
+            }
+            else {
+                atomicObserver = new SynchronizedObserver<T>(observer, subscription, lock);
+            }
             return subscription.wrap(innerObservable.subscribe(atomicObserver));
         }
 
