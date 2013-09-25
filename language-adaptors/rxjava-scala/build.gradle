@@ -23,12 +23,20 @@ sourceSets {
             srcDir 'src/main/scala'
             srcDir 'src/test/scala'
             srcDir 'src/examples/scala'
+            srcDir 'src/examples/java'
         }
+        java.srcDirs = []
     }
-    examples { 
+    examples {
+        // It seems that in Gradle, the dependency "compileScala depends on compileJava" is hardcoded,
+        // or at least not meant to be removed.
+        // However, compileScala also runs javac at the very end, so we just add the Java sources to
+        // the scala source set:
         scala { 
             srcDir 'src/examples/scala'
+            srcDir 'src/examples/java'
         }
+        java.srcDirs = []
     }
 }
 
