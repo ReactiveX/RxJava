@@ -36,6 +36,7 @@ import rx.operators.OperationCache;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDebounce;
+import rx.operators.OperationDefaultIfEmpty;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
@@ -3885,6 +3886,21 @@ public class Observable<T> {
         return create(OperationFirstOrDefault.firstOrDefault(this, predicate, defaultValue));
     }
 
+    /**
+     * Returns the elements of the specified sequence or the specified default
+     * value in a singleton sequence if the sequence is empty.
+     *
+     * @param defaultValue
+     *            The value to return if the sequence is empty.
+     * @return An observable sequence that contains the specified default value
+     *         if the source is empty; otherwise, the elements of the source
+     *         itself.
+     *
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229624(v=vs.103).aspx">MSDN: Observable.DefaultIfEmpty</a>
+     */
+    public Observable<T> defaultIfEmpty(T defaultValue) {
+        return create(OperationDefaultIfEmpty.defaultIfEmpty(this, defaultValue));
+    }
     
     /**
      * Returns an Observable that emits only the first <code>num</code> items emitted by the source
