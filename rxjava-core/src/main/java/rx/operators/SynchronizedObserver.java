@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -68,10 +69,18 @@ public final class SynchronizedObserver<T> implements Observer<T> {
     private final SafeObservableSubscription subscription;
     private volatile boolean finishRequested = false;
     private volatile boolean finished = false;
+    private volatile Object lock;
 
     public SynchronizedObserver(Observer<? super T> Observer, SafeObservableSubscription subscription) {
         this.observer = Observer;
         this.subscription = subscription;
+        this.lock = this;
+    }
+
+    public SynchronizedObserver(Observer<? super T> Observer, SafeObservableSubscription subscription, Object lock) {
+        this.observer = Observer;
+        this.subscription = subscription;
+        this.lock = lock;
     }
     
     /**
@@ -80,8 +89,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
      * @param Observer
      */
     public SynchronizedObserver(Observer<? super T> Observer) {
-        this.observer = Observer;
-        this.subscription = new SafeObservableSubscription();
+        this(Observer, new SafeObservableSubscription());
     }
 
     public void onNext(T arg) {
@@ -89,7 +97,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             // if we're already stopped, or a finish request has been received, we won't allow further onNext requests
             return;
         }
-        synchronized (this) {
+        synchronized (lock) {
             // check again since this could have changed while waiting
             if (finished || finishRequested || subscription.isUnsubscribed()) {
                 // if we're already stopped, or a finish request has been received, we won't allow further onNext requests
@@ -105,7 +113,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             return;
         }
         finishRequested = true;
-        synchronized (this) {
+        synchronized (lock) {
             // check again since this could have changed while waiting
             if (finished || subscription.isUnsubscribed()) {
                 return;
@@ -121,7 +129,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
             return;
         }
         finishRequested = true;
-        synchronized (this) {
+        synchronized (lock) {
             // check again since this could have changed while waiting
             if (finished || subscription.isUnsubscribed()) {
                 return;
@@ -189,6 +197,46 @@ public final class SynchronizedObserver<T> implements Observer<T> {
         }
 
         @Test
+        public void testMultiThreadedBasicWithLock() {
+            Subscription s = mock(Subscription.class);
+            TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three");
+            Observable<String> w = Observable.create(onSubscribe);
+
+            SafeObservableSubscription as = new SafeObservableSubscription(s);
+            BusyObserver busyObserver = new BusyObserver();
+
+            Object lock = new Object();
+            ExternalBusyThread externalBusyThread = new ExternalBusyThread(busyObserver, lock, 10, 100);
+
+            SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as, lock);
+
+            externalBusyThread.start();
+
+            w.subscribe(aw);
+            onSubscribe.waitToFinish();
+
+            try {
+                externalBusyThread.join(10000);
+                assertFalse(externalBusyThread.isAlive());
+                assertFalse(externalBusyThread.fail);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+
+            assertEquals(3, busyObserver.onNextCount.get());
+            assertFalse(busyObserver.onError);
+            assertTrue(busyObserver.onCompleted);
+            // non-deterministic because unsubscribe happens after 'waitToFinish' releases
+            // so commenting out for now as this is not a critical thing to test here
+            //            verify(s, times(1)).unsubscribe();
+
+            // we can have concurrency ...
+            assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
+            // ... but the onNext execution should be single threaded
+            assertEquals(1, busyObserver.maxConcurrentThreads.get());
+        }
+
+        @Test
         public void testMultiThreadedWithNPE() {
             Subscription s = mock(Subscription.class);
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null);
@@ -221,6 +269,52 @@ public final class SynchronizedObserver<T> implements Observer<T> {
         }
 
         @Test
+        public void testMultiThreadedWithNPEAndLock() {
+            Subscription s = mock(Subscription.class);
+            TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null);
+            Observable<String> w = Observable.create(onSubscribe);
+
+            SafeObservableSubscription as = new SafeObservableSubscription(s);
+            BusyObserver busyObserver = new BusyObserver();
+
+            Object lock = new Object();
+            ExternalBusyThread externalBusyThread = new ExternalBusyThread(busyObserver, lock, 10, 100);
+
+            SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as, lock);
+
+            externalBusyThread.start();
+
+            w.subscribe(aw);
+            onSubscribe.waitToFinish();
+
+            try {
+                externalBusyThread.join(10000);
+                assertFalse(externalBusyThread.isAlive());
+                assertFalse(externalBusyThread.fail);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+
+            System.out.println("maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get());
+
+            // we can't know how many onNext calls will occur since they each run on a separate thread
+            // that depends on thread scheduling so 0, 1, 2 and 3 are all valid options
+            // assertEquals(3, busyObserver.onNextCount.get());
+            assertTrue(busyObserver.onNextCount.get() < 4);
+            assertTrue(busyObserver.onError);
+            // no onCompleted because onError was invoked
+            assertFalse(busyObserver.onCompleted);
+            // non-deterministic because unsubscribe happens after 'waitToFinish' releases
+            // so commenting out for now as this is not a critical thing to test here
+            //verify(s, times(1)).unsubscribe();
+
+            // we can have concurrency ...
+            assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
+            // ... but the onNext execution should be single threaded
+            assertEquals(1, busyObserver.maxConcurrentThreads.get());
+        }
+
+        @Test
         public void testMultiThreadedWithNPEinMiddle() {
             Subscription s = mock(Subscription.class);
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
@@ -232,6 +326,50 @@ public final class SynchronizedObserver<T> implements Observer<T> {
 
             w.subscribe(aw);
             onSubscribe.waitToFinish();
+
+            System.out.println("maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get());
+            // this should not be the full number of items since the error should stop it before it completes all 9
+            System.out.println("onNext count: " + busyObserver.onNextCount.get());
+            assertTrue(busyObserver.onNextCount.get() < 9);
+            assertTrue(busyObserver.onError);
+            // no onCompleted because onError was invoked
+            assertFalse(busyObserver.onCompleted);
+            // non-deterministic because unsubscribe happens after 'waitToFinish' releases
+            // so commenting out for now as this is not a critical thing to test here
+            // verify(s, times(1)).unsubscribe();
+
+            // we can have concurrency ...
+            assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
+            // ... but the onNext execution should be single threaded
+            assertEquals(1, busyObserver.maxConcurrentThreads.get());
+        }
+
+        @Test
+        public void testMultiThreadedWithNPEinMiddleAndLock() {
+            Subscription s = mock(Subscription.class);
+            TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
+            Observable<String> w = Observable.create(onSubscribe);
+
+            SafeObservableSubscription as = new SafeObservableSubscription(s);
+            BusyObserver busyObserver = new BusyObserver();
+
+            Object lock = new Object();
+            ExternalBusyThread externalBusyThread = new ExternalBusyThread(busyObserver, lock, 10, 100);
+
+            SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as, lock);
+
+            externalBusyThread.start();
+
+            w.subscribe(aw);
+            onSubscribe.waitToFinish();
+
+            try {
+                externalBusyThread.join(10000);
+                assertFalse(externalBusyThread.isAlive());
+                assertFalse(externalBusyThread.fail);
+            } catch (InterruptedException e) {
+                // ignore
+            }
 
             System.out.println("maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get());
             // this should not be the full number of items since the error should stop it before it completes all 9
@@ -617,14 +755,32 @@ public final class SynchronizedObserver<T> implements Observer<T> {
 
             @Override
             public void onCompleted() {
+                threadsRunning.incrementAndGet();
+
                 System.out.println(">>> BusyObserver received onCompleted");
                 onCompleted = true;
+
+                int concurrentThreads = threadsRunning.get();
+                int maxThreads = maxConcurrentThreads.get();
+                if (concurrentThreads > maxThreads) {
+                    maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
+                }
+                threadsRunning.decrementAndGet();
             }
 
             @Override
             public void onError(Throwable e) {
+                threadsRunning.incrementAndGet();
+
                 System.out.println(">>> BusyObserver received onError: " + e.getMessage());
                 onError = true;
+
+                int concurrentThreads = threadsRunning.get();
+                int maxThreads = maxConcurrentThreads.get();
+                if (concurrentThreads > maxThreads) {
+                    maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
+                }
+                threadsRunning.decrementAndGet();
             }
 
             @Override
@@ -647,6 +803,70 @@ public final class SynchronizedObserver<T> implements Observer<T> {
                         maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
                     }
                     threadsRunning.decrementAndGet();
+                }
+            }
+
+        }
+
+        private static class ExternalBusyThread extends Thread {
+
+            private BusyObserver observer;
+            private Object lock;
+            private int lockTimes;
+            private int waitTime;
+            public volatile boolean fail;
+
+            public ExternalBusyThread(BusyObserver observer, Object lock, int lockTimes, int waitTime) {
+                this.observer = observer;
+                this.lock = lock;
+                this.lockTimes = lockTimes;
+                this.waitTime = waitTime;
+                this.fail = false;
+            }
+
+            @Override
+            public void run() {
+                Random r = new Random();
+                for (int i = 0; i < lockTimes; i++) {
+                    synchronized (lock) {
+                        int oldOnNextCount = observer.onNextCount.get();
+                        boolean oldOnCompleted = observer.onCompleted;
+                        boolean oldOnError = observer.onError;
+                        try {
+                            Thread.sleep(r.nextInt(waitTime));
+                        } catch (InterruptedException e) {
+                            // ignore
+                        }
+                        // Since we own the lock, onNextCount, onCompleted and
+                        // onError must not be changed.
+                        int newOnNextCount = observer.onNextCount.get();
+                        boolean newOnCompleted = observer.onCompleted;
+                        boolean newOnError = observer.onError;
+                        if (oldOnNextCount != newOnNextCount) {
+                            System.out.println(">>> ExternalBusyThread received different onNextCount: "
+                                            + oldOnNextCount
+                                            + " -> "
+                                            + newOnNextCount);
+                            fail = true;
+                            break;
+                        }
+                        if (oldOnCompleted != newOnCompleted) {
+                            System.out.println(">>> ExternalBusyThread received different onCompleted: "
+                                            + oldOnCompleted
+                                            + " -> "
+                                            + newOnCompleted);
+                            fail = true;
+                            break;
+                        }
+                        if (oldOnError != newOnError) {
+                            System.out.println(">>> ExternalBusyThread received different onError: "
+                                            + oldOnError
+                                            + " -> "
+                                            + newOnError);
+                            fail = true;
+                            break;
+                        }
+                    }
                 }
             }
 
