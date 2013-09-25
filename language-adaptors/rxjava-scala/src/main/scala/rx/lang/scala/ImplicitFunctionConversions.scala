@@ -29,8 +29,8 @@ object ImplicitFunctionConversions {
 
   implicit def scalaFunction1ToOnSubscribeFunc[T](f: rx.lang.scala.Observer[T] => Subscription) =
     new rx.Observable.OnSubscribeFunc[T] {
-      def onSubscribe(obs: Observer[_ >: T]): Subscription = {
-        f(obs)
+      def onSubscribe(obs: Observer[_ >: T]): rx.Subscription = {
+        f(obs).asJava
       }
     }
 

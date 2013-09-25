@@ -35,8 +35,20 @@ package object scala {
   
   type Observer[-T] = rx.Observer[_ >: T]  
   type Scheduler = rx.Scheduler
-  type Subscription = rx.Subscription
   
+  /**
+   * Subscriptions are returned from all Observable.subscribe methods to allow unsubscribing.
+   * 
+   * This interface is the RxJava equivalent of IDisposable in Microsoft's Rx implementation.
+   */
+  implicit class Subscription(val asJava: rx.Subscription) extends AnyVal {
+    /**
+     * Call this to stop receiving notifications on the Observer that was registered when 
+     * this Subscription was received.
+     */
+    def unsubscribe(): Unit = asJava.unsubscribe()
+  }
+
 }
 
 /*
