@@ -65,6 +65,17 @@ Scala code using Rx should only import members from `rx.lang.scala` and below.
 Work on this adaptor is still in progress, and for the moment, the best source of documentation are the comments in the source code of [`rx.lang.scala.Observable`](https://github.com/Netflix/RxJava/blob/master/language-adaptors/rxjava-scala/src/main/scala/rx/lang/scala/Observable.scala).
 
 
+## Documentation
+
+You can build the documentation as follows: In the RxJava root directory, run
+
+    ./gradlew :language-adaptors:rxjava-scala:scaladoc
+
+Then navigate to
+
+    RxJava/language-adaptors/rxjava-scala/build/docs/scaladoc/index.html
+
+
 ## Binaries
 
 Binaries and dependency information for Maven, Ivy, Gradle and others can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rxjava-scala%22).
