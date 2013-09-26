@@ -15,17 +15,22 @@
  */
 package rx.lang
 
-
-/**
- * This object contains aliases to all types Scala users need to import.
- * 
- * Note that:
- * -  Scala users cannot use Java's type with variance without always using writing
- *    e.g. rx.Notification[_ <: T], so we create aliases fixing the variance
- * -  For consistency, we create aliases for all types
- */
 import java.util.concurrent.TimeUnit
 import java.util.Date
+
+/* 
+ * Note that:
+ * -  Scala users cannot use Java's types with variance without always using writing
+ *    e.g. rx.Notification[_ <: T], so we create aliases fixing the variance
+ * -  For consistency, we create aliases for all types which Scala users need
+ */
+
+/**
+ * This package contains all classes that RxScala users need.
+ * 
+ * It mirrors the structure of package `rx`, but implementation classes that RxScala users
+ * will not need are left out.
+ */
 package object scala {
 
   /*
@@ -45,23 +50,23 @@ package object scala {
   /**
    * Provides a mechanism for receiving push-based notifications.
    *
-   * After an Observer calls an [[rx.lang.scala.Observable]]'s {{{subscribe}}} method, the Observable
-   * calls the Observer's {{{onNext}}} method to provide notifications. A well-behaved Observable will
-   * call an Observer's {{{onCompleted}}} method exactly once or the Observer's {{{onError}}} method exactly once.
+   * After an Observer calls an [[rx.lang.scala.Observable]]'s `subscribe` method, the Observable
+   * calls the Observer's `onNext` method to provide notifications. A well-behaved Observable will
+   * call an Observer's `onCompleted` method exactly once or the Observer's `onError` method exactly once.
    */
   trait Observer[-T] {
 
     /**
      * Notifies the Observer that the [[rx.lang.scala.Observable]] has finished sending push-based notifications.
      *
-     * The [[rx.lang.scala.Observable]] will not call this method if it calls {{{onError}}}.
+     * The [[rx.lang.scala.Observable]] will not call this method if it calls `onError`.
      */
     def onCompleted(): Unit
 
     /**
      * Notifies the Observer that the [[rx.lang.scala.Observable]] has experienced an error condition.
      *
-     * If the [[rx.lang.scala.Observable]] calls this method, it will not thereafter call {{{onNext}}} or {{{onCompleted}}}.
+     * If the [[rx.lang.scala.Observable]] calls this method, it will not thereafter call `onNext` or `onCompleted`.
      */
     def onError(e: Throwable): Unit
 
@@ -70,7 +75,7 @@ package object scala {
      *
      * The [[rx.lang.scala.Observable]] calls this closure 0 or more times.
      *
-     * The [[rx.lang.scala.Observable]] will not call this method again after it calls either {{{onCompleted}}} or {{{onError}}}.
+     * The [[rx.lang.scala.Observable]] will not call this method again after it calls either `onCompleted` or `onError`.
      */
     def onNext(arg: T): Unit
   }
@@ -200,6 +205,8 @@ package object scala {
      */
     def unsubscribe(): Unit
   }
+  
+  import language.implicitConversions
   
   private[scala] implicit def fakeSubscription2RxSubscription(s: Subscription): rx.Subscription = 
     new rx.Subscription {

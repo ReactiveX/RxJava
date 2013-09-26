@@ -19,10 +19,10 @@ import java.{ lang => jlang }
 import rx.util.functions._
 
 /**
- * These function conversions convert between Scala functions and Rx Funcs and Actions.
- * Most users RxScala won't need them, but they might be useful if one wants to use
- * the rx.Observable directly instead of using rx.lang.scala.Observable or if one wants
- * to use a Java library taking/returning Funcs and Actions.
+ * These function conversions convert between Scala functions and Rx `Func`s and `Action`s.
+ * Most RxScala users won't need them, but they might be useful if one wants to use
+ * the `rx.Observable` directly instead of using `rx.lang.scala.Observable` or if one wants
+ * to use a Java library taking/returning `Func`s and `Action`s.
  */
 object ImplicitFunctionConversions {
   import language.implicitConversions

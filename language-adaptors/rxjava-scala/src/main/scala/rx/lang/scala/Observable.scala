@@ -20,7 +20,7 @@ package rx.lang.scala
 /**
  * The Observable interface that implements the Reactive Pattern.
  */
-class Observable[+T](val asJava: rx.Observable[_ <: T])
+class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   // Uncommenting this line combined with `new Observable(...)` instead of `new Observable[T](...)`
   // makes the compiler crash
   extends AnyVal 
@@ -641,7 +641,8 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   } 
   
   /**
-   * <p>
+   * Returns an Observable which only emits those items for which a given predicate holds.
+   * 
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
    * 
    * @param predicate
@@ -1278,7 +1279,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @param that
    *            an Observable to be merged
    * @return an Observable that emits items that are the result of flattening the items emitted by
-   *         {$code this} and {$code that}
+   *         {@code this} and {@code that}
    */
   def mergeDelayError[U >: T](that: Observable[U]): Observable[U] = {
     Observable[U](rx.Observable.mergeDelayError[U](this.asJava, that.asJava))
@@ -1761,6 +1762,9 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   
 }
 
+/**
+ * Provides various ways to construct new Observables.
+ */
 object Observable {
   import scala.collection.JavaConverters._
   import scala.collection.immutable.Range
@@ -1982,7 +1986,7 @@ object Observable {
 // Cannot yet have inner class because of this error message: 
 // "implementation restriction: nested class is not allowed in value class.
 // This restriction is planned to be removed in subsequent releases."  
-class WithFilter[+T] private[scala] (p: T => Boolean, asJava: rx.Observable[_ <: T]) {
+private[scala] class WithFilter[+T] (p: T => Boolean, asJava: rx.Observable[_ <: T]) {
   import rx.lang.scala.ImplicitFunctionConversions._
   
   def map[B](f: T => B): Observable[B] = {
@@ -2000,7 +2004,7 @@ class WithFilter[+T] private[scala] (p: T => Boolean, asJava: rx.Observable[_ <:
   // there is no foreach here, that's only available on BlockingObservable
 }
 
-class UnitTestSuite extends org.scalatest.junit.JUnitSuite {
+private[scala] class UnitTestSuite extends org.scalatest.junit.JUnitSuite {
   import scala.concurrent.duration._
   import org.junit.{Before, Test, Ignore}
   import org.junit.Assert._

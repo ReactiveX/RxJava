@@ -62,18 +62,12 @@ For more examples, see [RxScalaDemo.scala](https://github.com/Netflix/RxJava/blo
 
 Scala code using Rx should only import members from `rx.lang.scala` and below.
 
-Work on this adaptor is still in progress, and for the moment, the best source of documentation are the comments in the source code of [`rx.lang.scala.Observable`](https://github.com/Netflix/RxJava/blob/master/language-adaptors/rxjava-scala/src/main/scala/rx/lang/scala/Observable.scala).
-
 
 ## Documentation
 
-You can build the documentation as follows: In the RxJava root directory, run
+You can build the documentation by running `./gradlew scaladoc` in the RxJava root directory.
 
-    ./gradlew :language-adaptors:rxjava-scala:scaladoc
-
-Then navigate to
-
-    RxJava/language-adaptors/rxjava-scala/build/docs/scaladoc/index.html
+Then navigate to `RxJava/language-adaptors/rxjava-scala/build/docs/scaladoc/index.html` to display it.
 
 
 ## Binaries

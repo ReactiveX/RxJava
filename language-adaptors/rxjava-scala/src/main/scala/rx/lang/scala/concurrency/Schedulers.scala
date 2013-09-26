@@ -25,21 +25,21 @@ object Schedulers {
   def newThread: Scheduler = rx.concurrency.Schedulers.newThread
 
   /**
-   * Returns a [[rx.lang.scala.Scheduler]] that queues work on an [[java.util.concurrent.Executor]].
+   * Returns a [[rx.lang.scala.Scheduler]] that queues work on an `java.util.concurrent.Executor`.
    * 
    * Note that this does not support scheduled actions with a delay.
    */
   def executor(executor: Executor): Scheduler = rx.concurrency.Schedulers.executor(executor)
 
   /**
-   * Returns a [[rx.lang.scala.Scheduler]] that queues work on an [[java.util.concurrent.ScheduledExecutorService]].
+   * Returns a [[rx.lang.scala.Scheduler]] that queues work on an `java.util.concurrent.ScheduledExecutorService`.
    */
   def executor(executor: ScheduledExecutorService): Scheduler = rx.concurrency.Schedulers.executor(executor)
 
   /**
    * Returns a [[rx.lang.scala.Scheduler]] intended for computational work.
    * 
-   * The implementation is backed by a [[java.util.concurrent.ScheduledExecutorService]] thread-pool sized to the number of CPU cores.
+   * The implementation is backed by a `java.util.concurrent.ScheduledExecutorService` thread-pool sized to the number of CPU cores.
    *
    * This can be used for event-loops, processing callbacks and other computational work.
    * 
@@ -50,7 +50,7 @@ object Schedulers {
   /**
    * [[rx.lang.scala.Scheduler]] intended for IO-bound work.
    * 
-   * The implementation is backed by an [[java.util.concurrent.Executor]] thread-pool that will grow as needed.
+   * The implementation is backed by an `java.util.concurrent.Executor` thread-pool that will grow as needed.
    * 
    * This can be used for asynchronously performing blocking IO.
    * 

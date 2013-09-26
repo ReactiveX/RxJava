@@ -384,19 +384,31 @@ class RxScalaDemo extends JUnitSuite {
     }
   }
   
-  @Test def materializeExample() {
+  @Test def materializeExample1() {
     def printObservable[T](o: Observable[T]): Unit = {
       import Notification._
-      for (n <- o.materialize.toBlockingObservable) n match {
+      o.materialize.subscribe(n => n match {
         case OnNext(v) => println("Got value " + v)
         case OnCompleted() => println("Completed")
         case OnError(err) => println("Error: " + err.getMessage)
-      }
+      })
     }
+    
     val o1 = Observable.interval(100 millis).take(3)
-    val o2 = o1 ++ Observable(new IOException("Oops"))
+    val o2 = Observable(new IOException("Oops"))
     printObservable(o1)
+    waitFor(o1)
     printObservable(o2)
+    waitFor(o2)
+  }
+  
+  @Test def materializeExample2() {
+    import Notification._
+    Observable(1, 2, 3).materialize.subscribe(n => n match {
+      case OnNext(v) => println("Got value " + v)
+      case OnCompleted() => println("Completed")
+      case OnError(err) => println("Error: " + err.getMessage)
+    })
   }
   
   def output(s: String): Unit = println(s)

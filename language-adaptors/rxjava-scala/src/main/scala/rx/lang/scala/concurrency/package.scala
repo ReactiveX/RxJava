@@ -17,6 +17,9 @@ package rx.lang.scala
 
 import rx.concurrency.CurrentThreadScheduler
 
+/**
+ * Provides schedulers.
+ */
 package object concurrency {
   // These classes are not exposed to Scala users, but are accessible through
   // rx.lang.scala.concurrency.Schedulers:

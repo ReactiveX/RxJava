@@ -1,9 +1,25 @@
 package rx.lang.scala
 
+/**
+ * Emitted by Observables returned by [[rx.lang.scala.Observable.materialize]].
+ */
 sealed trait Notification[+T] {
   def asJava: rx.Notification[_ <: T]
 }
 
+/**
+ * Provides pattern matching support for Notifications.
+ * 
+ * Example:
+ * {{{
+ * import Notification._
+ * Observable(1, 2, 3).materialize.subscribe(n => n match {
+ *   case OnNext(v) => println("Got value " + v)
+ *   case OnCompleted() => println("Completed")
+ *   case OnError(err) => println("Error: " + err.getMessage)
+ * })
+ * }}}
+ */
 object Notification {
 
   def apply[T](n: rx.Notification[_ <: T]): Notification[T] = n.getKind match {

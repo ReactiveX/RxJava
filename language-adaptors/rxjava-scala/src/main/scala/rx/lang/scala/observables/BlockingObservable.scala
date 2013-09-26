@@ -23,7 +23,7 @@ import rx.lang.scala.ImplicitFunctionConversions._
  * 
  * You can obtain a BlockingObservable from an Observable using [[Observable.toBlockingObservable]]
  */
-class BlockingObservable[+T](val asJava: rx.observables.BlockingObservable[_ <: T]) 
+class BlockingObservable[+T] private[scala] (val asJava: rx.observables.BlockingObservable[_ <: T]) 
   extends AnyVal 
 {
 
@@ -131,7 +131,7 @@ class BlockingObservable[+T](val asJava: rx.observables.BlockingObservable[_ <: 
 // Cannot yet have inner class because of this error message: 
 // "implementation restriction: nested class is not allowed in value class.
 // This restriction is planned to be removed in subsequent releases."  
-class WithFilter[+T] private[observables] (p: T => Boolean, asJava: rx.observables.BlockingObservable[_ <: T]) {
+private[observables] class WithFilter[+T] (p: T => Boolean, asJava: rx.observables.BlockingObservable[_ <: T]) {
   import rx.lang.scala.ImplicitFunctionConversions._
   
   // there's no map and flatMap here, they're only available on Observable

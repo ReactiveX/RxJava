@@ -1,5 +1,8 @@
 package rx.lang.scala
 
+/**
+ * Provides the type `Subject`.
+ */
 package object subjects {
 
   /**
