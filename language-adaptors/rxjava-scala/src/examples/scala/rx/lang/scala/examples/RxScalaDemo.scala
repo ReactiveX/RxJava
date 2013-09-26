@@ -23,8 +23,9 @@ import org.junit.{Before, Test, Ignore}
 import org.junit.Assert._
 import rx.lang.scala.concurrency.NewThreadScheduler
 import rx.lang.scala.util.Timestamped
+import java.io.IOException
 
-//@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
+@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
 
   @Test def intervalExample() {
@@ -385,13 +386,17 @@ class RxScalaDemo extends JUnitSuite {
   
   @Test def materializeExample() {
     def printObservable[T](o: Observable[T]): Unit = {
+      import Notification._
       for (n <- o.materialize.toBlockingObservable) n match {
-        case Notification.OnNext[T](v) => println("Got value " + v)
-        case Notification.OnCompleted[T]() => println("Completed")
-        case Notification.OnError[T](err) => println("Error: ")
-      } 
+        case OnNext(v) => println("Got value " + v)
+        case OnCompleted() => println("Completed")
+        case OnError(err) => println("Error: " + err.getMessage)
+      }
     }
-    val mat = Observable.interval(100 millis).take(3).materialize
+    val o1 = Observable.interval(100 millis).take(3)
+    val o2 = o1 ++ Observable(new IOException("Oops"))
+    printObservable(o1)
+    printObservable(o2)
   }
   
   def output(s: String): Unit = println(s)
