@@ -16,50 +16,221 @@
 package rx.lang
 
 
-/*
+/**
  * This object contains aliases to all types Scala users need to import.
+ * 
  * Note that:
  * -  Scala users cannot use Java's type with variance without always using writing
  *    e.g. rx.Notification[_ <: T], so we create aliases fixing the variance
  * -  For consistency, we create aliases for all types
- * -  Type aliases cannot be at top level, they have to be inside an object or class
  */
+import java.util.concurrent.TimeUnit
+import java.util.Date
 package object scala {
 
-  type Notification[+T] = rx.Notification[_ <: T]
-  object Notification {
-    def apply[T](): Notification[T] = new rx.Notification()
-    def apply[T](value: T): Notification[T] = new rx.Notification(value)
-    def apply[T](t: Throwable): Notification[T] = new rx.Notification(t)
+  /*
+   * Here we're imitating C's preprocessor using Search & Replace.
+   * 
+   * To activate the code needed to get nice Scaladoc, do the following replacements:
+   *    /*//#ifdef SCALADOC    -->   //#ifdef SCALADOC
+   *    *///#else              -->   /*//#else
+   *    //#endif               -->   *///#endif
+   *
+   * To get back to the actual code, undo the above replacements.
+   * 
+   */
+
+  /*//#ifdef SCALADOC
+
+  /**
+   * Provides a mechanism for receiving push-based notifications.
+   *
+   * After an Observer calls an [[rx.lang.scala.Observable]]'s {{{subscribe}}} method, the Observable
+   * calls the Observer's {{{onNext}}} method to provide notifications. A well-behaved Observable will
+   * call an Observer's {{{onCompleted}}} method exactly once or the Observer's {{{onError}}} method exactly once.
+   */
+  trait Observer[-T] {
+
+    /**
+     * Notifies the Observer that the [[rx.lang.scala.Observable]] has finished sending push-based notifications.
+     *
+     * The [[rx.lang.scala.Observable]] will not call this method if it calls {{{onError}}}.
+     */
+    def onCompleted(): Unit
+
+    /**
+     * Notifies the Observer that the [[rx.lang.scala.Observable]] has experienced an error condition.
+     *
+     * If the [[rx.lang.scala.Observable]] calls this method, it will not thereafter call {{{onNext}}} or {{{onCompleted}}}.
+     */
+    def onError(e: Throwable): Unit
+
+    /**
+     * Provides the Observer with new data.
+     *
+     * The [[rx.lang.scala.Observable]] calls this closure 0 or more times.
+     *
+     * The [[rx.lang.scala.Observable]] will not call this method again after it calls either {{{onCompleted}}} or {{{onError}}}.
+     */
+    def onNext(arg: T): Unit
   }
+
   
-  type Observer[-T] = rx.Observer[_ >: T]  
-  type Scheduler = rx.Scheduler
-  
+  /**
+   * Represents an object that schedules units of work.
+   */
+  abstract class Scheduler {
+
+    /**
+     * Schedules a cancelable action to be executed.
+     *
+     * @param state
+     *            State to pass into the action.
+     * @param action
+     *            Action to schedule.
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    def schedule[T](state: T, action: (Scheduler, T) => Subscription): Subscription
+
+    /**
+     * Schedules a cancelable action to be executed in delayTime.
+     *
+     * @param state
+     *            State to pass into the action.
+     * @param action
+     *            Action to schedule.
+     * @param delayTime
+     *            Time the action is to be delayed before executing.
+     * @param unit
+     *            Time unit of the delay time.
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    def schedule[T](state: T, action: (Scheduler, T) => Subscription, delayTime: Long, unit: TimeUnit): Subscription
+
+    /**
+     * Schedules a cancelable action to be executed periodically.
+     * This default implementation schedules recursively and waits for actions to complete (instead of potentially executing
+     * long-running actions concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
+     *
+     * @param state
+     *            State to pass into the action.
+     * @param action
+     *            The action to execute periodically.
+     * @param initialDelay
+     *            Time to wait before executing the action for the first time.
+     * @param period
+     *            The time interval to wait each time in between executing the action.
+     * @param unit
+     *            The time unit the interval above is given in.
+     * @return A subscription to be able to unsubscribe from action.
+     */
+    def schedulePeriodically[T](state: T, action: (Scheduler, T) => Subscription, initialDelay: Long, period: Long, unit: TimeUnit): Subscription
+
+    /**
+     * Schedules a cancelable action to be executed at dueTime.
+     *
+     * @param state
+     *            State to pass into the action.
+     * @param action
+     *            Action to schedule.
+     * @param dueTime
+     *            Time the action is to be executed. If in the past it will be executed immediately.
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    def schedule[T](state: T, action: (Scheduler, T) => Subscription, dueTime: Date): Subscription
+
+    /**
+     * Schedules an action to be executed.
+     *
+     * @param action
+     *            action
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    def schedule(action: () => Unit): Subscription
+
+    /**
+     * Schedules an action to be executed in delayTime.
+     *
+     * @param action
+     *            action
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    def schedule(action: () => Unit, delayTime: Long, unit: TimeUnit): Subscription
+
+    /**
+     * Schedules an action to be executed periodically.
+     *
+     * @param action
+     *            The action to execute periodically.
+     * @param initialDelay
+     *            Time to wait before executing the action for the first time.
+     * @param period
+     *            The time interval to wait each time in between executing the action.
+     * @param unit
+     *            The time unit the interval above is given in.
+     * @return A subscription to be able to unsubscribe from action.
+     */
+    def schedulePeriodically(action: () => Unit, initialDelay: Long, period: Long, unit: TimeUnit): Subscription
+
+    /**
+     * @return the scheduler's notion of current absolute time in milliseconds.
+     */
+    def now(): Long
+
+    /**
+     * Parallelism available to a Scheduler.
+     * <p>
+     * This defaults to {@code Runtime.getRuntime().availableProcessors()} but can be overridden for use cases such as scheduling work on a computer cluster.
+     *
+     * @return the scheduler's available degree of parallelism.
+     */
+    def degreeOfParallelism: Int
+
+  }
+
   /**
    * Subscriptions are returned from all Observable.subscribe methods to allow unsubscribing.
    * 
-   * This interface is the RxJava equivalent of IDisposable in Microsoft's Rx implementation.
+   * This interface is the equivalent of IDisposable in the .NET Rx implementation.
    */
-  implicit class Subscription(val asJava: rx.Subscription) extends AnyVal {
+  trait Subscription {
     /**
-     * Call this to stop receiving notifications on the Observer that was registered when 
+     * Call this method to stop receiving notifications on the Observer that was registered when 
      * this Subscription was received.
      */
-    def unsubscribe(): Unit = asJava.unsubscribe()
+    def unsubscribe(): Unit
   }
+  
+  private[scala] implicit def fakeSubscription2RxSubscription(s: Subscription): rx.Subscription = 
+    new rx.Subscription {
+      def unsubscribe() = s.unsubscribe()
+    }
+  private[scala] implicit def rxSubscription2FakeSubscription(s: rx.Subscription): Subscription = 
+    new Subscription {
+      def unsubscribe() = s.unsubscribe()
+    }
+
+  private[scala] implicit def fakeObserver2RxObserver[T](o: Observer[T]): rx.Observer[_ >: T] = ???
+  private[scala] implicit def rxObserver2fakeObserver[T](o: rx.Observer[_ >: T]): Observer[T] = ???
+  
+  private[scala] implicit def fakeScheduler2RxScheduler(s: Scheduler): rx.Scheduler = ???
+  private[scala] implicit def rxScheduler2fakeScheduler(s: rx.Scheduler): Scheduler = ???
+  
+  *///#else
+  
+  type Observer[-T] = rx.Observer[_ >: T]
+
+  type Scheduler = rx.Scheduler
+  
+  type Subscription = rx.Subscription
+  
+  //#endif
 
 }
 
 /*
 
-TODO make aliases for these types because:
-* those which are covariant or contravariant do need an alias to get variance correct
-* the others for consistency
-
-rx.observables.BlockingObservable
-rx.observables.ConnectableObservable
-rx.observables.GroupedObservable
+These classes are considered unnecessary for Scala users, so we don't create aliases for them:
 
 rx.plugins.RxJavaErrorHandler
 rx.plugins.RxJavaObservableExecutionHook
@@ -70,4 +241,3 @@ rx.subscriptions.CompositeSubscription
 rx.subscriptions.Subscriptions
 
 */
-

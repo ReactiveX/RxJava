@@ -30,7 +30,6 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   import scala.concurrent.duration.{Duration, TimeUnit}
   import rx.{Observable => JObservable}
   import rx.util.functions._
-  import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
   import rx.lang.scala.subjects.Subject
   import rx.lang.scala.observables.BlockingObservable
@@ -714,7 +713,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">MSDN: Observable.materialize</a>
    */
   def materialize: Observable[Notification[T]] = {
-    Observable[Notification[T]](asJava.materialize())
+    Observable[rx.Notification[_ <: T]](asJava.materialize()).map(Notification(_))
   }
 
   /**
@@ -755,9 +754,11 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return an Observable that emits the items and notifications embedded in the {@link Notification} objects emitted by the source Observable
    */
   // with =:= it does not work, why?
-  def dematerialize[U](implicit evidence: T <:< Notification[U]): Observable[U] = {
-    val o = asJava.dematerialize[U]()
-    Observable[U](o)
+  def dematerialize[U](implicit evidence: Observable[T] <:< Observable[Notification[U]]): Observable[U] = {
+    val o1: Observable[Notification[U]] = this
+    val o2: Observable[rx.Notification[_ <: U]] = o1.map(_.asJava)
+    val o3 = o2.asJava.dematerialize[U]()
+    Observable[U](o3)
   }
   
   /**
@@ -1765,7 +1766,6 @@ object Observable {
   import scala.collection.immutable.Range
   import scala.concurrent.duration.Duration
   import rx.{Observable => JObservable}
-  import rx.lang.scala.{Notification, Subscription, Scheduler, Observer}
   import rx.lang.scala.util._
   import rx.util.functions._
   import rx.lang.scala.ImplicitFunctionConversions._
@@ -1923,7 +1923,8 @@ object Observable {
   } 
 
   def apply[T](f: Future[T], scheduler: Scheduler): Observable[T] = {
-    Observable[T](rx.Observable.from(f, scheduler))
+    val sched: rx.Scheduler = scheduler
+    Observable[T](rx.Observable.from(f, sched))
   }
 
   def apply[T](f: Future[T], duration: Duration): Observable[T] = {
