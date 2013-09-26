@@ -19,7 +19,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -58,7 +57,6 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.swing.sources.ChangeEventSource;
 import rx.swing.sources.ComponentEventSource;
 import rx.swing.sources.KeyEventSource;
 import rx.swing.sources.MouseEventSource;
@@ -79,6 +77,9 @@ public enum SwingObservable {
         Class<?> potentialListenerClass = null;
 
         for (Method method : methods) {
+            if (!method.getName().startsWith("add") && !method.getName().startsWith("remove"))
+                continue;
+
             if (!method.getName().endsWith("Listener"))
                 continue;
 
@@ -86,27 +87,35 @@ public enum SwingObservable {
             Class<?>[] parameterTypes = method.getParameterTypes();
             if (parameterTypes.length != 1)
                 continue;
-            potentialListenerClass = parameterTypes[0];
-            if (!potentialListenerClass.isInterface())
-                continue;
-            if (!potentialListenerClass.isInstance(EventListener.class))
-                continue;
 
-            boolean hasMatchingEventMethods = false;
-            for (Method eventMethod : potentialListenerClass.getMethods()) {
-                Class<?>[] eventMethodParameterTypes = eventMethod.getParameterTypes();
-                if (eventMethodParameterTypes.length != 1)
+            if (potentialListenerClass == null) {
+                Class<?> candidateListenerClass = parameterTypes[0];
+                if (!candidateListenerClass.isInterface())
                     continue;
-                if (!eventMethodParameterTypes[0].isInstance(eventClass))
+                if (!EventListener.class.isAssignableFrom(candidateListenerClass))
+                    continue;
+    
+                boolean hasMatchingEventMethods = false;
+                for (Method eventMethod : candidateListenerClass.getMethods()) {
+                    Class<?>[] eventMethodParameterTypes = eventMethod.getParameterTypes();
+                    if (eventMethodParameterTypes.length != 1)
+                        continue;
+                    if (!eventClass.isAssignableFrom(eventMethodParameterTypes[0]))
+                        continue;
+    
+                    hasMatchingEventMethods = true;
+                }
+    
+                if (!hasMatchingEventMethods)
                     continue;
 
-                hasMatchingEventMethods = true;
+                potentialListenerClass = candidateListenerClass;
             }
-
-            if (!hasMatchingEventMethods)
+            else if (!potentialListenerClass.isAssignableFrom(parameterTypes[0]))
                 continue;
 
             if (method.getName().startsWith("add")) {
+
                 if (potentialAddMethod == null)
                     potentialAddMethod = method;
                 else
@@ -120,6 +129,16 @@ public enum SwingObservable {
             }
         }
 
+        if (potentialListenerClass == null) {
+            return Observable.error(new RuntimeException("Unable to find any methods on " + onComponent.getClass().getName() + " that take an event listener"));
+        }
+        if (potentialAddMethod == null) {
+            return Observable.error(new RuntimeException("Unable to find " + onComponent.getClass().getName() + ".add*Listener(" + potentialListenerClass.getName() + ")"));
+        }
+        if (potentialRemoveMethod == null) {
+            return Observable.error(new RuntimeException("Unable to find " + onComponent.getClass().getName() + ".remove*Listener(" + potentialListenerClass.getName() + ")"));
+        }
+
         final Method addMethod = potentialAddMethod;
         final Method removeMethod = potentialRemoveMethod;
         final Class<?> listenerClass = potentialListenerClass;
@@ -127,7 +146,7 @@ public enum SwingObservable {
         return Observable.create(new OnSubscribeFunc<E>() {
             @Override
             public Subscription onSubscribe(final Observer<? super E> observer) {
-                Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] { listenerClass }, new InvocationHandler() {
+                final Object listener = Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] { listenerClass }, new InvocationHandler() {
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
                         try {
@@ -159,11 +178,6 @@ public enum SwingObservable {
                     }
                 });
 
-                final ActionListener listener = new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                    }
-                };
                 try {
                     addMethod.invoke(onComponent, listener);
                 } catch (Throwable e) {
@@ -289,17 +303,6 @@ public enum SwingObservable {
         return ComponentEventSource.fromResizing(component);
     }
 
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param w
-     *            Wrapper around the component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(ChangeEventSource.ChangeEventComponentWrapper w) {
-        return ChangeEventSource.fromChangeEventsOf(w);
-    }
-
     // There is no common base interface for all components with {add/remove}ChangeListener methods.
     // So we have to add a fromChangeEvents overload for each component which fires ChangeEvents.
 
@@ -420,28 +423,6 @@ public enum SwingObservable {
      *            The component to register the observable for.
      * @return Observable of {@link ChangeEvent}s.
      */
-    public static Observable<ChangeEvent> fromChangeEvents(final DefaultButtonModel component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final DefaultBoundedRangeModel component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
     public static Observable<ChangeEvent> fromChangeEvents(final SingleSelectionModel component) {
         return fromListenerFor(ChangeEvent.class, component);
     }
@@ -453,29 +434,7 @@ public enum SwingObservable {
      *            The component to register the observable for.
      * @return Observable of {@link ChangeEvent}s.
      */
-    public static Observable<ChangeEvent> fromChangeEvents(final DefaultSingleSelectionModel component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
     public static Observable<ChangeEvent> fromChangeEvents(final SpinnerModel component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final AbstractSpinnerModel component) {
         return fromListenerFor(ChangeEvent.class, component);
     }
 
@@ -520,17 +479,6 @@ public enum SwingObservable {
      * @return Observable of {@link ChangeEvent}s.
      */
     public static Observable<ChangeEvent> fromChangeEvents(final StyleContext component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final DefaultCaret component) {
         return fromListenerFor(ChangeEvent.class, component);
     }
 
