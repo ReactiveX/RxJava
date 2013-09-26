@@ -741,4 +741,45 @@ public class ObservableTests {
         verify(aObserver, times(1)).onCompleted();
     }
 
+    @Test
+    public void testContains() {
+        Observable<Boolean> observable = Observable.from("a", "b", null).contains("b");
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, times(1)).onNext(true);
+        verify(aObserver, never()).onNext(false);
+        verify(aObserver, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testContainsWithNull() {
+        Observable<Boolean> observable = Observable.from("a", "b", null).contains(null);
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, times(1)).onNext(true);
+        verify(aObserver, never()).onNext(false);
+        verify(aObserver, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testContainsWithEmptyObservable() {
+        Observable<Boolean> observable = Observable.<String>empty().contains("a");
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, times(1)).onNext(false);
+        verify(aObserver, never()).onNext(true);
+        verify(aObserver, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
 }
