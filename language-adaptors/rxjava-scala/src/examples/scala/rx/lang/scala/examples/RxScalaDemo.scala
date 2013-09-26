@@ -21,7 +21,7 @@ import rx.lang.scala._
 import scala.concurrent.duration._
 import org.junit.{Before, Test, Ignore}
 import org.junit.Assert._
-import rx.lang.scala.concurrency.NewThreadScheduler
+import rx.lang.scala.concurrency.Schedulers
 import rx.lang.scala.util.Timestamped
 import java.io.IOException
 
@@ -169,10 +169,10 @@ class RxScalaDemo extends JUnitSuite {
   
   @Test def schedulersExample() {
     val o = Observable.interval(100 millis).take(8)
-    o.observeOn(NewThreadScheduler).subscribe(
+    o.observeOn(Schedulers.newThread).subscribe(
         i => println(s"${i}a (on thread #${Thread.currentThread().getId()})")
     )
-    o.observeOn(NewThreadScheduler).subscribe(
+    o.observeOn(Schedulers.newThread).subscribe(
         i => println(s"${i}b (on thread #${Thread.currentThread().getId()})")
     )
     waitFor(o)
