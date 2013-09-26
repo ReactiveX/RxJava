@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 0.14.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.2%22)) ###
+
+* [Pull 403](https://github.com/Netflix/RxJava/pull/403) Operators: Cast and OfType
+* [Pull 401](https://github.com/Netflix/RxJava/pull/401) Operator: DefaultIfEmpty
+* [Pull 409](https://github.com/Netflix/RxJava/pull/409) Operator: Synchronize with object
+
 ### Version 0.14.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.1%22)) ###
 
 * [Pull 402](https://github.com/Netflix/RxJava/pull/402) rxjava-apache-http improvements
