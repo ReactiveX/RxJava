@@ -42,24 +42,5 @@ package object util {
   def Closing() = rx.util.Closings.create()
   
   // rx.util.Range not needed because there's a standard Scala Range
-
-  class Timestamped[+T](val asJava: rx.util.Timestamped[_ <: T]) {}
-  
-  // TODO rename this to Timestamped without making scalac crash
-  object TimestampedObject {
-    def apply[T](timestampMillis: Long, value: T): Timestamped[T] = {
-      new Timestamped(new rx.util.Timestamped(timestampMillis, value))
-    }
-    
-    def apply[T](asJava: rx.util.Timestamped[_ <: T]): Timestamped[T] = {
-      new Timestamped(asJava)
-    }
-    
-    def unapply[T](v: Timestamped[T]): Option[(Long, T)] = unapply(v.asJava)
-    
-    def unapply[T](v: rx.util.Timestamped[_ <: T]): Option[(Long, T)] = {
-      Some((v.getTimestampMillis, v.getValue))
-    }
-  }
   
 }

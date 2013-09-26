@@ -199,7 +199,7 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
    * @return an Observable that emits timestamped items from the source Observable
    */
   def timestamp: Observable[Timestamped[T]] = {
-    Observable[rx.util.Timestamped[_ <: T]](asJava.timestamp()).map(TimestampedObject(_))
+    Observable[rx.util.Timestamped[_ <: T]](asJava.timestamp()).map(Timestamped(_))
   }
   
   /**
