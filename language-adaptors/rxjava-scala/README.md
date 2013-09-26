@@ -65,7 +65,9 @@ Scala code using Rx should only import members from `rx.lang.scala` and below.
 
 ## Documentation
 
-You can build the documentation by running `./gradlew scaladoc` in the RxJava root directory.
+The API documentation can be found [here](http://rxscala.github.io/scaladoc/index.html#rx.lang.scala.Observable).
+
+You can build the API documentation yourself by running `./gradlew scaladoc` in the RxJava root directory.
 
 Then navigate to `RxJava/language-adaptors/rxjava-scala/build/docs/scaladoc/index.html` to display it.
 
