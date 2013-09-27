@@ -17,7 +17,6 @@ package rx.lang
 
 import java.util.concurrent.TimeUnit
 import java.util.Date
-import rx.lang.scala.concurrency.GenericScheduler
 
 /* 
  * Note that:
@@ -81,119 +80,6 @@ package object scala {
     def onNext(arg: T): Unit
   }
 
-  
-  /**
-   * Represents an object that schedules units of work.
-   */
-  abstract class Scheduler {
-
-    /**
-     * Schedules a cancelable action to be executed.
-     *
-     * @param state
-     *            State to pass into the action.
-     * @param action
-     *            Action to schedule.
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    def schedule[T](state: T, action: (Scheduler, T) => Subscription): Subscription
-
-    /**
-     * Schedules a cancelable action to be executed in delayTime.
-     *
-     * @param state
-     *            State to pass into the action.
-     * @param action
-     *            Action to schedule.
-     * @param delayTime
-     *            Time the action is to be delayed before executing.
-     * @param unit
-     *            Time unit of the delay time.
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    def schedule[T](state: T, action: (Scheduler, T) => Subscription, delayTime: Long, unit: TimeUnit): Subscription
-
-    /**
-     * Schedules a cancelable action to be executed periodically.
-     * This default implementation schedules recursively and waits for actions to complete (instead of potentially executing
-     * long-running actions concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
-     *
-     * @param state
-     *            State to pass into the action.
-     * @param action
-     *            The action to execute periodically.
-     * @param initialDelay
-     *            Time to wait before executing the action for the first time.
-     * @param period
-     *            The time interval to wait each time in between executing the action.
-     * @param unit
-     *            The time unit the interval above is given in.
-     * @return A subscription to be able to unsubscribe from action.
-     */
-    def schedulePeriodically[T](state: T, action: (Scheduler, T) => Subscription, initialDelay: Long, period: Long, unit: TimeUnit): Subscription
-
-    /**
-     * Schedules a cancelable action to be executed at dueTime.
-     *
-     * @param state
-     *            State to pass into the action.
-     * @param action
-     *            Action to schedule.
-     * @param dueTime
-     *            Time the action is to be executed. If in the past it will be executed immediately.
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    def schedule[T](state: T, action: (Scheduler, T) => Subscription, dueTime: Date): Subscription
-
-    /**
-     * Schedules an action to be executed.
-     *
-     * @param action
-     *            action
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    def schedule(action: () => Unit): Subscription
-
-    /**
-     * Schedules an action to be executed in delayTime.
-     *
-     * @param action
-     *            action
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    def schedule(action: () => Unit, delayTime: Long, unit: TimeUnit): Subscription
-
-    /**
-     * Schedules an action to be executed periodically.
-     *
-     * @param action
-     *            The action to execute periodically.
-     * @param initialDelay
-     *            Time to wait before executing the action for the first time.
-     * @param period
-     *            The time interval to wait each time in between executing the action.
-     * @param unit
-     *            The time unit the interval above is given in.
-     * @return A subscription to be able to unsubscribe from action.
-     */
-    def schedulePeriodically(action: () => Unit, initialDelay: Long, period: Long, unit: TimeUnit): Subscription
-
-    /**
-     * @return the scheduler's notion of current absolute time in milliseconds.
-     */
-    def now(): Long
-
-    /**
-     * Parallelism available to a Scheduler.
-     * <p>
-     * This defaults to {@code Runtime.getRuntime().availableProcessors()} but can be overridden for use cases such as scheduling work on a computer cluster.
-     *
-     * @return the scheduler's available degree of parallelism.
-     */
-    def degreeOfParallelism: Int
-
-  }
-
   /**
    * Subscriptions are returned from all Observable.subscribe methods to allow unsubscribing.
    * 
@@ -221,15 +107,10 @@ package object scala {
   private[scala] implicit def fakeObserver2RxObserver[T](o: Observer[T]): rx.Observer[_ >: T] = ???
   private[scala] implicit def rxObserver2fakeObserver[T](o: rx.Observer[_ >: T]): Observer[T] = ???
   
-  private[scala] implicit def fakeScheduler2RxScheduler(s: Scheduler): rx.Scheduler = ???
-  private[scala] implicit def rxScheduler2fakeScheduler(s: rx.Scheduler): Scheduler = ???
-  
   *///#else
   
   type Observer[-T] = rx.Observer[_ >: T]
 
-  type Scheduler = GenericScheduler[rx.Scheduler]
-  
   type Subscription = rx.Subscription
   
   //#endif

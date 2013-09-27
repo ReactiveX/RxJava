@@ -21,9 +21,7 @@ import rx.concurrency.CurrentThreadScheduler
  * Provides schedulers.
  */
 package object concurrency {
-  
-  //type TestScheduler = GenericScheduler[rx.concurrency.TestScheduler]
-  
+
   // These classes are not exposed to Scala users, but are accessible through rx.lang.scala.concurrency.Schedulers:
   
   // rx.concurrency.CurrentThreadScheduler

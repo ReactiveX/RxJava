@@ -17,7 +17,6 @@ package rx.lang.scala
 
 import java.{ lang => jlang }
 import rx.util.functions._
-import rx.lang.scala.concurrency.GenericScheduler
 
 /**
  * These function conversions convert between Scala functions and Rx `Func`s and `Action`s.
@@ -37,7 +36,7 @@ object ImplicitFunctionConversions {
   
   implicit def scalaSchedulerToJavaScheduler(s: Scheduler): rx.Scheduler = s.asJava
   
-  implicit def javaSchedulerToScalaScheduler[S <: rx.Scheduler](s: S): GenericScheduler[S] = new GenericScheduler(s)
+  implicit def javaSchedulerToScalaScheduler(s: rx.Scheduler): Scheduler = Scheduler(s)
   
   implicit def scalaFunction1ToOnSubscribeFunc[T](f: rx.lang.scala.Observer[T] => Subscription) =
     new rx.Observable.OnSubscribeFunc[T] {
