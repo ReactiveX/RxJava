@@ -1,8 +1,9 @@
 package rx.lang.scala.concurrency
 
-import rx.Scheduler
 import java.util.concurrent.Executor
 import java.util.concurrent.ScheduledExecutorService
+import rx.lang.scala.Scheduler
+import rx.lang.scala.ImplicitFunctionConversions._
 
 /**
  * Factory methods for creating Schedulers.

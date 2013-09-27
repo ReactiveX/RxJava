@@ -17,6 +17,7 @@ package rx.lang
 
 import java.util.concurrent.TimeUnit
 import java.util.Date
+import rx.lang.scala.concurrency.GenericScheduler
 
 /* 
  * Note that:
@@ -227,7 +228,7 @@ package object scala {
   
   type Observer[-T] = rx.Observer[_ >: T]
 
-  type Scheduler = rx.Scheduler
+  type Scheduler = GenericScheduler[rx.Scheduler]
   
   type Subscription = rx.Subscription
   
