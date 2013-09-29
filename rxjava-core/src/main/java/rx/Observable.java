@@ -63,6 +63,7 @@ import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
+import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipWhile;
 import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSum;
@@ -4052,6 +4053,32 @@ public class Observable<T> {
      */
     public Observable<T> skipWhile(Func1<? super T, Boolean> predicate) {
         return create(OperationSkipWhile.skipWhile(this, predicate));
+    }
+
+    /**
+     * Bypasses a specified number of elements at the end of an observable
+     * sequence.
+     * <p>
+     * This operator accumulates a queue with a length enough to store the first
+     * count elements. As more elements are received, elements are taken from
+     * the front of the queue and produced on the result sequence. This causes
+     * elements to be delayed.
+     *
+     * @param source
+     *            the source sequence.
+     * @param count
+     *            number of elements to bypass at the end of the source
+     *            sequence.
+     * @return An observable sequence containing the source sequence elements
+     *         except for the bypassed ones at the end.
+     *
+     * @throws IndexOutOfBoundsException
+     *             count is less than zero.
+     *
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211750(v=vs.103).aspx">MSDN: Observable.SkipLast</a>
+     */
+    public Observable<T> skipLast(int count) {
+        return create(OperationSkipLast.skipLast(this, count));
     }
 
     /**
