@@ -1749,7 +1749,26 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
     val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
       (jo: rx.Observable[T]) => f(Observable[T](jo)).asJava.asInstanceOf[rx.Observable[R]]
     Observable[R](asJava.asInstanceOf[rx.Observable[T]].parallel[R](fJava, scheduler))
-  }  
+  }
+
+  /** Tests whether a predicate holds for some of the elements of this `Observable`.
+   *
+   *  @param   p     the predicate used to test elements.
+   *  @return        an Observable emitting one single Boolean, which is `true` if the given predicate `p` 
+   *                 holds for some of the elements of this Observable, and `false` otherwise.
+   */
+  def exists(p: T => Boolean): Observable[Boolean] = {
+    Observable[java.lang.Boolean](asJava.exists(p)).map(_.booleanValue())
+  }
+
+  /** Tests whether this `Observable` emits no elements.
+   *
+   *  @return        an Observable emitting one single Boolean, which is `true` if this `Observable` 
+   *                 emits no elements, and `false` otherwise.
+   */
+  def isEmpty: Observable[Boolean] = {
+    Observable[java.lang.Boolean](asJava.isEmpty).map(_.booleanValue())
+  }
   
   def withFilter(p: T => Boolean): WithFilter[T] = {
     new WithFilter[T](p, asJava)

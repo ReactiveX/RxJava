@@ -411,6 +411,15 @@ class RxScalaDemo extends JUnitSuite {
     })
   }
   
+  @Test def elementAtReplacement() {
+    assertEquals("b", Observable("a", "b", "c").drop(1).first.toBlockingObservable.single)
+  }
+  
+  @Test def elementAtOrDefaultReplacement() {
+    assertEquals("b", Observable("a", "b", "c").drop(1).firstOrElse("!").toBlockingObservable.single)
+    assertEquals("!!", Observable("a", "b", "c").drop(10).firstOrElse("!!").toBlockingObservable.single)
+  }
+  
   def output(s: String): Unit = println(s)
   
   // blocks until obs has completed
