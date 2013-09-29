@@ -85,6 +85,18 @@ public class OperationSkipLast {
 
                 @Override
                 public void onNext(T value) {
+                    if (count == 0) {
+                        // If count == 0, we do not need to put value into deque
+                        // and remove it at once. We can emit the value
+                        // directly.
+                        try {
+                            observer.onNext(value);
+                        } catch (Throwable ex) {
+                            observer.onError(ex);
+                            subscription.unsubscribe();
+                        }
+                        return;
+                    }
                     lock.lock();
                     try {
                         deque.offerLast(value);
