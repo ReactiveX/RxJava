@@ -26,6 +26,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
+import rx.subscriptions.Subscriptions;
 import rx.Observer;
 import rx.Subscription;
 
@@ -59,6 +60,26 @@ public final class OperationTakeLast {
         }
 
         public Subscription onSubscribe(Observer<? super T> observer) {
+            if(count == 0) {
+                items.subscribe(new Observer<T>() {
+
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+
+                    @Override
+                    public void onNext(T args) {
+                    }
+
+                }).unsubscribe();
+                observer.onCompleted();
+                return Subscriptions.empty();
+            }
+
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
@@ -136,6 +157,19 @@ public final class OperationTakeLast {
             Observer<String> aObserver = mock(Observer.class);
             take.subscribe(aObserver);
             verify(aObserver, times(1)).onNext("one");
+            verify(aObserver, never()).onError(any(Throwable.class));
+            verify(aObserver, times(1)).onCompleted();
+        }
+
+        @Test
+        public void testTakeLastWithZeroCount() {
+            Observable<String> w = Observable.from("one");
+            Observable<String> take = Observable.create(takeLast(w, 0));
+
+            @SuppressWarnings("unchecked")
+            Observer<String> aObserver = mock(Observer.class);
+            take.subscribe(aObserver);
+            verify(aObserver, never()).onNext("one");
             verify(aObserver, never()).onError(any(Throwable.class));
             verify(aObserver, times(1)).onCompleted();
         }
