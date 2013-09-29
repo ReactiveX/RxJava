@@ -4064,8 +4064,6 @@ public class Observable<T> {
      * the front of the queue and produced on the result sequence. This causes
      * elements to be delayed.
      *
-     * @param source
-     *            the source sequence.
      * @param count
      *            number of elements to bypass at the end of the source
      *            sequence.
