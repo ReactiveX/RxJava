@@ -3,7 +3,8 @@ package rx.lang.scala.util
 /**
  * Wraps a value and a timestamp.
  */
-class Timestamped[+T](val asJava: rx.util.Timestamped[_ <: T]) extends AnyVal {
+// constructor is private because users should use apply from companion
+class Timestamped[+T] private[util] (val asJava: rx.util.Timestamped[_ <: T]) extends AnyVal {
   /**
    * Returns the timestamp, in milliseconds.
    */

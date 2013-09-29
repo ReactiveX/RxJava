@@ -23,6 +23,7 @@ import rx.lang.scala.ImplicitFunctionConversions._
  * 
  * You can obtain a BlockingObservable from an Observable using [[Observable.toBlockingObservable]]
  */
+// constructor is private because users should use Observable.toBlockingObservable
 class BlockingObservable[+T] private[scala] (val asJava: rx.observables.BlockingObservable[_ <: T]) 
   extends AnyVal 
 {

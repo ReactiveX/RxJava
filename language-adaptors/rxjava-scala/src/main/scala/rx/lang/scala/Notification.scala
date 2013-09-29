@@ -8,7 +8,7 @@ sealed trait Notification[+T] {
 }
 
 /**
- * Provides pattern matching support for Notifications.
+ * Provides pattern matching support and constructors for Notifications.
  * 
  * Example:
  * {{{

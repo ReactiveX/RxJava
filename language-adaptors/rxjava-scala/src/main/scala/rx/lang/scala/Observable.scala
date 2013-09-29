@@ -20,6 +20,7 @@ package rx.lang.scala
 /**
  * The Observable interface that implements the Reactive Pattern.
  */
+// constructor is private because users should use apply in companion
 class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   // Uncommenting this line combined with `new Observable(...)` instead of `new Observable[T](...)`
   // makes the compiler crash
