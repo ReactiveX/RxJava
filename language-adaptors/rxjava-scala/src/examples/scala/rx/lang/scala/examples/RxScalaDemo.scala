@@ -420,6 +420,40 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals("!!", Observable("a", "b", "c").drop(10).firstOrElse("!!").toBlockingObservable.single)
   }
   
+  @Test def observableLikeFuture1() {
+    implicit val scheduler = Schedulers.threadPoolForIO
+    val o1 = observable {
+      Thread.sleep(1000)
+      5
+    }
+    val o2 = observable {
+      Thread.sleep(500)
+      4
+    }
+    Thread.sleep(500)
+    val t1 = System.currentTimeMillis
+    println((o1 merge o2).first.toBlockingObservable.single)
+    println(System.currentTimeMillis - t1)
+  }
+  
+  @Test def observableLikeFuture2() {
+    class Friend {}
+    val session = new Object {
+      def getFriends: List[Friend] = List(new Friend, new Friend)
+    }
+    
+    implicit val scheduler = Schedulers.threadPoolForIO
+    val o: Observable[List[Friend]] = observable {
+       session.getFriends
+    }
+    o.subscribe(
+      friendList => println(friendList),
+      err => println(err.getMessage)
+    )
+    
+    Thread.sleep(1500) // or convert to BlockingObservable
+  }
+  
   def output(s: String): Unit = println(s)
   
   // blocks until obs has completed
