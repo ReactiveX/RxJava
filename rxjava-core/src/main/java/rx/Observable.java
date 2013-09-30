@@ -548,6 +548,23 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits no data to the {@link Observer} and immediately invokes
+     * its {@link Observer#onCompleted onCompleted} method with the specified scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/empty.png">
+     * @param scheduler
+     *            the scheduler to call the {@link Observer#onCompleted onCompleted} method.
+     * @param <T>
+     *            the type of the items (ostensibly) emitted by the Observable
+     * @return an Observable that returns no data to the {@link Observer} and immediately invokes
+     *         the {@link Observer}'s {@link Observer#onCompleted() onCompleted} method with
+     *         the specified scheduler.
+     */
+    public static <T> Observable<T> empty(Scheduler scheduler) {
+        return Observable.<T>empty().subscribeOn(scheduler);
+    }
+
+    /**
      * Returns an Observable that invokes an {@link Observer}'s {@link Observer#onError onError} method when the Observer subscribes to it
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.png">
