@@ -1341,7 +1341,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
     val f: Func2[_ >: T, _ >: U, _ <: (T, U)] = (t: T, u: U) => (t, u)
     Observable[(T, U)](rx.Observable.combineLatest[T, U, (T, U)](this.asJava, that.asJava, f))
   }
-
+// Review completed till here!!!
   /**
    * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
    *
@@ -1530,6 +1530,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    * @return an Observable that emits only the very first item from the source, or a default value
    *         if the source Observable completes without emitting any item.
    */
+  // TODO def headOrElse
   def firstOrElse[U >: T](default: => U): Observable[U] = {
     this.take(1).fold[Option[U]](None)((v: Option[U], e: U) => Some(e)).map({
       case Some(element) => element
@@ -1546,6 +1547,8 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    * @return an Observable that emits only the very first item from the source, or none if the
    *         source Observable completes without emitting a single item.
    */
+  // TODO def head
+  // TODO def tail
   def first: Observable[T] = {
     take(1)
   }
@@ -1577,37 +1580,6 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   }
 
   /**
-   * Returns an Observable that forwards all items emitted from the source Observable that are sequentially
-   * distinct according to an equality function.
-   *
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.png">
-   *
-   * @param equality
-   *            an equality function for deciding whether two emitted items are equal or not
-   * @return an Observable of sequentially distinct items
-   */
-  // def distinctUntilChanged[U](equality: (T, T) => Boolean): Observable[T] = {
-  //   TODO once https://github.com/Netflix/RxJava/issues/395 is fixed
-  // }
-
-  /**
-   * Returns an Observable that forwards all items emitted from the source Observable that are sequentially
-   * distinct according to a key selector function and a comparator.
-   *
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.key.png">
-   *
-   * @param keySelector
-   *            a function that projects an emitted item to a key value which is used for deciding whether an item is sequentially
-   *            distinct from another one or not
-   * @param equality
-   *            an equality function for deciding whether two emitted item keys are equal or not
-   * @return an Observable of sequentially distinct items
-   */
-  // def distinctUntilChanged[U](keySelector: T => U, equality: (T, T) => Boolean): Observable[T] = {
-  //   TODO once https://github.com/Netflix/RxJava/issues/395 is fixed
-  // }
-
-  /**
    * Returns an Observable that forwards all distinct items emitted from the source Observable.
    *
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.png">
@@ -1617,20 +1589,6 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   def distinct: Observable[T] = {
     Observable[T](asJava.distinct())
   }
-
-  /**
-   * Returns an Observable that forwards all items emitted from the source Observable that are distinct according
-   * to a comparator.
-   *
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.png">
-   *
-   * @param equality
-   *            an equality function for deciding whether two emitted items are equal or not
-   * @return an Observable of distinct items
-   */
-  // def distinct(equality: (T, T) => Boolean): Observable[T] = {
-  //   TODO once https://github.com/Netflix/RxJava/issues/395 is fixed
-  // }
 
   /**
    * Returns an Observable that forwards all items emitted from the source Observable that are distinct according
@@ -1673,6 +1631,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    * @return an Observable emitting the number of counted elements of the source Observable
    *         as its single item.
    */
+  //TODO Both size and length
   def length: Observable[Int] = {
     Observable[Integer](asJava.count()).map(_.intValue())
   }
@@ -1868,6 +1827,7 @@ object Observable {
     Observable[T](JObservable.from(args.toIterable.asJava))
   }
   
+  // TODO (SG) documentation
   def apply(range: Range): Observable[Int] = {
     Observable[Int](JObservable.from(range.toIterable.asJava))
   }
@@ -1895,29 +1855,6 @@ object Observable {
   def defer[T](observable: => Observable[T]): Observable[T] = {
     Observable[T](JObservable.defer[T](() => observable.asJava))
   }
-
-  /**
-   * Returns an Observable that emits a single item and then completes.
-   *
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.png">
-   *
-   * To convert any object into an Observable that emits that object, pass that object into the
-   * `just` method.
-   *
-   * This is similar to the [[Observable.apply[T](T*)]] method, except that
-   * [[Observable.apply[T](T*)]] will convert an `Iterable` object into an Observable that emits
-   * each of the items in the Iterable, one at a time, while the `just()` method
-   * converts an Iterable into an Observable that emits the entire Iterable as a single item.
-   * 
-   * @param value
-   *            the item to pass to the [[Observer]]'s [[Observer.onNext onNext]] method
-   * @tparam T
-   *            the type of that item
-   * @return an Observable that emits a single item and then completes
-   */
-  def just[T](value: T): Observable[T] = {
-    Observable[T](JObservable.just(value))
-  }
   
   /**
    * Returns an Observable that never sends any items or notifications to an [[Observer]].
@@ -1932,25 +1869,6 @@ object Observable {
     Observable[Nothing](JObservable.never())
   }
 
-  // TODO also support Scala Futures, but think well before. Do we want to Future and Observable
-  // to share a common base interface?
-  
-  // private because it's not RxScala's responsability to provide this alias
-  private type Future[+T] = java.util.concurrent.Future[_ <: T]
-  
-  def apply[T](f: Future[T]): Observable[T] = {
-    Observable[T](rx.Observable.from(f))
-  } 
-
-  def apply[T](f: Future[T], scheduler: Scheduler): Observable[T] = {
-    val sched: rx.Scheduler = scheduler
-    Observable[T](rx.Observable.from(f, sched))
-  }
-
-  def apply[T](f: Future[T], duration: Duration): Observable[T] = {
-    Observable[T](rx.Observable.from(f, duration.length, duration.unit))
-  }
-
   /**
    * Given a Seq of N observables, returns an observable that emits Seqs of N elements each.
    * The first emitted Seq will contain the first element of each source observable,
@@ -1959,8 +1877,10 @@ object Observable {
    * @param observables
    *            A Seq of source Observables
    * @return an Observable that emits the zipped Seqs
-   */
-  def zip[T](observables: Seq[Observable[T]]): Observable[Seq[T]] = {
+   */  
+  def zip[A,B,C](obA: Observable[A], obB: Observable[B], obC: Observable[B]): Observable[(A, B, C)]
+  // TODO until 6
+  def zip[T](observables: Observable[T]*): Observable[Seq[T]] = {
     val f: FuncN[Seq[T]] = (args: Seq[java.lang.Object]) => {
       val asSeq: Seq[Object] = args.toSeq
       asSeq.asInstanceOf[Seq[T]]
@@ -1989,11 +1909,16 @@ object Observable {
     Observable[Seq[T]](o)
   }
   
-  def interval(duration: Duration): Observable[Long] = {
-    (new Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit))).map(_.longValue())
-  }
-  
-  def interval(duration: Duration, scheduler: Scheduler): Observable[Long] = {
+  /**
+   * TODO (SG) ScalaDoc
+   * TODO Provide implicit scheduler:
+   * 
+   * def interval(duration: Duration)(implicit scheduler: Scheduler): Observable[Long]
+   * def interval(duration: Duration)(scheduler: Scheduler): Observable[Long]
+   * def interval(scheduler: Scheduler)(duration: Duration): Observable[Long]
+   * def interval(duration: Duration, scheduler: Scheduler): Observable[Long] && def interval(duration: Duration): Observable[Long] 
+   */
+  def interval(duration: Duration)(implicit scheduler: Scheduler): Observable[Long] = {
     (new Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit, scheduler))).map(_.longValue())
   }
   
