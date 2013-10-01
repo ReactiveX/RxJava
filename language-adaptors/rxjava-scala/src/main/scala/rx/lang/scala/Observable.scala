@@ -1524,19 +1524,32 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    *
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstOrDefault.png">
    *
-   * @param defaultValue
+   * @param default
    *            The default value to emit if the source Observable doesn't emit anything.
    *            This is a by-name parameter, so it is only evaluated if the source Observable doesn't emit anything.
    * @return an Observable that emits only the very first item from the source, or a default value
    *         if the source Observable completes without emitting any item.
    */
-  // TODO def headOrElse
   def firstOrElse[U >: T](default: => U): Observable[U] = {
     this.take(1).fold[Option[U]](None)((v: Option[U], e: U) => Some(e)).map({
       case Some(element) => element
       case None => default
     })
   }
+
+  /**
+   * Returns an Observable that emits only the very first item emitted by the source Observable, or
+   * a default value if the source Observable is empty.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstOrDefault.png">
+   *
+   * @param default
+   *            The default value to emit if the source Observable doesn't emit anything.
+   *            This is a by-name parameter, so it is only evaluated if the source Observable doesn't emit anything.
+   * @return an Observable that emits only the very first item from the source, or a default value
+   *         if the source Observable completes without emitting any item.
+   */
+  def headOrElse[U >: T](default: => U): Observable[U] = firstOrElse(default)
 
   /**
    * Returns an Observable that emits only the very first item emitted by the source Observable.
@@ -1547,12 +1560,17 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    * @return an Observable that emits only the very first item from the source, or none if the
    *         source Observable completes without emitting a single item.
    */
-  // TODO def head
-  // TODO def tail
-  def first: Observable[T] = {
-    take(1)
-  }
+  def first: Observable[T] = take(1)
 
+  def head: Observable[T] = {
+    this.take(1).fold[Option[T]](None)((v: Option[T], e: T) => Some(e)).map({
+      case Some(element) => element
+      case None => throw new NoSuchElementException("head of empty Observable")
+    })
+  }
+  
+  // TODO def tail
+  
   /**
    * Returns an Observable that forwards all sequentially distinct items emitted from the source Observable.
    *
@@ -1870,30 +1888,35 @@ object Observable {
   }
 
   /**
-   * Given a Seq of N observables, returns an observable that emits Seqs of N elements each.
-   * The first emitted Seq will contain the first element of each source observable,
-   * the second Seq the second element of each source observable, and so on.
+   * Given 3 observables, returns an observable that emits Tuples of 3 elements each.
+   * The first emitted Tuple will contain the first element of each source observable,
+   * the second Tuple the second element of each source observable, and so on.
    * 
-   * @param observables
-   *            A Seq of source Observables
-   * @return an Observable that emits the zipped Seqs
-   */  
-  def zip[A,B,C](obA: Observable[A], obB: Observable[B], obC: Observable[B]): Observable[(A, B, C)]
-  // TODO until 6
-  def zip[T](observables: Observable[T]*): Observable[Seq[T]] = {
-    val f: FuncN[Seq[T]] = (args: Seq[java.lang.Object]) => {
-      val asSeq: Seq[Object] = args.toSeq
-      asSeq.asInstanceOf[Seq[T]]
-    }
-    val list = observables.map(_.asJava).asJava
-    val o = rx.Observable.zip(list, f)
-    Observable[Seq[T]](o)
+   * @return an Observable that emits the zipped Observables
+   */
+  def zip[A, B, C](obA: Observable[A], obB: Observable[B], obC: Observable[C]): Observable[(A, B, C)] = {
+    Observable[(A, B, C)](rx.Observable.zip[A, B, C, (A, B, C)](obA.asJava, obB.asJava, obC.asJava, (a: A, b: B, c: C) => (a, b, c)))
   }
   
   /**
-   * Given an Observable emitting N source observables, returns an observable that emits Seqs of N elements each.
+   * Given 4 observables, returns an observable that emits Tuples of 4 elements each.
+   * The first emitted Tuple will contain the first element of each source observable,
+   * the second Tuple the second element of each source observable, and so on.
+   * 
+   * @return an Observable that emits the zipped Observables
+   */
+  def zip[A, B, C, D](obA: Observable[A], obB: Observable[B], obC: Observable[C], obD: Observable[D]): Observable[(A, B, C, D)] = {
+    Observable[(A, B, C, D)](rx.Observable.zip[A, B, C, D, (A, B, C, D)](obA.asJava, obB.asJava, obC.asJava, obD.asJava, (a: A, b: B, c: C, d: D) => (a, b, c, d)))
+  }
+
+  /**
+   * Given an Observable emitting `N` source observables, returns an observable that 
+   * emits Seqs of `N` elements each.
    * The first emitted Seq will contain the first element of each source observable,
    * the second Seq the second element of each source observable, and so on.
+   * 
+   * Note that the returned Observable will only start emitting items once the given 
+   * `Observable[Observable[T]]` has completed, because otherwise it cannot know `N`.
    * 
    * @param observables
    *            An Observable emitting N source Observables
@@ -1908,17 +1931,32 @@ object Observable {
     val o = rx.Observable.zip(list, f)
     Observable[Seq[T]](o)
   }
-  
+
   /**
-   * TODO (SG) ScalaDoc
-   * TODO Provide implicit scheduler:
+   * Emits 0, 1, 2, ... with a delay of `duration` between consecutive numbers.
    * 
-   * def interval(duration: Duration)(implicit scheduler: Scheduler): Observable[Long]
-   * def interval(duration: Duration)(scheduler: Scheduler): Observable[Long]
-   * def interval(scheduler: Scheduler)(duration: Duration): Observable[Long]
-   * def interval(duration: Duration, scheduler: Scheduler): Observable[Long] && def interval(duration: Duration): Observable[Long] 
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/interval.png">
+   *
+   * @param duration
+   *            duration between two consecutive numbers
+   * @return An Observable that emits a number each time interval.
    */
-  def interval(duration: Duration)(implicit scheduler: Scheduler): Observable[Long] = {
+  def interval(duration: Duration): Observable[Long] = {
+    (new Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit))).map(_.longValue())
+  }
+
+  /**
+   * Emits 0, 1, 2, ... with a delay of `duration` between consecutive numbers.
+   * 
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/interval.png">
+   *
+   * @param duration
+   *            duration between two consecutive numbers
+   * @param scheduler
+   *            the scheduler to use
+   * @return An Observable that emits a number each time interval.
+   */
+  def interval(duration: Duration, scheduler: Scheduler): Observable[Long] = {
     (new Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit, scheduler))).map(_.longValue())
   }
   
@@ -1949,7 +1987,7 @@ private[scala] class UnitTestSuite extends org.scalatest.junit.JUnitSuite {
   import scala.concurrent.duration._
   import org.junit.{Before, Test, Ignore}
   import org.junit.Assert._
-  import org.mockito.Matchers.any
+  import org.mockito.Matchers._
   import org.mockito.Mockito._
   import org.mockito.{ MockitoAnnotations, Mock }
   
@@ -2010,6 +2048,16 @@ private[scala] class UnitTestSuite extends org.scalatest.junit.JUnitSuite {
       case e: Exception => receivedMsg = e.getCause().getMessage()
     }
     assertEquals(receivedMsg, msg)
+  }
+  
+  @Test def testHead() {
+    val observer = mock(classOf[Observer[Int]])
+    val o = Observable().head
+    val sub = o.subscribe(observer)
+
+    verify(observer, never).onNext(any(classOf[Int]))
+    verify(observer, never).onCompleted()
+    verify(observer, times(1)).onError(any(classOf[NoSuchElementException]))
   }
   
   @Test def testTest() = {
