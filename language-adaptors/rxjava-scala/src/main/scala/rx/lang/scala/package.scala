@@ -104,6 +104,13 @@ package object scala {
       def unsubscribe() = s.unsubscribe()
     }
 
+  private[scala] implicit def schedulerActionToFunc2[T](action: (Scheduler, T) => Subscription) =
+    new rx.util.functions.Func2[rx.Scheduler, T, rx.Subscription] {
+      def call(s: rx.Scheduler, t: T): rx.Subscription = {
+        action(ImplicitFunctionConversions.javaSchedulerToScalaScheduler(s), t)
+      }
+    }  
+  
   private[scala] implicit def fakeObserver2RxObserver[T](o: Observer[T]): rx.Observer[_ >: T] = ???
   private[scala] implicit def rxObserver2fakeObserver[T](o: rx.Observer[_ >: T]): Observer[T] = ???
   
