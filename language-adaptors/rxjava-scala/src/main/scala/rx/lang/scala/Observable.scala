@@ -1893,7 +1893,7 @@ object Observable {
    *         factory function
    */
   def defer[T](observable: => Observable[T]): Observable[T] = {
-    Observable[T](JObservable.defer(observable.asJava))
+    Observable[T](JObservable.defer[T](() => observable.asJava))
   }
 
   /**
@@ -2094,3 +2094,4 @@ private[scala] class UnitTestSuite extends org.scalatest.junit.JUnitSuite {
   }
   
 }
+
