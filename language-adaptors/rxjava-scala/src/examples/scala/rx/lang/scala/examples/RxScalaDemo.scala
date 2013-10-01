@@ -323,13 +323,13 @@ class RxScalaDemo extends JUnitSuite {
         .toBlockingObservable.foreach(println(_))
   }
   
-  // source Observables are in a List:
-  @Test def zipManySeqExample() {
-    val observables = List(Observable(1, 2), Observable(10, 20), Observable(100, 200))
-    (for (seq <- Observable.zip(observables)) yield seq.mkString("(", ", ", ")"))
+  // source Observables are all known:
+  @Test def zip3Example() {
+    val o = Observable.zip(Observable(1, 2), Observable(10, 20), Observable(100, 200))
+    (for ((n1, n2, n3) <- o) yield s"$n1, $n2 and $n3")
         .toBlockingObservable.foreach(println(_))
   }
-  
+
   // source Observables are in an Observable:
   @Test def zipManyObservableExample() {
     val observables = Observable(Observable(1, 2), Observable(10, 20), Observable(100, 200))
@@ -453,7 +453,7 @@ class RxScalaDemo extends JUnitSuite {
     
     Thread.sleep(1500) // or convert to BlockingObservable
   }
-  
+
   def output(s: String): Unit = println(s)
   
   // blocks until obs has completed

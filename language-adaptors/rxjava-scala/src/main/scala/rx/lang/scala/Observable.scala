@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,11 +14,36 @@
  * limitations under the License.
  */
 
-
 package rx.lang.scala
 
 /**
  * The Observable interface that implements the Reactive Pattern.
+ * 
+ * @define subscribeObserver 
+ * Call this method to subscribe an [[Observer]] for receiving 
+ * items and notifications from the Observable.
+ * 
+ * A typical implementation of `subscribe` does the following:
+ *
+ * It stores a reference to the Observer in a collection object, such as a `List[T]` object.
+ *
+ * It returns a reference to the [[Subscription]] interface. This enables Observers to
+ * unsubscribe, that is, to stop receiving items and notifications before the Observable stops
+ * sending them, which also invokes the Observer's [[Observer.onCompleted onCompleted]] method.
+ *
+ * An `Observable[T]` instance is responsible for accepting all subscriptions
+ * and notifying all Observers. Unless the documentation for a particular
+ * `Observable[T]` implementation indicates otherwise, Observers should make no
+ * assumptions about the order in which multiple Observers will receive their notifications.
+ *
+ * @param observer
+ *            the observer
+ * @param scheduler
+ *            the [[Scheduler]] on which Observers subscribe to the Observable
+ * @return a [[Subscription]] reference with which the [[Observer]] can stop receiving items
+ *         before the Observable has finished sending them
+ * @throws IllegalArgumentException
+ *             if the [[Observer]] provided as the argument to `subscribe()` is `null`
  */
 // constructor is private because users should use apply in companion
 class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
@@ -35,64 +60,19 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   import rx.lang.scala.subjects.Subject
   import rx.lang.scala.observables.BlockingObservable
   import rx.lang.scala.ImplicitFunctionConversions._
-
-  /**
-   * An [[Observer]] must call an Observable's `subscribe` method in order to
-   * receive items and notifications from the Observable.
-   * 
-   * A typical implementation of `subscribe` does the following:
-   *
-   * It stores a reference to the Observer in a collection object, such as a `List[T]` object.
-   *
-   * It returns a reference to the [[Subscription]] interface. This enables Observers to
-   * unsubscribe, that is, to stop receiving items and notifications before the Observable stops
-   * sending them, which also invokes the Observer's [[Observer.onCompleted onCompleted]] method.
-   *
-   * An `Observable[T]` instance is responsible for accepting all subscriptions
-   * and notifying all Observers. Unless the documentation for a particular
-   * `Observable[T]` implementation indicates otherwise, Observers should make no
-   * assumptions about the order in which multiple Observers will receive their notifications.
-   *
-   * 
-   * @param observer
-   *            the observer
-   * @return a [[Subscription]] reference with which the [[Observer]] can stop receiving items
-   *         before the Observable has finished sending them
-   * @throws IllegalArgumentException
-   *             if the [[Observer]] provided as the argument to `subscribe()` is `null`
-   */
-  def subscribe(observer: Observer[T]): Subscription = {
-    asJava.subscribe(observer)
-  }
   
   /**
-   * An [[Observer]] must call an Observable's `subscribe` method in order to
-   * receive items and notifications from the Observable.
-   * 
-   * A typical implementation of `subscribe` does the following:
-   *
-   * It stores a reference to the Observer in a collection object, such as a `List[T]` object.
-   *
-   * It returns a reference to the [[Subscription]] interface. This enables Observers to
-   * unsubscribe, that is, to stop receiving items and notifications before the Observable stops
-   * sending them, which also invokes the Observer's [[Observer.onCompleted onCompleted]] method.
-   *
-   * An `Observable[T]` instance is responsible for accepting all subscriptions
-   * and notifying all Observers. Unless the documentation for a particular `Observable[T]` implementation indicates otherwise, Observers should make no
-   * assumptions about the order in which multiple Observers will receive their notifications.
-   *
-   * 
-   * @param observer
-   *            the observer
-   * @param scheduler
-   *            the [[Scheduler]] on which Observers subscribe to the Observable
-   * @return a [[Subscription]] reference with which Observers can stop receiving items and
-   *         notifications before the Observable has finished sending them
-   * @throws IllegalArgumentException
-   *             if an argument to `subscribe()` is `null`
+   * $subscribeObserver
    */
   def subscribe(observer: Observer[T], scheduler: Scheduler): Subscription = {
     asJava.subscribe(observer, scheduler)
+  }
+
+  /**
+   * $subscribeObserver
+   */
+  def subscribe(observer: Observer[T]): Subscription = {
+    asJava.subscribe(observer)
   }
   
   def subscribe(onNext: T => Unit): Subscription = {
@@ -102,7 +82,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   def subscribe(onNext: T => Unit, onError: Throwable => Unit): Subscription = {
     asJava.subscribe(onNext, onError)
   }
-  
+
   def subscribe(onNext: T => Unit, onError: Throwable => Unit, onComplete: () => Unit): Subscription = {
     asJava.subscribe(onNext, onError, onComplete)
   }
@@ -120,16 +100,15 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   }
 
   /**
-   * Returns a [[ConnectableObservable]] that upon connection causes the source Observable to
+   * Returns a pair of a start function and an [[Observable]] that upon calling the start function causes the source Observable to
    * push results into the specified subject.
    * 
    * @param subject
-   *            the [[Subject]] for the [[ConnectableObservable]] to push source items
-   *            into
+   *            the `rx.lang.scala.subjects.Subject` to push source items into
    * @tparam R
    *            result type
    * @return a pair of a start function and an [[Observable]] such that when the start function
-   *         is called, the Observable starts to push results into the specified [[Subject]]
+   *         is called, the Observable starts to push results into the specified Subject
    */
   def multicast[R](subject: Subject[T, R]): (() => Subscription, Observable[R]) = {
     val javaCO = asJava.multicast[R](subject)
@@ -192,7 +171,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   }
   
   /**
-   * Wraps each item emitted by a source Observable in a [[Timestamped]] object.
+   * Wraps each item emitted by a source Observable in a [[rx.lang.scala.util.Timestamped]] object.
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/timestamp.png">
    * 
@@ -230,16 +209,16 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    * Creates an Observable which produces buffers of collected values.
    * 
    * This Observable produces connected non-overlapping buffers. The current buffer is
-   * emitted and replaced with a new buffer when the Observable produced by the specified [[Func0]] produces a [[rx.lang.scala.util.Closing]] object. The * [[Func0]] will then
+   * emitted and replaced with a new buffer when the Observable produced by the specified function produces a [[rx.lang.scala.util.Closing]] object. The function will then
    * be used to create a new Observable to listen for the end of the next buffer.
    * 
    * @param bufferClosingSelector
-   *            The [[Func0]] which is used to produce an [[Observable]] for every buffer created.
+   *            The function which is used to produce an [[Observable]] for every buffer created.
    *            When this [[Observable]] produces a [[rx.lang.scala.util.Closing]] object, the associated buffer
    *            is emitted and replaced with a new one.
    * @return
    *         An [[Observable]] which produces connected non-overlapping buffers, which are emitted
-   *         when the current [[Observable]] created with the [[Func0]] argument produces a [[rx.lang.scala.util.Closing]] object.
+   *         when the current [[Observable]] created with the function argument produces a [[rx.lang.scala.util.Closing]] object.
    */
   def buffer(bufferClosingSelector: () => Observable[Closing]) : Observable[Seq[T]] = {
     val f: Func0[_ <: rx.Observable[_ <: Closing]] = bufferClosingSelector().asJava
@@ -251,7 +230,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    * Creates an Observable which produces buffers of collected values.
    * 
    * This Observable produces buffers. Buffers are created when the specified "bufferOpenings"
-   * Observable produces a [[rx.lang.scala.util.Opening]] object. Additionally the [[Func0]] argument
+   * Observable produces a [[rx.lang.scala.util.Opening]] object. Additionally the function argument
    * is used to create an Observable which produces [[rx.lang.scala.util.Closing]] objects. When this
    * Observable produces such an object, the associated buffer is emitted.
    * 
@@ -259,7 +238,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    *            The [[Observable]] which, when it produces a [[rx.lang.scala.util.Opening]] object, will cause
    *            another buffer to be created.
    * @param bufferClosingSelector
-   *            The [[Func0]] which is used to produce an [[Observable]] for every buffer created.
+   *            The function which is used to produce an [[Observable]] for every buffer created.
    *            When this [[Observable]] produces a [[rx.lang.scala.util.Closing]] object, the associated buffer
    *            is emitted.
    * @return
@@ -301,7 +280,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    *            The maximum size of each buffer before it should be emitted.
    * @param skip
    *            How many produced values need to be skipped before starting a new buffer. Note that when "skip" and
-   *            "count" are equals that this is the same operation as [[Observable.buffer(int)]].
+   *            "count" are equals that this is the same operation as `buffer(int)`.
    * @return
    *         An [[Observable]] which produces buffers every "skipped" values containing at most
    *         "count" produced values.
@@ -440,16 +419,16 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces connected
    * non-overlapping windows. The current window is emitted and replaced with a new window when the
-   * Observable produced by the specified [[Func0]] produces a [[rx.lang.scala.util.Closing]] object. The [[Func0]] will then be used to create a new Observable to listen for the end of the next
+   * Observable produced by the specified function produces a [[rx.lang.scala.util.Closing]] object. The function will then be used to create a new Observable to listen for the end of the next
    * window.
    * 
    * @param closingSelector
-   *            The [[Func0]] which is used to produce an [[Observable]] for every window created.
+   *            The function which is used to produce an [[Observable]] for every window created.
    *            When this [[Observable]] produces a [[rx.lang.scala.util.Closing]] object, the associated window
    *            is emitted and replaced with a new one.
    * @return
    *         An [[Observable]] which produces connected non-overlapping windows, which are emitted
-   *         when the current [[Observable]] created with the [[Func0]] argument produces a [[rx.lang.scala.util.Closing]] object.
+   *         when the current [[Observable]] created with the function argument produces a [[rx.lang.scala.util.Closing]] object.
    */
   def window(closingSelector: () => Observable[Closing]): Observable[Observable[T]] = {
     val func : Func0[_ <: rx.Observable[_ <: Closing]] = closingSelector().asJava
@@ -464,14 +443,14 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces windows.
    * Chunks are created when the specified "windowOpenings" Observable produces a [[rx.lang.scala.util.Opening]] object.
-   * Additionally the [[Func0]] argument is used to create an Observable which produces [[rx.lang.scala.util.Closing]] objects. When this Observable produces such an object, the associated window is
+   * Additionally the `closingSelector` argument is used to create an Observable which produces [[rx.lang.scala.util.Closing]] objects. When this Observable produces such an object, the associated window is
    * emitted.
    * 
    * @param windowOpenings
    *            The [[Observable]] which when it produces a [[rx.lang.scala.util.Opening]] object, will cause
    *            another window to be created.
    * @param closingSelector
-   *            The [[Func0]] which is used to produce an [[Observable]] for every window created.
+   *            The function which is used to produce an [[Observable]] for every window created.
    *            When this [[Observable]] produces a [[rx.lang.scala.util.Closing]] object, the associated window
    *            is emitted.
    * @return
@@ -502,17 +481,17 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
 
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces windows every
-   * "skip" values, each containing "count" elements. When the source Observable completes or encounters an error,
+   * `skip` values, each containing `count` elements. When the source Observable completes or encounters an error,
    * the current window is emitted and the event is propagated.
    * 
    * @param count
    *            The maximum size of each window before it should be emitted.
    * @param skip
-   *            How many produced values need to be skipped before starting a new window. Note that when "skip" and
-   *            "count" are equals that this is the same operation as [[Observable.window(Observable, int)]].
+   *            How many produced values need to be skipped before starting a new window. Note that when `skip` and
+   *            `count` are equal that this is the same operation as `window(int)`.
    * @return
    *         An [[Observable]] which produces windows every "skipped" values containing at most
-   *         "count" produced values.
+   *         `count` produced values.
    */
   def window(count: Int, skip: Int): Observable[Observable[T]] = {
     Observable.jObsOfJObsToScObsOfScObs(asJava.window(count, skip))
@@ -821,9 +800,9 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   }
 
   /**
-   * Instruct an Observable to pass control to another Observable rather than invoking [[Observer.onError onError]] if it encounters an error of type [[java.lang.Exception]].
+   * Instruct an Observable to pass control to another Observable rather than invoking [[Observer.onError onError]] if it encounters an error of type `java.lang.Exception`.
    *
-   * This differs from [[Observable.onErrorResumeNext]] in that this one does not handle [[java.lang.Throwable]] or [[java.lang.Error]] but lets those continue through.
+   * This differs from `Observable.onErrorResumeNext` in that this one does not handle `java.lang.Throwable` or `java.lang.Error` but lets those continue through.
    *
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorResumeNext.png">
    *
@@ -909,7 +888,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   } 
 
   /**
-   * Returns a [[ConnectableObservable]] that shares a single subscription to the underlying
+   * Returns a pair of a start function and an [[Observable]] that shares a single subscription to the underlying
    * Observable that will replay all of its items and notifications to any future [[Observer]].
    *
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.png">
@@ -924,7 +903,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
 
   /**
    * This method has similar behavior to [[Observable.replay]] except that this auto-subscribes to
-   * the source Observable rather than returning a [[ConnectableObservable]].
+   * the source Observable rather than returning a start function and an Observable.
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/cache.png">
    *
@@ -943,7 +922,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   }
 
   /**
-   * Returns a [[ConnectableObservable]], which waits until its [[ConnectableObservable.connect connect]] method is called before it begins emitting
+   * Returns a a pair of a start function and an [[Observable]], which waits until the start function is called before it begins emitting
    * items to those [[Observer]]s that have subscribed to it.
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/publishConnect.png">
@@ -1192,7 +1171,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    * Normally, an Observable that returns multiple items will do so by invoking its [[Observer]]'s [[Observer.onNext onNext]] method for each such item. You can change
    * this behavior, instructing the Observable to compose a list of all of these items and then to
    * invoke the Observer's `onNext` function once, passing it the entire list, by
-   * calling the Observable's `toList` method prior to calling its [[Observable.subscribe]] method.
+   * calling the Observable's `toList` method prior to calling its `Observable.subscribe` method.
    *
    * Be careful not to use this operator on Observables that emit infinite or very large numbers
    * of items, as you do not have the option to unsubscribe.
@@ -1341,7 +1320,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
     val f: Func2[_ >: T, _ >: U, _ <: (T, U)] = (t: T, u: U) => (t, u)
     Observable[(T, U)](rx.Observable.combineLatest[T, U, (T, U)](this.asJava, that.asJava, f))
   }
-// Review completed till here!!!
+
   /**
    * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
    *
@@ -1351,17 +1330,15 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    *
    * Information on debounce vs throttle:
    *
-   * [ul]
-   * [li]http://drupalmotion.com/article/debounce-and-throttle-visual-explanation</li>
-   * [li]http://unscriptable.com/2009/03/20/debouncing-javascript-methods/</li>
-   * [li]http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/</li>
-   * </ul>
+   * - http://drupalmotion.com/article/debounce-and-throttle-visual-explanation
+   * - http://unscriptable.com/2009/03/20/debouncing-javascript-methods/
+   * - http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/
    *
    * @param timeout
    *            The time each value has to be 'the most recent' of the [[Observable]] to ensure that it's not dropped.
    *
    * @return An [[Observable]] which filters out values which are too quickly followed up with newer values.
-   * @see [[Observable.debounce]]
+   * @see `Observable.debounce`
    */
   def throttleWithTimeout(timeout: Duration): Observable[T] = {
     Observable[T](asJava.throttleWithTimeout(timeout.length, timeout.unit))
@@ -1376,17 +1353,15 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    *
    * Information on debounce vs throttle:
    *
-   * [ul]
-   * [li]http://drupalmotion.com/article/debounce-and-throttle-visual-explanation</li>
-   * [li]http://unscriptable.com/2009/03/20/debouncing-javascript-methods/</li>
-   * [li]http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/</li>
-   * </ul>
+   * - http://drupalmotion.com/article/debounce-and-throttle-visual-explanation
+   * - http://unscriptable.com/2009/03/20/debouncing-javascript-methods/
+   * - http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/
    *
    * @param timeout
    *            The time each value has to be 'the most recent' of the [[Observable]] to ensure that it's not dropped.
    *
    * @return An [[Observable]] which filters out values which are too quickly followed up with newer values.
-   * @see [[Observable.throttleWithTimeout]];
+   * @see `Observable.throttleWithTimeout`
    */
   def debounce(timeout: Duration): Observable[T] = {
     Observable[T](asJava.debounce(timeout.length, timeout.unit))
@@ -1401,18 +1376,16 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    *
    * Information on debounce vs throttle:
    *
-   * [ul]
-   * [li]http://drupalmotion.com/article/debounce-and-throttle-visual-explanation</li>
-   * [li]http://unscriptable.com/2009/03/20/debouncing-javascript-methods/</li>
-   * [li]http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/</li>
-   * </ul>
+   * - http://drupalmotion.com/article/debounce-and-throttle-visual-explanation
+   * - http://unscriptable.com/2009/03/20/debouncing-javascript-methods/
+   * - http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/
    *
    * @param timeout
    *            The time each value has to be 'the most recent' of the [[Observable]] to ensure that it's not dropped.
    * @param scheduler
    *            The [[Scheduler]] to use internally to manage the timers which handle timeout for each event.
    * @return Observable which performs the throttle operation.
-   * @see [[Observable.throttleWithTimeout]];
+   * @see `Observable.throttleWithTimeout`
    */
   def debounce(timeout: Duration, scheduler: Scheduler): Observable[T] = {
     Observable[T](asJava.debounce(timeout.length, timeout.unit, scheduler))
@@ -1430,7 +1403,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    * @param scheduler
    *            The [[Scheduler]] to use internally to manage the timers which handle timeout for each event.
    * @return Observable which performs the throttle operation.
-   * @see [[Observable.debounce]]
+   * @see `Observable.debounce`
    */
   def throttleWithTimeout(timeout: Duration, scheduler: Scheduler): Observable[T] = {
     Observable[T](asJava.throttleWithTimeout(timeout.length, timeout.unit, scheduler))
@@ -1439,7 +1412,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   /**
    * Throttles by skipping value until `skipDuration` passes and then emits the next received value.
    *
-   * This differs from [[Observable.throttleLast]] in that this only tracks passage of time whereas [[Observable.throttleLast]] ticks at scheduled intervals.
+   * This differs from `Observable.throttleLast` in that this only tracks passage of time whereas `Observable.throttleLast` ticks at scheduled intervals.
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleFirst.png">
    *
@@ -1456,7 +1429,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   /**
    * Throttles by skipping value until `skipDuration` passes and then emits the next received value.
    *
-   * This differs from [[Observable.throttleLast]] in that this only tracks passage of time whereas [[Observable.throttleLast]] ticks at scheduled intervals.
+   * This differs from `Observable.throttleLast` in that this only tracks passage of time whereas `Observable.throttleLast` ticks at scheduled intervals.
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleFirst.png">
    *
@@ -1471,7 +1444,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   /**
    * Throttles by returning the last value of each interval defined by 'intervalDuration'.
    *
-   * This differs from [[Observable.throttleFirst]] in that this ticks along at a scheduled interval whereas [[Observable.throttleFirst]] does not tick, it just tracks passage of time.
+   * This differs from `Observable.throttleFirst` in that this ticks along at a scheduled interval whereas `Observable.throttleFirst` does not tick, it just tracks passage of time.
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleLast.png">
    *
@@ -1486,7 +1459,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   /**
    * Throttles by returning the last value of each interval defined by 'intervalDuration'.
    *
-   * This differs from [[Observable.throttleFirst]] in that this ticks along at a scheduled interval whereas [[Observable.throttleFirst]] does not tick, it just tracks passage of time.
+   * This differs from `Observable.throttleFirst` in that this ticks along at a scheduled interval whereas `Observable.throttleFirst` does not tick, it just tracks passage of time.
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/throttleLast.png">
    *
@@ -1561,7 +1534,14 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    *         source Observable completes without emitting a single item.
    */
   def first: Observable[T] = take(1)
-
+  
+  /*
+  
+  TODO once https://github.com/Netflix/RxJava/issues/417 is fixed, we can add head and tail methods
+  
+  /**
+   * emits NoSuchElementException("head of empty Observable") if empty
+   */
   def head: Observable[T] = {
     this.take(1).fold[Option[T]](None)((v: Option[T], e: T) => Some(e)).map({
       case Some(element) => element
@@ -1569,7 +1549,12 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
     })
   }
   
-  // TODO def tail
+  /**
+   * emits an UnsupportedOperationException("tail of empty list") if empty
+   */
+  def tail: Observable[T] = ???
+  
+  */
   
   /**
    * Returns an Observable that forwards all sequentially distinct items emitted from the source Observable.
@@ -1624,23 +1609,17 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   }
 
   /**
-   * Returns an Observable that forwards all items emitted from the source Observable that are distinct according
-   * to a key selector function and a comparator.
+   * Returns an Observable that counts the total number of elements in the source Observable.
    *
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.key.png">
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/count.png">
    *
-   * @param keySelector
-   *            a function that projects an emitted item to a key value which is used for deciding whether an item is
-   *            distinct from another one or not
-   * @param equality
-   *            an equality function for deciding whether two emitted item keys are equal or not
-   * @return an Observable of distinct items
-   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229050(v=vs.103).aspx">MSDN: Observable.distinct</a>
+   * @return an Observable emitting the number of counted elements of the source Observable
+   *         as its single item.
    */
-  // def distinct[U](keySelector: T => U, equality: (T, T) => Boolean): Observable[T] = {
-  //   TODO once https://github.com/Netflix/RxJava/issues/395 is fixed
-  //}
-
+  def length: Observable[Int] = {
+    Observable[Integer](asJava.count()).map(_.intValue())
+  }
+  
   /**
    * Returns an Observable that counts the total number of elements in the source Observable.
    *
@@ -1649,10 +1628,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    * @return an Observable emitting the number of counted elements of the source Observable
    *         as its single item.
    */
-  //TODO Both size and length
-  def length: Observable[Int] = {
-    Observable[Integer](asJava.count()).map(_.intValue())
-  }
+  def size: Observable[Int] = length
 
   /**
    * Retry subscription to origin Observable upto given retry count.
@@ -1692,7 +1668,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   }
   
   /**
-   * Converts an Observable into a [[BlockingObservable]] (an Observable with blocking
+   * Converts an Observable into a [[rx.lang.scala.observables.BlockingObservable]] (an Observable with blocking
    * operators).
    *
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">Blocking Observable Operators</a>
@@ -1702,10 +1678,10 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   }
 
   /**
-   * Perform work in parallel by sharding an `Observable[T]` on a [[Schedulers.threadPoolForComputation()]] [[Scheduler]] and return an `Observable[R]` with the output.
+   * Perform work in parallel by sharding an `Observable[T]` on a [[rx.lang.scala.concurrency.Schedulers.threadPoolForComputation]] [[Scheduler]] and return an `Observable[R]` with the output.
    *
    * @param f
-   *            a [[Func1]] that applies Observable operators to `Observable[T]` in parallel and returns an `Observable[R]`
+   *            a function that applies Observable operators to `Observable[T]` in parallel and returns an `Observable[R]`
    * @return an Observable with the output of the function executed on a [[Scheduler]]
    */
   def parallel[R](f: Observable[T] => Observable[R]): Observable[R] = {
@@ -1718,10 +1694,10 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    * Perform work in parallel by sharding an `Observable[T]` on a [[Scheduler]] and return an `Observable[R]` with the output.
    *
    * @param f
-   *            a [[Func1]] that applies Observable operators to `Observable[T]` in parallel and returns an `Observable[R]`
+   *            a function that applies Observable operators to `Observable[T]` in parallel and returns an `Observable[R]`
    * @param s
    *            a [[Scheduler]] to perform the work on.
-   * @return an Observable with the output of the [[Func1]] executed on a [[Scheduler]]
+   * @return an Observable with the output of the function executed on a [[Scheduler]]
    */
   def parallel[R](f: Observable[T] => Observable[R], scheduler: Scheduler): Observable[R] = {
     val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
@@ -1844,8 +1820,19 @@ object Observable {
   def apply[T](args: T*): Observable[T] = {     
     Observable[T](JObservable.from(args.toIterable.asJava))
   }
-  
-  // TODO (SG) documentation
+
+  /**
+   * Generates an Observable that emits a sequence of integers within a specified range.
+   * 
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/range.png">
+   *
+   * Implementation note: the entire range will be immediately emitted each time an [[Observer]] subscribes. 
+   * Since this occurs before the [[Subscription]] is returned,
+   * it in not possible to unsubscribe from the sequence before it completes.
+   *
+   * @param range the range
+   * @return an Observable that emits a range of sequential integers
+   */
   def apply(range: Range): Observable[Int] = {
     Observable[Int](JObservable.from(range.toIterable.asJava))
   }
@@ -2050,6 +2037,7 @@ private[scala] class UnitTestSuite extends org.scalatest.junit.JUnitSuite {
     assertEquals(receivedMsg, msg)
   }
   
+  /*
   @Test def testHead() {
     val observer = mock(classOf[Observer[Int]])
     val o = Observable().head
@@ -2059,6 +2047,7 @@ private[scala] class UnitTestSuite extends org.scalatest.junit.JUnitSuite {
     verify(observer, never).onCompleted()
     verify(observer, times(1)).onError(any(classOf[NoSuchElementException]))
   }
+  */
   
   @Test def testTest() = {
     val a: Observable[Int] = Observable()

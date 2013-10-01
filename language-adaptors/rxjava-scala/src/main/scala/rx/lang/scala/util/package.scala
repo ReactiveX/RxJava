@@ -22,25 +22,25 @@ package object util {
 
   /**
    * Tagging interface for objects which can open buffers.
-   * @see [[Observable.buffer]]
+   * @see [[Observable `Observable.buffer(Observable[Opening], Opening => Observable[Closing])`]]
    */
   type Opening = rx.util.Opening
 
   /**
    * Creates an object which can open buffers.
-   * @see [[Observable.buffer]]
+   * @see [[Observable `Observable.buffer(Observable[Opening], Opening => Observable[Closing])`]]
    */
   def Opening() = rx.util.Openings.create()
   
   /**
    * Tagging interface for objects which can close buffers.
-   * @see [[Observable.buffer]]
+   * @see [[Observable `Observable.buffer(Observable[Opening], Opening => Observable[Closing])`]]
    */
   type Closing = rx.util.Closing
 
   /**
    * Creates an object which can close buffers.
-   * @see [[Observable.buffer]]
+   * @see [[Observable `Observable.buffer(Observable[Opening], Opening => Observable[Closing])`]]
    */
   def Closing() = rx.util.Closings.create()
   
