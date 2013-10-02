@@ -246,14 +246,15 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   }
   
   /**
-   * Wraps each item emitted by a source Observable in a [[rx.lang.scala.util.Timestamped]] object.
+   * Wraps each item emitted by a source Observable in a timestamped tuple.
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/timestamp.png">
    * 
    * @return an Observable that emits timestamped items from the source Observable
    */
-  def timestamp: Observable[Timestamped[T]] = {
-    Observable[rx.util.Timestamped[_ <: T]](asJava.timestamp()).map(Timestamped(_))
+  def timestamp: Observable[(Long, T)] = {
+    Observable[rx.util.Timestamped[_ <: T]](asJava.timestamp())
+      .map((t: rx.util.Timestamped[_ <: T]) => (t.getTimestampMillis, t.getValue()))
   }
   
   /**
