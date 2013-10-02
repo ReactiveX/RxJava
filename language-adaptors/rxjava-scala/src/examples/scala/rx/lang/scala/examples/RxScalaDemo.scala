@@ -454,6 +454,11 @@ class RxScalaDemo extends JUnitSuite {
     Thread.sleep(1500) // or convert to BlockingObservable
   }
 
+  @Test def takeWhileWithIndexAlternative {
+    val condition = true
+    Observable("a", "b").zipWithIndex.takeWhile{case (elem, index) => condition}.map(_._1)
+  }
+
   def output(s: String): Unit = println(s)
   
   // blocks until obs has completed

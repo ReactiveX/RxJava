@@ -1185,23 +1185,6 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   def takeWhile(predicate: T => Boolean): Observable[T] = {
     Observable[T](asJava.takeWhile(predicate))
   }
-  
-  /**
-   * Returns an Observable that emits the items emitted by a source Observable so long as a given
-   * predicate remains true, where the predicate can operate on both the item and its index
-   * relative to the complete sequence.
-   *
-   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhileWithIndex.png">
-   * 
-   * @param predicate
-   *            a function to test each item emitted by the source Observable for a condition;
-   *            the second parameter of the function represents the index of the source item
-   * @return an Observable that emits items from the source Observable so long as the predicate
-   *         continues to return `true` for each item, then completes
-   */
-  def takeWhileWithIndex(predicate: (T, Integer) => Boolean): Observable[T] = {
-    Observable[T](asJava.takeWhileWithIndex(predicate))
-  }
 
   /**
    * Returns an Observable that emits only the last `count` items emitted by the source
