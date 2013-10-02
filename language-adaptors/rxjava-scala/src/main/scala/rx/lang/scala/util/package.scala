@@ -16,7 +16,7 @@
 package rx.lang.scala
 
 /**
- * Provides [[rx.lang.scala.util.Opening]]s, [[rx.lang.scala.util.Closing]]s, and [[rx.lang.scala.util.Timestamped]].  
+ * Provides [[Opening]]s, [[Closing]]s, and [[Timestamped]].  
  */
 package object util {
 

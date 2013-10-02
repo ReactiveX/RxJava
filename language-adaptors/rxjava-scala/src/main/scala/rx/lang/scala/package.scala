@@ -50,40 +50,40 @@ package object scala {
   /**
    * Provides a mechanism for receiving push-based notifications.
    *
-   * After an Observer calls an [[rx.lang.scala.Observable]]'s `subscribe` method, the Observable
+   * After an Observer calls an [[Observable]]'s `subscribe` method, the Observable
    * calls the Observer's `onNext` method to provide notifications. A well-behaved Observable will
    * call an Observer's `onCompleted` method exactly once or the Observer's `onError` method exactly once.
    */
   trait Observer[-T] {
 
     /**
-     * Notifies the Observer that the [[rx.lang.scala.Observable]] has finished sending push-based notifications.
+     * Notifies the Observer that the [[Observable]] has finished sending push-based notifications.
      *
-     * The [[rx.lang.scala.Observable]] will not call this method if it calls `onError`.
+     * The [[Observable]] will not call this method if it calls `onError`.
      */
     def onCompleted(): Unit
 
     /**
-     * Notifies the Observer that the [[rx.lang.scala.Observable]] has experienced an error condition.
+     * Notifies the Observer that the [[Observable]] has experienced an error condition.
      *
-     * If the [[rx.lang.scala.Observable]] calls this method, it will not thereafter call `onNext` or `onCompleted`.
+     * If the [[Observable]] calls this method, it will not thereafter call `onNext` or `onCompleted`.
      */
     def onError(e: Throwable): Unit
 
     /**
      * Provides the Observer with new data.
      *
-     * The [[rx.lang.scala.Observable]] calls this closure 0 or more times.
+     * The [[Observable]] calls this closure 0 or more times.
      *
-     * The [[rx.lang.scala.Observable]] will not call this method again after it calls either `onCompleted` or `onError`.
+     * The [[Observable]] will not call this method again after it calls either `onCompleted` or `onError`.
      */
     def onNext(arg: T): Unit
   }
 
   /**
-   * Subscriptions are returned from all Observable.subscribe methods to allow unsubscribing.
+   * Subscriptions are returned from all `Observable.subscribe` methods to allow unsubscribing.
    * 
-   * This interface is the equivalent of IDisposable in the .NET Rx implementation.
+   * This interface is the equivalent of `IDisposable` in the .NET Rx implementation.
    */
   trait Subscription {
     /**
@@ -115,13 +115,13 @@ package object scala {
   private[scala] implicit def rxObserver2fakeObserver[T](o: rx.Observer[_ >: T]): Observer[T] = ???
   
   *///#else
-  
+
   type Observer[-T] = rx.Observer[_ >: T]
 
   type Subscription = rx.Subscription
-  
+
   //#endif
- 
+
   /**
    * Allows to construct observables in a similar way as futures.
    * 

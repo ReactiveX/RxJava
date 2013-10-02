@@ -129,7 +129,7 @@ trait Scheduler {
   }
 
   /**
-   * @return the scheduler's notion of current absolute time in milliseconds.
+   * Returns the scheduler's notion of current absolute time in milliseconds.
    */
   def now: Long = {
     asJava.now

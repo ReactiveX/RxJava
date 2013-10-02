@@ -1,7 +1,7 @@
 package rx.lang.scala
 
 /**
- * Emitted by Observables returned by [[rx.lang.scala.Observable.materialize]].
+ * Emitted by Observables returned by [[Observable.materialize]].
  */
 sealed trait Notification[+T] {
   def asJava: rx.Notification[_ <: T]
