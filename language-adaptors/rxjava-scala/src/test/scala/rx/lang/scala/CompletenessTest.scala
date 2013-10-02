@@ -22,11 +22,14 @@ class CompletenessTest extends JUnitSuite {
      "You can use `fold` instead to accumulate `sum` and `numberOfElements` and divide at the end.]"
      
   val commentForFirstWithPredicate = "[use `.filter(condition).first`]"
+    
+  val fromFuture = "[TODO: Decide how Scala Futures should relate to Observables. Should there be a " +
+     "common base interface for Future and Observable? And should Futures also have an unsubscribe method?]"
   
   val correspondence = defaultMethodCorrespondence ++ Map(
       // manually added entries for Java instance methods
       "aggregate(Func2[T, T, T])" -> "reduce((U, U) => U)",
-      "aggregate(R, Func2[R, _ >: T, R])" -> "fold(R)((R, T) => R)",
+      "aggregate(R, Func2[R, _ >: T, R])" -> "foldLeft(R)((R, T) => R)",
       "all(Func1[_ >: T, Boolean])" -> "forall(T => Boolean)",
       "buffer(Long, Long, TimeUnit)" -> "buffer(Duration, Duration)",
       "buffer(Long, Long, TimeUnit, Scheduler)" -> "buffer(Duration, Duration, Scheduler)",
@@ -47,7 +50,7 @@ class CompletenessTest extends JUnitSuite {
       "parallel(Func1[Observable[T], Observable[R]])" -> "parallel(Observable[T] => Observable[R])",
       "parallel(Func1[Observable[T], Observable[R]], Scheduler)" -> "parallel(Observable[T] => Observable[R], Scheduler)",
       "reduce(Func2[T, T, T])" -> "reduce((U, U) => U)",
-      "reduce(R, Func2[R, _ >: T, R])" -> "fold(R)((R, T) => R)",
+      "reduce(R, Func2[R, _ >: T, R])" -> "foldLeft(R)((R, T) => R)",
       "scan(Func2[T, T, T])" -> unnecessary,
       "scan(R, Func2[R, _ >: T, R])" -> "scan(R)((R, T) => R)",
       "skip(Int)" -> "drop(Int)",
@@ -57,6 +60,7 @@ class CompletenessTest extends JUnitSuite {
       "takeFirst()" -> "first",
       "takeFirst(Func1[_ >: T, Boolean])" -> commentForFirstWithPredicate,
       "takeLast(Int)" -> "takeRight(Int)",
+      "takeWhileWithIndex(Func2[_ >: T, _ >: Integer, Boolean])" -> "[use `.zipWithIndex.takeWhile{case (elem, index) => condition}.map(_._1)`]",
       "toList()" -> "toSeq",
       "toSortedList()" -> "[Sorting is already done in Scala's collection library, use `.toSeq.map(_.sorted)`]",
       "toSortedList(Func2[_ >: T, _ >: T, Integer])" -> "[Sorting is already done in Scala's collection library, use `.toSeq.map(_.sortWith(f))`]",
@@ -77,9 +81,10 @@ class CompletenessTest extends JUnitSuite {
       "error(Throwable)" -> "apply(Throwable)",
       "from(Array[T])" -> "apply(T*)",
       "from(Iterable[_ <: T])" -> "apply(T*)", 
-      "from(Future[_ <: T])" -> "apply(Future[T])",
-      "from(Future[_ <: T], Long, TimeUnit)" -> "apply(Future[T], Duration)",
-      "from(Future[_ <: T], Scheduler)" -> "apply(Future[T], Scheduler)",
+      "from(Future[_ <: T])" -> fromFuture,
+      "from(Future[_ <: T], Long, TimeUnit)" -> fromFuture,
+      "from(Future[_ <: T], Scheduler)" -> fromFuture,
+      "just(T)" -> "apply(T*)",
       "merge(Observable[_ <: T], Observable[_ <: T])" -> "merge(Observable[U])",
       "merge(Observable[_ <: Observable[_ <: T]])" -> "flatten(<:<[Observable[T], Observable[Observable[U]]])",
       "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[U])",
@@ -298,7 +303,7 @@ class CompletenessTest extends JUnitSuite {
       (if (p._1.startsWith("average")) "average" else p._1.takeWhile(_ != '('), p._2)
     def formatJavaCol(name: String, alternatives: Iterable[String]): String = {
       alternatives.toList.sorted.map(scalaToJavaSignature(_)).map(s => {
-        if (s.length > 50) {
+        if (s.length > 64) {
           val toolTip = escapeJava(s)
           "<span title=\"" + toolTip + "\"><code>" + name + "(...)</code></span>"
         } else {
