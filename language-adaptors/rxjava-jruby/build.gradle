@@ -1,11 +1,40 @@
 apply plugin: 'osgi'
 
+repositories {
+    maven {
+        url 'http://deux.gemjars.org'
+    }
+    mavenCentral()
+}
+
+configurations {
+    rspec
+}
+
+sourceSets {
+    test {
+        resources {
+            srcDir 'src/spec/ruby'
+        }
+    }
+}
+
 dependencies {
     compile project(':rxjava-core')
     compile 'org.jruby:jruby:1.7+'
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
+    rspec 'org.jruby:jruby-complete:1.7.4'
+    rspec 'org.rubygems:rspec:2.10.0'
 }
+
+task(rspec, type: JavaExec) {
+    main 'org.jruby.Main'
+    classpath configurations.rspec + runtimeClasspath
+    args 'classpath:bin/rspec', 'src/spec/ruby'
+}
+
+tasks.build.dependsOn << 'rspec'
 
 jar {
     manifest {

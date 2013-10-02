@@ -3,7 +3,7 @@ module Rx
     module Jruby
       class Interop
         WRAPPERS = {
-          Java::RxUtilFunctions::Action         => Java::RxLangJruby::JRubyActionWrapper
+          Java::RxUtilFunctions::Action => Java::RxLangJruby::JRubyActionWrapper
         }
 
         WRAPPERS.default = Java::RxLangJruby::JRubyFunctionWrapper
@@ -52,26 +52,42 @@ module Rx
 
               klass_to_open = static ? klass.singleton_class : klass
 
-              klass_to_open.send(:alias_method, "#{method_name}_without_wrapping", method_name)
-              klass_to_open.send(:define_method, method_name) do |*args, &block|
-                context = RUNTIME.get_current_context
+              [method_name, underscore(method_name)].each do |name|
+                klass_to_open.send(:alias_method, "#{name}_without_wrapping", name)
+                klass_to_open.send(:define_method, name) do |*args, &block|
+                  context = RUNTIME.get_current_context
 
-                args = args.each_with_index.map do |arg, idx|
-                  if arg.is_a?(Proc) && types[idx]
-                    types[idx].new(context, arg)
-                  else
-                    arg
+                  args = args.each_with_index.map do |arg, idx|
+                    if arg.is_a?(Proc) && types[idx]
+                      types[idx].new(context, arg)
+                    else
+                      arg
+                    end
                   end
-                end
 
-                if block && types[args.length]
-                  block = types[args.length].new(context, block)
-                end
+                  if block && types[args.length]
+                    block = types[args.length].new(context, block)
+                  end
 
-                send("#{method_name}_without_wrapping", *(args + [block].compact))
+                  send("#{name}_without_wrapping", *(args + [block].compact))
+                end
               end
             end
           end
+        end
+
+        private
+
+        # File activesupport/lib/active_support/inflector/methods.rb, line 89
+        def underscore(camel_cased_word)
+          word = camel_cased_word.to_s.dup
+          word.gsub!('::', '/')
+          word.gsub!(/(?:([A-Za-z\d])|^)((?=a)b)(?=\b|[^a-z])/) { "#{$1}#{$1 && '_'}#{$2.downcase}" }
+          word.gsub!(/([A-Z\d]+)([A-Z][a-z])/,'\1_\2')
+          word.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
+          word.tr!("-", "_")
+          word.downcase!
+          word
         end
       end
     end
