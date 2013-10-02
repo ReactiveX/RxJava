@@ -289,7 +289,7 @@ class RxScalaDemo extends JUnitSuite {
   // We can't put a general average method into Observable.scala, because Scala's Numeric
   // does not have scalar multiplication (we would need to calculate (1.0/numberOfElements)*sum)
   def doubleAverage(o: Observable[Double]): Observable[Double] = {
-    for ((finalSum, finalCount) <- o.fold((0.0, 0))({case ((sum, count), elem) => (sum+elem, count+1)}))
+    for ((finalSum, finalCount) <- o.foldLeft((0.0, 0))({case ((sum, count), elem) => (sum+elem, count+1)}))
       yield finalSum / finalCount
   }
   

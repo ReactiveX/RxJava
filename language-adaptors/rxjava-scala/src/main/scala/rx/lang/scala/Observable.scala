@@ -1038,7 +1038,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    * @return an Observable that emits a single item that is the result of accumulating the output
    *         from the items emitted by the source Observable
    */
-  def fold[R](initialValue: R)(accumulator: (R, T) => R): Observable[R] = {
+  def foldLeft[R](initialValue: R)(accumulator: (R, T) => R): Observable[R] = {
     Observable[R](asJava.reduce(initialValue, accumulator))
   }
   
@@ -1117,7 +1117,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
     // type mismatch; found : rx.Observable[java.lang.Boolean] required: rx.Observable[_ <: scala.Boolean]
     // new Observable[Boolean](asJava.all(predicate))
     // it's more fun in Scala:
-    this.map(predicate).fold(true)(_ && _)
+    this.map(predicate).foldLeft(true)(_ && _)
   }
     
   /**
@@ -1566,7 +1566,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    *   @inheritdoc
    */
   def sum[U >: T](implicit num: Numeric[U]): Observable[U] = {
-    fold(num.zero)(num.plus)
+    foldLeft(num.zero)(num.plus)
   }
   
   /**
@@ -1582,7 +1582,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    *   @inheritdoc
    */
   def product[U >: T](implicit num: Numeric[U]): Observable[U] = {
-    fold(num.one)(num.times)
+    foldLeft(num.one)(num.times)
   }
 
   /**
@@ -1598,7 +1598,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    *         if the source Observable completes without emitting any item.
    */
   def firstOrElse[U >: T](default: => U): Observable[U] = {
-    this.take(1).fold[Option[U]](None)((v: Option[U], e: U) => Some(e)).map({
+    this.take(1).foldLeft[Option[U]](None)((v: Option[U], e: U) => Some(e)).map({
       case Some(element) => element
       case None => default
     })
