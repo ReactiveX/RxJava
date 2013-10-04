@@ -40,6 +40,9 @@ def sample(duration: Duration): Observable[T]
 // called skip in Java, but drop in Scala
 def drop(n: Int): Observable[T] 
 
+// the Scala collect method
+def collect[R](pf: PartialFunction[T, R]): Observable[R]
+
 // there's only mapWithIndex in Java, because Java doesn't have tuples:
 def zipWithIndex: Observable[(T, Int)] 
 

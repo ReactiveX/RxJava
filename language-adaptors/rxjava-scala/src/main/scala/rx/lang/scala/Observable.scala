@@ -655,6 +655,19 @@ class Observable[+T](val asJava: rx.Observable[_ <: T])
   }
 
   /**
+   * The classic collect operation from the Scala collection library. Takes a partial function
+   * and filters only those elements for which the function is defined and then applies the
+   * function on those elements
+   *
+   * @param pf A partial function that will be applied to the elements emitted by this Observable
+   * @return A new observable that emits elements from the source observable if those elements are in the
+   *         partial function's domain, transformed by the partial function
+   */
+  def collect[R](pf: PartialFunction[T, R]): Observable[R] = {
+    filter(pf.isDefinedAt).map(pf)
+  }
+
+  /**
    * Registers an {@link Action0} to be called when this Observable invokes {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
    * <p>
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/finallyDo.png">
