@@ -3,7 +3,8 @@ module Rx
     module Jruby
       class Interop
         WRAPPERS = {
-          Java::RxUtilFunctions::Action => Java::RxLangJruby::JRubyActionWrapper
+          Java::RxUtilFunctions::Action         => Java::RxLangJruby::JRubyActionWrapper,
+          Java::Rx::Observable::OnSubscribeFunc => false
         }
 
         WRAPPERS.default = Java::RxLangJruby::JRubyFunctionWrapper
@@ -33,6 +34,9 @@ module Rx
                   type.ruby_class.ancestors.include?(java_class)
                 end
 
+                # Skip OnSubscribeFuncs
+                next if constructor && constructor.last == false
+
                 constructor = (constructor && constructor.last) || WRAPPERS.default
 
                 parameter_types[[method.name, method.static?]][idx] ||= []
@@ -52,7 +56,7 @@ module Rx
 
               klass_to_open = static ? klass.singleton_class : klass
 
-              [method_name, underscore(method_name)].each do |name|
+              [method_name, underscore(method_name)].uniq.each do |name|
                 klass_to_open.send(:alias_method, "#{name}_without_wrapping", name)
                 klass_to_open.send(:define_method, name) do |*args, &block|
                   context = RUNTIME.get_current_context

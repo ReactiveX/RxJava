@@ -29,8 +29,18 @@ describe Rx::Lang::Jruby::Interop do
       observable.subscribe(1)
     end
 
+    it "doesn't wrap OnSubscribeFunc arguments" do
+      proc = lambda {|observer| observer.onNext("hi")}
+      Java::Rx::Observable.should_not_receive(:create_without_wrapping)
+      Java::Rx::Observable.create(proc).should be_a(Java::Rx::Observable)
+    end
+
     it "works with underscoreized method names" do
-      observable.should_receive(:finally_do_without_wrapping).with(kind_of(Java::RxLangJruby::JRubyActionWrapper))
+      observable.
+          should_receive(:finally_do_without_wrapping).
+          with(kind_of(Java::RxLangJruby::JRubyActionWrapper)).
+          and_call_original
+
       observable.finally_do(lambda {})
     end
 
