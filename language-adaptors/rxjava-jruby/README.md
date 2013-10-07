@@ -10,6 +10,14 @@ This enables correct and efficient execution of code such as:
     subscribe {|val| puts val}
 ```
 
+# Usage
+
+Require the JAR file as usual. After requiring the JAR, you must also require the interop code:
+
+```ruby
+require "rx/lang/jruby/interop"
+```
+
 # Binaries
 
 Binaries and dependency information for Maven, Ivy, Gradle and others can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rxjava-jruby%22).
