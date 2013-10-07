@@ -25,7 +25,7 @@ dependencies {
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
     rspec 'org.jruby:jruby-complete:1.7.4'
-    rspec 'org.rubygems:rspec:2.10.0'
+    rspec 'org.rubygems:rspec:2.14.1'
 }
 
 task(rspec, type: JavaExec) {
