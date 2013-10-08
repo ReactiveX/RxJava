@@ -4478,6 +4478,17 @@ public class Observable<T> {
     }
 
     /**
+     * Ignores all values in an observable sequence and only calls onCompleted or onError method.
+     *
+     * @return An empty observable sequence that only call onCompleted, or onError method.
+     *
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229242(v=vs.103).aspx">MSDN: Observable.IgnoreElements</a>
+     */
+    public Observable<T> ignoreElements() {
+        return filter(alwaysFalse());
+    }
+
+    /**
      * Whether a given {@link Function} is an internal implementation inside rx.* packages or not.
      * <p>
      * For why this is being used see https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
