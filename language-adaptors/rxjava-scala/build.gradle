@@ -13,10 +13,30 @@ tasks.withType(ScalaCompile) {
 }
 
 sourceSets { 
-    test { 
+	main { 
         scala { 
             srcDir 'src/main/scala'
         }
+    }
+    test { 
+        scala { 
+            srcDir 'src/main/scala'
+            srcDir 'src/test/scala'
+            srcDir 'src/examples/scala'
+            srcDir 'src/examples/java'
+        }
+        java.srcDirs = []
+    }
+    examples {
+        // It seems that in Gradle, the dependency "compileScala depends on compileJava" is hardcoded,
+        // or at least not meant to be removed.
+        // However, compileScala also runs javac at the very end, so we just add the Java sources to
+        // the scala source set:
+        scala { 
+            srcDir 'src/examples/scala'
+            srcDir 'src/examples/java'
+        }
+        java.srcDirs = []
     }
 }
 
@@ -33,6 +53,15 @@ dependencies {
 tasks.compileScala {  
     classpath = classpath + (configurations.compile + configurations.provided)
 }
+
+tasks.compileExamplesScala {  
+    classpath = classpath + files(compileScala.destinationDir) + (configurations.compile + configurations.provided)
+}
+
+// Add RxJava core to Scaladoc input:
+// tasks.scaladoc.source(project(':rxjava-core').tasks.getByPath(':rxjava-core:compileJava').source)
+// println("-------")
+// println(tasks.scaladoc.source.asPath)
 
 task test(overwrite: true, dependsOn: testClasses) << {
     ant.taskdef(name: 'scalatest',
