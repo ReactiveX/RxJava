@@ -118,25 +118,22 @@ public class RefCountTests {
         // advance further
         s.advanceTimeBy(1000, TimeUnit.MILLISECONDS);
 
-        // the following is not working as it seems the PublishSubject does not allow re-subscribing. TODO fix that in subsequent pull request
-        
-        
-//        // subscribing a new one should start over because the source should have been unsubscribed
-//        // subscribe list1
-//        final List<Long> list3 = new ArrayList<Long>();
-//        Subscription s3 = interval.subscribe(new Action1<Long>() {
-//
-//            @Override
-//            public void call(Long t1) {
-//                list3.add(t1);
-//            }
-//
-//        });
-//        s.advanceTimeBy(200, TimeUnit.MILLISECONDS);
-//
-//        assertEquals(2, list3.size());
-//        assertEquals(0L, list3.get(0).longValue());
-//        assertEquals(1L, list3.get(1).longValue());
+        // subscribing a new one should start over because the source should have been unsubscribed
+        // subscribe list3
+        final List<Long> list3 = new ArrayList<Long>();
+        Subscription s3 = interval.subscribe(new Action1<Long>() {
+
+            @Override
+            public void call(Long t1) {
+                list3.add(t1);
+            }
+
+        });
+        s.advanceTimeBy(200, TimeUnit.MILLISECONDS);
+
+        assertEquals(2, list3.size());
+        assertEquals(0L, list3.get(0).longValue());
+        assertEquals(1L, list3.get(1).longValue());
 
     }
 }
