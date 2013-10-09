@@ -327,6 +327,10 @@ public class Functions {
         return AlwaysTrue.INSTANCE;
     }
 
+    public static <T> Func1<? super T, Boolean> alwaysFalse() {
+        return AlwaysFalse.INSTANCE;
+    }
+
     public static <T> Func1<T, T> identity() {
         return new Func1<T, T>() {
             @Override
@@ -345,4 +349,12 @@ public class Functions {
         }
     }
     
+    private enum AlwaysFalse implements Func1<Object, Boolean> {
+        INSTANCE;
+
+        @Override
+        public Boolean call(Object o) {
+            return false;
+        }
+    }
 }
