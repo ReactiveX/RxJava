@@ -578,9 +578,28 @@ public class Observable<T> {
      * @param <T>
      *            the type of the items (ostensibly) emitted by the Observable
      * @return an Observable that invokes the {@link Observer}'s {@link Observer#onError onError} method when the Observer subscribes to it
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244299(v=vs.103).aspx">MSDN: Observable.Throw Method</a>
      */
     public static <T> Observable<T> error(Throwable exception) {
         return new ThrowObservable<T>(exception);
+    }
+
+    /**
+     * Returns an Observable that invokes an {@link Observer}'s {@link Observer#onError onError} method with the specified scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.png">
+     *
+     * @param exception
+     *            the particular error to report
+     * @param scheduler
+     *            the scheduler to call the {@link Observer#onError onError} method.
+     * @param <T>
+     *            the type of the items (ostensibly) emitted by the Observable
+     * @return an Observable that invokes the {@link Observer}'s {@link Observer#onError onError} method with the specified scheduler.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211711(v=vs.103).aspx">MSDN: Observable.Throw Method</a>
+     */
+    public static <T> Observable<T> error(Throwable exception, Scheduler scheduler) {
+        return Observable.<T> error(exception).subscribeOn(scheduler);
     }
 
     /**
