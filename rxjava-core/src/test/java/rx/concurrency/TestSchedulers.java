@@ -361,8 +361,8 @@ public class TestSchedulers {
             @Override
             public Subscription call(Scheduler scheduler, String state) {
                 System.out.println("doing work");
-                latch.countDown();
                 counter.incrementAndGet();
+                latch.countDown();
                 if (latch.getCount() == 0) {
                     return Subscriptions.empty();
                 } else {
