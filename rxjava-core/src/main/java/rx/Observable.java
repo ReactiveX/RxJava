@@ -599,7 +599,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211711(v=vs.103).aspx">MSDN: Observable.Throw Method</a>
      */
     public static <T> Observable<T> error(Throwable exception, Scheduler scheduler) {
-        return Observable.<T> error(exception).observeOn(scheduler);
+        return Observable.<T> error(exception).subscribeOn(scheduler);
     }
 
     /**
