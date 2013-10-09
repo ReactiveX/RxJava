@@ -838,4 +838,15 @@ public class ObservableTests {
                 org.mockito.Matchers.any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
     }
+
+    public void testIgnoreElements() {
+        Observable<Integer> observable = Observable.from(1, 2, 3).ignoreElements();
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, never()).onNext(any(Integer.class));
+        verify(aObserver, never()).onError(any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
 }
