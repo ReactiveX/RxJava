@@ -3153,6 +3153,22 @@ public class Observable<T> {
     }
     
     /**
+     * Determines whether an observable sequence contains a specified element.
+     *
+     * @param value
+     *            The element to search in the sequence.
+     * @return an Observable that emits if the element is in the source sequence.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh228965(v=vs.103).aspx">MSDN: Observable.Contains</a>
+     */
+    public Observable<Boolean> contains(final T element) {
+        return exists(new Func1<T, Boolean>() {
+            public Boolean call(T t1) {
+                return element == null ? t1 == null : element.equals(t1);
+            }
+        });
+    }
+
+    /**
      * Registers an {@link Action0} to be called when this Observable invokes {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/finallyDo.png">
