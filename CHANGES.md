@@ -1,5 +1,19 @@
 # RxJava Releases #
 
+### Version 0.14.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.3%22)) ###
+
+* [Pull 407](https://github.com/Netflix/RxJava/pull/407) Implemented RefCount Operator
+* [Pull 410](https://github.com/Netflix/RxJava/pull/410) Implemented the 'Contains' operator
+* [Pull 411](https://github.com/Netflix/RxJava/pull/411) Unit Test fix: update counter before triggering latch 
+* [Pull 413](https://github.com/Netflix/RxJava/pull/413) Fixed the issues of takeLast(items, 0) and null values
+* [Pull 414](https://github.com/Netflix/RxJava/pull/414) Implemented the 'SkipLast' operator
+* [Pull 415](https://github.com/Netflix/RxJava/pull/415) Implemented the 'Empty' operator with scheduler
+* [Pull 416](https://github.com/Netflix/RxJava/pull/416) Implemented the 'Throw' operator with scheduler 
+* [Pull 420](https://github.com/Netflix/RxJava/pull/420) Scala Adaptor Improvements
+* [Pull 422](https://github.com/Netflix/RxJava/pull/422) JRuby function wrapping support
+* [Pull 424](https://github.com/Netflix/RxJava/pull/424) Implemented the 'IgnoreElements' operator
+* [Pull 426](https://github.com/Netflix/RxJava/pull/426) PublishSubject ReSubscribe for publish().refCount() Behavior
+
 ### Version 0.14.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.2%22)) ###
 
 * [Pull 403](https://github.com/Netflix/RxJava/pull/403) Operators: Cast and OfType
