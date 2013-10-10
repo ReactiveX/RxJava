@@ -2,6 +2,7 @@ package rx.operators;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,84 +26,97 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.util.Log;
 
-import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 
-public class OperationObserveInForeground {
+public class OperationObserveFromAndroidComponent {
 
-    public static <T> Observable<T> observeOnFragment(Observable<T> source, android.app.Fragment fragment) {
-        return Observable.create(new OnSubscribeFragment<T>(source, new WeakReference<Fragment>(fragment)));
+    public static <T> Observable<T> observeFromAndroidComponent(Observable<T> source, android.app.Fragment fragment) {
+        return Observable.create(new OnSubscribeFragment<T>(source, fragment));
     }
 
-    public static <T> Observable<T> observeOnSupportFragment(Observable<T> source, android.support.v4.app.Fragment fragment) {
-        return Observable.create(new OnSubscribeSupportFragment<T>(
-                source, new WeakReference<android.support.v4.app.Fragment>(fragment)));
+    public static <T> Observable<T> observeFromAndroidComponent(Observable<T> source, android.support.v4.app.Fragment fragment) {
+        return Observable.create(new OnSubscribeSupportFragment<T>(source, fragment));
     }
 
-    public static <T> Observable<T> observeOnActivity(Observable<T> source, Activity activity) {
-        return Observable.create(new OnSubscribeActivity<T>(source, new WeakReference<Activity>(activity)));
+    public static <T> Observable<T> observeFromAndroidComponent(Observable<T> source, Activity activity) {
+        return Observable.create(new OnSubscribeActivity<T>(source, activity));
     }
 
     private static abstract class OnSubscribeBase<T, AndroidComponent> implements Observable.OnSubscribeFunc<T> {
 
-        private final Observable<T> source;
-        private final WeakReference<AndroidComponent> componentRef;
-        private Observer<? super T> actual;
+        private static final String LOG_TAG = OperationObserveFromAndroidComponent.class.getSimpleName();
 
-        private OnSubscribeBase(Observable<T> source, WeakReference<AndroidComponent> componentRef) {
+        private final Observable<T> source;
+        private volatile AndroidComponent componentRef;
+        private volatile Observer<? super T> observerRef;
+
+        private OnSubscribeBase(Observable<T> source, AndroidComponent component) {
             this.source = source;
-            this.componentRef = componentRef;
+            this.componentRef = component;
+        }
+
+        private void log(String message) {
+            Log.d(LOG_TAG, "componentRef = " + componentRef);
+            Log.d(LOG_TAG, "observerRef = " + observerRef);
+            Log.d(LOG_TAG, message);
         }
 
         protected abstract boolean isComponentValid(AndroidComponent component);
 
         @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
-            actual = observer;
-            return source.observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<T>() {
+            observerRef = observer;
+            final Subscription sourceSub = source.observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<T>() {
                 @Override
                 public void onCompleted() {
-                    AndroidComponent component = componentRef.get();
-                    if (component != null && isComponentValid(component)) {
-                        actual.onCompleted();
+                    if (componentRef != null && isComponentValid(componentRef)) {
+                        observerRef.onCompleted();
                     } else {
-                        actual = null;
                         log("onComplete: target component released or detached; dropping message");
+                        releaseReferences();
                     }
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    AndroidComponent component = componentRef.get();
-                    if (component != null && isComponentValid(component)) {
-                        actual.onError(e);
+                    if (componentRef != null && isComponentValid(componentRef)) {
+                        observerRef.onError(e);
                     } else {
-                        actual = null;
                         log("onError: target component released or detached; dropping message");
+                        releaseReferences();
                     }
                 }
 
                 @Override
                 public void onNext(T args) {
-                    AndroidComponent component = componentRef.get();
-                    if (component != null && isComponentValid(component)) {
-                        actual.onNext(args);
+                    if (componentRef != null && isComponentValid(componentRef)) {
+                        observerRef.onNext(args);
                     } else {
-                        actual = null;
                         log("onNext: target component released or detached; dropping message");
+                        releaseReferences();
                     }
                 }
-
-                private void log(String message) {
-                    Log.i(OperationObserveInForeground.class.getSimpleName(), message);
-                }
             });
+            return new Subscription() {
+                @Override
+                public void unsubscribe() {
+                    log("unsubscribing from source sequence");
+                    releaseReferences();
+                    sourceSub.unsubscribe();
+                }
+            };
+        }
+
+        private void releaseReferences() {
+            observerRef = null;
+            componentRef = null;
         }
     }
 
     private static final class OnSubscribeFragment<T> extends OnSubscribeBase<T, android.app.Fragment> {
 
-        private OnSubscribeFragment(Observable<T> source, WeakReference<android.app.Fragment> fragmentRef) {
-            super(source, fragmentRef);
+        private OnSubscribeFragment(Observable<T> source, android.app.Fragment fragment) {
+            super(source, fragment);
         }
 
         @Override
@@ -113,7 +127,7 @@ public class OperationObserveInForeground {
 
     private static final class OnSubscribeSupportFragment<T> extends OnSubscribeBase<T, android.support.v4.app.Fragment> {
 
-        private OnSubscribeSupportFragment(Observable<T> source, WeakReference<android.support.v4.app.Fragment> fragment) {
+        private OnSubscribeSupportFragment(Observable<T> source, android.support.v4.app.Fragment fragment) {
             super(source, fragment);
         }
 
@@ -125,7 +139,7 @@ public class OperationObserveInForeground {
 
     private static final class OnSubscribeActivity<T> extends OnSubscribeBase<T, Activity> {
 
-        private OnSubscribeActivity(Observable<T> source, WeakReference<Activity> activity) {
+        private OnSubscribeActivity(Observable<T> source, Activity activity) {
             super(source, activity);
         }
 
@@ -159,14 +173,14 @@ public class OperationObserveInForeground {
 
         @Test
         public void itObservesTheSourceSequenceOnTheMainUIThread() {
-            OperationObserveInForeground.observeOnFragment(mockObservable, mockFragment).subscribe(mockObserver);
+            OperationObserveFromAndroidComponent.observeFromAndroidComponent(mockObservable, mockFragment).subscribe(mockObserver);
             verify(mockObservable).observeOn(AndroidSchedulers.mainThread());
         }
 
         @Test
         public void itForwardsOnNextOnCompletedSequenceToTargetObserver() {
             Observable<Integer> source = Observable.from(1, 2, 3);
-            OperationObserveInForeground.observeOnFragment(source, mockFragment).subscribe(mockObserver);
+            OperationObserveFromAndroidComponent.observeFromAndroidComponent(source, mockFragment).subscribe(mockObserver);
             verify(mockObserver, times(3)).onNext(anyInt());
             verify(mockObserver).onCompleted();
             verify(mockObserver, never()).onError(any(Exception.class));
@@ -176,22 +190,21 @@ public class OperationObserveInForeground {
         public void itForwardsOnErrorToTargetObserver() {
             final Exception exception = new Exception();
             Observable<Integer> source = Observable.error(exception);
-            OperationObserveInForeground.observeOnFragment(source, mockFragment).subscribe(mockObserver);
+            OperationObserveFromAndroidComponent.observeFromAndroidComponent(source, mockFragment).subscribe(mockObserver);
             verify(mockObserver).onError(exception);
             verify(mockObserver, never()).onNext(anyInt());
             verify(mockObserver, never()).onCompleted();
         }
 
         @Test
-        public void itDropsOnNextOnCompletedSequenceIfTargetComponentIsGone() {
+        public void itDropsOnNextOnCompletedSequenceIfTargetComponentIsGone() throws Throwable {
             PublishSubject<Integer> source = PublishSubject.create();
-            WeakReference<Fragment> fragmentRef = new WeakReference<Fragment>(mockFragment);
 
-            final OnSubscribeFragment<Integer> operator = new OnSubscribeFragment<Integer>(source, fragmentRef);
+            final OnSubscribeFragment<Integer> operator = new OnSubscribeFragment<Integer>(source, mockFragment);
             operator.onSubscribe(mockObserver);
 
             source.onNext(1);
-            fragmentRef.clear();
+            releaseComponentRef(operator);
 
             source.onNext(2);
             source.onNext(3);
@@ -202,15 +215,14 @@ public class OperationObserveInForeground {
         }
 
         @Test
-        public void itDropsOnErrorIfTargetComponentIsGone() {
+        public void itDropsOnErrorIfTargetComponentIsGone() throws Throwable {
             PublishSubject<Integer> source = PublishSubject.create();
-            WeakReference<Fragment> fragmentRef = new WeakReference<Fragment>(mockFragment);
 
-            final OnSubscribeFragment<Integer> operator = new OnSubscribeFragment<Integer>(source, fragmentRef);
+            final OnSubscribeFragment<Integer> operator = new OnSubscribeFragment<Integer>(source, mockFragment);
             operator.onSubscribe(mockObserver);
 
             source.onNext(1);
-            fragmentRef.clear();
+            releaseComponentRef(operator);
 
             source.onError(new Exception());
 
@@ -218,10 +230,16 @@ public class OperationObserveInForeground {
             verifyNoMoreInteractions(mockObserver);
         }
 
+        private void releaseComponentRef(OnSubscribeFragment<Integer> operator) throws NoSuchFieldException, IllegalAccessException {
+            final Field componentRef = operator.getClass().getSuperclass().getDeclaredField("componentRef");
+            componentRef.setAccessible(true);
+            componentRef.set(operator, null);
+        }
+
         @Test
         public void itDoesNotForwardOnNextOnCompletedSequenceIfFragmentIsDetached() {
             PublishSubject<Integer> source = PublishSubject.create();
-            OperationObserveInForeground.observeOnFragment(source, mockFragment).subscribe(mockObserver);
+            OperationObserveFromAndroidComponent.observeFromAndroidComponent(source, mockFragment).subscribe(mockObserver);
 
             source.onNext(1);
 
@@ -237,7 +255,7 @@ public class OperationObserveInForeground {
         @Test
         public void itDoesNotForwardOnErrorIfFragmentIsDetached() {
             PublishSubject<Integer> source = PublishSubject.create();
-            OperationObserveInForeground.observeOnFragment(source, mockFragment).subscribe(mockObserver);
+            OperationObserveFromAndroidComponent.observeFromAndroidComponent(source, mockFragment).subscribe(mockObserver);
 
             source.onNext(1);
 
@@ -251,7 +269,7 @@ public class OperationObserveInForeground {
         @Test
         public void isDoesNotForwardOnNextOnCompletedSequenceIfActivityIsFinishing() {
             PublishSubject<Integer> source = PublishSubject.create();
-            OperationObserveInForeground.observeOnActivity(source, mockActivity).subscribe(mockObserver);
+            OperationObserveFromAndroidComponent.observeFromAndroidComponent(source, mockActivity).subscribe(mockObserver);
 
             source.onNext(1);
 
@@ -267,7 +285,7 @@ public class OperationObserveInForeground {
         @Test
         public void itDoesNotForwardOnErrorIfActivityIsFinishing() {
             PublishSubject<Integer> source = PublishSubject.create();
-            OperationObserveInForeground.observeOnActivity(source, mockActivity).subscribe(mockObserver);
+            OperationObserveFromAndroidComponent.observeFromAndroidComponent(source, mockActivity).subscribe(mockObserver);
 
             source.onNext(1);
 
@@ -276,6 +294,19 @@ public class OperationObserveInForeground {
 
             verify(mockObserver).onNext(1);
             verify(mockObserver, never()).onError(any(Exception.class));
+        }
+
+        @Test
+        public void itUnsubscribesFromTheSourceSequence() {
+            Subscription underlying = mock(Subscription.class);
+            when(mockObservable.observeOn(AndroidSchedulers.mainThread())).thenReturn(mockObservable);
+            when(mockObservable.subscribe(any(Observer.class))).thenReturn(underlying);
+
+            Subscription sub = OperationObserveFromAndroidComponent.observeFromAndroidComponent(
+                    mockObservable, mockActivity).subscribe(mockObserver);
+            sub.unsubscribe();
+
+            verify(underlying).unsubscribe();
         }
     }
 }
