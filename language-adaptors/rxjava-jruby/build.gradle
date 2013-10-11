@@ -28,6 +28,7 @@ dependencies {
     rspec 'org.rubygems:rspec:2.14.1'
 }
 
+/* // benjchristensen => commenting out until internal Netflix build system can handle ruby gems
 task(rspec, type: JavaExec) {
     main 'org.jruby.Main'
     classpath configurations.rspec + runtimeClasspath
@@ -35,6 +36,7 @@ task(rspec, type: JavaExec) {
 }
 
 tasks.build.dependsOn << 'rspec'
+*/
 
 jar {
     manifest {
