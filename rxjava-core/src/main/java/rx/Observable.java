@@ -33,9 +33,11 @@ import rx.operators.OperationAny;
 import rx.operators.OperationAverage;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCache;
+import rx.operators.OperationCast;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDebounce;
+import rx.operators.OperationDefaultIfEmpty;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
@@ -61,6 +63,7 @@ import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
+import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipWhile;
 import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSum;
@@ -83,6 +86,7 @@ import rx.operators.SafeObserver;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
+import rx.subjects.AsyncSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
@@ -540,9 +544,28 @@ public class Observable<T> {
      *            the type of the items (ostensibly) emitted by the Observable
      * @return an Observable that returns no data to the {@link Observer} and immediately invokes
      *         the {@link Observer}'s {@link Observer#onCompleted() onCompleted} method
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229670(v=vs.103).aspx">MSDN: Observable.Empty Method</a>
      */
     public static <T> Observable<T> empty() {
         return from(new ArrayList<T>());
+    }
+
+    /**
+     * Returns an Observable that emits no data to the {@link Observer} and immediately invokes
+     * its {@link Observer#onCompleted onCompleted} method with the specified scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/empty.png">
+     * @param scheduler
+     *            the scheduler to call the {@link Observer#onCompleted onCompleted} method.
+     * @param <T>
+     *            the type of the items (ostensibly) emitted by the Observable
+     * @return an Observable that returns no data to the {@link Observer} and immediately invokes
+     *         the {@link Observer}'s {@link Observer#onCompleted() onCompleted} method with
+     *         the specified scheduler.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229066(v=vs.103).aspx">MSDN: Observable.Empty Method (IScheduler)</a>
+     */
+    public static <T> Observable<T> empty(Scheduler scheduler) {
+        return Observable.<T>empty().subscribeOn(scheduler);
     }
 
     /**
@@ -555,9 +578,28 @@ public class Observable<T> {
      * @param <T>
      *            the type of the items (ostensibly) emitted by the Observable
      * @return an Observable that invokes the {@link Observer}'s {@link Observer#onError onError} method when the Observer subscribes to it
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244299(v=vs.103).aspx">MSDN: Observable.Throw Method</a>
      */
     public static <T> Observable<T> error(Throwable exception) {
         return new ThrowObservable<T>(exception);
+    }
+
+    /**
+     * Returns an Observable that invokes an {@link Observer}'s {@link Observer#onError onError} method with the specified scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.png">
+     *
+     * @param exception
+     *            the particular error to report
+     * @param scheduler
+     *            the scheduler to call the {@link Observer#onError onError} method.
+     * @param <T>
+     *            the type of the items (ostensibly) emitted by the Observable
+     * @return an Observable that invokes the {@link Observer}'s {@link Observer#onError onError} method with the specified scheduler.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211711(v=vs.103).aspx">MSDN: Observable.Throw Method</a>
+     */
+    public static <T> Observable<T> error(Throwable exception, Scheduler scheduler) {
+        return Observable.<T> error(exception).subscribeOn(scheduler);
     }
 
     /**
@@ -1820,6 +1862,27 @@ public class Observable<T> {
      */
     public Observable<T> synchronize() {
         return create(OperationSynchronize.synchronize(this));
+    }
+
+    /**
+     * Accepts an Observable and wraps it in another Observable that ensures that the resulting
+     * Observable is chronologically well-behaved. This is accomplished by acquiring a mutual-exclusion lock for the object provided as the lock parameter.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/synchronize.png">
+     * <p>
+     * A well-behaved Observable does not interleave its invocations of the {@link Observer#onNext onNext}, {@link Observer#onCompleted onCompleted}, and {@link Observer#onError onError} methods of
+     * its {@link Observer}s; it invokes {@code onCompleted} or {@code onError} only once; and it never invokes {@code onNext} after invoking either {@code onCompleted} or {@code onError}.
+     * {@code synchronize} enforces this, and the Observable it returns invokes {@code onNext} and {@code onCompleted} or {@code onError} synchronously.
+     *
+     * @param lock
+     *            The lock object to synchronize each observer call on
+     * @param <T>
+     *            the type of item emitted by the source Observable
+     * @return an Observable that is a chronologically well-behaved version of the source
+     *         Observable, and that synchronously notifies its {@link Observer}s
+     */
+    public Observable<T> synchronize(Object lock) {
+        return create(OperationSynchronize.synchronize(this, lock));
     }
 
     /**
@@ -3129,6 +3192,22 @@ public class Observable<T> {
     }
     
     /**
+     * Determines whether an observable sequence contains a specified element.
+     *
+     * @param value
+     *            The element to search in the sequence.
+     * @return an Observable that emits if the element is in the source sequence.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh228965(v=vs.103).aspx">MSDN: Observable.Contains</a>
+     */
+    public Observable<Boolean> contains(final T element) {
+        return exists(new Func1<T, Boolean>() {
+            public Boolean call(T t1) {
+                return element == null ? t1 == null : element.equals(t1);
+            }
+        });
+    }
+
+    /**
      * Registers an {@link Action0} to be called when this Observable invokes {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/finallyDo.png">
@@ -3635,6 +3714,14 @@ public class Observable<T> {
     }
 
     /**
+     * Returns a {@link ConnectableObservable} that shares a single subscription that contains the last notification only.
+     * @return a {@link ConnectableObservable}
+     */
+    public ConnectableObservable<T> publishLast() {
+        return OperationMulticast.multicast(this, AsyncSubject.<T> create());
+    }
+
+    /**
      * Synonymous with <code>reduce()</code>.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/aggregate.png">
@@ -3864,6 +3951,21 @@ public class Observable<T> {
         return create(OperationFirstOrDefault.firstOrDefault(this, predicate, defaultValue));
     }
 
+    /**
+     * Returns the elements of the specified sequence or the specified default
+     * value in a singleton sequence if the sequence is empty.
+     *
+     * @param defaultValue
+     *            The value to return if the sequence is empty.
+     * @return An observable sequence that contains the specified default value
+     *         if the source is empty; otherwise, the elements of the source
+     *         itself.
+     *
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229624(v=vs.103).aspx">MSDN: Observable.DefaultIfEmpty</a>
+     */
+    public Observable<T> defaultIfEmpty(T defaultValue) {
+        return create(OperationDefaultIfEmpty.defaultIfEmpty(this, defaultValue));
+    }
     
     /**
      * Returns an Observable that emits only the first <code>num</code> items emitted by the source
@@ -4014,6 +4116,30 @@ public class Observable<T> {
      */
     public Observable<T> skipWhile(Func1<? super T, Boolean> predicate) {
         return create(OperationSkipWhile.skipWhile(this, predicate));
+    }
+
+    /**
+     * Bypasses a specified number of elements at the end of an observable
+     * sequence.
+     * <p>
+     * This operator accumulates a queue with a length enough to store the first
+     * count elements. As more elements are received, elements are taken from
+     * the front of the queue and produced on the result sequence. This causes
+     * elements to be delayed.
+     *
+     * @param count
+     *            number of elements to bypass at the end of the source
+     *            sequence.
+     * @return An observable sequence containing the source sequence elements
+     *         except for the bypassed ones at the end.
+     *
+     * @throws IndexOutOfBoundsException
+     *             count is less than zero.
+     *
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211750(v=vs.103).aspx">MSDN: Observable.SkipLast</a>
+     */
+    public Observable<T> skipLast(int count) {
+        return create(OperationSkipLast.skipLast(this, count));
     }
 
     /**
@@ -4333,12 +4459,61 @@ public class Observable<T> {
     }
 
     /**
+     * Converts the elements of an observable sequence to the specified type.
+     *
+     * @param klass
+     *            The target class type which the elements will be converted to.
+     *
+     * @return An observable sequence that contains each element of the source
+     *         sequence converted to the specified type.
+     *
+     * @see <a
+     *      href="http://msdn.microsoft.com/en-us/library/hh211842(v=vs.103).aspx">MSDN:
+     *      Observable.Cast</a>
+     */
+    public <R> Observable<R> cast(final Class<R> klass) {
+        return create(OperationCast.cast(this, klass));
+    }
+
+    /**
+     * Filters the elements of an observable sequence based on the specified
+     * type.
+     *
+     * @param klass
+     *            The class type to filter the elements in the source sequence
+     *            on.
+     *
+     * @return An observable sequence that contains elements from the input
+     *         sequence of type klass.
+     *
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229380(v=vs.103).aspx">MSDN: Observable.OfType</a>
+     */
+    public <R> Observable<R> ofType(final Class<R> klass) {
+        return filter(new Func1<T, Boolean>() {
+            public Boolean call(T t) {
+                return klass.isInstance(t);
+            }
+        }).cast(klass);
+    }
+
+    /**
+     * Ignores all values in an observable sequence and only calls onCompleted or onError method.
+     *
+     * @return An empty observable sequence that only call onCompleted, or onError method.
+     *
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229242(v=vs.103).aspx">MSDN: Observable.IgnoreElements</a>
+     */
+    public Observable<T> ignoreElements() {
+        return filter(alwaysFalse());
+    }
+
+    /**
      * Whether a given {@link Function} is an internal implementation inside rx.* packages or not.
      * <p>
      * For why this is being used see https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
      * 
      * NOTE: If strong reasons for not depending on package names comes up then the implementation of this method can change to looking for a marker interface.
-     * 
+     *
      * @param o
      * @return {@code true} if the given function is an internal implementation, and {@code false} otherwise.
      */

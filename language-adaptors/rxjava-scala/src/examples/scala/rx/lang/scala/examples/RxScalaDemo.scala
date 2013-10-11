@@ -21,9 +21,10 @@ import rx.lang.scala._
 import scala.concurrent.duration._
 import org.junit.{Before, Test, Ignore}
 import org.junit.Assert._
-import rx.lang.scala.concurrency.NewThreadScheduler
+import rx.lang.scala.concurrency.Schedulers
+import java.io.IOException
 
-//@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
+@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
 
   @Test def intervalExample() {
@@ -167,10 +168,10 @@ class RxScalaDemo extends JUnitSuite {
   
   @Test def schedulersExample() {
     val o = Observable.interval(100 millis).take(8)
-    o.observeOn(NewThreadScheduler).subscribe(
+    o.observeOn(Schedulers.newThread).subscribe(
         i => println(s"${i}a (on thread #${Thread.currentThread().getId()})")
     )
-    o.observeOn(NewThreadScheduler).subscribe(
+    o.observeOn(Schedulers.newThread).subscribe(
         i => println(s"${i}b (on thread #${Thread.currentThread().getId()})")
     )
     waitFor(o)
@@ -287,7 +288,7 @@ class RxScalaDemo extends JUnitSuite {
   // We can't put a general average method into Observable.scala, because Scala's Numeric
   // does not have scalar multiplication (we would need to calculate (1.0/numberOfElements)*sum)
   def doubleAverage(o: Observable[Double]): Observable[Double] = {
-    for ((finalSum, finalCount) <- o.fold((0.0, 0))({case ((sum, count), elem) => (sum+elem, count+1)}))
+    for ((finalSum, finalCount) <- o.foldLeft((0.0, 0))({case ((sum, count), elem) => (sum+elem, count+1)}))
       yield finalSum / finalCount
   }
   
@@ -321,13 +322,13 @@ class RxScalaDemo extends JUnitSuite {
         .toBlockingObservable.foreach(println(_))
   }
   
-  // source Observables are in a List:
-  @Test def zipManySeqExample() {
-    val observables = List(Observable(1, 2), Observable(10, 20), Observable(100, 200))
-    (for (seq <- Observable.zip(observables)) yield seq.mkString("(", ", ", ")"))
+  // source Observables are all known:
+  @Test def zip3Example() {
+    val o = Observable.zip(Observable(1, 2), Observable(10, 20), Observable(100, 200))
+    (for ((n1, n2, n3) <- o) yield s"$n1, $n2 and $n3")
         .toBlockingObservable.foreach(println(_))
   }
-  
+
   // source Observables are in an Observable:
   @Test def zipManyObservableExample() {
     val observables = Observable(Observable(1, 2), Observable(10, 20), Observable(100, 200))
@@ -375,6 +376,88 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(Seq(10, 9, 8, 7), Observable(10, 7, 8, 9).toSeq.map(_.sortWith(f)).toBlockingObservable.single)
   }
   
+  @Test def timestampExample() {
+    val timestamped = Observable.interval(100 millis).take(3).timestamp.toBlockingObservable
+    for ((millis, value) <- timestamped if value > 0) {
+      println(value + " at t = " + millis)
+    }
+  }
+  
+  @Test def materializeExample1() {
+    def printObservable[T](o: Observable[T]): Unit = {
+      import Notification._
+      o.materialize.subscribe(n => n match {
+        case OnNext(v) => println("Got value " + v)
+        case OnCompleted() => println("Completed")
+        case OnError(err) => println("Error: " + err.getMessage)
+      })
+    }
+    
+    val o1 = Observable.interval(100 millis).take(3)
+    val o2 = Observable(new IOException("Oops"))
+    printObservable(o1)
+    waitFor(o1)
+    printObservable(o2)
+    waitFor(o2)
+  }
+  
+  @Test def materializeExample2() {
+    import Notification._
+    Observable(1, 2, 3).materialize.subscribe(n => n match {
+      case OnNext(v) => println("Got value " + v)
+      case OnCompleted() => println("Completed")
+      case OnError(err) => println("Error: " + err.getMessage)
+    })
+  }
+  
+  @Test def elementAtReplacement() {
+    assertEquals("b", Observable("a", "b", "c").drop(1).first.toBlockingObservable.single)
+  }
+  
+  @Test def elementAtOrDefaultReplacement() {
+    assertEquals("b", Observable("a", "b", "c").drop(1).firstOrElse("!").toBlockingObservable.single)
+    assertEquals("!!", Observable("a", "b", "c").drop(10).firstOrElse("!!").toBlockingObservable.single)
+  }
+  
+  @Test def observableLikeFuture1() {
+    implicit val scheduler = Schedulers.threadPoolForIO
+    val o1 = observable {
+      Thread.sleep(1000)
+      5
+    }
+    val o2 = observable {
+      Thread.sleep(500)
+      4
+    }
+    Thread.sleep(500)
+    val t1 = System.currentTimeMillis
+    println((o1 merge o2).first.toBlockingObservable.single)
+    println(System.currentTimeMillis - t1)
+  }
+  
+  @Test def observableLikeFuture2() {
+    class Friend {}
+    val session = new Object {
+      def getFriends: List[Friend] = List(new Friend, new Friend)
+    }
+    
+    implicit val scheduler = Schedulers.threadPoolForIO
+    val o: Observable[List[Friend]] = observable {
+       session.getFriends
+    }
+    o.subscribe(
+      friendList => println(friendList),
+      err => println(err.getMessage)
+    )
+    
+    Thread.sleep(1500) // or convert to BlockingObservable
+  }
+
+  @Test def takeWhileWithIndexAlternative {
+    val condition = true
+    Observable("a", "b").zipWithIndex.takeWhile{case (elem, index) => condition}.map(_._1)
+  }
+
   def output(s: String): Unit = println(s)
   
   // blocks until obs has completed

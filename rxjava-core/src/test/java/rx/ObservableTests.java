@@ -20,6 +20,8 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -488,6 +490,48 @@ public class ObservableTests {
     }
 
     @Test
+    public void testPublishLast() throws InterruptedException {
+        final AtomicInteger count = new AtomicInteger();
+        ConnectableObservable<String> connectable = Observable.create(new OnSubscribeFunc<String>() {
+            @Override
+            public Subscription onSubscribe(final Observer<? super String> observer) {
+                count.incrementAndGet();
+                final BooleanSubscription subscription = new BooleanSubscription();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        observer.onNext("first");
+                        observer.onNext("last");
+                        observer.onCompleted();
+                    }
+                }).start();
+                return subscription;
+            }
+        }).publishLast();
+
+        // subscribe once
+        final CountDownLatch latch = new CountDownLatch(1);
+        connectable.subscribe(new Action1<String>() {
+            @Override
+            public void call(String value) {
+                assertEquals("last", value);
+                latch.countDown();
+            }
+        });
+
+        // subscribe twice
+        connectable.subscribe(new Action1<String>() {
+            @Override
+            public void call(String _) {}
+        });
+
+        Subscription subscription = connectable.connect();
+        assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
+        assertEquals(1, count.get());
+        subscription.unsubscribe();
+    }
+
+    @Test
     public void testReplay() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         ConnectableObservable<String> o = Observable.create(new OnSubscribeFunc<String>() {
@@ -700,5 +744,109 @@ public class ObservableTests {
         if (!(error.get() instanceof NumberFormatException)) {
             fail("It should be a NumberFormatException");
         }
+    }
+    
+    @Test
+    public void testOfType() {
+        Observable<String> observable = Observable.from(1, "abc", false, 2L).ofType(String.class);
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, never()).onNext(1);
+        verify(aObserver, times(1)).onNext("abc");
+        verify(aObserver, never()).onNext(false);
+        verify(aObserver, never()).onNext(2L);
+        verify(aObserver, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testOfTypeWithPolymorphism() {
+        ArrayList<Integer> l1 = new ArrayList<Integer>();
+        l1.add(1);
+        LinkedList<Integer> l2 = new LinkedList<Integer>();
+        l2.add(2);
+
+        @SuppressWarnings("rawtypes")
+        Observable<List> observable = Observable.<Object>from(l1, l2, "123").ofType(List.class);
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, times(1)).onNext(l1);
+        verify(aObserver, times(1)).onNext(l2);
+        verify(aObserver, never()).onNext("123");
+        verify(aObserver, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testContains() {
+        Observable<Boolean> observable = Observable.from("a", "b", null).contains("b");
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, times(1)).onNext(true);
+        verify(aObserver, never()).onNext(false);
+        verify(aObserver, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testContainsWithInexistence() {
+        Observable<Boolean> observable = Observable.from("a", "b", null).contains("c");
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, times(1)).onNext(false);
+        verify(aObserver, never()).onNext(true);
+        verify(aObserver, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testContainsWithNull() {
+        Observable<Boolean> observable = Observable.from("a", "b", null).contains(null);
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, times(1)).onNext(true);
+        verify(aObserver, never()).onNext(false);
+        verify(aObserver, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testContainsWithEmptyObservable() {
+        Observable<Boolean> observable = Observable.<String>empty().contains("a");
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, times(1)).onNext(false);
+        verify(aObserver, never()).onNext(true);
+        verify(aObserver, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+
+    public void testIgnoreElements() {
+        Observable<Integer> observable = Observable.from(1, 2, 3).ignoreElements();
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, never()).onNext(any(Integer.class));
+        verify(aObserver, never()).onError(any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
     }
 }

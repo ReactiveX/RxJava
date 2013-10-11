@@ -2,8 +2,8 @@ rootProject.name='rxjava'
 include 'rxjava-core', \
 'language-adaptors:rxjava-groovy', \
 'language-adaptors:rxjava-clojure', \
+'language-adaptors:rxjava-jruby', \
 'language-adaptors:rxjava-scala', \
-'language-adaptors:rxjava-scala-java', \
 'rxjava-contrib:rxjava-swing', \
 'rxjava-contrib:rxjava-android', \
 'rxjava-contrib:rxjava-apache-http'
