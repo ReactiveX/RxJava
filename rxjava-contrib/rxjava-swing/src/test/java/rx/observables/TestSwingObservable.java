@@ -172,8 +172,8 @@ public class TestSwingObservable {
             }
         });
         ComponentListener[] listeners = component.getComponentListeners();
-        assertEquals(2, listeners.length);
-        listeners[1].componentResized(sentEvent);
+        assertEquals(1, listeners.length);
+        listeners[0].componentResized(sentEvent);
     }
 
     @Test
@@ -188,8 +188,8 @@ public class TestSwingObservable {
             }
         });
         ComponentListener[] listeners = component.getComponentListeners();
-        assertEquals(2, listeners.length);
-        listeners[1].componentResized(sentEvent);
+        assertEquals(1, listeners.length);
+        listeners[0].componentResized(sentEvent);
     }
 
     @Test
@@ -252,8 +252,8 @@ public class TestSwingObservable {
             }
         });
         ChangeListener[] listeners = component.getChangeListeners();
-        assertEquals(2, listeners.length);
-        listeners[1].stateChanged(sentEvent);
+        assertEquals(1, listeners.length);
+        listeners[0].stateChanged(sentEvent);
     }
 
     @Test
