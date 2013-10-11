@@ -30,27 +30,7 @@ import java.util.EventObject;
 import java.util.Set;
 
 import javax.swing.AbstractButton;
-import javax.swing.AbstractSpinnerModel;
-import javax.swing.BoundedRangeModel;
-import javax.swing.ButtonModel;
-import javax.swing.DefaultBoundedRangeModel;
-import javax.swing.DefaultButtonModel;
-import javax.swing.DefaultSingleSelectionModel;
-import javax.swing.JMenu;
-import javax.swing.JProgressBar;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.JViewport;
-import javax.swing.MenuSelectionManager;
-import javax.swing.SingleSelectionModel;
-import javax.swing.SpinnerModel;
-import javax.swing.colorchooser.ColorSelectionModel;
 import javax.swing.event.ChangeEvent;
-import javax.swing.text.Caret;
-import javax.swing.text.DefaultCaret;
-import javax.swing.text.Style;
-import javax.swing.text.StyleContext;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
@@ -311,178 +291,16 @@ public enum SwingObservable {
      * 
      * @param component
      *            The component to register the observable for.
+     *            It must have an {@code addChangeListener} and a {@code removeChangeListener}
+     *            method.
      * @return Observable of {@link ChangeEvent}s.
      */
-    public static Observable<ChangeEvent> fromChangeEvents(final AbstractButton component) {
+    public static Observable<ChangeEvent> fromChangeEvents(Object component) {
         return fromListenerFor(ChangeEvent.class, component);
     }
 
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final JTabbedPane component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final JViewport component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final JMenu component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final JProgressBar component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final JSlider component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final JSpinner component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final MenuSelectionManager component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final ButtonModel component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final BoundedRangeModel component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final SingleSelectionModel component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final SpinnerModel component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final ColorSelectionModel component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final Caret component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final Style component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    /**
-     * Creates an observable corresponding to {@link ChangeEvent}s.
-     * 
-     * @param component
-     *            The component to register the observable for.
-     * @return Observable of {@link ChangeEvent}s.
-     */
-    public static Observable<ChangeEvent> fromChangeEvents(final StyleContext component) {
-        return fromListenerFor(ChangeEvent.class, component);
-    }
-
-    public static class AmbiguousMethodException extends RuntimeException {
+    @SuppressWarnings("serial")
+	public static class AmbiguousMethodException extends RuntimeException {
         private final Method method1;
         private final Method method2;
 
