@@ -146,7 +146,7 @@ public enum GdxEventSource { ; // no instances
                 Gdx.app.getInput().setInputProcessor(new InputProcessor() {
                     @Override
                     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-                        if (!wrapped.touchUp(screenX, screenY, pointer, button)) {
+                        if (wrapped == null || !wrapped.touchUp(screenX, screenY, pointer, button)) {
                             observer.onNext(new TouchUpEvent(screenX, screenY, pointer, button));
                         }
                         return true;
@@ -154,7 +154,7 @@ public enum GdxEventSource { ; // no instances
 
                     @Override
                     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                        if (!wrapped.touchDown(screenX, screenY, pointer, button)) {
+                        if (wrapped == null || !wrapped.touchDown(screenX, screenY, pointer, button)) {
                             observer.onNext(new TouchDownEvent(screenX, screenY, pointer, button));
                         }
                         return true;
@@ -162,7 +162,7 @@ public enum GdxEventSource { ; // no instances
 
                     @Override
                     public boolean touchDragged(int screenX, int screenY, int pointer) {
-                        if (!wrapped.touchDragged(screenX, screenY, pointer)) {
+                        if (wrapped == null || !wrapped.touchDragged(screenX, screenY, pointer)) {
                             observer.onNext(new TouchDraggedEvent(screenX, screenY, pointer));
                         }
                         return true;
@@ -170,7 +170,7 @@ public enum GdxEventSource { ; // no instances
 
                     @Override
                     public boolean keyDown(int keycode) {
-                        if (!wrapped.keyDown(keycode)) {
+                        if (wrapped == null || !wrapped.keyDown(keycode)) {
                             observer.onNext(new KeyDownEvent(keycode));
                         }
                         return true;
@@ -178,7 +178,7 @@ public enum GdxEventSource { ; // no instances
               
                     @Override
                     public boolean keyUp(int keycode) {
-                        if (!wrapped.keyUp(keycode)) {
+                        if (wrapped == null || !wrapped.keyUp(keycode)) {
                             observer.onNext(new KeyUpEvent(keycode));
                         }
                         return true;
@@ -186,7 +186,7 @@ public enum GdxEventSource { ; // no instances
               
                     @Override
                     public boolean keyTyped(char character) {
-                        if (!wrapped.keyTyped(character)) {
+                        if (wrapped == null || !wrapped.keyTyped(character)) {
                             observer.onNext(new KeyTypedEvent(character));
                         }
                         return true;
@@ -194,7 +194,7 @@ public enum GdxEventSource { ; // no instances
               
                     @Override
                     public boolean mouseMoved(int screenX, int screenY) {
-                        if (!wrapped.mouseMoved(screenX, screenY)) {
+                        if (wrapped == null || !wrapped.mouseMoved(screenX, screenY)) {
                             observer.onNext(new MouseMovedEvent(screenX, screenY));
                         }
                         return true;
@@ -202,7 +202,7 @@ public enum GdxEventSource { ; // no instances
               
                     @Override
                     public boolean scrolled(int amount) {
-                        if (!wrapped.scrolled(amount)) {
+                        if (wrapped == null || !wrapped.scrolled(amount)) {
                             observer.onNext(new ScrolledEvent(amount));
                         }
                         return true;
