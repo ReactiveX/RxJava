@@ -104,7 +104,7 @@ public enum GdxEventSource { ; // no instances
      * @param source The observable of contact events to use as source.
      * @return An observable emitting "Begin Contact" events.
      */
-    public static Observable<BeginContactEvent> beginContact(Observable<ContactEvent> source) {
+    public static Observable<BeginContactEvent> beginContact(Observable<? extends ContactEvent> source) {
         return filtered(source, BeginContactEvent.class);
     }
     
@@ -113,7 +113,7 @@ public enum GdxEventSource { ; // no instances
      * @param source The observable of contact events to use as source.
      * @return An observable emitting "End Contact" events.
      */
-    public static Observable<EndContactEvent> endContact(Observable<ContactEvent> source) {
+    public static Observable<EndContactEvent> endContact(Observable<? extends ContactEvent> source) {
         return filtered(source, EndContactEvent.class);
     }
     
@@ -122,7 +122,7 @@ public enum GdxEventSource { ; // no instances
      * @param source The observable of contact events to use as source.
      * @return An observable emitting "PreSolve" events.
      */
-    public static Observable<PreSolveContactEvent> preSolve(Observable<ContactEvent> source) {
+    public static Observable<PreSolveContactEvent> preSolve(Observable<? extends ContactEvent> source) {
         return filtered(source, PreSolveContactEvent.class);
     }
     
@@ -131,7 +131,7 @@ public enum GdxEventSource { ; // no instances
      * @param source The observable of contact events to use as source.
      * @return An observable emitting "PostSolve" events.
      */
-    public static Observable<PostSolveContactEvent> postSolve(Observable<ContactEvent> source) {
+    public static Observable<PostSolveContactEvent> postSolve(Observable<? extends ContactEvent> source) {
         return filtered(source, PostSolveContactEvent.class);
     }
     
@@ -224,7 +224,7 @@ public enum GdxEventSource { ; // no instances
      * @param source The observable of input events to use as source.
      * @return An observable emitting "Touch Up" events.
      */
-    public static Observable<TouchUpEvent> touchUp(Observable<InputEvent> source) {
+    public static Observable<TouchUpEvent> touchUp(Observable<? extends InputEvent> source) {
         return filtered(source, TouchUpEvent.class);
     }
     
@@ -233,7 +233,7 @@ public enum GdxEventSource { ; // no instances
      * @param source The observable of input events to use as source.
      * @return An observable emitting "Touch Down" events.
      */
-    public static Observable<TouchDownEvent> touchDown(Observable<InputEvent> source) {
+    public static Observable<TouchDownEvent> touchDown(Observable<? extends InputEvent> source) {
         return filtered(source, TouchDownEvent.class);
     }
   
@@ -242,7 +242,7 @@ public enum GdxEventSource { ; // no instances
      * @param source The observable of input events to use as source.
      * @return An observable emitting "Touch Dragged" events.
      */
-    public static Observable<TouchDraggedEvent> touchDragged(Observable<InputEvent> source) {
+    public static Observable<TouchDraggedEvent> touchDragged(Observable<? extends InputEvent> source) {
         return filtered(source, TouchDraggedEvent.class);
     }
 
@@ -251,7 +251,7 @@ public enum GdxEventSource { ; // no instances
      * @param source The observable of input events to use as source.
      * @return An observable emitting "Mouse Moved" events.
      */
-    public static Observable<MouseMovedEvent> mouseMoved(Observable<InputEvent> source) {
+    public static Observable<MouseMovedEvent> mouseMoved(Observable<? extends InputEvent> source) {
         return filtered(source, MouseMovedEvent.class);
     }
 
@@ -260,7 +260,7 @@ public enum GdxEventSource { ; // no instances
      * @param source The observable of input events to use as source.
      * @return An observable emitting "Scrolled" events.
      */
-    public static Observable<ScrolledEvent> scrolled(Observable<InputEvent> source) {
+    public static Observable<ScrolledEvent> scrolled(Observable<? extends InputEvent> source) {
         return filtered(source, ScrolledEvent.class);
     }
 
@@ -269,7 +269,7 @@ public enum GdxEventSource { ; // no instances
      * @param source The observable of input events to use as source.
      * @return An observable emitting "Key Typed" events.
      */
-    public static Observable<KeyTypedEvent> keyTyped(Observable<InputEvent> source) {
+    public static Observable<KeyTypedEvent> keyTyped(Observable<? extends InputEvent> source) {
         return filtered(source, KeyTypedEvent.class);
     }
 
@@ -278,7 +278,7 @@ public enum GdxEventSource { ; // no instances
      * @param source The observable of input events to use as source.
      * @return An observable emitting "Key Up" events.
      */
-    public static Observable<KeyUpEvent> keyUp(Observable<InputEvent> source) {
+    public static Observable<KeyUpEvent> keyUp(Observable<? extends InputEvent> source) {
         return filtered(source, KeyUpEvent.class);
     }
 
@@ -287,11 +287,11 @@ public enum GdxEventSource { ; // no instances
      * @param source The observable of input events to use as source.
      * @return An observable emitting "Key Down" events.
      */
-    public static Observable<KeyDownEvent> keyDown(Observable<InputEvent> source) {
+    public static Observable<KeyDownEvent> keyDown(Observable<? extends InputEvent> source) {
         return filtered(source, KeyDownEvent.class);
     }
   
-    private static <U, T extends U> Observable<T> filtered(Observable<U> source, final Class<T> clazz) {
+    private static <U, T extends U> Observable<T> filtered(Observable<? extends U> source, final Class<T> clazz) {
         return source.filter(new Func1<U, Boolean>() {
             @Override
             public Boolean call(U event) {
