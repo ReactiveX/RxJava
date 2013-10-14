@@ -40,6 +40,13 @@ public final class OperationTimeout {
         private final TimeUnit timeUnit;
         private final Scheduler scheduler;
 
+        private Timeout(Observable<? extends T> source, long timeout, TimeUnit timeUnit, Scheduler scheduler) {
+            this.source = source;
+            this.timeout = timeout;
+            this.timeUnit = timeUnit;
+            this.scheduler = scheduler;
+        }
+
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
             final AtomicBoolean terminated = new AtomicBoolean(false);
@@ -116,13 +123,6 @@ public final class OperationTimeout {
             composite.add(serial);
             serial.setSubscription(schedule.call());
             return composite;
-        }
-
-        private Timeout(Observable<? extends T> source, long timeout, TimeUnit timeUnit, Scheduler scheduler) {
-            this.source = source;
-            this.timeout = timeout;
-            this.timeUnit = timeUnit;
-            this.scheduler = scheduler;
         }
     }
 }
