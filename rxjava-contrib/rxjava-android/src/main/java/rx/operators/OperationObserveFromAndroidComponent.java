@@ -61,9 +61,11 @@ public class OperationObserveFromAndroidComponent {
         }
 
         private void log(String message) {
-            Log.d(LOG_TAG, "componentRef = " + componentRef);
-            Log.d(LOG_TAG, "observerRef = " + observerRef);
-            Log.d(LOG_TAG, message);
+            if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
+                Log.d(LOG_TAG, "componentRef = " + componentRef);
+                Log.d(LOG_TAG, "observerRef = " + observerRef);
+                Log.d(LOG_TAG, message);
+            }
         }
 
         protected abstract boolean isComponentValid(AndroidComponent component);
