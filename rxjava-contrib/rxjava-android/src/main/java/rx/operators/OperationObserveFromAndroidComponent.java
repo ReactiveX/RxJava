@@ -44,10 +44,10 @@ public class OperationObserveFromAndroidComponent {
     }
 
     public static <T> Observable<T> observeFromAndroidComponent(Observable<T> source, Activity activity) {
-        return Observable.create(new OnSubscribeActivity<T>(source, activity));
+        return Observable.create(new OnSubscribeBase<T, Activity>(source, activity));
     }
 
-    private static abstract class OnSubscribeBase<T, AndroidComponent> implements Observable.OnSubscribeFunc<T> {
+    private static class OnSubscribeBase<T, AndroidComponent> implements Observable.OnSubscribeFunc<T> {
 
         private static final String LOG_TAG = OperationObserveFromAndroidComponent.class.getSimpleName();
 
@@ -68,7 +68,9 @@ public class OperationObserveFromAndroidComponent {
             }
         }
 
-        protected abstract boolean isComponentValid(AndroidComponent component);
+        protected boolean isComponentValid(AndroidComponent component) {
+            return true;
+        }
 
         @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
@@ -145,18 +147,6 @@ public class OperationObserveFromAndroidComponent {
         @Override
         protected boolean isComponentValid(android.support.v4.app.Fragment fragment) {
             return fragment.isAdded();
-        }
-    }
-
-    private static final class OnSubscribeActivity<T> extends OnSubscribeBase<T, Activity> {
-
-        private OnSubscribeActivity(Observable<T> source, Activity activity) {
-            super(source, activity);
-        }
-
-        @Override
-        protected boolean isComponentValid(Activity activity) {
-            return !activity.isFinishing();
         }
     }
 
@@ -286,36 +276,6 @@ public class OperationObserveFromAndroidComponent {
             source.onNext(1);
 
             when(mockFragment.isAdded()).thenReturn(false);
-            source.onError(new Exception());
-
-            verify(mockObserver).onNext(1);
-            verify(mockObserver, never()).onError(any(Exception.class));
-        }
-
-        @Test
-        public void isDoesNotForwardOnNextOnCompletedSequenceIfActivityIsFinishing() {
-            PublishSubject<Integer> source = PublishSubject.create();
-            OperationObserveFromAndroidComponent.observeFromAndroidComponent(source, mockActivity).subscribe(mockObserver);
-
-            source.onNext(1);
-
-            when(mockActivity.isFinishing()).thenReturn(true);
-            source.onNext(2);
-            source.onNext(3);
-            source.onCompleted();
-
-            verify(mockObserver).onNext(1);
-            verify(mockObserver, never()).onCompleted();
-        }
-
-        @Test
-        public void itDoesNotForwardOnErrorIfActivityIsFinishing() {
-            PublishSubject<Integer> source = PublishSubject.create();
-            OperationObserveFromAndroidComponent.observeFromAndroidComponent(source, mockActivity).subscribe(mockObserver);
-
-            source.onNext(1);
-
-            when(mockActivity.isFinishing()).thenReturn(true);
             source.onError(new Exception());
 
             verify(mockObserver).onNext(1);
