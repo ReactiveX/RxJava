@@ -28,61 +28,7 @@ import rx.concurrency.Schedulers;
 import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
-import rx.operators.OperationAll;
-import rx.operators.OperationAny;
-import rx.operators.OperationAverage;
-import rx.operators.OperationBuffer;
-import rx.operators.OperationCache;
-import rx.operators.OperationCast;
-import rx.operators.OperationCombineLatest;
-import rx.operators.OperationConcat;
-import rx.operators.OperationDebounce;
-import rx.operators.OperationDefaultIfEmpty;
-import rx.operators.OperationDefer;
-import rx.operators.OperationDematerialize;
-import rx.operators.OperationDistinct;
-import rx.operators.OperationDistinctUntilChanged;
-import rx.operators.OperationElementAt;
-import rx.operators.OperationFilter;
-import rx.operators.OperationFinally;
-import rx.operators.OperationFirstOrDefault;
-import rx.operators.OperationGroupBy;
-import rx.operators.OperationInterval;
-import rx.operators.OperationMap;
-import rx.operators.OperationMaterialize;
-import rx.operators.OperationMerge;
-import rx.operators.OperationMergeDelayError;
-import rx.operators.OperationMulticast;
-import rx.operators.OperationObserveOn;
-import rx.operators.OperationOnErrorResumeNextViaFunction;
-import rx.operators.OperationOnErrorResumeNextViaObservable;
-import rx.operators.OperationOnErrorReturn;
-import rx.operators.OperationOnExceptionResumeNextViaObservable;
-import rx.operators.OperationParallel;
-import rx.operators.OperationRetry;
-import rx.operators.OperationSample;
-import rx.operators.OperationScan;
-import rx.operators.OperationSkip;
-import rx.operators.OperationSkipLast;
-import rx.operators.OperationSkipWhile;
-import rx.operators.OperationSubscribeOn;
-import rx.operators.OperationSum;
-import rx.operators.OperationSwitch;
-import rx.operators.OperationSynchronize;
-import rx.operators.OperationTake;
-import rx.operators.OperationTakeLast;
-import rx.operators.OperationTakeUntil;
-import rx.operators.OperationTakeWhile;
-import rx.operators.OperationThrottleFirst;
-import rx.operators.OperationTimestamp;
-import rx.operators.OperationToObservableFuture;
-import rx.operators.OperationToObservableIterable;
-import rx.operators.OperationToObservableList;
-import rx.operators.OperationToObservableSortedList;
-import rx.operators.OperationWindow;
-import rx.operators.OperationZip;
-import rx.operators.SafeObservableSubscription;
-import rx.operators.SafeObserver;
+import rx.operators.*;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
@@ -4505,6 +4451,32 @@ public class Observable<T> {
      */
     public Observable<T> ignoreElements() {
         return filter(alwaysFalse());
+    }
+
+    /**
+     * Returns either the observable sequence or an TimeoutException if timeout elapses.
+     * @param timeout
+     *                  The timeout duration
+     * @param timeUnit
+     *                  The time unit of the timeout
+     * @param scheduler
+     *                  The scheduler to run the timeout timers on.
+     * @return The source sequence with a TimeoutException in case of a timeout.
+     */
+    public Observable<T> timeout(long timeout, TimeUnit timeUnit, Scheduler scheduler) {
+        return create(OperationTimeout.timeout(this, timeout, timeUnit, scheduler));
+    }
+
+    /**
+     * Returns either the observable sequence or an TimeoutException if timeout elapses.
+     * @param timeout
+     *                  The timeout duration
+     * @param timeUnit
+     *                  The time unit of the timeout
+     * @return The source sequence with a TimeoutException in case of a timeout.
+     */
+    public Observable<T> timeout(long timeout, TimeUnit timeUnit) {
+        return create(OperationTimeout.timeout(this, timeout, timeUnit, Schedulers.threadPoolForComputation()));
     }
 
     /**
