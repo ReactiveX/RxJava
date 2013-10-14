@@ -79,7 +79,6 @@ public class OperationObserveFromAndroidComponent {
                         observerRef.onCompleted();
                     } else {
                         log("onComplete: target component released or detached; dropping message");
-                        releaseReferences();
                     }
                 }
 
@@ -89,7 +88,6 @@ public class OperationObserveFromAndroidComponent {
                         observerRef.onError(e);
                     } else {
                         log("onError: target component released or detached; dropping message");
-                        releaseReferences();
                     }
                 }
 
@@ -99,7 +97,6 @@ public class OperationObserveFromAndroidComponent {
                         observerRef.onNext(args);
                     } else {
                         log("onNext: target component released or detached; dropping message");
-                        releaseReferences();
                     }
                 }
             });
