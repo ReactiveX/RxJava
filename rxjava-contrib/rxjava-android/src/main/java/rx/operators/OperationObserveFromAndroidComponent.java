@@ -24,9 +24,14 @@ import rx.subjects.PublishSubject;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.os.Looper;
 import android.util.Log;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class OperationObserveFromAndroidComponent {
 
@@ -47,8 +52,8 @@ public class OperationObserveFromAndroidComponent {
         private static final String LOG_TAG = OperationObserveFromAndroidComponent.class.getSimpleName();
 
         private final Observable<T> source;
-        private volatile AndroidComponent componentRef;
-        private volatile Observer<? super T> observerRef;
+        private AndroidComponent componentRef;
+        private Observer<? super T> observerRef;
 
         private OnSubscribeBase(Observable<T> source, AndroidComponent component) {
             this.source = source;
@@ -65,6 +70,7 @@ public class OperationObserveFromAndroidComponent {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
+            assertUiThread();
             observerRef = observer;
             final Subscription sourceSub = source.observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<T>() {
                 @Override
@@ -110,6 +116,12 @@ public class OperationObserveFromAndroidComponent {
         private void releaseReferences() {
             observerRef = null;
             componentRef = null;
+        }
+
+        private void assertUiThread() {
+            if (Looper.getMainLooper() != Looper.myLooper()) {
+                throw new IllegalStateException("Observers must subscribe from the main UI thread, but was " + Thread.currentThread());
+            }
         }
     }
 
@@ -169,6 +181,21 @@ public class OperationObserveFromAndroidComponent {
         public void setupMocks() {
             MockitoAnnotations.initMocks(this);
             when(mockFragment.isAdded()).thenReturn(true);
+        }
+
+        @Test
+        public void itThrowsIfObserverSubscribesFromBackgroundThread() throws Exception {
+            final Future<Object> future = Executors.newSingleThreadExecutor().submit(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    OperationObserveFromAndroidComponent.observeFromAndroidComponent(
+                            mockObservable, mockFragment).subscribe(mockObserver);
+                    return null;
+                }
+            });
+            future.get(1, TimeUnit.SECONDS);
+            verify(mockObserver).onError(any(IllegalStateException.class));
+            verifyNoMoreInteractions(mockObserver);
         }
 
         @Test
