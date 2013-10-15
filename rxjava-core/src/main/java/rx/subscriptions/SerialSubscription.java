@@ -30,14 +30,18 @@ public class SerialSubscription implements Subscription {
 
     @Override
     public void unsubscribe() {
+        Subscription toUnsubscribe = null;
         synchronized (gate) {
             if (!unsubscribed) {
                 if (subscription != null) {
-                    subscription.unsubscribe();
+                    toUnsubscribe = subscription;
                     subscription = null;
                 }
                 unsubscribed = true;
             }
+        }
+        if (toUnsubscribe != null) {
+            toUnsubscribe.unsubscribe();
         }
     }
 
@@ -48,15 +52,19 @@ public class SerialSubscription implements Subscription {
     }
 
     public void setSubscription(Subscription subscription) {
+        Subscription toUnsubscribe = null;
         synchronized (gate) {
             if (!unsubscribed) {
                 if (this.subscription != null) {
-                    this.subscription.unsubscribe();
+                    toUnsubscribe = this.subscription;
                 }
                 this.subscription = subscription;
             } else {
-                subscription.unsubscribe();
+                toUnsubscribe = subscription;
             }
+        }
+        if (toUnsubscribe != null) {
+            toUnsubscribe.unsubscribe();
         }
     }
 }
