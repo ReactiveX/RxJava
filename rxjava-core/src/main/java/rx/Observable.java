@@ -28,7 +28,62 @@ import rx.concurrency.Schedulers;
 import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
-import rx.operators.*;
+import rx.operators.OperationAll;
+import rx.operators.OperationAny;
+import rx.operators.OperationAverage;
+import rx.operators.OperationBuffer;
+import rx.operators.OperationCache;
+import rx.operators.OperationCast;
+import rx.operators.OperationCombineLatest;
+import rx.operators.OperationConcat;
+import rx.operators.OperationDebounce;
+import rx.operators.OperationDefaultIfEmpty;
+import rx.operators.OperationDefer;
+import rx.operators.OperationDematerialize;
+import rx.operators.OperationDistinct;
+import rx.operators.OperationDistinctUntilChanged;
+import rx.operators.OperationElementAt;
+import rx.operators.OperationFilter;
+import rx.operators.OperationFinally;
+import rx.operators.OperationFirstOrDefault;
+import rx.operators.OperationGroupBy;
+import rx.operators.OperationInterval;
+import rx.operators.OperationMap;
+import rx.operators.OperationMaterialize;
+import rx.operators.OperationMerge;
+import rx.operators.OperationMergeDelayError;
+import rx.operators.OperationMulticast;
+import rx.operators.OperationObserveOn;
+import rx.operators.OperationOnErrorResumeNextViaFunction;
+import rx.operators.OperationOnErrorResumeNextViaObservable;
+import rx.operators.OperationOnErrorReturn;
+import rx.operators.OperationOnExceptionResumeNextViaObservable;
+import rx.operators.OperationParallel;
+import rx.operators.OperationRetry;
+import rx.operators.OperationSample;
+import rx.operators.OperationScan;
+import rx.operators.OperationSkip;
+import rx.operators.OperationSkipLast;
+import rx.operators.OperationSkipWhile;
+import rx.operators.OperationSubscribeOn;
+import rx.operators.OperationSum;
+import rx.operators.OperationSwitch;
+import rx.operators.OperationSynchronize;
+import rx.operators.OperationTake;
+import rx.operators.OperationTakeLast;
+import rx.operators.OperationTakeUntil;
+import rx.operators.OperationTakeWhile;
+import rx.operators.OperationThrottleFirst;
+import rx.operators.OperationTimeout;
+import rx.operators.OperationTimestamp;
+import rx.operators.OperationToObservableFuture;
+import rx.operators.OperationToObservableIterable;
+import rx.operators.OperationToObservableList;
+import rx.operators.OperationToObservableSortedList;
+import rx.operators.OperationWindow;
+import rx.operators.OperationZip;
+import rx.operators.SafeObservableSubscription;
+import rx.operators.SafeObserver;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
@@ -1801,8 +1856,6 @@ public class Observable<T> {
      * its {@link Observer}s; it invokes {@code onCompleted} or {@code onError} only once; and it never invokes {@code onNext} after invoking either {@code onCompleted} or {@code onError}.
      * {@code synchronize} enforces this, and the Observable it returns invokes {@code onNext} and {@code onCompleted} or {@code onError} synchronously.
      * 
-     * @param <T>
-     *            the type of item emitted by the source Observable
      * @return an Observable that is a chronologically well-behaved version of the source
      *         Observable, and that synchronously notifies its {@link Observer}s
      */
@@ -1822,8 +1875,6 @@ public class Observable<T> {
      *
      * @param lock
      *            The lock object to synchronize each observer call on
-     * @param <T>
-     *            the type of item emitted by the source Observable
      * @return an Observable that is a chronologically well-behaved version of the source
      *         Observable, and that synchronously notifies its {@link Observer}s
      */
@@ -3140,7 +3191,7 @@ public class Observable<T> {
     /**
      * Determines whether an observable sequence contains a specified element.
      *
-     * @param value
+     * @param element
      *            The element to search in the sequence.
      * @return an Observable that emits if the element is in the source sequence.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228965(v=vs.103).aspx">MSDN: Observable.Contains</a>
