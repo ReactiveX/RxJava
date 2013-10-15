@@ -49,7 +49,7 @@ public class OperationObserveFromAndroidComponent {
 
     private static class OnSubscribeBase<T, AndroidComponent> implements Observable.OnSubscribeFunc<T> {
 
-        private static final String LOG_TAG = OperationObserveFromAndroidComponent.class.getSimpleName();
+        private static final String LOG_TAG = "AndroidObserver";
 
         private final Observable<T> source;
         private AndroidComponent componentRef;
