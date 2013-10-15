@@ -104,6 +104,7 @@ public final class OperationNext {
     private static class NextObserver<T> implements Observer<Notification<? extends T>> {
         private final BlockingQueue<Notification<? extends T>> buf = new ArrayBlockingQueue<Notification<? extends T>>(1);
         private final AtomicBoolean waiting = new AtomicBoolean(false);
+        private volatile boolean completed = false;
 
         @Override
         public void onCompleted() {
@@ -139,7 +140,11 @@ public final class OperationNext {
         public boolean isCompleted(boolean rethrowExceptionIfExists) {
             Notification<? extends T> lastItem = buf.peek();
             if (lastItem == null) {
-                return false;
+                // Fixed issue #383 testOnErrorViaHasNext fails sometimes.
+                // If the buf is empty, there are two cases:
+                // 1. The next item has not been emitted yet.
+                // 2. The error or completed notification is removed in takeNext method.
+                return completed;
             }
 
             if (lastItem.isOnError()) {
@@ -157,10 +162,12 @@ public final class OperationNext {
             Notification<? extends T> next = buf.take();
 
             if (next.isOnError()) {
+                completed = true;
                 throw Exceptions.propagate(next.getThrowable());
             }
 
             if (next.isOnCompleted()) {
+                completed = true;
                 throw new IllegalStateException("Observable is completed");
             }
 
