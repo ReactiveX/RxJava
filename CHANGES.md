@@ -1,5 +1,12 @@
 # RxJava Releases #
 
+### Version 0.14.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.4%22)) ###
+
+* [Issue 428](https://github.com/Netflix/RxJava/issues/428) Fix: buffer() using TimeAndSizeBasedChunks incorrectly forces thread into interrupted state
+* [Pull 435](https://github.com/Netflix/RxJava/pull/435) rx-apache-http recognizes "Transfer-Encoding: chunked" as an HTTP stream
+* [Pull 437](https://github.com/Netflix/RxJava/pull/437) Fixes: Scheduler and Merge
+
+
 ### Version 0.14.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.3%22)) ###
 
 * [Pull 407](https://github.com/Netflix/RxJava/pull/407) Operator: RefCount
