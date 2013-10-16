@@ -1,0 +1,19 @@
+apply plugin: 'kotlin'
+apply plugin: 'osgi'
+
+dependencies {
+    compile project(':rxjava-core')
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:0.6.+'
+    provided 'junit:junit-dep:4.10'
+    provided 'org.mockito:mockito-core:1.8.5'
+}
+
+jar {
+    manifest {
+        name = 'rxjava-kotlin'
+        instruction 'Bundle-Vendor', 'Netflix'
+        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
+        instruction 'Fragment-Host', 'com.netflix.rxjava.core'
+    }
+}
