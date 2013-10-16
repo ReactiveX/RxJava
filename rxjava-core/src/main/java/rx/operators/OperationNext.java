@@ -234,7 +234,7 @@ public final class OperationNext {
         }
 
         @Test
-        public void testOnErrorViaHasNext() throws Throwable {
+        public void testOnErrorViaHasNext() throws InterruptedException, ExecutionException {
             Subject<String, String> obs = PublishSubject.create();
 
             Iterator<String> it = next(obs).iterator();
@@ -253,15 +253,10 @@ public final class OperationNext {
             obs.onError(new TestException());
 
             // this should not throw an exception but instead just return false
-            try {
-                assertFalse(it.hasNext());
-            } catch (Throwable e) {
-                fail("should not have received exception");
-                e.printStackTrace();
-            }
+            assertFalse(it.hasNext());
         }
 
-        private Future<String> nextAsync(final Iterator<String> it) throws Throwable {
+        private Future<String> nextAsync(final Iterator<String> it) {
 
             return executor.submit(new Callable<String>() {
 
