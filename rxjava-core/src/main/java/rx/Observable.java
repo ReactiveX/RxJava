@@ -61,6 +61,7 @@ import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallel;
+import rx.operators.OperationReduce;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
@@ -3514,7 +3515,9 @@ public class Observable<T> {
      * This technique, which is called "reduce" or "aggregate" here, is sometimes called "fold,"
      * "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance,
      * has an <code>inject</code> method that does a similar operation on lists.
-     * 
+     * <p>
+     * Note: You can't reduce an empty sequence without an initial value.
+     *
      * @param accumulator
      *            An accumulator function to be invoked on each item emitted by the source
      *            Observable, whose result will be used in the next accumulator call
@@ -3524,7 +3527,7 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public Observable<T> reduce(Func2<T, T, T> accumulator) {
-        return create(OperationScan.scan(this, accumulator)).takeLast(1);
+        return create(OperationReduce.reduce(this, accumulator));
     }
 
     /**
@@ -3777,7 +3780,7 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator) {
-        return create(OperationScan.scan(this, initialValue, accumulator)).takeLast(1);
+        return create(OperationReduce.reduce(this, initialValue, accumulator));
     }
 
     /**
