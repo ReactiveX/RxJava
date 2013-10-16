@@ -32,6 +32,9 @@ import kotlin.concurrent.thread
 import rx.Observable.OnSubscribeFunc
 import rx.lang.kotlin.BasicKotlinTests.AsyncObservable
 
+/**
+ * This class use plain Kotlin without extensions from the language adaptor
+ */
 public class BasicKotlinTests {
 
     [Mock] var a: ScriptAssertion? = null

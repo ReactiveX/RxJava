@@ -30,7 +30,9 @@ import rx.Notification
 import rx.Subscription
 import kotlin.concurrent.thread
 
-
+/**
+ * This class contains tests using the extension functions provided by the language adaptor.
+ */
 public class ExtensionTests {
     [Mock] var a: ScriptAssertion? = null
     [Mock] var w: Observable<Int>? = null
