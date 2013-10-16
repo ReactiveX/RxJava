@@ -33,6 +33,7 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -473,6 +474,27 @@ public class TestSchedulers {
             fail("Error: " + observer.error.get().getMessage());
         }
     }
+    
+    @Test
+    public void testRecursion() {
+        TestScheduler s = new TestScheduler();
+
+        final AtomicInteger counter = new AtomicInteger(0);
+
+        Subscription subscription = s.schedule(new Action1<Action0>() {
+
+            @Override
+            public void call(Action0 self) {
+                counter.incrementAndGet();
+                System.out.println("counter: " + counter.get());
+                self.call();
+            }
+
+        });
+        subscription.unsubscribe();
+        assertEquals(0, counter.get());
+    }
+    
 
     /**
      * Used to determine if onNext is being invoked concurrently.

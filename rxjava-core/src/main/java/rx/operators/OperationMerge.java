@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,6 +37,10 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 
 /**
  * Flattens a list of Observables into one Observable sequence, without any transformation.
@@ -93,6 +98,7 @@ public final class OperationMerge {
 
                     @Override
                     public void unsubscribe() {
+                        System.out.println("unsubscribe from merge");
                         unsubscribed = true;
                     }
 
@@ -125,6 +131,7 @@ public final class OperationMerge {
         }
 
         public Subscription onSubscribe(Observer<? super T> actualObserver) {
+            CompositeSubscription completeSubscription = new CompositeSubscription();
 
             /**
              * We must synchronize a merge because we subscribe to multiple sequences in parallel that will each be emitting.
@@ -134,15 +141,16 @@ public final class OperationMerge {
              * Bug report: https://github.com/Netflix/RxJava/issues/200
              */
             SafeObservableSubscription subscription = new SafeObservableSubscription(ourSubscription);
+            completeSubscription.add(subscription);
             SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(actualObserver, subscription);
 
             /**
              * Subscribe to the parent Observable to get to the children Observables
              */
-            sequences.subscribe(new ParentObserver(synchronizedObserver));
+            completeSubscription.add(sequences.subscribe(new ParentObserver(synchronizedObserver)));
 
             /* return our subscription to allow unsubscribing */
-            return subscription;
+            return completeSubscription;
         }
 
         /**
@@ -381,6 +389,70 @@ public final class OperationMerge {
         }
 
         @Test
+        public void testUnSubscribeObservableOfObservables() throws InterruptedException {
+
+            final AtomicBoolean unsubscribed = new AtomicBoolean();
+            final CountDownLatch latch = new CountDownLatch(1);
+
+            Observable<Observable<Long>> source = Observable.create(new OnSubscribeFunc<Observable<Long>>() {
+
+                @Override
+                public Subscription onSubscribe(final Observer<? super Observable<Long>> observer) {
+                    // verbose on purpose so I can track the inside of it
+                    final Subscription s = Subscriptions.create(new Action0() {
+
+                        @Override
+                        public void call() {
+                            System.out.println("*** unsubscribed");
+                            unsubscribed.set(true);
+                        }
+
+                    });
+
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+                            while (!unsubscribed.get()) {
+                                observer.onNext(Observable.from(1L, 2L));
+                            }
+                            System.out.println("Done looping after unsubscribe: " + unsubscribed.get());
+                            observer.onCompleted();
+
+                            // mark that the thread is finished
+                            latch.countDown();
+                        }
+                    }).start();
+
+                    return s;
+                };
+
+            });
+
+            final AtomicInteger count = new AtomicInteger();
+            Observable.create(merge(source)).take(6).toBlockingObservable().forEach(new Action1<Long>() {
+
+                @Override
+                public void call(Long v) {
+                    System.out.println("Value: " + v);
+                    int c = count.incrementAndGet();
+                    if (c > 6) {
+                        fail("Should be only 6");
+                    }
+
+                }
+            });
+
+            latch.await(1000, TimeUnit.MILLISECONDS);
+
+            System.out.println("unsubscribed: " + unsubscribed.get());
+
+            assertTrue(unsubscribed.get());
+
+        }
+
+        @Test
         public void testMergeArrayWithThreading() {
             final TestASynchronousObservable o1 = new TestASynchronousObservable();
             final TestASynchronousObservable o2 = new TestASynchronousObservable();
@@ -453,9 +525,9 @@ public final class OperationMerge {
             // so I'm unfortunately reverting to using a Thread.sleep to allow the process scheduler time
             // to make sure after o1.onNextBeingSent and o2.onNextBeingSent are hit that the following
             // onNext is invoked.
-            
+
             Thread.sleep(300);
-            
+
             try { // in try/finally so threads are released via latch countDown even if assertion fails
                 assertEquals(1, concurrentCounter.get());
             } finally {
