@@ -15,8 +15,11 @@
  */
 package rx.operators;
 
+import static org.junit.Assert.assertFalse;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
@@ -37,6 +40,7 @@ import rx.util.Closings;
 import rx.util.Opening;
 import rx.util.Openings;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
@@ -629,6 +633,40 @@ public final class OperationBuffer extends ChunkedOperation {
             inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
             inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
             inOrder.verify(observer, Mockito.times(1)).onCompleted();
+        }
+
+        @Test
+        public void testLongTimeAction() throws InterruptedException {
+            final CountDownLatch latch = new CountDownLatch(1);
+            LongTimeAction action = new LongTimeAction(latch);
+            Observable.from(1).buffer(10, TimeUnit.MILLISECONDS, 10)
+                    .subscribe(action);
+            latch.await();
+            assertFalse(action.fail);
+        }
+
+        private static class LongTimeAction implements Action1<List<Integer>> {
+
+            CountDownLatch latch;
+            boolean fail = false;
+
+            public LongTimeAction(CountDownLatch latch) {
+                this.latch = latch;
+            }
+
+            @Override
+            public void call(List<Integer> t1) {
+                try {
+                    if (fail) {
+                        return;
+                    }
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    fail = true;
+                } finally {
+                    latch.countDown();
+                }
+            }
         }
 
         private List<String> list(String... args) {
