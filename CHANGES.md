@@ -1,5 +1,9 @@
 # RxJava Releases #
 
+### Version 0.14.5 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.5%22)) ###
+
+* [Pull 438](https://github.com/Netflix/RxJava/pull/438) Kotlin Language Adaptor
+
 ### Version 0.14.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.4%22)) ###
 
 * [Issue 428](https://github.com/Netflix/RxJava/issues/428) Fix: buffer() using TimeAndSizeBasedChunks incorrectly forces thread into interrupted state
