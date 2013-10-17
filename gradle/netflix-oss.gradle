@@ -1,1 +1,6 @@
 apply from: 'http://artifacts.netflix.com/gradle-netflix-local/artifactory.gradle'
+
+gradle.projectsLoaded {
+  project(':language-adaptors:rxjava-kotlin').artifactoryPublish.enabled = false
+  project(':language-adaptors:rxjava-kotlin').build.enabled = false
+}
