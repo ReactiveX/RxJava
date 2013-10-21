@@ -16,14 +16,12 @@
 package rx.operators;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
@@ -133,7 +131,7 @@ public final class OperationReduce {
                 private volatile R acc = initialValue;
 
                 @Override
-                public synchronized void onNext(T args) {
+                public void onNext(T args) {
                     acc = accumulatorFunction.call(acc, args);
                 }
 
@@ -169,7 +167,7 @@ public final class OperationReduce {
                 private volatile boolean isSourceSequenceEmpty = true;
 
                 @Override
-                public synchronized void onNext(T args) {
+                public void onNext(T args) {
                     if (isSourceSequenceEmpty) {
                         acc = args;
                         isSourceSequenceEmpty = false;
@@ -217,11 +215,10 @@ public final class OperationReduce {
             Observer<String> observer = mock(Observer.class);
             m.subscribe(observer);
 
-            verify(observer, never()).onError(any(Throwable.class));
-            verify(observer, times(1)).onNext("0123");
-            verify(observer, times(1)).onNext(anyString());
-            verify(observer, times(1)).onCompleted();
-            verify(observer, never()).onError(any(Throwable.class));
+            InOrder inOrder = inOrder(observer);
+            inOrder.verify(observer, times(1)).onNext("0123");
+            inOrder.verify(observer, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
         }
 
         @Test
@@ -242,11 +239,10 @@ public final class OperationReduce {
             Observer<Integer> observer = mock(Observer.class);
             m.subscribe(observer);
 
-            verify(observer, never()).onError(any(Throwable.class));
-            verify(observer, times(1)).onNext(6);
-            verify(observer, times(1)).onNext(anyInt());
-            verify(observer, times(1)).onCompleted();
-            verify(observer, never()).onError(any(Throwable.class));
+            InOrder inOrder = inOrder(observer);
+            inOrder.verify(observer, times(1)).onNext(6);
+            inOrder.verify(observer, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
         }
 
         @Test
@@ -267,11 +263,10 @@ public final class OperationReduce {
             Observer<Integer> observer = mock(Observer.class);
             m.subscribe(observer);
 
-            verify(observer, never()).onError(any(Throwable.class));
-            verify(observer, times(1)).onNext(1);
-            verify(observer, times(1)).onNext(anyInt());
-            verify(observer, times(1)).onCompleted();
-            verify(observer, never()).onError(any(Throwable.class));
+            InOrder inOrder = inOrder(observer);
+            inOrder.verify(observer, times(1)).onNext(1);
+            inOrder.verify(observer, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
         }
 
         @Test
@@ -292,10 +287,10 @@ public final class OperationReduce {
             Observer<String> observer = mock(Observer.class);
             m.subscribe(observer);
 
-            verify(observer, times(1)).onNext("1");
-            verify(observer, times(1)).onNext(anyString());
-            verify(observer, times(1)).onCompleted();
-            verify(observer, never()).onError(any(Throwable.class));
+            InOrder inOrder = inOrder(observer);
+            inOrder.verify(observer, times(1)).onNext("1");
+            inOrder.verify(observer, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
         }
 
         @Test
@@ -316,10 +311,10 @@ public final class OperationReduce {
             Observer<Integer> observer = mock(Observer.class);
             m.subscribe(observer);
 
-            verify(observer, never()).onNext(anyInt());
-            verify(observer, never()).onCompleted();
-            verify(observer, times(1)).onError(
+            InOrder inOrder = inOrder(observer);
+            inOrder.verify(observer, times(1)).onError(
                     any(UnsupportedOperationException.class));
+            inOrder.verifyNoMoreInteractions();
         }
     }
 
