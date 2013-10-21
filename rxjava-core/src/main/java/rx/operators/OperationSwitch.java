@@ -34,6 +34,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.concurrency.TestScheduler;
+import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -78,9 +79,15 @@ public final class OperationSwitch {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
-            SafeObservableSubscription subscription = new SafeObservableSubscription();
-            subscription.wrap(sequences.subscribe(new SwitchObserver<T>(observer, subscription)));
-            return subscription;
+            SafeObservableSubscription parent;
+            parent = new SafeObservableSubscription();
+
+            MultipleAssignmentSubscription child;
+            child = new MultipleAssignmentSubscription();
+
+            parent.wrap(sequences.subscribe(new SwitchObserver<T>(observer, parent, child)));
+
+            return new CompositeSubscription(parent, child);
         }
     }
 
@@ -89,16 +96,17 @@ public final class OperationSwitch {
         private final Object                         gate;
         private final Observer<? super T>            observer;
         private final SafeObservableSubscription     parent;
-        private final MultipleAssignmentSubscription innerSubscription;
+        private final MultipleAssignmentSubscription child;
         private long                                 latest;
         private boolean                              stopped;
         private boolean                              hasLatest;
 
-        public SwitchObserver(Observer<? super T> observer, SafeObservableSubscription parent) {
+        public SwitchObserver(Observer<? super T> observer, SafeObservableSubscription parent,
+                MultipleAssignmentSubscription child) {
             this.observer = observer;
             this.parent = parent;
+            this.child = child;
             this.gate = new Object();
-            this.innerSubscription = new MultipleAssignmentSubscription();
         }
 
         @Override
@@ -106,7 +114,7 @@ public final class OperationSwitch {
             final long id;
             synchronized (gate) {
                 id = ++latest;
-                hasLatest = true;
+                this.hasLatest = true;
             }
 
             final SafeObservableSubscription sub;
@@ -116,7 +124,7 @@ public final class OperationSwitch {
                 public void onNext(T args) {
                     synchronized (gate) {
                         if (latest == id) {
-                            observer.onNext(args);
+                            SwitchObserver.this.observer.onNext(args);
                         }
                     }
                 }
@@ -126,8 +134,8 @@ public final class OperationSwitch {
                     synchronized (gate) {
                         sub.unsubscribe();
                         if (latest == id) {
-                            observer.onError(e);
-                            parent.unsubscribe();
+                            SwitchObserver.this.observer.onError(e);
+                            SwitchObserver.this.parent.unsubscribe();
                         }
                     }
                 }
@@ -137,12 +145,12 @@ public final class OperationSwitch {
                     synchronized (gate) {
                         sub.unsubscribe();
                         if (latest == id) {
-                            hasLatest = false;
+                            SwitchObserver.this.hasLatest = false;
                         }
 
                         if (stopped) {
-                            observer.onCompleted();
-                            parent.unsubscribe();
+                            SwitchObserver.this.observer.onCompleted();
+                            SwitchObserver.this.parent.unsubscribe();
                         }
 
                     }
@@ -150,26 +158,26 @@ public final class OperationSwitch {
 
             }));
 
-            innerSubscription.setSubscription(sub);
+            this.child.setSubscription(sub);
         }
 
         @Override
         public void onError(Throwable e) {
             synchronized (gate) {
-                observer.onError(e);
+                this.observer.onError(e);
             }
 
-            parent.unsubscribe();
+            this.parent.unsubscribe();
         }
 
         @Override
         public void onCompleted() {
             synchronized (gate) {
-                innerSubscription.unsubscribe();
-                stopped = true;
-                if (!hasLatest) {
-                    observer.onCompleted();
-                    parent.unsubscribe();
+                this.child.unsubscribe();
+                this.stopped = true;
+                if (!this.hasLatest) {
+                    this.observer.onCompleted();
+                    this.parent.unsubscribe();
                 }
             }
         }
