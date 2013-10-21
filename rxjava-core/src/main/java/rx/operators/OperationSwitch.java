@@ -173,7 +173,6 @@ public final class OperationSwitch {
         @Override
         public void onCompleted() {
             synchronized (gate) {
-                this.child.unsubscribe();
                 this.stopped = true;
                 if (!this.hasLatest) {
                     this.observer.onCompleted();
