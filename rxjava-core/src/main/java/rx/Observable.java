@@ -74,6 +74,7 @@ import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
+import rx.operators.OperationTimeout;
 import rx.operators.OperationTimestamp;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
@@ -1855,8 +1856,6 @@ public class Observable<T> {
      * its {@link Observer}s; it invokes {@code onCompleted} or {@code onError} only once; and it never invokes {@code onNext} after invoking either {@code onCompleted} or {@code onError}.
      * {@code synchronize} enforces this, and the Observable it returns invokes {@code onNext} and {@code onCompleted} or {@code onError} synchronously.
      * 
-     * @param <T>
-     *            the type of item emitted by the source Observable
      * @return an Observable that is a chronologically well-behaved version of the source
      *         Observable, and that synchronously notifies its {@link Observer}s
      */
@@ -1876,8 +1875,6 @@ public class Observable<T> {
      *
      * @param lock
      *            The lock object to synchronize each observer call on
-     * @param <T>
-     *            the type of item emitted by the source Observable
      * @return an Observable that is a chronologically well-behaved version of the source
      *         Observable, and that synchronously notifies its {@link Observer}s
      */
@@ -3194,7 +3191,7 @@ public class Observable<T> {
     /**
      * Determines whether an observable sequence contains a specified element.
      *
-     * @param value
+     * @param element
      *            The element to search in the sequence.
      * @return an Observable that emits if the element is in the source sequence.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228965(v=vs.103).aspx">MSDN: Observable.Contains</a>
@@ -4505,6 +4502,32 @@ public class Observable<T> {
      */
     public Observable<T> ignoreElements() {
         return filter(alwaysFalse());
+    }
+
+    /**
+     * Returns either the observable sequence or an TimeoutException if timeout elapses.
+     * @param timeout
+     *                  The timeout duration
+     * @param timeUnit
+     *                  The time unit of the timeout
+     * @param scheduler
+     *                  The scheduler to run the timeout timers on.
+     * @return The source sequence with a TimeoutException in case of a timeout.
+     */
+    public Observable<T> timeout(long timeout, TimeUnit timeUnit, Scheduler scheduler) {
+        return create(OperationTimeout.timeout(this, timeout, timeUnit, scheduler));
+    }
+
+    /**
+     * Returns either the observable sequence or an TimeoutException if timeout elapses.
+     * @param timeout
+     *                  The timeout duration
+     * @param timeUnit
+     *                  The time unit of the timeout
+     * @return The source sequence with a TimeoutException in case of a timeout.
+     */
+    public Observable<T> timeout(long timeout, TimeUnit timeUnit) {
+        return create(OperationTimeout.timeout(this, timeout, timeUnit, Schedulers.threadPoolForComputation()));
     }
 
     /**
