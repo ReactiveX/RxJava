@@ -1,5 +1,12 @@
 # RxJava Releases #
 
+### Version 0.14.6 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.6%22)) ###
+
+* [Pull 441](https://github.com/Netflix/RxJava/pull/441) Fixed the issue that 'take' does not call 'onError'
+* [Pull 443](https://github.com/Netflix/RxJava/pull/443) OperationSwitch notify onComplete() too early.
+* [Pull 434](https://github.com/Netflix/RxJava/pull/434) Timeout operator and SerialSubscription
+* [Pull 447](https://github.com/Netflix/RxJava/pull/447) Caching the result of 'isInternalImplementation'
+
 ### Version 0.14.5 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.5%22)) ###
 
 * [Pull 438](https://github.com/Netflix/RxJava/pull/438) Kotlin Language Adaptor
