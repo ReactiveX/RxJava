@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -128,6 +129,8 @@ import rx.util.functions.Function;
  * @param <T>
  */
 public class Observable<T> {
+
+    private final static ConcurrentHashMap<Class, Boolean> internalClassMap = new ConcurrentHashMap<Class, Boolean>();
 
     /**
      * Executed when 'subscribe' is invoked.
@@ -4545,11 +4548,21 @@ public class Observable<T> {
             return true;
         }
         // prevent double-wrapping (yeah it happens)
-        if (o instanceof SafeObserver)
+        if (o instanceof SafeObserver) {
             return true;
-        // we treat the following package as "internal" and don't wrap it
-        Package p = o.getClass().getPackage(); // it can be null
-        return p != null && p.getName().startsWith("rx.operators");
+        }
+
+        Class<?> clazz = o.getClass();
+        if (internalClassMap.containsKey(clazz)) {
+            //don't need to do reflection
+            return internalClassMap.get(clazz);
+        } else {
+            // we treat the following package as "internal" and don't wrap it
+            Package p = o.getClass().getPackage(); // it can be null
+            Boolean isInternal = (p != null && p.getName().startsWith("rx.operators"));
+            internalClassMap.put(clazz, isInternal);
+            return isInternal;
+        }
     }
 
 }
