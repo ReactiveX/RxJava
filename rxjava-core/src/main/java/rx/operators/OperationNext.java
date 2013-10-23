@@ -17,11 +17,11 @@ package rx.operators;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -70,6 +70,7 @@ public final class OperationNext {
         private final NextObserver<? extends T> observer;
         private T next;
         private boolean hasNext = true;
+        private boolean isNextConsumed = true;
 
         private NextIterator(NextObserver<? extends T> observer) {
             this.observer = observer;
@@ -80,23 +81,34 @@ public final class OperationNext {
             // Since an iterator should not be used in different thread,
             // so we do not need any synchronization.
             if(hasNext == false) {
+                // the iterator has reached the end.
                 return false;
             }
+            if(isNextConsumed == false) {
+                // next has not been used yet.
+                return true;
+            }
+            return moveToNext();
+        }
+
+        private boolean moveToNext() {
             try {
                 Notification<? extends T> nextNotification = observer.takeNext();
                 if(nextNotification.isOnNext()) {
+                    isNextConsumed = false;
                     next = nextNotification.getValue();
                     return true;
                 }
                 // If an observable is completed or fails,
-                // next always return null and hasNext always return false.
-                next = null;
+                // hasNext() always return false.
                 hasNext = false;
                 if(nextNotification.isOnCompleted()) {
                     return false;
                 }
-                // onError
-                throw Exceptions.propagate(nextNotification.getThrowable());
+                if(nextNotification.isOnError()) {
+                    throw Exceptions.propagate(nextNotification.getThrowable());
+                }
+                throw new IllegalStateException("Should not reach here");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw Exceptions.propagate(e);
@@ -105,7 +117,13 @@ public final class OperationNext {
 
         @Override
         public T next() {
-            return next;
+            if(hasNext()) {
+                isNextConsumed = true;
+                return next;
+            }
+            else {
+                throw new NoSuchElementException("No more elements");
+            }
         }
 
         @Override
@@ -197,11 +215,21 @@ public final class OperationNext {
 
             obs.onCompleted();
             assertFalse(it.hasNext());
-            assertNull(it.next());
+            try {
+                it.next();
+                fail("At the end of an iterator should throw a NoSuchElementException");
+            }
+            catch(NoSuchElementException e){
+            }
 
-            // If the observable is completed, hasNext always returns false and next always returns null.
+            // If the observable is completed, hasNext always returns false and next always throw a NoSuchElementException.
             assertFalse(it.hasNext());
-            assertNull(it.next());
+            try {
+                it.next();
+                fail("At the end of an iterator should throw a NoSuchElementException");
+            }
+            catch(NoSuchElementException e){
+            }
         }
 
         @Test
@@ -221,9 +249,14 @@ public final class OperationNext {
                 // successful
             }
 
-            // After the observable fails, hasNext always returns false and next always returns null.
+            // After the observable fails, hasNext always returns false and next always throw a NoSuchElementException.
             assertFalse(it.hasNext());
-            assertNull(it.next());
+            try {
+                it.next();
+                fail("At the end of an iterator should throw a NoSuchElementException");
+            }
+            catch(NoSuchElementException e){
+            }
         }
 
         @Test
@@ -232,11 +265,21 @@ public final class OperationNext {
            Iterator<String> it = next(obs).iterator();
 
            assertFalse(it.hasNext());
-           assertNull(it.next());
+           try {
+               it.next();
+               fail("At the end of an iterator should throw a NoSuchElementException");
+           }
+           catch(NoSuchElementException e){
+           }
 
-           // If the observable is completed, hasNext always returns false and next always returns null.
+           // If the observable is completed, hasNext always returns false and next always throw a NoSuchElementException.
            assertFalse(it.hasNext());
-           assertNull(it.next());
+           try {
+               it.next();
+               fail("At the end of an iterator should throw a NoSuchElementException");
+           }
+           catch(NoSuchElementException e){
+           }
         }
 
         @Test
@@ -253,9 +296,14 @@ public final class OperationNext {
                 // successful
             }
 
-            // After the observable fails, hasNext always returns false and next always returns null.
+            // After the observable fails, hasNext always returns false and next always throw a NoSuchElementException.
             assertFalse(it.hasNext());
-            assertNull(it.next());
+            try {
+                it.next();
+                fail("At the end of an iterator should throw a NoSuchElementException");
+            }
+            catch(NoSuchElementException e){
+            }
         }
 
         @Test
@@ -273,9 +321,53 @@ public final class OperationNext {
                 // successful
             }
 
-            // After the observable fails, hasNext always returns false and next always returns null.
+            // After the observable fails, hasNext always returns false and next always throw a NoSuchElementException.
             assertFalse(it.hasNext());
-            assertNull(it.next());
+            try {
+                it.next();
+                fail("At the end of an iterator should throw a NoSuchElementException");
+            }
+            catch(NoSuchElementException e){
+            }
+        }
+
+        @Test
+        public void testNextWithOnlyUsingNextMethod() {
+            Subject<String, String> obs = PublishSubject.create();
+            Iterator<String> it = next(obs).iterator();
+            fireOnNextInNewThread(obs, "one");
+            assertEquals("one", it.next());
+
+            fireOnNextInNewThread(obs, "two");
+            assertEquals("two", it.next());
+
+            obs.onCompleted();
+            try {
+                it.next();
+                fail("At the end of an iterator should throw a NoSuchElementException");
+            }
+            catch(NoSuchElementException e){
+            }
+        }
+
+        @Test
+        public void testNextWithCallingHasNextMultipleTimes() {
+            Subject<String, String> obs = PublishSubject.create();
+            Iterator<String> it = next(obs).iterator();
+            fireOnNextInNewThread(obs, "one");
+            assertTrue(it.hasNext());
+            assertTrue(it.hasNext());
+            assertTrue(it.hasNext());
+            assertTrue(it.hasNext());
+            assertEquals("one", it.next());
+
+            obs.onCompleted();
+            try {
+                it.next();
+                fail("At the end of an iterator should throw a NoSuchElementException");
+            }
+            catch(NoSuchElementException e){
+            }
         }
 
         @SuppressWarnings("serial")
@@ -342,6 +434,8 @@ public final class OperationNext {
             assertTrue("expected that c [" + c + "] is higher than or equal to " + COUNT, c >= COUNT);
 
             assertTrue(it.hasNext());
+            int d = it.next();
+            assertTrue(d > c);
 
             // shut down the thread
             running.set(false);
