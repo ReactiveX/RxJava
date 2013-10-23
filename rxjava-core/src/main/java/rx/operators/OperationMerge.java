@@ -98,7 +98,6 @@ public final class OperationMerge {
 
                     @Override
                     public void unsubscribe() {
-                        System.out.println("unsubscribe from merge");
                         unsubscribed = true;
                     }
 
