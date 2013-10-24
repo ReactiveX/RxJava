@@ -75,6 +75,7 @@ import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
+import rx.operators.OperationTimeInterval;
 import rx.operators.OperationTimeout;
 import rx.operators.OperationTimestamp;
 import rx.operators.OperationToObservableFuture;
@@ -97,6 +98,7 @@ import rx.util.Closing;
 import rx.util.OnErrorNotImplementedException;
 import rx.util.Opening;
 import rx.util.Range;
+import rx.util.TimeInterval;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -4531,6 +4533,30 @@ public class Observable<T> {
      */
     public Observable<T> timeout(long timeout, TimeUnit timeUnit) {
         return create(OperationTimeout.timeout(this, timeout, timeUnit, Schedulers.threadPoolForComputation()));
+    }
+
+    /**
+     * Records the time interval between consecutive elements in an observable sequence.
+     *
+     * @return An observable sequence with time interval information on elements.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212107(v=vs.103).aspx">MSDN: Observable.TimeInterval</a>
+     */
+    public Observable<TimeInterval<T>> timeInterval() {
+        return create(OperationTimeInterval.timeInterval(this));
+    }
+
+    /**
+     * Records the time interval between consecutive elements in an observable
+     * sequence, using the specified scheduler to compute time intervals.
+     *
+     * @param scheduler
+     *            Scheduler used to compute time intervals.
+     *
+     * @return An observable sequence with time interval information on elements.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212107(v=vs.103).aspx">MSDN: Observable.TimeInterval</a>
+     */
+    public Observable<TimeInterval<T>> timeInterval(Scheduler scheduler) {
+        return create(OperationTimeInterval.timeInterval(this, scheduler));
     }
 
     /**
