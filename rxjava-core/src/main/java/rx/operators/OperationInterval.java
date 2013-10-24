@@ -35,6 +35,7 @@ import rx.concurrency.TestScheduler;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
+import rx.util.functions.Func1;
 
 /**
  * Returns an observable sequence that produces a value after each period.
@@ -68,6 +69,7 @@ public final class OperationInterval {
         private final Scheduler scheduler;
         
         private long currentValue;
+        private boolean errorOccurred;
 
         private Interval(long period, TimeUnit unit, Scheduler scheduler) {
             this.period = period;
@@ -80,8 +82,15 @@ public final class OperationInterval {
             final Subscription wrapped = scheduler.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {
-                    observer.onNext(currentValue);
-                    currentValue++;
+                    if (!errorOccurred) {
+                        try {
+                            observer.onNext(currentValue);
+                            currentValue++;
+                        } catch (Throwable t) {
+                            errorOccurred = true;
+                            observer.onError(t);
+                        }
+                    }
                 }
             }, period, period, unit);
             
@@ -89,7 +98,9 @@ public final class OperationInterval {
                 @Override
                 public void call() {
                     wrapped.unsubscribe();
-                    observer.onCompleted();
+                    if (!errorOccurred) {
+                        observer.onCompleted();
+                    }
                 }
             });
         }
@@ -110,7 +121,7 @@ public final class OperationInterval {
         
         @Test
         public void testInterval() {
-            Observable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler));
+            Observable<Long> w = Observable.create(interval(1, TimeUnit.SECONDS, scheduler));
             Subscription sub = w.subscribe(observer);
             
             verify(observer, never()).onNext(0L);
@@ -134,8 +145,34 @@ public final class OperationInterval {
         }
         
         @Test
+        public void testIntervalWithError() {
+            Observable<Long> w = Observable.create(interval(1, TimeUnit.SECONDS, scheduler)).map(new Func1<Long, Long>() {
+                @Override
+                public Long call(Long value) {
+                    if (value == 2L) {
+                        throw new RuntimeException("error!");
+                    }
+                    return value;
+                }
+            });
+            w.subscribe(observer);
+            InOrder inOrder = inOrder(observer);
+
+            scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
+            inOrder.verify(observer, times(1)).onNext(0L);
+            inOrder.verify(observer, times(1)).onNext(1L);
+            verify(observer, never()).onCompleted();
+            verify(observer, never()).onError(any(Throwable.class));
+
+            scheduler.advanceTimeTo(3, TimeUnit.SECONDS);
+            inOrder.verify(observer, never()).onNext(anyLong());
+            inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
+            verify(observer, never()).onCompleted();
+        }
+
+        @Test
         public void testWithMultipleSubscribersStartingAtSameTime() {
-            Observable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler));
+            Observable<Long> w = Observable.create(interval(1, TimeUnit.SECONDS, scheduler));
             Subscription sub1 = w.subscribe(observer);
             Subscription sub2 = w.subscribe(observer2);
 
@@ -174,7 +211,7 @@ public final class OperationInterval {
 
         @Test
         public void testWithMultipleStaggeredSubscribers() {
-            Observable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler));
+            Observable<Long> w = Observable.create(interval(1, TimeUnit.SECONDS, scheduler));
             Subscription sub1 = w.subscribe(observer);
 
             verify(observer, never()).onNext(anyLong());
@@ -214,7 +251,7 @@ public final class OperationInterval {
 
         @Test
         public void testWithMultipleStaggeredSubscribersAndPublish() {
-            ConnectableObservable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler)).publish();
+            ConnectableObservable<Long> w = Observable.create(interval(1, TimeUnit.SECONDS, scheduler)).publish();
             Subscription sub1 = w.subscribe(observer);
             w.connect();
             
