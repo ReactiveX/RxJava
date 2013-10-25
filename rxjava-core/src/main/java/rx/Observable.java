@@ -1013,17 +1013,9 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits a single item and then completes in a specified scheduler.
+     * Returns an Observable that emits a single item and then completes on a specified scheduler.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.png">
-     * <p>
-     * To convert any object into an Observable that emits that object, pass that object into the
-     * <code>just</code> method.
-     * <p>
-     * This is similar to the {@link #from(java.lang.Object[])} method, except that
-     * <code>from()</code> will convert an {@link Iterable} object into an Observable that emits
-     * each of the items in the Iterable, one at a time, while the <code>just()</code> method
-     * converts an Iterable into an Observable that emits the entire Iterable as a single item.
+     * This is a scheduler version of {@link Observable#just(Object)}.
      *
      * @param value
      *            the item to pass to the {@link Observer}'s {@link Observer#onNext onNext} method
@@ -1031,7 +1023,7 @@ public class Observable<T> {
      *            the scheduler to send the single element on
      * @param <T>
      *            the type of that item
-     * @return an Observable that emits a single item and then completes
+     * @return an Observable that emits a single item and then completes on a specified scheduler.
      */
     public static <T> Observable<T> just(T value, Scheduler scheduler) {
         return just(value).observeOn(scheduler);
