@@ -17,6 +17,7 @@ package rx.apache.http.consumers;
 
 import java.io.IOException;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
@@ -52,15 +53,27 @@ public class ResponseConsumerDelegate extends AbstractAsyncResponseConsumer<Http
     @Override
     protected void onResponseReceived(HttpResponse response) throws HttpException, IOException {
         // when we receive the response with headers we evaluate what type of consumer we want
-        if (response.getFirstHeader("Content-Type").getValue().contains("text/event-stream")) {
-            // use 'contains' instead of equals since Content-Type can contain additional information
-            // such as charset ... see here: http://www.w3.org/International/O-HTTP-charset
+        if (responseIsStreamLike(response)) {
             consumer = new ResponseConsumerEventStream(observer, subscription);
         } else {
             consumer = new ResponseConsumerBasic(observer, subscription);
         }
         // forward 'response' to actual consumer
         consumer._onResponseReceived(response);
+    }
+
+    private boolean responseIsStreamLike(HttpResponse response) {
+        final Header contentType = response.getFirstHeader("Content-Type");
+        // use 'contains' instead of equals since Content-Type can contain additional information
+        // such as charset ... see here: http://www.w3.org/International/O-HTTP-charset
+        if (contentType != null && contentType.getValue().contains("text/event-stream")) {
+            return true;
+        }
+        final Header transferEncoding = response.getFirstHeader("Transfer-Encoding");
+        if (transferEncoding != null && transferEncoding.getValue().equals("chunked")) {
+            return true;
+        }
+        return false;
     }
 
     @Override

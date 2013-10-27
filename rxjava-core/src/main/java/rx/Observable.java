@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -74,6 +75,7 @@ import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
+import rx.operators.OperationTimeout;
 import rx.operators.OperationTimestamp;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
@@ -127,6 +129,8 @@ import rx.util.functions.Function;
  * @param <T>
  */
 public class Observable<T> {
+
+    private final static ConcurrentHashMap<Class, Boolean> internalClassMap = new ConcurrentHashMap<Class, Boolean>();
 
     /**
      * Executed when 'subscribe' is invoked.
@@ -1855,8 +1859,6 @@ public class Observable<T> {
      * its {@link Observer}s; it invokes {@code onCompleted} or {@code onError} only once; and it never invokes {@code onNext} after invoking either {@code onCompleted} or {@code onError}.
      * {@code synchronize} enforces this, and the Observable it returns invokes {@code onNext} and {@code onCompleted} or {@code onError} synchronously.
      * 
-     * @param <T>
-     *            the type of item emitted by the source Observable
      * @return an Observable that is a chronologically well-behaved version of the source
      *         Observable, and that synchronously notifies its {@link Observer}s
      */
@@ -1876,8 +1878,6 @@ public class Observable<T> {
      *
      * @param lock
      *            The lock object to synchronize each observer call on
-     * @param <T>
-     *            the type of item emitted by the source Observable
      * @return an Observable that is a chronologically well-behaved version of the source
      *         Observable, and that synchronously notifies its {@link Observer}s
      */
@@ -3194,7 +3194,7 @@ public class Observable<T> {
     /**
      * Determines whether an observable sequence contains a specified element.
      *
-     * @param value
+     * @param element
      *            The element to search in the sequence.
      * @return an Observable that emits if the element is in the source sequence.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228965(v=vs.103).aspx">MSDN: Observable.Contains</a>
@@ -4508,6 +4508,32 @@ public class Observable<T> {
     }
 
     /**
+     * Returns either the observable sequence or an TimeoutException if timeout elapses.
+     * @param timeout
+     *                  The timeout duration
+     * @param timeUnit
+     *                  The time unit of the timeout
+     * @param scheduler
+     *                  The scheduler to run the timeout timers on.
+     * @return The source sequence with a TimeoutException in case of a timeout.
+     */
+    public Observable<T> timeout(long timeout, TimeUnit timeUnit, Scheduler scheduler) {
+        return create(OperationTimeout.timeout(this, timeout, timeUnit, scheduler));
+    }
+
+    /**
+     * Returns either the observable sequence or an TimeoutException if timeout elapses.
+     * @param timeout
+     *                  The timeout duration
+     * @param timeUnit
+     *                  The time unit of the timeout
+     * @return The source sequence with a TimeoutException in case of a timeout.
+     */
+    public Observable<T> timeout(long timeout, TimeUnit timeUnit) {
+        return create(OperationTimeout.timeout(this, timeout, timeUnit, Schedulers.threadPoolForComputation()));
+    }
+
+    /**
      * Whether a given {@link Function} is an internal implementation inside rx.* packages or not.
      * <p>
      * For why this is being used see https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
@@ -4522,11 +4548,21 @@ public class Observable<T> {
             return true;
         }
         // prevent double-wrapping (yeah it happens)
-        if (o instanceof SafeObserver)
+        if (o instanceof SafeObserver) {
             return true;
-        // we treat the following package as "internal" and don't wrap it
-        Package p = o.getClass().getPackage(); // it can be null
-        return p != null && p.getName().startsWith("rx.operators");
+        }
+
+        Class<?> clazz = o.getClass();
+        if (internalClassMap.containsKey(clazz)) {
+            //don't need to do reflection
+            return internalClassMap.get(clazz);
+        } else {
+            // we treat the following package as "internal" and don't wrap it
+            Package p = o.getClass().getPackage(); // it can be null
+            Boolean isInternal = (p != null && p.getName().startsWith("rx.operators"));
+            internalClassMap.put(clazz, isInternal);
+            return isInternal;
+        }
     }
 
 }

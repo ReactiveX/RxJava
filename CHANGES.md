@@ -1,5 +1,23 @@
 # RxJava Releases #
 
+### Version 0.14.6 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.6%22)) ###
+
+* [Pull 441](https://github.com/Netflix/RxJava/pull/441) Fixed the issue that 'take' does not call 'onError'
+* [Pull 443](https://github.com/Netflix/RxJava/pull/443) OperationSwitch notify onComplete() too early.
+* [Pull 434](https://github.com/Netflix/RxJava/pull/434) Timeout operator and SerialSubscription
+* [Pull 447](https://github.com/Netflix/RxJava/pull/447) Caching the result of 'isInternalImplementation'
+
+### Version 0.14.5 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.5%22)) ###
+
+* [Pull 438](https://github.com/Netflix/RxJava/pull/438) Kotlin Language Adaptor
+
+### Version 0.14.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.4%22)) ###
+
+* [Issue 428](https://github.com/Netflix/RxJava/issues/428) Fix: buffer() using TimeAndSizeBasedChunks incorrectly forces thread into interrupted state
+* [Pull 435](https://github.com/Netflix/RxJava/pull/435) rx-apache-http recognizes "Transfer-Encoding: chunked" as an HTTP stream
+* [Pull 437](https://github.com/Netflix/RxJava/pull/437) Fixes: Scheduler and Merge
+
+
 ### Version 0.14.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.3%22)) ###
 
 * [Pull 407](https://github.com/Netflix/RxJava/pull/407) Operator: RefCount

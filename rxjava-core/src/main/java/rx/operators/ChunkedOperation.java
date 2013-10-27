@@ -187,8 +187,11 @@ public class ChunkedOperation {
                 return;
             }
 
-            subscription.unsubscribe();
+            // Fixed issue 428.
+            // As unsubscribe will cancel the Future, and the currrent thread's interrupt status
+            // will be set. So we need to emit the chunk before unsubscribe.
             super.emitChunk(chunk);
+            subscription.unsubscribe();
             createChunk();
         }
 

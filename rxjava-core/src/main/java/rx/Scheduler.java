@@ -27,8 +27,11 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import rx.concurrency.TestScheduler;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -83,23 +86,23 @@ public abstract class Scheduler {
      * Schedules a cancelable action to be executed periodically.
      * This default implementation schedules recursively and waits for actions to complete (instead of potentially executing
      * long-running actions concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
-     *
-     * @param state 
+     * 
+     * @param state
      *            State to pass into the action.
-     * @param action 
+     * @param action
      *            The action to execute periodically.
-     * @param initialDelay 
+     * @param initialDelay
      *            Time to wait before executing the action for the first time.
-     * @param period 
+     * @param period
      *            The time interval to wait each time in between executing the action.
-     * @param unit 
+     * @param unit
      *            The time unit the interval above is given in.
      * @return A subscription to be able to unsubscribe from action.
      */
     public <T> Subscription schedulePeriodically(T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long initialDelay, long period, TimeUnit unit) {
         final long periodInNanos = unit.toNanos(period);
         final AtomicBoolean complete = new AtomicBoolean();
-  
+
         final Func2<Scheduler, T, Subscription> recursiveAction = new Func2<Scheduler, T, Subscription>() {
             @Override
             public Subscription call(Scheduler scheduler, T state0) {
@@ -128,7 +131,7 @@ public abstract class Scheduler {
             }
         });
     }
-    
+
     /**
      * Schedules a cancelable action to be executed at dueTime.
      * 
@@ -150,6 +153,40 @@ public abstract class Scheduler {
         }
     }
 
+    /**
+     * Schedules an action and receives back an action for recursive execution.
+     * 
+     * @param action
+     *            action
+     * @return a subscription to be able to unsubscribe from action.
+     */
+    public Subscription schedule(final Action1<Action0> action) {
+        final CompositeSubscription parentSubscription = new CompositeSubscription();
+        final MultipleAssignmentSubscription childSubscription = new MultipleAssignmentSubscription();
+        parentSubscription.add(childSubscription);
+
+        final Func2<Scheduler, Func2, Subscription> parentAction = new Func2<Scheduler, Func2, Subscription>() {
+
+            @Override
+            public Subscription call(final Scheduler scheduler, final Func2 parentAction) {
+                action.call(new Action0() {
+
+                    @Override
+                    public void call() {
+                        if (!parentSubscription.isUnsubscribed()) {
+                            childSubscription.setSubscription(scheduler.schedule(parentAction, parentAction));
+                        }
+                    }
+
+                });
+                return childSubscription;
+            }
+        };
+
+        parentSubscription.add(schedule(parentAction, parentAction));
+
+        return parentSubscription;
+    }
 
     /**
      * Schedules an action to be executed.
@@ -187,17 +224,16 @@ public abstract class Scheduler {
         }, delayTime, unit);
     }
 
-
     /**
      * Schedules an action to be executed periodically.
      * 
-     * @param action 
+     * @param action
      *            The action to execute periodically.
-     * @param initialDelay 
+     * @param initialDelay
      *            Time to wait before executing the action for the first time.
-     * @param period 
+     * @param period
      *            The time interval to wait each time in between executing the action.
-     * @param unit 
+     * @param unit
      *            The time unit the interval above is given in.
      * @return A subscription to be able to unsubscribe from action.
      */
@@ -230,39 +266,41 @@ public abstract class Scheduler {
     }
 
     public static class UnitTest {
-        @SuppressWarnings("unchecked") // mocking is unchecked, unfortunately
+        @SuppressWarnings("unchecked")
+        // mocking is unchecked, unfortunately
         @Test
         public void testPeriodicScheduling() {
             final Func1<Long, Void> calledOp = mock(Func1.class);
-            
+
             final TestScheduler scheduler = new TestScheduler();
             Subscription subscription = scheduler.schedulePeriodically(new Action0() {
-                @Override public void call() {
+                @Override
+                public void call() {
                     System.out.println(scheduler.now());
                     calledOp.call(scheduler.now());
                 }
             }, 1, 2, TimeUnit.SECONDS);
-            
+
             verify(calledOp, never()).call(anyLong());
 
             InOrder inOrder = Mockito.inOrder(calledOp);
-            
+
             scheduler.advanceTimeBy(999L, TimeUnit.MILLISECONDS);
             inOrder.verify(calledOp, never()).call(anyLong());
 
             scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
             inOrder.verify(calledOp, times(1)).call(1000L);
-            
+
             scheduler.advanceTimeBy(1999L, TimeUnit.MILLISECONDS);
             inOrder.verify(calledOp, never()).call(3000L);
-            
+
             scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
             inOrder.verify(calledOp, times(1)).call(3000L);
-            
+
             scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
             inOrder.verify(calledOp, times(1)).call(5000L);
             inOrder.verify(calledOp, times(1)).call(7000L);
-            
+
             subscription.unsubscribe();
             scheduler.advanceTimeBy(11L, TimeUnit.SECONDS);
             inOrder.verify(calledOp, never()).call(anyLong());
