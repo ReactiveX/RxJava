@@ -18,6 +18,7 @@ TODOs which came up at the meeting with Erik Meijer on 2013-10-11:
 *    There are no examples yet using `async`, but `async` will be used in the course. Write examples and check if everything works as expected when combined with `async`.
 *    Futures: For the moment, just add a Future->Observable converter method to `object Observable`. Later, think if `Future[T] extends Observable[T]`.
 *    Operator `delay`: Once Erik has commented on [this](https://github.com/Netflix/RxJava/pull/384), make sure this operator is added accordingly to RxJava and then to RxScala
+*    add wrappers or aliases for `AsyncSubject<T>`, `BehaviorSubject<T>`, `PublishSubject<T>`, and `ReplaySubject<T>`
 *    go through Erik's code that he showed at the meeting and check if everything can now be done nicely
 *    get Erik's slides from the course and check if they are compatible with the library
 
