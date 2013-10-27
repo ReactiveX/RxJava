@@ -71,6 +71,7 @@ public final class OperationNext {
         private T next;
         private boolean hasNext = true;
         private boolean isNextConsumed = true;
+        private Throwable error = null;
 
         private NextIterator(NextObserver<? extends T> observer) {
             this.observer = observer;
@@ -78,6 +79,10 @@ public final class OperationNext {
 
         @Override
         public boolean hasNext() {
+            if(error != null) {
+                // If any error has already been thrown, throw it again.
+                throw Exceptions.propagate(error);
+            }
             // Since an iterator should not be used in different thread,
             // so we do not need any synchronization.
             if(hasNext == false) {
@@ -106,17 +111,23 @@ public final class OperationNext {
                     return false;
                 }
                 if(nextNotification.isOnError()) {
-                    throw Exceptions.propagate(nextNotification.getThrowable());
+                    error = nextNotification.getThrowable();
+                    throw Exceptions.propagate(error);
                 }
                 throw new IllegalStateException("Should not reach here");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw Exceptions.propagate(e);
+                error = e;
+                throw Exceptions.propagate(error);
             }
         }
 
         @Override
         public T next() {
+            if(error != null) {
+                // If any error has already been thrown, throw it again.
+                throw Exceptions.propagate(error);
+            }
             if(hasNext()) {
                 isNextConsumed = true;
                 return next;
@@ -246,17 +257,9 @@ public final class OperationNext {
                 fail("Expected an TestException");
             }
             catch(TestException e) {
-                // successful
             }
 
-            // After the observable fails, hasNext always returns false and next always throw a NoSuchElementException.
-            assertFalse(it.hasNext());
-            try {
-                it.next();
-                fail("At the end of an iterator should throw a NoSuchElementException");
-            }
-            catch(NoSuchElementException e){
-            }
+            assertErrorAfterObservableFail(it);
         }
 
         @Test
@@ -296,14 +299,7 @@ public final class OperationNext {
                 // successful
             }
 
-            // After the observable fails, hasNext always returns false and next always throw a NoSuchElementException.
-            assertFalse(it.hasNext());
-            try {
-                it.next();
-                fail("At the end of an iterator should throw a NoSuchElementException");
-            }
-            catch(NoSuchElementException e){
-            }
+            assertErrorAfterObservableFail(it);
         }
 
         @Test
@@ -321,13 +317,22 @@ public final class OperationNext {
                 // successful
             }
 
-            // After the observable fails, hasNext always returns false and next always throw a NoSuchElementException.
-            assertFalse(it.hasNext());
+            assertErrorAfterObservableFail(it);
+        }
+
+        private void assertErrorAfterObservableFail(Iterator<String> it) {
+            // After the observable fails, hasNext and next always throw the exception.
+            try {
+                it.hasNext();
+                fail("hasNext should throw a TestException");
+            }
+            catch(TestException e){
+            }
             try {
                 it.next();
-                fail("At the end of an iterator should throw a NoSuchElementException");
+                fail("next should throw a TestException");
             }
-            catch(NoSuchElementException e){
+            catch(TestException e){
             }
         }
 
