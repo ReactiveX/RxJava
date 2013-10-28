@@ -61,7 +61,6 @@ import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallel;
-import rx.operators.OperationReduce;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
@@ -3523,11 +3522,29 @@ public class Observable<T> {
      *            Observable, whose result will be used in the next accumulator call
      * @return an Observable that emits a single item that is the result of accumulating the
      *         output from the source Observable
+     * @throws UnsupportedOperationException
+     *            the Observable is empty
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public Observable<T> reduce(Func2<T, T, T> accumulator) {
-        return create(OperationReduce.reduce(this, accumulator));
+        return create(OperationScan.scan(this, accumulator)).takeLast(1).assertNonEmpty();
+    }
+
+    private Observable<T> assertNonEmpty() {
+        return materialize().map(new Func1<Notification<T>, Notification<T>>() {
+            private boolean isEmpty = true;
+            @Override
+            public Notification<T> call(Notification<T> t1) {
+                if (t1.isOnNext()) {
+                    isEmpty = false;
+                }
+                else if (t1.isOnCompleted() && isEmpty) {
+                    return new Notification<T>(new UnsupportedOperationException("Can not apply on an empty sequence"));
+                }
+                return t1;
+            }
+        }).dematerialize();
     }
 
     /**
@@ -3780,7 +3797,7 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator) {
-        return create(OperationReduce.reduce(this, initialValue, accumulator));
+        return create(OperationScan.scan(this, initialValue, accumulator)).takeLast(1);
     }
 
     /**

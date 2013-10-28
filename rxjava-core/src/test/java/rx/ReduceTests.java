@@ -16,8 +16,13 @@
 package rx;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import rx.CovarianceTest.HorrorMovie;
 import rx.CovarianceTest.Movie;
@@ -103,4 +108,113 @@ public class ReduceTests {
         obs.reduce(chooseSecondMovie);
     }
 
+    @Test
+    public void testReduceIntegersWithInitialValue() {
+        Observable<String> m = Observable.from(1, 2, 3).reduce("0",
+                new Func2<String, Integer, String>() {
+
+                    @Override
+                    public String call(String s, Integer n) {
+                        return s + n;
+                    }
+
+                });
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        m.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("0123");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testReduceIntegersWithoutInitialValue() {
+        Observable<Integer> m = Observable.from(1, 2, 3).reduce(
+                new Func2<Integer, Integer, Integer>() {
+
+                    @Override
+                    public Integer call(Integer t1, Integer t2) {
+                        return t1 + t2;
+                    }
+
+                });
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = mock(Observer.class);
+        m.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(6);
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testReduceIntegersWithoutInitialValueAndOnlyOneValue() {
+        Observable<Integer> m = Observable.from(1).reduce(
+                new Func2<Integer, Integer, Integer>() {
+
+                    @Override
+                    public Integer call(Integer t1, Integer t2) {
+                        return t1 + t2;
+                    }
+
+                });
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = mock(Observer.class);
+        m.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(1);
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testReduceIntegersWithInitialValueAndEmpty() {
+        Observable<String> m = Observable.<Integer> empty().reduce("1",
+                new Func2<String, Integer, String>() {
+
+                    @Override
+                    public String call(String s, Integer n) {
+                        return s + n;
+                    }
+
+                });
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        m.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("1");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testReduceIntegersWithoutInitialValueAndEmpty() {
+        Observable<Integer> m = Observable.<Integer> empty().reduce(
+                new Func2<Integer, Integer, Integer>() {
+
+                    @Override
+                    public Integer call(Integer t1, Integer t2) {
+                        return t1 + t2;
+                    }
+
+                });
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = mock(Observer.class);
+        m.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(
+                any(UnsupportedOperationException.class));
+        inOrder.verifyNoMoreInteractions();
+    }
 }
