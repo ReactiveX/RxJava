@@ -20,6 +20,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
+import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -31,19 +32,18 @@ import rx.operators.SafeObservableSubscription;
 import rx.operators.SafeObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 /**
  * An extension of {@link Observable} that provides blocking operators.
  * <p>
- * You construct a BlockingObservable from an Observable with {@link #from(Observable)} or {@link Observable#toBlockingObservable()} <p>
- * The documentation for this interface makes use of a form of marble diagram that has been
- * modified to illustrate blocking operators. The following legend explains these marble diagrams:
+ * You construct a BlockingObservable from an Observable with {@link #from(Observable)} or {@link Observable#toBlockingObservable()}
+ * <p>
+ * The documentation for this interface makes use of a form of marble diagram that has been modified to illustrate blocking operators. The following legend explains these marble diagrams:
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.legend.png">
  * <p>
- * For more information see the
- * <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">Blocking
- * Observable Operators</a> page at the RxJava Wiki.
+ * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">Blocking Observable Operators</a> page at the RxJava Wiki.
  * 
  * @param <T>
  */
@@ -85,8 +85,7 @@ public class BlockingObservable<T> {
      * Used for protecting against errors being thrown from {@link Observer} implementations and
      * ensuring onNext/onError/onCompleted contract compliance.
      * <p>
-     * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect
-     * calls to user code from within an operator"
+     * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
      */
     private Subscription protectivelyWrapAndSubscribe(Observer<? super T> observer) {
         SafeObservableSubscription subscription = new SafeObservableSubscription();
@@ -99,8 +98,7 @@ public class BlockingObservable<T> {
      * <p>
      * NOTE: This will block even if the Observable is asynchronous.
      * <p>
-     * This is similar to {@link Observable#subscribe(Observer)}, but it blocks. Because it blocks it does
-     * not need the {@link Observer#onCompleted()} or {@link Observer#onError(Throwable)} methods.
+     * This is similar to {@link Observable#subscribe(Observer)}, but it blocks. Because it blocks it does not need the {@link Observer#onCompleted()} or {@link Observer#onError(Throwable)} methods.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
      * 
@@ -328,8 +326,7 @@ public class BlockingObservable<T> {
     /**
      * Returns a {@link Future} representing the single value emitted by an {@link Observable}.
      * <p>
-     * <code>toFuture()</code> throws an exception if the Observable emits more than one item. If
-     * the Observable may emit more than item, use {@link Observable#toList toList()}.toFuture()</code>.
+     * <code>toFuture()</code> throws an exception if the Observable emits more than one item. If the Observable may emit more than item, use {@link Observable#toList toList()}.toFuture()</code>.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
      * 
@@ -353,5 +350,50 @@ public class BlockingObservable<T> {
                 return getIterator();
             }
         };
+    }
+
+    /**
+     * Tries to be as close to org.junit.Assert.assertEquals as it can.
+     * 
+     * @param expected
+     * @param actual
+     */
+    public static <T> void assertObservableEquals(Observable<T> expected, Observable<T> actual) {
+        assertObservableEquals(null, expected, actual);
+    }
+
+    public static <T> void assertObservableEquals(String message, Observable<T> expected, Observable<T> actual) {
+        Func2<? super Notification<T>, ? super Notification<T>, Notification<String>> zipFunction = new Func2<Notification<T>, Notification<T>, Notification<String>>() {
+            @Override
+            public Notification<String> call(Notification<T> expectedNotfication, Notification<T> actualNotification) {
+                if (expectedNotfication.equals(actualNotification))
+                    return new Notification<String>(expectedNotfication.toString());
+                else
+                    return new Notification<String>(new AssertionError("expected:<" + expectedNotfication + "> but was:<"
+                            + actualNotification + ">"));
+            }
+        };
+
+        Func2<Notification<String>, Notification<String>, Notification<String>> accumulator = new Func2<Notification<String>, Notification<String>, Notification<String>>() {
+            @Override
+            public Notification<String> call(Notification<String> a, Notification<String> b) {
+                String message = a.isOnError() ? a.getThrowable().getMessage() : a.getValue();
+                boolean fail = a.isOnError();
+
+                message += "\n\t" + (b.isOnError() ? b.getThrowable().getMessage() : b.getValue());
+                fail |= b.isOnError();
+
+                if (fail)
+                    return new Notification<String>(new AssertionError(message));
+                else
+                    return new Notification<String>(message);
+            }
+        };
+
+        Notification<String> outcome = Observable.zip(expected.materialize(), actual.materialize(), zipFunction).aggregate(accumulator).toBlockingObservable().single();
+
+        if (outcome.isOnError()) {
+            throw new AssertionError((message != null ? message + ": " : "") +"Observables are different\n\t" + outcome.getThrowable().getMessage());
+        }
     }
 }
