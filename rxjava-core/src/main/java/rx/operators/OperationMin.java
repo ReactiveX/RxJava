@@ -33,6 +33,9 @@ import rx.Observer;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
+/**
+ * Returns the minimum element in an observable sequence.
+ */
 public class OperationMin {
 
     public static <T extends Comparable<T>> Observable<T> min(

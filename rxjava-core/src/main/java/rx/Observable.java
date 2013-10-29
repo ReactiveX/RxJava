@@ -52,8 +52,10 @@ import rx.operators.OperationInterval;
 import rx.operators.OperationLast;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
+import rx.operators.OperationMax;
 import rx.operators.OperationMerge;
 import rx.operators.OperationMergeDelayError;
+import rx.operators.OperationMin;
 import rx.operators.OperationMulticast;
 import rx.operators.OperationObserveOn;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
@@ -3629,6 +3631,114 @@ public class Observable<T> {
      */
     public static Observable<Double> averageDoubles(Observable<Double> source) {
         return OperationAverage.averageDoubles(source);
+    }
+
+    /**
+     * Returns the minimum element in an observable sequence.
+     * For an empty source, it causes an {@link UnsupportedOperationException}.
+     *
+     * @param source
+     *            an observable sequence to determine the minimum element of.
+     * @return an observable emitting the minimum element.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229715(v=vs.103).aspx">MSDN: Observable.Min</a>
+     */
+    public static <T extends Comparable<T>> Observable<T> min(Observable<T> source) {
+        return OperationMin.min(source);
+    }
+
+    /**
+     * Returns the minimum element in an observable sequence according to the specified comparator.
+     * For an empty source, it causes an {@link UnsupportedOperationException}.
+     *
+     * @param comparator
+     *            the comparer used to compare elements.
+     * @return an observable emitting the minimum value according to the specified comparator.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229095(v=vs.103).aspx">MSDN: Observable.Min</a>
+     */
+    public Observable<T> min(Comparator<T> comparator) {
+        return OperationMin.min(this, comparator);
+    }
+
+    /**
+     * Returns the elements in an observable sequence with the minimum key value.
+     * For an empty source, it returns an observable emitting an empty List.
+     *
+     * @param selector
+     *            the key selector function.
+     * @return an observable emitting a List of the elements with the minimum key value.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh228970(v=vs.103).aspx">MSDN: Observable.MinBy</a>
+     */
+    public <R extends Comparable<R>> Observable<List<T>> minBy(Func1<T, R> selector) {
+        return OperationMin.minBy(this, selector);
+    }
+
+    /**
+     * Returns the elements in an observable sequence with the minimum key value  according to the specified comparator.
+     * For an empty source, it returns an observable emitting an empty List.
+     *
+     * @param selector
+     *            the key selector function.
+     * @param comparator
+     *            the comparator used to compare key values.
+     * @return an observable emitting a List of the elements with the minimum key value  according to the specified comparator.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh228970(v=vs.103).aspx">MSDN: Observable.MinBy</a>
+     */
+    public <R> Observable<List<T>> minBy(Func1<T, R> selector, Comparator<R> comparator) {
+        return OperationMin.minBy(this, selector, comparator);
+    }
+
+    /**
+     * Returns the maximum element in an observable sequence.
+     * For an empty source, it causes an {@link UnsupportedOperationException}.
+     *
+     * @param source
+     *            an observable sequence to determine the maximum element of.
+     * @return an observable emitting the maximum element.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211837(v=vs.103).aspx">MSDN: Observable.Max</a>
+     */
+    public static <T extends Comparable<T>> Observable<T> max(Observable<T> source) {
+        return OperationMax.max(source);
+    }
+
+    /**
+     * Returns the maximum element in an observable sequence according to the specified comparator.
+     * For an empty source, it causes an {@link UnsupportedOperationException}.
+     *
+     * @param comparator
+     *            the comparer used to compare elements.
+     * @return an observable emitting the maximum value according to the specified comparator.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211635(v=vs.103).aspx">MSDN: Observable.Max</a>
+     */
+    public Observable<T> max(Comparator<T> comparator) {
+        return OperationMax.max(this, comparator);
+    }
+
+    /**
+     * Returns the elements in an observable sequence with the maximum key value.
+     * For an empty source, it returns an observable emitting an empty List.
+     *
+     * @param selector
+     *            the key selector function.
+     * @return an observable emitting a List of the elements with the maximum key value.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229058(v=vs.103).aspx">MSDN: Observable.MaxBy</a>
+     */
+    public <R extends Comparable<R>> Observable<List<T>> maxBy(Func1<T, R> selector) {
+        return OperationMax.maxBy(this, selector);
+    }
+
+    /**
+     * Returns the elements in an observable sequence with the maximum key value  according to the specified comparator.
+     * For an empty source, it returns an observable emitting an empty List.
+     *
+     * @param selector
+     *            the key selector function.
+     * @param comparator
+     *            the comparator used to compare key values.
+     * @return an observable emitting a List of the elements with the maximum key value  according to the specified comparator.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244330(v=vs.103).aspx">MSDN: Observable.MaxBy</a>
+     */
+    public <R> Observable<List<T>> maxBy(Func1<T, R> selector, Comparator<R> comparator) {
+        return OperationMax.maxBy(this, selector, comparator);
     }
 
     /**
