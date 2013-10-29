@@ -1,4 +1,4 @@
-package rx.android;
+package rx.android.observables;
 
 import rx.Observable;
 import rx.operators.OperationObserveFromAndroidComponent;
@@ -6,7 +6,9 @@ import rx.operators.OperationObserveFromAndroidComponent;
 import android.app.Activity;
 import android.app.Fragment;
 
-public class AndroidObservables {
+public final class AndroidObservable {
+
+    private AndroidObservable() {}
 
     public static <T> Observable<T> fromActivity(Activity activity, Observable<T> sourceObservable) {
         return OperationObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, activity);
