@@ -15,9 +15,16 @@
  */
 package rx.subscriptions;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.util.concurrent.Future;
 
+import org.junit.Test;
+
 import rx.Subscription;
+import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action0;
 
 /**
@@ -41,14 +48,14 @@ public class Subscriptions {
      * @return {@link Subscription}
      */
     public static Subscription create(final Action0 unsubscribe) {
-        return new Subscription() {
+        return new SafeObservableSubscription(new Subscription() {
 
             @Override
             public void unsubscribe() {
                 unsubscribe.call();
             }
 
-        };
+        });
     }
 
     /**
@@ -122,4 +129,15 @@ public class Subscriptions {
         public void unsubscribe() {
         }
     };
+
+    public static class UnitTest {
+        @Test
+        public void testUnsubscribeOnlyOnce() {
+            Action0 unsubscribe = mock(Action0.class);
+            Subscription subscription = create(unsubscribe);
+            subscription.unsubscribe();
+            subscription.unsubscribe();
+            verify(unsubscribe, times(1)).call();
+        }
+    }
 }
