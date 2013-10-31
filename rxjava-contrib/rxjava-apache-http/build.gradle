@@ -7,7 +7,7 @@ dependencies {
     compile project(':rxjava-core')
     compile 'org.apache.httpcomponents:httpclient:4.3'
     compile 'org.apache.httpcomponents:httpcore-nio:4.3'
-    compile 'org.apache.httpcomponents:httpasyncclient:4.0-beta4'
+    compile 'org.apache.httpcomponents:httpasyncclient:4.0'
 }
 
 jar {
