@@ -1015,6 +1015,23 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits a single item and then completes on a specified scheduler.
+     * <p>
+     * This is a scheduler version of {@link Observable#just(Object)}.
+     *
+     * @param value
+     *            the item to pass to the {@link Observer}'s {@link Observer#onNext onNext} method
+     * @param scheduler
+     *            the scheduler to send the single element on
+     * @param <T>
+     *            the type of that item
+     * @return an Observable that emits a single item and then completes on a specified scheduler.
+     */
+    public static <T> Observable<T> just(T value, Scheduler scheduler) {
+        return just(value).observeOn(scheduler);
+    }
+
+    /**
      * Flattens a sequence of Observables emitted by an Observable into one Observable, without any
      * transformation.
      * <p>
