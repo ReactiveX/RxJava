@@ -30,6 +30,7 @@ import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.operators.OperationAll;
+import rx.operators.OperationAmb;
 import rx.operators.OperationAny;
 import rx.operators.OperationAverage;
 import rx.operators.OperationBuffer;
@@ -4574,6 +4575,34 @@ public class Observable<T> {
      */
     public Observable<TimeInterval<T>> timeInterval(Scheduler scheduler) {
         return create(OperationTimeInterval.timeInterval(this, scheduler));
+    }
+
+    /**
+     * Propagates the observable sequence that reacts first.
+     *
+     * @param sources
+     *            observable sources competing to react first.
+     *
+     * @return
+     *            an observable sequence that surfaces any of the given sequences, whichever reacted first.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733(v=vs.103).aspx">MSDN: Observable.Amb</a>
+     */
+    public static <T> Observable<T> amb(Observable<? extends T>... sources) {
+        return create(OperationAmb.amb(sources));
+    }
+
+    /**
+     * Propagates the observable sequence that reacts first.
+     *
+     * @param sources
+     *            observable sources competing to react first.
+     *
+     * @return
+     *            an observable sequence that surfaces any of the given sequences, whichever reacted first.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229115(v=vs.103).aspx">MSDN: Observable.Amb</a>
+     */
+    public static <T> Observable<T> amb(Iterable<? extends Observable<? extends T>> sources) {
+        return create(OperationAmb.amb(sources));
     }
 
     /**
