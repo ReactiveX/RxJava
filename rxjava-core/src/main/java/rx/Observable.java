@@ -4580,15 +4580,177 @@ public class Observable<T> {
     /**
      * Propagates the observable sequence that reacts first.
      *
-     * @param sources
-     *            observable sources competing to react first.
-     *
+     * @param o1
+     *            an observable competing to react first.
+     * @param o2
+     *            an observable competing to react first.
      * @return
      *            an observable sequence that surfaces any of the given sequences, whichever reacted first.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733(v=vs.103).aspx">MSDN: Observable.Amb</a>
      */
-    public static <T> Observable<T> amb(Observable<? extends T>... sources) {
-        return create(OperationAmb.amb(sources));
+    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2) {
+        return create(OperationAmb.amb(o1, o2));
+    }
+
+    /**
+     * Propagates the observable sequence that reacts first.
+     *
+     * @param o1
+     *            an observable competing to react first.
+     * @param o2
+     *            an observable competing to react first.
+     * @param o3
+     *            an observable competing to react first.
+     * @return
+     *            an observable sequence that surfaces any of the given sequences, whichever reacted first.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733(v=vs.103).aspx">MSDN: Observable.Amb</a>
+     */
+    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3) {
+        return create(OperationAmb.amb(o1, o2, o3));
+    }
+
+    /**
+     * Propagates the observable sequence that reacts first.
+     *
+     * @param o1
+     *            an observable competing to react first.
+     * @param o2
+     *            an observable competing to react first.
+     * @param o3
+     *            an observable competing to react first.
+     * @param o4
+     *            an observable competing to react first.
+     * @return
+     *            an observable sequence that surfaces any of the given sequences, whichever reacted first.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733(v=vs.103).aspx">MSDN: Observable.Amb</a>
+     */
+    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4) {
+        return create(OperationAmb.amb(o1, o2, o3, o4));
+    }
+
+    /**
+     * Propagates the observable sequence that reacts first.
+     *
+     * @param o1
+     *            an observable competing to react first.
+     * @param o2
+     *            an observable competing to react first.
+     * @param o3
+     *            an observable competing to react first.
+     * @param o4
+     *            an observable competing to react first.
+     * @param o5
+     *            an observable competing to react first.
+     * @return
+     *            an observable sequence that surfaces any of the given sequences, whichever reacted first.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733(v=vs.103).aspx">MSDN: Observable.Amb</a>
+     */
+    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5) {
+        return create(OperationAmb.amb(o1, o2, o3, o4, o5));
+    }
+
+    /**
+     * Propagates the observable sequence that reacts first.
+     *
+     * @param o1
+     *            an observable competing to react first.
+     * @param o2
+     *            an observable competing to react first.
+     * @param o3
+     *            an observable competing to react first.
+     * @param o4
+     *            an observable competing to react first.
+     * @param o5
+     *            an observable competing to react first.
+     * @param o6
+     *            an observable competing to react first.
+     * @return
+     *            an observable sequence that surfaces any of the given sequences, whichever reacted first.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733(v=vs.103).aspx">MSDN: Observable.Amb</a>
+     */
+    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6) {
+        return create(OperationAmb.amb(o1, o2, o3, o4, o5, o6));
+    }
+
+    /**
+     * Propagates the observable sequence that reacts first.
+     *
+     * @param o1
+     *            an observable competing to react first.
+     * @param o2
+     *            an observable competing to react first.
+     * @param o3
+     *            an observable competing to react first.
+     * @param o4
+     *            an observable competing to react first.
+     * @param o5
+     *            an observable competing to react first.
+     * @param o6
+     *            an observable competing to react first.
+     * @param o7
+     *            an observable competing to react first.
+     * @return
+     *            an observable sequence that surfaces any of the given sequences, whichever reacted first.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733(v=vs.103).aspx">MSDN: Observable.Amb</a>
+     */
+    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7) {
+        return create(OperationAmb.amb(o1, o2, o3, o4, o5, o6, o7));
+    }
+
+    /**
+     * Propagates the observable sequence that reacts first.
+     *
+     * @param o1
+     *            an observable competing to react first.
+     * @param o2
+     *            an observable competing to react first.
+     * @param o3
+     *            an observable competing to react first.
+     * @param o4
+     *            an observable competing to react first.
+     * @param o5
+     *            an observable competing to react first.
+     * @param o6
+     *            an observable competing to react first.
+     * @param o7
+     *            an observable competing to react first.
+     * @param o8
+     *            an observable competing to react first.
+     * @return
+     *            an observable sequence that surfaces any of the given sequences, whichever reacted first.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733(v=vs.103).aspx">MSDN: Observable.Amb</a>
+     */
+    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8) {
+        return create(OperationAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8));
+    }
+
+    /**
+     * Propagates the observable sequence that reacts first.
+     *
+     * @param o1
+     *            an observable competing to react first.
+     * @param o2
+     *            an observable competing to react first.
+     * @param o3
+     *            an observable competing to react first.
+     * @param o4
+     *            an observable competing to react first.
+     * @param o5
+     *            an observable competing to react first.
+     * @param o6
+     *            an observable competing to react first.
+     * @param o7
+     *            an observable competing to react first.
+     * @param o8
+     *            an observable competing to react first.
+     * @param o9
+     *            an observable competing to react first.
+     * @return
+     *            an observable sequence that surfaces any of the given sequences, whichever reacted first.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733(v=vs.103).aspx">MSDN: Observable.Amb</a>
+     */
+    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8, Observable<? extends T> o9) {
+        return create(OperationAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8, o9));
     }
 
     /**

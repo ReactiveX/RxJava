@@ -20,7 +20,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,8 +42,88 @@ import rx.util.functions.Action0;
  */
 public class OperationAmb {
 
-    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T>... sources) {
-        return amb(Arrays.asList(sources));
+    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2) {
+        List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
+        sources.add(o1);
+        sources.add(o2);
+        return amb(sources);
+    }
+
+    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3) {
+        List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
+        sources.add(o1);
+        sources.add(o2);
+        sources.add(o3);
+        return amb(sources);
+    }
+
+    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4) {
+        List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
+        sources.add(o1);
+        sources.add(o2);
+        sources.add(o3);
+        sources.add(o4);
+        return amb(sources);
+    }
+
+    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5) {
+        List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
+        sources.add(o1);
+        sources.add(o2);
+        sources.add(o3);
+        sources.add(o4);
+        sources.add(o5);
+        return amb(sources);
+    }
+
+    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6) {
+        List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
+        sources.add(o1);
+        sources.add(o2);
+        sources.add(o3);
+        sources.add(o4);
+        sources.add(o5);
+        sources.add(o6);
+        return amb(sources);
+    }
+
+    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7) {
+        List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
+        sources.add(o1);
+        sources.add(o2);
+        sources.add(o3);
+        sources.add(o4);
+        sources.add(o5);
+        sources.add(o6);
+        sources.add(o7);
+        return amb(sources);
+    }
+
+    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8) {
+        List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
+        sources.add(o1);
+        sources.add(o2);
+        sources.add(o3);
+        sources.add(o4);
+        sources.add(o5);
+        sources.add(o6);
+        sources.add(o7);
+        sources.add(o8);
+        return amb(sources);
+    }
+
+    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8, Observable<? extends T> o9) {
+        List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
+        sources.add(o1);
+        sources.add(o2);
+        sources.add(o3);
+        sources.add(o4);
+        sources.add(o5);
+        sources.add(o6);
+        sources.add(o7);
+        sources.add(o8);
+        sources.add(o9);
+        return amb(sources);
     }
 
     public static <T> OnSubscribeFunc<T> amb(
@@ -170,7 +251,6 @@ public class OperationAmb {
             Observable<String> observable3 = createObservable(new String[] {
                     "3", "33", "333", "3333" }, 3000, null);
 
-            @SuppressWarnings("unchecked")
             Observable<String> o = Observable.create(amb(observable1,
                     observable2, observable3));
 
@@ -200,7 +280,6 @@ public class OperationAmb {
             Observable<String> observable3 = createObservable(new String[] {},
                     3000, new IOException("fake exception"));
 
-            @SuppressWarnings("unchecked")
             Observable<String> o = Observable.create(amb(observable1,
                     observable2, observable3));
 
@@ -228,7 +307,6 @@ public class OperationAmb {
             Observable<String> observable3 = createObservable(new String[] {
                 "3" }, 3000, null);
 
-            @SuppressWarnings("unchecked")
             Observable<String> o = Observable.create(amb(observable1,
                     observable2, observable3));
 
