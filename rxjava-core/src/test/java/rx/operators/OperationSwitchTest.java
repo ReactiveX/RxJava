@@ -1,7 +1,368 @@
 package rx.operators;
 
-import org.junit.Ignore;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InOrder;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
+import rx.concurrency.TestScheduler;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 
-@Ignore("WIP")
+import java.util.concurrent.TimeUnit;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+
 public class OperationSwitchTest {
+
+  private TestScheduler scheduler;
+  private Observer<String> observer;
+
+  @Before
+  @SuppressWarnings("unchecked")
+  public void before() {
+    scheduler = new TestScheduler();
+    observer = mock(Observer.class);
+  }
+
+  @Test
+  public void testSwitchWhenOuterCompleteBeforeInner() {
+    Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+      @Override
+      public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+        publishNext(observer, 50, Observable.create(new Observable.OnSubscribeFunc<String>() {
+          @Override
+          public Subscription onSubscribe(Observer<? super String> observer) {
+            publishNext(observer, 70, "one");
+            publishNext(observer, 100, "two");
+            publishCompleted(observer, 200);
+            return Subscriptions.empty();
+          }
+        }));
+        publishCompleted(observer, 60);
+
+        return Subscriptions.empty();
+      }
+    });
+
+    Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+    sampled.subscribe(observer);
+
+    InOrder inOrder = inOrder(observer);
+
+    scheduler.advanceTimeTo(350, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, times(2)).onNext(anyString());
+    inOrder.verify(observer, times(1)).onCompleted();
+  }
+
+  @Test
+  public void testSwitchWhenInnerCompleteBeforeOuter() {
+    Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+      @Override
+      public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+        publishNext(observer, 10, Observable.create(new Observable.OnSubscribeFunc<String>() {
+          @Override
+          public Subscription onSubscribe(Observer<? super String> observer) {
+            publishNext(observer, 0, "one");
+            publishNext(observer, 10, "two");
+            publishCompleted(observer, 20);
+            return Subscriptions.empty();
+          }
+        }));
+
+        publishNext(observer, 100, Observable.create(new Observable.OnSubscribeFunc<String>() {
+          @Override
+          public Subscription onSubscribe(Observer<? super String> observer) {
+            publishNext(observer, 0, "three");
+            publishNext(observer, 10, "four");
+            publishCompleted(observer, 20);
+            return Subscriptions.empty();
+          }
+        }));
+        publishCompleted(observer, 200);
+
+        return Subscriptions.empty();
+      }
+    });
+
+    Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+    sampled.subscribe(observer);
+
+    InOrder inOrder = inOrder(observer);
+
+    scheduler.advanceTimeTo(150, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, never()).onCompleted();
+    inOrder.verify(observer, times(1)).onNext("one");
+    inOrder.verify(observer, times(1)).onNext("two");
+    inOrder.verify(observer, times(1)).onNext("three");
+    inOrder.verify(observer, times(1)).onNext("four");
+
+    scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, never()).onNext(anyString());
+    inOrder.verify(observer, times(1)).onCompleted();
+  }
+
+  @Test
+  public void testSwitchWithComplete() {
+    Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+      @Override
+      public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+        publishNext(observer, 50, Observable.create(new Observable.OnSubscribeFunc<String>() {
+          @Override
+          public Subscription onSubscribe(Observer<? super String> observer) {
+            publishNext(observer, 60, "one");
+            publishNext(observer, 100, "two");
+            return Subscriptions.empty();
+          }
+        }));
+
+        publishNext(observer, 200, Observable.create(new Observable.OnSubscribeFunc<String>() {
+          @Override
+          public Subscription onSubscribe(Observer<? super String> observer) {
+            publishNext(observer, 0, "three");
+            publishNext(observer, 100, "four");
+            return Subscriptions.empty();
+          }
+        }));
+
+        publishCompleted(observer, 250);
+
+        return Subscriptions.empty();
+      }
+    });
+
+    Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+    sampled.subscribe(observer);
+
+    InOrder inOrder = inOrder(observer);
+
+    scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, never()).onNext(anyString());
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+
+    scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, times(1)).onNext("one");
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+
+    scheduler.advanceTimeTo(175, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, times(1)).onNext("two");
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+
+    scheduler.advanceTimeTo(225, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, times(1)).onNext("three");
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+
+    scheduler.advanceTimeTo(350, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, times(1)).onNext("four");
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+  }
+
+  @Test
+  public void testSwitchWithError() {
+    Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+      @Override
+      public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+        publishNext(observer, 50, Observable.create(new Observable.OnSubscribeFunc<String>() {
+          @Override
+          public Subscription onSubscribe(Observer<? super String> observer) {
+            publishNext(observer, 50, "one");
+            publishNext(observer, 100, "two");
+            return Subscriptions.empty();
+          }
+        }));
+
+        publishNext(observer, 200, Observable.create(new Observable.OnSubscribeFunc<String>() {
+          @Override
+          public Subscription onSubscribe(Observer<? super String> observer) {
+            publishNext(observer, 0, "three");
+            publishNext(observer, 100, "four");
+            return Subscriptions.empty();
+          }
+        }));
+
+        publishError(observer, 250, new TestException());
+
+        return Subscriptions.empty();
+      }
+    });
+
+    Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+    sampled.subscribe(observer);
+
+    InOrder inOrder = inOrder(observer);
+
+    scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, never()).onNext(anyString());
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+
+    scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, times(1)).onNext("one");
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+
+    scheduler.advanceTimeTo(175, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, times(1)).onNext("two");
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+
+    scheduler.advanceTimeTo(225, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, times(1)).onNext("three");
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+
+    scheduler.advanceTimeTo(350, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, never()).onNext(anyString());
+    verify(observer, never()).onCompleted();
+    verify(observer, times(1)).onError(any(TestException.class));
+  }
+
+  @Test
+  public void testSwitchWithSubsequenceComplete() {
+    Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+      @Override
+      public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+        publishNext(observer, 50, Observable.create(new Observable.OnSubscribeFunc<String>() {
+          @Override
+          public Subscription onSubscribe(Observer<? super String> observer) {
+            publishNext(observer, 50, "one");
+            publishNext(observer, 100, "two");
+            return Subscriptions.empty();
+          }
+        }));
+
+        publishNext(observer, 130, Observable.create(new Observable.OnSubscribeFunc<String>() {
+          @Override
+          public Subscription onSubscribe(Observer<? super String> observer) {
+            publishCompleted(observer, 0);
+            return Subscriptions.empty();
+          }
+        }));
+
+        publishNext(observer, 150, Observable.create(new Observable.OnSubscribeFunc<String>() {
+          @Override
+          public Subscription onSubscribe(Observer<? super String> observer) {
+            publishNext(observer, 50, "three");
+            return Subscriptions.empty();
+          }
+        }));
+
+        return Subscriptions.empty();
+      }
+    });
+
+    Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+    sampled.subscribe(observer);
+
+    InOrder inOrder = inOrder(observer);
+
+    scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, never()).onNext(anyString());
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+
+    scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, times(1)).onNext("one");
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+
+    scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, times(1)).onNext("three");
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+  }
+
+  @Test
+  public void testSwitchWithSubsequenceError() {
+    Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+      @Override
+      public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+        publishNext(observer, 50, Observable.create(new Observable.OnSubscribeFunc<String>() {
+          @Override
+          public Subscription onSubscribe(Observer<? super String> observer) {
+            publishNext(observer, 50, "one");
+            publishNext(observer, 100, "two");
+            return Subscriptions.empty();
+          }
+        }));
+
+        publishNext(observer, 130, Observable.create(new Observable.OnSubscribeFunc<String>() {
+          @Override
+          public Subscription onSubscribe(Observer<? super String> observer) {
+            publishError(observer, 0, new TestException());
+            return Subscriptions.empty();
+          }
+        }));
+
+        publishNext(observer, 150, Observable.create(new Observable.OnSubscribeFunc<String>() {
+          @Override
+          public Subscription onSubscribe(Observer<? super String> observer) {
+            publishNext(observer, 50, "three");
+            return Subscriptions.empty();
+          }
+        }));
+
+        return Subscriptions.empty();
+      }
+    });
+
+    Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+    sampled.subscribe(observer);
+
+    InOrder inOrder = inOrder(observer);
+
+    scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, never()).onNext(anyString());
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+
+    scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, times(1)).onNext("one");
+    verify(observer, never()).onCompleted();
+    verify(observer, never()).onError(any(Throwable.class));
+
+    scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
+    inOrder.verify(observer, never()).onNext("three");
+    verify(observer, never()).onCompleted();
+    verify(observer, times(1)).onError(any(TestException.class));
+  }
+
+  private <T> void publishCompleted(final Observer<T> observer, long delay) {
+    scheduler.schedule(new Action0() {
+      @Override
+      public void call() {
+        observer.onCompleted();
+      }
+    }, delay, TimeUnit.MILLISECONDS);
+  }
+
+  private <T> void publishError(final Observer<T> observer, long delay, final Throwable error) {
+    scheduler.schedule(new Action0() {
+      @Override
+      public void call() {
+        observer.onError(error);
+      }
+    }, delay, TimeUnit.MILLISECONDS);
+  }
+
+  private <T> void publishNext(final Observer<T> observer, long delay, final T value) {
+    scheduler.schedule(new Action0() {
+      @Override
+      public void call() {
+        observer.onNext(value);
+      }
+    }, delay, TimeUnit.MILLISECONDS);
+  }
+
+  @SuppressWarnings("serial")
+  private class TestException extends Throwable {
+  }
 }

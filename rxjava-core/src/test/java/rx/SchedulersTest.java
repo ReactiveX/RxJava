@@ -16,6 +16,8 @@
 package rx;
 
 import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 import rx.Observable.OnSubscribeFunc;
 import rx.concurrency.Schedulers;
 import rx.concurrency.TestScheduler;
@@ -34,505 +36,547 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.*;
 
 public class SchedulersTest {
 
-    @Test
-    public void testComputationThreadPool1() {
+  @SuppressWarnings("unchecked")
+  // mocking is unchecked, unfortunately
+  @Test
+  public void testPeriodicScheduling() {
+    final Func1<Long, Void> calledOp = mock(Func1.class);
 
-        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).map(new Func1<Integer, String>() {
+    final TestScheduler scheduler = new TestScheduler();
+    Subscription subscription = scheduler.schedulePeriodically(new Action0() {
+      @Override
+      public void call() {
+        System.out.println(scheduler.now());
+        calledOp.call(scheduler.now());
+      }
+    }, 1, 2, TimeUnit.SECONDS);
 
-            @Override
-            public String call(Integer t) {
-                assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
-        });
+    verify(calledOp, never()).call(anyLong());
 
-        o.subscribeOn(Schedulers.threadPoolForComputation()).toBlockingObservable().forEach(new Action1<String>() {
+    InOrder inOrder = Mockito.inOrder(calledOp);
 
-            @Override
-            public void call(String t) {
-                System.out.println("t: " + t);
-            }
-        });
-    }
+    scheduler.advanceTimeBy(999L, TimeUnit.MILLISECONDS);
+    inOrder.verify(calledOp, never()).call(anyLong());
 
-    @Test
-    public void testIOThreadPool1() {
+    scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
+    inOrder.verify(calledOp, times(1)).call(1000L);
 
-        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).map(new Func1<Integer, String>() {
+    scheduler.advanceTimeBy(1999L, TimeUnit.MILLISECONDS);
+    inOrder.verify(calledOp, never()).call(3000L);
 
-            @Override
-            public String call(Integer t) {
-                assertTrue(Thread.currentThread().getName().startsWith("RxIOThreadPool"));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
-        });
+    scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
+    inOrder.verify(calledOp, times(1)).call(3000L);
 
-        o.subscribeOn(Schedulers.threadPoolForIO()).toBlockingObservable().forEach(new Action1<String>() {
+    scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
+    inOrder.verify(calledOp, times(1)).call(5000L);
+    inOrder.verify(calledOp, times(1)).call(7000L);
 
-            @Override
-            public void call(String t) {
-                System.out.println("t: " + t);
-            }
-        });
-    }
+    subscription.unsubscribe();
+    scheduler.advanceTimeBy(11L, TimeUnit.SECONDS);
+    inOrder.verify(calledOp, never()).call(anyLong());
+  }
 
-    @Test
-    public void testMergeWithoutScheduler1() {
+  @Test
+  public void testComputationThreadPool1() {
 
-        final String currentThreadName = Thread.currentThread().getName();
+    Observable<Integer> o1 = Observable.<Integer>from(1, 2, 3, 4, 5);
+    Observable<Integer> o2 = Observable.<Integer>from(6, 7, 8, 9, 10);
+    Observable<String> o = Observable.<Integer>merge(o1, o2).map(new Func1<Integer, String>() {
 
-        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).map(new Func1<Integer, String>() {
+      @Override
+      public String call(Integer t) {
+        assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
+        return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+      }
+    });
 
-            @Override
-            public String call(Integer t) {
-                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
-        });
+    o.subscribeOn(Schedulers.threadPoolForComputation()).toBlockingObservable().forEach(new Action1<String>() {
 
-        o.toBlockingObservable().forEach(new Action1<String>() {
+      @Override
+      public void call(String t) {
+        System.out.println("t: " + t);
+      }
+    });
+  }
 
-            @Override
-            public void call(String t) {
-                System.out.println("t: " + t);
-            }
-        });
-    }
+  @Test
+  public void testIOThreadPool1() {
 
-    @Test
-    public void testMergeWithImmediateScheduler1() {
+    Observable<Integer> o1 = Observable.<Integer>from(1, 2, 3, 4, 5);
+    Observable<Integer> o2 = Observable.<Integer>from(6, 7, 8, 9, 10);
+    Observable<String> o = Observable.<Integer>merge(o1, o2).map(new Func1<Integer, String>() {
 
-        final String currentThreadName = Thread.currentThread().getName();
+      @Override
+      public String call(Integer t) {
+        assertTrue(Thread.currentThread().getName().startsWith("RxIOThreadPool"));
+        return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+      }
+    });
 
-        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).subscribeOn(Schedulers.immediate()).map(new Func1<Integer, String>() {
+    o.subscribeOn(Schedulers.threadPoolForIO()).toBlockingObservable().forEach(new Action1<String>() {
 
-            @Override
-            public String call(Integer t) {
-                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
-        });
+      @Override
+      public void call(String t) {
+        System.out.println("t: " + t);
+      }
+    });
+  }
 
-        o.toBlockingObservable().forEach(new Action1<String>() {
+  @Test
+  public void testMergeWithoutScheduler1() {
 
-            @Override
-            public void call(String t) {
-                System.out.println("t: " + t);
-            }
-        });
-    }
+    final String currentThreadName = Thread.currentThread().getName();
 
-    @Test
-    public void testMergeWithCurrentThreadScheduler1() {
+    Observable<Integer> o1 = Observable.<Integer>from(1, 2, 3, 4, 5);
+    Observable<Integer> o2 = Observable.<Integer>from(6, 7, 8, 9, 10);
+    Observable<String> o = Observable.<Integer>merge(o1, o2).map(new Func1<Integer, String>() {
 
-        final String currentThreadName = Thread.currentThread().getName();
+      @Override
+      public String call(Integer t) {
+        assertTrue(Thread.currentThread().getName().equals(currentThreadName));
+        return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+      }
+    });
 
-        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).subscribeOn(Schedulers.currentThread()).map(new Func1<Integer, String>() {
+    o.toBlockingObservable().forEach(new Action1<String>() {
 
-            @Override
-            public String call(Integer t) {
-                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
-        });
+      @Override
+      public void call(String t) {
+        System.out.println("t: " + t);
+      }
+    });
+  }
 
-        o.toBlockingObservable().forEach(new Action1<String>() {
+  @Test
+  public void testMergeWithImmediateScheduler1() {
 
-            @Override
-            public void call(String t) {
-                System.out.println("t: " + t);
-            }
-        });
-    }
+    final String currentThreadName = Thread.currentThread().getName();
 
-    @Test
-    public void testMergeWithScheduler1() {
+    Observable<Integer> o1 = Observable.<Integer>from(1, 2, 3, 4, 5);
+    Observable<Integer> o2 = Observable.<Integer>from(6, 7, 8, 9, 10);
+    Observable<String> o = Observable.<Integer>merge(o1, o2).subscribeOn(Schedulers.immediate()).map(new Func1<Integer, String>() {
 
-        final String currentThreadName = Thread.currentThread().getName();
+      @Override
+      public String call(Integer t) {
+        assertTrue(Thread.currentThread().getName().equals(currentThreadName));
+        return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+      }
+    });
 
-        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).subscribeOn(Schedulers.threadPoolForComputation()).map(new Func1<Integer, String>() {
+    o.toBlockingObservable().forEach(new Action1<String>() {
 
-            @Override
-            public String call(Integer t) {
-                assertFalse(Thread.currentThread().getName().equals(currentThreadName));
-                assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
-        });
+      @Override
+      public void call(String t) {
+        System.out.println("t: " + t);
+      }
+    });
+  }
 
-        o.toBlockingObservable().forEach(new Action1<String>() {
+  @Test
+  public void testMergeWithCurrentThreadScheduler1() {
 
-            @Override
-            public void call(String t) {
-                System.out.println("t: " + t);
-            }
-        });
-    }
+    final String currentThreadName = Thread.currentThread().getName();
 
-    @Test
-    public void testSubscribeWithScheduler1() throws InterruptedException {
+    Observable<Integer> o1 = Observable.<Integer>from(1, 2, 3, 4, 5);
+    Observable<Integer> o2 = Observable.<Integer>from(6, 7, 8, 9, 10);
+    Observable<String> o = Observable.<Integer>merge(o1, o2).subscribeOn(Schedulers.currentThread()).map(new Func1<Integer, String>() {
 
-        final AtomicInteger count = new AtomicInteger();
+      @Override
+      public String call(Integer t) {
+        assertTrue(Thread.currentThread().getName().equals(currentThreadName));
+        return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+      }
+    });
 
-        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+    o.toBlockingObservable().forEach(new Action1<String>() {
 
-        o1.subscribe(new Action1<Integer>() {
+      @Override
+      public void call(String t) {
+        System.out.println("t: " + t);
+      }
+    });
+  }
 
-            @Override
-            public void call(Integer t) {
-                System.out.println("Thread: " + Thread.currentThread().getName());
-                System.out.println("t: " + t);
-                count.incrementAndGet();
-            }
-        });
+  @Test
+  public void testMergeWithScheduler1() {
 
-        // the above should be blocking so we should see a count of 5
-        assertEquals(5, count.get());
+    final String currentThreadName = Thread.currentThread().getName();
 
-        count.set(0);
+    Observable<Integer> o1 = Observable.<Integer>from(1, 2, 3, 4, 5);
+    Observable<Integer> o2 = Observable.<Integer>from(6, 7, 8, 9, 10);
+    Observable<String> o = Observable.<Integer>merge(o1, o2).subscribeOn(Schedulers.threadPoolForComputation()).map(new Func1<Integer, String>() {
 
-        // now we'll subscribe with a scheduler and it should be async
+      @Override
+      public String call(Integer t) {
+        assertFalse(Thread.currentThread().getName().equals(currentThreadName));
+        assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
+        return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+      }
+    });
 
-        final String currentThreadName = Thread.currentThread().getName();
+    o.toBlockingObservable().forEach(new Action1<String>() {
 
-        // latches for deterministically controlling the test below across threads
-        final CountDownLatch latch = new CountDownLatch(5);
-        final CountDownLatch first = new CountDownLatch(1);
+      @Override
+      public void call(String t) {
+        System.out.println("t: " + t);
+      }
+    });
+  }
 
-        o1.subscribe(new Action1<Integer>() {
+  @Test
+  public void testSubscribeWithScheduler1() throws InterruptedException {
 
-            @Override
-            public void call(Integer t) {
-                try {
-                    // we block the first one so we can assert this executes asynchronously with a count
-                    first.await(1000, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException("The latch should have released if we are async.", e);
-                }
-                assertFalse(Thread.currentThread().getName().equals(currentThreadName));
-                assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
-                System.out.println("Thread: " + Thread.currentThread().getName());
-                System.out.println("t: " + t);
-                count.incrementAndGet();
-                latch.countDown();
-            }
-        }, Schedulers.threadPoolForComputation());
+    final AtomicInteger count = new AtomicInteger();
 
-        // assert we are async
-        assertEquals(0, count.get());
-        // release the latch so it can go forward
-        first.countDown();
+    Observable<Integer> o1 = Observable.<Integer>from(1, 2, 3, 4, 5);
 
-        // wait for all 5 responses
-        latch.await();
-        assertEquals(5, count.get());
-    }
+    o1.subscribe(new Action1<Integer>() {
 
-    @Test
-    public void testRecursiveScheduler1() {
-        Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
-            @Override
-            public Subscription onSubscribe(final Observer<? super Integer> observer) {
-                return Schedulers.currentThread().schedule(0, new Func2<Scheduler, Integer, Subscription>() {
-                    @Override
-                    public Subscription call(Scheduler scheduler, Integer i) {
-                        if (i > 42) {
-                            observer.onCompleted();
-                            return Subscriptions.empty();
-                        }
+      @Override
+      public void call(Integer t) {
+        System.out.println("Thread: " + Thread.currentThread().getName());
+        System.out.println("t: " + t);
+        count.incrementAndGet();
+      }
+    });
 
-                        observer.onNext(i);
+    // the above should be blocking so we should see a count of 5
+    assertEquals(5, count.get());
 
-                        return scheduler.schedule(i + 1, this);
-                    }
-                });
-            }
-        });
+    count.set(0);
 
-        final AtomicInteger lastValue = new AtomicInteger();
-        obs.toBlockingObservable().forEach(new Action1<Integer>() {
+    // now we'll subscribe with a scheduler and it should be async
 
-            @Override
-            public void call(Integer v) {
-                System.out.println("Value: " + v);
-                lastValue.set(v);
-            }
-        });
+    final String currentThreadName = Thread.currentThread().getName();
 
-        assertEquals(42, lastValue.get());
-    }
+    // latches for deterministically controlling the test below across threads
+    final CountDownLatch latch = new CountDownLatch(5);
+    final CountDownLatch first = new CountDownLatch(1);
 
-    @Test
-    public void testRecursiveScheduler2() throws InterruptedException {
-        // use latches instead of Thread.sleep
-        final CountDownLatch latch = new CountDownLatch(10);
-        final CountDownLatch completionLatch = new CountDownLatch(1);
+    o1.subscribe(new Action1<Integer>() {
 
-        Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
-            @Override
-            public Subscription onSubscribe(final Observer<? super Integer> observer) {
-
-                return Schedulers.threadPoolForComputation().schedule(new BooleanSubscription(), new Func2<Scheduler, BooleanSubscription, Subscription>() {
-                    @Override
-                    public Subscription call(Scheduler scheduler, BooleanSubscription cancel) {
-                        if (cancel.isUnsubscribed()) {
-                            observer.onCompleted();
-                            completionLatch.countDown();
-                            return Subscriptions.empty();
-                        }
-
-                        observer.onNext(42);
-                        latch.countDown();
-
-                        // this will recursively schedule this task for execution again
-                        scheduler.schedule(cancel, this);
-
-                        return cancel;
-                    }
-                });
-            }
-        });
-
-        final AtomicInteger count = new AtomicInteger();
-        final AtomicBoolean completed = new AtomicBoolean(false);
-        Subscription subscribe = obs.subscribe(new Observer<Integer>() {
-            @Override
-            public void onCompleted() {
-                System.out.println("Completed");
-                completed.set(true);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                System.out.println("Error");
-            }
-
-            @Override
-            public void onNext(Integer args) {
-                count.incrementAndGet();
-                System.out.println(args);
-            }
-        });
-
-        if (!latch.await(5000, TimeUnit.MILLISECONDS)) {
-            fail("Timed out waiting on onNext latch");
+      @Override
+      public void call(Integer t) {
+        try {
+          // we block the first one so we can assert this executes asynchronously with a count
+          first.await(1000, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+          throw new RuntimeException("The latch should have released if we are async.", e);
         }
+        assertFalse(Thread.currentThread().getName().equals(currentThreadName));
+        assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
+        System.out.println("Thread: " + Thread.currentThread().getName());
+        System.out.println("t: " + t);
+        count.incrementAndGet();
+        latch.countDown();
+      }
+    }, Schedulers.threadPoolForComputation());
 
-        // now unsubscribe and ensure it stops the recursive loop
-        subscribe.unsubscribe();
-        System.out.println("unsubscribe");
+    // assert we are async
+    assertEquals(0, count.get());
+    // release the latch so it can go forward
+    first.countDown();
 
-        if (!completionLatch.await(5000, TimeUnit.MILLISECONDS)) {
-            fail("Timed out waiting on completion latch");
-        }
+    // wait for all 5 responses
+    latch.await();
+    assertEquals(5, count.get());
+  }
 
-        // the count can be 10 or higher due to thread scheduling of the unsubscribe vs the scheduler looping to emit the count
-        assertTrue(count.get() >= 10);
-        assertTrue(completed.get());
-    }
-
-    @Test
-    public void testSchedulingWithDueTime() throws InterruptedException {
-
-        final CountDownLatch latch = new CountDownLatch(5);
-        final AtomicInteger counter = new AtomicInteger();
-
-        long start = System.currentTimeMillis();
-
-        Schedulers.threadPoolForComputation().schedule(null, new Func2<Scheduler, String, Subscription>() {
-
-            @Override
-            public Subscription call(Scheduler scheduler, String state) {
-                System.out.println("doing work");
-                counter.incrementAndGet();
-                latch.countDown();
-                if (latch.getCount() == 0) {
-                    return Subscriptions.empty();
-                } else {
-                    return scheduler.schedule(state, this, new Date(System.currentTimeMillis() + 50));
-                }
+  @Test
+  public void testRecursiveScheduler1() {
+    Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
+      @Override
+      public Subscription onSubscribe(final Observer<? super Integer> observer) {
+        return Schedulers.currentThread().schedule(0, new Func2<Scheduler, Integer, Subscription>() {
+          @Override
+          public Subscription call(Scheduler scheduler, Integer i) {
+            if (i > 42) {
+              observer.onCompleted();
+              return Subscriptions.empty();
             }
-        }, new Date(System.currentTimeMillis() + 100));
 
-        if (!latch.await(3000, TimeUnit.MILLISECONDS)) {
-            fail("didn't execute ... timed out");
-        }
+            observer.onNext(i);
 
-        long end = System.currentTimeMillis();
+            return scheduler.schedule(i + 1, this);
+          }
+        });
+      }
+    });
 
-        assertEquals(5, counter.get());
-        if ((end - start) < 250) {
-            fail("it should have taken over 250ms since each step was scheduled 50ms in the future");
-        }
+    final AtomicInteger lastValue = new AtomicInteger();
+    obs.toBlockingObservable().forEach(new Action1<Integer>() {
+
+      @Override
+      public void call(Integer v) {
+        System.out.println("Value: " + v);
+        lastValue.set(v);
+      }
+    });
+
+    assertEquals(42, lastValue.get());
+  }
+
+  @Test
+  public void testRecursiveScheduler2() throws InterruptedException {
+    // use latches instead of Thread.sleep
+    final CountDownLatch latch = new CountDownLatch(10);
+    final CountDownLatch completionLatch = new CountDownLatch(1);
+
+    Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
+      @Override
+      public Subscription onSubscribe(final Observer<? super Integer> observer) {
+
+        return Schedulers.threadPoolForComputation().schedule(new BooleanSubscription(), new Func2<Scheduler, BooleanSubscription, Subscription>() {
+          @Override
+          public Subscription call(Scheduler scheduler, BooleanSubscription cancel) {
+            if (cancel.isUnsubscribed()) {
+              observer.onCompleted();
+              completionLatch.countDown();
+              return Subscriptions.empty();
+            }
+
+            observer.onNext(42);
+            latch.countDown();
+
+            // this will recursively schedule this task for execution again
+            scheduler.schedule(cancel, this);
+
+            return cancel;
+          }
+        });
+      }
+    });
+
+    final AtomicInteger count = new AtomicInteger();
+    final AtomicBoolean completed = new AtomicBoolean(false);
+    Subscription subscribe = obs.subscribe(new Observer<Integer>() {
+      @Override
+      public void onCompleted() {
+        System.out.println("Completed");
+        completed.set(true);
+      }
+
+      @Override
+      public void onError(Throwable e) {
+        System.out.println("Error");
+      }
+
+      @Override
+      public void onNext(Integer args) {
+        count.incrementAndGet();
+        System.out.println(args);
+      }
+    });
+
+    if (!latch.await(5000, TimeUnit.MILLISECONDS)) {
+      fail("Timed out waiting on onNext latch");
     }
 
-    @Test
-    public void testConcurrentOnNextFailsValidation() throws InterruptedException {
+    // now unsubscribe and ensure it stops the recursive loop
+    subscribe.unsubscribe();
+    System.out.println("unsubscribe");
 
-        final int count = 10;
-        final CountDownLatch latch = new CountDownLatch(count);
-        Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
+    if (!completionLatch.await(5000, TimeUnit.MILLISECONDS)) {
+      fail("Timed out waiting on completion latch");
+    }
+
+    // the count can be 10 or higher due to thread scheduling of the unsubscribe vs the scheduler looping to emit the count
+    assertTrue(count.get() >= 10);
+    assertTrue(completed.get());
+  }
+
+  @Test
+  public void testSchedulingWithDueTime() throws InterruptedException {
+
+    final CountDownLatch latch = new CountDownLatch(5);
+    final AtomicInteger counter = new AtomicInteger();
+
+    long start = System.currentTimeMillis();
+
+    Schedulers.threadPoolForComputation().schedule(null, new Func2<Scheduler, String, Subscription>() {
+
+      @Override
+      public Subscription call(Scheduler scheduler, String state) {
+        System.out.println("doing work");
+        counter.incrementAndGet();
+        latch.countDown();
+        if (latch.getCount() == 0) {
+          return Subscriptions.empty();
+        } else {
+          return scheduler.schedule(state, this, new Date(System.currentTimeMillis() + 50));
+        }
+      }
+    }, new Date(System.currentTimeMillis() + 100));
+
+    if (!latch.await(3000, TimeUnit.MILLISECONDS)) {
+      fail("didn't execute ... timed out");
+    }
+
+    long end = System.currentTimeMillis();
+
+    assertEquals(5, counter.get());
+    if ((end - start) < 250) {
+      fail("it should have taken over 250ms since each step was scheduled 50ms in the future");
+    }
+  }
+
+  @Test
+  public void testConcurrentOnNextFailsValidation() throws InterruptedException {
+
+    final int count = 10;
+    final CountDownLatch latch = new CountDownLatch(count);
+    Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
+
+      @Override
+      public Subscription onSubscribe(final Observer<? super String> observer) {
+        for (int i = 0; i < count; i++) {
+          final int v = i;
+          new Thread(new Runnable() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
-                for (int i = 0; i < count; i++) {
-                    final int v = i;
-                    new Thread(new Runnable() {
+            public void run() {
+              observer.onNext("v: " + v);
 
-                        @Override
-                        public void run() {
-                            observer.onNext("v: " + v);
+              latch.countDown();
+            }
+          }).start();
+        }
+        return Subscriptions.empty();
+      }
+    });
 
-                            latch.countDown();
-                        }
-                    }).start();
-                }
+    ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
+    // this should call onNext concurrently
+    o.subscribe(observer);
+
+    if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
+      fail("timed out");
+    }
+
+    if (observer.error.get() == null) {
+      fail("We expected error messages due to concurrency");
+    }
+  }
+
+  @Test
+  public void testObserveOn() throws InterruptedException {
+
+    Observable<String> o = Observable.from("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten");
+
+    ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
+
+    o.observeOn(Schedulers.threadPoolForComputation()).subscribe(observer);
+
+    if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
+      fail("timed out");
+    }
+
+    if (observer.error.get() != null) {
+      observer.error.get().printStackTrace();
+      fail("Error: " + observer.error.get().getMessage());
+    }
+  }
+
+  @Test
+  public void testSubscribeOnNestedConcurrency() throws InterruptedException {
+
+    Observable<String> o = Observable.from("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
+        .mapMany(new Func1<String, Observable<String>>() {
+
+          @Override
+          public Observable<String> call(final String v) {
+            return Observable.create(new OnSubscribeFunc<String>() {
+
+              @Override
+              public Subscription onSubscribe(final Observer<? super String> observer) {
+                observer.onNext("value_after_map-" + v);
+                observer.onCompleted();
                 return Subscriptions.empty();
-            }
+              }
+            }).subscribeOn(Schedulers.newThread()); // subscribe on a new thread
+          }
         });
 
-        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
-        // this should call onNext concurrently
-        o.subscribe(observer);
+    ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
 
-        if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
-            fail("timed out");
-        }
+    o.subscribe(observer);
 
-        if (observer.error.get() == null) {
-            fail("We expected error messages due to concurrency");
-        }
+    if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
+      fail("timed out");
     }
 
-    @Test
-    public void testObserveOn() throws InterruptedException {
+    if (observer.error.get() != null) {
+      observer.error.get().printStackTrace();
+      fail("Error: " + observer.error.get().getMessage());
+    }
+  }
 
-        Observable<String> o = Observable.from("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten");
+  @Test
+  public void testRecursion() {
+    TestScheduler s = new TestScheduler();
 
-        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
+    final AtomicInteger counter = new AtomicInteger(0);
 
-        o.observeOn(Schedulers.threadPoolForComputation()).subscribe(observer);
+    Subscription subscription = s.schedule(new Action1<Action0>() {
 
-        if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
-            fail("timed out");
-        }
+      @Override
+      public void call(Action0 self) {
+        counter.incrementAndGet();
+        System.out.println("counter: " + counter.get());
+        self.call();
+      }
 
-        if (observer.error.get() != null) {
-            observer.error.get().printStackTrace();
-            fail("Error: " + observer.error.get().getMessage());
-        }
+    });
+    subscription.unsubscribe();
+    assertEquals(0, counter.get());
+  }
+
+
+  /**
+   * Used to determine if onNext is being invoked concurrently.
+   *
+   * @param <T>
+   */
+  private static class ConcurrentObserverValidator<T> implements Observer<T> {
+
+    final AtomicInteger concurrentCounter = new AtomicInteger();
+    final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+    final CountDownLatch completed = new CountDownLatch(1);
+
+    @Override
+    public void onCompleted() {
+      completed.countDown();
     }
 
-    @Test
-    public void testSubscribeOnNestedConcurrency() throws InterruptedException {
-
-        Observable<String> o = Observable.from("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
-                .mapMany(new Func1<String, Observable<String>>() {
-
-                  @Override
-                  public Observable<String> call(final String v) {
-                    return Observable.create(new OnSubscribeFunc<String>() {
-
-                      @Override
-                      public Subscription onSubscribe(final Observer<? super String> observer) {
-                        observer.onNext("value_after_map-" + v);
-                        observer.onCompleted();
-                        return Subscriptions.empty();
-                      }
-                    }).subscribeOn(Schedulers.newThread()); // subscribe on a new thread
-                  }
-                });
-
-        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
-
-        o.subscribe(observer);
-
-        if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
-            fail("timed out");
-        }
-
-        if (observer.error.get() != null) {
-            observer.error.get().printStackTrace();
-            fail("Error: " + observer.error.get().getMessage());
-        }
+    @Override
+    public void onError(Throwable e) {
+      completed.countDown();
+      error.set(e);
     }
 
-    @Test
-    public void testRecursion() {
-        TestScheduler s = new TestScheduler();
-
-        final AtomicInteger counter = new AtomicInteger(0);
-
-        Subscription subscription = s.schedule(new Action1<Action0>() {
-
-            @Override
-            public void call(Action0 self) {
-                counter.incrementAndGet();
-                System.out.println("counter: " + counter.get());
-                self.call();
-            }
-
-        });
-        subscription.unsubscribe();
-        assertEquals(0, counter.get());
+    @Override
+    public void onNext(T args) {
+      int count = concurrentCounter.incrementAndGet();
+      System.out.println("ConcurrentObserverValidator.onNext: " + args);
+      if (count > 1) {
+        onError(new RuntimeException("we should not have concurrent execution of onNext"));
+      }
+      try {
+        try {
+          // take some time so other onNext calls could pile up (I haven't yet thought of a way to do this without sleeping)
+          Thread.sleep(50);
+        } catch (InterruptedException e) {
+          // ignore
+        }
+      } finally {
+        concurrentCounter.decrementAndGet();
+      }
     }
 
-
-    /**
-     * Used to determine if onNext is being invoked concurrently.
-     *
-     * @param <T>
-     */
-    private static class ConcurrentObserverValidator<T> implements Observer<T> {
-
-        final AtomicInteger concurrentCounter = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        final CountDownLatch completed = new CountDownLatch(1);
-
-        @Override
-        public void onCompleted() {
-            completed.countDown();
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            completed.countDown();
-            error.set(e);
-        }
-
-        @Override
-        public void onNext(T args) {
-            int count = concurrentCounter.incrementAndGet();
-            System.out.println("ConcurrentObserverValidator.onNext: " + args);
-            if (count > 1) {
-                onError(new RuntimeException("we should not have concurrent execution of onNext"));
-            }
-            try {
-                try {
-                    // take some time so other onNext calls could pile up (I haven't yet thought of a way to do this without sleeping)
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-            } finally {
-                concurrentCounter.decrementAndGet();
-            }
-        }
-
-    }
+  }
 }

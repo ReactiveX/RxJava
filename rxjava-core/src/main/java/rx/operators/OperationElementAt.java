@@ -15,24 +15,12 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import java.util.Iterator;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.Test;
-
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Returns the element at a specified index in a sequence.
@@ -144,104 +132,6 @@ public class OperationElementAt {
                     }
                 }
             }));
-        }
-    }
-
-    public static class UnitTest {
-
-        @Test
-        public void testElementAt() {
-            Observable<Integer> w = Observable.from(1, 2);
-            Observable<Integer> observable = Observable.create(elementAt(w, 1));
-
-            @SuppressWarnings("unchecked")
-            Observer<Integer> aObserver = mock(Observer.class);
-            observable.subscribe(aObserver);
-            verify(aObserver, never()).onNext(1);
-            verify(aObserver, times(1)).onNext(2);
-            verify(aObserver, never()).onError(
-                    any(Throwable.class));
-            verify(aObserver, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testElementAtWithMinusIndex() {
-            Observable<Integer> w = Observable.from(1, 2);
-            Observable<Integer> observable = Observable
-                    .create(elementAt(w, -1));
-
-            try {
-                Iterator<Integer> iter = OperationToIterator
-                        .toIterator(observable);
-                assertTrue(iter.hasNext());
-                iter.next();
-                fail("expect an IndexOutOfBoundsException when index is out of bounds");
-            } catch (IndexOutOfBoundsException e) {
-            }
-        }
-
-        @Test
-        public void testElementAtWithIndexOutOfBounds()
-                throws InterruptedException, ExecutionException {
-            Observable<Integer> w = Observable.from(1, 2);
-            Observable<Integer> observable = Observable.create(elementAt(w, 2));
-            try {
-                Iterator<Integer> iter = OperationToIterator
-                        .toIterator(observable);
-                assertTrue(iter.hasNext());
-                iter.next();
-                fail("expect an IndexOutOfBoundsException when index is out of bounds");
-            } catch (IndexOutOfBoundsException e) {
-            }
-        }
-
-        @Test
-        public void testElementAtOrDefault() throws InterruptedException,
-                ExecutionException {
-            Observable<Integer> w = Observable.from(1, 2);
-            Observable<Integer> observable = Observable
-                    .create(elementAtOrDefault(w, 1, 0));
-
-            @SuppressWarnings("unchecked")
-            Observer<Integer> aObserver = mock(Observer.class);
-            observable.subscribe(aObserver);
-            verify(aObserver, never()).onNext(1);
-            verify(aObserver, times(1)).onNext(2);
-            verify(aObserver, never()).onError(any(Throwable.class));
-            verify(aObserver, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testElementAtOrDefaultWithIndexOutOfBounds()
-                throws InterruptedException, ExecutionException {
-            Observable<Integer> w = Observable.from(1, 2);
-            Observable<Integer> observable = Observable
-                    .create(elementAtOrDefault(w, 2, 0));
-
-            @SuppressWarnings("unchecked")
-            Observer<Integer> aObserver = mock(Observer.class);
-            observable.subscribe(aObserver);
-            verify(aObserver, never()).onNext(1);
-            verify(aObserver, never()).onNext(2);
-            verify(aObserver, times(1)).onNext(0);
-            verify(aObserver, never()).onError(any(Throwable.class));
-            verify(aObserver, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testElementAtOrDefaultWithMinusIndex() {
-            Observable<Integer> w = Observable.from(1, 2);
-            Observable<Integer> observable = Observable
-                    .create(elementAtOrDefault(w, -1, 0));
-
-            try {
-                Iterator<Integer> iter = OperationToIterator
-                        .toIterator(observable);
-                assertTrue(iter.hasNext());
-                iter.next();
-                fail("expect an IndexOutOfBoundsException when index is out of bounds");
-            } catch (IndexOutOfBoundsException e) {
-            }
         }
     }
 }

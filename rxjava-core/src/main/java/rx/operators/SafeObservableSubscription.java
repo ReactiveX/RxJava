@@ -15,13 +15,9 @@
  */
 package rx.operators;
 
-import static org.mockito.Mockito.*;
+import rx.Subscription;
 
 import java.util.concurrent.atomic.AtomicReference;
-
-import org.junit.Test;
-
-import rx.Subscription;
 
 /**
  * Thread-safe wrapper around Observable Subscription that ensures unsubscribe can be called only once.
@@ -81,16 +77,5 @@ public final class SafeObservableSubscription implements Subscription {
 
     public boolean isUnsubscribed() {
         return actualSubscription.get() == UNSUBSCRIBED;
-    }
-
-    public static class UnitTest {
-        @Test
-        public void testWrapAfterUnsubscribe() {
-            SafeObservableSubscription atomicObservableSubscription = new SafeObservableSubscription();
-            atomicObservableSubscription.unsubscribe();
-            Subscription innerSubscription = mock(Subscription.class);
-            atomicObservableSubscription.wrap(innerSubscription);
-            verify(innerSubscription, times(1)).unsubscribe();
-        }
     }
 }

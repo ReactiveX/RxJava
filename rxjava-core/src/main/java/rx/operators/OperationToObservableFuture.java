@@ -15,17 +15,13 @@
  */
 package rx.operators;
 
-import static org.mockito.Mockito.*;
-
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Test;
-
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
+
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Converts a Future into an Observable.
@@ -39,7 +35,7 @@ import rx.subscriptions.Subscriptions;
  * <code>Observable.subscribe(Observer)</code> does nothing.
  */
 public class OperationToObservableFuture {
-    private static class ToObservableFuture<T> implements OnSubscribeFunc<T> {
+    static class ToObservableFuture<T> implements OnSubscribeFunc<T> {
         private final Future<? extends T> that;
         private final Long time;
         private final TimeUnit unit;
@@ -81,42 +77,5 @@ public class OperationToObservableFuture {
 
     public static <T> OnSubscribeFunc<T> toObservableFuture(final Future<? extends T> that, long time, TimeUnit unit) {
         return new ToObservableFuture<T>(that, time, unit);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static class UnitTest {
-        @Test
-        public void testSuccess() throws Exception {
-            Future<Object> future = mock(Future.class);
-            Object value = new Object();
-            when(future.get()).thenReturn(value);
-            ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
-            Observer<Object> o = mock(Observer.class);
-
-            Subscription sub = ob.onSubscribe(o);
-            sub.unsubscribe();
-
-            verify(o, times(1)).onNext(value);
-            verify(o, times(1)).onCompleted();
-            verify(o, never()).onError(null);
-            verify(future, never()).cancel(true);
-        }
-
-        @Test
-        public void testFailure() throws Exception {
-            Future<Object> future = mock(Future.class);
-            RuntimeException e = new RuntimeException();
-            when(future.get()).thenThrow(e);
-            ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
-            Observer<Object> o = mock(Observer.class);
-
-            Subscription sub = ob.onSubscribe(o);
-            sub.unsubscribe();
-
-            verify(o, never()).onNext(null);
-            verify(o, never()).onCompleted();
-            verify(o, times(1)).onError(e);
-            verify(future, never()).cancel(true);
-        }
     }
 }

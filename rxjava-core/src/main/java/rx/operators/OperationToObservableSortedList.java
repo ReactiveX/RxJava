@@ -15,24 +15,17 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func2;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Return an Observable that emits the items emitted by the source Observable, in a sorted order
@@ -139,43 +132,6 @@ public final class OperationToObservableSortedList<T> {
                 return c1.compareTo(c2);
             }
 
-        }
-
-    }
-
-    public static class UnitTest {
-
-        @Test
-        public void testSortedList() {
-            Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
-            Observable<List<Integer>> observable = Observable.create(toSortedList(w));
-
-            @SuppressWarnings("unchecked")
-            Observer<List<Integer>> aObserver = mock(Observer.class);
-            observable.subscribe(aObserver);
-            verify(aObserver, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
-            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-            verify(aObserver, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testSortedListWithCustomFunction() {
-            Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
-            Observable<List<Integer>> observable = Observable.create(toSortedList(w, new Func2<Integer, Integer, Integer>() {
-
-                @Override
-                public Integer call(Integer t1, Integer t2) {
-                    return t2 - t1;
-                }
-
-            }));
-
-            @SuppressWarnings("unchecked")
-            Observer<List<Integer>> aObserver = mock(Observer.class);
-            observable.subscribe(aObserver);
-            verify(aObserver, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
-            verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-            verify(aObserver, times(1)).onCompleted();
         }
 
     }

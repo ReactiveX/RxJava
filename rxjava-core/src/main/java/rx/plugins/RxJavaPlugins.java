@@ -15,11 +15,7 @@
  */
 package rx.plugins;
 
-import static org.junit.Assert.*;
-
 import java.util.concurrent.atomic.AtomicReference;
-
-import org.junit.Test;
 
 /**
  * Registry for plugin implementations that allows global override and handles the retrieval of correct implementation based on order of precedence:
@@ -36,7 +32,7 @@ public class RxJavaPlugins {
     private final AtomicReference<RxJavaErrorHandler> errorHandler = new AtomicReference<RxJavaErrorHandler>();
     private final AtomicReference<RxJavaObservableExecutionHook> observableExecutionHook = new AtomicReference<RxJavaObservableExecutionHook>();
 
-    private RxJavaPlugins() {
+    RxJavaPlugins() {
 
     }
 
@@ -148,77 +144,4 @@ public class RxJavaPlugins {
             return null;
         }
     }
-
-    public static class UnitTest {
-
-        @Test
-        public void testErrorHandlerDefaultImpl() {
-            RxJavaErrorHandler impl = new RxJavaPlugins().getErrorHandler();
-            assertTrue(impl instanceof RxJavaErrorHandlerDefault);
-        }
-
-        @Test
-        public void testErrorHandlerViaRegisterMethod() {
-            RxJavaPlugins p = new RxJavaPlugins();
-            p.registerErrorHandler(new RxJavaErrorHandlerTestImpl());
-            RxJavaErrorHandler impl = p.getErrorHandler();
-            assertTrue(impl instanceof RxJavaErrorHandlerTestImpl);
-        }
-
-        @Test
-        public void testErrorHandlerViaProperty() {
-            try {
-                RxJavaPlugins p = new RxJavaPlugins();
-                String fullClass = getFullClassNameForTestClass(RxJavaErrorHandlerTestImpl.class);
-                System.setProperty("rxjava.plugin.RxJavaErrorHandler.implementation", fullClass);
-                RxJavaErrorHandler impl = p.getErrorHandler();
-                assertTrue(impl instanceof RxJavaErrorHandlerTestImpl);
-            } finally {
-                System.clearProperty("rxjava.plugin.RxJavaErrorHandler.implementation");
-            }
-        }
-
-        // inside UnitTest so it is stripped from Javadocs
-        public static class RxJavaErrorHandlerTestImpl extends RxJavaErrorHandler {
-            // just use defaults
-        }
-
-        @Test
-        public void testObservableExecutionHookDefaultImpl() {
-            RxJavaPlugins p = new RxJavaPlugins();
-            RxJavaObservableExecutionHook impl = p.getObservableExecutionHook();
-            assertTrue(impl instanceof RxJavaObservableExecutionHookDefault);
-        }
-
-        @Test
-        public void testObservableExecutionHookViaRegisterMethod() {
-            RxJavaPlugins p = new RxJavaPlugins();
-            p.registerObservableExecutionHook(new RxJavaObservableExecutionHookTestImpl());
-            RxJavaObservableExecutionHook impl = p.getObservableExecutionHook();
-            assertTrue(impl instanceof RxJavaObservableExecutionHookTestImpl);
-        }
-
-        @Test
-        public void testObservableExecutionHookViaProperty() {
-            try {
-                RxJavaPlugins p = new RxJavaPlugins();
-                String fullClass = getFullClassNameForTestClass(RxJavaObservableExecutionHookTestImpl.class);
-                System.setProperty("rxjava.plugin.RxJavaObservableExecutionHook.implementation", fullClass);
-                RxJavaObservableExecutionHook impl = p.getObservableExecutionHook();
-                assertTrue(impl instanceof RxJavaObservableExecutionHookTestImpl);
-            } finally {
-                System.clearProperty("rxjava.plugin.RxJavaObservableExecutionHook.implementation");
-            }
-        }
-
-        // inside UnitTest so it is stripped from Javadocs
-        public static class RxJavaObservableExecutionHookTestImpl extends RxJavaObservableExecutionHook {
-            // just use defaults
-        }
-
-        private static String getFullClassNameForTestClass(Class<?> cls) {
-            return RxJavaPlugins.class.getPackage().getName() + "." + RxJavaPlugins.class.getSimpleName() + "$UnitTest$" + cls.getSimpleName();
-        }
-    }
-
 }
