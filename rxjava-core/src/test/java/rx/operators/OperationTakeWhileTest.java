@@ -1,0 +1,204 @@
+package rx.operators;
+
+import org.junit.Test;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
+import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Func1;
+import rx.util.functions.Func2;
+
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+import static rx.operators.OperationTakeWhile.takeWhile;
+import static rx.operators.OperationTakeWhile.takeWhileWithIndex;
+
+public class OperationTakeWhileTest {
+
+  @Test
+  public void testTakeWhile1() {
+    Observable<Integer> w = Observable.from(1, 2, 3);
+    Observable<Integer> take = Observable.create(takeWhile(w, new Func1<Integer, Boolean>() {
+      @Override
+      public Boolean call(Integer input) {
+        return input < 3;
+      }
+    }));
+
+    @SuppressWarnings("unchecked")
+    Observer<Integer> aObserver = mock(Observer.class);
+    take.subscribe(aObserver);
+    verify(aObserver, times(1)).onNext(1);
+    verify(aObserver, times(1)).onNext(2);
+    verify(aObserver, never()).onNext(3);
+    verify(aObserver, never()).onError(any(Throwable.class));
+    verify(aObserver, times(1)).onCompleted();
+  }
+
+  @Test
+  public void testTakeWhileOnSubject1() {
+    Subject<Integer, Integer> s = PublishSubject.create();
+    Observable<Integer> take = Observable.create(takeWhile(s, new Func1<Integer, Boolean>() {
+      @Override
+      public Boolean call(Integer input) {
+        return input < 3;
+      }
+    }));
+
+    @SuppressWarnings("unchecked")
+    Observer<Integer> aObserver = mock(Observer.class);
+    take.subscribe(aObserver);
+
+    s.onNext(1);
+    s.onNext(2);
+    s.onNext(3);
+    s.onNext(4);
+    s.onNext(5);
+    s.onCompleted();
+
+    verify(aObserver, times(1)).onNext(1);
+    verify(aObserver, times(1)).onNext(2);
+    verify(aObserver, never()).onNext(3);
+    verify(aObserver, never()).onNext(4);
+    verify(aObserver, never()).onNext(5);
+    verify(aObserver, never()).onError(any(Throwable.class));
+    verify(aObserver, times(1)).onCompleted();
+  }
+
+  @Test
+  public void testTakeWhile2() {
+    Observable<String> w = Observable.from("one", "two", "three");
+    Observable<String> take = Observable.create(takeWhileWithIndex(w, new Func2<String, Integer, Boolean>() {
+      @Override
+      public Boolean call(String input, Integer index) {
+        return index < 2;
+      }
+    }));
+
+    @SuppressWarnings("unchecked")
+    Observer<String> aObserver = mock(Observer.class);
+    take.subscribe(aObserver);
+    verify(aObserver, times(1)).onNext("one");
+    verify(aObserver, times(1)).onNext("two");
+    verify(aObserver, never()).onNext("three");
+    verify(aObserver, never()).onError(any(Throwable.class));
+    verify(aObserver, times(1)).onCompleted();
+  }
+
+  @Test
+  public void testTakeWhileDoesntLeakErrors() {
+    Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+      @Override
+      public Subscription onSubscribe(Observer<? super String> observer) {
+        observer.onNext("one");
+        observer.onError(new Throwable("test failed"));
+        return Subscriptions.empty();
+      }
+    });
+
+    Observable.create(takeWhile(source, new Func1<String, Boolean>() {
+      @Override
+      public Boolean call(String s) {
+        return false;
+      }
+    })).toBlockingObservable().last();
+  }
+
+  @Test
+  public void testTakeWhileProtectsPredicateCall() {
+    TestObservable source = new TestObservable(mock(Subscription.class), "one");
+    final RuntimeException testException = new RuntimeException("test exception");
+
+    @SuppressWarnings("unchecked")
+    Observer<String> aObserver = mock(Observer.class);
+    Observable<String> take = Observable.create(takeWhile(Observable.create(source), new Func1<String, Boolean>() {
+      @Override
+      public Boolean call(String s) {
+        throw testException;
+      }
+    }));
+    take.subscribe(aObserver);
+
+    // wait for the Observable to complete
+    try {
+      source.t.join();
+    } catch (Throwable e) {
+      e.printStackTrace();
+      fail(e.getMessage());
+    }
+
+    verify(aObserver, never()).onNext(any(String.class));
+    verify(aObserver, times(1)).onError(testException);
+  }
+
+  @Test
+  public void testUnsubscribeAfterTake() {
+    Subscription s = mock(Subscription.class);
+    TestObservable w = new TestObservable(s, "one", "two", "three");
+
+    @SuppressWarnings("unchecked")
+    Observer<String> aObserver = mock(Observer.class);
+    Observable<String> take = Observable.create(takeWhileWithIndex(Observable.create(w), new Func2<String, Integer, Boolean>() {
+      @Override
+      public Boolean call(String s, Integer index) {
+        return index < 1;
+      }
+    }));
+    take.subscribe(aObserver);
+
+    // wait for the Observable to complete
+    try {
+      w.t.join();
+    } catch (Throwable e) {
+      e.printStackTrace();
+      fail(e.getMessage());
+    }
+
+    System.out.println("TestObservable thread finished");
+    verify(aObserver, times(1)).onNext("one");
+    verify(aObserver, never()).onNext("two");
+    verify(aObserver, never()).onNext("three");
+    verify(s, times(1)).unsubscribe();
+  }
+
+  private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+
+    final Subscription s;
+    final String[] values;
+    Thread t = null;
+
+    public TestObservable(Subscription s, String... values) {
+      this.s = s;
+      this.values = values;
+    }
+
+    @Override
+    public Subscription onSubscribe(final Observer<? super String> observer) {
+      System.out.println("TestObservable subscribed to ...");
+      t = new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+          try {
+            System.out.println("running TestObservable thread");
+            for (String s : values) {
+              System.out.println("TestObservable onNext: " + s);
+              observer.onNext(s);
+            }
+            observer.onCompleted();
+          } catch (Throwable e) {
+            throw new RuntimeException(e);
+          }
+        }
+
+      });
+      System.out.println("starting TestObservable thread");
+      t.start();
+      System.out.println("done starting TestObservable thread");
+      return s;
+    }
+  }
+}

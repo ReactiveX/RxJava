@@ -15,27 +15,13 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.ImmediateScheduler;
-import rx.concurrency.Schedulers;
 import rx.subscriptions.CompositeSubscription;
-import rx.util.functions.Func2;
 
 /**
  * Asynchronously notify Observers on the specified Scheduler.
@@ -69,58 +55,4 @@ public class OperationObserveOn {
             }
         }
     }
-
-    public static class UnitTest {
-
-        /**
-         * This is testing a no-op path since it uses Schedulers.immediate() which will not do scheduling.
-         */
-        @Test
-        @SuppressWarnings("unchecked")
-        public void testObserveOn() {
-            Observer<Integer> observer = mock(Observer.class);
-            Observable.create(observeOn(Observable.from(1, 2, 3), Schedulers.immediate())).subscribe(observer);
-
-            verify(observer, times(1)).onNext(1);
-            verify(observer, times(1)).onNext(2);
-            verify(observer, times(1)).onNext(3);
-            verify(observer, times(1)).onCompleted();
-        }
-
-        @Test
-        @SuppressWarnings("unchecked")
-        public void testOrdering() throws InterruptedException {
-            Observable<String> obs = Observable.from("one", null, "two", "three", "four");
-
-            Observer<String> observer = mock(Observer.class);
-
-            InOrder inOrder = inOrder(observer);
-
-            final CountDownLatch completedLatch = new CountDownLatch(1);
-            doAnswer(new Answer<Void>() {
-
-                @Override
-                public Void answer(InvocationOnMock invocation) throws Throwable {
-                    completedLatch.countDown();
-                    return null;
-                }
-            }).when(observer).onCompleted();
-
-            obs.observeOn(Schedulers.threadPoolForComputation()).subscribe(observer);
-
-            if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
-                fail("timed out waiting");
-            }
-
-            inOrder.verify(observer, times(1)).onNext("one");
-            inOrder.verify(observer, times(1)).onNext(null);
-            inOrder.verify(observer, times(1)).onNext("two");
-            inOrder.verify(observer, times(1)).onNext("three");
-            inOrder.verify(observer, times(1)).onNext("four");
-            inOrder.verify(observer, times(1)).onCompleted();
-            inOrder.verifyNoMoreInteractions();
-        }
-
-    }
-
 }
