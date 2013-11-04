@@ -1,21 +1,30 @@
 /**
  * Copyright 2013 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.concurrency;
+package rx;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import rx.Observable.OnSubscribeFunc;
+import rx.concurrency.Schedulers;
+import rx.concurrency.TestScheduler;
+import rx.subscriptions.BooleanSubscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
+import rx.util.functions.Action1;
+import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
@@ -24,21 +33,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
-import rx.Scheduler;
-import rx.Subscription;
-import rx.subscriptions.BooleanSubscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
-
-public class TestSchedulers {
+public class SchedulersTest {
 
     @Test
     public void testComputationThreadPool1() {
@@ -447,18 +444,18 @@ public class TestSchedulers {
         Observable<String> o = Observable.from("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
                 .mapMany(new Func1<String, Observable<String>>() {
 
-                    @Override
-                    public Observable<String> call(final String v) {
-                        return Observable.create(new OnSubscribeFunc<String>() {
+                  @Override
+                  public Observable<String> call(final String v) {
+                    return Observable.create(new OnSubscribeFunc<String>() {
 
-                            @Override
-                            public Subscription onSubscribe(final Observer<? super String> observer) {
-                                observer.onNext("value_after_map-" + v);
-                                observer.onCompleted();
-                                return Subscriptions.empty();
-                            }
-                        }).subscribeOn(Schedulers.newThread()); // subscribe on a new thread
-                    }
+                      @Override
+                      public Subscription onSubscribe(final Observer<? super String> observer) {
+                        observer.onNext("value_after_map-" + v);
+                        observer.onCompleted();
+                        return Subscriptions.empty();
+                      }
+                    }).subscribeOn(Schedulers.newThread()); // subscribe on a new thread
+                  }
                 });
 
         ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
@@ -474,7 +471,7 @@ public class TestSchedulers {
             fail("Error: " + observer.error.get().getMessage());
         }
     }
-    
+
     @Test
     public void testRecursion() {
         TestScheduler s = new TestScheduler();
@@ -494,11 +491,11 @@ public class TestSchedulers {
         subscription.unsubscribe();
         assertEquals(0, counter.get());
     }
-    
+
 
     /**
      * Used to determine if onNext is being invoked concurrently.
-     * 
+     *
      * @param <T>
      */
     private static class ConcurrentObserverValidator<T> implements Observer<T> {
