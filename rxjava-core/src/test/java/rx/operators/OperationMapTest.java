@@ -30,6 +30,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observer;
@@ -268,14 +270,18 @@ public class OperationMapTest {
                 .observeOn(Schedulers.threadPoolForComputation())
                 .map(new Func1<String, String>() {
                     public String call(String arg0) {
-                        try {
-                            throw new IllegalArgumentException("any error");
-                        } finally {
-                            latch.countDown();
-                        }
+                        throw new IllegalArgumentException("any error");
                     }
                 });
 
+        // wait for the call to get to the observer before decrementing the latch
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                latch.countDown();
+                return null;
+            }
+        }).when(stringObserver).onError(any(Throwable.class));
         m.subscribe(stringObserver);
         latch.await();
         InOrder inorder = inOrder(stringObserver);
