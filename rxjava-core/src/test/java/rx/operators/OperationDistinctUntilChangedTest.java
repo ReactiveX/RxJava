@@ -1,22 +1,20 @@
 package rx.operators;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.*;
+import static rx.operators.OperationDistinctUntilChanged.*;
+
+import java.util.Comparator;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+
 import rx.Observable;
 import rx.Observer;
 import rx.util.functions.Func1;
-
-import java.util.Comparator;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.never;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static rx.Observable.*;
-import static rx.operators.OperationDistinctUntilChanged.distinctUntilChanged;
 
 public class OperationDistinctUntilChangedTest {
 
@@ -50,8 +48,8 @@ public class OperationDistinctUntilChangedTest {
 
   @Test
   public void testDistinctUntilChangedOfNone() {
-    Observable<String> src = empty();
-    create(distinctUntilChanged(src)).subscribe(w);
+    Observable<String> src = Observable.empty();
+    Observable.create(distinctUntilChanged(src)).subscribe(w);
 
     verify(w, never()).onNext(anyString());
     verify(w, never()).onError(any(Throwable.class));
@@ -60,8 +58,8 @@ public class OperationDistinctUntilChangedTest {
 
   @Test
   public void testDistinctUntilChangedOfNoneWithKeySelector() {
-    Observable<String> src = empty();
-    create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
+    Observable<String> src = Observable.empty();
+    Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
 
     verify(w, never()).onNext(anyString());
     verify(w, never()).onError(any(Throwable.class));
@@ -70,8 +68,8 @@ public class OperationDistinctUntilChangedTest {
 
   @Test
   public void testDistinctUntilChangedOfNormalSource() {
-    Observable<String> src = from("a", "b", "c", "c", "c", "b", "b", "a", "e");
-    create(distinctUntilChanged(src)).subscribe(w);
+    Observable<String> src = Observable.from("a", "b", "c", "c", "c", "b", "b", "a", "e");
+    Observable.create(distinctUntilChanged(src)).subscribe(w);
 
     InOrder inOrder = inOrder(w);
     inOrder.verify(w, times(1)).onNext("a");
@@ -87,8 +85,8 @@ public class OperationDistinctUntilChangedTest {
 
   @Test
   public void testDistinctUntilChangedOfNormalSourceWithKeySelector() {
-    Observable<String> src = from("a", "b", "c", "C", "c", "B", "b", "a", "e");
-    create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
+    Observable<String> src = Observable.from("a", "b", "c", "C", "c", "B", "b", "a", "e");
+    Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
 
     InOrder inOrder = inOrder(w);
     inOrder.verify(w, times(1)).onNext("a");
@@ -104,8 +102,8 @@ public class OperationDistinctUntilChangedTest {
 
   @Test
   public void testDistinctUntilChangedOfSourceWithNulls() {
-    Observable<String> src = from(null, "a", "a", null, null, "b", null, null);
-    create(distinctUntilChanged(src)).subscribe(w);
+    Observable<String> src = Observable.from(null, "a", "a", null, null, "b", null, null);
+    Observable.create(distinctUntilChanged(src)).subscribe(w);
 
     InOrder inOrder = inOrder(w);
     inOrder.verify(w, times(1)).onNext(null);
@@ -120,8 +118,8 @@ public class OperationDistinctUntilChangedTest {
 
   @Test
   public void testDistinctUntilChangedOfSourceWithExceptionsFromKeySelector() {
-    Observable<String> src = from("a", "b", null, "c");
-    create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
+    Observable<String> src = Observable.from("a", "b", null, "c");
+    Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
 
     InOrder inOrder = inOrder(w);
     inOrder.verify(w, times(1)).onNext("a");
@@ -133,8 +131,8 @@ public class OperationDistinctUntilChangedTest {
 
   @Test
   public void testDistinctUntilChangedWithComparator() {
-    Observable<String> src = from("a", "b", "c", "aa", "bb", "c", "ddd");
-    create(distinctUntilChanged(src, COMPARE_LENGTH)).subscribe(w);
+    Observable<String> src = Observable.from("a", "b", "c", "aa", "bb", "c", "ddd");
+    Observable.create(distinctUntilChanged(src, COMPARE_LENGTH)).subscribe(w);
     InOrder inOrder = inOrder(w);
     inOrder.verify(w, times(1)).onNext("a");
     inOrder.verify(w, times(1)).onNext("aa");
@@ -147,8 +145,8 @@ public class OperationDistinctUntilChangedTest {
 
   @Test
   public void testDistinctUntilChangedWithComparatorAndKeySelector() {
-    Observable<String> src = from("a", "b", "x", "aa", "bb", "c", "ddd");
-    create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w);
+    Observable<String> src = Observable.from("a", "b", "x", "aa", "bb", "c", "ddd");
+    Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w);
     InOrder inOrder = inOrder(w);
     inOrder.verify(w, times(1)).onNext("a");
     inOrder.verify(w, times(1)).onNext("x");
@@ -161,12 +159,12 @@ public class OperationDistinctUntilChangedTest {
 
   @Test
   public void testDistinctUntilChangedWithComparatorAndKeySelectorandTwoSubscriptions() {
-    Observable<String> src = from("a", "b", "x", "aa", "bb", "c", "ddd");
-    create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w);
+    Observable<String> src = Observable.from("a", "b", "x", "aa", "bb", "c", "ddd");
+    Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w);
     InOrder inOrder = inOrder(w);
     inOrder.verify(w, times(1)).onNext("a");
     inOrder.verify(w, times(1)).onNext("x");
-    create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w2);
+    Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w2);
     inOrder.verify(w, times(1)).onNext("c");
     inOrder.verify(w, times(1)).onNext("ddd");
     inOrder.verify(w, times(1)).onCompleted();
