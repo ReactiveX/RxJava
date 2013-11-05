@@ -1,5 +1,10 @@
 # RxJava Releases #
 
+### Version 0.14.8 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.8%22)) ###
+
+* [Pull 460](https://github.com/Netflix/RxJava/pull/460) Operator: Amb
+* [Pull 466](https://github.com/Netflix/RxJava/pull/466) Refactor Unit Tests
+
 ### Version 0.14.7 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.7%22)) ###
 
 * [Pull 459](https://github.com/Netflix/RxJava/pull/459) Fix multiple unsubscribe behavior
