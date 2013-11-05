@@ -15,6 +15,10 @@
  */
 package rx.operators;
 
+import static rx.util.functions.Functions.*;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -22,10 +26,6 @@ import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Func1;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static rx.util.functions.Functions.alwaysTrue;
 
 /**
  * Returns an Observable that emits the first item emitted by the source
@@ -35,7 +35,7 @@ public final class OperationFirstOrDefault {
 
     /**
      * Returns an Observable that emits the first item emitted by the source
-     * Observable that satisfies the given condition, 
+     * Observable that satisfies the given condition,
      * or a default value if the source emits no items that satisfy the given condition.
      * 
      * @param source
@@ -49,7 +49,7 @@ public final class OperationFirstOrDefault {
     public static <T> OnSubscribeFunc<T> firstOrDefault(Observable<? extends T> source, Func1<? super T, Boolean> predicate, T defaultValue) {
         return new FirstOrElse<T>(source, predicate, defaultValue);
     }
-    
+
     /**
      * Returns an Observable that emits the first item emitted by the source
      * Observable, or a default value if the source emits nothing.
@@ -79,7 +79,7 @@ public final class OperationFirstOrDefault {
         public Subscription onSubscribe(final Observer<? super T> observer) {
             final Subscription sourceSub = source.subscribe(new Observer<T>() {
                 private final AtomicBoolean hasEmitted = new AtomicBoolean(false);
-                
+
                 @Override
                 public void onCompleted() {
                     if (!hasEmitted.get()) {
@@ -107,7 +107,7 @@ public final class OperationFirstOrDefault {
                     }
                 }
             });
-            
+
             return Subscriptions.create(new Action0() {
                 @Override
                 public void call() {

@@ -15,15 +15,15 @@
  */
 package rx.operators;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Skips any emitted source items as long as the specified condition holds true. Emits all further source items
@@ -33,7 +33,7 @@ public final class OperationSkipWhile {
     public static <T> OnSubscribeFunc<T> skipWhileWithIndex(Observable<? extends T> source, Func2<? super T, Integer, Boolean> predicate) {
         return new SkipWhile<T>(source, predicate);
     }
-    
+
     public static <T> OnSubscribeFunc<T> skipWhile(Observable<? extends T> source, final Func1<? super T, Boolean> predicate) {
         return new SkipWhile<T>(source, new Func2<T, Integer, Boolean>() {
             @Override
@@ -48,7 +48,7 @@ public final class OperationSkipWhile {
         private final Func2<? super T, Integer, Boolean> predicate;
         private final AtomicBoolean skipping = new AtomicBoolean(true);
         private final AtomicInteger index = new AtomicInteger(0);
-        
+
         SkipWhile(Observable<? extends T> source, Func2<? super T, Integer, Boolean> pred) {
             this.source = source;
             this.predicate = pred;
@@ -86,7 +86,7 @@ public final class OperationSkipWhile {
                             observer.onNext(next);
                         } else {
                         }
-                    } catch(Throwable t) {
+                    } catch (Throwable t) {
                         observer.onError(t);
                     }
                 }

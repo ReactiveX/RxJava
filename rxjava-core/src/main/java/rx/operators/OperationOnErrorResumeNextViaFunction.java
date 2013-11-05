@@ -15,15 +15,15 @@
  */
 package rx.operators;
 
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.CompositeException;
 import rx.util.functions.Func1;
-
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Instruct an Observable to pass control to another Observable (the return value of a function)

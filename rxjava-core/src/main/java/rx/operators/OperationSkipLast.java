@@ -15,14 +15,14 @@
  */
 package rx.operators;
 
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.concurrent.locks.ReentrantLock;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Bypasses a specified number of elements at the end of an observable sequence.
@@ -37,7 +37,7 @@ public class OperationSkipLast {
      * count elements. As more elements are received, elements are taken from
      * the front of the queue and produced on the result sequence. This causes
      * elements to be delayed.
-     *
+     * 
      * @param source
      *            the source sequence.
      * @param count
@@ -45,7 +45,7 @@ public class OperationSkipLast {
      *            sequence.
      * @return An observable sequence containing the source sequence elements
      *         except for the bypassed ones at the end.
-     *
+     * 
      * @throws IndexOutOfBoundsException
      *             count is less than zero.
      */

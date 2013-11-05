@@ -18,7 +18,8 @@ package rx.util;
 public class Openings {
 
     public static Opening create() {
-        return new Opening() {};
+        return new Opening() {
+        };
     }
 
     private Openings() {

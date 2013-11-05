@@ -15,12 +15,12 @@
  */
 package rx.operators;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Instruct an Observable to pass control to another Observable rather than invoking

@@ -15,13 +15,13 @@
  */
 package rx.operators;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subjects.ReplaySubject;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This method has similar behavior to {@link Observable#replay()} except that this auto-subscribes

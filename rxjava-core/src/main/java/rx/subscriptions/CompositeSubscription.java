@@ -15,14 +15,14 @@
  */
 package rx.subscriptions;
 
-import rx.Subscription;
-import rx.util.CompositeException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import rx.Subscription;
+import rx.util.CompositeException;
 
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed together.

@@ -15,12 +15,12 @@
  */
 package rx.operators;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Instruct an Observable to pass control to another Observable rather than invoking
@@ -67,7 +67,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             subscription.wrap(originalSequence.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     // forward the successful calls unless resumed
-                    if (subscriptionRef.get()==subscription)
+                    if (subscriptionRef.get() == subscription)
                         observer.onNext(value);
                 }
 
@@ -92,7 +92,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
 
                 public void onCompleted() {
                     // forward the successful calls unless resumed
-                    if (subscriptionRef.get()==subscription)
+                    if (subscriptionRef.get() == subscription)
                         observer.onCompleted();
                 }
             }));

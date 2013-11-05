@@ -15,13 +15,13 @@
  */
 package rx.operators;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Returns an Observable that emits a Boolean that indicates whether all items emitted by an
@@ -41,12 +41,10 @@ public class OperationAll {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-
         private AllObservable(Observable<? extends T> sequence, Func1<? super T, Boolean> predicate) {
             this.sequence = sequence;
             this.predicate = predicate;
         }
-
 
         @Override
         public Subscription onSubscribe(final Observer<? super Boolean> observer) {

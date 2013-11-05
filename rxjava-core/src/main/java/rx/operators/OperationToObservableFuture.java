@@ -15,13 +15,13 @@
  */
 package rx.operators;
 
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Converts a Future into an Observable.
@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
  * <code>Observable.subscribe(Observer)</code> does nothing.
  */
 public class OperationToObservableFuture {
-    static class ToObservableFuture<T> implements OnSubscribeFunc<T> {
+    /* package accessible for unit tests */static class ToObservableFuture<T> implements OnSubscribeFunc<T> {
         private final Future<? extends T> that;
         private final Long time;
         private final TimeUnit unit;

@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,12 +15,12 @@
  */
 package rx.subjects;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Observer;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Subject that publishes the most recent and all subsequent events to each subscribed {@link Observer}.
@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p>
  * <pre> {@code
 
-  // observer will receive all events.
+ * / observer will receive all events.
   BehaviorSubject<Object> subject = BehaviorSubject.createWithDefaultValue("default");
   subject.subscribe(observer);
   subject.onNext("one");
@@ -47,18 +47,16 @@ import java.util.concurrent.atomic.AtomicReference;
   subject.onNext("three");
 
   } </pre>
- *
+ * 
  * @param <T>
  */
 public class BehaviorSubject<T> extends Subject<T, T> {
 
     /**
-     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each
-     * {@link Observer} that subscribes to it.
-     *
+     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each {@link Observer} that subscribes to it.
+     * 
      * @param defaultValue
-     *            The value which will be published to any {@link Observer} as long as the
-     *            {@link BehaviorSubject} has not yet received any events.
+     *            The value which will be published to any {@link Observer} as long as the {@link BehaviorSubject} has not yet received any events.
      * @return the constructed {@link BehaviorSubject}.
      */
     public static <T> BehaviorSubject<T> createWithDefaultValue(T defaultValue) {

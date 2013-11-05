@@ -36,6 +36,7 @@ import rx.util.Exceptions;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterator.png">
  * <p>
+ * 
  * @see <a href="https://github.com/Netflix/RxJava/issues/50">Issue #50</a>
  */
 public class OperationToIterator {

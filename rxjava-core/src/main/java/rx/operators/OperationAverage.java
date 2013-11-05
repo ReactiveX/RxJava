@@ -21,19 +21,20 @@ import rx.util.functions.Func2;
 
 /**
  * A few operators for implementing the averaging operation.
+ * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
  */
 public final class OperationAverage {
     private static final class Tuple2<T> {
         private final T current;
         private final Integer count;
-        
+
         private Tuple2(T v1, Integer v2) {
             current = v1;
             count = v2;
         }
     }
-    
+
     public static Observable<Integer> average(Observable<Integer> source) {
         return source.reduce(new Tuple2<Integer>(0, 0), new Func2<Tuple2<Integer>, Integer, Tuple2<Integer>>() {
             @Override

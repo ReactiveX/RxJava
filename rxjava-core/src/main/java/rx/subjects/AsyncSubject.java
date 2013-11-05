@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,12 +15,12 @@
  */
 package rx.subjects;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Observer;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Subject that publishes only the last event to each {@link Observer} that has subscribed when the
@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p>
  * <pre> {@code
 
-  // observer will receive no onNext events because the subject.onCompleted() isn't called.
+ * / observer will receive no onNext events because the subject.onCompleted() isn't called.
   AsyncSubject<Object> subject = AsyncSubject.create();
   subject.subscribe(observer);
   subject.onNext("one");
@@ -48,15 +48,14 @@ import java.util.concurrent.atomic.AtomicReference;
   subject.onCompleted();
 
   } </pre>
- *
+ * 
  * @param <T>
  */
 public class AsyncSubject<T> extends Subject<T, T> {
 
-
     /**
      * Create a new AsyncSubject
-     *
+     * 
      * @return a new AsyncSubject
      */
     public static <T> AsyncSubject<T> create() {

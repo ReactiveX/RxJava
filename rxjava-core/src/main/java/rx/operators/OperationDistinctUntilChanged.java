@@ -15,6 +15,8 @@
  */
 package rx.operators;
 
+import java.util.Comparator;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -24,8 +26,6 @@ import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
 
-import java.util.Comparator;
-
 /**
  * Returns an Observable that emits all sequentially distinct items emitted by the source.
  */
@@ -33,6 +33,7 @@ public final class OperationDistinctUntilChanged {
 
     /**
      * Returns an Observable that emits all sequentially distinct items emitted by the source.
+     * 
      * @param source
      *            The source Observable to emit the sequentially distinct items for.
      * @param equalityComparator
@@ -40,11 +41,12 @@ public final class OperationDistinctUntilChanged {
      * @return A subscription function for creating the target Observable.
      */
     public static <T> OnSubscribeFunc<T> distinctUntilChanged(Observable<? extends T> source, Comparator<T> equalityComparator) {
-        return new DistinctUntilChanged<T, T>(source, Functions.<T>identity(), equalityComparator);
+        return new DistinctUntilChanged<T, T>(source, Functions.<T> identity(), equalityComparator);
     }
-    
+
     /**
      * Returns an Observable that emits all sequentially distinct items emitted by the source.
+     * 
      * @param source
      *            The source Observable to emit the sequentially distinct items for.
      * @param keySelector
@@ -56,9 +58,10 @@ public final class OperationDistinctUntilChanged {
     public static <T, U> OnSubscribeFunc<T> distinctUntilChanged(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
         return new DistinctUntilChanged<T, U>(source, keySelector, equalityComparator);
     }
-    
+
     /**
      * Returns an Observable that emits all sequentially distinct items emitted by the source.
+     * 
      * @param source
      *            The source Observable to emit the sequentially distinct items for.
      * @param keySelector
@@ -68,15 +71,16 @@ public final class OperationDistinctUntilChanged {
     public static <T, U> OnSubscribeFunc<T> distinctUntilChanged(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector) {
         return new DistinctUntilChanged<T, U>(source, keySelector, new DefaultEqualityComparator<U>());
     }
-    
+
     /**
      * Returns an Observable that emits all sequentially distinct items emitted by the source.
+     * 
      * @param source
      *            The source Observable to emit the sequentially distinct items for.
      * @return A subscription function for creating the target Observable.
      */
     public static <T> OnSubscribeFunc<T> distinctUntilChanged(Observable<? extends T> source) {
-        return new DistinctUntilChanged<T, T>(source, Functions.<T>identity(), new DefaultEqualityComparator<T>());
+        return new DistinctUntilChanged<T, T>(source, Functions.<T> identity(), new DefaultEqualityComparator<T>());
     }
 
     // does not define a useful ordering; it's only used for equality tests here
@@ -90,12 +94,12 @@ public final class OperationDistinctUntilChanged {
             }
         }
     }
-    
+
     private static class DistinctUntilChanged<T, U> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> source;
         private final Func1<? super T, ? extends U> keySelector;
         private final Comparator<U> equalityComparator;
-        
+
         private DistinctUntilChanged(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
             this.source = source;
             this.keySelector = keySelector;
@@ -107,7 +111,7 @@ public final class OperationDistinctUntilChanged {
             final Subscription sourceSub = source.subscribe(new Observer<T>() {
                 private U lastEmittedKey;
                 private boolean hasEmitted;
-                
+
                 @Override
                 public void onCompleted() {
                     observer.onCompleted();
@@ -131,7 +135,7 @@ public final class OperationDistinctUntilChanged {
                     }
                 }
             });
-            
+
             return Subscriptions.create(new Action0() {
                 @Override
                 public void call() {

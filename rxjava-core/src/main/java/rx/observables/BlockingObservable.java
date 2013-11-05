@@ -15,17 +15,22 @@
  */
 package rx.observables;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.operators.*;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
-
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
+
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
+import rx.operators.OperationMostRecent;
+import rx.operators.OperationNext;
+import rx.operators.OperationToFuture;
+import rx.operators.OperationToIterator;
+import rx.operators.SafeObservableSubscription;
+import rx.operators.SafeObserver;
+import rx.util.functions.Action1;
+import rx.util.functions.Func1;
 
 /**
  * An extension of {@link Observable} that provides blocking operators.

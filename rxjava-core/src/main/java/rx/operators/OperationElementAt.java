@@ -15,12 +15,12 @@
  */
 package rx.operators;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Returns the element at a specified index in a sequence.

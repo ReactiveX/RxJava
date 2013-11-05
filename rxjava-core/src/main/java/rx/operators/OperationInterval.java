@@ -15,6 +15,8 @@
  */
 package rx.operators;
 
+import java.util.concurrent.TimeUnit;
+
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
@@ -22,8 +24,6 @@ import rx.Subscription;
 import rx.concurrency.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Returns an observable sequence that produces a value after each period.
@@ -55,7 +55,7 @@ public final class OperationInterval {
         private final long period;
         private final TimeUnit unit;
         private final Scheduler scheduler;
-        
+
         private long currentValue;
 
         private Interval(long period, TimeUnit unit, Scheduler scheduler) {
@@ -73,7 +73,7 @@ public final class OperationInterval {
                     currentValue++;
                 }
             }, period, period, unit);
-            
+
             return Subscriptions.create(new Action0() {
                 @Override
                 public void call() {

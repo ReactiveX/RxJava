@@ -15,15 +15,24 @@
  */
 package rx.operators;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.*;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
+import rx.util.functions.Func2;
+import rx.util.functions.Func3;
+import rx.util.functions.Func4;
+import rx.util.functions.Func5;
+import rx.util.functions.Func6;
+import rx.util.functions.Func7;
+import rx.util.functions.Func8;
+import rx.util.functions.Func9;
+import rx.util.functions.FuncN;
+import rx.util.functions.Functions;
 
 /**
  * Returns an Observable that emits the results of a function applied to sets of items emitted, in
@@ -141,7 +150,7 @@ public final class OperationZip {
     /*
      * ThreadSafe
      */
-    static class ZipObserver<R, T> implements Observer<T> {
+    /* package accessible for unit tests */static class ZipObserver<R, T> implements Observer<T> {
         final Observable<? extends T> w;
         final Aggregator<R> a;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
@@ -186,7 +195,7 @@ public final class OperationZip {
      * 
      * @param <T>
      */
-    static class Aggregator<T> implements OnSubscribeFunc<T> {
+    /* package accessible for unit tests */static class Aggregator<T> implements OnSubscribeFunc<T> {
 
         private volatile SynchronizedObserver<T> observer;
         private final FuncN<? extends T> zipFunction;

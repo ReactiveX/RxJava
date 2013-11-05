@@ -15,13 +15,13 @@
  */
 package rx.subjects;
 
-import rx.Observer;
-import rx.Subscription;
-import rx.operators.SafeObservableSubscription;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
+
+import rx.Observer;
+import rx.Subscription;
+import rx.operators.SafeObservableSubscription;
 
 /**
  * Subject that, once and {@link Observer} has subscribed, publishes all subsequent events to the subscriber.

@@ -15,14 +15,14 @@
  */
 package rx.operators;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Returns an Observable that emits a single item, a list composed of all the items emitted by the
@@ -56,6 +56,7 @@ public final class OperationToObservableList<T> {
 
             return that.subscribe(new Observer<T>() {
                 final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();
+
                 public void onNext(T value) {
                     // onNext can be concurrently executed so list must be thread-safe
                     list.add(value);

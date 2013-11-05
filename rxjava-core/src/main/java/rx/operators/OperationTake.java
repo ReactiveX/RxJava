@@ -15,13 +15,13 @@
  */
 package rx.operators;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Returns an Observable that emits the first <code>num</code> items emitted by the source

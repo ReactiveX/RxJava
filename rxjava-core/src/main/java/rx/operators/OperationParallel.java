@@ -15,14 +15,14 @@
  */
 package rx.operators;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rx.Observable;
 import rx.Scheduler;
 import rx.concurrency.Schedulers;
 import rx.observables.GroupedObservable;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Identifies unit of work that can be executed in parallel on a given Scheduler.

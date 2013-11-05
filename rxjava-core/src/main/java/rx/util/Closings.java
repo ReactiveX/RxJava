@@ -18,7 +18,8 @@ package rx.util;
 public class Closings {
 
     public static Closing create() {
-        return new Closing() {};
+        return new Closing() {
+        };
     }
 
     private Closings() {

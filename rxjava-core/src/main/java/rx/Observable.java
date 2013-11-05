@@ -19,7 +19,6 @@ import static rx.util.functions.Functions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -287,7 +286,7 @@ public class Observable<T> {
     /**
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to
      * receive items and notifications from the Observable.
-     *
+     * 
      * @param onNext
      */
     public Subscription subscribe(final Action1<? super T> onNext) {
@@ -324,7 +323,7 @@ public class Observable<T> {
     /**
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to
      * receive items and notifications from the Observable.
-     *
+     * 
      * @param onNext
      * @param scheduler
      */
@@ -369,7 +368,7 @@ public class Observable<T> {
     /**
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to
      * receive items and notifications from the Observable.
-     *
+     * 
      * @param onNext
      * @param onError
      * @param scheduler
@@ -381,7 +380,7 @@ public class Observable<T> {
     /**
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to
      * receive items and notifications from the Observable.
-     *
+     * 
      * @param onNext
      * @param onError
      * @param onComplete
@@ -426,7 +425,7 @@ public class Observable<T> {
     /**
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to
      * receive items and notifications from the Observable.
-     *
+     * 
      * @param onNext
      * @param onError
      * @param onComplete
@@ -561,6 +560,7 @@ public class Observable<T> {
      * its {@link Observer#onCompleted onCompleted} method with the specified scheduler.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/empty.png">
+     * 
      * @param scheduler
      *            the scheduler to call the {@link Observer#onCompleted onCompleted} method.
      * @param <T>
@@ -571,7 +571,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229066(v=vs.103).aspx">MSDN: Observable.Empty Method (IScheduler)</a>
      */
     public static <T> Observable<T> empty(Scheduler scheduler) {
-        return Observable.<T>empty().subscribeOn(scheduler);
+        return Observable.<T> empty().subscribeOn(scheduler);
     }
 
     /**
@@ -594,7 +594,7 @@ public class Observable<T> {
      * Returns an Observable that invokes an {@link Observer}'s {@link Observer#onError onError} method with the specified scheduler.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.png">
-     *
+     * 
      * @param exception
      *            the particular error to report
      * @param scheduler
@@ -626,7 +626,7 @@ public class Observable<T> {
     public static <T> Observable<T> from(Iterable<? extends T> iterable) {
         return create(OperationToObservableIterable.toObservableIterable(iterable));
     }
-    
+
     /**
      * Converts an Array into an Observable.
      * <p>
@@ -906,7 +906,7 @@ public class Observable<T> {
     public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
         return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
-    
+
     /**
      * Converts a series of items into an Observable.
      * <p>
@@ -1018,7 +1018,7 @@ public class Observable<T> {
      * Returns an Observable that emits a single item and then completes on a specified scheduler.
      * <p>
      * This is a scheduler version of {@link Observable#just(Object)}.
-     *
+     * 
      * @param value
      *            the item to pass to the {@link Observer}'s {@link Observer#onNext onNext} method
      * @param scheduler
@@ -1049,7 +1049,7 @@ public class Observable<T> {
     public static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
         return create(OperationMerge.merge(source));
     }
-    
+
     /**
      * Flattens a series of Observables into one Observable, without any transformation.
      * <p>
@@ -1095,7 +1095,7 @@ public class Observable<T> {
     public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
         return create(OperationMerge.merge(t1, t2, t3));
     }
-    
+
     /**
      * Flattens a series of Observables into one Observable, without any transformation.
      * <p>
@@ -1121,7 +1121,7 @@ public class Observable<T> {
     public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
         return create(OperationMerge.merge(t1, t2, t3, t4));
     }
-    
+
     /**
      * Flattens a series of Observables into one Observable, without any transformation.
      * <p>
@@ -1149,7 +1149,7 @@ public class Observable<T> {
     public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
         return create(OperationMerge.merge(t1, t2, t3, t4, t5));
     }
-    
+
     /**
      * Flattens a series of Observables into one Observable, without any transformation.
      * <p>
@@ -1179,7 +1179,7 @@ public class Observable<T> {
     public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
         return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6));
     }
-    
+
     /**
      * Flattens a series of Observables into one Observable, without any transformation.
      * <p>
@@ -1211,7 +1211,7 @@ public class Observable<T> {
     public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
         return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6, t7));
     }
-    
+
     /**
      * Flattens a series of Observables into one Observable, without any transformation.
      * <p>
@@ -1245,7 +1245,7 @@ public class Observable<T> {
     public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
         return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6, t7, t8));
     }
-    
+
     /**
      * Flattens a series of Observables into one Observable, without any transformation.
      * <p>
@@ -1297,7 +1297,7 @@ public class Observable<T> {
     public static <T> Observable<T> concat(Observable<? extends Observable<? extends T>> observables) {
         return create(OperationConcat.concat(observables));
     }
-    
+
     /**
      * Returns an Observable that emits the items emitted by two or more Observables, one after the
      * other.
@@ -1567,7 +1567,7 @@ public class Observable<T> {
     public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2));
     }
-    
+
     /**
      * This behaves like {@link #merge(Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
@@ -1597,7 +1597,7 @@ public class Observable<T> {
     public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3));
     }
-    
+
     /**
      * This behaves like {@link #merge(Observable, Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
@@ -1629,7 +1629,7 @@ public class Observable<T> {
     public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4));
     }
-    
+
     /**
      * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
@@ -1663,7 +1663,7 @@ public class Observable<T> {
     public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5));
     }
-    
+
     /**
      * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
@@ -1699,7 +1699,7 @@ public class Observable<T> {
     public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6));
     }
-    
+
     /**
      * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
@@ -1737,7 +1737,7 @@ public class Observable<T> {
     public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7));
     }
-    
+
     /**
      * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
@@ -1777,7 +1777,7 @@ public class Observable<T> {
     public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7, t8));
     }
-    
+
     /**
      * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will
@@ -1866,7 +1866,6 @@ public class Observable<T> {
     public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
         return create(OperationSwitch.switchDo(sequenceOfSequences));
     }
-    
 
     /**
      * Accepts an Observable and wraps it in another Observable that ensures that the resulting
@@ -1894,7 +1893,7 @@ public class Observable<T> {
      * A well-behaved Observable does not interleave its invocations of the {@link Observer#onNext onNext}, {@link Observer#onCompleted onCompleted}, and {@link Observer#onError onError} methods of
      * its {@link Observer}s; it invokes {@code onCompleted} or {@code onError} only once; and it never invokes {@code onNext} after invoking either {@code onCompleted} or {@code onError}.
      * {@code synchronize} enforces this, and the Observable it returns invokes {@code onNext} and {@code onCompleted} or {@code onError} synchronously.
-     *
+     * 
      * @param lock
      *            The lock object to synchronize each observer call on
      * @return an Observable that is a chronologically well-behaved version of the source
@@ -1905,18 +1904,18 @@ public class Observable<T> {
     }
 
     /**
-     * @deprecated Replaced with instance method. 
+     * @deprecated Replaced with instance method.
      */
     @Deprecated
     public static <T> Observable<T> synchronize(Observable<T> source) {
         return create(OperationSynchronize.synchronize(source));
     }
-    
+
     /**
      * Emits an item each time interval (containing a sequential number).
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/interval.png">
-     *
+     * 
      * @param interval
      *            Interval size in time units (see below).
      * @param unit
@@ -1927,12 +1926,12 @@ public class Observable<T> {
     public static Observable<Long> interval(long interval, TimeUnit unit) {
         return create(OperationInterval.interval(interval, unit));
     }
-    
+
     /**
      * Emits an item each time interval (containing a sequential number).
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/interval.png">
-     *
+     * 
      * @param interval
      *            Interval size in time units (see below).
      * @param unit
@@ -1945,7 +1944,7 @@ public class Observable<T> {
     public static Observable<Long> interval(long interval, TimeUnit unit, Scheduler scheduler) {
         return create(OperationInterval.interval(interval, unit, scheduler));
     }
-    
+
     /**
      * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
      * <p>
@@ -3035,8 +3034,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the results of a function of your choosing applied to
      * combinations of N items emitted, in sequence, by N other Observables as provided by an Iterable.
-     * <p>
-     * {@code zip} applies this function in strict sequence, so the first item emitted by the
+     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the
      * new Observable will be the result of the function applied to the first item emitted by
      * all of the Observalbes; the second item emitted by the new Observable will be the result of
      * the function applied to the second item emitted by each of those Observables; and so forth.
@@ -3139,7 +3137,7 @@ public class Observable<T> {
     public Observable<T> distinct() {
         return create(OperationDistinct.distinct(this));
     }
-    
+
     /**
      * Returns an Observable that forwards all items emitted from the source Observable that are distinct according
      * to a key selector function.
@@ -3155,7 +3153,7 @@ public class Observable<T> {
     public <U> Observable<T> distinct(Func1<? super T, ? extends U> keySelector) {
         return create(OperationDistinct.distinct(this, keySelector));
     }
-    
+
     /**
      * Returns the element at a specified index in a sequence.
      * 
@@ -3193,9 +3191,9 @@ public class Observable<T> {
     public Observable<T> elementAtOrDefault(int index, T defaultValue) {
         return create(OperationElementAt.elementAtOrDefault(this, index, defaultValue));
     }
-    
+
     /**
-     * Returns an {@link Observable} that emits <code>true</code> if any element of the source {@link Observable} satisfies 
+     * Returns an {@link Observable} that emits <code>true</code> if any element of the source {@link Observable} satisfies
      * the given condition, otherwise <code>false</code>. Note: always emit <code>false</code> if the source {@link Observable} is empty.
      * <p>
      * In Rx.Net this is the <code>any</code> operator but renamed in RxJava to better match Java naming idioms.
@@ -3209,10 +3207,10 @@ public class Observable<T> {
     public Observable<Boolean> exists(Func1<? super T, Boolean> predicate) {
         return create(OperationAny.exists(this, predicate));
     }
-    
+
     /**
      * Determines whether an observable sequence contains a specified element.
-     *
+     * 
      * @param element
      *            The element to search in the sequence.
      * @return an Observable that emits if the element is in the source sequence.
@@ -3531,8 +3529,8 @@ public class Observable<T> {
      * Returns an Observable that counts the total number of elements in the source Observable.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/count.png">
-     *
-     * @return an Observable emitting the number of counted elements of the source Observable 
+     * 
+     * @return an Observable emitting the number of counted elements of the source Observable
      *         as its single item.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229470%28v=vs.103%29.aspx">MSDN: Observable.Count</a>
      */
@@ -3544,22 +3542,22 @@ public class Observable<T> {
             }
         });
     }
-    
+
     /**
      * Returns an Observable that sums up the elements in the source Observable.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.png">
-     *
+     * 
      * @param source
-     *            Source observable to compute the sum of.      
-     * @return an Observable emitting the sum of all the elements of the source Observable 
+     *            Source observable to compute the sum of.
+     * @return an Observable emitting the sum of all the elements of the source Observable
      *         as its single item.
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
      */
     public static Observable<Integer> sum(Observable<Integer> source) {
         return OperationSum.sum(source);
     }
-    
+
     /**
      * @see #sum(Observable)
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
@@ -3567,7 +3565,7 @@ public class Observable<T> {
     public static Observable<Long> sumLongs(Observable<Long> source) {
         return OperationSum.sumLongs(source);
     }
-    
+
     /**
      * @see #sum(Observable)
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
@@ -3575,7 +3573,7 @@ public class Observable<T> {
     public static Observable<Float> sumFloats(Observable<Float> source) {
         return OperationSum.sumFloats(source);
     }
-    
+
     /**
      * @see #sum(Observable)
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
@@ -3583,23 +3581,23 @@ public class Observable<T> {
     public static Observable<Double> sumDoubles(Observable<Double> source) {
         return OperationSum.sumDoubles(source);
     }
-    
+
     /**
      * Returns an Observable that computes the average of all elements in the source Observable.
      * For an empty source, it causes an ArithmeticException.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.png">
-     *
+     * 
      * @param source
-     *            Source observable to compute the average of.      
-     * @return an Observable emitting the averageof all the elements of the source Observable 
+     *            Source observable to compute the average of.
+     * @return an Observable emitting the averageof all the elements of the source Observable
      *         as its single item.
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
      */
     public static Observable<Integer> average(Observable<Integer> source) {
         return OperationAverage.average(source);
     }
-    
+
     /**
      * @see #average(Observable)
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
@@ -3636,7 +3634,7 @@ public class Observable<T> {
     public ConnectableObservable<T> replay() {
         return OperationMulticast.multicast(this, ReplaySubject.<T> create());
     }
-    
+
     /**
      * Retry subscription to origin Observable upto given retry count.
      * <p>
@@ -3668,6 +3666,7 @@ public class Observable<T> {
      * <p>
      * For example, if an Observable fails on first time but emits [1, 2] then succeeds the second time and
      * emits [1, 2, 3, 4, 5] then the complete output would be [1, 2, 1, 2, 3, 4, 5, onCompleted].
+     * 
      * @return Observable with retry logic.
      */
     public Observable<T> retry() {
@@ -3714,11 +3713,11 @@ public class Observable<T> {
      *            a {@link Scheduler} to perform the work on.
      * @return an Observable with the output of the {@link Func1} executed on a {@link Scheduler}
      */
-    
+
     public <R> Observable<R> parallel(final Func1<Observable<T>, Observable<R>> f, final Scheduler s) {
         return OperationParallel.parallel(this, f, s);
     }
-    
+
     /**
      * Returns a {@link ConnectableObservable}, which waits until its {@link ConnectableObservable#connect connect} method is called before it begins emitting
      * items to those {@link Observer}s that have subscribed to it.
@@ -3734,6 +3733,7 @@ public class Observable<T> {
 
     /**
      * Returns a {@link ConnectableObservable} that shares a single subscription that contains the last notification only.
+     * 
      * @return a {@link ConnectableObservable}
      */
     public ConnectableObservable<T> publishLast() {
@@ -3973,19 +3973,19 @@ public class Observable<T> {
     /**
      * Returns the elements of the specified sequence or the specified default
      * value in a singleton sequence if the sequence is empty.
-     *
+     * 
      * @param defaultValue
      *            The value to return if the sequence is empty.
      * @return An observable sequence that contains the specified default value
      *         if the source is empty; otherwise, the elements of the source
      *         itself.
-     *
+     * 
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229624(v=vs.103).aspx">MSDN: Observable.DefaultIfEmpty</a>
      */
     public Observable<T> defaultIfEmpty(T defaultValue) {
         return create(OperationDefaultIfEmpty.defaultIfEmpty(this, defaultValue));
     }
-    
+
     /**
      * Returns an Observable that emits only the first <code>num</code> items emitted by the source
      * Observable.
@@ -4051,7 +4051,7 @@ public class Observable<T> {
     public Observable<T> takeFirst() {
         return first();
     }
-    
+
     /**
      * Returns an Observable that emits only the very first item emitted by the source Observable
      * that satisfies a given condition.
@@ -4068,7 +4068,7 @@ public class Observable<T> {
     public Observable<T> takeFirst(Func1<? super T, Boolean> predicate) {
         return first(predicate);
     }
-    
+
     /**
      * Returns an Observable that emits only the last <code>count</code> items emitted by the source
      * Observable.
@@ -4108,13 +4108,13 @@ public class Observable<T> {
      * condition holds true. Emits all further source items as soon as the condition becomes false.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipWhileWithIndex.png">
-     *
+     * 
      * @param predicate
      *            A function to test each item emitted from the source Observable for a condition.
      *            It receives the emitted item as first parameter and the index of the emitted item as
      *            second parameter.
      * @return an Observable that emits all items from the source Observable as soon as the condition
-     *         becomes false. 
+     *         becomes false.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211631%28v=vs.103%29.aspx">MSDN: Observable.SkipWhile</a>
      */
     public Observable<T> skipWhileWithIndex(Func2<? super T, Integer, Boolean> predicate) {
@@ -4126,11 +4126,11 @@ public class Observable<T> {
      * condition holds true. Emits all further source items as soon as the condition becomes false.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipWhile.png">
-     *
+     * 
      * @param predicate
      *            A function to test each item emitted from the source Observable for a condition.
      * @return an Observable that emits all items from the source Observable as soon as the condition
-     *         becomes false. 
+     *         becomes false.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229685%28v=vs.103%29.aspx">MSDN: Observable.SkipWhile</a>
      */
     public Observable<T> skipWhile(Func1<? super T, Boolean> predicate) {
@@ -4145,16 +4145,16 @@ public class Observable<T> {
      * count elements. As more elements are received, elements are taken from
      * the front of the queue and produced on the result sequence. This causes
      * elements to be delayed.
-     *
+     * 
      * @param count
      *            number of elements to bypass at the end of the source
      *            sequence.
      * @return An observable sequence containing the source sequence elements
      *         except for the bypassed ones at the end.
-     *
+     * 
      * @throws IndexOutOfBoundsException
      *             count is less than zero.
-     *
+     * 
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211750(v=vs.103).aspx">MSDN: Observable.SkipLast</a>
      */
     public Observable<T> skipLast(int count) {
@@ -4225,7 +4225,7 @@ public class Observable<T> {
     public Observable<T> startWith(Iterable<T> values) {
         return concat(Observable.<T> from(values), this);
     }
-    
+
     /**
      * Emit a specified set of items before beginning to emit items from the source Observable.
      * <p>
@@ -4238,7 +4238,7 @@ public class Observable<T> {
     public Observable<T> startWith(T t1) {
         return concat(Observable.<T> from(t1), this);
     }
-    
+
     /**
      * Emit a specified set of items before beginning to emit items from the source Observable.
      * <p>
@@ -4253,7 +4253,7 @@ public class Observable<T> {
     public Observable<T> startWith(T t1, T t2) {
         return concat(Observable.<T> from(t1, t2), this);
     }
-    
+
     /**
      * Emit a specified set of items before beginning to emit items from the source Observable.
      * <p>
@@ -4270,7 +4270,7 @@ public class Observable<T> {
     public Observable<T> startWith(T t1, T t2, T t3) {
         return concat(Observable.<T> from(t1, t2, t3), this);
     }
-    
+
     /**
      * Emit a specified set of items before beginning to emit items from the source Observable.
      * <p>
@@ -4289,7 +4289,7 @@ public class Observable<T> {
     public Observable<T> startWith(T t1, T t2, T t3, T t4) {
         return concat(Observable.<T> from(t1, t2, t3, t4), this);
     }
-    
+
     /**
      * Emit a specified set of items before beginning to emit items from the source Observable.
      * <p>
@@ -4310,7 +4310,7 @@ public class Observable<T> {
     public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5) {
         return concat(Observable.<T> from(t1, t2, t3, t4, t5), this);
     }
-    
+
     /**
      * Emit a specified set of items before beginning to emit items from the source Observable.
      * <p>
@@ -4333,7 +4333,7 @@ public class Observable<T> {
     public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6) {
         return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6), this);
     }
-    
+
     /**
      * Emit a specified set of items before beginning to emit items from the source Observable.
      * <p>
@@ -4358,7 +4358,7 @@ public class Observable<T> {
     public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7) {
         return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6, t7), this);
     }
-    
+
     /**
      * Emit a specified set of items before beginning to emit items from the source Observable.
      * <p>
@@ -4385,7 +4385,7 @@ public class Observable<T> {
     public Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8) {
         return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6, t7, t8), this);
     }
-    
+
     /**
      * Emit a specified set of items before beginning to emit items from the source Observable.
      * <p>
@@ -4454,7 +4454,7 @@ public class Observable<T> {
     public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) {
         return create(OperationGroupBy.groupBy(this, keySelector));
     }
-    
+
     /**
      * Returns an {@link Observable} that emits <code>true</code> if the source {@link Observable} is empty, otherwise <code>false</code>.
      * <p>
@@ -4466,7 +4466,7 @@ public class Observable<T> {
     public Observable<Boolean> isEmpty() {
         return create(OperationAny.isEmpty(this));
     }
-    
+
     /**
      * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking
      * operators).
@@ -4479,16 +4479,14 @@ public class Observable<T> {
 
     /**
      * Converts the elements of an observable sequence to the specified type.
-     *
+     * 
      * @param klass
      *            The target class type which the elements will be converted to.
-     *
+     * 
      * @return An observable sequence that contains each element of the source
      *         sequence converted to the specified type.
-     *
-     * @see <a
-     *      href="http://msdn.microsoft.com/en-us/library/hh211842(v=vs.103).aspx">MSDN:
-     *      Observable.Cast</a>
+     * 
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211842(v=vs.103).aspx">MSDN: Observable.Cast</a>
      */
     public <R> Observable<R> cast(final Class<R> klass) {
         return create(OperationCast.cast(this, klass));
@@ -4497,14 +4495,14 @@ public class Observable<T> {
     /**
      * Filters the elements of an observable sequence based on the specified
      * type.
-     *
+     * 
      * @param klass
      *            The class type to filter the elements in the source sequence
      *            on.
-     *
+     * 
      * @return An observable sequence that contains elements from the input
      *         sequence of type klass.
-     *
+     * 
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229380(v=vs.103).aspx">MSDN: Observable.OfType</a>
      */
     public <R> Observable<R> ofType(final Class<R> klass) {
@@ -4517,9 +4515,9 @@ public class Observable<T> {
 
     /**
      * Ignores all values in an observable sequence and only calls onCompleted or onError method.
-     *
+     * 
      * @return An empty observable sequence that only call onCompleted, or onError method.
-     *
+     * 
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229242(v=vs.103).aspx">MSDN: Observable.IgnoreElements</a>
      */
     public Observable<T> ignoreElements() {
@@ -4528,12 +4526,13 @@ public class Observable<T> {
 
     /**
      * Returns either the observable sequence or an TimeoutException if timeout elapses.
+     * 
      * @param timeout
-     *                  The timeout duration
+     *            The timeout duration
      * @param timeUnit
-     *                  The time unit of the timeout
+     *            The time unit of the timeout
      * @param scheduler
-     *                  The scheduler to run the timeout timers on.
+     *            The scheduler to run the timeout timers on.
      * @return The source sequence with a TimeoutException in case of a timeout.
      */
     public Observable<T> timeout(long timeout, TimeUnit timeUnit, Scheduler scheduler) {
@@ -4542,10 +4541,11 @@ public class Observable<T> {
 
     /**
      * Returns either the observable sequence or an TimeoutException if timeout elapses.
+     * 
      * @param timeout
-     *                  The timeout duration
+     *            The timeout duration
      * @param timeUnit
-     *                  The time unit of the timeout
+     *            The time unit of the timeout
      * @return The source sequence with a TimeoutException in case of a timeout.
      */
     public Observable<T> timeout(long timeout, TimeUnit timeUnit) {
@@ -4554,7 +4554,7 @@ public class Observable<T> {
 
     /**
      * Records the time interval between consecutive elements in an observable sequence.
-     *
+     * 
      * @return An observable sequence with time interval information on elements.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212107(v=vs.103).aspx">MSDN: Observable.TimeInterval</a>
      */
@@ -4565,10 +4565,10 @@ public class Observable<T> {
     /**
      * Records the time interval between consecutive elements in an observable
      * sequence, using the specified scheduler to compute time intervals.
-     *
+     * 
      * @param scheduler
      *            Scheduler used to compute time intervals.
-     *
+     * 
      * @return An observable sequence with time interval information on elements.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212107(v=vs.103).aspx">MSDN: Observable.TimeInterval</a>
      */
@@ -4582,7 +4582,7 @@ public class Observable<T> {
      * For why this is being used see https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
      * 
      * NOTE: If strong reasons for not depending on package names comes up then the implementation of this method can change to looking for a marker interface.
-     *
+     * 
      * @param o
      * @return {@code true} if the given function is an internal implementation, and {@code false} otherwise.
      */

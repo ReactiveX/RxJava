@@ -14,7 +14,7 @@ public class OperationDefaultIfEmpty {
     /**
      * Returns the elements of the specified sequence or the specified default
      * value in a singleton sequence if the sequence is empty.
-     *
+     * 
      * @param source
      *            The sequence to return the specified value for if it is empty.
      * @param defaultValue

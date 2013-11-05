@@ -36,8 +36,7 @@ import rx.util.functions.Func2;
     private final AtomicBoolean started = new AtomicBoolean();
 
     private final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
-    
-    
+
     public ScheduledObserver(CompositeSubscription s, Observer<? super T> underlying, Scheduler scheduler) {
         this.parentSubscription = s;
         this.underlying = underlying;

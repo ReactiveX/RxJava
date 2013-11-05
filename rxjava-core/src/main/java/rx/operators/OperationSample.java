@@ -15,6 +15,10 @@
  */
 package rx.operators;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -23,10 +27,6 @@ import rx.Subscription;
 import rx.concurrency.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Returns an Observable that emits the results of sampling the items emitted by the source
@@ -49,16 +49,16 @@ public final class OperationSample {
     public static <T> OnSubscribeFunc<T> sample(final Observable<? extends T> source, long period, TimeUnit unit, Scheduler scheduler) {
         return new Sample<T>(source, period, unit, scheduler);
     }
-    
+
     private static class Sample<T> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> source;
         private final long period;
         private final TimeUnit unit;
         private final Scheduler scheduler;
-        
+
         private final AtomicBoolean hasValue = new AtomicBoolean();
         private final AtomicReference<T> latestValue = new AtomicReference<T>();
-        
+
         private Sample(Observable<? extends T> source, long interval, TimeUnit unit, Scheduler scheduler) {
             this.source = source;
             this.period = interval;
@@ -71,11 +71,13 @@ public final class OperationSample {
             Observable<Long> clock = Observable.create(OperationInterval.interval(period, unit, scheduler));
             final Subscription clockSubscription = clock.subscribe(new Observer<Long>() {
                 @Override
-                public void onCompleted() { /* the clock never completes */ }
-                
+                public void onCompleted() { /* the clock never completes */
+                }
+
                 @Override
-                public void onError(Throwable e) { /* the clock has no errors */ }
-                
+                public void onError(Throwable e) { /* the clock has no errors */
+                }
+
                 @Override
                 public void onNext(Long tick) {
                     if (hasValue.get()) {
@@ -83,27 +85,27 @@ public final class OperationSample {
                     }
                 }
             });
-      
+
             final Subscription sourceSubscription = source.subscribe(new Observer<T>() {
                 @Override
                 public void onCompleted() {
                     clockSubscription.unsubscribe();
                     observer.onCompleted();
                 }
-        
+
                 @Override
                 public void onError(Throwable e) {
                     clockSubscription.unsubscribe();
                     observer.onError(e);
                 }
-        
+
                 @Override
                 public void onNext(T value) {
                     latestValue.set(value);
                     hasValue.set(true);
                 }
             });
-            
+
             return Subscriptions.create(new Action0() {
                 @Override
                 public void call() {

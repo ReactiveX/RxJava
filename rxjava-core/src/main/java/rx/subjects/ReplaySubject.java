@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,12 +15,16 @@
  */
 package rx.subjects;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
-
-import java.util.*;
 
 /**
  * Subject that retains all events and will replay them to an {@link Observer} that subscribes.
@@ -31,7 +35,7 @@ import java.util.*;
  * <p>
  * <pre> {@code
 
-  ReplaySubject<Object> subject = ReplaySubject.create();
+ * eplaySubject<Object> subject = ReplaySubject.create();
   subject.onNext("one");
   subject.onNext("two");
   subject.onNext("three");
@@ -42,7 +46,7 @@ import java.util.*;
   subject.subscribe(observer2);
 
   } </pre>
- *
+ * 
  * @param <T>
  */
 public final class ReplaySubject<T> extends Subject<T, T>

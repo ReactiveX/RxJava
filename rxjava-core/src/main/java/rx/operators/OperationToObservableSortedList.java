@@ -15,17 +15,17 @@
  */
 package rx.operators;
 
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
-import rx.Subscription;
-import rx.util.functions.Func2;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
+import rx.Observer;
+import rx.Subscription;
+import rx.util.functions.Func2;
 
 /**
  * Return an Observable that emits the items emitted by the source Observable, in a sorted order

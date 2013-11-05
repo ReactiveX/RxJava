@@ -15,15 +15,15 @@
  */
 package rx.operators;
 
+import static rx.util.functions.Functions.*;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static rx.util.functions.Functions.alwaysTrue;
 
 /**
  * Returns an {@link Observable} that emits <code>true</code> if any element of
@@ -41,7 +41,7 @@ public final class OperationAny {
     public static <T> OnSubscribeFunc<Boolean> any(Observable<? extends T> source) {
         return new Any<T>(source, alwaysTrue(), false);
     }
-    
+
     public static <T> OnSubscribeFunc<Boolean> isEmpty(Observable<? extends T> source) {
         return new Any<T>(source, alwaysTrue(), true);
     }
@@ -61,7 +61,7 @@ public final class OperationAny {
     public static <T> OnSubscribeFunc<Boolean> any(Observable<? extends T> source, Func1<? super T, Boolean> predicate) {
         return new Any<T>(source, predicate, false);
     }
-    
+
     public static <T> OnSubscribeFunc<Boolean> exists(Observable<? extends T> source, Func1<? super T, Boolean> predicate) {
         return any(source, predicate);
     }

@@ -15,6 +15,11 @@
  */
 package rx.operators;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -22,11 +27,6 @@ import rx.Subscription;
 import rx.observables.GroupedObservable;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Groups the items emitted by an Observable according to a specified criterion, and emits these
@@ -161,7 +161,7 @@ public final class OperationGroupBy {
     private static class GroupedSubject<K, T> extends GroupedObservable<K, T> implements Observer<T> {
 
         static <K, T> GroupedSubject<K, T> create(final K key, final GroupBy<K, T> parent) {
-            final AtomicReference<Observer<? super T>> subscribedObserver = new AtomicReference<Observer<? super T>>(OperationGroupBy.<T>emptyObserver());
+            final AtomicReference<Observer<? super T>> subscribedObserver = new AtomicReference<Observer<? super T>>(OperationGroupBy.<T> emptyObserver());
             return new GroupedSubject<K, T>(key, new OnSubscribeFunc<T>() {
 
                 private final SafeObservableSubscription subscription = new SafeObservableSubscription();
@@ -177,7 +177,7 @@ public final class OperationGroupBy {
                         @Override
                         public void unsubscribe() {
                             // we remove the Observer so we stop emitting further events (they will be ignored if parent continues to send)
-                            subscribedObserver.set(OperationGroupBy.<T>emptyObserver());
+                            subscribedObserver.set(OperationGroupBy.<T> emptyObserver());
                             // now we need to notify the parent that we're unsubscribed
                             parent.unsubscribeKey(key);
                         }
@@ -210,18 +210,18 @@ public final class OperationGroupBy {
 
     }
 
-    private static <T> Observer<T> emptyObserver() { 
+    private static <T> Observer<T> emptyObserver() {
         return new Observer<T>() {
             @Override
             public void onCompleted() {
                 // do nothing            
             }
-    
+
             @Override
             public void onError(Throwable e) {
                 // do nothing            
             }
-    
+
             @Override
             public void onNext(T t) {
                 // do nothing

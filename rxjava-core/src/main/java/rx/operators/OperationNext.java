@@ -15,16 +15,16 @@
  */
 package rx.operators;
 
-import rx.Notification;
-import rx.Observable;
-import rx.Observer;
-import rx.util.Exceptions;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import rx.Notification;
+import rx.Observable;
+import rx.Observer;
+import rx.util.Exceptions;
 
 /**
  * Returns an Iterable that blocks until the Observable emits another item, then returns that item.
@@ -63,17 +63,17 @@ public final class OperationNext {
 
         @Override
         public boolean hasNext() {
-            if(error != null) {
+            if (error != null) {
                 // If any error has already been thrown, throw it again.
                 throw Exceptions.propagate(error);
             }
             // Since an iterator should not be used in different thread,
             // so we do not need any synchronization.
-            if(hasNext == false) {
+            if (hasNext == false) {
                 // the iterator has reached the end.
                 return false;
             }
-            if(isNextConsumed == false) {
+            if (isNextConsumed == false) {
                 // next has not been used yet.
                 return true;
             }
@@ -83,7 +83,7 @@ public final class OperationNext {
         private boolean moveToNext() {
             try {
                 Notification<? extends T> nextNotification = observer.takeNext();
-                if(nextNotification.isOnNext()) {
+                if (nextNotification.isOnNext()) {
                     isNextConsumed = false;
                     next = nextNotification.getValue();
                     return true;
@@ -91,10 +91,10 @@ public final class OperationNext {
                 // If an observable is completed or fails,
                 // hasNext() always return false.
                 hasNext = false;
-                if(nextNotification.isOnCompleted()) {
+                if (nextNotification.isOnCompleted()) {
                     return false;
                 }
-                if(nextNotification.isOnError()) {
+                if (nextNotification.isOnError()) {
                     error = nextNotification.getThrowable();
                     throw Exceptions.propagate(error);
                 }
@@ -108,11 +108,11 @@ public final class OperationNext {
 
         @Override
         public T next() {
-            if(error != null) {
+            if (error != null) {
                 // If any error has already been thrown, throw it again.
                 throw Exceptions.propagate(error);
             }
-            if(hasNext()) {
+            if (hasNext()) {
                 isNextConsumed = true;
                 return next;
             }

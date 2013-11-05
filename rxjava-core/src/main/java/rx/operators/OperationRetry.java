@@ -16,6 +16,8 @@ package rx.operators;
  * limitations under the License.
  */
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -25,8 +27,6 @@ import rx.concurrency.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.util.functions.Func2;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class OperationRetry {
 

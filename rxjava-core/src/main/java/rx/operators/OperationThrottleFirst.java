@@ -15,6 +15,9 @@
  */
 package rx.operators;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -22,9 +25,6 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
 import rx.util.functions.Func1;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Throttle by windowing a stream and returning the first value in each window.

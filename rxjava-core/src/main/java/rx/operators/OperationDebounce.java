@@ -15,6 +15,9 @@
  */
 package rx.operators;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -23,9 +26,6 @@ import rx.Subscription;
 import rx.concurrency.Schedulers;
 import rx.util.functions.Action0;
 import rx.util.functions.Func1;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * This operation is used to filter out bursts of events. This is done by ignoring the events from an observable which are too

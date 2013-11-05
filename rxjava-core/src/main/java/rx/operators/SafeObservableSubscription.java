@@ -15,9 +15,9 @@
  */
 package rx.operators;
 
-import rx.Subscription;
-
 import java.util.concurrent.atomic.AtomicReference;
+
+import rx.Subscription;
 
 /**
  * Thread-safe wrapper around Observable Subscription that ensures unsubscribe can be called only once.
@@ -50,7 +50,8 @@ public final class SafeObservableSubscription implements Subscription {
     /**
      * Wraps the actual subscription once it exists (if it wasn't available when constructed)
      * 
-     * @param actualSubscription the wrapped subscription
+     * @param actualSubscription
+     *            the wrapped subscription
      * @throws IllegalStateException
      *             if trying to set more than once (or use this method after setting via constructor)
      */

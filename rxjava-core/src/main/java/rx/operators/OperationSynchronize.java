@@ -58,11 +58,11 @@ public final class OperationSynchronize<T> {
     /**
      * Accepts an observable and wraps it in another observable which ensures that the resulting observable is well-behaved.
      * This is accomplished by acquiring a mutual-exclusion lock for the object provided as the lock parameter.
-     *
+     * 
      * A well-behaved observable ensures onNext, onCompleted, or onError calls to its subscribers are
      * not interleaved, onCompleted and onError are only called once respectively, and no
      * onNext calls follow onCompleted and onError calls.
-     *
+     * 
      * @param observable
      * @param lock
      *            The lock object to synchronize each observer call on
@@ -86,7 +86,7 @@ public final class OperationSynchronize<T> {
 
         public Subscription onSubscribe(Observer<? super T> observer) {
             SafeObservableSubscription subscription = new SafeObservableSubscription();
-            if(lock == null) {
+            if (lock == null) {
                 atomicObserver = new SynchronizedObserver<T>(observer, subscription);
             }
             else {

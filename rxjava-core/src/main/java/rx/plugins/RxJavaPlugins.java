@@ -32,7 +32,7 @@ public class RxJavaPlugins {
     private final AtomicReference<RxJavaErrorHandler> errorHandler = new AtomicReference<RxJavaErrorHandler>();
     private final AtomicReference<RxJavaObservableExecutionHook> observableExecutionHook = new AtomicReference<RxJavaObservableExecutionHook>();
 
-    RxJavaPlugins() {
+    /* package accessible for unit tests */RxJavaPlugins() {
 
     }
 

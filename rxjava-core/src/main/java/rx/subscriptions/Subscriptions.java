@@ -15,11 +15,11 @@
  */
 package rx.subscriptions;
 
+import java.util.concurrent.Future;
+
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action0;
-
-import java.util.concurrent.Future;
 
 /**
  * Helper methods and utilities for creating and working with {@link Subscription} objects
@@ -102,7 +102,7 @@ public class Subscriptions {
     public static CompositeSubscription from(Subscription... subscriptions) {
         return new CompositeSubscription(subscriptions);
     }
-    
+
     /**
      * A {@link Subscription} that groups multiple Subscriptions together and unsubscribes from all of them together.
      * 

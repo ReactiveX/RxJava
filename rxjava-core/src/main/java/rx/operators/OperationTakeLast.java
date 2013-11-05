@@ -15,14 +15,14 @@
  */
 package rx.operators;
 
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.concurrent.locks.ReentrantLock;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Returns an Observable that emits the last <code>count</code> items emitted by the source

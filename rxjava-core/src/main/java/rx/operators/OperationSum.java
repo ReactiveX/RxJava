@@ -20,6 +20,7 @@ import rx.util.functions.Func2;
 
 /**
  * A few operators for implementing the sum operation.
+ * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
  */
 public final class OperationSum {

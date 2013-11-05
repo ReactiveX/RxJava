@@ -1,5 +1,13 @@
 package rx;
 
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
@@ -8,14 +16,6 @@ import rx.concurrency.TestScheduler;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 public class RefCountTests {
 
@@ -51,7 +51,7 @@ public class RefCountTests {
         second.unsubscribe();
         assertEquals(1, unsubscriptionCount.get());
     }
-    
+
     @Test
     public void testRefCount() {
         TestScheduler s = new TestScheduler();

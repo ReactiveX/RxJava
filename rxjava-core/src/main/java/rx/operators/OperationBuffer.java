@@ -15,6 +15,9 @@
  */
 package rx.operators;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -25,9 +28,6 @@ import rx.util.Closing;
 import rx.util.Opening;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public final class OperationBuffer extends ChunkedOperation {
 
@@ -65,7 +65,7 @@ public final class OperationBuffer extends ChunkedOperation {
 
             @Override
             public Subscription onSubscribe(Observer<? super List<T>> observer) {
-                NonOverlappingChunks<T, List<T>> buffers = new NonOverlappingChunks<T, List<T>>(observer, OperationBuffer.<T>bufferMaker());
+                NonOverlappingChunks<T, List<T>> buffers = new NonOverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new ObservableBasedSingleChunkCreator<T, List<T>>(buffers, bufferClosingSelector);
                 return source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator));
             }
@@ -101,7 +101,7 @@ public final class OperationBuffer extends ChunkedOperation {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
-                OverlappingChunks<T, List<T>> buffers = new OverlappingChunks<T, List<T>>(observer, OperationBuffer.<T>bufferMaker());
+                OverlappingChunks<T, List<T>> buffers = new OverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new ObservableBasedMultiChunkCreator<T, List<T>>(buffers, bufferOpenings, bufferClosingSelector);
                 return source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator));
             }
@@ -156,7 +156,7 @@ public final class OperationBuffer extends ChunkedOperation {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
-                Chunks<T, List<T>> chunks = new SizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T>bufferMaker(), count);
+                Chunks<T, List<T>> chunks = new SizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), count);
                 ChunkCreator creator = new SkippingChunkCreator<T, List<T>>(chunks, skip);
                 return source.subscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator));
             }
@@ -211,7 +211,7 @@ public final class OperationBuffer extends ChunkedOperation {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
-                NonOverlappingChunks<T, List<T>> buffers = new NonOverlappingChunks<T, List<T>>(observer, OperationBuffer.<T>bufferMaker());
+                NonOverlappingChunks<T, List<T>> buffers = new NonOverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new TimeBasedChunkCreator<T, List<T>>(buffers, timespan, unit, scheduler);
                 return source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator));
             }
@@ -272,7 +272,7 @@ public final class OperationBuffer extends ChunkedOperation {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
-                Chunks<T, List<T>> chunks = new TimeAndSizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T>bufferMaker(), count, timespan, unit, scheduler);
+                Chunks<T, List<T>> chunks = new TimeAndSizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), count, timespan, unit, scheduler);
                 ChunkCreator creator = new SingleChunkCreator<T, List<T>>(chunks);
                 return source.subscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator));
             }
@@ -333,7 +333,7 @@ public final class OperationBuffer extends ChunkedOperation {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
-                OverlappingChunks<T, List<T>> buffers = new TimeBasedChunks<T, List<T>>(observer, OperationBuffer.<T>bufferMaker(), timespan, unit, scheduler);
+                OverlappingChunks<T, List<T>> buffers = new TimeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), timespan, unit, scheduler);
                 ChunkCreator creator = new TimeBasedChunkCreator<T, List<T>>(buffers, timeshift, unit, scheduler);
                 return source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator));
             }

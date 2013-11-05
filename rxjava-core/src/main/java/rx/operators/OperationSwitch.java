@@ -33,14 +33,11 @@ import rx.util.functions.Func1;
 public final class OperationSwitch {
 
     /**
-     * This function transforms an {@link Observable} sequence of
-     * {@link Observable} sequences into a single {@link Observable} sequence
-     * which produces values from the most recently published {@link Observable}
-     * .
+     * This function transforms an {@link Observable} sequence of {@link Observable} sequences into a single {@link Observable} sequence
+     * which produces values from the most recently published {@link Observable} .
      * 
      * @param sequences
-     *            The {@link Observable} sequence consisting of
-     *            {@link Observable} sequences.
+     *            The {@link Observable} sequence consisting of {@link Observable} sequences.
      * @return A {@link Func1} which does this transformation.
      */
     public static <T> OnSubscribeFunc<T> switchDo(final Observable<? extends Observable<? extends T>> sequences) {
@@ -76,13 +73,13 @@ public final class OperationSwitch {
 
     private static class SwitchObserver<T> implements Observer<Observable<? extends T>> {
 
-        private final Object                         gate;
-        private final Observer<? super T>            observer;
-        private final SafeObservableSubscription     parent;
+        private final Object gate;
+        private final Observer<? super T> observer;
+        private final SafeObservableSubscription parent;
         private final MultipleAssignmentSubscription child;
-        private long                                 latest;
-        private boolean                              stopped;
-        private boolean                              hasLatest;
+        private long latest;
+        private boolean stopped;
+        private boolean hasLatest;
 
         public SwitchObserver(Observer<? super T> observer, SafeObservableSubscription parent,
                 MultipleAssignmentSubscription child) {

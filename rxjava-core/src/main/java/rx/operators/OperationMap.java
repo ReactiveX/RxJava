@@ -46,11 +46,11 @@ public final class OperationMap {
      */
     public static <T, R> OnSubscribeFunc<R> map(final Observable<? extends T> sequence, final Func1<? super T, ? extends R> func) {
         return mapWithIndex(sequence, new Func2<T, Integer, R>() {
-                    @Override
-                    public R call(T value, @SuppressWarnings("unused") Integer unused) {
-                        return func.call(value);
-                    }
-                });
+            @Override
+            public R call(T value, @SuppressWarnings("unused") Integer unused) {
+                return func.call(value);
+            }
+        });
     }
 
     /**
@@ -60,7 +60,7 @@ public final class OperationMap {
      * @param sequence
      *            the input sequence.
      * @param func
-     *            a function to apply to each item in the sequence. The function gets the index of the emitted item 
+     *            a function to apply to each item in the sequence. The function gets the index of the emitted item
      *            as additional parameter.
      * @param <T>
      *            the type of the input sequence.

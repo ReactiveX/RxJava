@@ -62,7 +62,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
         this.subscription = subscription;
         this.lock = lock;
     }
-    
+
     /**
      * Used when synchronizing an Observer without access to the subscription.
      * 

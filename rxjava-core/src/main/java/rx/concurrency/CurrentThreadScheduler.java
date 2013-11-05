@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,13 +15,13 @@
  */
 package rx.concurrency;
 
-import rx.Scheduler;
-import rx.Subscription;
-import rx.util.functions.Func2;
-
 import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import rx.Scheduler;
+import rx.Subscription;
+import rx.util.functions.Func2;
 
 /**
  * Schedules work on the current thread but does not execute immediately. Work is put in a queue and executed after the current unit of work is completed.
@@ -35,7 +35,7 @@ public class CurrentThreadScheduler extends Scheduler {
 
     private static final ThreadLocal<PriorityQueue<TimedAction>> QUEUE = new ThreadLocal<PriorityQueue<TimedAction>>();
 
-    CurrentThreadScheduler() {
+    /* package accessible for unit tests */CurrentThreadScheduler() {
     }
 
     private final AtomicInteger counter = new AtomicInteger(0);

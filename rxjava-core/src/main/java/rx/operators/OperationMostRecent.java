@@ -15,13 +15,13 @@
  */
 package rx.operators;
 
-import rx.Observable;
-import rx.Observer;
-import rx.util.Exceptions;
-
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import rx.Observable;
+import rx.Observer;
+import rx.util.Exceptions;
 
 /**
  * Returns an Iterable that always returns the item most recently emitted by an Observable, or a

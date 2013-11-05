@@ -16,7 +16,7 @@ public class StartWithTests {
         assertEquals("zero", values.get(0));
         assertEquals("two", values.get(2));
     }
-    
+
     @Test
     public void startWithIterable() {
         List<String> li = new ArrayList<String>();

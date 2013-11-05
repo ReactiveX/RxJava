@@ -15,6 +15,12 @@
  */
 package rx.operators;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -24,18 +30,17 @@ import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
 
-import java.util.*;
-
 /**
  * Returns an Observable that emits all distinct items emitted by the source.
  * 
- * Be careful with this operation when using infinite or very large observables 
+ * Be careful with this operation when using infinite or very large observables
  * as it has to store all distinct values it has received.
  */
 public final class OperationDistinct {
 
     /**
      * Returns an Observable that emits all distinct items emitted by the source
+     * 
      * @param source
      *            The source Observable to emit the distinct items for.
      * @return A subscription function for creating the target Observable.
@@ -43,9 +48,10 @@ public final class OperationDistinct {
     public static <T, U> OnSubscribeFunc<T> distinct(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector) {
         return new Distinct<T, U>(source, keySelector);
     }
-    
+
     /**
      * Returns an Observable that emits all distinct items emitted by the source
+     * 
      * @param source
      *            The source Observable to emit the distinct items for.
      * @param equalityComparator
@@ -53,11 +59,12 @@ public final class OperationDistinct {
      * @return A subscription function for creating the target Observable.
      */
     public static <T> OnSubscribeFunc<T> distinct(Observable<? extends T> source, Comparator<T> equalityComparator) {
-        return new DistinctWithComparator<T, T>(source, Functions.<T>identity(), equalityComparator);
+        return new DistinctWithComparator<T, T>(source, Functions.<T> identity(), equalityComparator);
     }
-    
+
     /**
      * Returns an Observable that emits all distinct items emitted by the source
+     * 
      * @param source
      *            The source Observable to emit the distinct items for.
      * @param equalityComparator
@@ -67,21 +74,22 @@ public final class OperationDistinct {
     public static <T, U> OnSubscribeFunc<T> distinct(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
         return new DistinctWithComparator<T, U>(source, keySelector, equalityComparator);
     }
-    
+
     /**
      * Returns an Observable that emits all distinct items emitted by the source
+     * 
      * @param source
      *            The source Observable to emit the distinct items for.
      * @return A subscription function for creating the target Observable.
      */
     public static <T> OnSubscribeFunc<T> distinct(Observable<? extends T> source) {
-        return new Distinct<T, T>(source, Functions.<T>identity());
+        return new Distinct<T, T>(source, Functions.<T> identity());
     }
-    
+
     private static class Distinct<T, U> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> source;
         private final Func1<? super T, ? extends U> keySelector;
-        
+
         private Distinct(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector) {
             this.source = source;
             this.keySelector = keySelector;
@@ -91,7 +99,7 @@ public final class OperationDistinct {
         public Subscription onSubscribe(final Observer<? super T> observer) {
             final Subscription sourceSub = source.subscribe(new Observer<T>() {
                 private final Set<U> emittedKeys = new HashSet<U>();
-                
+
                 @Override
                 public void onCompleted() {
                     observer.onCompleted();
@@ -111,7 +119,7 @@ public final class OperationDistinct {
                     }
                 }
             });
-            
+
             return Subscriptions.create(new Action0() {
                 @Override
                 public void call() {
@@ -120,12 +128,12 @@ public final class OperationDistinct {
             });
         }
     }
-    
+
     private static class DistinctWithComparator<T, U> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> source;
         private final Func1<? super T, ? extends U> keySelector;
         private final Comparator<U> equalityComparator;
-        
+
         private DistinctWithComparator(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
             this.source = source;
             this.keySelector = keySelector;
@@ -135,10 +143,10 @@ public final class OperationDistinct {
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
             final Subscription sourceSub = source.subscribe(new Observer<T>() {
-                
+
                 // due to the totally arbitrary equality comparator, we can't use anything more efficient than lists here 
                 private final List<U> emittedKeys = new ArrayList<U>();
-                
+
                 @Override
                 public void onCompleted() {
                     observer.onCompleted();
@@ -157,9 +165,9 @@ public final class OperationDistinct {
                         observer.onNext(next);
                     }
                 }
-                
+
                 private boolean alreadyEmitted(U newKey) {
-                    for (U key: emittedKeys) {
+                    for (U key : emittedKeys) {
                         if (equalityComparator.compare(key, newKey) == 0) {
                             return true;
                         }
@@ -167,7 +175,7 @@ public final class OperationDistinct {
                     return false;
                 }
             });
-            
+
             return Subscriptions.create(new Action0() {
                 @Override
                 public void call() {
