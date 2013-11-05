@@ -15,13 +15,6 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.MockitoAnnotations;
-
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -53,7 +46,8 @@ public final class OperationScan {
      *            An accumulator function to be invoked on each element from the sequence.
      * 
      * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212007%28v=vs.103%29.aspx">Observable.Scan(TSource, TAccumulate) Method (IObservable(TSource), TAccumulate, Func(TAccumulate, TSource, TAccumulate))</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212007%28v=vs.103%29.aspx">Observable.Scan(TSource, TAccumulate) Method (IObservable(TSource), TAccumulate, Func(TAccumulate, TSource,
+     *      TAccumulate))</a>
      */
     public static <T, R> OnSubscribeFunc<R> scan(Observable<? extends T> sequence, R initialValue, Func2<R, ? super T, R> accumulator) {
         return new Accumulator<T, R>(sequence, initialValue, accumulator);
@@ -77,18 +71,18 @@ public final class OperationScan {
     private static class AccuWithoutInitialValue<T> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> sequence;
         private final Func2<T, T, T> accumulatorFunction;
-        
+
         private AccumulatingObserver<T, T> accumulatingObserver;
-        
+
         private AccuWithoutInitialValue(Observable<? extends T> sequence, Func2<T, T, T> accumulator) {
             this.sequence = sequence;
             this.accumulatorFunction = accumulator;
         }
-        
+
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
             return sequence.subscribe(new Observer<T>() {
-                
+
                 // has to be synchronized so that the initial value is always sent only once.
                 @Override
                 public synchronized void onNext(T value) {
@@ -99,7 +93,7 @@ public final class OperationScan {
                         accumulatingObserver.onNext(value);
                     }
                 }
-                
+
                 @Override
                 public void onError(Throwable e) {
                     observer.onError(e);
@@ -112,7 +106,7 @@ public final class OperationScan {
             });
         }
     }
-    
+
     private static class Accumulator<T, R> implements OnSubscribeFunc<R> {
         private final Observable<? extends T> sequence;
         private final R initialValue;
@@ -140,7 +134,7 @@ public final class OperationScan {
         private AccumulatingObserver(Observer<? super R> observer, R initialValue, Func2<R, ? super T, R> accumulator) {
             this.observer = observer;
             this.accumulatorFunction = accumulator;
-            
+
             this.acc = initialValue;
         }
 
@@ -160,103 +154,15 @@ public final class OperationScan {
                 observer.onError(ex);
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             observer.onError(e);
         }
-        
+
         @Override
         public void onCompleted() {
             observer.onCompleted();
         }
     }
-    
-    public static class UnitTest {
-
-        @Before
-        public void before() {
-            MockitoAnnotations.initMocks(this);
-        }
-
-        @Test
-        public void testScanIntegersWithInitialValue() {
-            @SuppressWarnings("unchecked")
-            Observer<String> observer = mock(Observer.class);
-
-            Observable<Integer> observable = Observable.from(1, 2, 3);
-
-            Observable<String> m = Observable.create(scan(observable, "", new Func2<String, Integer, String>() {
-
-                @Override
-                public String call(String s, Integer n) {
-                    return s + n.toString();
-                }
-
-            }));
-            m.subscribe(observer);
-
-            verify(observer, never()).onError(any(Throwable.class));
-            verify(observer, times(1)).onNext("");
-            verify(observer, times(1)).onNext("1");
-            verify(observer, times(1)).onNext("12");
-            verify(observer, times(1)).onNext("123");
-            verify(observer, times(4)).onNext(anyString());
-            verify(observer, times(1)).onCompleted();
-            verify(observer, never()).onError(any(Throwable.class));
-        }
-
-        @Test
-        public void testScanIntegersWithoutInitialValue() {
-            @SuppressWarnings("unchecked")
-            Observer<Integer> Observer = mock(Observer.class);
-
-            Observable<Integer> observable = Observable.from(1, 2, 3);
-
-            Observable<Integer> m = Observable.create(scan(observable, new Func2<Integer, Integer, Integer>() {
-
-                @Override
-                public Integer call(Integer t1, Integer t2) {
-                    return t1 + t2;
-                }
-
-            }));
-            m.subscribe(Observer);
-
-            verify(Observer, never()).onError(any(Throwable.class));
-            verify(Observer, never()).onNext(0);
-            verify(Observer, times(1)).onNext(1);
-            verify(Observer, times(1)).onNext(3);
-            verify(Observer, times(1)).onNext(6);
-            verify(Observer, times(3)).onNext(anyInt());
-            verify(Observer, times(1)).onCompleted();
-            verify(Observer, never()).onError(any(Throwable.class));
-        }
-
-        @Test
-        public void testScanIntegersWithoutInitialValueAndOnlyOneValue() {
-            @SuppressWarnings("unchecked")
-            Observer<Integer> Observer = mock(Observer.class);
-
-            Observable<Integer> observable = Observable.from(1);
-
-            Observable<Integer> m = Observable.create(scan(observable, new Func2<Integer, Integer, Integer>() {
-
-                @Override
-                public Integer call(Integer t1, Integer t2) {
-                    return t1 + t2;
-                }
-
-            }));
-            m.subscribe(Observer);
-
-            verify(Observer, never()).onError(any(Throwable.class));
-            verify(Observer, never()).onNext(0);
-            verify(Observer, times(1)).onNext(1);
-            verify(Observer, times(1)).onNext(anyInt());
-            verify(Observer, times(1)).onCompleted();
-            verify(Observer, never()).onError(any(Throwable.class));
-        }
-    }
-
 }

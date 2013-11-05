@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.concurrency;
+package rx;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
@@ -25,12 +27,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
-import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
-import rx.Scheduler;
-import rx.Subscription;
+import rx.concurrency.Schedulers;
+import rx.concurrency.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -38,7 +40,47 @@ import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
-public class TestSchedulers {
+public class SchedulersTest {
+
+    @SuppressWarnings("unchecked")
+    // mocking is unchecked, unfortunately
+    @Test
+    public void testPeriodicScheduling() {
+        final Func1<Long, Void> calledOp = mock(Func1.class);
+
+        final TestScheduler scheduler = new TestScheduler();
+        Subscription subscription = scheduler.schedulePeriodically(new Action0() {
+            @Override
+            public void call() {
+                System.out.println(scheduler.now());
+                calledOp.call(scheduler.now());
+            }
+        }, 1, 2, TimeUnit.SECONDS);
+
+        verify(calledOp, never()).call(anyLong());
+
+        InOrder inOrder = Mockito.inOrder(calledOp);
+
+        scheduler.advanceTimeBy(999L, TimeUnit.MILLISECONDS);
+        inOrder.verify(calledOp, never()).call(anyLong());
+
+        scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
+        inOrder.verify(calledOp, times(1)).call(1000L);
+
+        scheduler.advanceTimeBy(1999L, TimeUnit.MILLISECONDS);
+        inOrder.verify(calledOp, never()).call(3000L);
+
+        scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
+        inOrder.verify(calledOp, times(1)).call(3000L);
+
+        scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
+        inOrder.verify(calledOp, times(1)).call(5000L);
+        inOrder.verify(calledOp, times(1)).call(7000L);
+
+        subscription.unsubscribe();
+        scheduler.advanceTimeBy(11L, TimeUnit.SECONDS);
+        inOrder.verify(calledOp, never()).call(anyLong());
+    }
 
     @Test
     public void testComputationThreadPool1() {
@@ -474,7 +516,7 @@ public class TestSchedulers {
             fail("Error: " + observer.error.get().getMessage());
         }
     }
-    
+
     @Test
     public void testRecursion() {
         TestScheduler s = new TestScheduler();
@@ -494,7 +536,6 @@ public class TestSchedulers {
         subscription.unsubscribe();
         assertEquals(0, counter.get());
     }
-    
 
     /**
      * Used to determine if onNext is being invoked concurrently.

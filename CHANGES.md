@@ -1,5 +1,20 @@
 # RxJava Releases #
 
+### Version 0.14.8 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.8%22)) ###
+
+* [Pull 460](https://github.com/Netflix/RxJava/pull/460) Operator: Amb
+* [Pull 466](https://github.com/Netflix/RxJava/pull/466) Refactor Unit Tests
+
+### Version 0.14.7 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.7%22)) ###
+
+* [Pull 459](https://github.com/Netflix/RxJava/pull/459) Fix multiple unsubscribe behavior
+* [Pull 458](https://github.com/Netflix/RxJava/pull/458) rxjava-android: OperationObserveFromAndroidComponent
+* [Pull 453](https://github.com/Netflix/RxJava/pull/453) Fix error handling in map operator
+* [Pull 450](https://github.com/Netflix/RxJava/pull/450) Operator: TimeInterval
+* [Pull 452](https://github.com/Netflix/RxJava/pull/451) Scheduler Overload of Just/Return Operator
+* [Pull 433](https://github.com/Netflix/RxJava/pull/433) Fixes: Next Operator
+* [Commit d64a8c5](https://github.com/Netflix/RxJava/commit/d64a8c5f73d8d1a5de1861e0d20f12609b408880) Update rxjava-apache-http to Apache HttpAsyncClient 4.0 GA 
+
 ### Version 0.14.6 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.6%22)) ###
 
 * [Pull 441](https://github.com/Netflix/RxJava/pull/441) Fixed the issue that 'take' does not call 'onError'

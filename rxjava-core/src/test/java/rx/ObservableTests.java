@@ -522,7 +522,8 @@ public class ObservableTests {
         // subscribe twice
         connectable.subscribe(new Action1<String>() {
             @Override
-            public void call(String _) {}
+            public void call(String _) {
+            }
         });
 
         Subscription subscription = connectable.connect();
@@ -745,7 +746,7 @@ public class ObservableTests {
             fail("It should be a NumberFormatException");
         }
     }
-    
+
     @Test
     public void testOfType() {
         Observable<String> observable = Observable.from(1, "abc", false, 2L).ofType(String.class);
@@ -770,7 +771,7 @@ public class ObservableTests {
         l2.add(2);
 
         @SuppressWarnings("rawtypes")
-        Observable<List> observable = Observable.<Object>from(l1, l2, "123").ofType(List.class);
+        Observable<List> observable = Observable.<Object> from(l1, l2, "123").ofType(List.class);
 
         @SuppressWarnings("unchecked")
         Observer<Object> aObserver = mock(Observer.class);
@@ -827,7 +828,7 @@ public class ObservableTests {
 
     @Test
     public void testContainsWithEmptyObservable() {
-        Observable<Boolean> observable = Observable.<String>empty().contains("a");
+        Observable<Boolean> observable = Observable.<String> empty().contains("a");
 
         @SuppressWarnings("unchecked")
         Observer<Object> aObserver = mock(Observer.class);

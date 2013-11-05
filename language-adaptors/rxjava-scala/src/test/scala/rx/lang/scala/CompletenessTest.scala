@@ -1,32 +1,70 @@
+/**
+ * Copyright 2013 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.lang.scala
 
-import scala.reflect.runtime.universe._
-import org.scalatest.junit.JUnitSuite
-import org.junit.Test
-import rx.util.functions._
-import scala.collection.SortedSet
-import scala.collection.SortedMap
-import org.junit.Ignore
-import java.lang.reflect.Modifier
-import java.util.Date
 import java.util.Calendar
 
+import scala.collection.SortedMap
+import scala.reflect.runtime.universe
+import scala.reflect.runtime.universe.Symbol
+import scala.reflect.runtime.universe.Type
+import scala.reflect.runtime.universe.typeOf
+
+import org.junit.Ignore
+import org.junit.Test
+import org.scalatest.junit.JUnitSuite
+
+/**
+ * These tests can be used to check if all methods of the Java Observable have a corresponding
+ * method in the Scala Observable.
+ * 
+ * These tests don't contain any assertions, so they will always succeed, but they print their
+ * results to stdout.
+ */
 class CompletenessTest extends JUnitSuite {
   
+  // some frequently used comments:
   val unnecessary = "[considered unnecessary in Scala land]"
-    
   val deprecated = "[deprecated in RxJava]"
-    
   val averageProblem = "[We can't have a general average method because Scala's `Numeric` does not have " +
      "scalar multiplication (we would need to calculate `(1.0/numberOfElements)*sum`). " + 
      "You can use `fold` instead to accumulate `sum` and `numberOfElements` and divide at the end.]"
-     
   val commentForFirstWithPredicate = "[use `.filter(condition).first`]"
-    
   val fromFuture = "[TODO: Decide how Scala Futures should relate to Observables. Should there be a " +
      "common base interface for Future and Observable? And should Futures also have an unsubscribe method?]"
   
-  val correspondence = defaultMethodCorrespondence ++ Map(
+  /**
+   * Maps each method from the Java Observable to its corresponding method in the Scala Observable
+   */
+  val correspondence = defaultMethodCorrespondence ++ correspondenceChanges // ++ overrides LHS with RHS
+  
+  /**
+   * Creates default method correspondence mappings, assuming that Scala methods have the same
+   * name and the same argument types as in Java
+   */
+  def defaultMethodCorrespondence: Map[String, String] = {
+    val allMethods = getPublicInstanceAndCompanionMethods(typeOf[rx.Observable[_]])      
+    val tuples = for (javaM <- allMethods) yield (javaM, javaMethodSignatureToScala(javaM))
+    tuples.toMap
+  }
+  
+  /**
+   * Manually added mappings from Java Observable methods to Scala Observable methods
+   */
+  def correspondenceChanges = Map(
       // manually added entries for Java instance methods
       "aggregate(Func2[T, T, T])" -> "reduce((U, U) => U)",
       "aggregate(R, Func2[R, _ >: T, R])" -> "foldLeft(R)((R, T) => R)",
@@ -158,8 +196,7 @@ class CompletenessTest extends JUnitSuite {
   def getPublicInstanceAndCompanionMethods(tp: Type): Iterable[String] = 
     getPublicInstanceMethods(tp) ++
       getPublicInstanceMethods(tp.typeSymbol.companionSymbol.typeSignature)
-  
-  
+
   def printMethodSet(title: String, tp: Type) {
     println("\n" + title)
     println(title.map(_ => '-') + "\n")
@@ -204,12 +241,6 @@ class CompletenessTest extends JUnitSuite {
      .replaceAll("(\\w+)\\(\\)", "$1")
   }
 
-  def defaultMethodCorrespondence: Map[String, String] = {
-    val allMethods = getPublicInstanceAndCompanionMethods(typeOf[rx.Observable[_]])      
-    val tuples = for (javaM <- allMethods) yield (javaM, javaMethodSignatureToScala(javaM))
-    tuples.toMap
-  }
-  
   @Ignore // because spams output
   @Test def printDefaultMethodCorrespondence: Unit = {
     println("\nDefault Method Correspondence")

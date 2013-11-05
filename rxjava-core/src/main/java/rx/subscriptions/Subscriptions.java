@@ -18,6 +18,7 @@ package rx.subscriptions;
 import java.util.concurrent.Future;
 
 import rx.Subscription;
+import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action0;
 
 /**
@@ -41,14 +42,14 @@ public class Subscriptions {
      * @return {@link Subscription}
      */
     public static Subscription create(final Action0 unsubscribe) {
-        return new Subscription() {
+        return new SafeObservableSubscription(new Subscription() {
 
             @Override
             public void unsubscribe() {
                 unsubscribe.call();
             }
 
-        };
+        });
     }
 
     /**
@@ -101,7 +102,7 @@ public class Subscriptions {
     public static CompositeSubscription from(Subscription... subscriptions) {
         return new CompositeSubscription(subscriptions);
     }
-    
+
     /**
      * A {@link Subscription} that groups multiple Subscriptions together and unsubscribes from all of them together.
      * 

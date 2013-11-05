@@ -15,30 +15,26 @@
  */
 package rx.operators;
 
-import static org.mockito.Mockito.*;
-
-import org.junit.Test;
-
 import rx.Observable;
-import rx.Observer;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 /**
  * A few operators for implementing the averaging operation.
+ * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
  */
 public final class OperationAverage {
     private static final class Tuple2<T> {
         private final T current;
         private final Integer count;
-        
+
         private Tuple2(T v1, Integer v2) {
             current = v1;
             count = v2;
         }
     }
-    
+
     public static Observable<Integer> average(Observable<Integer> source) {
         return source.reduce(new Tuple2<Integer>(0, 0), new Func2<Tuple2<Integer>, Integer, Tuple2<Integer>>() {
             @Override
@@ -99,100 +95,5 @@ public final class OperationAverage {
                 return result.current / result.count;
             }
         });
-    }
-
-    public static class UnitTest {
-        @SuppressWarnings("unchecked")
-        Observer<Integer> w = mock(Observer.class);
-        @SuppressWarnings("unchecked")
-        Observer<Long> wl = mock(Observer.class);
-        @SuppressWarnings("unchecked")
-        Observer<Float> wf = mock(Observer.class);
-        @SuppressWarnings("unchecked")
-        Observer<Double> wd = mock(Observer.class);
-
-        @Test
-        public void testAverageOfAFewInts() throws Throwable {
-            Observable<Integer> src = Observable.from(1, 2, 3, 4, 6);
-            average(src).subscribe(w);
-
-            verify(w, times(1)).onNext(anyInt());
-            verify(w).onNext(3);
-            verify(w, never()).onError(any(Throwable.class));
-            verify(w, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testEmptyAverage() throws Throwable {
-            Observable<Integer> src = Observable.empty();
-            average(src).subscribe(w);
-
-            verify(w, never()).onNext(anyInt());
-            verify(w, times(1)).onError(any(ArithmeticException.class));
-            verify(w, never()).onCompleted();
-        }
-
-        @Test
-        public void testAverageOfAFewLongs() throws Throwable {
-            Observable<Long> src = Observable.from(1L, 2L, 3L, 4L, 6L);
-            averageLongs(src).subscribe(wl);
-
-            verify(wl, times(1)).onNext(anyLong());
-            verify(wl).onNext(3L);
-            verify(wl, never()).onError(any(Throwable.class));
-            verify(wl, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testEmptyAverageLongs() throws Throwable {
-            Observable<Long> src = Observable.empty();
-            averageLongs(src).subscribe(wl);
-
-            verify(wl, never()).onNext(anyLong());
-            verify(wl, times(1)).onError(any(ArithmeticException.class));
-            verify(wl, never()).onCompleted();
-        }
-
-        @Test
-        public void testAverageOfAFewFloats() throws Throwable {
-            Observable<Float> src = Observable.from(1.0f, 2.0f);
-            averageFloats(src).subscribe(wf);
-
-            verify(wf, times(1)).onNext(anyFloat());
-            verify(wf).onNext(1.5f);
-            verify(wf, never()).onError(any(Throwable.class));
-            verify(wf, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testEmptyAverageFloats() throws Throwable {
-            Observable<Float> src = Observable.empty();
-            averageFloats(src).subscribe(wf);
-
-            verify(wf, never()).onNext(anyFloat());
-            verify(wf, times(1)).onError(any(ArithmeticException.class));
-            verify(wf, never()).onCompleted();
-        }
-
-        @Test
-        public void testAverageOfAFewDoubles() throws Throwable {
-            Observable<Double> src = Observable.from(1.0d, 2.0d);
-            averageDoubles(src).subscribe(wd);
-
-            verify(wd, times(1)).onNext(anyDouble());
-            verify(wd).onNext(1.5d);
-            verify(wd, never()).onError(any(Throwable.class));
-            verify(wd, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testEmptyAverageDoubles() throws Throwable {
-            Observable<Double> src = Observable.empty();
-            averageDoubles(src).subscribe(wd);
-
-            verify(wd, never()).onNext(anyDouble());
-            verify(wd, times(1)).onError(any(ArithmeticException.class));
-            verify(wd, never()).onCompleted();
-        }
     }
 }
