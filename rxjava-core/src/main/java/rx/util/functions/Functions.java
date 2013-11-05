@@ -317,7 +317,8 @@ public class Functions {
      * Constructs a predicate that returns true for each input that the source
      * predicate returns false for and vice versa.
      * 
-     * @param predicate The source predicate to negate.
+     * @param predicate
+     *            The source predicate to negate.
      */
     public static <T> Func1<T, Boolean> not(Func1<? super T, Boolean> predicate) {
         return new Not<T>(predicate);
@@ -348,7 +349,7 @@ public class Functions {
             return true;
         }
     }
-    
+
     private enum AlwaysFalse implements Func1<Object, Boolean> {
         INSTANCE;
 

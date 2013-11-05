@@ -15,11 +15,7 @@
  */
 package rx.operators;
 
-import static org.mockito.Mockito.*;
-
 import java.util.concurrent.atomic.AtomicReference;
-
-import org.junit.Test;
 
 import rx.Subscription;
 
@@ -54,7 +50,8 @@ public final class SafeObservableSubscription implements Subscription {
     /**
      * Wraps the actual subscription once it exists (if it wasn't available when constructed)
      * 
-     * @param actualSubscription the wrapped subscription
+     * @param actualSubscription
+     *            the wrapped subscription
      * @throws IllegalStateException
      *             if trying to set more than once (or use this method after setting via constructor)
      */
@@ -81,16 +78,5 @@ public final class SafeObservableSubscription implements Subscription {
 
     public boolean isUnsubscribed() {
         return actualSubscription.get() == UNSUBSCRIBED;
-    }
-
-    public static class UnitTest {
-        @Test
-        public void testWrapAfterUnsubscribe() {
-            SafeObservableSubscription atomicObservableSubscription = new SafeObservableSubscription();
-            atomicObservableSubscription.unsubscribe();
-            Subscription innerSubscription = mock(Subscription.class);
-            atomicObservableSubscription.wrap(innerSubscription);
-            verify(innerSubscription, times(1)).unsubscribe();
-        }
     }
 }

@@ -15,19 +15,9 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
-
-import org.junit.Test;
-import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
@@ -47,7 +37,7 @@ public class OperationSkipLast {
      * count elements. As more elements are received, elements are taken from
      * the front of the queue and produced on the result sequence. This causes
      * elements to be delayed.
-     *
+     * 
      * @param source
      *            the source sequence.
      * @param count
@@ -55,7 +45,7 @@ public class OperationSkipLast {
      *            sequence.
      * @return An observable sequence containing the source sequence elements
      *         except for the bypassed ones at the end.
-     *
+     * 
      * @throws IndexOutOfBoundsException
      *             count is less than zero.
      */
@@ -131,94 +121,6 @@ public class OperationSkipLast {
                 }
 
             }));
-        }
-    }
-
-    public static class UnitTest {
-
-        @Test
-        public void testSkipLastEmpty() {
-            Observable<String> w = Observable.empty();
-            Observable<String> observable = Observable.create(skipLast(w, 2));
-
-            @SuppressWarnings("unchecked")
-            Observer<String> aObserver = mock(Observer.class);
-            observable.subscribe(aObserver);
-            verify(aObserver, never()).onNext(any(String.class));
-            verify(aObserver, never()).onError(any(Throwable.class));
-            verify(aObserver, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testSkipLast1() {
-            Observable<String> w = Observable.from("one", "two", "three");
-            Observable<String> observable = Observable.create(skipLast(w, 2));
-
-            @SuppressWarnings("unchecked")
-            Observer<String> aObserver = mock(Observer.class);
-            InOrder inOrder = inOrder(aObserver);
-            observable.subscribe(aObserver);
-            inOrder.verify(aObserver, never()).onNext("two");
-            inOrder.verify(aObserver, never()).onNext("three");
-            verify(aObserver, times(1)).onNext("one");
-            verify(aObserver, never()).onError(any(Throwable.class));
-            verify(aObserver, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testSkipLast2() {
-            Observable<String> w = Observable.from("one", "two");
-            Observable<String> observable = Observable.create(skipLast(w, 2));
-
-            @SuppressWarnings("unchecked")
-            Observer<String> aObserver = mock(Observer.class);
-            observable.subscribe(aObserver);
-            verify(aObserver, never()).onNext(any(String.class));
-            verify(aObserver, never()).onError(any(Throwable.class));
-            verify(aObserver, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testSkipLastWithZeroCount() {
-            Observable<String> w = Observable.from("one", "two");
-            Observable<String> observable = Observable.create(skipLast(w, 0));
-
-            @SuppressWarnings("unchecked")
-            Observer<String> aObserver = mock(Observer.class);
-            observable.subscribe(aObserver);
-            verify(aObserver, times(1)).onNext("one");
-            verify(aObserver, times(1)).onNext("two");
-            verify(aObserver, never()).onError(any(Throwable.class));
-            verify(aObserver, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testSkipLastWithNull() {
-            Observable<String> w = Observable.from("one", null, "two");
-            Observable<String> observable = Observable.create(skipLast(w, 1));
-
-            @SuppressWarnings("unchecked")
-            Observer<String> aObserver = mock(Observer.class);
-            observable.subscribe(aObserver);
-            verify(aObserver, times(1)).onNext("one");
-            verify(aObserver, times(1)).onNext(null);
-            verify(aObserver, never()).onNext("two");
-            verify(aObserver, never()).onError(any(Throwable.class));
-            verify(aObserver, times(1)).onCompleted();
-        }
-
-        @Test
-        public void testSkipLastWithNegativeCount() {
-            Observable<String> w = Observable.from("one");
-            Observable<String> observable = Observable.create(skipLast(w, -1));
-
-            @SuppressWarnings("unchecked")
-            Observer<String> aObserver = mock(Observer.class);
-            observable.subscribe(aObserver);
-            verify(aObserver, never()).onNext(any(String.class));
-            verify(aObserver, times(1)).onError(
-                    any(IndexOutOfBoundsException.class));
-            verify(aObserver, never()).onCompleted();
         }
     }
 }

@@ -61,7 +61,7 @@ public class ChunkedOperation {
      * 
      * @param <T>
      *            The type of objects which this {@link Chunk} can hold.
-     * @param <C> 
+     * @param <C>
      *            The type of object being tracked by the {@link Chunk}
      */
     protected abstract static class Chunk<T, C> {

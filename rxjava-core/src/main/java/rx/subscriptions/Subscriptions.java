@@ -15,13 +15,7 @@
  */
 package rx.subscriptions;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import java.util.concurrent.Future;
-
-import org.junit.Test;
 
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
@@ -108,7 +102,7 @@ public class Subscriptions {
     public static CompositeSubscription from(Subscription... subscriptions) {
         return new CompositeSubscription(subscriptions);
     }
-    
+
     /**
      * A {@link Subscription} that groups multiple Subscriptions together and unsubscribes from all of them together.
      * 
@@ -129,15 +123,4 @@ public class Subscriptions {
         public void unsubscribe() {
         }
     };
-
-    public static class UnitTest {
-        @Test
-        public void testUnsubscribeOnlyOnce() {
-            Action0 unsubscribe = mock(Action0.class);
-            Subscription subscription = create(unsubscribe);
-            subscription.unsubscribe();
-            subscription.unsubscribe();
-            verify(unsubscribe, times(1)).call();
-        }
-    }
 }

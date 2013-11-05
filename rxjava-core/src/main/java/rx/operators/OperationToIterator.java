@@ -15,20 +15,13 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.junit.Test;
-
 import rx.Notification;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
-import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 import rx.util.Exceptions;
 
 /**
@@ -36,6 +29,7 @@ import rx.util.Exceptions;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterator.png">
  * <p>
+ * 
  * @see <a href="https://github.com/Netflix/RxJava/issues/50">Issue #50</a>
  */
 public class OperationToIterator {
@@ -107,47 +101,4 @@ public class OperationToIterator {
         };
     }
 
-    @Test
-    public void testToIterator() {
-        Observable<String> obs = Observable.from("one", "two", "three");
-
-        Iterator<String> it = toIterator(obs);
-
-        assertEquals(true, it.hasNext());
-        assertEquals("one", it.next());
-
-        assertEquals(true, it.hasNext());
-        assertEquals("two", it.next());
-
-        assertEquals(true, it.hasNext());
-        assertEquals("three", it.next());
-
-        assertEquals(false, it.hasNext());
-
-    }
-
-    @Test(expected = TestException.class)
-    public void testToIteratorWithException() {
-        Observable<String> obs = Observable.create(new OnSubscribeFunc<String>() {
-
-            @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
-                observer.onNext("one");
-                observer.onError(new TestException());
-                return Subscriptions.empty();
-            }
-        });
-
-        Iterator<String> it = toIterator(obs);
-
-        assertEquals(true, it.hasNext());
-        assertEquals("one", it.next());
-
-        assertEquals(true, it.hasNext());
-        it.next();
-    }
-
-    private static class TestException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-    }
 }
