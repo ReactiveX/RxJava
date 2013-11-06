@@ -15,14 +15,21 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static rx.operators.OperationMap.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static rx.operators.OperationMap.map;
+import static rx.operators.OperationMap.mapMany;
+import static rx.operators.OperationMap.mapWithIndex;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
@@ -36,6 +43,7 @@ import org.mockito.stubbing.Answer;
 import rx.Observable;
 import rx.Observer;
 import rx.concurrency.Schedulers;
+import rx.concurrency.TestScheduler;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -261,6 +269,27 @@ public class OperationMapTest {
     }
 
     @Test
+    public void testMapWithErrorInFuncAndScheduler() throws InterruptedException {
+        // The error will throw in the scheduler.
+        // map needs to handle the error and notice the observer.
+        TestScheduler scheduler = new TestScheduler();
+        Observable<String> m = Observable.from("one")
+                .observeOn(scheduler)
+                .map(new Func1<String, String>() {
+                    public String call(String arg0) {
+                        throw new IllegalArgumentException("any error");
+                    }
+                });
+
+        m.subscribe(stringObserver);
+
+        scheduler.advanceTimeBy(1000, TimeUnit.MILLISECONDS);
+        InOrder inorder = inOrder(stringObserver);
+        inorder.verify(stringObserver, times(1)).onError(any(IllegalArgumentException.class));
+        inorder.verifyNoMoreInteractions();
+    }
+
+    @Test
     public void testMapWithErrorInFuncAndThreadPoolScheduler() throws InterruptedException {
         // The error will throw in one of threads in the thread pool.
         // If map does not handle it, the error will disappear.
@@ -275,9 +304,9 @@ public class OperationMapTest {
                 });
 
         // wait for the call to get to the observer before decrementing the latch
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Void answer(InvocationOnMock invocation) throws Throwable {
                 latch.countDown();
                 return null;
             }
