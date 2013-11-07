@@ -264,29 +264,21 @@ public class OperationMapTest {
                 }).toBlockingObservable().single();
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testMapWithErrorInFuncAndThreadPoolScheduler() throws InterruptedException {
         // The error will throw in one of threads in the thread pool.
         // If map does not handle it, the error will disappear.
         // so map needs to handle the error by itself.
-        final CountDownLatch latch = new CountDownLatch(1);
         Observable<String> m = Observable.from("one")
                 .observeOn(Schedulers.threadPoolForComputation())
                 .map(new Func1<String, String>() {
                     public String call(String arg0) {
-                        try {
-                            throw new IllegalArgumentException("any error");
-                        } finally {
-                            latch.countDown();
-                        }
+                        throw new IllegalArgumentException("any error");
                     }
                 });
 
-        m.subscribe(stringObserver);
-        latch.await();
-        InOrder inorder = inOrder(stringObserver);
-        inorder.verify(stringObserver, times(1)).onError(any(IllegalArgumentException.class));
-        inorder.verifyNoMoreInteractions();
+        // block for response, expecting exception thrown
+        m.toBlockingObservable().last();
     }
     
     /**
