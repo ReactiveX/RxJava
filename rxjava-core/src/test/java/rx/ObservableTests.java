@@ -236,6 +236,26 @@ public class ObservableTests {
         fail("Expected an exception to be thrown");
     }
     
+    /**
+     * A reduce on an empty Observable and a seed should just pass the seed through.
+     * 
+     * This is confirmed at https://github.com/Netflix/RxJava/issues/423#issuecomment-27642456
+     */
+    @Test
+    public void testReduceWithEmptyObservableAndSeed() {
+        Observable<Integer> observable = Observable.range(1, 0);
+        int value = observable.reduce(1, new Func2<Integer, Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+
+        }).toBlockingObservable().last();
+
+        assertEquals(1, value);
+    }
+    
     @Test
     public void testReduceWithInitialValue() {
         Observable<Integer> observable = Observable.from(1, 2, 3, 4);
