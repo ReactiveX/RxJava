@@ -3514,17 +3514,21 @@ public class Observable<T> {
      * This technique, which is called "reduce" or "aggregate" here, is sometimes called "fold,"
      * "accumulate," "compress," or "inject" in other programming contexts. Groovy, for instance,
      * has an <code>inject</code> method that does a similar operation on lists.
-     * 
+     * <p>
+     * Note: You can't reduce an empty sequence without an initial value.
+     *
      * @param accumulator
      *            An accumulator function to be invoked on each item emitted by the source
      *            Observable, whose result will be used in the next accumulator call
      * @return an Observable that emits a single item that is the result of accumulating the
      *         output from the source Observable
+     * @throws IllegalArgumentException
+     *            When the Observable is empty, Observers will receive an onError notification with an IllegalArgumentException.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public Observable<T> reduce(Func2<T, T, T> accumulator) {
-        return create(OperationScan.scan(this, accumulator)).takeLast(1);
+        return create(OperationScan.scan(this, accumulator)).last();
     }
 
     /**
@@ -3777,7 +3781,7 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator) {
-        return create(OperationScan.scan(this, initialValue, accumulator)).takeLast(1);
+        return create(OperationScan.scan(this, initialValue, accumulator)).last();
     }
 
     /**
