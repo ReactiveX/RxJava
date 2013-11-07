@@ -16,6 +16,7 @@
 package rx.subjects;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observer;
@@ -85,6 +86,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
 
     private final ConcurrentHashMap<Subscription, Observer<? super T>> observers;
     private final AtomicReference<T> currentValue;
+    private final AtomicBoolean hasValue = new AtomicBoolean();
 
     protected AsyncSubject(OnSubscribeFunc<T> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers) {
         super(onSubscribe);
@@ -96,9 +98,9 @@ public class AsyncSubject<T> extends Subject<T, T> {
     public void onCompleted() {
         T finalValue = currentValue.get();
         for (Observer<? super T> observer : observers.values()) {
-            observer.onNext(finalValue);
-        }
-        for (Observer<? super T> observer : observers.values()) {
+            if (hasValue.get()) {
+                observer.onNext(finalValue);
+            }
             observer.onCompleted();
         }
     }
@@ -112,6 +114,7 @@ public class AsyncSubject<T> extends Subject<T, T> {
 
     @Override
     public void onNext(T args) {
+        hasValue.set(true);
         currentValue.set(args);
     }
 }
