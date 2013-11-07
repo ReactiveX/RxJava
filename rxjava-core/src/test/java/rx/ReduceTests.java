@@ -15,8 +15,8 @@
  */
 package rx;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -213,8 +213,7 @@ public class ReduceTests {
         m.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onError(
-                any(UnsupportedOperationException.class));
+        inOrder.verify(observer, times(1)).onError(isA(IllegalArgumentException.class));
         inOrder.verifyNoMoreInteractions();
     }
 }
