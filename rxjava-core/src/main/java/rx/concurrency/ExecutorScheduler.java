@@ -57,7 +57,7 @@ public class ExecutorScheduler extends Scheduler {
                 }
             }, initialDelay, period, unit);
 
-            subscriptions.add(Subscriptions.create(f));
+            subscriptions.add(Subscriptions.from(f));
             return subscriptions;
 
         } else {
@@ -84,7 +84,7 @@ public class ExecutorScheduler extends Scheduler {
                 }
             }, delayTime, unit);
             // add the ScheduledFuture as a subscription so we can cancel the scheduled action if an unsubscribe happens
-            subscription.add(Subscriptions.create(f));
+            subscription.add(Subscriptions.from(f));
         } else {
             // we are not a ScheduledExecutorService so can't directly schedule
             if (delayTime == 0) {
@@ -106,7 +106,7 @@ public class ExecutorScheduler extends Scheduler {
                     }
                 }, delayTime, unit);
                 // add the ScheduledFuture as a subscription so we can cancel the scheduled action if an unsubscribe happens
-                subscription.add(Subscriptions.create(f));
+                subscription.add(Subscriptions.from(f));
             }
         }
         return subscription;
@@ -134,7 +134,7 @@ public class ExecutorScheduler extends Scheduler {
             // we are an ExecutorService so get a Future back that supports unsubscribe
             Future<?> f = ((ExecutorService) executor).submit(r);
             // add the Future as a subscription so we can cancel the scheduled action if an unsubscribe happens
-            subscription.add(Subscriptions.create(f));
+            subscription.add(Subscriptions.from(f));
         } else {
             // we are the lowest common denominator so can't unsubscribe once we execute
             executor.execute(r);

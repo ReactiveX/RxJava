@@ -58,15 +58,22 @@ public class NewThreadScheduler extends Scheduler {
         }
 
         @Override
-        public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
+        public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
+            final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
+            // all subscriptions that may need to be unsubscribed
+            final CompositeSubscription subscription = new CompositeSubscription(discardableAction);
+            
             final Scheduler _scheduler = this;
-            return Subscriptions.from(executor.submit(new Runnable() {
+            subscription.add(Subscriptions.from(executor.submit(new Runnable() {
 
                 @Override
                 public void run() {
-                    action.call(_scheduler, state);
+                    Subscription s = discardableAction.call(_scheduler);
+                    subscription.add(s);
                 }
-            }));
+            })));
+            
+            return subscription;
         }
 
         @Override
@@ -89,7 +96,7 @@ public class NewThreadScheduler extends Scheduler {
             }, delayTime, unit);
 
             // add the ScheduledFuture as a subscription so we can cancel the scheduled action if an unsubscribe happens
-            subscription.add(Subscriptions.create(f));
+            subscription.add(Subscriptions.from(f));
 
             return subscription;
         }
@@ -97,7 +104,7 @@ public class NewThreadScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
+    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
         EventLoopScheduler s = new EventLoopScheduler();
         return s.schedule(state, action);
     }
@@ -122,7 +129,7 @@ public class NewThreadScheduler extends Scheduler {
         }, delay, unit);
 
         // add the ScheduledFuture as a subscription so we can cancel the scheduled action if an unsubscribe happens
-        subscription.add(Subscriptions.create(f));
+        subscription.add(Subscriptions.from(f));
 
         return subscription;
     }
