@@ -49,11 +49,10 @@ public class BlockingObservableTest {
         assertEquals("three", obs.last());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testLastEmptyObservable() {
         BlockingObservable<Object> obs = BlockingObservable.from(Observable.empty());
-
-        assertNull(obs.last());
+        obs.last();
     }
 
     @Test
