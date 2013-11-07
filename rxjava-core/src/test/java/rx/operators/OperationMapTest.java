@@ -212,8 +212,12 @@ public class OperationMapTest {
         verify(stringObserver, times(1)).onError(any(Throwable.class));
     }
 
+    /**
+     * This is testing how unsubscribe behavior is handled when an error occurs in a user provided function
+     * and the source is unsubscribed from ... but ignores or can't receive the unsubscribe as it is synchronous.
+     */
     @Test
-    public void testMapWithSynchronousObservableContainingError() {
+    public void testMapContainingErrorWithSequenceThatDoesntUnsubscribe() {
         Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
         final AtomicInteger c1 = new AtomicInteger();
         final AtomicInteger c2 = new AtomicInteger();
@@ -243,7 +247,9 @@ public class OperationMapTest {
         verify(stringObserver, never()).onCompleted();
         verify(stringObserver, times(1)).onError(any(Throwable.class));
 
-        // we should have only returned 1 value: "one"
+        // We should have only returned 1 value: "one"
+        // Since the unsubscribe doesn't propagate, we will actually be sent all events and need
+        // to ignore all after the first failure.
         assertEquals(1, c1.get());
         assertEquals(1, c2.get());
     }
@@ -281,6 +287,52 @@ public class OperationMapTest {
         InOrder inorder = inOrder(stringObserver);
         inorder.verify(stringObserver, times(1)).onError(any(IllegalArgumentException.class));
         inorder.verifyNoMoreInteractions();
+    }
+    
+    /**
+     * While mapping over range(1,1).last() we expect IllegalArgumentException since the sequence is empty.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testErrorPassesThruMap() {
+        Observable.range(1,0).last().map(new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer i) {
+                return i;
+            }
+            
+        }).toBlockingObservable().single();
+    }
+    
+    /**
+     * We expect IllegalStateException to pass thru map.
+     */
+    @Test(expected = IllegalStateException.class)
+    public void testErrorPassesThruMap2() {
+        Observable.error(new IllegalStateException()).map(new Func1<Object, Object>() {
+
+            @Override
+            public Object call(Object i) {
+                return i;
+            }
+            
+        }).toBlockingObservable().single();
+    }
+    
+    /**
+     * We expect an ArithmeticException exception here because last() emits a single value
+     * but then we divide by 0.
+     */
+    @Test(expected = ArithmeticException.class)
+    public void testMapWithErrorInFunc() {
+        Observable.range(1,1).last().map(new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer i) {
+                return i/0;
+            }
+            
+        }).toBlockingObservable().single();
     }
 
     private static Map<String, String> getMap(String prefix) {
