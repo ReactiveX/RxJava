@@ -36,6 +36,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -210,6 +211,31 @@ public class ObservableTests {
         verify(w).onNext(10);
     }
 
+    
+    /**
+     * A reduce should fail with an IllegalArgumentException if done on an empty Observable.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testReduceWithEmptyObservable() {
+        Observable<Integer> observable = Observable.range(1, 0);
+        observable.reduce(new Func2<Integer, Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+
+        }).toBlockingObservable().forEach(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t1) {
+                // do nothing ... we expect an exception instead
+            }
+        });
+
+        fail("Expected an exception to be thrown");
+    }
+    
     @Test
     public void testReduceWithInitialValue() {
         Observable<Integer> observable = Observable.from(1, 2, 3, 4);

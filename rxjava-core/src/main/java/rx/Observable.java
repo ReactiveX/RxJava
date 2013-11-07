@@ -3520,11 +3520,18 @@ public class Observable<T> {
      *            Observable, whose result will be used in the next accumulator call
      * @return an Observable that emits a single item that is the result of accumulating the
      *         output from the source Observable
+     * @throws IllegalArgumentException
+     *             if Observable sequence is empty.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public Observable<T> reduce(Func2<T, T, T> accumulator) {
-        return create(OperationScan.scan(this, accumulator)).takeLast(1);
+        /*
+         * Discussion and confirmation of implementation at https://github.com/Netflix/RxJava/issues/423#issuecomment-27642532
+         * 
+         * It should use last() not takeLast(1) since it needs to emit an error if the sequence is empty.
+         */
+        return create(OperationScan.scan(this, accumulator)).last();
     }
 
     /**
