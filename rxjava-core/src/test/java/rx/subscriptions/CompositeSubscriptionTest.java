@@ -124,4 +124,24 @@ public class CompositeSubscriptionTest {
         assertTrue(s3.isUnsubscribed());
         assertTrue(s.isUnsubscribed());
     }
+
+    @Test
+    public void testUnsubscribeIdempotence() {
+        final AtomicInteger counter = new AtomicInteger();
+        CompositeSubscription s = new CompositeSubscription();
+        s.add(new Subscription() {
+
+            @Override
+            public void unsubscribe() {
+                counter.incrementAndGet();
+            }
+        });
+
+        s.unsubscribe();
+        s.unsubscribe();
+        s.unsubscribe();
+
+        // we should have only unsubscribed once
+        assertEquals(1, counter.get());
+    }
 }
