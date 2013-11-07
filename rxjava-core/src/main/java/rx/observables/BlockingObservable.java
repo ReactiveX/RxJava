@@ -178,13 +178,10 @@ public class BlockingObservable<T> {
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.png">
      * 
      * @return the last item emitted by the source {@link Observable}
+     * @throws IllegalArgumentException if source contains no elements
      */
     public T last() {
-        T result = null;
-        for (T value : toIterable()) {
-            result = value;
-        }
-        return result;
+        return new BlockingObservable<T>(o.last()).single();
     }
 
     /**
