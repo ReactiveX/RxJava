@@ -51,8 +51,36 @@ public class CompositeSubscription implements Subscription {
         }
     }
 
+    /**
+     * Remove and unsubscribe all subscriptions but do not unsubscribe the outer CompositeSubscription.
+     */
+    public void clear() {
+        Collection<Throwable> es = null;
+        for (Subscription s : subscriptions.keySet()) {
+            try {
+                s.unsubscribe();
+                this.subscriptions.remove(s);
+            } catch (Throwable e) {
+                if (es == null) {
+                    es = new ArrayList<Throwable>();
+                }
+                es.add(e);
+            }
+        }
+        if (es != null) {
+            throw new CompositeException("Failed to unsubscribe to 1 or more subscriptions.", es);
+        }
+    }
+
+    /**
+     * Remove the {@link Subscription} and unsubscribe it.
+     * 
+     * @param s
+     */
     public void remove(Subscription s) {
         this.subscriptions.remove(s);
+        // also unsubscribe from it: http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable.remove(v=vs.103).aspx
+        s.unsubscribe();
     }
 
     public boolean isUnsubscribed() {
