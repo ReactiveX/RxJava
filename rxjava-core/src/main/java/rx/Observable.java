@@ -49,6 +49,7 @@ import rx.operators.OperationFinally;
 import rx.operators.OperationFirstOrDefault;
 import rx.operators.OperationGroupBy;
 import rx.operators.OperationInterval;
+import rx.operators.OperationLast;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
@@ -4461,11 +4462,20 @@ public class Observable<T> {
      * <p>
      * In Rx.Net this is negated as the <code>any</code> operator but renamed in RxJava to better match Java naming idioms.
      * 
-     * @return A subscription function for creating the target Observable.
+     * @return An Observable that emits Boolean.
      * @see <a href= "http://msdn.microsoft.com/en-us/library/hh229905(v=vs.103).aspx" >MSDN: Observable.Any</a>
      */
     public Observable<Boolean> isEmpty() {
         return create(OperationAny.isEmpty(this));
+    }
+    
+    /**
+     * Returns an {@link Observable} that emits the last element of the source or an <code>IllegalArgumentException</code> if the source {@link Observable} is empty.
+     * 
+     * @return Observable<T>
+     */
+    public Observable<T> last() {
+        return create(OperationLast.last(this));
     }
 
     /**
