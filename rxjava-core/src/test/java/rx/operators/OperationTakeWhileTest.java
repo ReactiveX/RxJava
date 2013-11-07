@@ -119,7 +119,7 @@ public class OperationTakeWhileTest {
             public Boolean call(String s) {
                 return false;
             }
-        })).toBlockingObservable().last();
+        })).toBlockingObservable().lastOrDefault("");
     }
 
     @Test
