@@ -43,6 +43,7 @@ import rx.operators.OperationDefer;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
+import rx.operators.OperationDoOnEach;
 import rx.operators.OperationElementAt;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
@@ -4776,6 +4777,22 @@ public class Observable<T> {
     public static <T> Observable<T> amb(Iterable<? extends Observable<? extends T>> sources) {
         return create(OperationAmb.amb(sources));
     }
+
+
+    /**
+     * Invokes an action for each element in the observable sequence.
+     *
+     * @param func
+     *            The action to invoke for each element in the source sequence.
+     *
+     * @return
+     *            The source sequence with the side-effecting behavior applied.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229115(v=vs.103).aspx">MSDN: Observable.Amb</a>
+     */
+    public Observable<T> doOnEach(Observer<? super T> observer) {
+        return create(OperationDoOnEach.doOnEach(this, observer));
+    }
+
 
     /**
      * Whether a given {@link Function} is an internal implementation inside rx.* packages or not.
