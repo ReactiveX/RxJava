@@ -1,5 +1,14 @@
 # RxJava Releases #
 
+### Version 0.14.9 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.9%22)) ###
+
+* [Pull 477](https://github.com/Netflix/RxJava/pull/477) BugFix: CompositeSubscription
+* [Pull 476](https://github.com/Netflix/RxJava/pull/476) BugFix: Don't emit null onComplete when no onNext received in AsyncSubject
+* [Pull 474](https://github.com/Netflix/RxJava/pull/474) BugFix: Reduce an empty observable
+* [Pull 474](https://github.com/Netflix/RxJava/pull/474) BugFix: non-deterministic unit test
+* [Pull 472](https://github.com/Netflix/RxJava/pull/472) BugFix: Issue 431 Unsubscribe with Schedulers.newThread
+* [Pull 470](https://github.com/Netflix/RxJava/pull/470) Operator: Last
+
 ### Version 0.14.8 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.8%22)) ###
 
 * [Pull 460](https://github.com/Netflix/RxJava/pull/460) Operator: Amb
