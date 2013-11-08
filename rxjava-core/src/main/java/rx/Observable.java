@@ -19,6 +19,7 @@ import static rx.util.functions.Functions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -3635,11 +3636,13 @@ public class Observable<T> {
 
     /**
      * Returns the minimum element in an observable sequence.
-     * For an empty source, it causes an {@link UnsupportedOperationException}.
+     * For an empty source, it causes an {@link IllegalArgumentException}.
      *
      * @param source
      *            an observable sequence to determine the minimum element of.
      * @return an observable emitting the minimum element.
+     * @throws IllegalArgumentException
+     *            if the source is empty
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229715(v=vs.103).aspx">MSDN: Observable.Min</a>
      */
     public static <T extends Comparable<T>> Observable<T> min(Observable<T> source) {
@@ -3648,11 +3651,13 @@ public class Observable<T> {
 
     /**
      * Returns the minimum element in an observable sequence according to the specified comparator.
-     * For an empty source, it causes an {@link UnsupportedOperationException}.
+     * For an empty source, it causes an {@link IllegalArgumentException}.
      *
      * @param comparator
      *            the comparer used to compare elements.
      * @return an observable emitting the minimum value according to the specified comparator.
+     * @throws IllegalArgumentException
+     *            if the source is empty
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229095(v=vs.103).aspx">MSDN: Observable.Min</a>
      */
     public Observable<T> min(Comparator<T> comparator) {
@@ -3689,11 +3694,13 @@ public class Observable<T> {
 
     /**
      * Returns the maximum element in an observable sequence.
-     * For an empty source, it causes an {@link UnsupportedOperationException}.
+     * For an empty source, it causes an {@link IllegalArgumentException}.
      *
      * @param source
      *            an observable sequence to determine the maximum element of.
      * @return an observable emitting the maximum element.
+     * @throws IllegalArgumentException
+     *            if the source is empty.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211837(v=vs.103).aspx">MSDN: Observable.Max</a>
      */
     public static <T extends Comparable<T>> Observable<T> max(Observable<T> source) {
@@ -3702,11 +3709,13 @@ public class Observable<T> {
 
     /**
      * Returns the maximum element in an observable sequence according to the specified comparator.
-     * For an empty source, it causes an {@link UnsupportedOperationException}.
+     * For an empty source, it causes an {@link IllegalArgumentException}.
      *
      * @param comparator
      *            the comparer used to compare elements.
      * @return an observable emitting the maximum value according to the specified comparator.
+     * @throws IllegalArgumentException
+     *            if the source is empty.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211635(v=vs.103).aspx">MSDN: Observable.Max</a>
      */
     public Observable<T> max(Comparator<T> comparator) {
