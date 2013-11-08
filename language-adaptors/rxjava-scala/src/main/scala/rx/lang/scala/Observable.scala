@@ -1807,6 +1807,28 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   def withFilter(p: T => Boolean): WithFilter[T] = {
     new WithFilter[T](p, asJava)
   }
+
+
+  def doOnEach(observer: Observer[T]): Observable[T] = {
+    Observable[T](asJava.doOnEach(observer))
+  }
+  
+  def doOnEach(onNext: T => Unit): Observable[T] = {
+    Observable[T](asJava.doOnEach(onNext))
+  }
+
+  def doOnEach(onNext: T => Unit, onComplete: () => Unit): Observable[T] = {
+    Observable[T](asJava.doOnEach(onNext, onComplete))
+  }
+
+  def doOnEach(onNext: T => Unit, onError: Throwable => Unit): Observable[T] = {
+    Observable[T](asJava.doOnEach(onNext, onError))
+  }
+
+  def doOnEach(onNext: T => Unit, onError: Throwable => Unit, onComplete: () => Unit): Observable[T] = {
+    Observable[T](asJava.doOnEach(onNext, onError, onComplete))
+  }
+
   
 }
 
