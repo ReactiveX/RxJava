@@ -4782,17 +4782,149 @@ public class Observable<T> {
     /**
      * Invokes an action for each element in the observable sequence.
      *
-     * @param func
+     * @param observer
      *            The action to invoke for each element in the source sequence.
      *
      * @return
      *            The source sequence with the side-effecting behavior applied.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229115(v=vs.103).aspx">MSDN: Observable.Amb</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229307(v=vs.103).aspx">MSDN: Observable.Do</a>
      */
     public Observable<T> doOnEach(Observer<? super T> observer) {
         return create(OperationDoOnEach.doOnEach(this, observer));
     }
 
+    /**
+     * Invokes an action for each element in the observable sequence.
+     *
+     * @param onNext
+     *            The action to invoke for each element in the source sequence.
+     *
+     * @return
+     *            The source sequence with the side-effecting behavior applied.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804(v=vs.103).aspx">MSDN: Observable.Do</a>
+     */
+    public Observable<T> doOnEach(final Action1<T> onNext) {
+        Observer<T> observer = new Observer<T>() {
+            @Override
+            public void onCompleted() {}
+
+            @Override
+            public void onError(Throwable e) {}
+
+            @Override
+            public void onNext(T args) {
+                onNext.call(args);
+            }
+
+        };
+
+
+        return create(OperationDoOnEach.doOnEach(this, observer));
+    }
+
+    /**
+     * Invokes an action for each element in the observable sequence.
+     *
+     * @param onNext
+     *            The action to invoke for each element in the source sequence.
+     * @param onCompleted
+     *            The action to invoke when the source sequence is completed.
+     *
+     * @return
+     *            The source sequence with the side-effecting behavior applied.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229659(v=vs.103).aspx">MSDN: Observable.Do</a>
+     */
+    public Observable<T> doOnEach(final Action1<T> onNext, final Action0 onCompleted) {
+        Observer<T> observer = new Observer<T>() {
+            @Override
+            public void onCompleted() {
+                onCompleted.call();
+            }
+
+            @Override
+            public void onError(Throwable e) {}
+
+            @Override
+            public void onNext(T args) {
+                onNext.call(args);
+            }
+
+        };
+
+
+        return create(OperationDoOnEach.doOnEach(this, observer));
+    }
+
+    /**
+     * Invokes an action for each element in the observable sequence.
+     *
+     * @param onNext
+     *            The action to invoke for each element in the source sequence.
+     * @param onError
+     *            The action to invoke when the source sequence calls onError.
+     *
+     * @return
+     *            The source sequence with the side-effecting behavior applied.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229539(v=vs.103).aspx">MSDN: Observable.Do</a>
+     */
+    public Observable<T> doOnEach(final Action1<T> onNext, final Action1<Throwable> onError) {
+        Observer<T> observer = new Observer<T>() {
+            @Override
+            public void onCompleted() {}
+
+            @Override
+            public void onError(Throwable e) {
+                onError.call(e);
+            }
+
+            @Override
+            public void onNext(T args) {
+                onNext.call(args);
+            }
+
+        };
+
+
+        return create(OperationDoOnEach.doOnEach(this, observer));
+    }
+
+
+    /**
+     * Invokes an action for each element in the observable sequence.
+     *
+     * @param onNext
+     *            The action to invoke for each element in the source sequence.
+     * @param onError
+     *            The action to invoke when the source sequence calls onError.
+     * @param onCompleted
+     *            The action to invoke when the source sequence is completed.
+     *
+     * @return
+     *            The source sequence with the side-effecting behavior applied.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229830(v=vs.103).aspx">MSDN: Observable.Do</a>
+     */
+    public Observable<T> doOnEach(final Action1<T> onNext, final Action1<Throwable> onError, final Action0 onCompleted) {
+        Observer<T> observer = new Observer<T>() {
+            @Override
+            public void onCompleted() {
+                onCompleted.call();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                onError.call(e);
+            }
+
+            @Override
+            public void onNext(T args) {
+                onNext.call(args);
+            }
+
+        };
+
+
+        return create(OperationDoOnEach.doOnEach(this, observer));
+    }
 
     /**
      * Whether a given {@link Function} is an internal implementation inside rx.* packages or not.
