@@ -44,7 +44,10 @@ public final class OperationAverage {
         }).map(new Func1<Tuple2<Integer>, Integer>() {
             @Override
             public Integer call(Tuple2<Integer> result) {
-                return result.current / result.count; // may throw DivisionByZero, this should be correct...
+                if (result.count == 0) {
+                    throw new IllegalArgumentException("Sequence contains no elements");
+                }
+                return result.current / result.count;
             }
         });
     }
@@ -58,7 +61,10 @@ public final class OperationAverage {
         }).map(new Func1<Tuple2<Long>, Long>() {
             @Override
             public Long call(Tuple2<Long> result) {
-                return result.current / result.count; // may throw DivisionByZero, this should be correct...
+                if (result.count == 0) {
+                    throw new IllegalArgumentException("Sequence contains no elements");
+                }
+                return result.current / result.count;
             }
         });
     }
@@ -73,7 +79,7 @@ public final class OperationAverage {
             @Override
             public Float call(Tuple2<Float> result) {
                 if (result.count == 0) {
-                    throw new ArithmeticException("divide by zero");
+                    throw new IllegalArgumentException("Sequence contains no elements");
                 }
                 return result.current / result.count;
             }
@@ -90,7 +96,7 @@ public final class OperationAverage {
             @Override
             public Double call(Tuple2<Double> result) {
                 if (result.count == 0) {
-                    throw new ArithmeticException("divide by zero");
+                    throw new IllegalArgumentException("Sequence contains no elements");
                 }
                 return result.current / result.count;
             }

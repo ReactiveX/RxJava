@@ -3593,7 +3593,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that computes the average of all elements in the source Observable.
-     * For an empty source, it causes an ArithmeticException.
+     * For an empty source, it causes an IllegalArgumentException.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.png">
      * 
@@ -3601,6 +3601,8 @@ public class Observable<T> {
      *            Source observable to compute the average of.
      * @return an Observable emitting the averageof all the elements of the source Observable
      *         as its single item.
+     * @throws IllegalArgumentException
+     *             if Observable sequence is empty.
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average%28v=vs.103%29.aspx">MSDN: Observable.Average</a>
      */
     public static Observable<Integer> average(Observable<Integer> source) {

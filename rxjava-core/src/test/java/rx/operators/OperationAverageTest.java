@@ -52,7 +52,7 @@ public class OperationAverageTest {
         average(src).subscribe(w);
 
         verify(w, never()).onNext(anyInt());
-        verify(w, times(1)).onError(any(ArithmeticException.class));
+        verify(w, times(1)).onError(isA(IllegalArgumentException.class));
         verify(w, never()).onCompleted();
     }
 
@@ -73,7 +73,7 @@ public class OperationAverageTest {
         averageLongs(src).subscribe(wl);
 
         verify(wl, never()).onNext(anyLong());
-        verify(wl, times(1)).onError(any(ArithmeticException.class));
+        verify(wl, times(1)).onError(isA(IllegalArgumentException.class));
         verify(wl, never()).onCompleted();
     }
 
@@ -94,7 +94,7 @@ public class OperationAverageTest {
         averageFloats(src).subscribe(wf);
 
         verify(wf, never()).onNext(anyFloat());
-        verify(wf, times(1)).onError(any(ArithmeticException.class));
+        verify(wf, times(1)).onError(isA(IllegalArgumentException.class));
         verify(wf, never()).onCompleted();
     }
 
@@ -115,7 +115,7 @@ public class OperationAverageTest {
         averageDoubles(src).subscribe(wd);
 
         verify(wd, never()).onNext(anyDouble());
-        verify(wd, times(1)).onError(any(ArithmeticException.class));
+        verify(wd, times(1)).onError(isA(IllegalArgumentException.class));
         verify(wd, never()).onCompleted();
     }
 }
