@@ -24,23 +24,24 @@ import rx.Subscription;
  * Converts the elements of an observable sequence to the specified type.
  */
 public class OperationDoOnEach {
-    public static <T> OnSubscribeFunc<T> doOnEach(Observable<? extends T> source, Observer<? super T> observer) {
-        return new DoOnEachObservable<T>(source, observer);
+    public static <T> OnSubscribeFunc<T> doOnEach(Observable<? extends T> sequence, Observer<? super T> observer) {
+        return new DoOnEachObservable<T>(sequence, observer);
     }
 
     private static class DoOnEachObservable<T> implements OnSubscribeFunc<T> {
 
-        private final Observable<? extends T> source;
+        private final Observable<? extends T> sequence;
         private final Observer<? super T> doOnEachObserver;
 
-        public DoOnEachObservable(Observable<? extends T> source, Observer<? super T> doOnEachObserver) {
-            this.source = source;
+        public DoOnEachObservable(Observable<? extends T> sequence, Observer<? super T> doOnEachObserver) {
+            this.sequence = sequence;
             this.doOnEachObserver = doOnEachObserver;
         }
 
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
-            return source.subscribe(new Observer<T>() {
+            final SafeObservableSubscription subscription = new SafeObservableSubscription();
+            return subscription.wrap(sequence.subscribe(new SafeObserver<T>(subscription, new Observer<T>() {
                 @Override
                 public void onCompleted() {
                     doOnEachObserver.onCompleted();
@@ -58,8 +59,7 @@ public class OperationDoOnEach {
                     doOnEachObserver.onNext(value);
                     observer.onNext(value);
                 }
-
-            });
+            })));
         }
 
     }

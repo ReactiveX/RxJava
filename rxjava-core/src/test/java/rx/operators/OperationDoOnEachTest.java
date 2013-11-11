@@ -36,6 +36,7 @@ import rx.Observer;
 import rx.concurrency.Schedulers;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
+import rx.util.functions.Action1;
 
 public class OperationDoOnEachTest {
 
@@ -104,5 +105,25 @@ public class OperationDoOnEachTest {
         verify(sideEffectObserver, times(1)).onError(any(Throwable.class));
     }
 
+    @Test
+    public void testDoOnEachWithErrorInCallback() {
+        Observable<String> base     = Observable.from("one", "two", "fail", "three");
+        Observable<String> doOnEach = base.doOnEach(new Action1<String>() {
+            @Override
+            public void call(String s) {
+                if ("fail".equals(s)) {
+                    throw new RuntimeException("Forced Failure");
+                }
+            }
+        });
+
+        doOnEach.subscribe(subscribedObserver);
+        verify(subscribedObserver, times(1)).onNext("one");
+        verify(subscribedObserver, times(1)).onNext("two");
+        verify(subscribedObserver, never()).onNext("three");
+        verify(subscribedObserver, never()).onCompleted();
+        verify(subscribedObserver, times(1)).onError(any(Throwable.class));
+
+    }
   
 }
