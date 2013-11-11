@@ -83,6 +83,7 @@ import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
 import rx.operators.OperationToObservableList;
 import rx.operators.OperationToObservableSortedList;
+import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperationZip;
 import rx.operators.SafeObservableSubscription;
@@ -4592,6 +4593,21 @@ public class Observable<T> {
      */
     public Observable<TimeInterval<T>> timeInterval(Scheduler scheduler) {
         return create(OperationTimeInterval.timeInterval(this, scheduler));
+    }
+
+    /**
+     * Constructs an observable sequence that depends on a resource object.
+     *
+     * @param resourceFactory
+     *            The factory function to obtain a resource object.
+     * @param observableFactory
+     *            The factory function to obtain an observable sequence that depends on the obtained resource.
+     * @return
+     *            The observable sequence whose lifetime controls the lifetime of the dependent resource object.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229585(v=vs.103).aspx">MSDN: Observable.Using</a>
+     */
+    public static <T, RESOURCE extends Subscription> Observable<T> using(Func0<RESOURCE> resourceFactory, Func1<RESOURCE, Observable<T>> observableFactory) {
+        return create(OperationUsing.using(resourceFactory, observableFactory));
     }
 
     /**
