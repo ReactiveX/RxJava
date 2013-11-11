@@ -53,10 +53,9 @@ import rx.operators.OperationInterval;
 import rx.operators.OperationLast;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
-import rx.operators.OperationMax;
 import rx.operators.OperationMerge;
 import rx.operators.OperationMergeDelayError;
-import rx.operators.OperationMin;
+import rx.operators.OperationMinMax;
 import rx.operators.OperationMulticast;
 import rx.operators.OperationObserveOn;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
@@ -3636,6 +3635,7 @@ public class Observable<T> {
 
     /**
      * Returns the minimum element in an observable sequence.
+     * If there are more than one minimum elements, returns the last one.
      * For an empty source, it causes an {@link IllegalArgumentException}.
      *
      * @param source
@@ -3646,11 +3646,12 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229715(v=vs.103).aspx">MSDN: Observable.Min</a>
      */
     public static <T extends Comparable<T>> Observable<T> min(Observable<T> source) {
-        return OperationMin.min(source);
+        return OperationMinMax.min(source);
     }
 
     /**
      * Returns the minimum element in an observable sequence according to the specified comparator.
+     * If there are more than one minimum elements, returns the last one.
      * For an empty source, it causes an {@link IllegalArgumentException}.
      *
      * @param comparator
@@ -3661,7 +3662,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229095(v=vs.103).aspx">MSDN: Observable.Min</a>
      */
     public Observable<T> min(Comparator<T> comparator) {
-        return OperationMin.min(this, comparator);
+        return OperationMinMax.min(this, comparator);
     }
 
     /**
@@ -3674,7 +3675,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228970(v=vs.103).aspx">MSDN: Observable.MinBy</a>
      */
     public <R extends Comparable<R>> Observable<List<T>> minBy(Func1<T, R> selector) {
-        return OperationMin.minBy(this, selector);
+        return OperationMinMax.minBy(this, selector);
     }
 
     /**
@@ -3689,11 +3690,12 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228970(v=vs.103).aspx">MSDN: Observable.MinBy</a>
      */
     public <R> Observable<List<T>> minBy(Func1<T, R> selector, Comparator<R> comparator) {
-        return OperationMin.minBy(this, selector, comparator);
+        return OperationMinMax.minBy(this, selector, comparator);
     }
 
     /**
      * Returns the maximum element in an observable sequence.
+     * If there are more than one maximum elements, returns the last one.
      * For an empty source, it causes an {@link IllegalArgumentException}.
      *
      * @param source
@@ -3704,11 +3706,12 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211837(v=vs.103).aspx">MSDN: Observable.Max</a>
      */
     public static <T extends Comparable<T>> Observable<T> max(Observable<T> source) {
-        return OperationMax.max(source);
+        return OperationMinMax.max(source);
     }
 
     /**
      * Returns the maximum element in an observable sequence according to the specified comparator.
+     * If there are more than one maximum elements, returns the last one.
      * For an empty source, it causes an {@link IllegalArgumentException}.
      *
      * @param comparator
@@ -3719,7 +3722,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211635(v=vs.103).aspx">MSDN: Observable.Max</a>
      */
     public Observable<T> max(Comparator<T> comparator) {
-        return OperationMax.max(this, comparator);
+        return OperationMinMax.max(this, comparator);
     }
 
     /**
@@ -3732,7 +3735,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229058(v=vs.103).aspx">MSDN: Observable.MaxBy</a>
      */
     public <R extends Comparable<R>> Observable<List<T>> maxBy(Func1<T, R> selector) {
-        return OperationMax.maxBy(this, selector);
+        return OperationMinMax.maxBy(this, selector);
     }
 
     /**
@@ -3747,7 +3750,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244330(v=vs.103).aspx">MSDN: Observable.MaxBy</a>
      */
     public <R> Observable<List<T>> maxBy(Func1<T, R> selector, Comparator<R> comparator) {
-        return OperationMax.maxBy(this, selector, comparator);
+        return OperationMinMax.maxBy(this, selector, comparator);
     }
 
     /**
