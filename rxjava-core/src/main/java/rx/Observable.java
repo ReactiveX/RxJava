@@ -4543,31 +4543,86 @@ public class Observable<T> {
     }
 
     /**
-     * Returns either the observable sequence or an TimeoutException if timeout elapses.
-     * 
+     * Applies a timeout policy for each element in the observable sequence,
+     * using the specified scheduler to run timeout timers. If the next element
+     * isn't received within the specified timeout duration starting from its
+     * predecessor, a TimeoutException is propagated to the observer.
+     *
      * @param timeout
-     *            The timeout duration
+     *            Maximum duration between values before a timeout occurs.
      * @param timeUnit
-     *            The time unit of the timeout
-     * @param scheduler
-     *            The scheduler to run the timeout timers on.
+     *            The unit of time which applies to the "timeout" argument.
+     *
      * @return The source sequence with a TimeoutException in case of a timeout.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244283(v=vs.103).aspx">MSDN: Observable.Timeout</a>
+     */
+    public Observable<T> timeout(long timeout, TimeUnit timeUnit) {
+        return create(OperationTimeout.timeout(this, timeout, timeUnit));
+    }
+
+    /**
+     * Applies a timeout policy for each element in the observable sequence,
+     * using the specified scheduler to run timeout timers. If the next element
+     * isn't received within the specified timeout duration starting from its
+     * predecessor, the other observable sequence is used to produce future
+     * messages from that point on.
+     *
+     * @param timeout
+     *            Maximum duration between values before a timeout occurs.
+     * @param timeUnit
+     *            The unit of time which applies to the "timeout" argument.
+     * @param other
+     *            Sequence to return in case of a timeout.
+     *
+     * @return The source sequence switching to the other sequence in case of a timeout.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229512(v=vs.103).aspx">MSDN: Observable.Timeout</a>
+     */
+    public Observable<T> timeout(long timeout, TimeUnit timeUnit, Observable<? extends T> other) {
+        return create(OperationTimeout.timeout(this, timeout, timeUnit, other));
+    }
+
+    /**
+     * Applies a timeout policy for each element in the observable sequence,
+     * using the specified scheduler to run timeout timers. If the next element
+     * isn't received within the specified timeout duration starting from its
+     * predecessor, a TimeoutException is propagated to the observer.
+     *
+     * @param timeout
+     *            Maximum duration between values before a timeout occurs.
+     * @param timeUnit
+     *            The unit of time which applies to the "timeout" argument.
+     * @param scheduler
+     *            Scheduler to run the timeout timers on.
+     *
+     * @return The source sequence with a TimeoutException in case of a timeout.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh228946(v=vs.103).aspx">MSDN: Observable.Timeout</a>
      */
     public Observable<T> timeout(long timeout, TimeUnit timeUnit, Scheduler scheduler) {
         return create(OperationTimeout.timeout(this, timeout, timeUnit, scheduler));
     }
 
     /**
-     * Returns either the observable sequence or an TimeoutException if timeout elapses.
-     * 
+     * Applies a timeout policy for each element in the observable sequence,
+     * using the specified scheduler to run timeout timers. If the next element
+     * isn't received within the specified timeout duration starting from its
+     * predecessor, the other observable sequence is used to produce future
+     * messages from that point on.
+     *
      * @param timeout
-     *            The timeout duration
+     *            Maximum duration between values before a timeout occurs.
      * @param timeUnit
-     *            The time unit of the timeout
-     * @return The source sequence with a TimeoutException in case of a timeout.
+     *            The unit of time which applies to the "timeout" argument.
+     * @param other
+     *            Sequence to return in case of a timeout.
+     * @param scheduler
+     *            Scheduler to run the timeout timers on.
+     *
+     * @return The source sequence switching to the other sequence in case of a
+     *         timeout.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211676(v=vs.103).aspx">MSDN: Observable.Timeout</a>
      */
-    public Observable<T> timeout(long timeout, TimeUnit timeUnit) {
-        return create(OperationTimeout.timeout(this, timeout, timeUnit, Schedulers.threadPoolForComputation()));
+    public Observable<T> timeout(long timeout, TimeUnit timeUnit, Observable<? extends T> other, Scheduler scheduler) {
+        return create(OperationTimeout.timeout(this, timeout, timeUnit, other, scheduler));
     }
 
     /**

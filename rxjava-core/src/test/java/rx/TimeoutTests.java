@@ -15,14 +15,19 @@
  */
 package rx;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.MockitoAnnotations;
 
 import rx.concurrency.TestScheduler;
@@ -46,6 +51,7 @@ public class TimeoutTests {
 
     @Test
     public void shouldNotTimeoutIfOnNextWithinTimeout() {
+        @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Subscription subscription = withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -58,6 +64,7 @@ public class TimeoutTests {
 
     @Test
     public void shouldNotTimeoutIfSecondOnNextWithinTimeout() {
+        @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Subscription subscription = withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -72,6 +79,7 @@ public class TimeoutTests {
 
     @Test
     public void shouldTimeoutIfOnNextNotWithinTimeout() {
+        @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Subscription subscription = withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(TIMEOUT + 1, TimeUnit.SECONDS);
@@ -81,6 +89,7 @@ public class TimeoutTests {
 
     @Test
     public void shouldTimeoutIfSecondOnNextNotWithinTimeout() {
+        @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Subscription subscription = withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -93,6 +102,7 @@ public class TimeoutTests {
 
     @Test
     public void shouldCompleteIfUnderlyingComletes() {
+        @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Subscription subscription = withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -105,6 +115,7 @@ public class TimeoutTests {
 
     @Test
     public void shouldErrorIfUnderlyingErrors() {
+        @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Subscription subscription = withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -112,5 +123,104 @@ public class TimeoutTests {
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         verify(observer).onError(any(UnsupportedOperationException.class));
         subscription.unsubscribe();
+    }
+
+    @Test
+    public void shouldSwitchToOtherIfOnNextNotWithinTimeout() {
+        Observable<String> other = Observable.from("a", "b", "c");
+        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = source.subscribe(observer);
+
+        testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+        underlyingSubject.onNext("One");
+        testScheduler.advanceTimeBy(4, TimeUnit.SECONDS);
+        underlyingSubject.onNext("Two");
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("One");
+        inOrder.verify(observer, times(1)).onNext("a");
+        inOrder.verify(observer, times(1)).onNext("b");
+        inOrder.verify(observer, times(1)).onNext("c");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        subscription.unsubscribe();
+    }
+
+    @Test
+    public void shouldSwitchToOtherIfOnErrorNotWithinTimeout() {
+        Observable<String> other = Observable.from("a", "b", "c");
+        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = source.subscribe(observer);
+
+        testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+        underlyingSubject.onNext("One");
+        testScheduler.advanceTimeBy(4, TimeUnit.SECONDS);
+        underlyingSubject.onError(new UnsupportedOperationException());
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("One");
+        inOrder.verify(observer, times(1)).onNext("a");
+        inOrder.verify(observer, times(1)).onNext("b");
+        inOrder.verify(observer, times(1)).onNext("c");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        subscription.unsubscribe();
+    }
+
+    @Test
+    public void shouldSwitchToOtherIfOnCompletedNotWithinTimeout() {
+        Observable<String> other = Observable.from("a", "b", "c");
+        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = source.subscribe(observer);
+
+        testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+        underlyingSubject.onNext("One");
+        testScheduler.advanceTimeBy(4, TimeUnit.SECONDS);
+        underlyingSubject.onCompleted();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("One");
+        inOrder.verify(observer, times(1)).onNext("a");
+        inOrder.verify(observer, times(1)).onNext("b");
+        inOrder.verify(observer, times(1)).onNext("c");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        subscription.unsubscribe();
+    }
+
+    @Test
+    public void shouldSwitchToOtherAndCanBeUnsubscribedIfOnNextNotWithinTimeout() {
+        PublishSubject<String> other = PublishSubject.create();
+        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = source.subscribe(observer);
+
+        testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+        underlyingSubject.onNext("One");
+        testScheduler.advanceTimeBy(4, TimeUnit.SECONDS);
+        underlyingSubject.onNext("Two");
+
+        other.onNext("a");
+        other.onNext("b");
+        subscription.unsubscribe();
+
+        // The following messages should not be delivered.
+        other.onNext("c");
+        other.onNext("d");
+        other.onCompleted();
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("One");
+        inOrder.verify(observer, times(1)).onNext("a");
+        inOrder.verify(observer, times(1)).onNext("b");
+        inOrder.verifyNoMoreInteractions();
     }
 }
