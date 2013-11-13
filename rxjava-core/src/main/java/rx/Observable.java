@@ -5023,20 +5023,47 @@ public class Observable<T> {
 
         return create(OperationDoOnEach.doOnEach(this, observer));
     }
-
+    
     /**
-     * Invokes an action for each element in the observable sequence.
+     * Invokes an action if onError is emitted from the observable sequence.
      *
-     * @param onNext
-     *            The action to invoke for each element in the source sequence.
-     * @param onCompleted
-     *            The action to invoke when the source sequence is completed.
+     * @param onError
+     *            The action to invoke if onError is invoked.
      *
      * @return
      *            The source sequence with the side-effecting behavior applied.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229659(v=vs.103).aspx">MSDN: Observable.Do</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804(v=vs.103).aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<T> onNext, final Action0 onCompleted) {
+    public Observable<T> doOnError(final Action1<Throwable> onError) {
+        Observer<T> observer = new Observer<T>() {
+            @Override
+            public void onCompleted() {}
+
+            @Override
+            public void onError(Throwable e) {
+                onError.call(e);
+            }
+
+            @Override
+            public void onNext(T args) { }
+
+        };
+
+
+        return create(OperationDoOnEach.doOnEach(this, observer));
+    }
+    
+    /**
+     * Invokes an action when onCompleted is emitted from the observable sequence.
+     *
+     * @param onCompleted
+     *            The action to invoke when onCompleted is emitted.
+     *
+     * @return
+     *            The source sequence with the side-effecting behavior applied.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804(v=vs.103).aspx">MSDN: Observable.Do</a>
+     */
+    public Observable<T> doOnCompleted(final Action0 onCompleted) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {
@@ -5044,12 +5071,10 @@ public class Observable<T> {
             }
 
             @Override
-            public void onError(Throwable e) {}
+            public void onError(Throwable e) { }
 
             @Override
-            public void onNext(T args) {
-                onNext.call(args);
-            }
+            public void onNext(T args) { }
 
         };
 
