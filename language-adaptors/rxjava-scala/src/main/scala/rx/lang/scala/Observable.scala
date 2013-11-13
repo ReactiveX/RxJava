@@ -1817,10 +1817,6 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
     Observable[T](asJava.doOnEach(onNext))
   }
 
-  def doOnEach(onNext: T => Unit, onComplete: () => Unit): Observable[T] = {
-    Observable[T](asJava.doOnEach(onNext, onComplete))
-  }
-
   def doOnEach(onNext: T => Unit, onError: Throwable => Unit): Observable[T] = {
     Observable[T](asJava.doOnEach(onNext, onError))
   }
