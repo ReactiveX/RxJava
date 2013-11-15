@@ -33,7 +33,7 @@ import rx.operators.SafeObservableSubscription;
  * <p>
  * <pre> {@code
 
- * / observer will receive no onNext events because the subject.onCompleted() isn't called.
+ * // observer will receive no onNext events because the subject.onCompleted() isn't called.
   AsyncSubject<Object> subject = AsyncSubject.create();
   subject.subscribe(observer);
   subject.onNext("one");
