@@ -1,5 +1,12 @@
 # RxJava Releases #
 
+### Version 0.14.11 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.11%22)) ###
+
+* [Pull 486](https://github.com/Netflix/RxJava/pull/486) BugFix: AsyncSubject
+* [Pull 483](https://github.com/Netflix/RxJava/pull/483) Tweaks to DoOnEach and added DoOnError/DoOnCompleted
+
+This has a very slight breaking change by removing one `doOnEach` overload. The version was not bumped from 0.14 to 0.15 as it is so minor and the offending method was just released in the previous version.
+
 ### Version 0.14.10 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.10%22)) ###
 
 * [Pull 481](https://github.com/Netflix/RxJava/pull/481) Operator: Using
