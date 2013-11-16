@@ -22,7 +22,7 @@ package object subjects {
 
   /**
    * A Subject is an Observable and an Observer at the same time. 
-   * 
+   *
    * The Java Subject looks like this: 
    * {{{
    * public abstract class Subject<T,R> extends Observable<R> implements Observer<T>
@@ -30,17 +30,77 @@ package object subjects {
    */
   type Subject[-T, +R] = rx.subjects.Subject[_ >: T, _ <: R]
 
+  /**
+   * Subject that publishes only the last event to each [[Observer]] that has subscribed when the
+   * sequence completes.
+   *
+   * The Java AsyncSubject looks like this:
+   * {{{
+   * public class AsyncSubject<T> extends Subject<T, T>
+   * }}}
+   */
+  type AsyncSubject[T] = rx.subjects.AsyncSubject[T]
+  object AsyncSubject {
+    /**
+     * Creates an [[AsyncSubject]]
+     */
+    def apply[T]() = rx.subjects.AsyncSubject.create[T]()
+  }
+
+  /**
+   * Subject that publishes the most recent and all subsequent events to each subscribed [[Observer]].
+   *
+   * The Java BehaviorSubject looks like this:
+   * {{{
+   * public class BehaviorSubject<T> extends Subject<T, T>
+   * }}}
+   */
+  type BehaviorSubject[T] = rx.subjects.BehaviorSubject[T]
+  object BehaviorSubject {
+    /**
+     * Creates a [[BehaviorSubject]]
+     */
+    def apply[T](defaultValue:T) =
+      rx.subjects.BehaviorSubject.createWithDefaultValue[T](defaultValue)
+  }
+
+  /**
+   * Subject that retains all events and will replay them to an [[Observer]] that subscribes.
+   *
+   * The Java PublishSubject looks like this:
+   * {{{
+   * public final class ReplaySubject<T> extends Subject<T, T>
+   * }}}
+   */
+  type ReplaySubject[T] = rx.subjects.ReplaySubject[T]
+  object ReplaySubject {
+    /**
+     * Creates a [[ReplaySubject]]
+     */
+    def apply[T]() = rx.subjects.ReplaySubject.create[T]()
+  }
+
+  /**
+   * Subject that, once and [[Observer]] has subscribed, publishes all subsequent
+   * events to the subscriber.
+   *
+   * The Java PublishSubject looks like this:
+   * {{{
+   * public class PublishSubject<T> extends Subject<T, T>
+   * }}}
+   */
+  type PlubishSubject[T] = rx.subjects.PublishSubject[T]
+  object PublishSubject {
+    /**
+     * Creates a [[PublishSubject]]
+     */
+    def apply[T]() = rx.subjects.PublishSubject.create[T]()
+  }
+
   // For nicer scaladoc, we would like to present something like this:
   /*
   trait Observable[+R] {}
   trait Observer[-T] {}
   trait Subject[-T, +R] extends Observable[R] with Observer[T] { }
   */
-  
-  // We don't make aliases to these types, because they are considered internal/not needed by users:
-  // rx.subjects.AsyncSubject
-  // rx.subjects.BehaviorSubject
-  // rx.subjects.PublishSubject
-  // rx.subjects.ReplaySubject
-
 }

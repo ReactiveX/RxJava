@@ -32,7 +32,7 @@ import rx.operators.SafeObservableSubscription;
  * <p>
  * <pre> {@code
 
- * ublishSubject<Object> subject = PublishSubject.create();
+ * PublishSubject<Object> subject = PublishSubject.create();
   // observer1 will receive all onNext and onCompleted events
   subject.subscribe(observer1);
   subject.onNext("one");
