@@ -15,8 +15,12 @@
  */
 package rx.subjects;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -64,6 +68,62 @@ public class AsyncSubjectTest {
         verify(aObserver, times(1)).onNext("three");
         verify(aObserver, Mockito.never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testNull() {
+        AsyncSubject<String> subject = AsyncSubject.create();
+
+        @SuppressWarnings("unchecked")
+        Observer<String> aObserver = mock(Observer.class);
+        subject.subscribe(aObserver);
+
+        subject.onNext(null);
+        subject.onCompleted();
+
+        verify(aObserver, times(1)).onNext(null);
+        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testSubscribeAfterCompleted() {
+        AsyncSubject<String> subject = AsyncSubject.create();
+
+        @SuppressWarnings("unchecked")
+        Observer<String> aObserver = mock(Observer.class);
+
+        subject.onNext("one");
+        subject.onNext("two");
+        subject.onNext("three");
+        subject.onCompleted();
+
+        subject.subscribe(aObserver);
+
+        verify(aObserver, times(1)).onNext("three");
+        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testSubscribeAfterError() {
+        AsyncSubject<String> subject = AsyncSubject.create();
+
+        @SuppressWarnings("unchecked")
+        Observer<String> aObserver = mock(Observer.class);
+
+        subject.onNext("one");
+        subject.onNext("two");
+        subject.onNext("three");
+
+        RuntimeException re = new RuntimeException("failed");
+        subject.onError(re);
+
+        subject.subscribe(aObserver);
+
+        verify(aObserver, times(1)).onError(re);
+        verify(aObserver, Mockito.never()).onNext(any(String.class));
+        verify(aObserver, Mockito.never()).onCompleted();
     }
 
     @Test
@@ -151,4 +211,94 @@ public class AsyncSubjectTest {
         inOrder.verify(aObserver, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
+
+    /**
+     * Can receive timeout if subscribe never receives an onError/onCompleted ... which reveals a race condition.
+     */
+    @Test
+    public void testSubscribeCompletionRaceCondition() {
+        /*
+         * With non-threadsafe code this fails most of the time on my dev laptop and is non-deterministic enough
+         * to act as a unit test to the race conditions.
+         * 
+         * With the synchronization code in place I can not get this to fail on my laptop. 
+         */
+        for (int i = 0; i < 50; i++) {
+            final AsyncSubject<String> subject = AsyncSubject.create();
+            final AtomicReference<String> value1 = new AtomicReference<String>();
+
+            subject.subscribe(new Action1<String>() {
+
+                @Override
+                public void call(String t1) {
+                    try {
+                        // simulate a slow observer
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    value1.set(t1);
+                }
+
+            });
+
+            Thread t1 = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    subject.onNext("value");
+                    subject.onCompleted();
+                }
+            });
+
+            SubjectObserverThread t2 = new SubjectObserverThread(subject);
+            SubjectObserverThread t3 = new SubjectObserverThread(subject);
+            SubjectObserverThread t4 = new SubjectObserverThread(subject);
+            SubjectObserverThread t5 = new SubjectObserverThread(subject);
+
+            t2.start();
+            t3.start();
+            t1.start();
+            t4.start();
+            t5.start();
+            try {
+                t1.join();
+                t2.join();
+                t3.join();
+                t4.join();
+                t5.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            assertEquals("value", value1.get());
+            assertEquals("value", t2.value.get());
+            assertEquals("value", t3.value.get());
+            assertEquals("value", t4.value.get());
+            assertEquals("value", t5.value.get());
+        }
+
+    }
+
+    private static class SubjectObserverThread extends Thread {
+
+        private final AsyncSubject<String> subject;
+        private final AtomicReference<String> value = new AtomicReference<String>();
+
+        public SubjectObserverThread(AsyncSubject<String> subject) {
+            this.subject = subject;
+        }
+
+        @Override
+        public void run() {
+            try {
+                // a timeout exception will happen if we don't get a terminal state 
+                String v = subject.timeout(2000, TimeUnit.MILLISECONDS).toBlockingObservable().single();
+                value.set(v);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
