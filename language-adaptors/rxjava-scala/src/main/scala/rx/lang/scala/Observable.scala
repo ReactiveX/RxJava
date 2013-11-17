@@ -69,12 +69,8 @@ package rx.lang.scala
  *
  * 
  */
-// constructor is private because users should use apply in companion
-class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
-  // Uncommenting this line combined with `new Observable(...)` instead of `new Observable[T](...)`
-  // makes the compiler crash
-  extends AnyVal 
-{
+trait Observable[+T] extends JavaWrapper[rx.Observable[_ <: T]] {
+  
   import scala.collection.JavaConverters._
   import scala.collection.Seq
   import scala.concurrent.duration.{Duration, TimeUnit}
@@ -187,7 +183,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
    *         is called, the Observable starts to push results into the specified Subject
    */
   def multicast[R](subject: Subject[T, R]): (() => Subscription, Observable[R]) = {
-    val javaCO = asJava.multicast[R](subject)
+    val javaCO = asJava.multicast[R](subject.asJava)
     (() => javaCO.connect(), Observable[R](javaCO))
   }
   
@@ -508,7 +504,7 @@ class Observable[+T] private[scala] (val asJava: rx.Observable[_ <: T])
   def window(closings: () => Observable[Closing]): Observable[Observable[T]] = {
     val func : Func0[_ <: rx.Observable[_ <: Closing]] = closings().asJava
     val o1: rx.Observable[_ <: rx.Observable[_]] = asJava.window(func)
-    val o2 = new Observable[rx.Observable[_]](o1).map((x: rx.Observable[_]) => {
+    val o2 = Observable[rx.Observable[_]](o1).map((x: rx.Observable[_]) => {
       val x2 = x.asInstanceOf[rx.Observable[_ <: T]]
       Observable[T](x2)
     })
@@ -1842,21 +1838,23 @@ object Observable {
  
   private[scala] 
   def jObsOfListToScObsOfSeq[T](jObs: rx.Observable[_ <: java.util.List[T]]): Observable[Seq[T]] = {
-    val oScala1: Observable[java.util.List[T]] = new Observable[java.util.List[T]](jObs)
+    val oScala1: Observable[java.util.List[T]] = Observable[java.util.List[T]](jObs)
     oScala1.map((lJava: java.util.List[T]) => lJava.asScala)
   }
   
   private[scala] 
   def jObsOfJObsToScObsOfScObs[T](jObs: rx.Observable[_ <: rx.Observable[_ <: T]]): Observable[Observable[T]] = {
-    val oScala1: Observable[rx.Observable[_ <: T]] = new Observable[rx.Observable[_ <: T]](jObs)
-    oScala1.map((oJava: rx.Observable[_ <: T]) => new Observable[T](oJava))
+    val oScala1: Observable[rx.Observable[_ <: T]] = Observable[rx.Observable[_ <: T]](jObs)
+    oScala1.map((oJava: rx.Observable[_ <: T]) => Observable[T](oJava))
   }
+  
+  private[Observable] class ObservableWrapper[+T](val asJava: rx.Observable[_ <: T]) extends Observable[T] {}
   
   /**
    * Creates a new Scala Observable from a given Java Observable.
    */
   def apply[T](asJava: rx.Observable[_ <: T]): Observable[T] = {
-    new Observable[T](asJava)
+    new ObservableWrapper[T](asJava)
   }
   
   /**
@@ -2030,7 +2028,7 @@ object Observable {
    * @return An Observable that emits a number each time interval.
    */
   def interval(duration: Duration): Observable[Long] = {
-    (new Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit))).map(_.longValue())
+    (Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit))).map(_.longValue())
   }
 
   /**
@@ -2045,7 +2043,7 @@ object Observable {
    * @return An Observable that emits a number each time interval.
    */
   def interval(duration: Duration, scheduler: Scheduler): Observable[Long] = {
-    (new Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit, scheduler))).map(_.longValue())
+    (Observable[java.lang.Long](JObservable.interval(duration.length, duration.unit, scheduler))).map(_.longValue())
   }
   
 }

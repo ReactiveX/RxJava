@@ -92,10 +92,11 @@ private class UnitTest extends JUnitSuite {
     import org.mockito.Mockito._
     
     val scheduler = TestScheduler()
+    // a Java observer
     val observer = mock(classOf[rx.Observer[Long]])
 
     val o = Observable.interval(1 second, scheduler)
-    val sub = o.subscribe(observer)
+    val sub = o.subscribe(Observer(observer))
 
     verify(observer, never).onNext(0L)
     verify(observer, never).onCompleted()
