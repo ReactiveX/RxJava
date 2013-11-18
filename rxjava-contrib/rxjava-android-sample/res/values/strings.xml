@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RxAndroid Sample</string>
+    <string name="action_settings">Settings</string>
+    <string name="download_a_file">Download File</string>
+</resources>
