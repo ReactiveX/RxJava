@@ -434,7 +434,6 @@ public final class OperationZip {
         }
         /**
          * The individual line's observer.
-         * @author akarnokd, 2013.01.14.
          * @param <T> the element type
          */
         public static class ItemObserver<T> implements Observer<T>, Subscription {

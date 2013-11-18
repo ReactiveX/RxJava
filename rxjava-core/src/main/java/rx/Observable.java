@@ -391,7 +391,7 @@ public class Observable<T> {
      * @param onError
      * @param onComplete
      */
-    public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
+    public Subscription subscribe(final Action1<? super T> onNext, final Action1<? super Throwable> onError, final Action0 onComplete) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -437,7 +437,7 @@ public class Observable<T> {
      * @param onComplete
      * @param scheduler
      */
-    public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete, Scheduler scheduler) {
+    public Subscription subscribe(final Action1<? super T> onNext, final Action1<? super Throwable> onError, final Action0 onComplete, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError, onComplete);
     }
 
@@ -3541,7 +3541,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public Observable<T> reduce(Func2<T, T, T> accumulator) {
+    public Observable<T> reduce(Func2<? super T, ? super T, ? extends T> accumulator) {
         /*
          * Discussion and confirmation of implementation at https://github.com/Netflix/RxJava/issues/423#issuecomment-27642532
          * 
@@ -3661,7 +3661,7 @@ public class Observable<T> {
      *            if the source is empty
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229715(v=vs.103).aspx">MSDN: Observable.Min</a>
      */
-    public static <T extends Comparable<T>> Observable<T> min(Observable<T> source) {
+    public static <T extends Comparable<? super T>> Observable<T> min(Observable<T> source) {
         return OperationMinMax.min(source);
     }
 
@@ -3677,7 +3677,7 @@ public class Observable<T> {
      *            if the source is empty
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229095(v=vs.103).aspx">MSDN: Observable.Min</a>
      */
-    public Observable<T> min(Comparator<T> comparator) {
+    public Observable<T> min(Comparator<? super T> comparator) {
         return OperationMinMax.min(this, comparator);
     }
 
@@ -3690,10 +3690,9 @@ public class Observable<T> {
      * @return an observable emitting a List of the elements with the minimum key value.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228970(v=vs.103).aspx">MSDN: Observable.MinBy</a>
      */
-    public <R extends Comparable<R>> Observable<List<T>> minBy(Func1<T, R> selector) {
+    public <R extends Comparable<? super R>> Observable<List<T>> minBy(Func1<? super T, ? extends R> selector) {
         return OperationMinMax.minBy(this, selector);
     }
-
     /**
      * Returns the elements in an observable sequence with the minimum key value  according to the specified comparator.
      * For an empty source, it returns an observable emitting an empty List.
@@ -3705,7 +3704,7 @@ public class Observable<T> {
      * @return an observable emitting a List of the elements with the minimum key value  according to the specified comparator.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228970(v=vs.103).aspx">MSDN: Observable.MinBy</a>
      */
-    public <R> Observable<List<T>> minBy(Func1<T, R> selector, Comparator<R> comparator) {
+    public <R> Observable<List<T>> minBy(Func1<? super T, ? extends R> selector, Comparator<? super R> comparator) {
         return OperationMinMax.minBy(this, selector, comparator);
     }
 
@@ -3721,7 +3720,7 @@ public class Observable<T> {
      *            if the source is empty.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211837(v=vs.103).aspx">MSDN: Observable.Max</a>
      */
-    public static <T extends Comparable<T>> Observable<T> max(Observable<T> source) {
+    public static <T extends Comparable<? super T>> Observable<T> max(Observable<T> source) {
         return OperationMinMax.max(source);
     }
 
@@ -3737,7 +3736,7 @@ public class Observable<T> {
      *            if the source is empty.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211635(v=vs.103).aspx">MSDN: Observable.Max</a>
      */
-    public Observable<T> max(Comparator<T> comparator) {
+    public Observable<T> max(Comparator<? super T> comparator) {
         return OperationMinMax.max(this, comparator);
     }
 
@@ -3750,7 +3749,7 @@ public class Observable<T> {
      * @return an observable emitting a List of the elements with the maximum key value.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229058(v=vs.103).aspx">MSDN: Observable.MaxBy</a>
      */
-    public <R extends Comparable<R>> Observable<List<T>> maxBy(Func1<T, R> selector) {
+    public <R extends Comparable<? super R>> Observable<List<T>> maxBy(Func1<? super T, ? extends R> selector) {
         return OperationMinMax.maxBy(this, selector);
     }
 
@@ -3765,7 +3764,7 @@ public class Observable<T> {
      * @return an observable emitting a List of the elements with the maximum key value  according to the specified comparator.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244330(v=vs.103).aspx">MSDN: Observable.MaxBy</a>
      */
-    public <R> Observable<List<T>> maxBy(Func1<T, R> selector, Comparator<R> comparator) {
+    public <R> Observable<List<T>> maxBy(Func1<? super T, ? extends R> selector, Comparator<? super R> comparator) {
         return OperationMinMax.maxBy(this, selector, comparator);
     }
 
@@ -3921,7 +3920,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154(v%3Dvs.103).aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
-    public <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator) {
+    public <R> Observable<R> reduce(R initialValue, Func2<? super R, ? super T, ? extends R> accumulator) {
         return create(OperationScan.scan(this, initialValue, accumulator)).takeLast(1);
     }
 
@@ -5017,7 +5016,7 @@ public class Observable<T> {
      *            The source sequence with the side-effecting behavior applied.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804(v=vs.103).aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<T> onNext) {
+    public Observable<T> doOnEach(final Action1<? super T> onNext) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {}
@@ -5046,7 +5045,7 @@ public class Observable<T> {
      *            The source sequence with the side-effecting behavior applied.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804(v=vs.103).aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnError(final Action1<Throwable> onError) {
+    public Observable<T> doOnError(final Action1<? super Throwable> onError) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {}
@@ -5106,7 +5105,7 @@ public class Observable<T> {
      *            The source sequence with the side-effecting behavior applied.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229539(v=vs.103).aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<T> onNext, final Action1<Throwable> onError) {
+    public Observable<T> doOnEach(final Action1<? super T> onNext, final Action1<? super Throwable> onError) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {}
@@ -5142,7 +5141,7 @@ public class Observable<T> {
      *            The source sequence with the side-effecting behavior applied.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229830(v=vs.103).aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<T> onNext, final Action1<Throwable> onError, final Action0 onCompleted) {
+    public Observable<T> doOnEach(final Action1<? super T> onNext, final Action1<? super Throwable> onError, final Action0 onCompleted) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {
