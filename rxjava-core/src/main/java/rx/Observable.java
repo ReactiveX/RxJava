@@ -1324,7 +1324,19 @@ public class Observable<T> {
     public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2) {
         return create(OperationConcat.concat(t1, t2));
     }
-
+    /**
+     * Returns an Observable that emits the items emitted by an iterable sequence of Observables, one after the
+     * other.
+     * 
+     * @param <T> the common supertype of the observables
+     * @param sources the iterable sequence of observables to concat
+     * @return an Observable that emits items that are the result of combining the items emitted by
+     *         the {@code sources} Observables, one after the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat(v=vs.103).aspx">MSDN: Observable.Concat Method</a>
+     */
+    public static <T> Observable<T> concat(Iterable<? extends Observable<? extends T>> sources) {
+        return create(OperationConcat.concat(sources));
+    }
     /**
      * Returns an Observable that emits the items emitted by two or more Observables, one after the
      * other.
