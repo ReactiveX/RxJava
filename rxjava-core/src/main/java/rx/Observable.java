@@ -667,16 +667,16 @@ public class Observable<T> {
 
     /**
      * Converts an {@link Iterable} sequence into an Observable with the specified scheduler.
-     *
-     * @param iterable
-     *            the source {@link Iterable} sequence
-     * @param scheduler
-     *            the scheduler to emit the items of the iterable
-     * @param <T>
-     *            the type of items in the {@link Iterable} sequence and the type of items to be
-     *            emitted by the resulting Observable
-     * @return an Observable that emits each item in the source {@link Iterable} sequence with the specified scheduler
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140(v=vs.103).aspx">MSDN: Observable.ToObservable</a>
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.s.png">
+     * 
+     * @param iterable the source {@link Iterable} sequence
+     * @param scheduler the scheduler to emit the items of the iterable
+     * @param <T> the type of items in the {@link Iterable} sequence and the
+     *            type of items to be emitted by the resulting Observable
+     * @return an Observable that emits each item in the source {@link Iterable}
+     *         sequence with the specified scheduler
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
      */
     public static <T> Observable<T> from(Iterable<? extends T> iterable, Scheduler scheduler) {
         return from(iterable).observeOn(scheduler);
@@ -977,17 +977,15 @@ public class Observable<T> {
     }
 
     /**
-     * Generates an Observable that emits a sequence of integers within a specified range with the specified scheduler.
-     *
-     * @param start
-     *            the value of the first integer in the sequence
-     * @param count
-     *            the number of sequential integers to generate
-     * @param scheduler
-     *            the scheduler to run the generator loop on
+     * Generates an Observable that emits a sequence of integers within a
+     * specified range with the specified scheduler.
+     * <p>
+     * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/range.s.png">
+     * @param start the value of the first integer in the sequence
+     * @param count the number of sequential integers to generate
+     * @param scheduler the scheduler to run the generator loop on
      * @return an Observable that emits a range of sequential integers
-     *
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211896(v=vs.103).aspx">Observable.Range Method (Int32, Int32, IScheduler)</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211896.aspx">Observable.Range Method (Int32, Int32, IScheduler)</a>
      */
     public static Observable<Integer> range(int start, int count, Scheduler scheduler) {
         return range(start, count).observeOn(scheduler);
@@ -3210,7 +3208,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.png">
      * 
      * @return an Observable of sequentially distinct items
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229494%28v=vs.103%29.aspx">MSDN: Observable.distinctUntilChanged</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229494.aspx">MSDN: Observable.distinctUntilChanged</a>
      */
     public Observable<T> distinctUntilChanged() {
         return create(OperationDistinctUntilChanged.distinctUntilChanged(this));
@@ -3227,7 +3225,7 @@ public class Observable<T> {
      *                    value that is used for deciding whether an item is
      *                    sequentially distinct from another one or not
      * @return an Observable of sequentially distinct items
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229508%28v=vs.103%29.aspx">MSDN: Observable.distinctUntilChanged</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229508.aspx">MSDN: Observable.distinctUntilChanged</a>
      */
     public <U> Observable<T> distinctUntilChanged(Func1<? super T, ? extends U> keySelector) {
         return create(OperationDistinctUntilChanged.distinctUntilChanged(this, keySelector));
@@ -3240,7 +3238,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.png">
      * 
      * @return an Observable of distinct items
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229764%28v=vs.103%29.aspx">MSDN: Observable.distinct</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229764.aspx">MSDN: Observable.distinct</a>
      */
     public Observable<T> distinct() {
         return create(OperationDistinct.distinct(this));
@@ -3256,7 +3254,7 @@ public class Observable<T> {
      *                    value that is used to decide whether an item is
      *                    distinct from another one or not
      * @return an Observable that emits distinct items
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244310%28v=vs.103%29.aspx">MSDN: Observable.distinct</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244310.aspx">MSDN: Observable.distinct</a>
      */
     public <U> Observable<T> distinct(Func1<? super T, ? extends U> keySelector) {
         return create(OperationDistinct.distinct(this, keySelector));
@@ -4588,28 +4586,30 @@ public class Observable<T> {
     }
 
     /**
-     * Emit a specified set of items with the specified scheduler before beginning to emit items from the source Observable.
-     *
-     * @param values
-     *            Iterable of the items you want the modified Observable to emit first
-     * @param scheduler
-     *            The scheduler to emit the prepended values on.
+     * Emit a specified set of items with the specified scheduler before
+     * beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.s.png">
+     * 
+     * @param values iterable of the items you want the modified Observable to emit first
+     * @param scheduler the scheduler to emit the prepended values on
      * @return an Observable that exhibits the modified behavior
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229372(v=vs.103).aspx">MSDN: Observable.StartWith</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229372.aspx">MSDN: Observable.StartWith</a>
      */
     public Observable<T> startWith(Iterable<T> values, Scheduler scheduler) {
         return concat(from(values, scheduler), this);
     }
 
     /**
-     * Emit a specified array of items with the specified scheduler before beginning to emit items from the source Observable.
+     * Emit a specified array of items with the specified scheduler before
+     * beginning to emit items from the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.s.png">
      *
-     * @param values
-     *            The items you want the modified Observable to emit first
-     * @param scheduler
-     *            The scheduler to emit the prepended values on.
+     * @param values the items you want the modified Observable to emit first
+     * @param scheduler the scheduler to emit the prepended values on
      * @return an Observable that exhibits the modified behavior
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229372(v=vs.103).aspx">MSDN: Observable.StartWith</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229372.aspx">MSDN: Observable.StartWith</a>
      */
     public Observable<T> startWith(T[] values, Scheduler scheduler) {
         return startWith(Arrays.asList(values), scheduler);
