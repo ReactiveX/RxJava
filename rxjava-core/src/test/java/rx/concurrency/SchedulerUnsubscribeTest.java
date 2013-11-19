@@ -28,12 +28,17 @@ public class SchedulerUnsubscribeTest {
     public void testUnsubscribeOfThreadPoolForIO() throws InterruptedException {
         testUnSubscribeForScheduler(Schedulers.threadPoolForIO());
     }
-    
+
     @Test
     public void testUnsubscribeOfThreadPoolForComputation() throws InterruptedException {
         testUnSubscribeForScheduler(Schedulers.threadPoolForComputation());
     }
-    
+
+    @Test
+    public void testUnsubscribeOfImmediateThread() throws InterruptedException {
+        testUnSubscribeForScheduler(Schedulers.immediate());
+    }
+
     @Test
     public void testUnsubscribeOfCurrentThread() throws InterruptedException {
         testUnSubscribeForScheduler(Schedulers.currentThread());
@@ -56,7 +61,7 @@ public class SchedulerUnsubscribeTest {
                     }
                 })
                 .subscribeOn(scheduler)
-                .observeOn(Schedulers.currentThread())
+                .observeOn(scheduler)
                 .subscribe(new Observer<Long>() {
                     @Override
                     public void onCompleted() {

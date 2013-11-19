@@ -15,13 +15,20 @@
  */
 package rx.operators;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
+import rx.concurrency.CurrentThreadScheduler;
 import rx.concurrency.ImmediateScheduler;
 import rx.subscriptions.CompositeSubscription;
+import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 
 /**
  * Asynchronously notify Observers on the specified Scheduler.
@@ -38,6 +45,9 @@ public class OperationObserveOn {
         private final Observable<? extends T> source;
         private final Scheduler scheduler;
 
+        final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
+        final AtomicInteger counter = new AtomicInteger(0);
+
         public ObserveOn(Observable<? extends T> source, Scheduler scheduler) {
             this.source = source;
             this.scheduler = scheduler;
@@ -48,11 +58,55 @@ public class OperationObserveOn {
             if (scheduler instanceof ImmediateScheduler) {
                 // do nothing if we request ImmediateScheduler so we don't invoke overhead
                 return source.subscribe(observer);
+            } else if (scheduler instanceof CurrentThreadScheduler) {
+                // do nothing if we request CurrentThreadScheduler so we don't invoke overhead
+                return source.subscribe(observer);
             } else {
-                CompositeSubscription s = new CompositeSubscription();
-                s.add(source.subscribe(new ScheduledObserver<T>(s, observer, scheduler)));
-                return s;
+                return observeOn(observer, scheduler);
             }
         }
+
+        public Subscription observeOn(final Observer<? super T> observer, Scheduler scheduler) {
+            final CompositeSubscription s = new CompositeSubscription();
+
+            s.add(source.materialize().subscribe(new Action1<Notification<? extends T>>() {
+
+                @Override
+                public void call(Notification<? extends T> e) {
+                    // this must happen before 'counter' is used to provide synchronization between threads
+                    queue.offer(e);
+
+                    // we now use counter to atomically determine if we need to start processing or not
+                    // it will be 0 if it's the first notification or the scheduler has finished processing work
+                    // and we need to start doing it again
+                    if (counter.getAndIncrement() == 0) {
+                        processQueue(s, observer);
+                    }
+
+                }
+            }));
+
+            return s;
+        }
+
+        private void processQueue(CompositeSubscription s, final Observer<? super T> observer) {
+            s.add(scheduler.schedule(new Action1<Action0>() {
+                @Override
+                public void call(Action0 self) {
+                    Notification<? extends T> not = queue.poll();
+                    if (not != null) {
+                        not.accept(observer);
+                    }
+
+                    // decrement count and if we still have work to do
+                    // recursively schedule ourselves to process again
+                    if (counter.decrementAndGet() > 0) {
+                        self.call();
+                    }
+
+                }
+            }));
+        }
     }
+
 }
