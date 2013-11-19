@@ -17,6 +17,7 @@ package rx.lang.scala.observables
 
 import scala.collection.JavaConverters._
 import rx.lang.scala.ImplicitFunctionConversions._
+import rx.lang.scala.JavaWrapper
 
 /**
  * An Observable that provides blocking operators.
@@ -24,9 +25,7 @@ import rx.lang.scala.ImplicitFunctionConversions._
  * You can obtain a BlockingObservable from an Observable using [[Observable.toBlockingObservable]]
  */
 // constructor is private because users should use Observable.toBlockingObservable
-class BlockingObservable[+T] private[scala] (val asJava: rx.observables.BlockingObservable[_ <: T]) 
-  extends AnyVal 
-{
+class BlockingObservable[+T] private[scala] (val asJava: rx.observables.BlockingObservable[_ <: T]) extends JavaWrapper[rx.observables.BlockingObservable[_ <: T]] {
 
   /**
    * Invoke a method on each item emitted by the {@link Observable}; block until the Observable

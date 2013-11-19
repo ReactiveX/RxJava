@@ -27,9 +27,21 @@ import rx.util.functions._
 object ImplicitFunctionConversions {
   import language.implicitConversions
 
+  implicit def javaSubscriptionToScalaSubscription(s: rx.Subscription): Subscription = {
+    Subscription(s)
+  }
+  
+  implicit def scalaSubscriptionToJavaSubscription(s: Subscription): rx.Subscription = {
+    s.asJava
+  }
+  
+  implicit def scalaObserverToJavaObserver[T](o: Observer[T]): rx.Observer[_ >: T] = {
+    o.asJava
+  }  
+  
   implicit def schedulerActionToFunc2[T](action: (Scheduler, T) => Subscription) =
-    new Func2[rx.Scheduler, T, Subscription] {
-      def call(s: rx.Scheduler, t: T): Subscription = {
+    new Func2[rx.Scheduler, T, rx.Subscription] {
+      def call(s: rx.Scheduler, t: T): rx.Subscription = {
         action(s, t)
       }
     }  
@@ -41,7 +53,7 @@ object ImplicitFunctionConversions {
   implicit def scalaFunction1ToOnSubscribeFunc[T](f: rx.lang.scala.Observer[T] => Subscription) =
     new rx.Observable.OnSubscribeFunc[T] {
       def onSubscribe(obs: rx.Observer[_ >: T]): rx.Subscription = {
-        f(obs)
+        f(Observer(obs)).asJava
       }
     }
 

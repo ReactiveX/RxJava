@@ -234,6 +234,7 @@ class RxScalaDemo extends JUnitSuite {
     waitFor(firstMedalOfEachCountry)
   }
   
+  @Ignore // TODO this test never terminates
   @Test def olympicsExample() {
     val (go, medals) = Olympics.mountainBikeMedals.publish
     medals.subscribe(println(_))
@@ -383,7 +384,8 @@ class RxScalaDemo extends JUnitSuite {
     }
   }
   
-  @Test def materializeExample1() {
+  @Test(expected = classOf[RuntimeException])  
+  def materializeExample1() {
     def printObservable[T](o: Observable[T]): Unit = {
       import Notification._
       o.materialize.subscribe(n => n match {

@@ -31,16 +31,14 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.scalatest.junit.JUnitSuite
 
-import rx.lang.scala.ImplicitFunctionConversions.scalaFunction0ProducingUnitToAction0
-import rx.lang.scala.ImplicitFunctionConversions.schedulerActionToFunc2
+import rx.lang.scala.ImplicitFunctionConversions._
 import rx.lang.scala.concurrency.TestScheduler
 
   
 /**
  * Represents an object that schedules units of work.
  */
-trait Scheduler {
-  def asJava: rx.Scheduler
+trait Scheduler extends JavaWrapper[rx.Scheduler] {
 
   /**
    * Schedules a cancelable action to be executed.

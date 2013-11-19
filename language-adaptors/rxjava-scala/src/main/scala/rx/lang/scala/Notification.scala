@@ -18,9 +18,8 @@ package rx.lang.scala
 /**
  * Emitted by Observables returned by [[Observable.materialize]].
  */
-sealed trait Notification[+T] {
-  def asJava: rx.Notification[_ <: T]
-}
+// sealed because all its subclasses must be defined in this file
+sealed trait Notification[+T] extends JavaWrapper[rx.Notification[_ <: T]] {}
 
 /**
  * Provides pattern matching support and constructors for Notifications.
