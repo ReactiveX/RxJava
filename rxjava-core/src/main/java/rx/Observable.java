@@ -64,6 +64,7 @@ import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallel;
+import rx.operators.OperationParallelMerge;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
@@ -4052,6 +4053,24 @@ public class Observable<T> {
         return OperationParallel.parallel(this, f, s);
     }
 
+    
+    /**
+     * Merges an <code>Observable<Observable<T>></code> to <code>Observable<Observable<T>></code>
+     * with number of inner Observables as defined by <code>parallelObservables</code>.
+     * <p>
+     * For example, if the original <code>Observable<Observable<T>></code> has 100 Observables to be emitted and <code>parallelObservables</code>
+     * is defined as 8, the 100 will be grouped onto 8 output Observables.
+     * <p>
+     * This is a mechanism for efficiently processing N number of Observables on a smaller N number of resources (typically CPU cores).
+     * 
+     * @param parallelObservables
+     *            the number of Observables to merge into.
+     * @return an Observable of Observables constrained to number defined by <code>parallelObservables</code>.
+     */
+    public static <T> Observable<Observable<T>> parallelMerge(Observable<Observable<T>> source, int parallelObservables) {
+        return OperationParallelMerge.parallelMerge(source, parallelObservables);
+    }
+    
     /**
      * Returns a {@link ConnectableObservable}, which waits until its
      * {@link ConnectableObservable#connect connect} method is called before it
