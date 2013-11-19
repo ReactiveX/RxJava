@@ -20,6 +20,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -29,10 +30,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable.OnSubscribeFunc;
+import rx.concurrency.TestScheduler;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
@@ -886,6 +889,7 @@ public class ObservableTests {
         verify(aObserver, times(1)).onCompleted();
     }
 
+    @Test
     public void testIgnoreElements() {
         Observable<Integer> observable = Observable.from(1, 2, 3).ignoreElements();
 
@@ -895,5 +899,63 @@ public class ObservableTests {
         verify(aObserver, never()).onNext(any(Integer.class));
         verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testFromWithScheduler() {
+        TestScheduler scheduler = new TestScheduler();
+        Observable<Integer> observable = Observable.from(Arrays.asList(1, 2), scheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+
+        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+
+        InOrder inOrder = inOrder(aObserver);
+        inOrder.verify(aObserver, times(1)).onNext(1);
+        inOrder.verify(aObserver, times(1)).onNext(2);
+        inOrder.verify(aObserver, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testStartWithWithScheduler() {
+        TestScheduler scheduler = new TestScheduler();
+        Observable<Integer> observable = Observable.from(3, 4).startWith(Arrays.asList(1, 2), scheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+
+        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+
+        InOrder inOrder = inOrder(aObserver);
+        inOrder.verify(aObserver, times(1)).onNext(1);
+        inOrder.verify(aObserver, times(1)).onNext(2);
+        inOrder.verify(aObserver, times(1)).onNext(3);
+        inOrder.verify(aObserver, times(1)).onNext(4);
+        inOrder.verify(aObserver, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testRangeWithScheduler() {
+        TestScheduler scheduler = new TestScheduler();
+        Observable<Integer> observable = Observable.range(3, 4, scheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+
+        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+
+        InOrder inOrder = inOrder(aObserver);
+        inOrder.verify(aObserver, times(1)).onNext(3);
+        inOrder.verify(aObserver, times(1)).onNext(4);
+        inOrder.verify(aObserver, times(1)).onNext(5);
+        inOrder.verify(aObserver, times(1)).onNext(6);
+        inOrder.verify(aObserver, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
     }
 }

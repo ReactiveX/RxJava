@@ -666,6 +666,23 @@ public class Observable<T> {
     }
 
     /**
+     * Converts an {@link Iterable} sequence into an Observable with the specified scheduler.
+     *
+     * @param iterable
+     *            the source {@link Iterable} sequence
+     * @param scheduler
+     *            the scheduler to emit the items of the iterable
+     * @param <T>
+     *            the type of items in the {@link Iterable} sequence and the type of items to be
+     *            emitted by the resulting Observable
+     * @return an Observable that emits each item in the source {@link Iterable} sequence with the specified scheduler
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140(v=vs.103).aspx">MSDN: Observable.ToObservable</a>
+     */
+    public static <T> Observable<T> from(Iterable<? extends T> iterable, Scheduler scheduler) {
+        return from(iterable).observeOn(scheduler);
+    }
+
+    /**
      * Converts an Array into an Observable.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
@@ -957,6 +974,23 @@ public class Observable<T> {
      */
     public static Observable<Integer> range(int start, int count) {
         return from(Range.createWithCount(start, count));
+    }
+
+    /**
+     * Generates an Observable that emits a sequence of integers within a specified range with the specified scheduler.
+     *
+     * @param start
+     *            the value of the first integer in the sequence
+     * @param count
+     *            the number of sequential integers to generate
+     * @param scheduler
+     *            the scheduler to run the generator loop on
+     * @return an Observable that emits a range of sequential integers
+     *
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211896(v=vs.103).aspx">Observable.Range Method (Int32, Int32, IScheduler)</a>
+     */
+    public static Observable<Integer> range(int start, int count, Scheduler scheduler) {
+        return range(start, count).observeOn(scheduler);
     }
 
     /**
@@ -4551,6 +4585,34 @@ public class Observable<T> {
      */
     public Observable<T> startWith(Iterable<T> values) {
         return concat(Observable.<T> from(values), this);
+    }
+
+    /**
+     * Emit a specified set of items with the specified scheduler before beginning to emit items from the source Observable.
+     *
+     * @param values
+     *            Iterable of the items you want the modified Observable to emit first
+     * @param scheduler
+     *            The scheduler to emit the prepended values on.
+     * @return an Observable that exhibits the modified behavior
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229372(v=vs.103).aspx">MSDN: Observable.StartWith</a>
+     */
+    public Observable<T> startWith(Iterable<T> values, Scheduler scheduler) {
+        return concat(from(values, scheduler), this);
+    }
+
+    /**
+     * Emit a specified array of items with the specified scheduler before beginning to emit items from the source Observable.
+     *
+     * @param values
+     *            The items you want the modified Observable to emit first
+     * @param scheduler
+     *            The scheduler to emit the prepended values on.
+     * @return an Observable that exhibits the modified behavior
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229372(v=vs.103).aspx">MSDN: Observable.StartWith</a>
+     */
+    public Observable<T> startWith(T[] values, Scheduler scheduler) {
+        return startWith(Arrays.asList(values), scheduler);
     }
 
     /**
