@@ -116,6 +116,16 @@ public class Notification<T> {
         return getKind() == Kind.OnNext;
     }
 
+    public void accept(Observer<? super T> observer) {
+        if (isOnNext()) {
+            observer.onNext(getValue());
+        } else if (isOnCompleted()) {
+            observer.onCompleted();
+        } else if (isOnError()) {
+            observer.onError(getThrowable());
+        }
+    }
+
     public static enum Kind {
         OnNext, OnError, OnCompleted
     }
