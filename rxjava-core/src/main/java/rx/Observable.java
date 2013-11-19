@@ -3649,7 +3649,7 @@ public class Observable<T> {
      *            if the source is empty
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229715(v=vs.103).aspx">MSDN: Observable.Min</a>
      */
-    public static <T extends Comparable<T>> Observable<T> min(Observable<T> source) {
+    public static <T extends Comparable<? super T>> Observable<T> min(Observable<T> source) {
         return OperationMinMax.min(source);
     }
 
@@ -3665,7 +3665,7 @@ public class Observable<T> {
      *            if the source is empty
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229095(v=vs.103).aspx">MSDN: Observable.Min</a>
      */
-    public Observable<T> min(Comparator<T> comparator) {
+    public Observable<T> min(Comparator<? super T> comparator) {
         return OperationMinMax.min(this, comparator);
     }
 
@@ -3678,7 +3678,7 @@ public class Observable<T> {
      * @return an observable emitting a List of the elements with the minimum key value.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228970(v=vs.103).aspx">MSDN: Observable.MinBy</a>
      */
-    public <R extends Comparable<R>> Observable<List<T>> minBy(Func1<T, R> selector) {
+    public <R extends Comparable<? super R>> Observable<List<T>> minBy(Func1<T, R> selector) {
         return OperationMinMax.minBy(this, selector);
     }
 
@@ -3693,7 +3693,7 @@ public class Observable<T> {
      * @return an observable emitting a List of the elements with the minimum key value  according to the specified comparator.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228970(v=vs.103).aspx">MSDN: Observable.MinBy</a>
      */
-    public <R> Observable<List<T>> minBy(Func1<T, R> selector, Comparator<R> comparator) {
+    public <R> Observable<List<T>> minBy(Func1<T, R> selector, Comparator<? super R> comparator) {
         return OperationMinMax.minBy(this, selector, comparator);
     }
 
@@ -3709,7 +3709,7 @@ public class Observable<T> {
      *            if the source is empty.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211837(v=vs.103).aspx">MSDN: Observable.Max</a>
      */
-    public static <T extends Comparable<T>> Observable<T> max(Observable<T> source) {
+    public static <T extends Comparable<? super T>> Observable<T> max(Observable<T> source) {
         return OperationMinMax.max(source);
     }
 
@@ -3725,7 +3725,7 @@ public class Observable<T> {
      *            if the source is empty.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211635(v=vs.103).aspx">MSDN: Observable.Max</a>
      */
-    public Observable<T> max(Comparator<T> comparator) {
+    public Observable<T> max(Comparator<? super T> comparator) {
         return OperationMinMax.max(this, comparator);
     }
 
@@ -3738,7 +3738,7 @@ public class Observable<T> {
      * @return an observable emitting a List of the elements with the maximum key value.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229058(v=vs.103).aspx">MSDN: Observable.MaxBy</a>
      */
-    public <R extends Comparable<R>> Observable<List<T>> maxBy(Func1<T, R> selector) {
+    public <R extends Comparable<? super R>> Observable<List<T>> maxBy(Func1<T, R> selector) {
         return OperationMinMax.maxBy(this, selector);
     }
 
@@ -3753,7 +3753,7 @@ public class Observable<T> {
      * @return an observable emitting a List of the elements with the maximum key value  according to the specified comparator.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244330(v=vs.103).aspx">MSDN: Observable.MaxBy</a>
      */
-    public <R> Observable<List<T>> maxBy(Func1<T, R> selector, Comparator<R> comparator) {
+    public <R> Observable<List<T>> maxBy(Func1<T, R> selector, Comparator<? super R> comparator) {
         return OperationMinMax.maxBy(this, selector, comparator);
     }
 

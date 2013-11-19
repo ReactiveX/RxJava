@@ -28,47 +28,47 @@ import rx.util.functions.Func2;
  */
 public class OperationMinMax {
 
-    public static <T extends Comparable<T>> Observable<T> min(
+    public static <T extends Comparable<? super T>> Observable<T> min(
             Observable<T> source) {
         return minMax(source, -1L);
     }
 
     public static <T> Observable<T> min(Observable<T> source,
-            final Comparator<T> comparator) {
+            final Comparator<? super T> comparator) {
         return minMax(source, comparator, -1L);
     }
 
-    public static <T, R extends Comparable<R>> Observable<List<T>> minBy(
+    public static <T, R extends Comparable<? super R>> Observable<List<T>> minBy(
             Observable<T> source, final Func1<T, R> selector) {
         return minMaxBy(source, selector, -1L);
     }
 
     public static <T, R> Observable<List<T>> minBy(Observable<T> source,
-            final Func1<T, R> selector, final Comparator<R> comparator) {
+            final Func1<T, R> selector, final Comparator<? super R> comparator) {
         return minMaxBy(source, selector, comparator, -1L);
     }
 
-    public static <T extends Comparable<T>> Observable<T> max(
+    public static <T extends Comparable<? super T>> Observable<T> max(
             Observable<T> source) {
         return minMax(source, 1L);
     }
 
     public static <T> Observable<T> max(Observable<T> source,
-            final Comparator<T> comparator) {
+            final Comparator<? super T> comparator) {
         return minMax(source, comparator, 1L);
     }
 
-    public static <T, R extends Comparable<R>> Observable<List<T>> maxBy(
+    public static <T, R extends Comparable<? super R>> Observable<List<T>> maxBy(
             Observable<T> source, final Func1<T, R> selector) {
         return minMaxBy(source, selector, 1L);
     }
 
     public static <T, R> Observable<List<T>> maxBy(Observable<T> source,
-            final Func1<T, R> selector, final Comparator<R> comparator) {
+            final Func1<T, R> selector, final Comparator<? super R> comparator) {
         return minMaxBy(source, selector, comparator, 1L);
     }
 
-    private static <T extends Comparable<T>> Observable<T> minMax(
+    private static <T extends Comparable<? super T>> Observable<T> minMax(
             Observable<T> source, final long flag) {
         return source.reduce(new Func2<T, T, T>() {
             @Override
@@ -82,7 +82,7 @@ public class OperationMinMax {
     }
 
     private static <T> Observable<T> minMax(Observable<T> source,
-            final Comparator<T> comparator, final long flag) {
+            final Comparator<? super T> comparator, final long flag) {
         return source.reduce(new Func2<T, T, T>() {
             @Override
             public T call(T acc, T value) {
@@ -94,7 +94,7 @@ public class OperationMinMax {
         });
     }
 
-    private static <T, R extends Comparable<R>> Observable<List<T>> minMaxBy(
+    private static <T, R extends Comparable<? super R>> Observable<List<T>> minMaxBy(
             Observable<T> source, final Func1<T, R> selector, final long flag) {
         return source.reduce(new ArrayList<T>(),
                 new Func2<List<T>, T, List<T>>() {
@@ -119,7 +119,7 @@ public class OperationMinMax {
     }
 
     private static <T, R> Observable<List<T>> minMaxBy(Observable<T> source,
-            final Func1<T, R> selector, final Comparator<R> comparator,
+            final Func1<T, R> selector, final Comparator<? super R> comparator,
             final long flag) {
         return source.reduce(new ArrayList<T>(),
                 new Func2<List<T>, T, List<T>>() {
