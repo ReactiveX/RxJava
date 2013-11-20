@@ -16,31 +16,31 @@
 package rx.lang.scala
 
 /**
- * Provides [[Opening]]s, [[Closing]]s, and [[Timestamped]].  
+ * Provides [[rx.lang.scala.util.Opening]]s, [[rx.lang.scala.util.Closing]]s, and [[rx.util.Timestamped]].
  */
 package object util {
 
   /**
    * Tagging interface for objects which can open buffers.
-   * @see [[Observable `Observable.buffer(Observable[Opening], Opening => Observable[Closing])`]]
+   * @see [[rx.lang.scala.Observable `Observable.buffer(Observable[Opening], Opening => Observable[Closing])`]]
    */
   type Opening = rx.util.Opening
 
   /**
    * Creates an object which can open buffers.
-   * @see [[Observable `Observable.buffer(Observable[Opening], Opening => Observable[Closing])`]]
+   * @see [[rx.lang.scala.Observable `Observable.buffer(Observable[Opening], Opening => Observable[Closing])`]]
    */
   def Opening() = rx.util.Openings.create()
   
   /**
    * Tagging interface for objects which can close buffers.
-   * @see [[Observable `Observable.buffer(Observable[Opening], Opening => Observable[Closing])`]]
+   * @see [[rx.lang.scala.Observable `Observable.buffer(Observable[Opening], Opening => Observable[Closing])`]]
    */
   type Closing = rx.util.Closing
 
   /**
    * Creates an object which can close buffers.
-   * @see [[Observable `Observable.buffer(Observable[Opening], Opening => Observable[Closing])`]]
+   * @see [[rx.lang.scala.Observable `Observable.buffer(Observable[Opening], Opening => Observable[Closing])`]]
    */
   def Closing() = rx.util.Closings.create()
   
