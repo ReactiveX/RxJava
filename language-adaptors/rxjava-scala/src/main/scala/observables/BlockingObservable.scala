@@ -21,7 +21,7 @@ import rx.lang.scala.ImplicitFunctionConversions._
 /**
  * An Observable that provides blocking operators.
  * 
- * You can obtain a BlockingObservable from an Observable using [[Observable.toBlockingObservable]]
+ * You can obtain a BlockingObservable from an Observable using [[rx.lang.scala.Observable.toBlockingObservable]]
  */
 // constructor is private because users should use Observable.toBlockingObservable
 class BlockingObservable[+T] private[scala] (val asJava: rx.observables.BlockingObservable[_ <: T]) 
@@ -39,13 +39,13 @@ class BlockingObservable[+T] private[scala] (val asJava: rx.observables.Blocking
    * 
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
    *
-   * @param onNext
+   * @param f
    *            the {@link Action1} to invoke for every item emitted by the {@link Observable}
    * @throws RuntimeException
    *             if an error occurs
    */
   def foreach(f: T => Unit): Unit = {
-    asJava.forEach(f);
+    asJava.forEach(f)
   }
   
   def withFilter(p: T => Boolean): WithFilter[T] = {
@@ -117,14 +117,14 @@ class BlockingObservable[+T] private[scala] (val asJava: rx.observables.Blocking
    * Returns an {@link Iterator} that iterates over all items emitted by this {@link Observable}.
    */
   def toIterable: Iterable[T] = {
-    asJava.toIterable().asScala: Iterable[T] // useless ascription because of compiler bug
+    asJava.toIterable.asScala: Iterable[T] // useless ascription because of compiler bug
   }
 
   /**
    * Returns a {@link List} that contains all items emitted by this {@link Observable}.
    */
   def toList: List[T] = {
-    asJava.toIterable().asScala.toList: List[T] // useless ascription because of compiler bug
+    asJava.toIterable.asScala.toList: List[T] // useless ascription because of compiler bug
   }
 
 }
