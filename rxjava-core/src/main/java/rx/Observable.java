@@ -4072,6 +4072,23 @@ public class Observable<T> {
     }
     
     /**
+     * Merges an <code>Observable<Observable<T>></code> to <code>Observable<Observable<T>></code>
+     * with number of inner Observables as defined by <code>parallelObservables</code> and runs each Observable on the defined Scheduler.
+     * <p>
+     * For example, if the original <code>Observable<Observable<T>></code> has 100 Observables to be emitted and <code>parallelObservables</code>
+     * is defined as 8, the 100 will be grouped onto 8 output Observables.
+     * <p>
+     * This is a mechanism for efficiently processing N number of Observables on a smaller N number of resources (typically CPU cores).
+     * 
+     * @param parallelObservables
+     *            the number of Observables to merge into.
+     * @return an Observable of Observables constrained to number defined by <code>parallelObservables</code>.
+     */
+    public static <T> Observable<Observable<T>> parallelMerge(Observable<Observable<T>> source, int parallelObservables, Scheduler scheduler) {
+        return OperationParallelMerge.parallelMerge(source, parallelObservables, scheduler);
+    }
+    
+    /**
      * Returns a {@link ConnectableObservable}, which waits until its
      * {@link ConnectableObservable#connect connect} method is called before it
      * begins emitting items to those {@link Observer}s that have subscribed to

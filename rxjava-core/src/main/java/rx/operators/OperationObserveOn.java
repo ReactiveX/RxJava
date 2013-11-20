@@ -27,8 +27,10 @@ import rx.Subscription;
 import rx.concurrency.CurrentThreadScheduler;
 import rx.concurrency.ImmediateScheduler;
 import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
+import rx.util.functions.Func2;
 
 /**
  * Asynchronously notify Observers on the specified Scheduler.
@@ -44,6 +46,7 @@ public class OperationObserveOn {
     private static class ObserveOn<T> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> source;
         private final Scheduler scheduler;
+        private volatile Scheduler recursiveScheduler;
 
         final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
         final AtomicInteger counter = new AtomicInteger(0);
@@ -66,7 +69,7 @@ public class OperationObserveOn {
             }
         }
 
-        public Subscription observeOn(final Observer<? super T> observer, Scheduler scheduler) {
+        public Subscription observeOn(final Observer<? super T> observer, final Scheduler scheduler) {
             final CompositeSubscription s = new CompositeSubscription();
 
             s.add(source.materialize().subscribe(new Action1<Notification<? extends T>>() {
@@ -80,7 +83,22 @@ public class OperationObserveOn {
                     // it will be 0 if it's the first notification or the scheduler has finished processing work
                     // and we need to start doing it again
                     if (counter.getAndIncrement() == 0) {
-                        processQueue(s, observer);
+                        if (recursiveScheduler == null) {
+                            s.add(scheduler.schedule(null, new Func2<Scheduler, T, Subscription>() {
+
+                                @Override
+                                public Subscription call(Scheduler innerScheduler, T state) {
+                                    // record innerScheduler so 'processQueue' can use it for all subsequent executions
+                                    recursiveScheduler = innerScheduler;
+
+                                    processQueue(s, observer);
+
+                                    return Subscriptions.empty();
+                                }
+                            }));
+                        } else {
+                            processQueue(s, observer);
+                        }
                     }
 
                 }
@@ -89,8 +107,13 @@ public class OperationObserveOn {
             return s;
         }
 
-        private void processQueue(CompositeSubscription s, final Observer<? super T> observer) {
-            s.add(scheduler.schedule(new Action1<Action0>() {
+        /**
+         * This uses 'recursiveScheduler' NOT 'scheduler' as it should reuse the same scheduler each time it processes.
+         * This means it must first get the recursiveScheduler when it first executes.
+         */
+        private void processQueue(final CompositeSubscription s, final Observer<? super T> observer) {
+
+            s.add(recursiveScheduler.schedule(new Action1<Action0>() {
                 @Override
                 public void call(Action0 self) {
                     Notification<? extends T> not = queue.poll();
