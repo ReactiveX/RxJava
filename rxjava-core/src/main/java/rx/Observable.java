@@ -1059,6 +1059,25 @@ public class Observable<T> {
     }
 
     /**
+     * Flattens a sequence of Observables returned by an Iterable into one
+     * Observable, without any transformation.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine the items emitted by multiple Observables so that they
+     * act like a single Observable, by using the {@code merge} method.
+     * 
+     * @param source an Iterable that returns Observables
+     * @return an Observable that emits items that are the result of flattening
+     *         the items emitted by the Observables returned by the
+     *         {@code source} Iterable
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     */
+    public static <T> Observable<T> merge(Iterable<? extends Observable<? extends T>> source) {
+        return create(OperationMerge.merge(source));
+    }
+
+    /**
      * Flattens a sequence of Observables emitted by an Observable into one
      * Observable, without any transformation.
      * <p>
@@ -1273,6 +1292,22 @@ public class Observable<T> {
         return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
+    /**
+     * Returns an Observable that emits the items emitted by two or more
+     * Observables, one after the other.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * 
+     * @param observables an Iterable that returns Observables
+     * @return an Observable that emits items that are the result of combining
+     *         the items returned by the {@code source} Iterable, one after
+     *         the other
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat Method</a>
+     */
+    public static <T> Observable<T> concat(Iterable<? extends Observable<? extends T>> observables) {
+        return create(OperationConcat.concat(observables));
+    }
+    
     /**
      * Returns an Observable that emits the items emitted by two or more
      * Observables, one after the other.
