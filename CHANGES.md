@@ -1,5 +1,17 @@
 # RxJava Releases #
 
+### Version 0.15.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.15.0%22)) ###
+
+This release contains a refactor of the Scala Bindings by @headinthebox that results in some breaking changes. 
+The previous solution ended up not working well in all cases for idiomatic Scala usage. Java/Scala interop has been changed and is no longer transparent so as to optimize for native Scala usage.
+Read the [rxjava-scala README](https://github.com/Netflix/RxJava/tree/master/language-adaptors/rxjava-scala) for more information.
+
+* [Pull 503](https://github.com/Netflix/RxJava/pull/503) New Scala Bindings
+* [Pull 502](https://github.com/Netflix/RxJava/pull/502) Fix ObserveOn and add ParallelMerge Scheduler overload
+* [Pull 499](https://github.com/Netflix/RxJava/pull/499) ObserveOn Refactor
+* [Pull 492](https://github.com/Netflix/RxJava/pull/492) Implement the scheduler overloads for Range, From, StartWith
+* [Pull 496](https://github.com/Netflix/RxJava/pull/496) Add contravariant for min and max
+
 ### Version 0.14.11 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.14.11%22)) ###
 
 * [Pull 486](https://github.com/Netflix/RxJava/pull/486) BugFix: AsyncSubject
