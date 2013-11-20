@@ -21,6 +21,10 @@ import rx.lang.scala._
 import rx.util.functions._
 import scala.collection.Seq
 import rx.lang.scala.subscriptions.Subscription
+import java.{lang => jlang}
+import scala.language.implicitConversions
+import rx.lang.scala.Observer
+import rx.lang.scala.Scheduler
 
 /**
  * These function conversions convert between Scala functions and Rx `Func`s and `Action`s.

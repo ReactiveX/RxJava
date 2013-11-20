@@ -2,14 +2,14 @@ package rx.lang.scala
 
 import java.util.Date
 import scala.concurrent.duration.Duration
-import scala.language.postfixOps
 import ImplicitFunctionConversions.scalaFunction0ProducingUnitToAction0
 import ImplicitFunctionConversions.schedulerActionToFunc2
 import rx.util.functions.{Action0, Action1, Func2}
 import rx.lang.scala.subscriptions.Subscription
 
 /**
- * Represents an object that schedules units of work.
+ * Represents an object thatimport rx.lang.scala.ImplicitFunctionConversions
+ schedules units of work.
  */
 trait Scheduler {
   def asJavaScheduler: rx.Scheduler

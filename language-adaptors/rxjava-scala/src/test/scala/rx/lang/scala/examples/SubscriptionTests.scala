@@ -1,3 +1,5 @@
+package rx.lang.scala.examples
+
 import org.junit.{Assert, Test}
 import org.scalatest.junit.JUnitSuite
 import rx.lang.scala.subscriptions.{MultipleAssignmentSubscription, CompositeSubscription, BooleanSubscription, Subscription}

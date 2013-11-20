@@ -1,5 +1,10 @@
 package rx.lang.scala
 
+import rx.lang.scala.ImplicitFunctionConversions
+
+import ImplicitFunctionConversions.scalaBooleanFunction1ToRxBooleanFunc1
+import ImplicitFunctionConversions.scalaFunction1ToRxFunc1
+
 // Cannot yet have inner class because of this error message:
 // "implementation restriction: nested class is not allowed in value class.
 // This restriction is planned to be removed in subsequent releases."

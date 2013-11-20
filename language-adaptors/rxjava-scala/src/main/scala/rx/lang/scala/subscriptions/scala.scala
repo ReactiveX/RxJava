@@ -1,5 +1,6 @@
 package rx.lang
 
+import rx.lang.scala.Scheduler
 package object scala {
 
   /**

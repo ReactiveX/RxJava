@@ -1,7 +1,8 @@
+package rx.lang.scala.examples
+
 import org.junit.{Ignore, Assert, Test}
 import org.scalatest.junit.JUnitSuite
 import rx.lang.scala.Observable
-import scala.Predef.String
 
 class UnitTestSuite extends JUnitSuite {
 

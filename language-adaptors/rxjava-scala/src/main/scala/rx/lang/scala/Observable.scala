@@ -19,6 +19,10 @@ package rx.lang.scala
 
 import rx.util.functions.FuncN
 import rx.Observable.OnSubscribeFunc
+import rx.lang.scala.Notification
+import rx.lang.scala.ImplicitFunctionConversions
+import rx.lang.scala.Observer
+import rx.lang.scala.Scheduler
 
 
 /**

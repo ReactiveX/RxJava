@@ -16,13 +16,16 @@
 package rx.lang.scala.examples
 
 import org.scalatest.junit.JUnitSuite
-import scala.language.postfixOps
 import rx.lang.scala._
 import scala.concurrent.duration._
-import org.junit.{Before, Test, Ignore}
+import org.junit.Test
 import org.junit.Assert._
 import rx.lang.scala.concurrency.Schedulers
 import java.io.IOException
+import rx.lang.scala.examples.Olympics
+import rx.lang.scala.Notification.OnCompleted
+import rx.lang.scala.Notification.OnError
+import rx.lang.scala.Notification.OnNext
 
 //@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
