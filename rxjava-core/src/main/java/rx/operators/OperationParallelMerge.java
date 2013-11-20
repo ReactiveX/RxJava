@@ -18,29 +18,31 @@ package rx.operators;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable;
+import rx.Scheduler;
+import rx.concurrency.Schedulers;
 import rx.observables.GroupedObservable;
 import rx.util.functions.Func1;
 
 public class OperationParallelMerge {
 
-    public static <T> Observable<Observable<T>> parallelMerge(final Observable<Observable<T>> source, final int num) {
+    public static <T> Observable<Observable<T>> parallelMerge(final Observable<Observable<T>> source, final int parallelObservables) {
+        return parallelMerge(source, parallelObservables, Schedulers.currentThread());
+    }
+
+    public static <T> Observable<Observable<T>> parallelMerge(final Observable<Observable<T>> source, final int parallelObservables, final Scheduler scheduler) {
 
         return source.groupBy(new Func1<Observable<T>, Integer>() {
             final AtomicLong rollingCount = new AtomicLong();
 
             @Override
             public Integer call(Observable<T> o) {
-                return (int) rollingCount.incrementAndGet() % num;
+                return (int) rollingCount.incrementAndGet() % parallelObservables;
             }
         }).map(new Func1<GroupedObservable<Integer, Observable<T>>, Observable<T>>() {
 
-            /**
-             * Safe to cast from GroupedObservable to Observable so suppressing warning
-             */
-            @SuppressWarnings("unchecked")
             @Override
             public Observable<T> call(GroupedObservable<Integer, Observable<T>> o) {
-                return (Observable<T>) o;
+                return Observable.merge(o).observeOn(scheduler);
             }
 
         });

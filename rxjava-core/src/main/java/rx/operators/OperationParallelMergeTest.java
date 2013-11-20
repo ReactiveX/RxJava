@@ -18,11 +18,16 @@ package rx.operators;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
 import rx.Observable;
+import rx.concurrency.Schedulers;
 import rx.subjects.PublishSubject;
+import rx.util.functions.Action1;
+import rx.util.functions.Func1;
 
 public class OperationParallelMergeTest {
 
@@ -42,8 +47,89 @@ public class OperationParallelMergeTest {
         List<? super Observable<String>> threeList = threeStreams.toList().toBlockingObservable().last();
         List<? super Observable<String>> twoList = twoStreams.toList().toBlockingObservable().last();
 
+        System.out.println("two list: " + twoList);
+        System.out.println("three list: " + threeList);
+        System.out.println("four list: " + fourList);
+
         assertEquals(4, fourList.size());
         assertEquals(3, threeList.size());
         assertEquals(2, twoList.size());
+    }
+
+    @Test
+    public void testNumberOfThreads() {
+        final ConcurrentHashMap<String, String> threads = new ConcurrentHashMap<String, String>();
+        Observable.merge(getStreams())
+                .toBlockingObservable().forEach(new Action1<String>() {
+
+                    @Override
+                    public void call(String o) {
+                        System.out.println("o: " + o + " Thread: " + Thread.currentThread());
+                        threads.put(Thread.currentThread().getName(), Thread.currentThread().getName());
+                    }
+                });
+
+        // without injecting anything, the getStream() method uses Interval which runs on a default scheduler
+        assertEquals(Runtime.getRuntime().availableProcessors(), threads.keySet().size());
+
+        // clear
+        threads.clear();
+
+        // now we parallelMerge into 3 streams and observeOn for each
+        // we expect 3 threads in the output
+        OperationParallelMerge.parallelMerge(getStreams(), 3)
+                .flatMap(new Func1<Observable<String>, Observable<String>>() {
+
+                    @Override
+                    public Observable<String> call(Observable<String> o) {
+                        // for each of the parallel 
+                        return o.observeOn(Schedulers.newThread());
+                    }
+                })
+                .toBlockingObservable().forEach(new Action1<String>() {
+
+                    @Override
+                    public void call(String o) {
+                        System.out.println("o: " + o + " Thread: " + Thread.currentThread());
+                        threads.put(Thread.currentThread().getName(), Thread.currentThread().getName());
+                    }
+                });
+
+        assertEquals(3, threads.keySet().size());
+    }
+
+    @Test
+    public void testNumberOfThreadsOnScheduledMerge() {
+        final ConcurrentHashMap<String, String> threads = new ConcurrentHashMap<String, String>();
+
+        // now we parallelMerge into 3 streams and observeOn for each
+        // we expect 3 threads in the output
+        Observable.merge(OperationParallelMerge.parallelMerge(getStreams(), 3, Schedulers.newThread()))
+                .toBlockingObservable().forEach(new Action1<String>() {
+
+                    @Override
+                    public void call(String o) {
+                        System.out.println("o: " + o + " Thread: " + Thread.currentThread());
+                        threads.put(Thread.currentThread().getName(), Thread.currentThread().getName());
+                    }
+                });
+
+        assertEquals(3, threads.keySet().size());
+    }
+
+    private static Observable<Observable<String>> getStreams() {
+        return Observable.range(0, 10).map(new Func1<Integer, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(final Integer i) {
+                return Observable.interval(10, TimeUnit.MILLISECONDS).map(new Func1<Long, String>() {
+
+                    @Override
+                    public String call(Long l) {
+                        return "Stream " + i + "  Value: " + l;
+                    }
+                }).take(5);
+            }
+        });
     }
 }
