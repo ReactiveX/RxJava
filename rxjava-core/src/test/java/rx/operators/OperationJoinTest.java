@@ -49,14 +49,6 @@ public class OperationJoinTest {
             }
         };
     }
-    Action1<Integer> toList(final Collection<Integer> out) {
-        return new Action1<Integer>() {
-            @Override
-            public void call(Integer t1) {
-                out.add(t1);
-            }
-        };
-    }
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
