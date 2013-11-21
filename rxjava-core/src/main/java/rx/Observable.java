@@ -304,6 +304,33 @@ public class Observable<T> {
     }
 
     /**
+     * Subscribe and ignore all events.
+     *  
+     * @return 
+     */
+    public Subscription subscribe() {
+        return protectivelyWrapAndSubscribe(new Observer<T>() {
+
+            @Override
+            public void onCompleted() {
+                // do nothing
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                handleError(e);
+                throw new OnErrorNotImplementedException(e);
+            }
+
+            @Override
+            public void onNext(T args) {
+                // do nothing
+            }
+
+        });
+    }
+    
+    /**
      * An {@link Observer} must call an Observable's {@code subscribe} method
      * in order to receive items and notifications from the Observable.
      * 
