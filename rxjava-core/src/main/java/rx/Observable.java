@@ -133,7 +133,7 @@ import rx.util.functions.Function;
  * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/legend.png">
  * <p>
  * For more information see the
- * <a href="https://raw.github.com/wiki/Netflix/RxJava/Observable">RxJava Wiki</a>
+ * <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
  * 
  * @param <T> the type of the item emitted by the Observable
  */
@@ -195,7 +195,7 @@ public class Observable<T> {
      * in which multiple Observers will receive their notifications.
      * <p>
      * For more information see the
-     * <a href="https://raw.github.com/wiki/Netflix/RxJava/Observable">RxJava Wiki</a>
+     * <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
      * 
      * @param observer the Observer
      * @return a {@link Subscription} reference with which the {@link Observer}
@@ -276,7 +276,7 @@ public class Observable<T> {
      * Observers will receive their notifications.
      * <p>
      * For more information see the
-     * <a href="https://raw.github.com/wiki/Netflix/RxJava/Observable">RxJava Wiki</a>
+     * <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
      * 
      * @param observer the Observer
      * @param scheduler the {@link Scheduler} on which Observers subscribe to
