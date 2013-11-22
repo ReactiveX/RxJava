@@ -15,18 +15,23 @@
  */
 package rx.lang.scala.examples
 
-import org.scalatest.junit.JUnitSuite
-import rx.lang.scala._
-import scala.concurrent.duration._
-import org.junit.Test
-import org.junit.Assert._
-import rx.lang.scala.concurrency.Schedulers
 import java.io.IOException
-import rx.lang.scala.examples.Olympics
-import rx.lang.scala.Notification.OnCompleted
-import rx.lang.scala.Notification.OnError
-import rx.lang.scala.Notification.OnNext
-import org.scalatest.Ignore
+
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.DurationInt
+import scala.concurrent.duration.DurationLong
+import scala.language.postfixOps
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Ignore
+import org.junit.Test
+import org.scalatest.junit.JUnitSuite
+
+import rx.lang.scala.Notification
+import rx.lang.scala.Observable
+import rx.lang.scala.observable
+import rx.lang.scala.concurrency.Schedulers
 
 @Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {

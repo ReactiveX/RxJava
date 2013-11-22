@@ -1,8 +1,7 @@
-package rx.lang.scala.examples
+package rx.lang.scala.subscriptions
 
 import org.junit.{Assert, Test}
 import org.scalatest.junit.JUnitSuite
-import rx.lang.scala.subscriptions.{MultipleAssignmentSubscription, CompositeSubscription, BooleanSubscription, Subscription}
 
 class SubscriptionTests extends JUnitSuite {
 
