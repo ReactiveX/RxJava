@@ -83,6 +83,7 @@ import rx.operators.OperationThrottleFirst;
 import rx.operators.OperationTimeInterval;
 import rx.operators.OperationTimeout;
 import rx.operators.OperationTimestamp;
+import rx.operators.OperationToAsync;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
 import rx.operators.OperationToObservableList;
@@ -108,6 +109,15 @@ import rx.util.TimeInterval;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
+import rx.util.functions.Action2;
+import rx.util.functions.Action3;
+import rx.util.functions.Action4;
+import rx.util.functions.Action5;
+import rx.util.functions.Action6;
+import rx.util.functions.Action7;
+import rx.util.functions.Action8;
+import rx.util.functions.Action9;
+import rx.util.functions.ActionN;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -4832,7 +4842,641 @@ public class Observable<T> {
     public Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) {
         return create(OperationToObservableSortedList.toSortedList(this, sortFunction));
     }
-
+    
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229868(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static Func0<Observable<Void>> toAsync(Action0 action) {
+        return OperationToAsync.toAsync(action, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229182(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <R> Func0<Observable<R>> toAsync(Func0<R> func) {
+        return OperationToAsync.toAsync(func, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229657(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1> Func1<T1, Observable<Void>> toAsync(Action1<T1> action) {
+        return OperationToAsync.toAsync(action, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229755(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, R> Func1<T1, Observable<R>> toAsync(Func1<T1, R> func) {
+        return OperationToAsync.toAsync(func, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211875(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2> Func2<T1, T2, Observable<Void>> toAsync(Action2<T1, T2> action) {
+        return OperationToAsync.toAsync(action, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229851(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, R> Func2<T1, T2, Observable<R>> toAsync(Func2<T1, T2, R> func) {
+        return OperationToAsync.toAsync(func, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229336(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3> Func3<T1, T2, T3, Observable<Void>> toAsync(Action3<T1, T2, T3> action) {
+        return OperationToAsync.toAsync(action, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229450(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, R> Func3<T1, T2, T3, Observable<R>> toAsync(Func3<T1, T2, T3, R> func) {
+        return OperationToAsync.toAsync(func, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229769(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4> Func4<T1, T2, T3, T4, Observable<Void>> toAsync(Action4<T1, T2, T3, T4> action) {
+        return OperationToAsync.toAsync(action, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229911(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, R> Func4<T1, T2, T3, T4, Observable<R>> toAsync(Func4<T1, T2, T3, T4, R> func) {
+        return OperationToAsync.toAsync(func, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229577(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5> Func5<T1, T2, T3, T4, T5, Observable<Void>> toAsync(Action5<T1, T2, T3, T4, T5> action) {
+        return OperationToAsync.toAsync(action, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229571(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, R> Func5<T1, T2, T3, T4, T5, Observable<R>> toAsync(Func5<T1, T2, T3, T4, T5, R> func) {
+        return OperationToAsync.toAsync(func, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211773(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6> Func6<T1, T2, T3, T4, T5, T6, Observable<Void>> toAsync(Action6<T1, T2, T3, T4, T5, T6> action) {
+        return OperationToAsync.toAsync(action, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229716(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, R> Func6<T1, T2, T3, T4, T5, T6, Observable<R>> toAsync(Func6<T1, T2, T3, T4, T5, T6, R> func) {
+        return OperationToAsync.toAsync(func, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211812(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7> Func7<T1, T2, T3, T4, T5, T6, T7, Observable<Void>> toAsync(Action7<T1, T2, T3, T4, T5, T6, T7> action) {
+        return OperationToAsync.toAsync(action, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229773(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Func7<T1, T2, T3, T4, T5, T6, T7, Observable<R>> toAsync(Func7<T1, T2, T3, T4, T5, T6, T7, R> func) {
+        return OperationToAsync.toAsync(func, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh228993(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> Func8<T1, T2, T3, T4, T5, T6, T7, T8, Observable<Void>> toAsync(Action8<T1, T2, T3, T4, T5, T6, T7, T8> action) {
+        return OperationToAsync.toAsync(action, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229910(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Func8<T1, T2, T3, T4, T5, T6, T7, T8, Observable<R>> toAsync(Func8<T1, T2, T3, T4, T5, T6, T7, T8, R> func) {
+        return OperationToAsync.toAsync(func, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211702(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9> Func9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Observable<Void>> toAsync(Action9<T1, T2, T3, T4, T5, T6, T7, T8, T9> action) {
+        return OperationToAsync.toAsync(action, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh212074(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Func9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Observable<R>> toAsync(Func9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> func) {
+        return OperationToAsync.toAsync(func, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     */
+    public static FuncN<Observable<Void>> toAsync(ActionN action) {
+        return OperationToAsync.toAsync(action, Schedulers.threadPoolForAsyncConversions());
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     */
+    public static <R> FuncN<Observable<R>> toAsync(FuncN<R> func) {
+        return OperationToAsync.toAsync(func, Schedulers.threadPoolForAsyncConversions());
+    }
+	    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * @param scheduler the scheduler used to execute the {@code action}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229439(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static Func0<Observable<Void>> toAsync(Action0 action, Scheduler scheduler) {
+        return OperationToAsync.toAsync(action, scheduler);
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * @param scheduler the scheduler used to call the {@code func}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211792(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <R> Func0<Observable<R>> toAsync(Func0<R> func, Scheduler scheduler) {
+        return OperationToAsync.toAsync(func, scheduler);
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * @param scheduler the scheduler used to execute the {@code action}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229822(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1> Func1<T1, Observable<Void>> toAsync(Action1<T1> action, Scheduler scheduler) {
+        return OperationToAsync.toAsync(action, scheduler);
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * @param scheduler the scheduler used to call the {@code func}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229731(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, R> Func1<T1, Observable<R>> toAsync(Func1<T1, R> func, Scheduler scheduler) {
+        return OperationToAsync.toAsync(func, scheduler);
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * @param scheduler the scheduler used to execute the {@code action}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229722(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2> Func2<T1, T2, Observable<Void>> toAsync(Action2<T1, T2> action, Scheduler scheduler) {
+        return OperationToAsync.toAsync(action, scheduler);
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * @param scheduler the scheduler used to call the {@code func}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229327(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, R> Func2<T1, T2, Observable<R>> toAsync(Func2<T1, T2, R> func, Scheduler scheduler) {
+        return OperationToAsync.toAsync(func, scheduler);
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * @param scheduler the scheduler used to execute the {@code action}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211787(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3> Func3<T1, T2, T3, Observable<Void>> toAsync(Action3<T1, T2, T3> action, Scheduler scheduler) {
+        return OperationToAsync.toAsync(action, scheduler);
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * @param scheduler the scheduler used to call the {@code func}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229287(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, R> Func3<T1, T2, T3, Observable<R>> toAsync(Func3<T1, T2, T3, R> func, Scheduler scheduler) {
+        return OperationToAsync.toAsync(func, scheduler);
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * @param scheduler the scheduler used to execute the {@code action}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229370(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4> Func4<T1, T2, T3, T4, Observable<Void>> toAsync(Action4<T1, T2, T3, T4> action, Scheduler scheduler) {
+        return OperationToAsync.toAsync(action, scheduler);
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * @param scheduler the scheduler used to call the {@code func}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229560(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, R> Func4<T1, T2, T3, T4, Observable<R>> toAsync(Func4<T1, T2, T3, T4, R> func, Scheduler scheduler) {
+        return OperationToAsync.toAsync(func, scheduler);
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * @param scheduler the scheduler used to execute the {@code action}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh212149(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5> Func5<T1, T2, T3, T4, T5, Observable<Void>> toAsync(Action5<T1, T2, T3, T4, T5> action, Scheduler scheduler) {
+        return OperationToAsync.toAsync(action, scheduler);
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * @param scheduler the scheduler used to call the {@code func}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229606(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, R> Func5<T1, T2, T3, T4, T5, Observable<R>> toAsync(Func5<T1, T2, T3, T4, T5, R> func, Scheduler scheduler) {
+        return OperationToAsync.toAsync(func, scheduler);
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * @param scheduler the scheduler used to execute the {@code action}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh212138(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6> Func6<T1, T2, T3, T4, T5, T6, Observable<Void>> toAsync(Action6<T1, T2, T3, T4, T5, T6> action, Scheduler scheduler) {
+        return OperationToAsync.toAsync(action, scheduler);
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * @param scheduler the scheduler used to call the {@code func}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229630(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, R> Func6<T1, T2, T3, T4, T5, T6, Observable<R>> toAsync(Func6<T1, T2, T3, T4, T5, T6, R> func, Scheduler scheduler) {
+        return OperationToAsync.toAsync(func, scheduler);
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * @param scheduler the scheduler used to execute the {@code action}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229808(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7> Func7<T1, T2, T3, T4, T5, T6, T7, Observable<Void>> toAsync(Action7<T1, T2, T3, T4, T5, T6, T7> action, Scheduler scheduler) {
+        return OperationToAsync.toAsync(action, scheduler);
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * @param scheduler the scheduler used to call the {@code func}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229794(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Func7<T1, T2, T3, T4, T5, T6, T7, Observable<R>> toAsync(Func7<T1, T2, T3, T4, T5, T6, T7, R> func, Scheduler scheduler) {
+        return OperationToAsync.toAsync(func, scheduler);
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * @param scheduler the scheduler used to execute the {@code action}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229361(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> Func8<T1, T2, T3, T4, T5, T6, T7, T8, Observable<Void>> toAsync(Action8<T1, T2, T3, T4, T5, T6, T7, T8> action, Scheduler scheduler) {
+        return OperationToAsync.toAsync(action, scheduler);
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * @param scheduler the scheduler used to call the {@code func}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh228956(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Func8<T1, T2, T3, T4, T5, T6, T7, T8, Observable<R>> toAsync(Func8<T1, T2, T3, T4, T5, T6, T7, T8, R> func, Scheduler scheduler) {
+        return OperationToAsync.toAsync(func, scheduler);
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * @param scheduler the scheduler used to execute the {@code action}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229662(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9> Func9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Observable<Void>> toAsync(Action9<T1, T2, T3, T4, T5, T6, T7, T8, T9> action, Scheduler scheduler) {
+        return OperationToAsync.toAsync(action, scheduler);
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * @param scheduler the scheduler used to call the {@code func}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229008(v=vs.103).aspx'>MSDN: Observable.ToAsync</a>
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Func9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Observable<R>> toAsync(Func9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> func, Scheduler scheduler) {
+        return OperationToAsync.toAsync(func, scheduler);
+    }
+    /**
+     * Convert a synchronous action call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param action the action to convert
+     * @param scheduler the scheduler used to execute the {@code action}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code action} and emits {@code null}.
+     * 
+     */
+    public static FuncN<Observable<Void>> toAsync(ActionN action, Scheduler scheduler) {
+        return OperationToAsync.toAsync(action, scheduler);
+    }
+    /**
+     * Convert a synchronous function call into an asynchronous function
+     * call through an Observable sequence.
+     * 
+     * @param func the function to convert
+     * @param scheduler the scheduler used to call the {@code func}
+     * 
+     * @return a function which returns an observable sequence which
+     *         executes the {@code func} and emits its returned value.
+     * 
+     */
+    public static <R> FuncN<Observable<R>> toAsync(FuncN<R> func, Scheduler scheduler) {
+        return OperationToAsync.toAsync(func, scheduler);
+    }
     /**
      * Emit a specified set of items before beginning to emit items from the
      * source Observable.

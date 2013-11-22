@@ -96,7 +96,16 @@ public class Schedulers {
     public static Scheduler threadPoolForComputation() {
         return executor(COMPUTATION_EXECUTOR);
     }
-
+    /**
+     * {@link Scheduler} intended for asynchronous conversions.
+     * <p>
+     * Defaults to {@link #threadPoolForComputation()}.
+     * 
+     * @return {@link ExecutorScheduler} for asynchronous conversion work.
+     */
+    public static Scheduler threadPoolForAsyncConversions() {
+        return threadPoolForComputation();
+    }
     /**
      * {@link Scheduler} intended for IO-bound work.
      * <p>
