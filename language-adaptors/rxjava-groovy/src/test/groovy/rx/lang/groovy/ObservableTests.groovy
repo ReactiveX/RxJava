@@ -345,6 +345,143 @@ def class ObservableTests {
           assertEquals(6, count);
     }
     
+    @Test
+    public void testToMap1() {
+        Map actual = new HashMap();
+        
+        Observable.from("a", "bb", "ccc", "dddd")
+        .toMap({String s -> s.length()})
+        .toBlockingObservable()
+        .forEach({s -> actual.putAll(s); });
+        
+        Map expected = new HashMap();
+        expected.put(1, "a");
+        expected.put(2, "bb");
+        expected.put(3, "ccc");
+        expected.put(4, "dddd");
+        
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testToMap2() {
+        Map actual = new HashMap();
+        
+        Observable.from("a", "bb", "ccc", "dddd")
+        .toMap({String s -> s.length()}, {String s -> s + s})
+        .toBlockingObservable()
+        .forEach({s -> actual.putAll(s); });
+        
+        Map expected = new HashMap();
+        expected.put(1, "aa");
+        expected.put(2, "bbbb");
+        expected.put(3, "cccccc");
+        expected.put(4, "dddddddd");
+        
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testToMap3() {
+        Map actual = new HashMap();
+        
+        LinkedHashMap last3 = new LinkedHashMap() {
+            public boolean removeEldestEntry(Map.Entry e) {
+                return size() > 3;
+            }
+        };
+        
+        Observable.from("a", "bb", "ccc", "dddd")
+        .toMap({String s -> s.length()}, {String s -> s + s}, { last3 })
+        .toBlockingObservable()
+        .forEach({s -> actual.putAll(s); });
+        
+        Map expected = new HashMap();
+        expected.put(2, "bbbb");
+        expected.put(3, "cccccc");
+        expected.put(4, "dddddddd");
+        
+        assertEquals(expected, actual);
+    }
+    @Test
+    public void testToMultimap1() {
+        Map actual = new HashMap();
+        
+        Observable.from("a", "b", "cc", "dd")
+        .toMultimap({String s -> s.length()})
+        .toBlockingObservable()
+        .forEach({s -> actual.putAll(s); });
+        
+        Map expected = new HashMap();
+        
+        expected.put(1, Arrays.asList("a", "b"));
+        expected.put(2, Arrays.asList("cc", "dd"));
+        
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testToMultimap2() {
+        Map actual = new HashMap();
+        
+        Observable.from("a", "b", "cc", "dd")
+        .toMultimap({String s -> s.length()}, {String s -> s + s})
+        .toBlockingObservable()
+        .forEach({s -> actual.putAll(s); });
+        
+        Map expected = new HashMap();
+        
+        expected.put(1, Arrays.asList("aa", "bb"));
+        expected.put(2, Arrays.asList("cccc", "dddd"));
+        
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testToMultimap3() {
+        Map actual = new HashMap();
+        
+        LinkedHashMap last1 = new LinkedHashMap() {
+            public boolean removeEldestEntry(Map.Entry e) {
+                return size() > 1;
+            }
+        };
+        
+        Observable.from("a", "b", "cc", "dd")
+        .toMultimap({String s -> s.length()}, {String s -> s + s}, { last1 })
+        .toBlockingObservable()
+        .forEach({s -> actual.putAll(s); });
+        
+        Map expected = new HashMap();
+        
+        expected.put(2, Arrays.asList("cccc", "dddd"));
+        
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testToMultimap4() {
+        Map actual = new HashMap();
+        
+        LinkedHashMap last1 = new LinkedHashMap() {
+            public boolean removeEldestEntry(Map.Entry e) {
+                return size() > 2;
+            }
+        };
+        
+        Observable.from("a", "b", "cc", "dd", "eee", "eee")
+        .toMultimap({String s -> s.length()}, {String s -> s + s}, { last1 }, 
+            {i -> i == 2 ? new ArrayList() : new HashSet() })
+        .toBlockingObservable()
+        .forEach({s -> actual.putAll(s); });
+        
+        Map expected = new HashMap();
+        
+        expected.put(2, Arrays.asList("cccc", "dddd"));
+        expected.put(3, new HashSet(Arrays.asList("eeeeee")));
+        
+        assertEquals(expected, actual);
+    }
 
     def class AsyncObservable implements OnSubscribeFunc {
 
