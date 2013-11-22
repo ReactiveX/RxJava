@@ -19,8 +19,10 @@ import static rx.util.functions.Functions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -86,6 +88,8 @@ import rx.operators.OperationThrottleFirst;
 import rx.operators.OperationTimeInterval;
 import rx.operators.OperationTimeout;
 import rx.operators.OperationTimestamp;
+import rx.operators.OperationToMap;
+import rx.operators.OperationToMultimap;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationToObservableIterable;
 import rx.operators.OperationToObservableList;
@@ -4835,7 +4839,175 @@ public class Observable<T> {
     public Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) {
         return create(OperationToObservableSortedList.toSortedList(this, sortFunction));
     }
+    
+    /**
+     * Return an Observable that emits a single HashMap containing all items
+     * emitted by the source Observable, mapped by the keys returned by the
+     * {@code keySelector} function.
+     * 
+     * If a source item maps to the same key, the HashMap will contain the latest
+     * of those items.
+     * 
+     * @param keySelector the function that extracts the key from the source items
+     *                    to be used as keys in the HashMap.
+     * @return an Observable that emits a single HashMap containing the mapped
+     *         values of the source Observable
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229137(v=vs.103).aspx'>MSDN: Observable.ToDictionary</a>
+     */
+    public <K> Observable<Map<K, T>> toMap(Func1<? super T, ? extends K> keySelector) {
+        return create(OperationToMap.toMap(this, keySelector));
+    }
+    
+    /**
+     * Return an Observable that emits a single HashMap containing elements with
+     * key and value extracted from the values emitted by the source Observable.
+     * 
+     * If a source item maps to the same key, the HashMap will contain the latest
+     * of those items.
+     * 
+     * @param keySelector the function that extracts the key from the source items
+     *                    to be used as key in the HashMap
+     * @param valueSelector the function that extracts the value from the source items
+     *                      to be used as value in the HashMap
+     * @return an Observable that emits a single HashMap containing the mapped
+     *         values of the source Observable
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh212075(v=vs.103).aspx'>MSDN: Observable.ToDictionary</a>
+     */
+    public <K, V> Observable<Map<K, V>> toMap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector) {
+        return create(OperationToMap.toMap(this, keySelector, valueSelector));
+    }
+    
+    /**
+     * Return an Observable that emits a single Map, returned by the mapFactory function,
+     * containing elements with key extracted from the values emitted by the source Observable.
+     * 
+     * @param keySelector the function that extracts the key from the source items
+     *                    to be used as key in the Map
+     * @param mapFactory the function that returns an Map instance to be used
+     * @return an Observable that emits a single Map containing the mapped values 
+     *         of the source source Observable.
+     */
+    public <K, V> Observable<Map<K, T>> toMap(Func1<? super T, ? extends K> keySelector, Func0<? extends Map<K, T>> mapFactory) {
+        return create(OperationToMap.toMap(this, keySelector, mapFactory));
+    }
+    
+    /**
+     * Return an Observable that emits a single Map, returned by the mapFactory function,
+     * containing key and value extracted from the values emitted by the source Observable.
+     * 
+     * @param keySelector the function that extracts the key from the source items
+     *                    to be used as key in the Map
+     * @param valueSelector the function that extracts the value from the source items
+     *                      to be used as value in the Map
+     * @param mapFactory the function that returns an Map instance to be used
+     * @return an Observable that emits a single Map containing the mapped
+     *         values of the source Observable
+     */
+    public <K, V> Observable<Map<K, V>> toMap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, V>> mapFactory) {
+        return create(OperationToMap.toMap(this, keySelector, valueSelector, mapFactory));
+    }
+    
+    /**
+     * Return an Observable that emits a single HashMap containing an ArrayList of elements,
+     * emitted by the source Observable and keyed by the keySelector function.
+     * 
+     * @param keySelector the function that extracts the key from the source items
+     *                    to be used as key in the HashMap
+     * @return an Observable that emits a single HashMap containing an ArrayList of elements
+     *         mapped from the source Observable
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh212098(v=vs.103).aspx'>MSDN: Observable.ToLookup</a>
+     */
+    public <K> Observable<Map<K, Collection<T>>> toMultimap(Func1<? super T, ? extends K> keySelector) {
+        return create(OperationToMultimap.toMultimap(this, keySelector));
+    }
+    
+    /**
+     * Return an Observable that emits a single HashMap containing an ArrayList of values,
+     * extracted by the valueSelector function, emitted by the source Observable
+     * and keyed by the keySelector function.
+     * 
+     * @param keySelector the function that extracts the key from the source items
+     *                    to be used as key in the HashMap
+     * @param valueSelector the function that extracts the value from the source items
+     *                      to be used as value in the Map
+     * @return an Observable that emits a single Hashmap containing an ArrayList of elements
+     *         mapped from the source Observable
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229101(v=vs.103).aspx'>MSDN: Observable.ToLookup</a>
+     */
+    public <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector) {
+        return create(OperationToMultimap.toMultimap(this, keySelector, valueSelector));
+    }
+    
+    /**
+     * Return an Observable that emits a single Map, returned by the mapFactory function,
+     * containing an ArrayList of values emitted by the source Observable and keyed by the 
+     * keySelector function.
+     * 
+     * @param keySelector the function that extracts the key from the source items
+     *                    to be used as key in the Map
+     * @param mapFactory the function that returns an Map instance to be used
+     * @return an Observable that emits a single Map containing the list of mapped values
+     *         of the source observable.
+     */
+    public <K> Observable<Map<K, Collection<T>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func0<? extends Map<K, Collection<T>>> mapFactory) {
+        return create(OperationToMultimap.toMultimap(this, keySelector, mapFactory));
+    }
+    
+    /**
+     * Return an Observable that emits a single Map, returned by the mapFactory function,
+     * containing an ArrayList of values, extracted by the valueSelector function,
+     * emitted by the source Observable and keyed by the 
+     * keySelector function.
+     * 
+     * @param keySelector the function that extracts the key from the source items
+     *                    to be used as key in the Map
+     * @param valueSelector the function that extracts the value from the source items
+     *                      to be used as value in the Map
+     * @param mapFactory the function that returns an Map instance to be used
+     * @return an Observable that emits a single Map containing the list of mapped values
+     *         of the source observable.
+     */
+    public <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, Collection<V>>> mapFactory) {
+        return create(OperationToMultimap.toMultimap(this, keySelector, valueSelector, mapFactory));
+    }
 
+    /**
+     * Return an Observable that emits a single Map, returned by the mapFactory function,
+     * containing a custom collection of values emitted by the source Observable and keyed by the 
+     * keySelector function.
+     * 
+     * @param keySelector the function that extracts the key from the source items
+     *                    to be used as key in the Map
+     * @param mapFactory the function that returns an Map instance to be used
+     * @param collectionFactory the function that returns a Collection instance for 
+     *                          a particular key to be used in the Map
+     * @return an Observable that emits a single Map containing the collection of mapped values
+     *         of the source observable.
+     */
+    public <K> Observable<Map<K, Collection<T>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func0<? extends Map<K, Collection<T>>> mapFactory, Func1<? super K, ? extends Collection<T>> collectionFactory) {
+        return create(OperationToMultimap.toMultimap(this, keySelector, mapFactory, collectionFactory));
+    }
+
+    /**
+     * Return an Observable that emits a single Map, returned by the mapFactory function,
+     * containing a custom collection of values, extracted by the valueSelector function,
+     * emitted by the source Observable and keyed by the 
+     * keySelector function.
+     * 
+     * @param keySelector the function that extracts the key from the source items
+     *                    to be used as key in the Map
+     * @param valueSelector the function that extracts the value from the source items
+     *                      to be used as value in the Map
+     * @param mapFactory the function that returns an Map instance to be used
+     * @param collectionFactory the function that returns a Collection instance for 
+     *                          a particular key to be used in the Map
+     * @return an Observable that emits a single Map containing the collection of mapped values
+     *         of the source observable.
+     */
+    public <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, Collection<V>>> mapFactory, Func1<? super K, ? extends Collection<V>> collectionFactory) {
+        return create(OperationToMultimap.toMultimap(this, keySelector, valueSelector, mapFactory, collectionFactory));
+    }
     /**
      * Emit a specified set of items before beginning to emit items from the
      * source Observable.
