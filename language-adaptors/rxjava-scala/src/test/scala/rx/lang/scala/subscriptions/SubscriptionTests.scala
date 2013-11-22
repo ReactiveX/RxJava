@@ -1,6 +1,7 @@
 package rx.lang.scala.subscriptions
 
-import org.junit.{Assert, Test}
+import org.junit.Assert._
+import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 
 class SubscriptionTests extends JUnitSuite {
@@ -8,16 +9,16 @@ class SubscriptionTests extends JUnitSuite {
   @Test
   def anonymousSubscriptionCreate() {
     val subscription = Subscription{}
-    Assert.assertNotNull(subscription)
+    assertNotNull(subscription)
   }
 
   @Test
   def anonymousSubscriptionDispose() {
     var unsubscribed = false
     val subscription = Subscription{ unsubscribed = true }
-    Assert.assertFalse(unsubscribed)
+    assertFalse(unsubscribed)
     subscription.unsubscribe()
-    Assert.assertTrue(unsubscribed)
+    assertTrue(unsubscribed)
   }
 
   @Test
@@ -29,11 +30,11 @@ class SubscriptionTests extends JUnitSuite {
   @Test
   def booleanSubscription() {
     val subscription = BooleanSubscription()
-    Assert.assertFalse(subscription.isUnsubscribed)
+    assertFalse(subscription.isUnsubscribed)
     subscription.unsubscribe()
-    Assert.assertTrue(subscription.isUnsubscribed)
+    assertTrue(subscription.isUnsubscribed)
     subscription.unsubscribe()
-    Assert.assertTrue(subscription.isUnsubscribed)
+    assertTrue(subscription.isUnsubscribed)
   }
 
   @Test
@@ -47,22 +48,22 @@ class SubscriptionTests extends JUnitSuite {
 
     val composite = CompositeSubscription()
 
-    Assert.assertFalse(composite.isUnsubscribed)
+    assertFalse(composite.isUnsubscribed)
 
     composite += s0
     composite += s1
 
     composite.unsubscribe()
 
-    Assert.assertTrue(composite.isUnsubscribed)
-    Assert.assertTrue(s0.isUnsubscribed)
-    Assert.assertTrue(u0)
-    Assert.assertTrue(u1)
+    assertTrue(composite.isUnsubscribed)
+    assertTrue(s0.isUnsubscribed)
+    assertTrue(u0)
+    assertTrue(u1)
 
     val s2 = BooleanSubscription()
-    Assert.assertFalse(s2.isUnsubscribed)
+    assertFalse(s2.isUnsubscribed)
     composite += s2
-    Assert.assertTrue(s2.isUnsubscribed)
+    assertTrue(s2.isUnsubscribed)
 
   }
 
@@ -73,13 +74,13 @@ class SubscriptionTests extends JUnitSuite {
     val composite = CompositeSubscription()
 
     composite += s0
-    Assert.assertFalse(s0.isUnsubscribed)
+    assertFalse(s0.isUnsubscribed)
     composite -= s0
-    Assert.assertTrue(s0.isUnsubscribed)
+    assertTrue(s0.isUnsubscribed)
 
     composite.unsubscribe()
 
-    Assert.assertTrue(composite.isUnsubscribed)
+    assertTrue(composite.isUnsubscribed)
   }
 
   @Test
@@ -89,27 +90,27 @@ class SubscriptionTests extends JUnitSuite {
       val s1 = BooleanSubscription()
       val multiple = MultipleAssignmentSubscription()
 
-      Assert.assertFalse(multiple.isUnsubscribed)
+      assertFalse(multiple.isUnsubscribed)
 
       multiple.subscription = s0
-      Assert.assertEquals(s0.asJavaSubscription, multiple.subscription.asJavaSubscription)
+      assertEquals(s0.asJavaSubscription, multiple.subscription.asJavaSubscription)
 
       multiple.subscription = s1
-      Assert.assertEquals(s1.asJavaSubscription, multiple.subscription.asJavaSubscription)
+      assertEquals(s1.asJavaSubscription, multiple.subscription.asJavaSubscription)
 
-      Assert.assertFalse(s0.isUnsubscribed)
-      Assert.assertFalse(s1.isUnsubscribed)
+      assertFalse(s0.isUnsubscribed)
+      assertFalse(s1.isUnsubscribed)
 
       multiple.unsubscribe()
 
-      Assert.assertTrue(multiple.isUnsubscribed)
-      Assert.assertFalse(s0.isUnsubscribed)
-      Assert.assertTrue(s1.isUnsubscribed)
+      assertTrue(multiple.isUnsubscribed)
+      assertFalse(s0.isUnsubscribed)
+      assertTrue(s1.isUnsubscribed)
 
       val s2 = BooleanSubscription()
-      Assert.assertFalse(s2.isUnsubscribed)
+      assertFalse(s2.isUnsubscribed)
       multiple.subscription = s2
-      Assert.assertTrue(s2.isUnsubscribed)
+      assertTrue(s2.isUnsubscribed)
   }
 
 }

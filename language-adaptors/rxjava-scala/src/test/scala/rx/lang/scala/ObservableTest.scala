@@ -1,6 +1,7 @@
 package rx.lang.scala
 
-import org.junit.{ Ignore, Assert, Test }
+import org.junit.Assert._
+import org.junit.{ Ignore, Test }
 import org.scalatest.junit.JUnitSuite
 
 class ObservableTests extends JUnitSuite {
@@ -29,15 +30,15 @@ class ObservableTests extends JUnitSuite {
     // correctly rejected:
     //val wrongDemat = Observable("hello").dematerialize
 
-    Assert.assertEquals(demat.toBlockingObservable.toIterable.toList, List(1, 2, 3))
+    assertEquals(demat.toBlockingObservable.toIterable.toList, List(1, 2, 3))
   }
 
   // Test that Java's firstOrDefault propagates errors.
   // If this changes (i.e. it suppresses errors and returns default) then Scala's firstOrElse
   // should be changed accordingly.
   @Test def testJavaFirstOrDefault() {
-    Assert.assertEquals(1, rx.Observable.from(1, 2).firstOrDefault(10).toBlockingObservable().single)
-    Assert.assertEquals(10, rx.Observable.empty().firstOrDefault(10).toBlockingObservable().single)
+    assertEquals(1, rx.Observable.from(1, 2).firstOrDefault(10).toBlockingObservable().single)
+    assertEquals(10, rx.Observable.empty().firstOrDefault(10).toBlockingObservable().single)
     val msg = "msg6251"
     var receivedMsg = "none"
     try {
@@ -45,14 +46,14 @@ class ObservableTests extends JUnitSuite {
     } catch {
       case e: Exception => receivedMsg = e.getCause().getMessage()
     }
-    Assert.assertEquals(receivedMsg, msg)
+    assertEquals(receivedMsg, msg)
   }
 
   @Test def testFirstOrElse() {
     def mustNotBeCalled: String = sys.error("this method should not be called")
     def mustBeCalled: String = "this is the default value"
-    Assert.assertEquals("hello", Observable("hello").firstOrElse(mustNotBeCalled).toBlockingObservable.single)
-    Assert.assertEquals("this is the default value", Observable().firstOrElse(mustBeCalled).toBlockingObservable.single)
+    assertEquals("hello", Observable("hello").firstOrElse(mustNotBeCalled).toBlockingObservable.single)
+    assertEquals("this is the default value", Observable().firstOrElse(mustBeCalled).toBlockingObservable.single)
   }
 
   @Test def testFirstOrElseWithError() {
@@ -63,7 +64,7 @@ class ObservableTests extends JUnitSuite {
     } catch {
       case e: Exception => receivedMsg = e.getCause().getMessage()
     }
-    Assert.assertEquals(receivedMsg, msg)
+    assertEquals(receivedMsg, msg)
   }
 
   /*
@@ -80,7 +81,7 @@ class ObservableTests extends JUnitSuite {
 
   @Test def testTest() = {
     val a: Observable[Int] = Observable()
-    Assert.assertEquals(4, Observable(1, 2, 3, 4).toBlockingObservable.toIterable.last)
+    assertEquals(4, Observable(1, 2, 3, 4).toBlockingObservable.toIterable.last)
     //println("This UnitTestSuite.testTest() for rx.lang.scala.Observable")
   }
 
