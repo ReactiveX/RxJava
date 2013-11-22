@@ -20,6 +20,7 @@ import static rx.util.functions.Functions.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -49,6 +50,7 @@ import rx.operators.OperationElementAt;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFirstOrDefault;
+import rx.operators.OperationGenerate;
 import rx.operators.OperationGroupBy;
 import rx.operators.OperationInterval;
 import rx.operators.OperationLast;
@@ -105,6 +107,7 @@ import rx.util.OnErrorNotImplementedException;
 import rx.util.Opening;
 import rx.util.Range;
 import rx.util.TimeInterval;
+import rx.util.TimeSpan;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -5689,5 +5692,110 @@ public class Observable<T> {
             return isInternal;
         }
     }
-
+    /**
+     * Generates an observable sequence by iterating a state from an initial state until the condition fails.
+     * @param initialState The initial state.
+     * @param condition The condition to terminate generation.
+     * @param iterate The iteration step function.
+     * @param resultSelector The selector function for results produced in the sequence.
+     * @return The generated sequence.
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229642.aspx'>MSDN: Observable.Generate</a>
+     */
+    public static <TState, R> Observable<R> generate(TState initialState, Func1<TState, Boolean> condition, 
+            Func1<TState, TState> iterate, Func1<TState, R> resultSelector) {
+        return generate(initialState, condition, iterate, resultSelector, 
+                Schedulers.threadPoolForComputation());
+    }
+    /**
+     * Generates an observable sequence by iterating a state from an initial state until the condition fails.
+     * @param initialState The initial state.
+     * @param condition The condition to terminate generation.
+     * @param iterate The iteration step function.
+     * @param resultSelector The selector function for results produced in the sequence.
+     * @param scheduler he scheduler on which to run the generator loop.
+     * @return The generated sequence.
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh212014.aspx'>MSDN: Observable.Generate</a>
+     */
+    public static <TState, R> Observable<R> generate(TState initialState, Func1<TState, Boolean> condition, 
+            Func1<TState, TState> iterate, Func1<TState, R> resultSelector, Scheduler scheduler) {
+        return create(OperationGenerate.generate(initialState, condition, iterate, 
+                resultSelector, scheduler));
+    }
+    /**
+     * Generates an observable sequence by iterating a state from an initial state until the condition fails.
+     * @param initialState The initial state.
+     * @param condition The condition to terminate generation.
+     * @param iterate The iteration step function.
+     * @param resultSelector The selector function for results produced in the sequence.
+     * @param timeSelector The time selector function to control the speed of values being produced each iteration.
+     * @return The generated sequence.
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh212066.aspx'>MSDN: Observable.Generate</a>
+     */
+    public static <TState, R> Observable<R> generate(TState initialState,
+            Func1<TState, Boolean> condition,
+            Func1<TState, TState> iterate,
+            Func1<TState, R> resultSelector,
+            Func1<TState, TimeSpan> timeSelector) {
+        return generate(initialState, condition, iterate, resultSelector, 
+                timeSelector, Schedulers.threadPoolForComputation());
+    }
+    /**
+     * Generates an observable sequence by iterating a state from an initial state until the condition fails.
+     * @param initialState The initial state.
+     * @param condition The condition to terminate generation.
+     * @param iterate The iteration step function.
+     * @param resultSelector The selector function for results produced in the sequence.
+     * @param timeSelector The time selector function to control the speed of values being produced each iteration.
+     * @param scheduler he scheduler on which to run the generator loop.
+     * @return The generated sequence.
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211794.aspx'>MSDN: Observable.Generate</a>
+     */
+    public static <TState, R> Observable<R> generate(TState initialState,
+            Func1<TState, Boolean> condition,
+            Func1<TState, TState> iterate,
+            Func1<TState, R> resultSelector,
+            Func1<TState, TimeSpan> timeSelector,
+            Scheduler scheduler) {
+        return create(OperationGenerate.generate(initialState, condition, iterate, resultSelector, 
+                timeSelector, scheduler));
+    }
+    /**
+     * Generates an observable sequence by iterating a state from an initial state until the condition fails.
+     * @param initialState The initial state.
+     * @param condition The condition to terminate generation.
+     * @param iterate The iteration step function.
+     * @param resultSelector The selector function for results produced in the sequence.
+     * @param timeSelector The time selector function to control the speed of values being produced each iteration.
+     * @return The generated sequence.
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229270.aspx'>MSDN: Observable.Generate</a>
+     */
+    public static <TState, R> Observable<R> generateAbsoluteTime(TState initialState,
+            Func1<TState, Boolean> condition,
+            Func1<TState, TState> iterate,
+            Func1<TState, R> resultSelector,
+            Func1<TState, Date> timeSelector
+            ) {
+        return generateAbsoluteTime(initialState, condition, iterate, resultSelector, 
+                timeSelector, Schedulers.threadPoolForComputation());
+    }
+    /**
+     * Generates an observable sequence by iterating a state from an initial state until the condition fails.
+     * @param initialState The initial state.
+     * @param condition The condition to terminate generation.
+     * @param iterate The iteration step function.
+     * @param resultSelector The selector function for results produced in the sequence.
+     * @param timeSelector The time selector function to control the speed of values being produced each iteration.
+     * @param scheduler he scheduler on which to run the generator loop.
+     * @return The generated sequence.
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh244290.aspx'>MSDN: Observable.Generate</a>
+     */
+    public static <TState, R> Observable<R> generateAbsoluteTime(TState initialState,
+            Func1<TState, Boolean> condition,
+            Func1<TState, TState> iterate,
+            Func1<TState, R> resultSelector,
+            Func1<TState, Date> timeSelector,
+            Scheduler scheduler) {
+        return create(OperationGenerate.generateAbsoluteTime(initialState, condition, 
+                iterate, resultSelector, timeSelector, scheduler));
+    }
 }
