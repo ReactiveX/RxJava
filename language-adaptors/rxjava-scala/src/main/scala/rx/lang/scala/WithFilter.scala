@@ -1,7 +1,5 @@
 package rx.lang.scala
 
-import rx.lang.scala.ImplicitFunctionConversions
-
 import ImplicitFunctionConversions.scalaBooleanFunction1ToRxBooleanFunc1
 import ImplicitFunctionConversions.scalaFunction1ToRxFunc1
 
