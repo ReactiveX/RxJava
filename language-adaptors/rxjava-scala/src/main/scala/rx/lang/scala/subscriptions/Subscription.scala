@@ -65,11 +65,11 @@ object Subscription {
   def apply(u: => Unit): Subscription  = {
     new Subscription () {
 
-      private val _isUnsubscribed = new AtomicBoolean(false)
-      def isUnsubscribed = _isUnsubscribed.get()
+      private val unsubscribed = new AtomicBoolean(false)
+      def isUnsubscribed = unsubscribed.get()
 
       val asJavaSubscription = new rx.Subscription {
-        def unsubscribe() { u; _isUnsubscribed.set(true) }
+        def unsubscribe() { u; unsubscribed.set(true) }
       }
     }
   }
