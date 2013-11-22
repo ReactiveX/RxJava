@@ -30,6 +30,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observer;
@@ -264,11 +266,12 @@ public class OperationMapTest {
                 }).toBlockingObservable().single();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testMapWithErrorInFuncAndThreadPoolScheduler() throws InterruptedException {
         // The error will throw in one of threads in the thread pool.
         // If map does not handle it, the error will disappear.
         // so map needs to handle the error by itself.
+        final CountDownLatch latch = new CountDownLatch(1);
         Observable<String> m = Observable.from("one")
                 .observeOn(Schedulers.threadPoolForComputation())
                 .map(new Func1<String, String>() {
@@ -277,8 +280,19 @@ public class OperationMapTest {
                     }
                 });
 
-        // block for response, expecting exception thrown
-        m.toBlockingObservable().last();
+        // wait for the call to get to the observer before decrementing the latch
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                latch.countDown();
+                return null;
+            }
+        }).when(stringObserver).onError(any(Throwable.class));
+        m.subscribe(stringObserver);
+        latch.await();
+        InOrder inorder = inOrder(stringObserver);
+        inorder.verify(stringObserver, times(1)).onError(any(IllegalArgumentException.class));
+        inorder.verifyNoMoreInteractions();
     }
     
     /**
