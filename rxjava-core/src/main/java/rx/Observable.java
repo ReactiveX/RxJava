@@ -52,6 +52,7 @@ import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFirstOrDefault;
 import rx.operators.OperationGroupBy;
+import rx.operators.OperationGroupByUntil;
 import rx.operators.OperationInterval;
 import rx.operators.OperationJoinPatterns;
 import rx.operators.OperationLast;
@@ -123,6 +124,7 @@ import rx.util.functions.Func8;
 import rx.util.functions.Func9;
 import rx.util.functions.FuncN;
 import rx.util.functions.Function;
+import rx.util.functions.Functions;
 
 /**
  * The Observable interface that implements the Reactive Pattern.
@@ -5941,6 +5943,30 @@ public class Observable<T> {
     @SuppressWarnings("unchecked")
     public static <R> Observable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3, Plan0<R> p4, Plan0<R> p5, Plan0<R> p6, Plan0<R> p7, Plan0<R> p8, Plan0<R> p9) {
         return create(OperationJoinPatterns.when(p1, p2, p3, p4, p5, p6, p7, p8, p9));
+    }
+    
+    /**
+     * Groups the elements of an observable sequence according to a specified key selector function until the duration observable expires for the key.
+     * @param keySelector A function to extract the key for each element.
+     * @param durationSelector A function to signal the expiration of a group.
+     * @return A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211932.aspx'>MSDN: Observable.GroupByUntil</a>
+     */
+    public <TKey, TDuration> Observable<GroupedObservable<TKey, T>> groupByUntil(Func1<T, TKey> keySelector, Func1<GroupedObservable<TKey, T>, Observable<TDuration>> durationSelector) {
+        return groupByUntil(keySelector, Functions.<T>identity(), durationSelector);
+    }
+    /**
+     * Groups the elements of an observable sequence according to a specified key and value selector function  until the duration observable expires for the key.
+     * @param keySelector A function to extract the key for each element.
+     * @param valueSelector A function to map each source element to an element in an observable group.
+     * @param durationSelector A function to signal the expiration of a group.
+     * @return A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229433.aspx'>MSDN: Observable.GroupByUntil</a>
+     */
+    public <TKey, TValue, TDuration> Observable<GroupedObservable<TKey, TValue>> groupByUntil(Func1<T, TKey> keySelector, Func1<T, TValue> valueSelector, Func1<GroupedObservable<TKey, TValue>, Observable<TDuration>> durationSelector) {
+        return create(new OperationGroupByUntil<T, TKey, TValue, TDuration>(this, keySelector, valueSelector, durationSelector));
     }
 }
 
