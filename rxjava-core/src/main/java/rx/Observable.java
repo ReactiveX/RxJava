@@ -5487,7 +5487,6 @@ public class Observable<T> {
         return create(OperationAmb.amb(sources));
     }
 
-
     /**
      * Invokes an action for each item emitted by the Observable.
      * <p>
@@ -5696,42 +5695,71 @@ public class Observable<T> {
             return isInternal;
         }
     }
+
     /**
-     * Creates a pattern that matches when both observable sequences have an available element.
-     * @param right Observable sequence to match with the left sequence.
-     * @return Pattern object that matches when both observable sequences have an available element.
+     * Creates a pattern that matches when both Observable sequences have an
+     * available item.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     *
+     * @param right Observable sequence to match with the left sequence
+     * @return Pattern object that matches when both Observable sequences have
+     *         an available item
+     * @throws NullPointerException if <code>right</code> is null
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">and()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229153.aspx'>MSDN: Observable.And</a>
-     * @throws NullPointerException if right is null
      */
     public <T2> Pattern2<T, T2> and(Observable<T2> right) {
         return OperationJoinPatterns.and(this, right);
     }
+
     /**
-     * Matches when the observable sequence has an available element and projects the element by invoking the selector function.
-     * @param selector Selector that will be invoked for elements in the source sequence.
-     * @return Plan that produces the projected results, to be fed (with other plans) to the When operator.
+     * Matches when the Observable sequence has an available item and
+     * projects the item by invoking the selector function.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     *
+     * @param selector Selector that will be invoked for elements in the source
+     *        sequence
+     * @return Plan that produces the projected results, to be fed (with other
+     *         plans) to the When operator
+     * @throws NullPointerException if <code>selector</code> is null
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">then()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh211662.aspx'>MSDN: Observable.Then</a>
-     * @throws NullPointerException if selector is null
      */
     public <R> Plan0<R> then(Func1<T, R> selector) {
         return OperationJoinPatterns.then(this, selector);
     }
+
     /**
      * Joins together the results from several patterns.
-     * @param plans A series of plans created by use of the Then operator on patterns.
-     * @return An observable sequence with the results from matching several patterns.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     *
+     * @param plans a series of plans created by use of the Then operator on
+     *              patterns
+     * @return an Observable sequence with the results from matching several
+     *         patterns
+     * @throws NullPointerException if <code>plans</code> is null
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">when()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229889.aspx'>MSDN: Observable.When</a>
-     * @throws NullPointerException if plans is null
      */
     public static <R> Observable<R> when(Plan0<R>... plans) {
         return create(OperationJoinPatterns.when(plans));
     }
+
     /**
      * Joins together the results from several patterns.
-     * @param plans A series of plans created by use of the Then operator on patterns.
-     * @return An observable sequence with the results from matching several patterns.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     *
+     * @param plans a series of plans created by use of the Then operator on
+     *        patterns
+     * @return an Observable sequence with the results from matching several
+     *         patterns
+     * @throws NullPointerException if <code>plans</code> is null
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">when()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229558.aspx'>MSDN: Observable.When</a>
-     * @throws NullPointerException if plans is null
      */
     public static <R> Observable<R> when(Iterable<? extends Plan0<R>> plans) {
         if (plans == null) {
@@ -5739,83 +5767,122 @@ public class Observable<T> {
         }
         return create(OperationJoinPatterns.when(plans));
     }
+
     /**
      * Joins the results from a pattern.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     *
      * @param p1 the plan to join
-     * @return An observable sequence with the results from matching a pattern
+     * @return an Observable sequence with the results from matching a pattern
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">when()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229889.aspx'>MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
     public static <R> Observable<R> when(Plan0<R> p1) {
         return create(OperationJoinPatterns.when(p1));
     }
+
     /**
      * Joins together the results from several patterns.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     *
      * @param p1 a plan
      * @param p2 a plan
-     * @return An observable sequence with the results from matching several patterns
+     * @return an Observable sequence with the results from matching several
+     *         patterns
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">when()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229889.aspx'>MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
     public static <R> Observable<R> when(Plan0<R> p1, Plan0<R> p2) {
         return create(OperationJoinPatterns.when(p1, p2));
     }
+
     /**
      * Joins together the results from several patterns.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     *
      * @param p1 a plan
      * @param p2 a plan
      * @param p3 a plan
-     * @return An observable sequence with the results from matching several patterns
+     * @return an Observable sequence with the results from matching several
+     *         patterns
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">when()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229889.aspx'>MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
     public static <R> Observable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3) {
         return create(OperationJoinPatterns.when(p1, p2, p3));
     }
+
     /**
      * Joins together the results from several patterns.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     *
      * @param p1 a plan
      * @param p2 a plan
      * @param p3 a plan
      * @param p4 a plan
-     * @return An observable sequence with the results from matching several patterns
+     * @return an Observable sequence with the results from matching several
+     *         patterns
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">when()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229889.aspx'>MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
     public static <R> Observable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3, Plan0<R> p4) {
         return create(OperationJoinPatterns.when(p1, p2, p3, p4));
     }
+
     /**
      * Joins together the results from several patterns.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     *
      * @param p1 a plan
      * @param p2 a plan
      * @param p3 a plan
      * @param p4 a plan
      * @param p5 a plan
-     * @return An observable sequence with the results from matching several patterns
+     * @return an Observable sequence with the results from matching several
+     *         patterns
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">when()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229889.aspx'>MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
     public static <R> Observable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3, Plan0<R> p4, Plan0<R> p5) {
         return create(OperationJoinPatterns.when(p1, p2, p3, p4, p5));
     }
+
     /**
      * Joins together the results from several patterns.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     *
      * @param p1 a plan
      * @param p2 a plan
      * @param p3 a plan
      * @param p4 a plan
      * @param p5 a plan
      * @param p6 a plan
-     * @return An observable sequence with the results from matching several patterns
+     * @return an Observable sequence with the results from matching several
+     *         patterns
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">when()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229889.aspx'>MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
     public static <R> Observable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3, Plan0<R> p4, Plan0<R> p5, Plan0<R> p6) {
         return create(OperationJoinPatterns.when(p1, p2, p3, p4, p5, p6));
     }
+
     /**
      * Joins together the results from several patterns.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     *
      * @param p1 a plan
      * @param p2 a plan
      * @param p3 a plan
@@ -5823,15 +5890,21 @@ public class Observable<T> {
      * @param p5 a plan
      * @param p6 a plan
      * @param p7 a plan
-     * @return An observable sequence with the results from matching several patterns
+     * @return an Observable sequence with the results from matching several
+     *         patterns
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">when()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229889.aspx'>MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
     public static <R> Observable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3, Plan0<R> p4, Plan0<R> p5, Plan0<R> p6, Plan0<R> p7) {
         return create(OperationJoinPatterns.when(p1, p2, p3, p4, p5, p6, p7));
     }
+
     /**
      * Joins together the results from several patterns.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     *
      * @param p1 a plan
      * @param p2 a plan
      * @param p3 a plan
@@ -5840,15 +5913,21 @@ public class Observable<T> {
      * @param p6 a plan
      * @param p7 a plan
      * @param p8 a plan
-     * @return An observable sequence with the results from matching several patterns
+     * @return an Observable sequence with the results from matching several
+     *         patterns
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">when()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229889.aspx'>MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
     public static <R> Observable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3, Plan0<R> p4, Plan0<R> p5, Plan0<R> p6, Plan0<R> p7, Plan0<R> p8) {
         return create(OperationJoinPatterns.when(p1, p2, p3, p4, p5, p6, p7, p8));
     }
+
     /**
      * Joins together the results from several patterns.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     *
      * @param p1 a plan
      * @param p2 a plan
      * @param p3 a plan
@@ -5858,7 +5937,9 @@ public class Observable<T> {
      * @param p7 a plan
      * @param p8 a plan
      * @param p9 a plan
-     * @return An observable sequence with the results from matching several patterns
+     * @return an Observable sequence with the results from matching several
+     *         patterns
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">when()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229889.aspx'>MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
@@ -5989,3 +6070,4 @@ public class Observable<T> {
         return create(OperationToMultimap.toMultimap(this, keySelector, valueSelector, mapFactory, collectionFactory));
     } 
 }
+
