@@ -5,7 +5,7 @@ import scala.concurrent.duration.Duration
 import ImplicitFunctionConversions.scalaFunction0ProducingUnitToAction0
 import ImplicitFunctionConversions.schedulerActionToFunc2
 import rx.util.functions.{Action0, Action1, Func2}
-import rx.lang.scala.subscriptions.Subscription
+import rx.lang.scala.Subscription
 
 /**
  * Represents an object thatimport rx.lang.scala.ImplicitFunctionConversions
