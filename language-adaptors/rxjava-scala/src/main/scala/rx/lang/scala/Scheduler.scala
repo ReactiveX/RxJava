@@ -163,7 +163,7 @@ trait Scheduler {
   def scheduleRec(work: (=>Unit)=>Unit): Subscription = {
     Subscription(asJavaScheduler.schedule(new Action1[Action0] {
       def call(t1: Action0){
-        work{ t1 }
+        work{ t1.call() }
       }
     }))
     //action1[action0]
