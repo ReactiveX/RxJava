@@ -1820,9 +1820,9 @@ trait Observable[+T]
     Observable[java.lang.Boolean](asJavaObservable.isEmpty).map(_.booleanValue())
   }
 
-  //def withFilter(p: T => Boolean): WithFilter[T] = {
-  //  new WithFilter[T](p, asJava)
-  //}
+  def withFilter(p: T => Boolean): WithFilter[T] = {
+    new WithFilter[T](p, asJavaObservable)
+  }
 
 }
 
