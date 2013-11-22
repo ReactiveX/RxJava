@@ -22,31 +22,171 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.EventListener;
+import java.util.EventObject;
 import java.util.Set;
 
 import javax.swing.AbstractButton;
+import javax.swing.event.ChangeEvent;
 
 import rx.Observable;
-import rx.swing.sources.AbstractButtonSource;
+import rx.Observable.OnSubscribeFunc;
+import rx.Observer;
+import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 import rx.swing.sources.ComponentEventSource;
 import rx.swing.sources.KeyEventSource;
 import rx.swing.sources.MouseEventSource;
+import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
 /**
- * Allows creating observables from various sources specific to Swing. 
+ * Allows creating observables from various sources specific to Swing.
  */
-public enum SwingObservable { ; // no instances
+public enum SwingObservable {
+    ; // no instances
+
+    public static <E extends EventObject> Observable<E> fromListenerFor(final Class<E> eventClass, final Object onComponent) {
+        Method[] methods = onComponent.getClass().getMethods();
+
+        Method potentialAddMethod = null;
+        Method potentialRemoveMethod = null;
+        Class<?> potentialListenerClass = null;
+
+        for (Method method : methods) {
+            if (!method.getName().startsWith("add") && !method.getName().startsWith("remove"))
+                continue;
+
+            if (!method.getName().endsWith("Listener"))
+                continue;
+
+            // check that the method takes an interface that has methods that take our event class
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            if (parameterTypes.length != 1)
+                continue;
+
+            if (potentialListenerClass == null) {
+                Class<?> candidateListenerClass = parameterTypes[0];
+                if (!candidateListenerClass.isInterface())
+                    continue;
+                if (!EventListener.class.isAssignableFrom(candidateListenerClass))
+                    continue;
+    
+                boolean hasMatchingEventMethods = false;
+                for (Method eventMethod : candidateListenerClass.getMethods()) {
+                    Class<?>[] eventMethodParameterTypes = eventMethod.getParameterTypes();
+                    if (eventMethodParameterTypes.length != 1)
+                        continue;
+                    if (!eventClass.isAssignableFrom(eventMethodParameterTypes[0]))
+                        continue;
+    
+                    hasMatchingEventMethods = true;
+                }
+    
+                if (!hasMatchingEventMethods)
+                    continue;
+
+                potentialListenerClass = candidateListenerClass;
+            }
+            else if (!potentialListenerClass.isAssignableFrom(parameterTypes[0]))
+                continue;
+
+            if (method.getName().startsWith("add")) {
+
+                if (potentialAddMethod == null)
+                    potentialAddMethod = method;
+                else
+                    throw new AmbiguousMethodException(potentialAddMethod, method);
+            }
+            if (method.getName().startsWith("remove")) {
+                if (potentialRemoveMethod == null)
+                    potentialRemoveMethod = method;
+                else
+                    throw new AmbiguousMethodException(potentialRemoveMethod, method);
+            }
+        }
+
+        if (potentialListenerClass == null) {
+            return Observable.error(new RuntimeException("Unable to find any methods on " + onComponent.getClass().getName() + " that take an event listener"));
+        }
+        if (potentialAddMethod == null) {
+            return Observable.error(new RuntimeException("Unable to find " + onComponent.getClass().getName() + ".add*Listener(" + potentialListenerClass.getName() + ")"));
+        }
+        if (potentialRemoveMethod == null) {
+            return Observable.error(new RuntimeException("Unable to find " + onComponent.getClass().getName() + ".remove*Listener(" + potentialListenerClass.getName() + ")"));
+        }
+
+        final Method addMethod = potentialAddMethod;
+        final Method removeMethod = potentialRemoveMethod;
+        final Class<?> listenerClass = potentialListenerClass;
+
+        return Observable.create(new OnSubscribeFunc<E>() {
+            @Override
+            public Subscription onSubscribe(final Observer<? super E> observer) {
+                final Object listener = Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] { listenerClass }, new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
+                        try {
+                            String methodName = method.getName();
+                            if (method.getDeclaringClass() == Object.class) {
+                                // Handle the Object public methods.
+                                if (methodName.equals("hashCode")) {
+                                    return new Integer(System.identityHashCode(proxy));
+                                } else if (methodName.equals("equals")) {
+                                    return (proxy == arguments[0] ? Boolean.TRUE : Boolean.FALSE);
+                                } else if (methodName.equals("toString")) {
+                                    return proxy.getClass().getName() + '@' + Integer.toHexString(proxy.hashCode());
+                                }
+                            }
+
+                            if (arguments.length != 1)
+                                throw new UnsupportedOperationException();
+                            if (arguments[0].getClass().isInstance(eventClass))
+                                throw new UnsupportedOperationException();
+                            if (method.getReturnType() != Void.TYPE)
+                                throw new UnsupportedOperationException();
+
+                            observer.onNext(eventClass.cast(arguments[0]));
+                        } catch (Throwable e) {
+                            observer.onError(e);
+                        }
+
+                        return null;
+                    }
+                });
+
+                try {
+                    addMethod.invoke(onComponent, listener);
+                } catch (Throwable e) {
+                    observer.onError(e);
+                }
+
+                return Subscriptions.create(new Action0() {
+                    @Override
+                    public void call() {
+                        try {
+                            removeMethod.invoke(onComponent, listener);
+                        } catch (Throwable e) {
+                            observer.onError(e);
+                        }
+                    }
+                });
+            }
+        });
+    }
 
     /**
      * Creates an observable corresponding to a Swing button action.
      * 
-     * @param button 
+     * @param button
      *            The button to register the observable for.
      * @return Observable of action events.
      */
-    public static Observable<ActionEvent> fromButtonAction(AbstractButton button) {
-        return AbstractButtonSource.fromActionOf(button);
+    public static Observable<ActionEvent> fromButtonAction(AbstractButton component) {
+        return fromListenerFor(ActionEvent.class, component);
     }
 
     /**
@@ -57,7 +197,7 @@ public enum SwingObservable { ; // no instances
      * @return Observable of key events.
      */
     public static Observable<KeyEvent> fromKeyEvents(Component component) {
-        return KeyEventSource.fromKeyEventsOf(component);
+        return fromListenerFor(KeyEvent.class, component);
     }
 
     /**
@@ -78,7 +218,8 @@ public enum SwingObservable { ; // no instances
 
     /**
      * Creates an observable that emits the set of all currently pressed keys each time
-     * this set changes. 
+     * this set changes.
+     * 
      * @param component
      *            The component to register the observable for.
      * @return Observable of currently pressed keys.
@@ -108,9 +249,10 @@ public enum SwingObservable { ; // no instances
     public static Observable<MouseEvent> fromMouseMotionEvents(Component component) {
         return MouseEventSource.fromMouseMotionEventsOf(component);
     }
-    
+
     /**
      * Creates an observable corresponding to relative mouse motion.
+     * 
      * @param component
      *            The component to register the observable for.
      * @return A point whose x and y coordinate represent the relative horizontal and vertical mouse motion.
@@ -118,7 +260,7 @@ public enum SwingObservable { ; // no instances
     public static Observable<Point> fromRelativeMouseMotion(Component component) {
         return MouseEventSource.fromRelativeMouseMotion(component);
     }
-    
+
     /**
      * Creates an observable corresponding to raw component events.
      * 
@@ -140,4 +282,41 @@ public enum SwingObservable { ; // no instances
     public static Observable<Dimension> fromResizing(Component component) {
         return ComponentEventSource.fromResizing(component);
     }
+
+    // There is no common base interface for all components with {add/remove}ChangeListener methods.
+    // So we have to add a fromChangeEvents overload for each component which fires ChangeEvents.
+
+    /**
+     * Creates an observable corresponding to {@link ChangeEvent}s.
+     * 
+     * @param component
+     *            The component to register the observable for.
+     *            It must have an {@code addChangeListener} and a {@code removeChangeListener}
+     *            method.
+     * @return Observable of {@link ChangeEvent}s.
+     */
+    public static Observable<ChangeEvent> fromChangeEvents(Object component) {
+        return fromListenerFor(ChangeEvent.class, component);
+    }
+
+    @SuppressWarnings("serial")
+	public static class AmbiguousMethodException extends RuntimeException {
+        private final Method method1;
+        private final Method method2;
+
+        public AmbiguousMethodException(Method method1, Method method2) {
+            super("Not sure which method to use " + method1 + " or " + method2);
+            this.method1 = method1;
+            this.method2 = method2;
+        }
+
+        public Method getMethod1() {
+            return method1;
+        }
+
+        public Method getMethod2() {
+            return method2;
+        }
+    }
+
 }
