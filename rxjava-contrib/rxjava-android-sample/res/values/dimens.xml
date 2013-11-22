@@ -1,0 +1,5 @@
+<resources>
+
+    <dimen name="content_padding">8dp</dimen>
+
+</resources>
