@@ -26,8 +26,9 @@ import rx.lang.scala.examples.Olympics
 import rx.lang.scala.Notification.OnCompleted
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
+import org.scalatest.Ignore
 
-//@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
+@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
 
   @Test def intervalExample() {
