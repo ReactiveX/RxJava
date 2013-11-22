@@ -30,6 +30,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.operators.OperationZip.Aggregator;
 import rx.operators.OperationZip.ZipObserver;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func2;
 import rx.util.functions.Func3;
@@ -494,6 +495,112 @@ public class OperationZipTest {
 
         verify(aObserver, times(1)).onError(any(Throwable.class));
     }
+    
+    @Test
+    public void testOnFirstCompletion() {
+        PublishSubject<String> oA = PublishSubject.create();
+        PublishSubject<String> oB = PublishSubject.create();
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+
+        Observable<String> o = Observable.create(zip(oA, oB, getConcat2Strings()));
+        o.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+
+        oA.onNext("a1");
+        inOrder.verify(observer, never()).onNext(anyString());
+        oB.onNext("b1");
+        inOrder.verify(observer, times(1)).onNext("a1-b1");
+        oB.onNext("b2");
+        inOrder.verify(observer, never()).onNext(anyString());
+        oA.onNext("a2");
+        inOrder.verify(observer, times(1)).onNext("a2-b2");
+
+        oA.onNext("a3");
+        oA.onNext("a4");
+        oA.onNext("a5");
+        oA.onCompleted();
+
+        // SHOULD ONCOMPLETE BE EMITTED HERE INSTEAD OF WAITING
+       // FOR B3, B4, B5 TO BE EMITTED?
+
+        oB.onNext("b3");
+        oB.onNext("b4");
+        oB.onNext("b5");
+
+        inOrder.verify(observer, times(1)).onNext("a3-b3");
+        inOrder.verify(observer, times(1)).onNext("a4-b4");
+        inOrder.verify(observer, times(1)).onNext("a5-b5");
+
+        // WE RECEIVE THE ONCOMPLETE HERE
+        inOrder.verify(observer, times(1)).onCompleted();
+
+        oB.onNext("b6");
+        oB.onNext("b7");
+        oB.onNext("b8");
+        oB.onNext("b9");
+        // never completes (infinite stream for example)
+
+        // we should receive nothing else despite oB continuing after oA completed
+        inOrder.verifyNoMoreInteractions();
+    }
+    
+    @Test
+    public void testOnErrorTermination() {
+        PublishSubject<String> oA = PublishSubject.create();
+        PublishSubject<String> oB = PublishSubject.create();
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+
+        Observable<String> o = Observable.create(zip(oA, oB, getConcat2Strings()));
+        o.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+
+        oA.onNext("a1");
+        inOrder.verify(observer, never()).onNext(anyString());
+        oB.onNext("b1");
+        inOrder.verify(observer, times(1)).onNext("a1-b1");
+        oB.onNext("b2");
+        inOrder.verify(observer, never()).onNext(anyString());
+        oA.onNext("a2");
+        inOrder.verify(observer, times(1)).onNext("a2-b2");
+
+        oA.onNext("a3");
+        oA.onNext("a4");
+        oA.onNext("a5");
+        oA.onError(new RuntimeException("forced failure"));
+
+        // it should emit failure immediately
+        inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
+
+        oB.onNext("b3");
+        oB.onNext("b4");
+        oB.onNext("b5");
+        oB.onNext("b6");
+        oB.onNext("b7");
+        oB.onNext("b8");
+        oB.onNext("b9");
+        // never completes (infinite stream for example)
+
+        // we should receive nothing else despite oB continuing after oA completed
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    private Func2<String, String, String> getConcat2Strings() {
+        return new Func2<String, String, String>() {
+
+            @Override
+            public String call(String t1, String t2) {
+                return t1 + "-" + t2;
+            }
+        };
+    }
+    
+    
 
     private Func2<Integer, Integer, Integer> getDivideZipr() {
         Func2<Integer, Integer, Integer> zipr = new Func2<Integer, Integer, Integer>() {

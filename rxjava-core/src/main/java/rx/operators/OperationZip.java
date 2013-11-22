@@ -59,37 +59,45 @@ import rx.util.functions.Functions;
  */
 public final class OperationZip {
     
+    @SuppressWarnings("unchecked")
     public static <T1, T2, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, final Func2<? super T1, ? super T2, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2), Functions.fromFunc(zipFunction));
     }
     
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, final Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3), Functions.fromFunc(zipFunction));
     }
     
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, final Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4), Functions.fromFunc(zipFunction));
     }
     
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, final Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5), Functions.fromFunc(zipFunction));
     }
     
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6,
             final Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5, o6), Functions.fromFunc(zipFunction));
     }
     
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7,
             final Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5, o6, o7), Functions.fromFunc(zipFunction));
     }
     
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
             final Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5, o6, o7, o8), Functions.fromFunc(zipFunction));
     }
     
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
             Observable<? extends T9> o9, final Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5, o6, o7, o8, o9), Functions.fromFunc(zipFunction));
@@ -415,6 +423,7 @@ public final class OperationZip {
                 this.observer = observer;
                 this.cancel = cancel;
             }
+            @SuppressWarnings("unchecked")
             @Override
             public void onNext(T value) {
                 rwLock.readLock().lock();
