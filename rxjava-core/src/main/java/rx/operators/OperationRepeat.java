@@ -18,53 +18,50 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
-import rx.subscriptions.MultipleAssignmentSubscription;
-import rx.util.functions.Func2;
+import rx.subscriptions.SerialSubscription;
+import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 
-public final class OperationRepeat {
+public class OperationRepeat<T> implements Observable.OnSubscribeFunc<T> {
 
-    public static <T> Observable.OnSubscribeFunc<T> repeat(Observable<? extends T> source) {
-        return new RepeatObservable<T>(source);
+    private final Observable<T> source;
+
+    public static <T> Observable.OnSubscribeFunc<T> repeat(Observable<T> seed) {
+        return new OperationRepeat(seed);
     }
 
-    static class RepeatObservable<T> implements Observable.OnSubscribeFunc<T> {
-
-        RepeatObservable(Observable<? extends T> source) {
-            this.source = source;
-        }
-
-        private Observable<? extends T> source;
-        private Observer<? super T> observer;
-        private MultipleAssignmentSubscription subscription =  new MultipleAssignmentSubscription();
-
-        @Override
-        public Subscription onSubscribe(Observer observer) {
-            this.observer = observer;
-            Loop();
-            return subscription;
-        }
-
-        void Loop() {
-            subscription.setSubscription(Schedulers.currentThread().schedule(0, new Func2<Scheduler, Integer, Subscription>() {
-                @Override
-                public Subscription call(Scheduler s, Integer n) {
-                    return source.subscribe(new Observer<T>() {
-                        @Override
-                        public void onCompleted() { Loop();  }
-
-                        @Override
-                        public void onError(Throwable error) { observer.onError(error); }
-
-                        @Override
-                        public void onNext(T value) { observer.onNext(value); }
-                    });
-                }
-            }));
-        }
+    private OperationRepeat(Observable<T> source) {
+        this.source = source;
     }
 
+    @Override
+    public Subscription onSubscribe(final Observer<? super T> observer) {
+        final SerialSubscription subscription = new SerialSubscription();
+        subscription.setSubscription(Schedulers.currentThread().schedule(new Action1<Action0>() {
+            @Override
+            public void call(final Action0 self) {
+                subscription.setSubscription(source.subscribe(new Observer<T>() {
 
+                    @Override
+                    public void onCompleted() {
+                        subscription.getSubscription().unsubscribe();
+                        self.call();
+                    }
+
+                    @Override
+                    public void onError(Throwable error) {
+                        observer.onError(error);
+                    }
+
+                    @Override
+                    public void onNext(T value) {
+                        observer.onNext(value);
+                    }
+                }));
+            }
+        }));
+        return subscription;
+    }
 }
