@@ -18,35 +18,36 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscription;
-import rx.concurrency.Schedulers;
-import rx.subscriptions.SerialSubscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
 public class OperationRepeat<T> implements Observable.OnSubscribeFunc<T> {
 
     private final Observable<T> source;
+    private final Scheduler scheduler;
 
-    public static <T> Observable.OnSubscribeFunc<T> repeat(Observable<T> seed) {
-        return new OperationRepeat(seed);
+    public static <T> Observable.OnSubscribeFunc<T> repeat(Observable<T> source, Scheduler scheduler) {
+        return new OperationRepeat(source, scheduler);
     }
 
-    private OperationRepeat(Observable<T> source) {
+    private OperationRepeat(Observable<T> source, Scheduler scheduler) {
         this.source = source;
+        this.scheduler = scheduler;
     }
 
     @Override
     public Subscription onSubscribe(final Observer<? super T> observer) {
-        final SerialSubscription subscription = new SerialSubscription();
-        subscription.setSubscription(Schedulers.currentThread().schedule(new Action1<Action0>() {
+        final MultipleAssignmentSubscription subscription = new MultipleAssignmentSubscription();
+        subscription.setSubscription(scheduler.schedule(new Action1<Action0>() {
             @Override
             public void call(final Action0 self) {
                 subscription.setSubscription(source.subscribe(new Observer<T>() {
 
                     @Override
                     public void onCompleted() {
-                        subscription.getSubscription().unsubscribe();
                         self.call();
                     }
 

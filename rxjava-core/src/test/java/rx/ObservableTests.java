@@ -15,9 +15,20 @@
  */
 package rx;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import rx.Observable.OnSubscribeFunc;
+import rx.concurrency.Schedulers;
+import rx.concurrency.TestScheduler;
+import rx.observables.ConnectableObservable;
+import rx.subscriptions.BooleanSubscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action1;
+import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,21 +39,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import rx.Observable.OnSubscribeFunc;
-import rx.concurrency.TestScheduler;
-import rx.observables.ConnectableObservable;
-import rx.subscriptions.BooleanSubscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class ObservableTests {
 
@@ -957,5 +958,12 @@ public class ObservableTests {
         inOrder.verify(aObserver, times(1)).onNext(6);
         inOrder.verify(aObserver, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testRepeatTake() {
+        Observable<Integer> xs = Observable.from(1,2);
+        Object[] ys = xs.repeat(Schedulers.newThread()).take(4).toList().toBlockingObservable().last().toArray();
+        assertArrayEquals(new Object[]{ 1, 2, 1, 2}, ys);
     }
 }

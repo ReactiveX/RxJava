@@ -969,7 +969,18 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428(v=vs.103).aspx">MSDN: Observable.Repeat</a>
      */
     public Observable<T> repeat() {
-        return create(rx.operators.OperationRepeat.repeat(this));
+        return this.repeat(Schedulers.currentThread());
+    }
+
+    /**
+     * Repeats the observable sequence indefinitely.
+     * <p>
+     * @param scheduler the scheduler to send the values on.
+     * @return The observable sequence producing the elements of the given sequence repeatedly and sequentially.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428(v=vs.103).aspx">MSDN: Observable.Repeat</a>
+     */
+    public Observable<T> repeat(Scheduler scheduler) {
+        return create(OperationRepeat.repeat(this, scheduler));
     }
 
     /**
