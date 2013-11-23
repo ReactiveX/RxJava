@@ -15,7 +15,21 @@
  */
 package rx;
 
-import static rx.util.functions.Functions.*;
+import rx.concurrency.Schedulers;
+import rx.observables.BlockingObservable;
+import rx.observables.ConnectableObservable;
+import rx.observables.GroupedObservable;
+import rx.operators.*;
+import rx.plugins.RxJavaErrorHandler;
+import rx.plugins.RxJavaObservableExecutionHook;
+import rx.plugins.RxJavaPlugins;
+import rx.subjects.AsyncSubject;
+import rx.subjects.PublishSubject;
+import rx.subjects.ReplaySubject;
+import rx.subjects.Subject;
+import rx.subscriptions.Subscriptions;
+import rx.util.*;
+import rx.util.functions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,101 +39,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import rx.concurrency.Schedulers;
-import rx.observables.BlockingObservable;
-import rx.observables.ConnectableObservable;
-import rx.observables.GroupedObservable;
-import rx.operators.OperationAll;
-import rx.operators.OperationAmb;
-import rx.operators.OperationAny;
-import rx.operators.OperationAverage;
-import rx.operators.OperationBuffer;
-import rx.operators.OperationCache;
-import rx.operators.OperationCast;
-import rx.operators.OperationCombineLatest;
-import rx.operators.OperationConcat;
-import rx.operators.OperationDebounce;
-import rx.operators.OperationDefaultIfEmpty;
-import rx.operators.OperationDefer;
-import rx.operators.OperationDematerialize;
-import rx.operators.OperationDistinct;
-import rx.operators.OperationDistinctUntilChanged;
-import rx.operators.OperationDoOnEach;
-import rx.operators.OperationElementAt;
-import rx.operators.OperationFilter;
-import rx.operators.OperationFinally;
-import rx.operators.OperationFirstOrDefault;
-import rx.operators.OperationGroupBy;
-import rx.operators.OperationInterval;
-import rx.operators.OperationLast;
-import rx.operators.OperationMap;
-import rx.operators.OperationMaterialize;
-import rx.operators.OperationMerge;
-import rx.operators.OperationMergeDelayError;
-import rx.operators.OperationMinMax;
-import rx.operators.OperationMulticast;
-import rx.operators.OperationObserveOn;
-import rx.operators.OperationOnErrorResumeNextViaFunction;
-import rx.operators.OperationOnErrorResumeNextViaObservable;
-import rx.operators.OperationOnErrorReturn;
-import rx.operators.OperationOnExceptionResumeNextViaObservable;
-import rx.operators.OperationParallel;
-import rx.operators.OperationParallelMerge;
-import rx.operators.OperationRetry;
-import rx.operators.OperationSample;
-import rx.operators.OperationScan;
-import rx.operators.OperationSkip;
-import rx.operators.OperationSkipLast;
-import rx.operators.OperationSkipWhile;
-import rx.operators.OperationSubscribeOn;
-import rx.operators.OperationSum;
-import rx.operators.OperationSwitch;
-import rx.operators.OperationSynchronize;
-import rx.operators.OperationTake;
-import rx.operators.OperationTakeLast;
-import rx.operators.OperationTakeUntil;
-import rx.operators.OperationTakeWhile;
-import rx.operators.OperationThrottleFirst;
-import rx.operators.OperationTimeInterval;
-import rx.operators.OperationTimeout;
-import rx.operators.OperationTimestamp;
-import rx.operators.OperationToObservableFuture;
-import rx.operators.OperationToObservableIterable;
-import rx.operators.OperationToObservableList;
-import rx.operators.OperationToObservableSortedList;
-import rx.operators.OperationUsing;
-import rx.operators.OperationWindow;
-import rx.operators.OperationZip;
-import rx.operators.SafeObservableSubscription;
-import rx.operators.SafeObserver;
-import rx.plugins.RxJavaErrorHandler;
-import rx.plugins.RxJavaObservableExecutionHook;
-import rx.plugins.RxJavaPlugins;
-import rx.subjects.AsyncSubject;
-import rx.subjects.PublishSubject;
-import rx.subjects.ReplaySubject;
-import rx.subjects.Subject;
-import rx.subscriptions.Subscriptions;
-import rx.util.Closing;
-import rx.util.OnErrorNotImplementedException;
-import rx.util.Opening;
-import rx.util.Range;
-import rx.util.TimeInterval;
-import rx.util.Timestamped;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
-import rx.util.functions.Func3;
-import rx.util.functions.Func4;
-import rx.util.functions.Func5;
-import rx.util.functions.Func6;
-import rx.util.functions.Func7;
-import rx.util.functions.Func8;
-import rx.util.functions.Func9;
-import rx.util.functions.FuncN;
-import rx.util.functions.Function;
+import static rx.util.functions.Functions.alwaysFalse;
+import static rx.util.functions.Functions.not;
 
 /**
  * The Observable interface that implements the Reactive Pattern.
@@ -1038,6 +959,17 @@ public class Observable<T> {
      */
     public static Observable<Integer> range(int start, int count, Scheduler scheduler) {
         return range(start, count).observeOn(scheduler);
+    }
+
+    /**
+     * Repeats the observable sequence indefinitely.
+     * <p>
+     *
+     * @return The observable sequence producing the elements of the given sequence repeatedly and sequentially.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428(v=vs.103).aspx">MSDN: Observable.Repeat</a>
+     */
+    public Observable<T> repeat() {
+        return create(rx.operators.OperationRepeat.repeat(this));
     }
 
     /**
