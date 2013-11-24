@@ -23,8 +23,10 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
-import rx.observables.ConnectableObservable;
-import rx.subscriptions.SerialSubscription;
+import rx.subscriptions.BooleanSubscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Func2;
 
 /**
  * Generates an observable sequence that repeats the given source sequence of
@@ -48,7 +50,7 @@ public class OperationRepeat {
     }
 
     public static <T> OnSubscribeFunc<T> repeat(final Observable<T> source,
-            final int repeatCount, final Scheduler scheduler) {
+            final Integer repeatCount, final Scheduler scheduler) {
         if (repeatCount != INFINITE && repeatCount < 0) {
             throw new IllegalArgumentException(
                     "repeatCount should not be less than 0");
@@ -57,49 +59,56 @@ public class OperationRepeat {
         return new OnSubscribeFunc<T>() {
             @Override
             public Subscription onSubscribe(final Observer<? super T> observer) {
-                if (repeatCount == 0) {
-                    return source.ignoreElements().observeOn(scheduler)
-                            .subscribe(observer);
+                if (repeatCount != INFINITE && repeatCount == 0) {
+                    // Still need to receive onComplete and onError
+                    return source.ignoreElements().observeOn(scheduler).subscribe(observer);
                 }
 
-                final SerialSubscription subscription = new SerialSubscription();
-                ConnectableObservable<T> replayObservable = source.replay();
-                subscription.setSubscription(replayObservable.observeOn(
-                        scheduler).subscribe(new Observer<T>() {
+                final MultipleAssignmentSubscription subscription = new MultipleAssignmentSubscription();
+                subscription.setSubscription(scheduler.schedule(
+                                        new BooleanSubscription(),
+                                        new Func2<Scheduler, BooleanSubscription, Subscription>() {
 
-                    private AtomicInteger remainCount = new AtomicInteger(
-                            repeatCount);
+                                            private Func2<Scheduler, BooleanSubscription, Subscription> self = this;
+                                            private AtomicInteger calledTimes = new AtomicInteger(0);
 
-                    @Override
-                    public void onCompleted() {
-                        if (repeatCount != INFINITE
-                                && remainCount.decrementAndGet() == 0) {
-                            observer.onCompleted();
-                        } else {
-                            ConnectableObservable<T> replayObservable = source
-                                    .replay();
-                            subscription.setSubscription(replayObservable
-                                    .observeOn(scheduler).subscribe(this));
-                            replayObservable.connect();
-                        }
-                    }
+                                            @Override
+                                            public Subscription call(
+                                                    final Scheduler scheduler,
+                                                    final BooleanSubscription cancel) {
+                                                if (cancel.isUnsubscribed()) {
+                                                    return Subscriptions.empty();
+                                                }
+                                                return source.subscribe(new Observer<T>() {
+                                                            @Override
+                                                            public void onCompleted() {
+                                                                if (cancel.isUnsubscribed()) {
+                                                                    return;
+                                                                }
+                                                                if (repeatCount != INFINITE
+                                                                        && calledTimes.incrementAndGet() == repeatCount) {
+                                                                    observer.onCompleted();
+                                                                } else {
+                                                                    subscription.setSubscription(scheduler.schedule(cancel, self));
+                                                                }
+                                                            }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        observer.onError(e);
-                    }
+                                                            @Override
+                                                            public void onError(Throwable e) {
+                                                                observer.onError(e);
+                                                            }
 
-                    @Override
-                    public void onNext(T value) {
-                        observer.onNext(value);
-                    }
-
-                }));
-                replayObservable.connect();
+                                                            @Override
+                                                            public void onNext(T value) {
+                                                                observer.onNext(value);
+                                                            }
+                                                        });
+                                            }
+                                        }));
                 return subscription;
             }
         };
     }
 
-    private static final int INFINITE = Integer.MIN_VALUE;
+    private static final Integer INFINITE = null;
 }
