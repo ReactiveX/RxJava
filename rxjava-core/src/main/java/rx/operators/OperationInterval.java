@@ -78,7 +78,6 @@ public final class OperationInterval {
                 @Override
                 public void call() {
                     wrapped.unsubscribe();
-                    observer.onCompleted();
                 }
             });
         }
