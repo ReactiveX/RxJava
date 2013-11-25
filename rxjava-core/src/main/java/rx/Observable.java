@@ -5093,35 +5093,33 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits only the very first item emitted by the
-     * source Observable.
+     * source Observable, or an <code>IllegalArgumentException</code> if the source
+     * {@link Observable} is empty.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
      * 
-     * @return an Observable that emits only the very first item emitted by the
-     *         source Observable, or nothing if the source Observable completes
-     *         without emitting a single item
+     * @return an Observable that emits only the very first item from the
+     *         source, or an <code>IllegalArgumentException</code> if the source {@link Observable} is empty.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first">RxJava Wiki: first()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
      */
     public Observable<T> first() {
-        return take(1);
+        return takeFirst().last();
     }
 
     /**
      * Returns an Observable that emits only the very first item emitted by the
-     * source Observable that satisfies a given condition.
+     * source Observable that satisfies a given condition, or an <code>IllegalArgumentException</code>
+     * if no such items are emitted.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstN.png">
      * 
      * @param predicate the condition any source emitted item has to satisfy
      * @return an Observable that emits only the very first item satisfying the
-     *         given condition from the source, or nothing if the source
-     *         Observable completes without emitting a single matching item
+     *         given condition from the source, or an <code>IllegalArgumentException</code> if no such items are emitted.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first">RxJava Wiki: first()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
      */
     public Observable<T> first(Func1<? super T, Boolean> predicate) {
-        return skipWhile(not(predicate)).take(1);
+        return takeFirst(predicate).last();
     }
 
     /**
@@ -5245,14 +5243,13 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
      * 
      * @return an Observable that emits only the very first item from the
-     *         source, or none if the source Observable completes without
+     *         source, or an empty Observable if the source Observable completes without
      *         emitting a single item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first">RxJava Wiki: first()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
-     * @see #first()
      */
     public Observable<T> takeFirst() {
-        return first();
+        return take(1);
     }
 
     /**
@@ -5263,14 +5260,13 @@ public class Observable<T> {
      * 
      * @param predicate the condition any source emitted item has to satisfy
      * @return an Observable that emits only the very first item satisfying the
-     *         given condition from the source, or none if the source Observable
+     *         given condition from the source, or an empty Observable if the source Observable
      *         completes without emitting a single matching item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first">RxJava Wiki: first()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
-     * @see #first(Func1)
      */
     public Observable<T> takeFirst(Func1<? super T, Boolean> predicate) {
-        return first(predicate);
+        return skipWhile(not(predicate)).take(1);
     }
 
     /**

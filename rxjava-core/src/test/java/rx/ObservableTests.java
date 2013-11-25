@@ -164,9 +164,9 @@ public class ObservableTests {
         verify(w, times(1)).onError(any(RuntimeException.class));
     }
 
-    public void testFirstWithPredicateOfSome() {
+    public void testTakeFirstWithPredicateOfSome() {
         Observable<Integer> observable = Observable.from(1, 3, 5, 4, 6, 3);
-        observable.first(IS_EVEN).subscribe(w);
+        observable.takeFirst(IS_EVEN).subscribe(w);
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(4);
         verify(w, times(1)).onCompleted();
@@ -174,20 +174,29 @@ public class ObservableTests {
     }
 
     @Test
-    public void testFirstWithPredicateOfNoneMatchingThePredicate() {
+    public void testTakeFirstWithPredicateOfNoneMatchingThePredicate() {
         Observable<Integer> observable = Observable.from(1, 3, 5, 7, 9, 7, 5, 3, 1);
-        observable.first(IS_EVEN).subscribe(w);
+        observable.takeFirst(IS_EVEN).subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, times(1)).onCompleted();
         verify(w, never()).onError(any(Throwable.class));
     }
 
     @Test
-    public void testFirstOfSome() {
+    public void testTakeFirstOfSome() {
         Observable<Integer> observable = Observable.from(1, 2, 3);
-        observable.first().subscribe(w);
+        observable.takeFirst().subscribe(w);
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(1);
+        verify(w, times(1)).onCompleted();
+        verify(w, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testTakeFirstOfNone() {
+        Observable<Integer> observable = Observable.empty();
+        observable.takeFirst().subscribe(w);
+        verify(w, never()).onNext(anyInt());
         verify(w, times(1)).onCompleted();
         verify(w, never()).onError(any(Throwable.class));
     }
@@ -197,8 +206,17 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.empty();
         observable.first().subscribe(w);
         verify(w, never()).onNext(anyInt());
-        verify(w, times(1)).onCompleted();
-        verify(w, never()).onError(any(Throwable.class));
+        verify(w, never()).onCompleted();
+        verify(w, times(1)).onError(isA(IllegalArgumentException.class));
+    }
+
+    @Test
+    public void testFirstWithPredicateOfNoneMatchingThePredicate() {
+        Observable<Integer> observable = Observable.from(1, 3, 5, 7, 9, 7, 5, 3, 1);
+        observable.first(IS_EVEN).subscribe(w);
+        verify(w, never()).onNext(anyInt());
+        verify(w, never()).onCompleted();
+        verify(w, times(1)).onError(isA(IllegalArgumentException.class));
     }
 
     @Test

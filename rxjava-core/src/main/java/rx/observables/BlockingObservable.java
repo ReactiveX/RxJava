@@ -173,6 +173,75 @@ public class BlockingObservable<T> {
     }
 
     /**
+     * Returns the first item emitted by a specified {@link Observable},
+     * or IllegalArgumentException if source contains no elements
+     * 
+     * @return the first item emitted by the source {@link Observable}
+     * @throws IllegalArgumentException
+     *            if source contains no elements
+     */
+    public T first() {
+        return from(o.first()).single();
+    }
+
+    /**
+     * Returns the first item emitted by a specified {@link Observable} that matches a predicate,
+     * or IllegalArgumentException if no such items are emitted.
+     * 
+     * @param predicate
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the first item emitted by the {@link Observable} that matches the predicate
+     * @throws IllegalArgumentException
+     *            if no such items are emitted.
+     */
+    public T first(Func1<? super T, Boolean> predicate) {
+        return from(o.first(predicate)).single();
+    }
+
+    /**
+     * Returns the first item emitted by a specified {@link Observable}, or a default value if no
+     * items are emitted.
+     * 
+     * @param defaultValue
+     *            a default value to return if the {@link Observable} emits no items
+     * @return the first item emitted by the {@link Observable}, or the default value if no items
+     *         are emitted
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229320(v=vs.103).aspx">MSDN: Observable.FirstOrDefault</a>
+     */
+    public T firstOrDefault(T defaultValue) {
+        boolean found = false;
+        T result = null;
+
+        for (T value : toIterable()) {
+            found = true;
+            result = value;
+            break;
+        }
+
+        if (!found) {
+            return defaultValue;
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the first item emitted by a specified {@link Observable} that matches a predicate, or
+     * a default value if no such items are emitted.
+     * 
+     * @param defaultValue
+     *            a default value to return if the {@link Observable} emits no matching items
+     * @param predicate
+     *            a predicate function to evaluate items emitted by the {@link Observable}
+     * @return the first item emitted by the {@link Observable} that matches the predicate, or the
+     *         default value if no matching items are emitted
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229759(v=vs.103).aspx">MSDN: Observable.FirstOrDefault</a>
+     */
+    public T firstOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
+        return from(o.filter(predicate)).firstOrDefault(defaultValue);
+    }
+
+    /**
      * Returns the last item emitted by a specified {@link Observable}.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.png">

@@ -257,6 +257,76 @@ public class BlockingObservableTest {
         }
     }
 
+    @Test
+    public void testFirst() {
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        assertEquals("one", observable.first());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFirstWithEmpty() {
+        BlockingObservable.from(Observable.<String>empty()).first();
+    }
+
+    @Test
+    public void testFirstWithPredicate() {
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        String first = observable.first(new Func1<String, Boolean>() {
+            @Override
+            public Boolean call(String args) {
+                return args.length() > 3;
+            }
+        });
+        assertEquals("three", first);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFirstWithPredicateAndEmpty() {
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        observable.first(new Func1<String, Boolean>() {
+            @Override
+            public Boolean call(String args) {
+                return args.length() > 5;
+            }
+        });
+    }
+
+    @Test
+    public void testFirstOrDefault() {
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        assertEquals("one", observable.firstOrDefault("default"));
+    }
+
+    @Test
+    public void testFirstOrDefaultWithEmpty() {
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.<String>empty());
+        assertEquals("default", observable.firstOrDefault("default"));
+    }
+
+    @Test
+    public void testFirstOrDefaultWithPredicate() {
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        String first = observable.firstOrDefault("default", new Func1<String, Boolean>() {
+            @Override
+            public Boolean call(String args) {
+                return args.length() > 3;
+            }
+        });
+        assertEquals("three", first);
+    }
+
+    @Test
+    public void testFirstOrDefaultWithPredicateAndEmpty() {
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        String first = observable.firstOrDefault("default", new Func1<String, Boolean>() {
+            @Override
+            public Boolean call(String args) {
+                return args.length() > 5;
+            }
+        });
+        assertEquals("default", first);
+    }
+
     private static class TestException extends RuntimeException {
         private static final long serialVersionUID = 1L;
     }
