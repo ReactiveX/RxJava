@@ -5,7 +5,6 @@ import scala.concurrent.duration.Duration
 import ImplicitFunctionConversions.scalaFunction0ProducingUnitToAction0
 import ImplicitFunctionConversions.schedulerActionToFunc2
 import rx.util.functions.{Action0, Action1, Func2}
-import rx.lang.scala.subscriptions.Subscription
 
 /**
  * Represents an object thatimport rx.lang.scala.ImplicitFunctionConversions
@@ -163,7 +162,7 @@ trait Scheduler {
   def scheduleRec(work: (=>Unit)=>Unit): Subscription = {
     Subscription(asJavaScheduler.schedule(new Action1[Action0] {
       def call(t1: Action0){
-        work{ t1 }
+        work{ t1.call() }
       }
     }))
     //action1[action0]

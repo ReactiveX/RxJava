@@ -16,14 +16,8 @@
 
 package rx.lang.scala
 
-
 import rx.util.functions.FuncN
 import rx.Observable.OnSubscribeFunc
-import rx.lang.scala.Notification
-import rx.lang.scala.ImplicitFunctionConversions
-import rx.lang.scala.Observer
-import rx.lang.scala.Scheduler
-
 
 /**
  * The Observable interface that implements the Reactive Pattern.
@@ -1820,9 +1814,9 @@ trait Observable[+T]
     Observable[java.lang.Boolean](asJavaObservable.isEmpty).map(_.booleanValue())
   }
 
-  //def withFilter(p: T => Boolean): WithFilter[T] = {
-  //  new WithFilter[T](p, asJava)
-  //}
+  def withFilter(p: T => Boolean): WithFilter[T] = {
+    new WithFilter[T](p, asJavaObservable)
+  }
 
 }
 

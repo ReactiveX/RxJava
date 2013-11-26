@@ -1,7 +1,5 @@
 package rx.lang.scala
 
-import rx.lang.scala.Observer
-
 /**
 * A Subject is an Observable and an Observer at the same time.
 */

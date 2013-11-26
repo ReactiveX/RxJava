@@ -29,17 +29,17 @@ object SerialSubscription {
 class SerialSubscription private[scala] (val asJavaSubscription: rx.subscriptions.SerialSubscription)
   extends Subscription {
 
-  private val _isUnsubscribed = new AtomicBoolean(false)
+  private val unsubscribed = new AtomicBoolean(false)
 
   /**
    * Checks whether the subscription has been unsubscribed.
    */
-  def isUnsubscribed: Boolean = _isUnsubscribed.get()
+  def isUnsubscribed: Boolean = unsubscribed.get()
 
   /**
    * Unsubscribes this subscription, setting isUnsubscribed to true.
    */
-  override def unsubscribe(): Unit = { super.unsubscribe(); _isUnsubscribed.set(true) }
+  override def unsubscribe(): Unit = { super.unsubscribe(); unsubscribed.set(true) }
 
   def subscription_=(value: Subscription): Unit = asJavaSubscription.setSubscription(value.asJavaSubscription)
   def subscription: Subscription = Subscription(asJavaSubscription.getSubscription)
