@@ -64,7 +64,7 @@ object Subscription {
       def isUnsubscribed = unsubscribed.get()
 
       val asJavaSubscription = new rx.Subscription {
-        def unsubscribe() { if(unsubscribed.get()) { u ; unsubscribed.set(true) }}
+        def unsubscribe() { if(!unsubscribed.get()) { u ; unsubscribed.set(true) }}
       }
     }
   }
