@@ -66,7 +66,7 @@ public class OperationIntervalTest {
         sub.unsubscribe();
         scheduler.advanceTimeTo(4, TimeUnit.SECONDS);
         verify(observer, never()).onNext(2L);
-        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
     }
 
@@ -101,11 +101,11 @@ public class OperationIntervalTest {
         scheduler.advanceTimeTo(4, TimeUnit.SECONDS);
 
         verify(observer, never()).onNext(2L);
-        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
 
         verify(observer2, never()).onNext(2L);
-        verify(observer2, times(1)).onCompleted();
+        verify(observer2, never()).onCompleted();
         verify(observer2, never()).onError(any(Throwable.class));
     }
 
@@ -141,11 +141,11 @@ public class OperationIntervalTest {
         sub2.unsubscribe();
 
         inOrder1.verify(observer, never()).onNext(anyLong());
-        inOrder1.verify(observer, times(1)).onCompleted();
+        inOrder1.verify(observer, never()).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
 
         inOrder2.verify(observer2, never()).onNext(anyLong());
-        inOrder2.verify(observer2, times(1)).onCompleted();
+        inOrder2.verify(observer2, never()).onCompleted();
         verify(observer2, never()).onError(any(Throwable.class));
     }
 
