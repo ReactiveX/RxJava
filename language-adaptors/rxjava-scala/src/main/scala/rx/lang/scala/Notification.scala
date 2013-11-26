@@ -36,6 +36,11 @@ object Notification {
   }
   
   object OnNext {
+
+    def apply[T](value: T): Notification[T] = {
+      Notification(new rx.Notification[T](value))
+    }
+
     def unapply[U](n: Notification[U]): Option[U] = n match {
       case n2: OnNext[U] => Some(n.asJava.getValue)
       case _ => None
@@ -47,6 +52,11 @@ object Notification {
   }
   
   object OnError {
+
+    def apply[T](error: Throwable): Notification[T] = {
+      Notification(new rx.Notification[T](error))
+    }
+
     def unapply[U](n: Notification[U]): Option[Throwable] = n match {
       case n2: OnError[U] => Some(n2.asJava.getThrowable)
       case _ => None
@@ -56,6 +66,11 @@ object Notification {
   class OnCompleted[T](val asJava: rx.Notification[_ <: T]) extends Notification[T] {}
   
   object OnCompleted {
+
+    def apply[T](): Notification[T] = {
+      Notification(new rx.Notification())
+    }
+
     def unapply[U](n: Notification[U]): Option[Unit] = n match {
       case n2: OnCompleted[U] => Some()
       case _ => None
