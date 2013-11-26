@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -115,6 +115,47 @@ public class PublishSubjectTest {
 
         assertCompletedObserver(aObserver);
         // todo bug?            assertNeverObserver(anotherObserver);
+    }
+
+    @Test
+    public void testCompletedStopsEmittingData() {
+        PublishSubject<Object> channel = PublishSubject.create();
+        @SuppressWarnings("unchecked")
+        Observer<Object> observerA = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<Object> observerB = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<Object> observerC = mock(Observer.class);
+
+        InOrder inOrder = inOrder(observerA, observerB, observerC);
+
+        Subscription a = channel.subscribe(observerA);
+        Subscription b = channel.subscribe(observerB);
+
+        channel.onNext(42);
+
+        inOrder.verify(observerA).onNext(42);
+        inOrder.verify(observerB).onNext(42);
+
+        a.unsubscribe();
+
+        channel.onNext(4711);
+
+        inOrder.verify(observerA, never()).onNext(any());
+        inOrder.verify(observerB).onNext(4711);
+
+        channel.onCompleted();
+
+        inOrder.verify(observerA, never()).onCompleted();
+        inOrder.verify(observerB).onCompleted();
+
+        Subscription c = channel.subscribe(observerC);
+
+        inOrder.verify(observerC).onCompleted();
+
+        channel.onNext(13);
+
+        inOrder.verifyNoMoreInteractions();
     }
 
     private void assertCompletedObserver(Observer<String> aObserver) {
