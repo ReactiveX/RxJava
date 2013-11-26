@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,10 +43,6 @@ public class BehaviorSubjectTest {
         subject.onNext("two");
         subject.onNext("three");
 
-        assertReceivedAllEvents(aObserver);
-    }
-
-    private void assertReceivedAllEvents(Observer<String> aObserver) {
         verify(aObserver, times(1)).onNext("default");
         verify(aObserver, times(1)).onNext("one");
         verify(aObserver, times(1)).onNext("two");
@@ -57,7 +53,7 @@ public class BehaviorSubjectTest {
 
     @Test
     public void testThatObserverDoesNotReceiveDefaultValueIfSomethingWasPublished() {
-        BehaviorSubject<String> subject = BehaviorSubject.createWithDefaultValue("default");
+        BehaviorSubject<String> subject = BehaviorSubject.create("default");
 
         subject.onNext("one");
 
@@ -68,10 +64,6 @@ public class BehaviorSubjectTest {
         subject.onNext("two");
         subject.onNext("three");
 
-        assertDidNotReceiveTheDefaultValue(aObserver);
-    }
-
-    private void assertDidNotReceiveTheDefaultValue(Observer<String> aObserver) {
         verify(aObserver, Mockito.never()).onNext("default");
         verify(aObserver, times(1)).onNext("one");
         verify(aObserver, times(1)).onNext("two");
@@ -82,7 +74,7 @@ public class BehaviorSubjectTest {
 
     @Test
     public void testCompleted() {
-        BehaviorSubject<String> subject = BehaviorSubject.createWithDefaultValue("default");
+        BehaviorSubject<String> subject = BehaviorSubject.create("default");
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -91,54 +83,6 @@ public class BehaviorSubjectTest {
         subject.onNext("one");
         subject.onCompleted();
 
-        assertCompletedObserver(aObserver);
-    }
-    
-    @Test
-    public void testCompletedStopsEmittingData() {
-        BehaviorSubject<Integer> channel = BehaviorSubject.createWithDefaultValue(2013);
-        @SuppressWarnings("unchecked")
-        Observer<Object> observerA = mock(Observer.class);
-        @SuppressWarnings("unchecked")
-        Observer<Object> observerB = mock(Observer.class);
-        @SuppressWarnings("unchecked")
-        Observer<Object> observerC = mock(Observer.class);
-
-        InOrder inOrder = inOrder(observerA, observerB, observerC);
-
-        Subscription a = channel.subscribe(observerA);
-        Subscription b = channel.subscribe(observerB);
-
-        inOrder.verify(observerA).onNext(2013);
-        inOrder.verify(observerB).onNext(2013);
-        
-        channel.onNext(42);
-
-        inOrder.verify(observerA).onNext(42);
-        inOrder.verify(observerB).onNext(42);
-
-        a.unsubscribe();
-
-        channel.onNext(4711);
-
-        inOrder.verify(observerA, never()).onNext(any());
-        inOrder.verify(observerB).onNext(4711);
-
-        channel.onCompleted();
-
-        inOrder.verify(observerA, never()).onCompleted();
-        inOrder.verify(observerB).onCompleted();
-
-        Subscription c = channel.subscribe(observerC);
-
-        inOrder.verify(observerC).onCompleted();
-
-        channel.onNext(13);
-
-        inOrder.verifyNoMoreInteractions();
-    }
-
-    private void assertCompletedObserver(Observer<String> aObserver) {
         verify(aObserver, times(1)).onNext("default");
         verify(aObserver, times(1)).onNext("one");
         verify(aObserver, Mockito.never()).onError(any(Throwable.class));
@@ -146,8 +90,54 @@ public class BehaviorSubjectTest {
     }
 
     @Test
+    public void testCompletedStopsEmittingData() {
+        BehaviorSubject<Integer> channel = BehaviorSubject.create(2013);
+        @SuppressWarnings("unchecked")
+        Observer<Object> observerA = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<Object> observerB = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<Object> observerC = mock(Observer.class);
+
+        Subscription a = channel.subscribe(observerA);
+        Subscription b = channel.subscribe(observerB);
+
+        InOrder inOrderA = inOrder(observerA);
+        InOrder inOrderB = inOrder(observerB);
+        InOrder inOrderC = inOrder(observerC);
+
+        inOrderA.verify(observerA).onNext(2013);
+        inOrderB.verify(observerB).onNext(2013);
+
+        channel.onNext(42);
+
+        inOrderA.verify(observerA).onNext(42);
+        inOrderB.verify(observerB).onNext(42);
+
+        a.unsubscribe();
+        inOrderA.verifyNoMoreInteractions();
+
+        channel.onNext(4711);
+
+        inOrderB.verify(observerB).onNext(4711);
+
+        channel.onCompleted();
+
+        inOrderB.verify(observerB).onCompleted();
+
+        Subscription c = channel.subscribe(observerC);
+
+        inOrderC.verify(observerC).onCompleted();
+
+        channel.onNext(13);
+
+        inOrderB.verifyNoMoreInteractions();
+        inOrderC.verifyNoMoreInteractions();
+    }
+
+    @Test
     public void testCompletedAfterError() {
-        BehaviorSubject<String> subject = BehaviorSubject.createWithDefaultValue("default");
+        BehaviorSubject<String> subject = BehaviorSubject.create("default");
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -158,10 +148,6 @@ public class BehaviorSubjectTest {
         subject.onNext("two");
         subject.onCompleted();
 
-        assertErrorObserver(aObserver);
-    }
-
-    private void assertErrorObserver(Observer<String> aObserver) {
         verify(aObserver, times(1)).onNext("default");
         verify(aObserver, times(1)).onNext("one");
         verify(aObserver, times(1)).onError(testException);
@@ -173,7 +159,7 @@ public class BehaviorSubjectTest {
                 new Func0<BehaviorSubject<String>>() {
                     @Override
                     public BehaviorSubject<String> call() {
-                        return BehaviorSubject.createWithDefaultValue("default");
+                        return BehaviorSubject.create("default");
                     }
                 }, new Action1<BehaviorSubject<String>>() {
                     @Override
