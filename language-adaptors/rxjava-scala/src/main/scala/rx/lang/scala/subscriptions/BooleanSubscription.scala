@@ -17,8 +17,10 @@ object BooleanSubscription {
   def apply(u: => Unit): BooleanSubscription = {
     new BooleanSubscription(new rx.subscriptions.BooleanSubscription {
       override def unsubscribe(): Unit = {
-        u
-        super.unsubscribe()
+        if(!super.isUnsubscribed()) {
+            u
+            super.unsubscribe()
+        }
       }
     })
   }
