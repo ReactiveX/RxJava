@@ -13,29 +13,29 @@ object Schedulers {
   /**
    * Returns a [[rx.lang.scala.Scheduler]] that executes work immediately on the current thread.
    */
-  def immediate: Scheduler = rx.concurrency.Schedulers.immediate()
+  def immediate: Scheduler = Scheduler(rx.concurrency.Schedulers.immediate())
 
   /**
    * Returns a [[rx.lang.scala.Scheduler]] that queues work on the current thread to be executed after the current work completes.
    */
-  def currentThread: Scheduler = rx.concurrency.Schedulers.currentThread()
+  def currentThread: Scheduler = Scheduler(rx.concurrency.Schedulers.currentThread())
 
   /**
    * Returns a [[rx.lang.scala.Scheduler]] that creates a new {@link Thread} for each unit of work.
    */
-  def newThread: Scheduler = rx.concurrency.Schedulers.newThread
+  def newThread: Scheduler = Scheduler(rx.concurrency.Schedulers.newThread)
 
   /**
    * Returns a [[rx.lang.scala.Scheduler]] that queues work on an `java.util.concurrent.Executor`.
    * 
    * Note that this does not support scheduled actions with a delay.
    */
-  def executor(executor: Executor): Scheduler = rx.concurrency.Schedulers.executor(executor)
+  def executor(executor: Executor): Scheduler = Scheduler(rx.concurrency.Schedulers.executor(executor))
 
   /**
    * Returns a [[rx.lang.scala.Scheduler]] that queues work on an `java.util.concurrent.ScheduledExecutorService`.
    */
-  def executor(executor: ScheduledExecutorService): Scheduler = rx.concurrency.Schedulers.executor(executor)
+  def executor(executor: ScheduledExecutorService): Scheduler = Scheduler(rx.concurrency.Schedulers.executor(executor))
 
   /**
    * Returns a [[rx.lang.scala.Scheduler]] intended for computational work.
@@ -46,7 +46,7 @@ object Schedulers {
    * 
    * Do not perform IO-bound work on this scheduler. Use [[rx.lang.scala.concurrency.Schedulers.threadPoolForIO]] instead.
    */
-  def threadPoolForComputation: Scheduler = rx.concurrency.Schedulers.threadPoolForComputation()
+  def threadPoolForComputation: Scheduler = Scheduler(rx.concurrency.Schedulers.threadPoolForComputation())
   
   /**
    * [[rx.lang.scala.Scheduler]] intended for IO-bound work.
@@ -57,6 +57,6 @@ object Schedulers {
    * 
    * Do not perform computational work on this scheduler. Use [[rx.lang.scala.concurrency.Schedulers.threadPoolForComputation]] instead.
    */
-  def threadPoolForIO: Scheduler = rx.concurrency.Schedulers.threadPoolForIO()
+  def threadPoolForIO: Scheduler = Scheduler(rx.concurrency.Schedulers.threadPoolForIO())
 
 }
