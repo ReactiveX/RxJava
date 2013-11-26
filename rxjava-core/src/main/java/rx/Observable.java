@@ -53,6 +53,7 @@ import rx.operators.OperationFinally;
 import rx.operators.OperationFirstOrDefault;
 import rx.operators.OperationGroupBy;
 import rx.operators.OperationInterval;
+import rx.operators.OperationJoin;
 import rx.operators.OperationJoinPatterns;
 import rx.operators.OperationLast;
 import rx.operators.OperationMap;
@@ -5942,5 +5943,26 @@ public class Observable<T> {
     public static <R> Observable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3, Plan0<R> p4, Plan0<R> p5, Plan0<R> p6, Plan0<R> p7, Plan0<R> p8, Plan0<R> p9) {
         return create(OperationJoinPatterns.when(p1, p2, p3, p4, p5, p6, p7, p8, p9));
     }
+    /**
+     * Correlates the elements of two sequences based on overlapping durations.
+     * @param right The right observable sequence to join elements for.
+     * @param leftDurationSelector A function to select the duration of each 
+     *                             element of this observable sequence, used to
+     *                             determine overlap.
+     * @param rightDurationSelector A function to select the duration of each
+     *                              element of the right observable sequence, 
+     *                              used to determine overlap.
+     * @param resultSelector A function invoked to compute a result element 
+     *                       for any two overlapping elements of the left and
+     *                       right observable sequences.
+     * @return An observable sequence that contains result elements computed
+     *         from source elements that have an overlapping duration.
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229750.aspx'>MSDN: Observable.Join</a>
+     */
+    public <TRight, TLeftDuration, TRightDuration, R> Observable<R> join(Observable<TRight> right, Func1<T, Observable<TLeftDuration>> leftDurationSelector,
+            Func1<TRight, Observable<TRightDuration>> rightDurationSelector,
+            Func2<T, TRight, R> resultSelector) {
+        return create(new OperationJoin<T, TRight, TLeftDuration, TRightDuration, R>(this, right, leftDurationSelector, rightDurationSelector, resultSelector));
+    }    
 }
 
