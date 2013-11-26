@@ -1,5 +1,19 @@
 # RxJava Releases #
 
+### Version 0.15.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.15.1%22)) ###
+
+This release should be additive functionality and bug fixes.
+
+* [Pull 510](https://github.com/Netflix/RxJava/pull/506) Operators: And, Then, When
+* [Pull 514](https://github.com/Netflix/RxJava/pull/514) Operator: Join
+* [Pull 525](https://github.com/Netflix/RxJava/pull/526) Operators: toMap/toMultiMap
+* [Pull 510](https://github.com/Netflix/RxJava/pull/510) BugFix: Zip
+* [Pull 512](https://github.com/Netflix/RxJava/pull/512) Scala Adaptor Details
+* [Pull 512](https://github.com/Netflix/RxJava/pull/529) Scala fixes
+* [Pull 508](https://github.com/Netflix/RxJava/pull/508) Empty subscribe 
+* [Pull 522](https://github.com/Netflix/RxJava/pull/522) Unsubscribe from takeLast
+* [Pull 525](https://github.com/Netflix/RxJava/pull/525) BugFix: Handling of Terminal State for Behavior/Publish Subjects
+
 ### Version 0.15.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.15.0%22)) ###
 
 This release contains a refactor of the Scala Bindings by @headinthebox that results in some breaking changes. 
