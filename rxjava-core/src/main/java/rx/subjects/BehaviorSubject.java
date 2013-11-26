@@ -15,12 +15,9 @@
  */
 package rx.subjects;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
-
+import rx.Notification;
 import rx.Observer;
-import rx.Subscription;
-import rx.operators.SafeObservableSubscription;
+import rx.util.functions.Action2;
 
 /**
  * Subject that publishes the most recent and all subsequent events to each subscribed {@link Observer}.
@@ -50,7 +47,19 @@ import rx.operators.SafeObservableSubscription;
  * 
  * @param <T>
  */
-public class BehaviorSubject<T> extends Subject<T, T> {
+public class BehaviorSubject<T> extends AbstractSubject<T> {
+
+    /**
+     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each {@link Observer} that subscribes to it.
+     * 
+     * @param defaultValue
+     *            The value which will be published to any {@link Observer} as long as the {@link BehaviorSubject} has not yet received any events.
+     * @return the constructed {@link BehaviorSubject}.
+     * @deprecated Use {@link create()} instead.
+     */
+    public static <T> BehaviorSubject<T> createWithDefaultValue(T defaultValue) {
+        return create(defaultValue);
+    }
 
     /**
      * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each {@link Observer} that subscribes to it.
@@ -59,63 +68,55 @@ public class BehaviorSubject<T> extends Subject<T, T> {
      *            The value which will be published to any {@link Observer} as long as the {@link BehaviorSubject} has not yet received any events.
      * @return the constructed {@link BehaviorSubject}.
      */
-    public static <T> BehaviorSubject<T> createWithDefaultValue(T defaultValue) {
-        final ConcurrentHashMap<Subscription, Observer<? super T>> observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
+    public static <T> BehaviorSubject<T> create(T defaultValue) {
+        final SubjectState<T> state = new SubjectState<T>();
+        // set a default value so subscriptions will immediately receive this until a new notification is received
+        state.currentValue.set(new Notification<T>(defaultValue));
+        OnSubscribeFunc<T> onSubscribe = getOnSubscribeFunc(state, new Action2<SubjectState<T>, Observer<? super T>>() {
 
-        final AtomicReference<T> currentValue = new AtomicReference<T>(defaultValue);
-
-        OnSubscribeFunc<T> onSubscribe = new OnSubscribeFunc<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                final SafeObservableSubscription subscription = new SafeObservableSubscription();
-
-                subscription.wrap(new Subscription() {
-                    @Override
-                    public void unsubscribe() {
-                        // on unsubscribe remove it from the map of outbound observers to notify
-                        observers.remove(subscription);
-                    }
-                });
-
-                observer.onNext(currentValue.get());
-
-                // on subscribe add it to the map of outbound observers to notify
-                observers.put(subscription, observer);
-                return subscription;
+            public void call(SubjectState<T> state, Observer<? super T> o) {
+                /**
+                 * When we subscribe we always emit the latest value to the observer, including
+                 * terminal states which are recorded as the last value.
+                 */
+                emitNotification(state.currentValue.get(), o);
             }
-        };
-
-        return new BehaviorSubject<T>(currentValue, onSubscribe, observers);
+        });
+        return new BehaviorSubject<T>(onSubscribe, state);
     }
 
-    private final ConcurrentHashMap<Subscription, Observer<? super T>> observers;
-    private final AtomicReference<T> currentValue;
+    private final SubjectState<T> state;
 
-    protected BehaviorSubject(AtomicReference<T> currentValue, OnSubscribeFunc<T> onSubscribe, ConcurrentHashMap<Subscription, Observer<? super T>> observers) {
+    protected BehaviorSubject(OnSubscribeFunc<T> onSubscribe, SubjectState<T> state) {
         super(onSubscribe);
-        this.currentValue = currentValue;
-        this.observers = observers;
+        this.state = state;
     }
 
     @Override
     public void onCompleted() {
-        for (Observer<? super T> observer : observers.values()) {
-            observer.onCompleted();
-        }
+        /**
+         * Mark this subject as completed and emit latest value + 'onCompleted' to all Observers
+         */
+        state.currentValue.set(new Notification<T>());
+        emitNotificationAndTerminate(state, null);
     }
 
     @Override
     public void onError(Throwable e) {
-        for (Observer<? super T> observer : observers.values()) {
-            observer.onError(e);
-        }
+        /**
+         * Mark this subject as completed with an error as the last value and emit 'onError' to all Observers
+         */
+        state.currentValue.set(new Notification<T>(e));
+        emitNotificationAndTerminate(state, null);
     }
 
     @Override
-    public void onNext(T args) {
-        currentValue.set(args);
-        for (Observer<? super T> observer : observers.values()) {
-            observer.onNext(args);
-        }
+    public void onNext(T v) {
+        /**
+         * Store the latest value and send it to all observers;
+         */
+        state.currentValue.set(new Notification<T>(v));
+        emitNotification(state, null);
     }
 }

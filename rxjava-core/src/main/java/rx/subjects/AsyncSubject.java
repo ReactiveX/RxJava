@@ -15,16 +15,9 @@
  */
 package rx.subjects;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantLock;
-
 import rx.Notification;
 import rx.Observer;
-import rx.Subscription;
-import rx.operators.SafeObservableSubscription;
-import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action2;
 
 /**
  * Subject that publishes only the last event to each {@link Observer} that has subscribed when the
@@ -55,7 +48,7 @@ import rx.subscriptions.Subscriptions;
  * 
  * @param <T>
  */
-public class AsyncSubject<T> extends Subject<T, T> {
+public class AsyncSubject<T> extends AbstractSubject<T> {
 
     /**
      * Create a new AsyncSubject
@@ -63,115 +56,60 @@ public class AsyncSubject<T> extends Subject<T, T> {
      * @return a new AsyncSubject
      */
     public static <T> AsyncSubject<T> create() {
-        final AsyncSubjectState<T> state = new AsyncSubjectState<T>();
+        final SubjectState<T> state = new SubjectState<T>();
+        OnSubscribeFunc<T> onSubscribe = getOnSubscribeFunc(state, new Action2<SubjectState<T>, Observer<? super T>>() {
 
-        OnSubscribeFunc<T> onSubscribe = new OnSubscribeFunc<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                /*
-                 * Subscription needs to be synchronized with terminal states to ensure
-                 * race conditions are handled. When subscribing we must make sure
-                 * onComplete/onError is correctly emitted to all observers, even if it
-                 * comes in while the onComplete/onError is being propagated.
-                 */
-                state.SUBSCRIPTION_LOCK.lock();
-                try {
-                    if (state.completed.get()) {
-                        emitNotificationToObserver(state, observer);
-                        return Subscriptions.empty();
-                    } else {
-                        // the subject is not completed so we subscribe
-                        final SafeObservableSubscription subscription = new SafeObservableSubscription();
-
-                        subscription.wrap(new Subscription() {
-                            @Override
-                            public void unsubscribe() {
-                                // on unsubscribe remove it from the map of outbound observers to notify
-                                state.observers.remove(subscription);
-                            }
-                        });
-
-                        // on subscribe add it to the map of outbound observers to notify
-                        state.observers.put(subscription, observer);
-
-                        return subscription;
+            public void call(SubjectState<T> state, Observer<? super T> o) {
+                // we want the last value + completed so add this extra logic 
+                // to send onCompleted if the last value is an onNext
+                if (state.completed.get()) {
+                    Notification<T> value = state.currentValue.get();
+                    if (value != null && value.isOnNext()) {
+                        o.onCompleted();
                     }
-                } finally {
-                    state.SUBSCRIPTION_LOCK.unlock();
                 }
-
             }
-
-        };
-
+        });
         return new AsyncSubject<T>(onSubscribe, state);
     }
 
-    private static <T> void emitNotificationToObserver(final AsyncSubjectState<T> state, Observer<? super T> observer) {
-        Notification<T> finalValue = state.currentValue.get();
+    private final SubjectState<T> state;
 
-        // if null that means onNext was never invoked (no Notification set)
-        if (finalValue != null) {
-            if (finalValue.isOnNext()) {
-                observer.onNext(finalValue.getValue());
-            } else if (finalValue.isOnError()) {
-                observer.onError(finalValue.getThrowable());
-            }
-        }
-        observer.onCompleted();
-    }
-
-    /**
-     * State externally constructed and passed in so the onSubscribe function has access to it.
-     * 
-     * @param <T>
-     */
-    private static class AsyncSubjectState<T> {
-        private final ConcurrentHashMap<Subscription, Observer<? super T>> observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
-        private final AtomicReference<Notification<T>> currentValue = new AtomicReference<Notification<T>>();
-        private final AtomicBoolean completed = new AtomicBoolean();
-        private final ReentrantLock SUBSCRIPTION_LOCK = new ReentrantLock();
-    }
-
-    private final AsyncSubjectState<T> state;
-
-    protected AsyncSubject(OnSubscribeFunc<T> onSubscribe, AsyncSubjectState<T> state) {
+    protected AsyncSubject(OnSubscribeFunc<T> onSubscribe, SubjectState<T> state) {
         super(onSubscribe);
         this.state = state;
     }
 
     @Override
     public void onCompleted() {
-        terminalState();
+        /**
+         * Mark this subject as completed and emit latest value + 'onCompleted' to all Observers
+         */
+        emitNotificationAndTerminate(state, new Action2<SubjectState<T>, Observer<? super T>>() {
+
+            @Override
+            public void call(SubjectState<T> state, Observer<? super T> o) {
+                o.onCompleted();
+            }
+        });
     }
 
     @Override
     public void onError(Throwable e) {
+        /**
+         * Mark this subject as completed with an error as the last value and emit 'onError' to all Observers
+         */
         state.currentValue.set(new Notification<T>(e));
-        terminalState();
+        emitNotificationAndTerminate(state, null);
     }
 
     @Override
     public void onNext(T v) {
+        /**
+         * Store the latest value but do not send it. It only gets sent when 'onCompleted' occurs.
+         */
         state.currentValue.set(new Notification<T>(v));
     }
 
-    private void terminalState() {
-        /*
-         * We can not allow new subscribers to be added while we execute the terminal state.
-         */
-        state.SUBSCRIPTION_LOCK.lock();
-        try {
-            if (state.completed.compareAndSet(false, true)) {
-                for (Subscription s : state.observers.keySet()) {
-                    // emit notifications to this observer
-                    emitNotificationToObserver(state, state.observers.get(s));
-                    // remove the subscription as it is completed
-                    state.observers.remove(s);
-                }
-            }
-        } finally {
-            state.SUBSCRIPTION_LOCK.unlock();
-        }
-    }
 }

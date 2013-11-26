@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,18 +20,12 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-
-import junit.framework.Assert;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -40,57 +34,6 @@ import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 public class PublishSubjectTest {
-
-    @Test
-    public void test() {
-        PublishSubject<Integer> subject = PublishSubject.create();
-        final AtomicReference<List<Notification<Integer>>> actualRef = new AtomicReference<List<Notification<Integer>>>();
-
-        Observable<List<Notification<Integer>>> wNotificationsList = subject.materialize().toList();
-        wNotificationsList.subscribe(new Action1<List<Notification<Integer>>>() {
-            @Override
-            public void call(List<Notification<Integer>> actual) {
-                actualRef.set(actual);
-            }
-        });
-
-        Subscription sub = Observable.create(new Observable.OnSubscribeFunc<Integer>() {
-            @Override
-            public Subscription onSubscribe(final Observer<? super Integer> observer) {
-                final AtomicBoolean stop = new AtomicBoolean(false);
-                new Thread() {
-                    @Override
-                    public void run() {
-                        int i = 1;
-                        while (!stop.get()) {
-                            observer.onNext(i++);
-                        }
-                        observer.onCompleted();
-                    }
-                }.start();
-                return new Subscription() {
-                    @Override
-                    public void unsubscribe() {
-                        stop.set(true);
-                    }
-                };
-            }
-        }).subscribe(subject);
-        // the subject has received an onComplete from the first subscribe because
-        // it is synchronous and the next subscribe won't do anything.
-        Observable.from(-1, -2, -3).subscribe(subject);
-
-        List<Notification<Integer>> expected = new ArrayList<Notification<Integer>>();
-        expected.add(new Notification<Integer>(-1));
-        expected.add(new Notification<Integer>(-2));
-        expected.add(new Notification<Integer>(-3));
-        expected.add(new Notification<Integer>());
-        Assert.assertTrue(actualRef.get().containsAll(expected));
-
-        sub.unsubscribe();
-    }
-
-    private final Throwable testException = new Throwable();
 
     @Test
     public void testCompleted() {
@@ -115,6 +58,49 @@ public class PublishSubjectTest {
 
         assertCompletedObserver(aObserver);
         // todo bug?            assertNeverObserver(anotherObserver);
+    }
+
+    @Test
+    public void testCompletedStopsEmittingData() {
+        PublishSubject<Object> channel = PublishSubject.create();
+        @SuppressWarnings("unchecked")
+        Observer<Object> observerA = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<Object> observerB = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<Object> observerC = mock(Observer.class);
+
+        Subscription a = channel.subscribe(observerA);
+        Subscription b = channel.subscribe(observerB);
+
+        InOrder inOrderA = inOrder(observerA);
+        InOrder inOrderB = inOrder(observerB);
+        InOrder inOrderC = inOrder(observerC);
+
+        channel.onNext(42);
+
+        inOrderA.verify(observerA).onNext(42);
+        inOrderB.verify(observerB).onNext(42);
+
+        a.unsubscribe();
+        inOrderA.verifyNoMoreInteractions();
+
+        channel.onNext(4711);
+
+        inOrderB.verify(observerB).onNext(4711);
+
+        channel.onCompleted();
+
+        inOrderB.verify(observerB).onCompleted();
+
+        Subscription c = channel.subscribe(observerC);
+
+        inOrderC.verify(observerC).onCompleted();
+
+        channel.onNext(13);
+
+        inOrderB.verifyNoMoreInteractions();
+        inOrderC.verifyNoMoreInteractions();
     }
 
     private void assertCompletedObserver(Observer<String> aObserver) {
@@ -339,43 +325,7 @@ public class PublishSubjectTest {
         s2.unsubscribe();
     }
 
-    /**
-     * Even if subject received an onError/onCompleted, new subscriptions should be able to restart it.
-     */
-    @Test
-    public void testReSubscribeAfterTerminalState() {
-        final PublishSubject<Integer> ps = PublishSubject.create();
 
-        Observer<Integer> o1 = mock(Observer.class);
-        Subscription s1 = ps.subscribe(o1);
+    private final Throwable testException = new Throwable();
 
-        // emit
-        ps.onNext(1);
-
-        // validate we got it
-        InOrder inOrder1 = inOrder(o1);
-        inOrder1.verify(o1, times(1)).onNext(1);
-        inOrder1.verifyNoMoreInteractions();
-
-        // unsubscribe
-        s1.unsubscribe();
-
-        ps.onCompleted();
-
-        // emit again but nothing will be there to receive it
-        ps.onNext(2);
-
-        Observer<Integer> o2 = mock(Observer.class);
-        Subscription s2 = ps.subscribe(o2);
-
-        // emit
-        ps.onNext(3);
-
-        // validate we got it
-        InOrder inOrder2 = inOrder(o2);
-        inOrder2.verify(o2, times(1)).onNext(3);
-        inOrder2.verifyNoMoreInteractions();
-
-        s2.unsubscribe();
-    }
 }
