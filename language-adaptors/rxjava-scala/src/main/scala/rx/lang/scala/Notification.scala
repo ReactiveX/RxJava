@@ -1,3 +1,18 @@
+/**
+ * Copyright 2013 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.lang.scala
 
 /**
@@ -36,6 +51,11 @@ object Notification {
   }
   
   object OnNext {
+
+    def apply[T](value: T): Notification[T] = {
+      Notification(new rx.Notification[T](value))
+    }
+
     def unapply[U](n: Notification[U]): Option[U] = n match {
       case n2: OnNext[U] => Some(n.asJava.getValue)
       case _ => None
@@ -47,6 +67,11 @@ object Notification {
   }
   
   object OnError {
+
+    def apply[T](error: Throwable): Notification[T] = {
+      Notification(new rx.Notification[T](error))
+    }
+
     def unapply[U](n: Notification[U]): Option[Throwable] = n match {
       case n2: OnError[U] => Some(n2.asJava.getThrowable)
       case _ => None
@@ -56,6 +81,11 @@ object Notification {
   class OnCompleted[T](val asJava: rx.Notification[_ <: T]) extends Notification[T] {}
   
   object OnCompleted {
+
+    def apply[T](): Notification[T] = {
+      Notification(new rx.Notification())
+    }
+
     def unapply[U](n: Notification[U]): Option[Unit] = n match {
       case n2: OnCompleted[U] => Some()
       case _ => None

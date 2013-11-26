@@ -35,11 +35,14 @@ class TestSchedulerExample extends JUnitSuite {
     verify(observer, never).onCompleted()
     verify(observer, never).onError(any(classOf[Throwable]))
 
-    sub.unsubscribe();
-    scheduler.advanceTimeTo(4 seconds)
     verify(observer, never).onNext(2L)
-    verify(observer, times(1)).onCompleted()
-    verify(observer, never).onError(any(classOf[Throwable]))
+    
+    sub.unsubscribe();
+
+    scheduler.advanceTimeTo(4 seconds)
+    
+    // after unsubscription we expect no further events
+    verifyNoMoreInteractions(observer)
   }
 
 }
