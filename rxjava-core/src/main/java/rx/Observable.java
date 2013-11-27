@@ -54,6 +54,7 @@ import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFirstOrDefault;
 import rx.operators.OperationGroupBy;
+import rx.operators.OperationGroupJoin;
 import rx.operators.OperationInterval;
 import rx.operators.OperationJoin;
 import rx.operators.OperationJoinPatterns;
@@ -6118,5 +6119,26 @@ public class Observable<T> {
      */
     public <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, Collection<V>>> mapFactory, Func1<? super K, ? extends Collection<V>> collectionFactory) {
         return create(OperationToMultimap.toMultimap(this, keySelector, valueSelector, mapFactory, collectionFactory));
-    } 
+    }
+    
+    /**
+     * Return an Observable which correlates two sequences when they overlap and groups the results.
+     * 
+     * @param right the other Observable to correlate values of this observable to
+     * @param leftDuration function that returns an Observable which indicates the duration of
+     *                     the values of this Observable
+     * @param rightDuration function that returns an Observable which indicates the duration of
+     *                      the values of the right Observable
+     * @param resultSelector function that takes a left value, the right observable and returns the
+     *                       value to be emitted
+     * @return an Observable that emits grouped values based on overlapping durations from this and
+     *         another Observable
+     * 
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244235.aspx">MSDN: Observable.GroupJoin</a>
+     */
+    public <T2, D1, D2, R> Observable<R> groupJoin(Observable<T2> right, Func1<? super T, ? extends Observable<D1>> leftDuration, 
+            Func1<? super T2, ? extends Observable<D2>> rightDuration,
+            Func2<? super T, ? super Observable<T2>, ? extends R> resultSelector) {
+        return create(new OperationGroupJoin<T, T2, D1, D2, R>(this, right, leftDuration, rightDuration, resultSelector));
+    }
 }
