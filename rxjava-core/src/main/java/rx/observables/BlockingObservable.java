@@ -179,6 +179,7 @@ public class BlockingObservable<T> {
      * @return the first item emitted by the source {@link Observable}
      * @throws IllegalArgumentException
      *            if source contains no elements
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177(v=vs.103).aspx">MSDN: Observable.First</a>
      */
     public T first() {
         return from(o.first()).single();
@@ -193,6 +194,7 @@ public class BlockingObservable<T> {
      * @return the first item emitted by the {@link Observable} that matches the predicate
      * @throws IllegalArgumentException
      *            if no such items are emitted.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229739(v=vs.103).aspx">MSDN: Observable.First</a>
      */
     public T first(Func1<? super T, Boolean> predicate) {
         return from(o.first(predicate)).single();
