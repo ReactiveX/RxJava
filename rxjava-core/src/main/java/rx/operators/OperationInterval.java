@@ -18,12 +18,21 @@ package rx.operators;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable.OnSubscribeFunc;
+import rx.Observable;
+import rx.observables.ConnectableObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
+import rx.util.functions.Func1;
+import rx.concurrency.TestScheduler;
+
+import org.junit.Before;
+import org.junit.Test;
+import static org.mockito.Mockito.*;
+import org.mockito.InOrder;
 
 /**
  * Returns an observable sequence that produces a value after each period.
@@ -57,6 +66,7 @@ public final class OperationInterval {
         private final Scheduler scheduler;
 
         private long currentValue;
+        private boolean errorOccurred;
 
         private Interval(long period, TimeUnit unit, Scheduler scheduler) {
             this.period = period;
@@ -69,8 +79,15 @@ public final class OperationInterval {
             final Subscription wrapped = scheduler.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {
-                    observer.onNext(currentValue);
-                    currentValue++;
+                    if (!errorOccurred) {
+                        try {
+                            observer.onNext(currentValue);
+                            currentValue++;
+                        } catch (Throwable t) {
+                            errorOccurred = true;
+                            observer.onError(t);
+                        }
+                    }
                 }
             }, period, period, unit);
 
@@ -78,6 +95,9 @@ public final class OperationInterval {
                 @Override
                 public void call() {
                     wrapped.unsubscribe();
+                    if (!errorOccurred) {
+                        observer.onCompleted();
+                    }
                 }
             });
         }
