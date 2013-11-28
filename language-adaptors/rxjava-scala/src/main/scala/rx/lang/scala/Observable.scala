@@ -1839,7 +1839,7 @@ trait Observable[+T]
    * @return an Observable with the side-effecting behavior applied.
    */
   def doOnEach(onNext: T => Unit): Observable[T] = {
-    Observable[T](asJavaObservable.asInstanceOf[rx.Observable[T]].doOnEach(
+    Observable[T](asJavaObservable.doOnEach(
       onNext
     ))
   }
