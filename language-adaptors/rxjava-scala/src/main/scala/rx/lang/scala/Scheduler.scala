@@ -57,7 +57,7 @@ trait Scheduler {
    * @param delayTime  Time the action is to be delayed before executing.
    * @return a subscription to be able to unsubscribe from action.
    */
-  def schedule(delayTime: Duration)(action: Scheduler => Subscription): Subscription = {
+  def schedule(delayTime: Duration, action: Scheduler => Subscription): Subscription = {
     this.schedule[Integer](0, (s: Scheduler, x: Integer) => action(s), delayTime: Duration): Subscription
   }
 
@@ -86,7 +86,7 @@ trait Scheduler {
    * @param period The time interval to wait each time in between executing the action.
    * @return A subscription to be able to unsubscribe from action.
    */
-  def schedule(initialDelay: Duration, period: Duration)(action: Scheduler => Subscription): Subscription = {
+  def schedule(initialDelay: Duration, period: Duration, action: Scheduler => Subscription): Subscription = {
     this.schedulePeriodically[Integer](0, (s: Scheduler, x:Integer) => action(s): Subscription, initialDelay: Duration, period: Duration): Subscription
   }
 
@@ -116,7 +116,7 @@ trait Scheduler {
    * @param dueTime Time the action is to be executed. If in the past it will be executed immediately.
    * @return a subscription to be able to unsubscribe from action.
    */
-  def schedule(dueTime: Date)(action: Scheduler => Subscription): Subscription = {
+  def schedule(dueTime: Date, action: Scheduler => Subscription): Subscription = {
     this.schedule(0: Integer, (s: Scheduler, x: Integer) => action(s): Subscription, dueTime: Date): Subscription
   }
 
@@ -152,7 +152,7 @@ trait Scheduler {
    * @param action action
    * @return a subscription to be able to unsubscribe from action.
    */
-  def schedule(delayTime: Duration)(action: =>Unit): Subscription = {
+  def schedule(delayTime: Duration, action: =>Unit): Subscription = {
     Subscription(asJavaScheduler.schedule(()=>action, delayTime.length, delayTime.unit))
   }
 
@@ -167,7 +167,7 @@ trait Scheduler {
    *            The time interval to wait each time in between executing the action.
    * @return A subscription to be able to unsubscribe from action.
    */
-  def schedule(initialDelay: Duration, period: Duration)(action: =>Unit): Subscription = {
+  def schedule(initialDelay: Duration, period: Duration, action: =>Unit): Subscription = {
     Subscription(asJavaScheduler.schedulePeriodically(()=>action, initialDelay.length, initialDelay.unit.convert(period.length, period.unit), initialDelay.unit))
   }
 
