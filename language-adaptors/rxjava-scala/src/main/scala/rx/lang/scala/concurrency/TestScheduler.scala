@@ -1,33 +1,27 @@
-/**
- * Copyright 2013 Netflix, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package rx.lang.scala.concurrency
 
-import scala.concurrent.duration.Duration
 import rx.lang.scala.Scheduler
+import scala.concurrent.duration.Duration
+
+/**
+ * Provides constructors for `TestScheduler`.
+ */
+object TestScheduler {
+  def apply(): TestScheduler = {
+    new TestScheduler(new rx.concurrency.TestScheduler())
+  }
+}
 
 /**
  * Scheduler with artificial time, useful for testing.
- * 
+ *
  * For example, you could test the `Observable.interval` operation using a `TestScheduler` as follows:
- * 
+ *
  * {{{
  * @Test def testInterval() {
  *   import org.mockito.Matchers._
  *   import org.mockito.Mockito._
- *   
+ *
  *   val scheduler = TestScheduler()
  *   val observer = mock(classOf[rx.Observer[Long]])
  *
@@ -55,8 +49,7 @@ import rx.lang.scala.Scheduler
  * }
  * }}}
  */
-class TestScheduler extends Scheduler {
-  val asJavaScheduler = new rx.concurrency.TestScheduler
+class TestScheduler private[scala] (val asJavaScheduler: rx.concurrency.TestScheduler) extends Scheduler {
 
   def advanceTimeBy(time: Duration) {
     asJavaScheduler.advanceTimeBy(time.length, time.unit)
@@ -70,13 +63,3 @@ class TestScheduler extends Scheduler {
     asJavaScheduler.triggerActions()
   }
 }
-
-/**
- * Provides constructors for `TestScheduler`.
- */
-object TestScheduler {
-  def apply(): TestScheduler = {
-    new TestScheduler
-  }
-}
-

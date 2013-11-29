@@ -2,6 +2,7 @@ package rx.lang.scala.concurrency
 
 import rx.lang.scala.Scheduler
 import java.util.concurrent.ScheduledExecutorService
+import scala.concurrent.duration.Duration
 
 object ScheduledExecutorServiceScheduler {
 
@@ -15,3 +16,4 @@ object ScheduledExecutorServiceScheduler {
 
 class ScheduledExecutorServiceScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
   extends Scheduler {}
+
