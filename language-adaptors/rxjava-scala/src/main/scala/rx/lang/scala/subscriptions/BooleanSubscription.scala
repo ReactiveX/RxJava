@@ -17,6 +17,10 @@ package rx.lang.scala.subscriptions
 
 import rx.lang.scala._
 
+
+
+
+
 object BooleanSubscription {
 
   /**
