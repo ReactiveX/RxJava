@@ -15,11 +15,13 @@
  */
 package rx.android.observables;
 
+import android.hardware.SensorManager;
 import rx.Observable;
 import rx.operators.OperationObserveFromAndroidComponent;
 
 import android.app.Activity;
 import android.app.Fragment;
+import rx.operators.OperationObserveFromAndroidSensor;
 
 public final class AndroidObservable {
 
@@ -35,6 +37,10 @@ public final class AndroidObservable {
 
     public static <T> Observable<T> fromFragment(android.support.v4.app.Fragment fragment, Observable<T> sourceObservable) {
         return OperationObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, fragment);
+    }
+
+    public static Observable<float[]> fromSensor(SensorManager sensorManager, int type, int rate) {
+        return  OperationObserveFromAndroidSensor.observeFromAndroidSensor(sensorManager, type, rate);
     }
 
 }
