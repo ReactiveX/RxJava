@@ -17,8 +17,21 @@ package rx.lang.scala.concurrency
 
 import java.util.concurrent.Executor
 import java.util.concurrent.ScheduledExecutorService
-import rx.lang.scala.Scheduler
+import rx.lang.scala.{Subscription, Scheduler}
 import rx.lang.scala.ImplicitFunctionConversions._
+import rx.concurrency.Schedulers
+
+/**
+ * Provides constructors for Schedulers.
+ */
+object Scheduler {
+  private class WrapJavaScheduler(val asJavaScheduler: rx.Scheduler) extends Scheduler
+
+  /**
+   * Constructs a Scala Scheduler from a Java Scheduler.
+   */
+  def apply(s: rx.Scheduler): Scheduler = new WrapJavaScheduler(s)
+}
 
 /**
  * Factory methods for creating Schedulers.
@@ -75,3 +88,4 @@ object Schedulers {
   def threadPoolForIO: Scheduler = Scheduler(rx.concurrency.Schedulers.threadPoolForIO())
 
 }
+

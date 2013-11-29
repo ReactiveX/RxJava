@@ -213,14 +213,3 @@ trait Scheduler {
 
 }
 
-/**
- * Provides constructors for Schedulers.
- */
-object Scheduler {
-  private class WrapJavaScheduler(val asJavaScheduler: rx.Scheduler) extends Scheduler
-  
-  /**
-   * Constructs a Scala Scheduler from a Java Scheduler.
-   */
-  def apply(s: rx.Scheduler): Scheduler = new WrapJavaScheduler(s)
-}

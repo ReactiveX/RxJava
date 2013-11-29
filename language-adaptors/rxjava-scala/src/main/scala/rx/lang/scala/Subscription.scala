@@ -22,7 +22,6 @@ package rx.lang.scala
  * This interface is the equivalent of `IDisposable` in the .NET Rx implementation.
  */
 trait Subscription {
-
   val asJavaSubscription: rx.Subscription
 
   /**
