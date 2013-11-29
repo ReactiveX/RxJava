@@ -1,7 +1,6 @@
 package rx.lang.scala.concurrency
 
 import rx.lang.scala.Scheduler
-import java.util.concurrent.Executor
 
 object NewThreadScheduler {
 

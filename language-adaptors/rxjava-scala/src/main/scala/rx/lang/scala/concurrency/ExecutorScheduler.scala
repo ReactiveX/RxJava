@@ -1,7 +1,7 @@
 package rx.lang.scala.concurrency
 
+import java.util.concurrent.Executor
 import rx.lang.scala.Scheduler
-import java.util.concurrent.{ScheduledExecutorService, Executor}
 
 object ExecutorScheduler {
 

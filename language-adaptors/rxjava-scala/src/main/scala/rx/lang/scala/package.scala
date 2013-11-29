@@ -17,6 +17,7 @@ package rx.lang
 
 import java.util.concurrent.TimeUnit
 import java.util.Date
+import rx.lang.scala.concurrency.Scheduler
 
 /**
  * This package contains all classes that RxScala users need.

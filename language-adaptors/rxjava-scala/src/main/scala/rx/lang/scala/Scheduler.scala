@@ -17,12 +17,10 @@ package rx.lang.scala
 
 import java.util.Date
 import scala.concurrent.duration.Duration
-import ImplicitFunctionConversions.scalaFunction0ProducingUnitToAction0
-import ImplicitFunctionConversions.schedulerActionToFunc2
 import rx.util.functions.{Action0, Action1, Func2}
 
 /**
- * Represents an object thatimport rx.lang.scala.ImplicitFunctionConversions
+ * Represents an object   rx.lang.scala.ImplicitFunctionConversions
  schedules units of work.
  */
 trait Scheduler {
@@ -34,7 +32,7 @@ trait Scheduler {
    * @param action Action to schedule.
    * @return a subscription to be able to unsubscribe from action.
    */
-  def schedule(action: rx.lang.scala.Scheduler => Subscription): Subscription = {
+  def schedule(action: Scheduler => Subscription): Subscription = {
     this.schedule[Integer](0, (s: Scheduler, x: Integer) => action(s): Subscription): Subscription
   }
 

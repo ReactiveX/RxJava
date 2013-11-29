@@ -18,6 +18,7 @@ package rx.lang.scala
 
 import rx.util.functions.FuncN
 import rx.Observable.OnSubscribeFunc
+import rx.lang.scala.concurrency.Scheduler
 
 /**
  * The Observable interface that implements the Reactive Pattern.
@@ -44,7 +45,7 @@ import rx.Observable.OnSubscribeFunc
  * @define subscribeObserverParamObserver 
  *         the observer
  * @define subscribeObserverParamScheduler 
- *         the [[rx.lang.scala.Scheduler]] on which Observers subscribe to the Observable
+ *         the [[Scheduler]] on which Observers subscribe to the Observable
  * @define subscribeAllReturn 
  *         a [[rx.lang.scala.Subscription]] reference whose `unsubscribe` method can be called to  stop receiving items
  *         before the Observable has finished sending them
@@ -402,7 +403,7 @@ trait Observable[+T]
    *            The period of time each buffer is collecting values before it should be emitted, and
    *            replaced with a new buffer.
    * @param scheduler
-   *            The [[rx.lang.scala.Scheduler]] to use when determining the end and start of a buffer.
+   *            The [[Scheduler]] to use when determining the end and start of a buffer.
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers with a fixed duration.
    */
@@ -443,7 +444,7 @@ trait Observable[+T]
    * @param count
    *            The maximum size of each buffer before it should be emitted.
    * @param scheduler
-   *            The [[rx.lang.scala.Scheduler]] to use when determining the end and start of a buffer.
+   *            The [[Scheduler]] to use when determining the end and start of a buffer.
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers which are emitted after
    *         a fixed duration or when the buffer has reached maximum capacity (which ever occurs first).
@@ -486,7 +487,7 @@ trait Observable[+T]
    * @param timeshift
    *            The period of time after which a new buffer will be created.
    * @param scheduler
-   *            The [[rx.lang.scala.Scheduler]] to use when determining the end and start of a buffer.
+   *            The [[Scheduler]] to use when determining the end and start of a buffer.
    * @return
    *         An [[rx.lang.scala.Observable]] which produces new buffers periodically, and these are emitted after
    *         a fixed timespan has elapsed.
@@ -607,7 +608,7 @@ trait Observable[+T]
    *            The period of time each window is collecting values before it should be emitted, and
    *            replaced with a new window.
    * @param scheduler
-   *            The [[rx.lang.scala.Scheduler]] to use when determining the end and start of a window.
+   *            The [[Scheduler]] to use when determining the end and start of a window.
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows with a fixed duration.
    */
@@ -648,7 +649,7 @@ trait Observable[+T]
    * @param count
    *            The maximum size of each window before it should be emitted.
    * @param scheduler
-   *            The [[rx.lang.scala.Scheduler]] to use when determining the end and start of a window.
+   *            The [[Scheduler]] to use when determining the end and start of a window.
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows which are emitted after
    *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
@@ -691,7 +692,7 @@ trait Observable[+T]
    * @param timeshift
    *            The period of time after which a new window will be created.
    * @param scheduler
-   *            The [[rx.lang.scala.Scheduler]] to use when determining the end and start of a window.
+   *            The [[Scheduler]] to use when determining the end and start of a window.
    * @return
    *         An [[rx.lang.scala.Observable]] which produces new windows periodically, and these are emitted after
    *         a fixed timespan has elapsed.
@@ -782,28 +783,28 @@ trait Observable[+T]
   }
 
   /**
-   * Asynchronously subscribes and unsubscribes Observers on the specified [[rx.lang.scala.Scheduler]].
+   * Asynchronously subscribes and unsubscribes Observers on the specified [[Scheduler]].
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/subscribeOn.png">
    *
    * @param scheduler
-   *            the [[rx.lang.scala.Scheduler]] to perform subscription and unsubscription actions on
+   *            the [[Scheduler]] to perform subscription and unsubscription actions on
    * @return the source Observable modified so that its subscriptions and unsubscriptions happen
-   *         on the specified [[rx.lang.scala.Scheduler]]
+   *         on the specified [[Scheduler]]
    */
   def subscribeOn(scheduler: Scheduler): Observable[T] = {
     Observable[T](asJavaObservable.subscribeOn(scheduler))
   }
 
   /**
-   * Asynchronously notify [[rx.lang.scala.Observer]]s on the specified [[rx.lang.scala.Scheduler]].
+   * Asynchronously notify [[rx.lang.scala.Observer]]s on the specified [[Scheduler]].
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
    *
    * @param scheduler
-   *            the [[rx.lang.scala.Scheduler]] to notify [[rx.lang.scala.Observer]]s on
+   *            the [[Scheduler]] to notify [[rx.lang.scala.Observer]]s on
    * @return the source Observable modified so that its [[rx.lang.scala.Observer]]s are notified on the
-   *         specified [[rx.lang.scala.Scheduler]]
+   *         specified [[Scheduler]]
    */
   def observeOn(scheduler: Scheduler): Observable[T] = {
     Observable[T](asJavaObservable.observeOn(scheduler))
@@ -1081,7 +1082,7 @@ trait Observable[+T]
    *
    * @param duration the sampling rate
    * @param scheduler
-   *            the [[rx.lang.scala.Scheduler]] to use when sampling
+   *            the [[Scheduler]] to use when sampling
    * @return an Observable that emits the results of sampling the items emitted by the source
    *         Observable at the specified time interval
    */
@@ -1459,7 +1460,7 @@ trait Observable[+T]
    * @param timeout
    *            The time each value has to be 'the most recent' of the [[rx.lang.scala.Observable]] to ensure that it's not dropped.
    * @param scheduler
-   *            The [[rx.lang.scala.Scheduler]] to use internally to manage the timers which handle timeout for each event.
+   *            The [[Scheduler]] to use internally to manage the timers which handle timeout for each event.
    * @return Observable which performs the throttle operation.
    * @see `Observable.throttleWithTimeout`
    */
@@ -1477,7 +1478,7 @@ trait Observable[+T]
    * @param timeout
    *            The time each value has to be 'the most recent' of the [[rx.lang.scala.Observable]] to ensure that it's not dropped.
    * @param scheduler
-   *            The [[rx.lang.scala.Scheduler]] to use internally to manage the timers which handle timeout for each event.
+   *            The [[Scheduler]] to use internally to manage the timers which handle timeout for each event.
    * @return Observable which performs the throttle operation.
    * @see `Observable.debounce`
    */
@@ -1495,7 +1496,7 @@ trait Observable[+T]
    * @param skipDuration
    *            Time to wait before sending another value after emitting last value.
    * @param scheduler
-   *            The [[rx.lang.scala.Scheduler]] to use internally to manage the timers which handle timeout for each event.
+   *            The [[Scheduler]] to use internally to manage the timers which handle timeout for each event.
    * @return Observable which performs the throttle operation.
    */
   def throttleFirst(skipDuration: Duration, scheduler: Scheduler): Observable[T] = {
@@ -1768,11 +1769,11 @@ trait Observable[+T]
   /**
    * Perform work in parallel by sharding an `Observable[T]` on a 
    * [[rx.lang.scala.concurrency.Schedulers.threadPoolForComputation computation]]
-   * [[rx.lang.scala.Scheduler]] and return an `Observable[R]` with the output.
+   * [[Scheduler]] and return an `Observable[R]` with the output.
    *
    * @param f
    *            a function that applies Observable operators to `Observable[T]` in parallel and returns an `Observable[R]`
-   * @return an Observable with the output of the function executed on a [[rx.lang.scala.Scheduler]]
+   * @return an Observable with the output of the function executed on a [[Scheduler]]
    */
   def parallel[R](f: Observable[T] => Observable[R]): Observable[R] = {
     val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
@@ -1781,13 +1782,13 @@ trait Observable[+T]
   }
 
   /**
-   * Perform work in parallel by sharding an `Observable[T]` on a [[rx.lang.scala.Scheduler]] and return an `Observable[R]` with the output.
+   * Perform work in parallel by sharding an `Observable[T]` on a [[Scheduler]] and return an `Observable[R]` with the output.
    *
    * @param f
    *            a function that applies Observable operators to `Observable[T]` in parallel and returns an `Observable[R]`
    * @param scheduler
-   *            a [[rx.lang.scala.Scheduler]] to perform the work on.
-   * @return an Observable with the output of the function executed on a [[rx.lang.scala.Scheduler]]
+   *            a [[Scheduler]] to perform the work on.
+   * @return an Observable with the output of the function executed on a [[Scheduler]]
    */
   def parallel[R](f: Observable[T] => Observable[R], scheduler: Scheduler): Observable[R] = {
     val fJava: Func1[rx.Observable[T], rx.Observable[R]] =

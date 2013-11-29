@@ -1,7 +1,7 @@
 package rx.lang.scala.concurrency
 
-import rx.lang.scala.Scheduler
 import scala.concurrent.duration.Duration
+import rx.lang.scala.Scheduler
 
 /**
  * Provides constructors for `TestScheduler`.

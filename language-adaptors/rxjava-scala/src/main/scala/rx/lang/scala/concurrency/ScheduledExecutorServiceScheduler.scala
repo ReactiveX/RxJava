@@ -1,8 +1,7 @@
 package rx.lang.scala.concurrency
 
-import rx.lang.scala.Scheduler
 import java.util.concurrent.ScheduledExecutorService
-import scala.concurrent.duration.Duration
+import rx.lang.scala.Scheduler
 
 object ScheduledExecutorServiceScheduler {
 
