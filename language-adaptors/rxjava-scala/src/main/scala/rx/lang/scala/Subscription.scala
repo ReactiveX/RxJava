@@ -46,13 +46,13 @@ object Subscription {
   /**
    * Creates an [[rx.lang.scala.Subscription]] from an [[rx.Subscription]].
    */
-  def apply(subscription: rx.Subscription): Subscription = {
+  private [scala] def apply(subscription: rx.Subscription): Subscription = {
     subscription match {
       case x: rx.subscriptions.BooleanSubscription => new BooleanSubscription(x)
       case x: rx.subscriptions.CompositeSubscription => new CompositeSubscription(x)
       case x: rx.subscriptions.MultipleAssignmentSubscription => new MultipleAssignmentSubscription(x)
       case x: rx.subscriptions.SerialSubscription => new SerialSubscription(x)
-      case x: rx.Subscription => Subscription { x.unsubscribe() }
+      case x: rx.Subscription => Subscription { x.unsubscribe() } // add isUnsubscribed
     }
   }
 
@@ -63,6 +63,7 @@ object Subscription {
     new Subscription() {
 
       private val unsubscribed = new AtomicBoolean(false)
+
       def isUnsubscribed = unsubscribed.get()
 
       val asJavaSubscription = new rx.Subscription {

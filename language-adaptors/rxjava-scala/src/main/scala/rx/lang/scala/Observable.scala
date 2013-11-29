@@ -45,7 +45,7 @@ import rx.lang.scala.concurrency.Scheduler
  * @define subscribeObserverParamObserver 
  *         the observer
  * @define subscribeObserverParamScheduler 
- *         the [[Scheduler]] on which Observers subscribe to the Observable
+ *         the [[rx.lang.scala.Scheduler]] on which Observers subscribe to the Observable
  * @define subscribeAllReturn 
  *         a [[rx.lang.scala.Subscription]] reference whose `unsubscribe` method can be called to  stop receiving items
  *         before the Observable has finished sending them
@@ -274,7 +274,17 @@ trait Observable[+T]
    * is the minumum of the number of `onNext` invocations of `this` and `that`. 
    */
   def zip[U](that: Observable[U]): Observable[(T, U)] = {
-    Observable[(T, U)](rx.Observable.zip[T, U, (T, U)](this.asJavaObservable, that.asJavaObservable, (t: T, u: U) => (t, u)))
+    zip(that, (t: T, u: U) => (t, u))
+  }
+
+  /**
+   * Returns an Observable formed from this Observable and another Observable by combining
+   * corresponding elements using the selector function.
+   * The number of `onNext` invocations of the resulting `Observable[(T, U)]`
+   * is the minumum of the number of `onNext` invocations of `this` and `that`.
+   */
+  def zip[U, R](that: Observable[U], selector: (T,U) => R): Observable[R] = {
+    Observable[R](rx.Observable.zip[T, U, R](this.asJavaObservable, that.asJavaObservable, selector))
   }
 
   /**
