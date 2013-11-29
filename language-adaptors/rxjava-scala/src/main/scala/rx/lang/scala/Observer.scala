@@ -15,6 +15,8 @@
  */
 package rx.lang.scala
 
+import rx.joins.ObserverBase
+
 /**
  Provides a mechanism for receiving push-based notifications.
 *
@@ -33,7 +35,7 @@ trait Observer[-T] {
  *
  * The [[rx.lang.scala.Observable]] will not call this method again after it calls either `onCompleted` or `onError`.
  */
-  def onNext(value: T): Unit          = asJavaObserver.onNext(value)
+  def onNext(value: T): Unit = asJavaObserver.onNext(value)
 
   /**
   * Notifies the Observer that the [[rx.lang.scala.Observable]] has experienced an error condition.
@@ -47,15 +49,63 @@ trait Observer[-T] {
    *
    * The [[rx.lang.scala.Observable]] will not call this method if it calls `onError`.
    */
-  def onCompleted(): Unit             = asJavaObserver.onCompleted()
+  def onCompleted(): Unit  = asJavaObserver.onCompleted()
 
 }
 
 object Observer {
-  def apply[T](observer: rx.Observer[T]) : Observer[T] = {
+
+  private [scala] def apply[T](observer: rx.Observer[T]) : Observer[T] = {
     new Observer[T]() {
       def asJavaObserver: rx.Observer[_ >: T] = observer
     }
+  }
+
+  /**
+   * Creates an [[rx.lang.scala.Observer]]
+   * @param onNext the onNext action
+   * @param onError the onError action
+   * @param onCompleted the onCompleted action
+   */
+  def apply[T](onNext: T => Unit, onError: Throwable => Unit, onCompleted: () => Unit): Observer[T] = {
+    Observer(new ObserverBase[T] () {
+      protected def onCompletedCore(): Unit = onCompleted()
+      protected def onErrorCore(error: Throwable): Unit = onError(error)
+      protected def onNextCore(value: T): Unit = onNext(value)
+    })
+  }
+
+  /**
+   * Creates an [[rx.lang.scala.Observer]]
+   * @param onNext the onNext action
+   * @param onError the onError action
+   */
+  def apply[T](onNext: T => Unit, onError: Throwable => Unit): Observer[T] = {
+    Observer(new ObserverBase[T] () {
+      protected def onCompletedCore(): Unit = {}
+      protected def onErrorCore(error: Throwable): Unit = onError(error)
+      protected def onNextCore(value: T): Unit = onNext(value)
+    })
+  }
+
+  def apply[T](onNext: T => Unit, onCompleted: () => Unit): Observer[T] = {
+    Observer(new ObserverBase[T] () {
+      protected def onCompletedCore(): Unit = onCompleted()
+      protected def onErrorCore(error: Throwable): Unit = {}
+      protected def onNextCore(value: T): Unit = onNext(value)
+    })
+  }
+
+  /**
+   * Creates an [[rx.lang.scala.Observer]]
+   * @param onNext the onNext action
+   */
+  def apply[T](onNext: T => Unit): Observer[T] = {
+    Observer(new ObserverBase[T] () {
+      protected def onCompletedCore(): Unit = {}
+      protected def onErrorCore(error: Throwable): Unit = {}
+      protected def onNextCore(value: T): Unit = onNext(value)
+    })
   }
 }
 
