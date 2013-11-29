@@ -42,7 +42,7 @@ public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
         return new ResultManager(t1).init();
     }
     /** Manage the source and other observers. */
-    class ResultManager implements Subscription, Observer<T> {
+    private class ResultManager implements Subscription, Observer<T> {
         final Observer<? super T> observer;
         final CompositeSubscription cancel;
         final Object guard = new Object();
@@ -94,7 +94,7 @@ public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
         }
         
         /** Observe the other stream. */
-        class OtherObserver implements Observer<U> {
+        private class OtherObserver implements Observer<U> {
             final Subscription self;
             public OtherObserver(Subscription self) {
                 this.self = self;
