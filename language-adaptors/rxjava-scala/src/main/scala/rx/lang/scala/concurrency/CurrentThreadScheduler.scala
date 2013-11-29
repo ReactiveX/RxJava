@@ -12,5 +12,5 @@ object CurrentThreadScheduler {
   }
 }
 
-class CurrentThreadScheduler private[scala] (val asJavaScheduler: rx.concurrencyCurrentThreadScheduler)
+class CurrentThreadScheduler private[scala] (val asJavaScheduler: rx.concurrency.CurrentThreadScheduler)
   extends Scheduler {}
