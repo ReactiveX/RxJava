@@ -15,35 +15,5 @@
  */
 package rx.lang
 
-import java.util.concurrent.TimeUnit
-import java.util.Date
-import rx.lang.scala.concurrency.Scheduler
-
-/**
- * This package contains all classes that RxScala users need.
- * 
- * It mirrors the structure of package `rx`, but implementation classes that RxScala users
- * will not need are left out.
- */
 package object scala {
-
-  /**
-   * Allows to construct observables in a similar way as futures.
-   * 
-   * Example:
-   *
-   * {{{
-   * implicit val scheduler = Schedulers.threadPoolForIO
-   * val o: Observable[List[Friend]] = observable {
-   *    session.getFriends
-   * }
-   * o.subscribe(
-   *   friendList => println(friendList),
-   *   err => println(err.getMessage)
-   * )
-   * }}} 
-   */
-  def observable[T](body: => T)(implicit scheduler: Scheduler): Observable[T] = {
-    Observable(1).observeOn(scheduler).map(_ => body)
-  }
 }
