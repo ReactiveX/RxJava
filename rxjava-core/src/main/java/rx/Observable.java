@@ -76,6 +76,7 @@ import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSkipLast;
+import rx.operators.OperationSkipUntil;
 import rx.operators.OperationSkipWhile;
 import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSum;
@@ -6119,4 +6120,18 @@ public class Observable<T> {
     public <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, Collection<V>>> mapFactory, Func1<? super K, ? extends Collection<V>> collectionFactory) {
         return create(OperationToMultimap.toMultimap(this, keySelector, valueSelector, mapFactory, collectionFactory));
     } 
+    
+    /**
+     * Return an Observable that skips elements from the source Observable until the secondary
+     * observable emits an element.
+     * 
+     * @param other the other Observable that has to emit an element before this
+     *              Observable's elements are relayed
+     * @return an Observable that skips elements from the source Observable until the secondary
+     *         observable emits an element.
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229358.aspx'>MSDN: Observable.SkipUntil</a>
+     */
+    public <U> Observable<T> skipUntil(Observable<U> other) {
+        return create(new OperationSkipUntil<T, U>(this, other));
+    }
 }
