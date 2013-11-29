@@ -15,3 +15,4 @@ object ImmediateScheduler {
 class ImmediateScheduler private[scala] (val asJavaScheduler: rx.concurrency.ImmediateScheduler)
   extends Scheduler {}
 
+
