@@ -1,7 +1,7 @@
 package rx.lang.scala.concurrency
 
 import rx.lang.scala.Scheduler
-import java.util.concurrent.Executor
+import java.util.concurrent.{ScheduledExecutorService, Executor}
 
 object ExecutorScheduler {
 
@@ -11,7 +11,7 @@ object ExecutorScheduler {
   * Note that this does not support scheduled actions with a delay.
   */
   def apply(executor: Executor): ExecutorScheduler =  {
-    new NewThreadScheduler(rx.concurrency.Schedulers.executor(executor))
+    new ExecutorScheduler(rx.concurrency.Schedulers.executor(executor))
   }
 }
 
