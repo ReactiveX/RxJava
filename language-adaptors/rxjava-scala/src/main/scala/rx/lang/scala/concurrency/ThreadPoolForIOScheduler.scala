@@ -26,9 +26,9 @@ object ThreadPoolForIOScheduler {
    *
    * This can be used for asynchronously performing blocking IO.
    *
-   * Do not perform computational work on this scheduler. Use [[rx.lang.scala.concurrency.Schedulers.threadPoolForComputation]] instead.
+   * Do not perform computational work on this scheduler. Use [[rx.lang.scala.concurrency.ThreadPoolForComputationScheduler]] instead.
    */
-  def apply(): ThreadPoolForIOScheduler =  {
+  def apply(): ThreadPoolForIOScheduler = {
     new ThreadPoolForIOScheduler(rx.concurrency.Schedulers.threadPoolForIO())
   }
 }

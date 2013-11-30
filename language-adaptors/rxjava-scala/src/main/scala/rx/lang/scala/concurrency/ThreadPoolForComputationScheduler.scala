@@ -26,9 +26,9 @@ object ThreadPoolForComputationScheduler {
    *
    * This can be used for event-loops, processing callbacks and other computational work.
    *
-   * Do not perform IO-bound work on this scheduler. Use [[rx.lang.scala.concurrency.Schedulers.threadPoolForIO]] instead.
+   * Do not perform IO-bound work on this scheduler. Use [[rx.lang.scala.concurrency.ThreadPoolForIOScheduler]] instead.
    */
-  def apply(): ThreadPoolForComputationScheduler =  {
+  def apply(): ThreadPoolForComputationScheduler = {
     new ThreadPoolForComputationScheduler(rx.concurrency.Schedulers.threadPoolForComputation())
   }
 }
