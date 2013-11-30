@@ -4,8 +4,6 @@ import org.junit.Assert._
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 
-import rx.lang.scala.Subscription
-
 class SubscriptionTests extends JUnitSuite {
 
   @Test

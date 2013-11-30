@@ -23,6 +23,8 @@ import rx.util.functions.{Action0, Action1, Func2}
  * Represents an object that schedules units of work.
  */
 trait Scheduler {
+  import rx.lang.scala.ImplicitFunctionConversions._
+
   val asJavaScheduler: rx.Scheduler
 
   /**
@@ -73,7 +75,8 @@ trait Scheduler {
    * @return a subscription to be able to unsubscribe from action.
    */
   private def schedule[T](state: T, action: (Scheduler, T) => Subscription, delayTime: Duration): Subscription = {
-    Subscription(asJavaScheduler.schedule(state, action, delayTime.length, delayTime.unit))
+    val xxx = schedulerActionToFunc2(action)
+    Subscription(asJavaScheduler.schedule(state, xxx, delayTime.length, delayTime.unit))
   }
 
   /**

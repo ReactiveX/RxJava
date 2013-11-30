@@ -33,10 +33,17 @@ import scala.language.implicitConversions
 object ImplicitFunctionConversions {
   import language.implicitConversions
 
-  implicit def schedulerActionToFunc2[T](action: (Scheduler, T) => Subscription): Func2[rx.Scheduler, T, rx.Subscription] with Object {def call(s: rx.Scheduler, t: T): rx.Subscription} =
+//  implicit def schedulerActionToFunc2[T](action: (Scheduler, T) => Subscription): Func2[rx.Scheduler, T, rx.Subscription] with Object {def call(s: rx.Scheduler, t: T): rx.Subscription} =
+//    new Func2[rx.Scheduler, T, rx.Subscription] {
+//      def call(s: rx.Scheduler, t: T): rx.Subscription = {
+//        action(rx.lang.scala.Scheduler(s), t).asJavaSubscription
+//      }
+//    }
+
+  implicit def schedulerActionToFunc2[T](action: (Scheduler, T) => Subscription) =
     new Func2[rx.Scheduler, T, rx.Subscription] {
       def call(s: rx.Scheduler, t: T): rx.Subscription = {
-        action(rx.lang.scala.Scheduler(s), t).asJavaSubscription
+        action(Scheduler(s), t).asJavaSubscription
       }
     }
 

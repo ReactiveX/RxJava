@@ -52,7 +52,7 @@ object Subscription {
       case x: rx.subscriptions.CompositeSubscription => new CompositeSubscription(x)
       case x: rx.subscriptions.MultipleAssignmentSubscription => new MultipleAssignmentSubscription(x)
       case x: rx.subscriptions.SerialSubscription => new SerialSubscription(x)
-      case x: rx.Subscription => Subscription { x.unsubscribe() }
+      case x: rx.Subscription => apply { x.unsubscribe() }
     }
   }
 
