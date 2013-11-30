@@ -839,7 +839,7 @@ trait Observable[+T]
     val o1: Observable[Notification[U]] = this
     val o2: Observable[rx.Notification[_ <: U]] = o1.map(_.asJava)
     val o3 = o2.asJavaObservable.dematerialize[U]()
-    Observable[U](o3)
+    Observable(o3)
   }
 
   /**
@@ -1933,7 +1933,7 @@ object Observable {
    *            resulting Observable
    * @return an Observable that emits each item in the source Array
    */
-  def apply[T](items: T*): Observable[T] = {
+  def from[T](items: T*): Observable[T] = {
     Observable[T](rx.Observable.from(items.toIterable.asJava))
   }
 

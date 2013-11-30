@@ -21,8 +21,8 @@ import scala.concurrent.duration._
 object Olympics {
   case class Medal(val year: Int, val games: String, val discipline: String, val medal: String, val athlete: String, val country: String)
 
-  def mountainBikeMedals: Observable[Medal] = Observable(
-    Observable(
+  def mountainBikeMedals: Observable[Medal] = Observable.from(
+    Observable.from(
       Medal(1996, "Atlanta 1996", "cross-country men", "Gold", "Bart BRENTJENS", "Netherlands"),
       Medal(1996, "Atlanta 1996", "cross-country women", "Gold", "Paola PEZZO", "Italy"),
       Medal(1996, "Atlanta 1996", "cross-country men", "Silver", "Thomas FRISCHKNECHT", "Switzerland"),
@@ -31,7 +31,7 @@ object Olympics {
       Medal(1996, "Atlanta 1996", "cross-country women", "Bronze", "Susan DEMATTEI", "United States of America")
     ),
     fourYearsEmpty,
-    Observable(
+    Observable.from(
       Medal(2000, "Sydney 2000", "cross-country women", "Gold", "Paola PEZZO", "Italy"),
       Medal(2000, "Sydney 2000", "cross-country women", "Silver", "Barbara BLATTER", "Switzerland"),
       Medal(2000, "Sydney 2000", "cross-country women", "Bronze", "Marga FULLANA", "Spain"),
@@ -40,7 +40,7 @@ object Olympics {
       Medal(2000, "Sydney 2000", "cross-country men", "Bronze", "Christoph SAUSER", "Switzerland")
     ),
     fourYearsEmpty,
-    Observable(
+    Observable.from(
       Medal(2004, "Athens 2004", "cross-country men", "Gold", "Julien ABSALON", "France"),
       Medal(2004, "Athens 2004", "cross-country men", "Silver", "Jose Antonio HERMIDA RAMOS", "Spain"),
       Medal(2004, "Athens 2004", "cross-country men", "Bronze", "Bart BRENTJENS", "Netherlands"),
@@ -49,7 +49,7 @@ object Olympics {
       Medal(2004, "Athens 2004", "cross-country women", "Bronze", "Sabine SPITZ", "Germany")
     ),
     fourYearsEmpty,
-    Observable(
+    Observable.from(
       Medal(2008, "Beijing 2008", "cross-country women", "Gold", "Sabine SPITZ", "Germany"),
       Medal(2008, "Beijing 2008", "cross-country women", "Silver", "Maja WLOSZCZOWSKA", "Poland"),
       Medal(2008, "Beijing 2008", "cross-country women", "Bronze", "Irina KALENTYEVA", "Russian Federation"),
@@ -58,7 +58,7 @@ object Olympics {
       Medal(2008, "Beijing 2008", "cross-country men", "Bronze", "Nino SCHURTER", "Switzerland")
     ),
     fourYearsEmpty,
-    Observable(
+    Observable.from(
       Medal(2012, "London 2012", "cross-country men", "Gold", "Jaroslav KULHAVY", "Czech Republic"),
       Medal(2012, "London 2012", "cross-country men", "Silver", "Nino SCHURTER", "Switzerland"),
       Medal(2012, "London 2012", "cross-country men", "Bronze", "Marco Aurelio FONTANA", "Italy"),
@@ -80,7 +80,7 @@ object Olympics {
     // So we don't use this:
     // Observable.interval(fourYears).take(1).map(i => neverUsedDummyMedal).filter(m => false)
     // But we just return empty, which completes immediately
-    Observable()
+    Observable.from()
   }
 
 }
