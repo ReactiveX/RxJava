@@ -427,40 +427,6 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals("!!", Observable("a", "b", "c").drop(10).firstOrElse("!!").toBlockingObservable.single)
   }
 
-  @Test def observableLikeFuture1() {
-    implicit val scheduler = ThreadPoolForIOScheduler()
-    val o1 = Observable {
-      Thread.sleep(1000)
-      5
-    }
-    val o2 = Observable {
-      Thread.sleep(500)
-      4
-    }
-    Thread.sleep(500)
-    val t1 = System.currentTimeMillis
-    println((o1 merge o2).first.toBlockingObservable.single)
-    println(System.currentTimeMillis - t1)
-  }
-
-  @Test def ObservableLikeFuture2() {
-    class Friend {}
-    val session = new Object {
-      def getFriends: List[Friend] = List(new Friend, new Friend)
-    }
-
-    implicit val scheduler = ThreadPoolForIOScheduler()
-    val o: Observable[List[Friend]] = Observable {
-      session.getFriends
-    }
-    o.subscribe(
-      friendList => println(friendList),
-      err => println(err.getMessage)
-    )
-
-    Thread.sleep(1500) // or convert to BlockingObservable
-  }
-
   @Test def takeWhileWithIndexAlternative {
     val condition = true
     Observable("a", "b").zipWithIndex.takeWhile{case (elem, index) => condition}.map(_._1)

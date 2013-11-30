@@ -17,12 +17,11 @@ package rx.lang.scala
 
 import java.lang.Exception
 import java.{ lang => jlang }
-//import rx.lang.scala._
-import rx.util.functions._
+
 import scala.collection.Seq
-import java.{lang => jlang}
 import scala.language.implicitConversions
-//import rx.lang.scala.Scheduler
+
+import rx.util.functions._
 
 /**
  * These function conversions convert between Scala functions and Rx `Func`s and `Action`s.
