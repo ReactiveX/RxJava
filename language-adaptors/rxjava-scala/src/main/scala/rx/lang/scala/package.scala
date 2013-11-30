@@ -15,5 +15,9 @@
  */
 package rx.lang
 
-package object scala {
-}
+/**
+ * This package contains all classes that RxScala users need.
+ *
+ * It basically mirrors the structure of package `rx`, but some changes were made to make it more Scala-idiomatic.
+ */
+package object scala {}
