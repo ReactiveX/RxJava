@@ -2810,7 +2810,7 @@ public class Observable<T> {
      *         object
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer">RxJava Wiki: buffer()</a>
      */
-    public <TClosing> Observable<List<T>> buffer(Func0<? extends Observable<TClosing>> bufferClosingSelector) {
+    public <TClosing> Observable<List<T>> buffer(Func0<? extends Observable<? extends TClosing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferClosingSelector));
     }
 
@@ -2839,7 +2839,7 @@ public class Observable<T> {
      *         objects
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer">RxJava Wiki: buffer()</a>
      */
-    public <TOpening, TClosing> Observable<List<T>> buffer(Observable<TOpening> bufferOpenings, Func1<? super TOpening, ? extends Observable<TClosing>> bufferClosingSelector) {
+    public <TOpening, TClosing> Observable<List<T>> buffer(Observable<? extends TOpening> bufferOpenings, Func1<? super TOpening, ? extends Observable<? extends TClosing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferOpenings, bufferClosingSelector));
     }
 
@@ -3053,7 +3053,7 @@ public class Observable<T> {
      *         object.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window">RxJava Wiki: window()</a>
      */
-    public <TClosing> Observable<Observable<T>> window(Func0<? extends Observable<TClosing>> closingSelector) {
+    public <TClosing> Observable<Observable<T>> window(Func0<? extends Observable<? extends TClosing>> closingSelector) {
         return create(OperationWindow.window(this, closingSelector));
     }
 
@@ -3080,7 +3080,7 @@ public class Observable<T> {
      *         objects
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window">RxJava Wiki: window()</a>
      */
-    public <TOpening, TClosing> Observable<Observable<T>> window(Observable<TOpening> windowOpenings, Func1<? super TOpening, ? extends Observable<TClosing>> closingSelector) {
+    public <TOpening, TClosing> Observable<Observable<T>> window(Observable<? extends TOpening> windowOpenings, Func1<? super TOpening, ? extends Observable<? extends TClosing>> closingSelector) {
         return create(OperationWindow.window(this, windowOpenings, closingSelector));
     }
 

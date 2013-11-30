@@ -58,7 +58,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T, TClosing> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final Func0<? extends Observable<TClosing>> bufferClosingSelector) {
+    public static <T, TClosing> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final Func0<? extends Observable<? extends TClosing>> bufferClosingSelector) {
         return new OnSubscribeFunc<List<T>>() {
 
             @Override
@@ -95,7 +95,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T, TOpening, TClosing> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final Observable<TOpening> bufferOpenings, final Func1<? super TOpening, ? extends Observable<TClosing>> bufferClosingSelector) {
+    public static <T, TOpening, TClosing> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final Observable<? extends TOpening> bufferOpenings, final Func1<? super TOpening, ? extends Observable<? extends TClosing>> bufferClosingSelector) {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {

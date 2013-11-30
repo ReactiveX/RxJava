@@ -450,10 +450,10 @@ public class ChunkedOperation {
     protected static class ObservableBasedSingleChunkCreator<T, C, TClosing> implements ChunkCreator {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
-        private final Func0<? extends Observable<TClosing>> chunkClosingSelector;
+        private final Func0<? extends Observable<? extends TClosing>> chunkClosingSelector;
         private final NonOverlappingChunks<T, C> chunks;
 
-        public ObservableBasedSingleChunkCreator(NonOverlappingChunks<T, C> chunks, Func0<? extends Observable<TClosing>> chunkClosingSelector) {
+        public ObservableBasedSingleChunkCreator(NonOverlappingChunks<T, C> chunks, Func0<? extends Observable<? extends TClosing>> chunkClosingSelector) {
             this.chunks = chunks;
             this.chunkClosingSelector = chunkClosingSelector;
 
@@ -462,7 +462,7 @@ public class ChunkedOperation {
         }
 
         private void listenForChunkEnd() {
-            Observable<TClosing> closingObservable = chunkClosingSelector.call();
+            Observable<? extends TClosing> closingObservable = chunkClosingSelector.call();
             closingObservable.subscribe(new Action1<TClosing>() {
                 @Override
                 public void call(TClosing closing) {
@@ -497,12 +497,12 @@ public class ChunkedOperation {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        public ObservableBasedMultiChunkCreator(final OverlappingChunks<T, C> chunks, Observable<TOpening> openings, final Func1<? super TOpening, ? extends Observable<TClosing>> chunkClosingSelector) {
+        public ObservableBasedMultiChunkCreator(final OverlappingChunks<T, C> chunks, Observable<? extends TOpening> openings, final Func1<? super TOpening, ? extends Observable<? extends TClosing>> chunkClosingSelector) {
             subscription.wrap(openings.subscribe(new Action1<TOpening>() {
                 @Override
                 public void call(TOpening opening) {
                     final Chunk<T, C> chunk = chunks.createChunk();
-                    Observable<TClosing> closingObservable = chunkClosingSelector.call(opening);
+                    Observable<? extends TClosing> closingObservable = chunkClosingSelector.call(opening);
 
                     closingObservable.subscribe(new Action1<TClosing>() {
                         @Override

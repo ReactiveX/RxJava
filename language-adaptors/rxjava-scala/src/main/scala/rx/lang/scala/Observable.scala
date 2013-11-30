@@ -303,8 +303,8 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers, which are emitted
    *         when the current [[rx.lang.scala.Observable]] created with the function argument produces an object.
    */
-  def buffer[Closing](closings: () => Observable[Closing]) : Observable[Seq[T]] = {
-    val f: Func0[_ <: rx.Observable[Closing]] = closings().asJavaObservable
+  def buffer[Closing](closings: () => Observable[_ <: Closing]) : Observable[Seq[T]] = {
+    val f: Func0[_ <: rx.Observable[_ <: Closing]] = closings().asJavaObservable
     val jObs: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer[Closing](f)
     Observable.jObsOfListToScObsOfSeq(jObs.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -329,7 +329,7 @@ trait Observable[+T]
    */
   def buffer[Opening, Closing](openings: Observable[Opening], closings: Opening => Observable[Closing]): Observable[Seq[T]] = {
     val opening: rx.Observable[_ <: Opening] = openings.asJavaObservable
-    val closing: Func1[Opening, _ <: rx.Observable[Closing]] = (o: Opening) => closings(o).asJavaObservable
+    val closing: Func1[_ >: Opening, _ <: rx.Observable[_ <: Closing]] = (o: Opening) => closings(o).asJavaObservable
     val jObs: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer[Opening, Closing](opening, closing)
     Observable.jObsOfListToScObsOfSeq(jObs.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -515,8 +515,8 @@ trait Observable[+T]
    *         when the current [[rx.lang.scala.Observable]] created with the function argument produces an object.
    */
   def window[Closing](closings: () => Observable[Closing]): Observable[Observable[T]] = {
-    val func : Func0[_ <: rx.Observable[Closing]] = closings().asJavaObservable
-    val o1: rx.Observable[_ <: rx.Observable[_]] = asJavaObservable.window(func)
+    val func : Func0[_ <: rx.Observable[_ <: Closing]] = closings().asJavaObservable
+    val o1: rx.Observable[_ <: rx.Observable[_]] = asJavaObservable.window[Closing](func)
     val o2 = Observable[rx.Observable[_]](o1).map((x: rx.Observable[_]) => {
       val x2 = x.asInstanceOf[rx.Observable[_ <: T]]
       Observable[T](x2)
@@ -542,7 +542,7 @@ trait Observable[+T]
    */
   def window[Opening, Closing](openings: Observable[Opening], closings: Opening => Observable[Closing]) = {
     Observable.jObsOfJObsToScObsOfScObs(
-      asJavaObservable.window(openings.asJavaObservable, (op: Opening) => closings(op).asJavaObservable))
+      asJavaObservable.window[Opening, Closing](openings.asJavaObservable, (op: Opening) => closings(op).asJavaObservable))
       : Observable[Observable[T]] // SI-7818
   }
 

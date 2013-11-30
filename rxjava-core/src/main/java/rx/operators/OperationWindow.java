@@ -57,7 +57,7 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T, TClosing> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final Func0<? extends Observable<TClosing>> windowClosingSelector) {
+    public static <T, TClosing> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final Func0<? extends Observable<? extends TClosing>> windowClosingSelector) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
@@ -94,7 +94,7 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T, TOpening, TClosing> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final Observable<TOpening> windowOpenings, final Func1<? super TOpening, ? extends Observable<TClosing>> windowClosingSelector) {
+    public static <T, TOpening, TClosing> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final Observable<? extends TOpening> windowOpenings, final Func1<? super TOpening, ? extends Observable<? extends TClosing>> windowClosingSelector) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
