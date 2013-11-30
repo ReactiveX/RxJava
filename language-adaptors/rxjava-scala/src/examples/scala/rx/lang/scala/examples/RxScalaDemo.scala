@@ -30,8 +30,8 @@ import org.scalatest.junit.JUnitSuite
 
 import rx.lang.scala.Notification
 import rx.lang.scala.Observable
-import rx.lang.scala.observable
-import rx.lang.scala.concurrency.Schedulers
+//import rx.lang.scala.observable
+import rx.lang.scala.concurrency.{NewThreadScheduler, Schedulers}
 
 @Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
@@ -177,10 +177,10 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def schedulersExample() {
     val o = Observable.interval(100 millis).take(8)
-    o.observeOn(Schedulers.newThread).subscribe(
+    o.observeOn(NewThreadScheduler()).subscribe(
       i => println(s"${i}a (on thread #${Thread.currentThread().getId()})")
     )
-    o.observeOn(Schedulers.newThread).subscribe(
+    o.observeOn(NewThreadScheduler()).subscribe(
       i => println(s"${i}b (on thread #${Thread.currentThread().getId()})")
     )
     waitFor(o)
