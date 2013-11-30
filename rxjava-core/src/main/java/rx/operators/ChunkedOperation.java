@@ -28,8 +28,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.util.Closing;
-import rx.util.Opening;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
@@ -449,13 +447,13 @@ public class ChunkedOperation {
      *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
      *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class ObservableBasedSingleChunkCreator<T, C> implements ChunkCreator {
+    protected static class ObservableBasedSingleChunkCreator<T, C, TClosing> implements ChunkCreator {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
-        private final Func0<? extends Observable<? extends Closing>> chunkClosingSelector;
+        private final Func0<? extends Observable<TClosing>> chunkClosingSelector;
         private final NonOverlappingChunks<T, C> chunks;
 
-        public ObservableBasedSingleChunkCreator(NonOverlappingChunks<T, C> chunks, Func0<? extends Observable<? extends Closing>> chunkClosingSelector) {
+        public ObservableBasedSingleChunkCreator(NonOverlappingChunks<T, C> chunks, Func0<? extends Observable<TClosing>> chunkClosingSelector) {
             this.chunks = chunks;
             this.chunkClosingSelector = chunkClosingSelector;
 
@@ -464,10 +462,10 @@ public class ChunkedOperation {
         }
 
         private void listenForChunkEnd() {
-            Observable<? extends Closing> closingObservable = chunkClosingSelector.call();
-            closingObservable.subscribe(new Action1<Closing>() {
+            Observable<TClosing> closingObservable = chunkClosingSelector.call();
+            closingObservable.subscribe(new Action1<TClosing>() {
                 @Override
-                public void call(Closing closing) {
+                public void call(TClosing closing) {
                     chunks.emitAndReplaceChunk();
                     listenForChunkEnd();
                 }
@@ -495,20 +493,20 @@ public class ChunkedOperation {
      *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
      *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class ObservableBasedMultiChunkCreator<T, C> implements ChunkCreator {
+    protected static class ObservableBasedMultiChunkCreator<T, C, TOpening, TClosing> implements ChunkCreator {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        public ObservableBasedMultiChunkCreator(final OverlappingChunks<T, C> chunks, Observable<? extends Opening> openings, final Func1<Opening, ? extends Observable<? extends Closing>> chunkClosingSelector) {
-            subscription.wrap(openings.subscribe(new Action1<Opening>() {
+        public ObservableBasedMultiChunkCreator(final OverlappingChunks<T, C> chunks, Observable<TOpening> openings, final Func1<? super TOpening, ? extends Observable<TClosing>> chunkClosingSelector) {
+            subscription.wrap(openings.subscribe(new Action1<TOpening>() {
                 @Override
-                public void call(Opening opening) {
+                public void call(TOpening opening) {
                     final Chunk<T, C> chunk = chunks.createChunk();
-                    Observable<? extends Closing> closingObservable = chunkClosingSelector.call(opening);
+                    Observable<TClosing> closingObservable = chunkClosingSelector.call(opening);
 
-                    closingObservable.subscribe(new Action1<Closing>() {
+                    closingObservable.subscribe(new Action1<TClosing>() {
                         @Override
-                        public void call(Closing closing) {
+                        public void call(TClosing closing) {
                             chunks.emitChunk(chunk);
                         }
                     });
