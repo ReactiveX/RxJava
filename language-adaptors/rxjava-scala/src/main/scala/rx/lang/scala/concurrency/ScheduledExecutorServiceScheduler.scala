@@ -23,7 +23,7 @@ object ScheduledExecutorServiceScheduler {
   /**
    * Returns a [[rx.lang.scala.Scheduler]] that queues work on an `java.util.concurrent.ScheduledExecutorService`.
    */
-  def apply(executor: ScheduledExecutorService): ExecutorScheduler =  {
+  def apply(executor: ScheduledExecutorService): ScheduledExecutorServiceScheduler =  {
     new ScheduledExecutorServiceScheduler(rx.concurrency.Schedulers.executor(executor))
   }
 }

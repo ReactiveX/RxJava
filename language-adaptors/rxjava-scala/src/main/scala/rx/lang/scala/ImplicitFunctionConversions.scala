@@ -17,12 +17,12 @@ package rx.lang.scala
 
 import java.lang.Exception
 import java.{ lang => jlang }
-import rx.lang.scala._
+//import rx.lang.scala._
 import rx.util.functions._
 import scala.collection.Seq
 import java.{lang => jlang}
 import scala.language.implicitConversions
-import rx.lang.scala.concurrency.Scheduler
+//import rx.lang.scala.Scheduler
 
 /**
  * These function conversions convert between Scala functions and Rx `Func`s and `Action`s.
@@ -33,10 +33,10 @@ import rx.lang.scala.concurrency.Scheduler
 object ImplicitFunctionConversions {
   import language.implicitConversions
 
-  implicit def schedulerActionToFunc2[T](action: (Scheduler, T) => Subscription) =
+  implicit def schedulerActionToFunc2[T](action: (Scheduler, T) => Subscription): Func2[rx.Scheduler, T, rx.Subscription] with Object {def call(s: rx.Scheduler, t: T): rx.Subscription} =
     new Func2[rx.Scheduler, T, rx.Subscription] {
       def call(s: rx.Scheduler, t: T): rx.Subscription = {
-        action(s, t).asJavaSubscription
+        action(rx.lang.scala.Scheduler(s), t).asJavaSubscription
       }
     }
 

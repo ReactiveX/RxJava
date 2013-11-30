@@ -26,5 +26,6 @@ object NewThreadScheduler {
     new NewThreadScheduler(rx.concurrency.Schedulers.newThread())
   }
 }
-class NewThreadScheduler private[scala] (val asJavaScheduler: rx.concurrency.NewThreadScheduler)
+
+class NewThreadScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
   extends Scheduler {}

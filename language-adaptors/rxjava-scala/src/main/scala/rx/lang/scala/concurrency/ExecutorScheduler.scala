@@ -31,7 +31,7 @@ object ExecutorScheduler {
 }
 
 
-class ExecutorScheduler private[scala] (val asJavaScheduler: rx.concurrency.ExecutorScheduler)
+class ExecutorScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
   extends Scheduler {}
 
 

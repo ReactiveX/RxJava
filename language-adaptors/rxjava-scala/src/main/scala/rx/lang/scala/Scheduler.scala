@@ -23,7 +23,7 @@ import rx.util.functions.{Action0, Action1, Func2}
  * Represents an object that schedules units of work.
  */
 trait Scheduler {
-  def asJavaScheduler: rx.Scheduler
+  val asJavaScheduler: rx.Scheduler
 
   /**
    * Schedules a cancelable action to be executed.
@@ -209,4 +209,13 @@ trait Scheduler {
   }
 
 }
+
+object Scheduler {
+  private [scala] def apply(scheduler: rx.Scheduler): Scheduler = {
+    return new Scheduler() {
+       val asJavaScheduler = scheduler
+    }
+  }
+}
+
 
