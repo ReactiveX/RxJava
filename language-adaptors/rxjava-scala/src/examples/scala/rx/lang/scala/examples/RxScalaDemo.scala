@@ -30,8 +30,7 @@ import org.scalatest.junit.JUnitSuite
 
 import rx.lang.scala.Notification
 import rx.lang.scala.Observable
-//import rx.lang.scala.observable
-import rx.lang.scala.concurrency.{NewThreadScheduler, Schedulers}
+import rx.lang.scala.concurrency._
 
 @Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
@@ -429,12 +428,12 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def observableLikeFuture1() {
-    implicit val scheduler = Schedulers.threadPoolForIO
-    val o1 = observable {
+    implicit val scheduler = ThreadPoolForIOScheduler()
+    val o1 = Observable {
       Thread.sleep(1000)
       5
     }
-    val o2 = observable {
+    val o2 = Observable {
       Thread.sleep(500)
       4
     }
@@ -444,14 +443,14 @@ class RxScalaDemo extends JUnitSuite {
     println(System.currentTimeMillis - t1)
   }
 
-  @Test def observableLikeFuture2() {
+  @Test def ObservableLikeFuture2() {
     class Friend {}
     val session = new Object {
       def getFriends: List[Friend] = List(new Friend, new Friend)
     }
 
-    implicit val scheduler = Schedulers.threadPoolForIO
-    val o: Observable[List[Friend]] = observable {
+    implicit val scheduler = ThreadPoolForIOScheduler()
+    val o: Observable[List[Friend]] = Observable {
       session.getFriends
     }
     o.subscribe(
