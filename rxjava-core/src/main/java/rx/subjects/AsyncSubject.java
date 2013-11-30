@@ -17,6 +17,7 @@ package rx.subjects;
 
 import rx.Notification;
 import rx.Observer;
+import rx.Observable.OnGetSubscriptionFunc;
 import rx.util.functions.Action2;
 
 /**
@@ -57,7 +58,7 @@ public class AsyncSubject<T> extends AbstractSubject<T> {
      */
     public static <T> AsyncSubject<T> create() {
         final SubjectState<T> state = new SubjectState<T>();
-        OnSubscribeFunc<T> onSubscribe = getOnSubscribeFunc(state, new Action2<SubjectState<T>, Observer<? super T>>() {
+        OnGetSubscriptionFunc<T> onSubscribe = getOnGetSubscriptionFunc(state, new Action2<SubjectState<T>, Observer<? super T>>() {
 
             @Override
             public void call(SubjectState<T> state, Observer<? super T> o) {
@@ -76,8 +77,8 @@ public class AsyncSubject<T> extends AbstractSubject<T> {
 
     private final SubjectState<T> state;
 
-    protected AsyncSubject(OnSubscribeFunc<T> onSubscribe, SubjectState<T> state) {
-        super(onSubscribe);
+    protected AsyncSubject(OnGetSubscriptionFunc<T> onGetSubscription, SubjectState<T> state) {
+        super(onGetSubscription);
         this.state = state;
     }
 

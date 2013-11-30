@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observer;
+import rx.Subscription;
 import rx.plugins.RxJavaPlugins;
 import rx.util.CompositeException;
 import rx.util.OnErrorNotImplementedException;
@@ -59,9 +60,9 @@ public class SafeObserver<T> implements Observer<T> {
 
     private final Observer<? super T> actual;
     private final AtomicBoolean isFinished = new AtomicBoolean(false);
-    private final SafeObservableSubscription subscription;
+    private final Subscription subscription;
 
-    public SafeObserver(SafeObservableSubscription subscription, Observer<? super T> actual) {
+    public SafeObserver(Subscription subscription, Observer<? super T> actual) {
         this.subscription = subscription;
         this.actual = actual;
     }

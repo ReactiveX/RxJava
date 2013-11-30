@@ -17,6 +17,7 @@ package rx.subjects;
 
 import rx.Notification;
 import rx.Observer;
+import rx.Observable.OnGetSubscriptionFunc;
 import rx.util.functions.Action2;
 
 /**
@@ -72,7 +73,7 @@ public class BehaviorSubject<T> extends AbstractSubject<T> {
         final SubjectState<T> state = new SubjectState<T>();
         // set a default value so subscriptions will immediately receive this until a new notification is received
         state.currentValue.set(new Notification<T>(defaultValue));
-        OnSubscribeFunc<T> onSubscribe = getOnSubscribeFunc(state, new Action2<SubjectState<T>, Observer<? super T>>() {
+        OnGetSubscriptionFunc<T> onSubscribe = getOnGetSubscriptionFunc(state, new Action2<SubjectState<T>, Observer<? super T>>() {
 
             @Override
             public void call(SubjectState<T> state, Observer<? super T> o) {
@@ -88,8 +89,8 @@ public class BehaviorSubject<T> extends AbstractSubject<T> {
 
     private final SubjectState<T> state;
 
-    protected BehaviorSubject(OnSubscribeFunc<T> onSubscribe, SubjectState<T> state) {
-        super(onSubscribe);
+    protected BehaviorSubject(OnGetSubscriptionFunc<T> onGetSubscription, SubjectState<T> state) {
+        super(onGetSubscription);
         this.state = state;
     }
 

@@ -162,21 +162,21 @@ public final class OperationGroupBy {
 
         static <K, T> GroupedSubject<K, T> create(final K key, final GroupBy<K, T> parent) {
             final AtomicReference<Observer<? super T>> subscribedObserver = new AtomicReference<Observer<? super T>>(OperationGroupBy.<T> emptyObserver());
-            return new GroupedSubject<K, T>(key, new OnSubscribeFunc<T>() {
-
-                private final SafeObservableSubscription subscription = new SafeObservableSubscription();
+            return new GroupedSubject<K, T>(key, new OnGetSubscriptionFunc<T>() {
 
                 @Override
-                public Subscription onSubscribe(Observer<? super T> observer) {
-                    // register Observer
-                    subscribedObserver.set(observer);
-
-                    parent.subscribeKey(key);
-
-                    return subscription.wrap(new Subscription() {
+                public PartialSubscription<T> onGetSubscription() {
+                    return PartialSubscription.create(new OnPartialSubscribeFunc<T>() {
                         @Override
-                        public void unsubscribe() {
-                            // we remove the Observer so we stop emitting further events (they will be ignored if parent continues to send)
+                        public void onSubscribe(Observer<? super T> observer) {
+                            subscribedObserver.set(observer);
+                            parent.subscribeKey(key);
+                        }
+                    }, new OnPartialUnsubscribeFunc() {
+                        @Override
+                        public void onUnsubscribe() {
+                            // we remove the Observer so we stop emitting further events (they will
+                            // be ignored if parent continues to send)
                             subscribedObserver.set(OperationGroupBy.<T> emptyObserver());
                             // now we need to notify the parent that we're unsubscribed
                             parent.unsubscribeKey(key);
@@ -188,8 +188,8 @@ public final class OperationGroupBy {
 
         private final AtomicReference<Observer<? super T>> subscribedObserver;
 
-        public GroupedSubject(K key, OnSubscribeFunc<T> onSubscribe, AtomicReference<Observer<? super T>> subscribedObserver) {
-            super(key, onSubscribe);
+        public GroupedSubject(K key, OnGetSubscriptionFunc<T> onGetSubscription, AtomicReference<Observer<? super T>> subscribedObserver) {
+            super(key, onGetSubscription);
             this.subscribedObserver = subscribedObserver;
         }
 
@@ -214,12 +214,12 @@ public final class OperationGroupBy {
         return new Observer<T>() {
             @Override
             public void onCompleted() {
-                // do nothing            
+                // do nothing
             }
 
             @Override
             public void onError(Throwable e) {
-                // do nothing            
+                // do nothing
             }
 
             @Override

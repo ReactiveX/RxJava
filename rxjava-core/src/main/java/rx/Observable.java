@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.joins.Pattern2;
 import rx.joins.Plan0;
@@ -106,7 +107,6 @@ import rx.operators.OperationZip;
 import rx.operators.SafeObservableSubscription;
 import rx.operators.SafeObserver;
 import rx.plugins.RxJavaErrorHandler;
-import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
 import rx.schedulers.Schedulers;
 import rx.subjects.AsyncSubject;
@@ -137,11 +137,11 @@ import rx.util.functions.Functions;
 /**
  * The Observable interface that implements the Reactive Pattern.
  * <p>
- * This interface provides overloaded methods for subscribing as well as
- * delegate methods to the various operators.
+ * This interface provides overloaded methods for subscribing as well as delegate methods to the
+ * various operators.
  * <p>
- * The documentation for this interface makes use of marble diagrams. The
- * following legend explains these diagrams:
+ * The documentation for this interface makes use of marble diagrams. The following legend explains
+ * these diagrams:
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/legend.png">
  * <p>
@@ -152,40 +152,312 @@ import rx.util.functions.Functions;
  */
 public class Observable<T> {
 
-    private final static ConcurrentHashMap<Class, Boolean> internalClassMap = new ConcurrentHashMap<Class, Boolean>();
-
     /**
-     * Executed when 'subscribe' is invoked.
+     * Executed when 'unsubscribe' is invoked on a {@link PartialSubscription}.
      */
-    private final OnSubscribeFunc<T> onSubscribe;
+    public interface OnPartialUnsubscribeFunc extends Function {
+        void onUnsubscribe();
+    }
 
     /**
-     * Function interface for work to be performed when an {@link Observable}
-     * is subscribed to via {@link Observable#subscribe(Observer)}
+     * Executed when 'subscribe' is invoked on a {@link PartialSubscription}.
+     */
+    public interface OnPartialSubscribeFunc<T> extends Function {
+        void onSubscribe(Observer<? super T> observer);
+    }
+
+    final static ConcurrentHashMap<Class, Boolean> internalClassMap = new ConcurrentHashMap<Class, Boolean>();
+
+    /**
+     * Executed when 'getSubscription' is invoked.
+     */
+    private final OnGetSubscriptionFunc<T> onGetSubscription;
+
+    /**
+     * Function interface for work to be performed when an {@link Observable} is subscription is
+     * created via {@link Observable#getSubscription()}
      * 
      * @param <T>
      */
-    public static interface OnSubscribeFunc<T> extends Function {
-
-        public Subscription onSubscribe(Observer<? super T> t1);
-
+    public static interface OnGetSubscriptionFunc<T> extends Function {
+        public PartialSubscription<T> onGetSubscription();
     }
 
     /**
-     * Observable with Function to execute when subscribed to.
-     * <p>
-     * NOTE: Use {@link #create(OnSubscribeFunc)} to create an Observable
-     * instead of this constructor unless you specifically have a need for
-     * inheritance.
+     * Function interface for work to be performed when an {@link Observable} is subscribed to via
+     * {@link Observable#subscribe(Observer)}
      * 
-     * @param onSubscribe {@link OnSubscribeFunc} to be executed when
-     *                    {@link #subscribe(Observer)} is called
+     * @param <T>
+     * @deprecated use OnGetSubscriptionFunc
      */
-    protected Observable(OnSubscribeFunc<T> onSubscribe) {
-        this.onSubscribe = onSubscribe;
+    @Deprecated
+    public static interface OnSubscribeFunc<T> extends Function {
+        public Subscription onSubscribe(Observer<? super T> observer);
     }
 
-    private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
+    /**
+     * Observable with Function to execute when subscription is created but before work has started.
+     * <p>
+     * NOTE: Use {@link #create(OnGetSubscriptionFunc)} to create an Observable instead of this
+     * constructor unless you specifically have a need for inheritance.
+     * 
+     * @param onGetSubscription
+     *            {@link OnGetSubscriptionFunc} to be executed when {@link #getSubscription()} is
+     *            called
+     */
+    protected Observable(OnGetSubscriptionFunc<T> onGetSubscription) {
+        this.onGetSubscription = onGetSubscription;
+    }
+
+    public static final class PartialSubscription<T> implements Subscription {
+        private AtomicReference<Observer<? super T>> subscribedObserver = new AtomicReference<Observer<? super T>>(null);
+        private static final Observer UNSUBSCRIBED_OBSERVER = new Observer() {
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(Object args) {
+            }
+        };
+
+        private final OnPartialSubscribeFunc<T> onPartialSubscribe;
+
+        private final OnPartialUnsubscribeFunc onPartialUnsubscribe;
+
+        public PartialSubscription(OnPartialSubscribeFunc<T> onPartialSubscribe, OnPartialUnsubscribeFunc onPartialUnsubscribe) {
+            this.onPartialSubscribe = onPartialSubscribe;
+            this.onPartialUnsubscribe = onPartialUnsubscribe;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public void unsubscribe() {
+            Observer<? super T> observer = subscribedObserver.get();
+            if (observer == null) {
+                subscribedObserver.compareAndSet(null, UNSUBSCRIBED_OBSERVER);
+                observer = subscribedObserver.get();
+            }
+            try {
+                onPartialUnsubscribe.onUnsubscribe();
+            } catch (Throwable e) {
+                observer.onError(e);
+            }
+        }
+
+        /**
+         * Whether a given {@link Function} is an internal implementation inside
+         * rx.* packages or not.
+         * <p>
+         * For why this is being used see https://github.com/Netflix/RxJava/issues/216 for
+         * discussion on "Guideline 6.4: Protect calls to user code from within an operator"
+         * 
+         * Note: If strong reasons for not depending on package names comes up then the
+         * implementation of this method can change to looking for a marker interface.
+         * 
+         * @param o
+         * @return {@code true} if the given function is an internal implementation,
+         *         and {@code false} otherwise.
+         */
+        private boolean isInternalImplementation(Object o) {
+            if (o == null) {
+                return true;
+            }
+            // prevent double-wrapping (yeah it happens)
+            if (o instanceof SafeObserver) {
+                return true;
+            }
+
+            Class<?> clazz = o.getClass();
+            if (internalClassMap.containsKey(clazz)) {
+                // don't need to do reflection
+                return internalClassMap.get(clazz);
+            } else {
+                // we treat the following package as "internal" and don't wrap it
+                Package p = o.getClass().getPackage(); // it can be null
+                Boolean isInternal = (p != null && p.getName().startsWith("rx.operators"));
+                internalClassMap.put(clazz, isInternal);
+                return isInternal;
+            }
+        }
+
+        /**
+         * Allow the {@link RxJavaErrorHandler} to receive the exception from
+         * onError.
+         * 
+         * @param e
+         */
+        private void handleError(Throwable e) {
+            // onError should be rare so we'll only fetch when needed
+            RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+        }
+
+        public void subscribe(Observer<? super T> observer) {
+            if (!subscribedObserver.compareAndSet(null, observer)) {
+                // someone else has already subscribed to this PartialSubscription
+                if (subscribedObserver.get() == UNSUBSCRIBED_OBSERVER) {
+                    // this means that the subscription was unsubscribed before the subscribe was called.
+                    return;
+                }
+                else {
+                    throw new IllegalStateException("A PartialSubscription can only be subscribed to once. The first Oserver is "+ subscribedObserver.get() +" the second Observer is "+ observer);
+                }
+            }
+
+            // allow the hook to intercept and/or decorate
+            OnPartialSubscribeFunc<T> onPartialSubscribeFunction = onPartialSubscribe;// hook.onPartialSubscribeStart(this,
+            // onPartialSubscribe);
+            // validate and proceed
+            if (observer == null) {
+                throw new IllegalArgumentException("observer can not be null");
+            }
+            if (onPartialSubscribeFunction == null) {
+                throw new IllegalStateException("onSubscribe function can not be null.");
+                // the subscribe function can also be overridden but generally that's not the
+                // appropriate approach so I won't mention that in the exception
+            }
+            try {
+                /**
+                 * See https://github.com/Netflix/RxJava/issues/216 for discussion on
+                 * "Guideline 6.4: Protect calls to user code from within an operator"
+                 */
+                if (isInternalImplementation(observer)) {
+                    onPartialSubscribeFunction.onSubscribe(observer);
+                } else {
+                    onPartialSubscribeFunction.onSubscribe(new SafeObserver<T>(this, observer));
+                }
+            } catch (OnErrorNotImplementedException e) {
+                // special handling when onError is not implemented ... we just rethrow
+                throw e;
+            } catch (Throwable e) {
+                // if an unhandled error occurs executing the onSubscribe we will propagate it
+                try {
+                    observer.onError(e);// hook.onSubscribeError(this, e));
+                } catch (OnErrorNotImplementedException e2) {
+                    // special handling when onError is not implemented ... we just rethrow
+                    throw e2;
+                } catch (Throwable e2) {
+                    // if this happens it means the onError itself failed (perhaps an invalid
+                    // function implementation)
+                    // so we are unable to propagate the error correctly and will just throw
+                    RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
+                    // hook.onSubscribeError(this, r);
+                    throw r;
+                }
+            }
+        }
+
+        private class ObserverFunctionWrapper implements Observer<T> {
+            private final Action1<? super T> onNext;
+            private final Action1<Throwable> onError;
+            private final Action0 onCompleted;
+
+            public ObserverFunctionWrapper(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onCompleted) {
+                this.onNext = onNext;
+                this.onError = onError;
+                this.onCompleted = onCompleted;
+            }
+
+            @Override
+            public void onCompleted() {
+                if (onCompleted != null)
+                    onCompleted.call();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                handleError(e);
+                if (onError == null)
+                    throw new OnErrorNotImplementedException(e);
+                onError.call(e);
+            }
+
+            @Override
+            public void onNext(T data) {
+                if (onNext != null) {
+                    onNext.call(data);
+                }
+            }
+        }
+
+        /**
+         * Subscribe and ignore all events.
+         * 
+         * @return
+         */
+        public void subscribe() {
+            subscribe(new ObserverFunctionWrapper(null, null, null));
+        }
+
+        /**
+         * An {@link Observer} must call an Observable's {@code subscribe} method
+         * in order to receive items and notifications from the Observable.
+         * 
+         * @param onNext
+         * @return
+         */
+        public void subscribe(final Action1<? super T> onNext) {
+            if (onNext == null) {
+                throw new IllegalArgumentException("onNext can not be null");
+            }
+
+            subscribe(new ObserverFunctionWrapper(onNext, null, null));
+        }
+
+        /**
+         * An {@link Observer} must call an Observable's {@code subscribe} method in
+         * order to receive items and notifications from the Observable.
+         * 
+         * @param onNext
+         * @param onError
+         * @return
+         */
+        public void subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError) {
+            if (onNext == null) {
+                throw new IllegalArgumentException("onNext can not be null");
+            }
+            if (onError == null) {
+                throw new IllegalArgumentException("onError can not be null");
+            }
+
+            subscribe(new ObserverFunctionWrapper(onNext, onError, null));
+        }
+
+        /**
+         * An {@link Observer} must call an Observable's {@code subscribe} method in
+         * order to receive items and notifications from the Observable.
+         * 
+         * @param onNext
+         * @param onError
+         * @param onComplete
+         * @return
+         */
+        public void subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
+            if (onNext == null) {
+                throw new IllegalArgumentException("onNext can not be null");
+            }
+            if (onError == null) {
+                throw new IllegalArgumentException("onError can not be null");
+            }
+            if (onComplete == null) {
+                throw new IllegalArgumentException("onComplete can not be null");
+            }
+
+            subscribe(new ObserverFunctionWrapper(onNext, onError, onComplete));
+        }
+
+        public static <T> PartialSubscription<T> create(OnPartialSubscribeFunc<T> onPartialSubscribe, OnPartialUnsubscribeFunc onPartialUnsubscribe) {
+            return new PartialSubscription<T>(onPartialSubscribe, onPartialUnsubscribe);
+        }
+    }
+
+    public PartialSubscription<T> getSubscription() {
+        return onGetSubscription.onGetSubscription();
+    }
 
     /**
      * An {@link Observer} must call an Observable's {@code subscribe} method in
@@ -217,55 +489,13 @@ public class Observable<T> {
      * @throws IllegalArgumentException if the {@link Observer} provided as the
      *                                  argument to {@code subscribe()} is
      *                                  {@code null}
+     * @deprecated see {@link Observable#getSubscription()}
      */
+    @Deprecated
     public Subscription subscribe(Observer<? super T> observer) {
-        // allow the hook to intercept and/or decorate
-        OnSubscribeFunc<T> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
-        // validate and proceed
-        if (observer == null) {
-            throw new IllegalArgumentException("observer can not be null");
-        }
-        if (onSubscribeFunction == null) {
-            throw new IllegalStateException("onSubscribe function can not be null.");
-            // the subscribe function can also be overridden but generally that's not the appropriate approach so I won't mention that in the exception
-        }
-        try {
-            /**
-             * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
-             */
-            if (isInternalImplementation(observer)) {
-                Subscription s = onSubscribeFunction.onSubscribe(observer);
-                if (s == null) {
-                    // this generally shouldn't be the case on a 'trusted' onSubscribe but in case it happens
-                    // we want to gracefully handle it the same as AtomicObservableSubscription does
-                    return hook.onSubscribeReturn(this, Subscriptions.empty());
-                } else {
-                    return hook.onSubscribeReturn(this, s);
-                }
-            } else {
-                SafeObservableSubscription subscription = new SafeObservableSubscription();
-                subscription.wrap(onSubscribeFunction.onSubscribe(new SafeObserver<T>(subscription, observer)));
-                return hook.onSubscribeReturn(this, subscription);
-            }
-        } catch (OnErrorNotImplementedException e) {
-            // special handling when onError is not implemented ... we just rethrow
-            throw e;
-        } catch (Throwable e) {
-            // if an unhandled error occurs executing the onSubscribe we will propagate it
-            try {
-                observer.onError(hook.onSubscribeError(this, e));
-            } catch (OnErrorNotImplementedException e2) {
-                // special handling when onError is not implemented ... we just rethrow
-                throw e2;
-            } catch (Throwable e2) {
-                // if this happens it means the onError itself failed (perhaps an invalid function implementation)
-                // so we are unable to propagate the error correctly and will just throw
-                RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
-                hook.onSubscribeError(this, r);
-                throw r;
-            }
-            return Subscriptions.empty();
-        }
+        PartialSubscription<T> partial = getSubscription();
+        partial.subscribe(observer);
+        return partial;
     }
 
     /**
@@ -299,86 +529,39 @@ public class Observable<T> {
      *         finished sending them
      * @throws IllegalArgumentException if an argument to {@code subscribe()}
      *                                  is {@code null}
+     * @deprecated see {@link Observable#getSubscription()}
      */
+    @Deprecated
     public Subscription subscribe(Observer<? super T> observer, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(observer);
     }
 
     /**
-     * Protects against errors being thrown from Observer implementations and
-     * ensures onNext/onError/onCompleted contract compliance.
-     * <p>
-     * See https://github.com/Netflix/RxJava/issues/216 for a discussion on
-     * "Guideline 6.4: Protect calls to user code from within an operator"
-     */
-    private Subscription protectivelyWrapAndSubscribe(Observer<? super T> o) {
-        SafeObservableSubscription subscription = new SafeObservableSubscription();
-        return subscription.wrap(subscribe(new SafeObserver<T>(subscription, o)));
-    }
-
-    /**
      * Subscribe and ignore all events.
-     *  
-     * @return 
+     * 
+     * @return
+     * @deprecated see {@link Observable#getSubscription()}
      */
+    @Deprecated
     public Subscription subscribe() {
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
-
-            @Override
-            public void onCompleted() {
-                // do nothing
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                handleError(e);
-                throw new OnErrorNotImplementedException(e);
-            }
-
-            @Override
-            public void onNext(T args) {
-                // do nothing
-            }
-
-        });
+        PartialSubscription<T> partial = getSubscription();
+        partial.subscribe();
+        return partial;
     }
-    
+
     /**
      * An {@link Observer} must call an Observable's {@code subscribe} method
      * in order to receive items and notifications from the Observable.
      * 
      * @param onNext
-     * @return 
+     * @return
+     * @deprecated see {@link Observable#getSubscription()}
      */
+    @Deprecated
     public Subscription subscribe(final Action1<? super T> onNext) {
-        if (onNext == null) {
-            throw new IllegalArgumentException("onNext can not be null");
-        }
-
-        /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
-         */
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
-
-            @Override
-            public void onCompleted() {
-                // do nothing
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                handleError(e);
-                throw new OnErrorNotImplementedException(e);
-            }
-
-            @Override
-            public void onNext(T args) {
-                onNext.call(args);
-            }
-
-        });
+        PartialSubscription<T> partial = getSubscription();
+        partial.subscribe(onNext);
+        return partial;
     }
 
     /**
@@ -388,7 +571,9 @@ public class Observable<T> {
      * @param onNext
      * @param scheduler
      * @return
+     * @deprecated see {@link Observable#getSubscription()}
      */
+    @Deprecated
     public Subscription subscribe(final Action1<? super T> onNext, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext);
     }
@@ -400,39 +585,13 @@ public class Observable<T> {
      * @param onNext
      * @param onError
      * @return
+     * @deprecated see {@link Observable#getSubscription()}
      */
+    @Deprecated
     public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError) {
-        if (onNext == null) {
-            throw new IllegalArgumentException("onNext can not be null");
-        }
-        if (onError == null) {
-            throw new IllegalArgumentException("onError can not be null");
-        }
-
-        /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
-         */
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
-
-            @Override
-            public void onCompleted() {
-                // do nothing
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                handleError(e);
-                onError.call(e);
-            }
-
-            @Override
-            public void onNext(T args) {
-                onNext.call(args);
-            }
-
-        });
+        PartialSubscription<T> partial = getSubscription();
+        partial.subscribe(onNext, onError);
+        return partial;
     }
 
     /**
@@ -443,7 +602,9 @@ public class Observable<T> {
      * @param onError
      * @param scheduler
      * @return
+     * @deprecated see {@link Observable#getSubscription()}
      */
+    @Deprecated
     public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError);
     }
@@ -456,42 +617,13 @@ public class Observable<T> {
      * @param onError
      * @param onComplete
      * @return
+     * @deprecated see {@link Observable#getSubscription()}
      */
+    @Deprecated
     public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
-        if (onNext == null) {
-            throw new IllegalArgumentException("onNext can not be null");
-        }
-        if (onError == null) {
-            throw new IllegalArgumentException("onError can not be null");
-        }
-        if (onComplete == null) {
-            throw new IllegalArgumentException("onComplete can not be null");
-        }
-
-        /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
-         */
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
-
-            @Override
-            public void onCompleted() {
-                onComplete.call();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                handleError(e);
-                onError.call(e);
-            }
-
-            @Override
-            public void onNext(T args) {
-                onNext.call(args);
-            }
-
-        });
+        PartialSubscription<T> partial = getSubscription();
+        partial.subscribe(onNext, onError, onComplete);
+        return partial;
     }
 
     /**
@@ -503,7 +635,9 @@ public class Observable<T> {
      * @param onComplete
      * @param scheduler
      * @return
+     * @deprecated see {@link Observable#getSubscription()}
      */
+    @Deprecated
     public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError, onComplete);
     }
@@ -512,27 +646,19 @@ public class Observable<T> {
      * Returns a {@link ConnectableObservable} that upon connection causes the
      * source Observable to push results into the specified subject.
      * 
-     * @param subject the {@link Subject} for the {@link ConnectableObservable}
-     *                to push source items into
-     * @param <R> result type
+     * @param subject
+     *            the {@link Subject} for the {@link ConnectableObservable} to push source items
+     *            into
+     * @param <R>
+     *            result type
      * @return a {@link ConnectableObservable} that upon connection causes the
-     *         source Observable to push results into the specified
-     *         {@link Subject}
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablepublish-and-observablemulticast">RxJava Wiki: Observable.publish() and Observable.multicast()</a>
+     *         source Observable to push results into the specified {@link Subject}
+     * @see <a
+     *      href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablepublish-and-observablemulticast">RxJava
+     *      Wiki: Observable.publish() and Observable.multicast()</a>
      */
     public <R> ConnectableObservable<R> multicast(Subject<? super T, ? extends R> subject) {
         return OperationMulticast.multicast(this, subject);
-    }
-
-    /**
-     * Allow the {@link RxJavaErrorHandler} to receive the exception from
-     * onError.
-     * 
-     * @param e
-     */
-    private void handleError(Throwable e) {
-        // onError should be rare so we'll only fetch when needed
-        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
     }
 
     /**
@@ -544,13 +670,19 @@ public class Observable<T> {
      */
     private static class NeverObservable<T> extends Observable<T> {
         public NeverObservable() {
-            super(new OnSubscribeFunc<T>() {
-
+            super(new OnGetSubscriptionFunc<T>() {
                 @Override
-                public Subscription onSubscribe(Observer<? super T> t1) {
-                    return Subscriptions.empty();
+                public PartialSubscription<T> onGetSubscription() {
+                    return PartialSubscription.create(new OnPartialSubscribeFunc<T>() {
+                        @Override
+                        public void onSubscribe(Observer<? super T> observer) {
+                        }
+                    }, new OnPartialUnsubscribeFunc() {
+                        @Override
+                        public void onUnsubscribe() {
+                        }
+                    });
                 }
-
             });
         }
     }
@@ -564,24 +696,22 @@ public class Observable<T> {
     private static class ThrowObservable<T> extends Observable<T> {
 
         public ThrowObservable(final Throwable exception) {
-            super(new OnSubscribeFunc<T>() {
-
-                /**
-                 * Accepts an {@link Observer} and calls its
-                 * {@link Observer#onError onError} method.
-                 * 
-                 * @param observer an {@link Observer} of this Observable
-                 * @return a reference to the subscription
-                 */
+            super(new OnGetSubscriptionFunc<T>() {
                 @Override
-                public Subscription onSubscribe(Observer<? super T> observer) {
-                    observer.onError(exception);
-                    return Subscriptions.empty();
+                public PartialSubscription<T> onGetSubscription() {
+                    return PartialSubscription.create(new OnPartialSubscribeFunc<T>() {
+                        @Override
+                        public void onSubscribe(Observer<? super T> observer) {
+                            observer.onError(exception);
+                        }
+                    }, new OnPartialUnsubscribeFunc() {
+                        @Override
+                        public void onUnsubscribe() {
+                        }
+                    });
                 }
-
             });
         }
-
     }
 
     /**
@@ -602,16 +732,40 @@ public class Observable<T> {
      * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design
      * Guidelines (PDF)</a> for detailed information.
      * 
-     * @param <T> the type of the items that this Observable emits
-     * @param func a function that accepts an {@code Observer<T>}, invokes its
-     *             {@code onNext}, {@code onError}, and {@code onCompleted}
-     *             methods as appropriate, and returns a {@link Subscription} to
-     *             allow the Observer to cancel the subscription
+     * @param <T>
+     *            the type of the items that this Observable emits
+     * @param func
+     *            a function that accepts an {@code Observer<T>}, invokes its {@code onNext},
+     *            {@code onError}, and {@code onCompleted} methods as appropriate, and returns a
+     *            {@link Subscription} to
+     *            allow the Observer to cancel the subscription
      * @return an Observable that, when an {@link Observer} subscribes to it,
      *         will execute the given function
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create">RxJava Wiki: create()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create">RxJava
+     *      Wiki: create()</a>
      */
-    public static <T> Observable<T> create(OnSubscribeFunc<T> func) {
+    @Deprecated
+    public static <T> Observable<T> create(final OnSubscribeFunc<T> func) {
+        return new Observable<T>(new OnGetSubscriptionFunc<T>() {
+            @Override
+            public PartialSubscription<T> onGetSubscription() {
+                final SafeObservableSubscription subscription = new SafeObservableSubscription();
+                return PartialSubscription.create(new OnPartialSubscribeFunc<T>() {
+                    @Override
+                    public void onSubscribe(Observer<? super T> observer) {
+                        subscription.wrap(func.onSubscribe(observer));
+                    }
+                }, new OnPartialUnsubscribeFunc() {
+                    @Override
+                    public void onUnsubscribe() {
+                        subscription.unsubscribe();
+                    }
+                });
+            }
+        });
+    }
+
+    public static <T> Observable<T> create(OnGetSubscriptionFunc<T> func) {
         return new Observable<T>(func);
     }
 

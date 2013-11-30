@@ -16,15 +16,12 @@
 package rx.subjects;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import rx.Notification;
 import rx.Observer;
-import rx.Subscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func1;
 
 /**
  * Subject that retains all events and will replay them to an {@link Observer} that subscribes.
@@ -33,140 +30,95 @@ import rx.util.functions.Func1;
  * <p>
  * Example usage:
  * <p>
- * <pre> {@code
-
- * eplaySubject<Object> subject = ReplaySubject.create();
-  subject.onNext("one");
-  subject.onNext("two");
-  subject.onNext("three");
-  subject.onCompleted();
-
-  // both of the following will get the onNext/onCompleted calls from above
-  subject.subscribe(observer1);
-  subject.subscribe(observer2);
-
-  } </pre>
+ * 
+ * <pre>
+ * {
+ *     &#064;code
+ *     eplaySubject&lt;Object&gt; subject = ReplaySubject.create();
+ *     subject.onNext(&quot;one&quot;);
+ *     subject.onNext(&quot;two&quot;);
+ *     subject.onNext(&quot;three&quot;);
+ *     subject.onCompleted();
+ * 
+ *     // both of the following will get the onNext/onCompleted calls from above
+ *     subject.subscribe(observer1);
+ *     subject.subscribe(observer2);
+ * 
+ * }
+ * </pre>
  * 
  * @param <T>
  */
 public final class ReplaySubject<T> extends Subject<T, T>
 {
-
-    private boolean isDone = false;
-    private Throwable exception = null;
-    private final Map<Subscription, Observer<? super T>> subscriptions = new HashMap<Subscription, Observer<? super T>>();
-    private final List<T> history = Collections.synchronizedList(new ArrayList<T>());
+    private final Map<Object, Observer<? super T>> subscriptions = new HashMap<Object, Observer<? super T>>();
+    private final List<Notification<T>> history = new ArrayList<Notification<T>>();
 
     public static <T> ReplaySubject<T> create() {
-        return new ReplaySubject<T>(new DelegateSubscriptionFunc<T>());
+        return new ReplaySubject<T>(new ReplayOnGetSubscription<T>());
     }
 
-    private ReplaySubject(DelegateSubscriptionFunc<T> onSubscribe) {
-        super(onSubscribe);
-        onSubscribe.wrap(new SubscriptionFunc());
+    private ReplaySubject(ReplayOnGetSubscription<T> onGetSubscription) {
+        super(onGetSubscription);
+        onGetSubscription.history = history;
+        onGetSubscription.subscriptions = subscriptions;
     }
 
-    private static final class DelegateSubscriptionFunc<T> implements OnSubscribeFunc<T>
-    {
-        private Func1<? super Observer<? super T>, ? extends Subscription> delegate = null;
-
-        public void wrap(Func1<? super Observer<? super T>, ? extends Subscription> delegate)
-        {
-            if (this.delegate != null) {
-                throw new UnsupportedOperationException("delegate already set");
-            }
-            this.delegate = delegate;
-        }
+    private static final class ReplayOnGetSubscription<T> implements OnGetSubscriptionFunc<T> {
+        private Map<Object, Observer<? super T>> subscriptions;
+        private List<Notification<T>> history;
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer)
-        {
-            return delegate.call(observer);
-        }
-    }
+        public PartialSubscription<T> onGetSubscription() {
+            final Object marker = new Object();
+            return PartialSubscription.create(new OnPartialSubscribeFunc<T>() {
+                @Override
+                public void onSubscribe(Observer<? super T> observer) {
+                    int item = 0;
 
-    private class SubscriptionFunc implements Func1<Observer<? super T>, Subscription>
-    {
-        @Override
-        public Subscription call(Observer<? super T> observer) {
-            int item = 0;
-            Subscription subscription;
+                    for (;;) {
+                        while (item < history.size()) {
+                            history.get(item++).accept(observer);
+                        }
 
-            for (;;) {
-                while (item < history.size()) {
-                    observer.onNext(history.get(item++));
+                        synchronized (subscriptions) {
+                            if (item < history.size()) {
+                                continue;
+                            }
+                            subscriptions.put(marker, observer);
+                            break;
+                        }
+                    }
                 }
-
-                synchronized (subscriptions) {
-                    if (item < history.size()) {
-                        continue;
-                    }
-
-                    if (exception != null) {
-                        observer.onError(exception);
-                        return Subscriptions.empty();
-                    }
-                    if (isDone) {
-                        observer.onCompleted();
-                        return Subscriptions.empty();
-                    }
-
-                    subscription = new RepeatSubjectSubscription();
-                    subscriptions.put(subscription, observer);
-                    break;
+            }, new OnPartialUnsubscribeFunc() {
+                @Override
+                public void onUnsubscribe() {
+                    subscriptions.remove(marker);
                 }
-            }
-
-            return subscription;
-        }
-    }
-
-    private class RepeatSubjectSubscription implements Subscription
-    {
-        @Override
-        public void unsubscribe()
-        {
-            synchronized (subscriptions) {
-                subscriptions.remove(this);
-            }
+            });
         }
     }
 
     @Override
-    public void onCompleted()
-    {
-        synchronized (subscriptions) {
-            isDone = true;
-            for (Observer<? super T> observer : new ArrayList<Observer<? super T>>(subscriptions.values())) {
-                observer.onCompleted();
-            }
-            subscriptions.clear();
-        }
+    public void onCompleted() {
+        propgate(new Notification<T>());
     }
 
     @Override
-    public void onError(Throwable e)
-    {
-        synchronized (subscriptions) {
-            if (isDone) {
-                return;
-            }
-            isDone = true;
-            exception = e;
-            for (Observer<? super T> observer : new ArrayList<Observer<? super T>>(subscriptions.values())) {
-                observer.onError(e);
-            }
-            subscriptions.clear();
-        }
+    public void onError(Throwable e) {
+        propgate(new Notification<T>(e));
     }
 
     @Override
-    public void onNext(T args)
-    {
+    public void onNext(T args) {
+        propgate(new Notification<T>(args));
+    }
+
+    public void propgate(Notification<T> n) {
         synchronized (subscriptions) {
-            history.add(args);
+            history.add(n);
             for (Observer<? super T> observer : new ArrayList<Observer<? super T>>(subscriptions.values())) {
-                observer.onNext(args);
+                n.accept(observer);
             }
         }
     }

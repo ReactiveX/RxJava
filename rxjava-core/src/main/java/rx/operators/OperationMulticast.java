@@ -35,10 +35,10 @@ public class OperationMulticast {
         private Subscription subscription;
 
         public MulticastConnectableObservable(Observable<? extends T> source, final Subject<? super T, ? extends R> subject) {
-            super(new OnSubscribeFunc<R>() {
+            super(new OnGetSubscriptionFunc<R>() {
                 @Override
-                public Subscription onSubscribe(Observer<? super R> observer) {
-                    return subject.subscribe(observer);
+                public PartialSubscription<R> onGetSubscription() {
+                    return (PartialSubscription<R>) subject.getSubscription();
                 }
             });
             this.source = source;

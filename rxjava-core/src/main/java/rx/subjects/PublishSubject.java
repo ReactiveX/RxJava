@@ -17,6 +17,7 @@ package rx.subjects;
 
 import rx.Notification;
 import rx.Observer;
+import rx.Observable.OnGetSubscriptionFunc;
 
 /**
  * Subject that, once and {@link Observer} has subscribed, publishes all subsequent events to the subscriber.
@@ -44,14 +45,14 @@ import rx.Observer;
 public class PublishSubject<T> extends AbstractSubject<T> {
     public static <T> PublishSubject<T> create() {
         final SubjectState<T> state = new SubjectState<T>();
-        OnSubscribeFunc<T> onSubscribe = getOnSubscribeFunc(state, null);
-        return new PublishSubject<T>(onSubscribe, state);
+        OnGetSubscriptionFunc<T> onGetSubscription = getOnGetSubscriptionFunc(state, null);
+        return new PublishSubject<T>(onGetSubscription, state);
     }
 
     private final SubjectState<T> state;
 
-    protected PublishSubject(OnSubscribeFunc<T> onSubscribe, SubjectState<T> state) {
-        super(onSubscribe);
+    protected PublishSubject(OnGetSubscriptionFunc<T> onGetSubscription, SubjectState<T> state) {
+        super(onGetSubscription);
         this.state = state;
     }
 
