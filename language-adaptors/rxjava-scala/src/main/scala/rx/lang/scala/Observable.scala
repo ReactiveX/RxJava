@@ -1894,6 +1894,14 @@ object Observable {
     }))
   }
 
+  def create[T](func: Observer[T] => Subscription): Observable[T] = {
+    Observable[T](rx.Observable.create(new OnSubscribeFunc[T] {
+      def onSubscribe(t1: rx.Observer[_ >: T]): rx.Subscription = {
+        func(Observer(t1))
+      }
+    }))
+  }
+
   /**
    * Returns an Observable that invokes an [[rx.lang.scala.Observer]]'s [[rx.lang.scala.Observer.onError onError]] method when the Observer subscribes to it
    *
