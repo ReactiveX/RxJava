@@ -27,14 +27,14 @@ trait Subject[-T, +R] extends Observable[R] with Observer[T] {
 
   // temporary hack to workaround bugs in rx Subjects
   override def asJavaObserver: rx.Observer[_ >: T] = new ObserverBase[T] {
+    protected def onNextCore(value: T) = asJavaSubject.onNext(value)
     protected def onErrorCore(error: Throwable) =  asJavaSubject.onError(error)
     protected def onCompletedCore() = asJavaSubject.onCompleted()
-    protected def onNextCore(value: T) = asJavaSubject.onNext(value)
   }
 
-  def onCompleted(): Unit = asJavaObserver.onCompleted()
-  def onError(error: Throwable): Unit = asJavaObserver.onError(error)
   def onNext(value: T): Unit = asJavaObserver.onNext(value)
+  def onError(error: Throwable): Unit = asJavaObserver.onError(error)
+  def onCompleted(): Unit = asJavaObserver.onCompleted()
 
 }
 

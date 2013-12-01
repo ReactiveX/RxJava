@@ -59,16 +59,17 @@ trait Observer[-T] {
 
 object Observer {
   /**
-   * Assume that the underlying rx.Observer does not need to be wrapped
+   * Assume that the underlying rx.Observer does not need to be wrapped.
    */
   private [scala] def apply[T](observer: rx.Observer[T]) : Observer[T] = {
-     new Observer[T]() {
+     new Observer[T] {
 
        override def asJavaObserver = observer
 
-       def onCompleted(): Unit = asJavaObserver.onCompleted()
-       def onError(error: Throwable): Unit = asJavaObserver.onError(error)
        def onNext(value: T): Unit = asJavaObserver.onNext(value)
+       def onError(error: Throwable): Unit = asJavaObserver.onError(error)
+       def onCompleted(): Unit = asJavaObserver.onCompleted()
+
      }
    }
 }
