@@ -113,11 +113,7 @@ public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
 
             @Override
             public void onCompleted() {
-                if (!running.get()) {
-                    ResultManager.this.onCompleted();
-                } else {
-                    self.unsubscribe();
-                }
+                self.unsubscribe();
             }
             
         }

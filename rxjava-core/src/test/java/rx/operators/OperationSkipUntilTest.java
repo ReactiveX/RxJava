@@ -89,7 +89,7 @@ public class OperationSkipUntilTest {
         
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());
-        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onCompleted();
     }
     @Test
     public void otherFiresAndCompletes() {
