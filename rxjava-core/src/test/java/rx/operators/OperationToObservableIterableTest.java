@@ -15,6 +15,7 @@
  */
 package rx.operators;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import static rx.operators.OperationToObservableIterable.*;
@@ -26,6 +27,7 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
+import rx.util.functions.Func1;
 
 public class OperationToObservableIterableTest {
 
@@ -41,5 +43,16 @@ public class OperationToObservableIterableTest {
         verify(aObserver, times(1)).onNext("three");
         verify(aObserver, Mockito.never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testInterruptable() {
+        Func1<Integer, Integer> expensive = mock(Func1.class);
+        when(expensive.call(any(Integer.class))).thenReturn(10);
+
+        int v = Observable.from(1, 2, 3).map(expensive).take(1).toBlockingObservable().single();
+        
+        assertEquals(10, v);
+        verify(expensive, times(1)).call(any(Integer.class));
     }
 }

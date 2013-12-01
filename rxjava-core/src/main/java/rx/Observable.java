@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.joins.Pattern2;
@@ -234,6 +235,8 @@ public class Observable<T> {
             this.onPartialUnsubscribe = onPartialUnsubscribe;
         }
 
+        private boolean unsubscribed = false;
+        
         @Override
         @SuppressWarnings("unchecked")
         public void unsubscribe() {
@@ -246,7 +249,14 @@ public class Observable<T> {
                 onPartialUnsubscribe.onUnsubscribe();
             } catch (Throwable e) {
                 observer.onError(e);
+            } finally {
+                unsubscribed = true;
             }
+            
+        }
+        
+        public boolean isUnsubscribed() {
+            return unsubscribed;
         }
 
         /**
