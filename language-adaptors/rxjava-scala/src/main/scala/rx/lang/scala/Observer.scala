@@ -63,7 +63,8 @@ object Observer {
    */
   private [scala] def apply[T](observer: rx.Observer[T]) : Observer[T] = {
      new Observer[T]() {
-       override def asJavaObserver: rx.Observer[_ >: T] = observer
+
+       override def asJavaObserver = observer
 
        def onCompleted(): Unit = asJavaObserver.onCompleted()
        def onError(error: Throwable): Unit = asJavaObserver.onError(error)

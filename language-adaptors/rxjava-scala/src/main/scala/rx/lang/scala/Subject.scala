@@ -15,16 +15,26 @@
  */
 package rx.lang.scala
 
+import rx.joins.ObserverBase
+
 /**
 * A Subject is an Observable and an Observer at the same time.
 */
 trait Subject[-T, +R] extends Observable[R] with Observer[T] {
-  val asJavaSubject:    rx.subjects.Subject[_ >: T, _<: R]
+  val asJavaSubject: rx.subjects.Subject[_ >: T, _<: R]
+
   def asJavaObservable: rx.Observable[_ <: R] = asJavaSubject
-  override def asJavaObserver:   rx.Observer[_ >: T] = asJavaSubject
+
+  // temporary hack to workaround bugs in rx Subjects
+  override def asJavaObserver: rx.Observer[_ >: T] = new ObserverBase[T] {
+    protected def onErrorCore(error: Throwable) =  asJavaSubject.onError(error)
+    protected def onCompletedCore() = asJavaSubject.onCompleted()
+    protected def onNextCore(value: T) = asJavaSubject.onNext(value)
+  }
 
   def onCompleted(): Unit = asJavaObserver.onCompleted()
   def onError(error: Throwable): Unit = asJavaObserver.onError(error)
   def onNext(value: T): Unit = asJavaObserver.onNext(value)
+
 }
 
