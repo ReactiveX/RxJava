@@ -189,25 +189,25 @@ class CompletenessTest extends JUnitSuite {
   }
   
   @Ignore // because spams output
-  @Test def printJavaInstanceMethods: Unit = {
+  @Test def printJavaInstanceMethods(): Unit = {
     printMethodSet("Instance methods of rx.Observable", 
                    typeOf[rx.Observable[_]])
   }
   
   @Ignore // because spams output
-  @Test def printScalaInstanceMethods: Unit = {
+  @Test def printScalaInstanceMethods(): Unit = {
     printMethodSet("Instance methods of rx.lang.scala.Observable", 
                    typeOf[rx.lang.scala.Observable[_]])
   }
   
   @Ignore // because spams output
-  @Test def printJavaStaticMethods: Unit = {
+  @Test def printJavaStaticMethods(): Unit = {
     printMethodSet("Static methods of rx.Observable", 
                    typeOf[rx.Observable[_]].typeSymbol.companionSymbol.typeSignature)
   }
   
   @Ignore // because spams output
-  @Test def printScalaCompanionMethods: Unit = {
+  @Test def printScalaCompanionMethods(): Unit = {
     printMethodSet("Companion methods of rx.lang.scala.Observable",
                    typeOf[rx.lang.scala.Observable.type])
   }
@@ -227,7 +227,7 @@ class CompletenessTest extends JUnitSuite {
   }
 
   @Ignore // because spams output
-  @Test def printDefaultMethodCorrespondence: Unit = {
+  @Test def printDefaultMethodCorrespondence(): Unit = {
     println("\nDefault Method Correspondence")
     println(  "-----------------------------\n")
     val c = SortedMap(defaultMethodCorrespondence.toSeq : _*)
@@ -238,7 +238,7 @@ class CompletenessTest extends JUnitSuite {
   }
   
   @Ignore // because spams output
-  @Test def printCorrectedMethodCorrespondence: Unit = {
+  @Test def printCorrectedMethodCorrespondence(): Unit = {
     println("\nCorrected Method Correspondence")
     println(  "-------------------------------\n")
     val c = SortedMap(correspondence.toSeq : _*)
@@ -262,7 +262,7 @@ class CompletenessTest extends JUnitSuite {
     println(s"$status: $bad out of ${bad+good} methods were not found in $tp")
   }
   
-  @Test def checkScalaMethodPresenceVerbose: Unit = {
+  @Test def checkScalaMethodPresenceVerbose(): Unit = {
     println("\nTesting that all mentioned Scala methods exist")
     println(  "----------------------------------------------\n")
     
@@ -289,14 +289,14 @@ class CompletenessTest extends JUnitSuite {
       (javaM, if (actualMethods.contains(scalaM) || scalaM.charAt(0) == '[') scalaM else "[**TODO: missing**]")
   }
    
-  @Test def checkJavaMethodPresence: Unit = {
+  @Test def checkJavaMethodPresence(): Unit = {
     println("\nTesting that all mentioned Java methods exist")
     println(  "---------------------------------------------\n")
     checkMethodPresence(correspondence.keys, typeOf[rx.Observable[_]])
   }
   
   @Ignore // because we prefer the verbose version
-  @Test def checkScalaMethodPresence: Unit = {
+  @Test def checkScalaMethodPresence(): Unit = {
     checkMethodPresence(correspondence.values, typeOf[rx.lang.scala.Observable[_]])
   }
   
@@ -347,8 +347,8 @@ Note:
     (for (((javaName, scalaCol), pairs) <- ps.groupBy(groupingKey(_)).toList.sortBy(_._1._1)) yield {
       "| " + formatJavaCol(javaName, pairs.map(_._1)) + " | " + formatScalaCol(scalaCol) + " |"
     }).foreach(println(_))
-    println(s"\nThis table was generated on ${Calendar.getInstance().getTime()}.")
-    println(s"**Do not edit**. Instead, edit `${getClass().getCanonicalName()}`.")
+    println(s"\nThis table was generated on ${Calendar.getInstance().getTime}.")
+    println(s"**Do not edit**. Instead, edit `${getClass.getCanonicalName}`.")
   }
   
 }

@@ -166,10 +166,10 @@ class RxScalaDemo extends JUnitSuite {
   @Test def testTwoSubscriptionsToOneInterval() {
     val o = Observable.interval(100 millis).take(8)
     o.subscribe(
-      i => println(s"${i}a (on thread #${Thread.currentThread().getId()})")
+      i => println(s"${i}a (on thread #${Thread.currentThread().getId})")
     )
     o.subscribe(
-      i => println(s"${i}b (on thread #${Thread.currentThread().getId()})")
+      i => println(s"${i}b (on thread #${Thread.currentThread().getId})")
     )
     waitFor(o)
   }
@@ -177,10 +177,10 @@ class RxScalaDemo extends JUnitSuite {
   @Test def schedulersExample() {
     val o = Observable.interval(100 millis).take(8)
     o.observeOn(NewThreadScheduler()).subscribe(
-      i => println(s"${i}a (on thread #${Thread.currentThread().getId()})")
+      i => println(s"${i}a (on thread #${Thread.currentThread().getId})")
     )
     o.observeOn(NewThreadScheduler()).subscribe(
-      i => println(s"${i}b (on thread #${Thread.currentThread().getId()})")
+      i => println(s"${i}b (on thread #${Thread.currentThread().getId})")
     )
     waitFor(o)
   }
@@ -356,13 +356,13 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   def square(x: Int): Int = {
-    println(s"$x*$x is being calculated on thread ${Thread.currentThread().getId()}")
+    println(s"$x*$x is being calculated on thread ${Thread.currentThread().getId}")
     Thread.sleep(100) // calculating a square is heavy work :)
     x*x
   }
 
   def work(o1: Observable[Int]): Observable[String] = {
-    println(s"map() is being called on thread ${Thread.currentThread().getId()}")
+    println(s"map() is being called on thread ${Thread.currentThread().getId}")
     o1.map(i => s"The square of $i is ${square(i)}")
   }
 

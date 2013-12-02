@@ -3,8 +3,8 @@ import org.junit.Test
 import rx.lang.scala.subjects._
 import org.mockito.InOrder
 import rx.lang.scala._
-import org.mockito.Matchers._;
-import org.mockito.Mockito._;
+import org.mockito.Matchers._
+import org.mockito.Mockito._
 
 import org.junit.Assert._
 import org.junit.Test

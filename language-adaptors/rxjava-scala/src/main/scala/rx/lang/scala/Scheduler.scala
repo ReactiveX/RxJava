@@ -215,7 +215,7 @@ trait Scheduler {
 
 object Scheduler {
   private [scala] def apply(scheduler: rx.Scheduler): Scheduler = {
-    return new Scheduler() {
+    new Scheduler() {
        val asJavaScheduler = scheduler
     }
   }
