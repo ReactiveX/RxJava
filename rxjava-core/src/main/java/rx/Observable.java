@@ -418,7 +418,6 @@ public class Observable<T> {
 
             @Override
             public void onError(Throwable e) {
-                handleError(e);
                 onError.call(e);
             }
 
@@ -477,7 +476,6 @@ public class Observable<T> {
 
             @Override
             public void onError(Throwable e) {
-                handleError(e);
                 onError.call(e);
             }
 
