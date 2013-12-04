@@ -518,7 +518,7 @@ trait Observable[+T]
   def window(closings: () => Observable[Closing]): Observable[Observable[T]] = {
     val func : Func0[_ <: rx.Observable[_ <: Closing]] = closings().asJavaObservable
     val o1: rx.Observable[_ <: rx.Observable[_]] = asJavaObservable.window(func)
-    val o2 = Observable[rx.Observable[_]](o1).map((x: rx.Observable[_]) => {
+    val o2 = toScalaObservable[rx.Observable[_]](o1).map((x: rx.Observable[_]) => {
       val x2 = x.asInstanceOf[rx.Observable[_ <: T]]
       toScalaObservable[T](x2)
     })
@@ -1868,7 +1868,7 @@ object Observable {
    * @return an Observable that, when an [[rx.lang.scala.Observer]] subscribes to it, will execute the given
    *         function
    */
-  def apply[T](func: Observer[T] => Subscription): Observable[T] = {
+  def create[T](func: Observer[T] => Subscription): Observable[T] = {
     toScalaObservable[T](rx.Observable.create(new OnSubscribeFunc[T] {
       def onSubscribe(t1: rx.Observer[_ >: T]): rx.Subscription = {
         func(Observer(t1))
@@ -1887,7 +1887,7 @@ object Observable {
    *            the type of the items (ostensibly) emitted by the Observable
    * @return an Observable that invokes the [[rx.lang.scala.Observer]]'s [[rx.lang.scala.Observer.onError onError]] method when the Observer subscribes to it
    */
-  def apply[T](exception: Throwable): Observable[T] = {
+  def error[T](exception: Throwable): Observable[T] = {
     toScalaObservable[T](rx.Observable.error(exception))
   }
 
@@ -1912,21 +1912,24 @@ object Observable {
   }
 
   /**
-   * Generates an Observable that emits a sequence of integers within a specified range.
+   * Converts an `Iterable` into an Observable.
    *
-   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/range.png">
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
    *
-   * Implementation note: the entire range will be immediately emitted each time an [[rx.lang.scala.Observer]] subscribes.
-   * Since this occurs before the [[rx.lang.scala.Subscription]] is returned,
-   * it in not possible to unsubscribe from the sequence before it completes.
+   * Note: the entire iterable sequence is immediately emitted each time an
+   * Observer subscribes. Since this occurs before the
+   * `Subscription` is returned, it is not possible to unsubscribe from
+   * the sequence before it completes.
    *
-   * @param range the range
-   * @return an Observable that emits a range of sequential integers
+   * @param iterable the source `Iterable` sequence
+   * @param <T> the type of items in the `Iterable` sequence and the
+   *            type of items to be emitted by the resulting Observable
+   * @return an Observable that emits each item in the source `Iterable`
+   *         sequence
    */
-  def apply(range: Range): Observable[Int] = {
-    toScalaObservable[Int](rx.Observable.from(range.toIterable.asJava))
+  def from[T](iterable: Iterable[T]): Observable[T] = {
+    toScalaObservable(rx.Observable.from(iterable.asJava))
   }
-  
 
   /**
    * Returns an Observable that calls an Observable factory to create its Observable for each
