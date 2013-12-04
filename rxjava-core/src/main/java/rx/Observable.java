@@ -5518,7 +5518,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnEach()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<T> onNext) {
+    public Observable<T> doOnEach(final Action1<? super T> onNext) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {}
@@ -5609,7 +5609,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnEach()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229539.aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<T> onNext, final Action1<Throwable> onError) {
+    public Observable<T> doOnEach(final Action1<? super T> onNext, final Action1<Throwable> onError) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {}
@@ -5644,7 +5644,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnEach()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229830.aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<T> onNext, final Action1<Throwable> onError, final Action0 onCompleted) {
+    public Observable<T> doOnEach(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onCompleted) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {
