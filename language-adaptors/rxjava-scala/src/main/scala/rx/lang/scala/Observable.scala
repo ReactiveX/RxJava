@@ -1826,7 +1826,7 @@ trait Observable[+T]
    *
    * @return an Observable with the side-effecting behavior applied.
    */
-  def doOnEach[U >: T](observer: Observer[U]): Observable[T] = {
+  def doOnEach(observer: Observer[T]): Observable[T] = {
     Observable[T](asJavaObservable.doOnEach(observer.asJavaObserver))
   }
 
