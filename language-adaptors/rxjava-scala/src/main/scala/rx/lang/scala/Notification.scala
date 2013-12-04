@@ -20,6 +20,11 @@ package rx.lang.scala
  */
 sealed trait Notification[+T] {
   def asJava: rx.Notification[_ <: T]
+  override def equals(that: Any): Boolean = that match {
+    case other: Notification[_] => asJava.equals(other.asJava)
+    case _ => false
+  }
+  override def hashCode(): Int = asJava.hashCode()
 }
 
 /**
@@ -48,6 +53,7 @@ object Notification {
   
   class OnNext[+T](val asJava: rx.Notification[_ <: T]) extends Notification[T] {
     def value: T = asJava.getValue
+    override def toString = s"OnNext($value)"
   }
   
   object OnNext {
@@ -64,6 +70,7 @@ object Notification {
   
   class OnError[+T](val asJava: rx.Notification[_ <: T]) extends Notification[T] {
     def error: Throwable = asJava.getThrowable
+    override def toString = s"OnError($error)"
   }
   
   object OnError {
@@ -78,7 +85,9 @@ object Notification {
     }
   }
   
-  class OnCompleted[T](val asJava: rx.Notification[_ <: T]) extends Notification[T] {}
+  class OnCompleted[T](val asJava: rx.Notification[_ <: T]) extends Notification[T] {
+    override def toString = "OnCompleted()"
+  }
   
   object OnCompleted {
 
