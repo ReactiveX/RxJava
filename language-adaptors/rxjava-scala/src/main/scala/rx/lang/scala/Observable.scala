@@ -1828,8 +1828,11 @@ object Observable {
   import scala.collection.JavaConverters._
   import scala.collection.immutable.Range
   import scala.concurrent.duration.Duration
+  import scala.concurrent.{Future, ExecutionContext}
+  import scala.util.{Success, Failure}
   import ImplicitFunctionConversions._
   import JavaConversions._
+  import rx.lang.scala.subjects.AsyncSubject
 
   private[scala]
   def jObsOfListToScObsOfSeq[T](jObs: rx.Observable[_ <: java.util.List[T]]): Observable[Seq[T]] = {
@@ -1909,6 +1912,24 @@ object Observable {
    */
   def apply[T](items: T*): Observable[T] = {
     toScalaObservable[T](rx.Observable.from(items.toIterable.asJava))
+  }
+
+ /** Returns an Observable emitting the value produced by the Future as its single item.
+   * If the future fails, the Observable will fail as well.
+   *
+   * @param f Future whose value ends up in the resulting Observable
+   * @return an Observable completed after producing the value of the future, or with an exception
+   */
+  def from[T](f: Future[T])(implicit execContext: ExecutionContext): Observable[T] = {
+    val s = AsyncSubject[T]()
+    f.onComplete {
+      case Failure(e) =>
+        s.onError(e)
+      case Success(c) =>
+        s.onNext(c)
+        s.onCompleted()
+    }
+    s
   }
 
   /**

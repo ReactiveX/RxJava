@@ -1,5 +1,8 @@
 package rx.lang.scala
 
+import scala.concurrent.{Future, Await}
+import scala.concurrent.duration.Duration
+import scala.concurrent.ExecutionContext.Implicits.global
 import org.junit.Assert._
 import org.junit.{ Ignore, Test }
 import org.scalatest.junit.JUnitSuite
@@ -65,6 +68,30 @@ class ObservableTests extends JUnitSuite {
       case e: Exception => receivedMsg = e.getCause().getMessage()
     }
     assertEquals(receivedMsg, msg)
+  }
+
+  @Test def testFromFuture() {
+    val o = Observable from Future { 5 }
+    assertEquals(5, o.toBlockingObservable.single)
+  }
+
+  @Test def testFromFutureWithDelay() {
+    val o = Observable from Future { Thread.sleep(200); 42 }
+    assertEquals(42, o.toBlockingObservable.single)
+  }
+
+  @Test def testFromFutureWithError() {
+    val err = new Exception("ooops42")
+    val o: Observable[Int] = Observable from Future { Thread.sleep(200); throw err }
+    assertEquals(List(Notification.OnError(err)), o.materialize.toBlockingObservable.toList)
+  }
+
+  @Test def testFromFutureWithSubscribeOnlyAfterCompletion() {
+    val f = Future { Thread.sleep(200); 6 }
+    val o = Observable from f
+    val res = Await.result(f, Duration.Inf)
+    assertEquals(6, res)
+    assertEquals(6, o.toBlockingObservable.single)
   }
 
   /*
