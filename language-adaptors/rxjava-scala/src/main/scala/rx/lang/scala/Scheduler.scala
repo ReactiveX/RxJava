@@ -17,16 +17,15 @@ package rx.lang.scala
 
 import java.util.Date
 import scala.concurrent.duration.Duration
-import ImplicitFunctionConversions.scalaFunction0ProducingUnitToAction0
-import ImplicitFunctionConversions.schedulerActionToFunc2
 import rx.util.functions.{Action0, Action1, Func2}
 
 /**
- * Represents an object thatimport rx.lang.scala.ImplicitFunctionConversions
- schedules units of work.
+ * Represents an object that schedules units of work.
  */
 trait Scheduler {
-  def asJavaScheduler: rx.Scheduler
+  import rx.lang.scala.ImplicitFunctionConversions._
+
+  val asJavaScheduler: rx.Scheduler
 
   /**
    * Schedules a cancelable action to be executed.
@@ -34,7 +33,7 @@ trait Scheduler {
    * @param action Action to schedule.
    * @return a subscription to be able to unsubscribe from action.
    */
-  def schedule(action: rx.lang.scala.Scheduler => Subscription): Subscription = {
+  def schedule(action: Scheduler => Subscription): Subscription = {
     this.schedule[Integer](0, (s: Scheduler, x: Integer) => action(s): Subscription): Subscription
   }
 
@@ -60,7 +59,7 @@ trait Scheduler {
    * @param delayTime  Time the action is to be delayed before executing.
    * @return a subscription to be able to unsubscribe from action.
    */
-  def schedule(delayTime: Duration)(action: Scheduler => Subscription): Subscription = {
+  def schedule(delayTime: Duration, action: Scheduler => Subscription): Subscription = {
     this.schedule[Integer](0, (s: Scheduler, x: Integer) => action(s), delayTime: Duration): Subscription
   }
 
@@ -76,7 +75,8 @@ trait Scheduler {
    * @return a subscription to be able to unsubscribe from action.
    */
   private def schedule[T](state: T, action: (Scheduler, T) => Subscription, delayTime: Duration): Subscription = {
-    Subscription(asJavaScheduler.schedule(state, action, delayTime.length, delayTime.unit))
+    val xxx = schedulerActionToFunc2(action)
+    Subscription(asJavaScheduler.schedule(state, xxx, delayTime.length, delayTime.unit))
   }
 
   /**
@@ -89,7 +89,7 @@ trait Scheduler {
    * @param period The time interval to wait each time in between executing the action.
    * @return A subscription to be able to unsubscribe from action.
    */
-  def schedule(initialDelay: Duration, period: Duration)(action: Scheduler => Subscription): Subscription = {
+  def schedule(initialDelay: Duration, period: Duration, action: Scheduler => Subscription): Subscription = {
     this.schedulePeriodically[Integer](0, (s: Scheduler, x:Integer) => action(s): Subscription, initialDelay: Duration, period: Duration): Subscription
   }
 
@@ -119,7 +119,7 @@ trait Scheduler {
    * @param dueTime Time the action is to be executed. If in the past it will be executed immediately.
    * @return a subscription to be able to unsubscribe from action.
    */
-  def schedule(dueTime: Date)(action: Scheduler => Subscription): Subscription = {
+  def schedule(dueTime: Date, action: Scheduler => Subscription): Subscription = {
     this.schedule(0: Integer, (s: Scheduler, x: Integer) => action(s): Subscription, dueTime: Date): Subscription
   }
 
@@ -155,7 +155,7 @@ trait Scheduler {
    * @param action action
    * @return a subscription to be able to unsubscribe from action.
    */
-  def schedule(delayTime: Duration)(action: =>Unit): Subscription = {
+  def schedule(delayTime: Duration, action: =>Unit): Subscription = {
     Subscription(asJavaScheduler.schedule(()=>action, delayTime.length, delayTime.unit))
   }
 
@@ -170,7 +170,7 @@ trait Scheduler {
    *            The time interval to wait each time in between executing the action.
    * @return A subscription to be able to unsubscribe from action.
    */
-  def schedule(initialDelay: Duration, period: Duration)(action: =>Unit): Subscription = {
+  def schedule(initialDelay: Duration, period: Duration, action: =>Unit): Subscription = {
     Subscription(asJavaScheduler.schedulePeriodically(()=>action, initialDelay.length, initialDelay.unit.convert(period.length, period.unit), initialDelay.unit))
   }
 
@@ -213,14 +213,12 @@ trait Scheduler {
 
 }
 
-/**
- * Provides constructors for Schedulers.
- */
 object Scheduler {
-  private class WrapJavaScheduler(val asJavaScheduler: rx.Scheduler) extends Scheduler
-  
-  /**
-   * Constructs a Scala Scheduler from a Java Scheduler.
-   */
-  def apply(s: rx.Scheduler): Scheduler = new WrapJavaScheduler(s)
+  private [scala] def apply(scheduler: rx.Scheduler): Scheduler = {
+    new Scheduler() {
+       val asJavaScheduler = scheduler
+    }
+  }
 }
+
+

@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.lang.scala
+package rx.lang.scala.concurrency
 
-/**
- * Contains special Observables.
- * 
- * In Scala, this package only contains [[rx.lang.scala.observables.BlockingObservable]].
- * In the corresponding Java package `rx.observables`, there is also a
- * `GroupedObservable` and a `ConnectableObservable`, but these are not needed
- * in Scala, because we use a pair `(key, observable)` instead of `GroupedObservable`
- * and a pair `(startFunction, observable)` instead of `ConnectableObservable`. 
- */
-package object observables {}
+import java.util.concurrent.ScheduledExecutorService
+import rx.lang.scala.Scheduler
+
+object ScheduledExecutorServiceScheduler {
+
+  /**
+   * Returns a [[rx.lang.scala.Scheduler]] that queues work on an `java.util.concurrent.ScheduledExecutorService`.
+   */
+  def apply(executor: ScheduledExecutorService): ScheduledExecutorServiceScheduler =  {
+    new ScheduledExecutorServiceScheduler(rx.concurrency.Schedulers.executor(executor))
+  }
+}
+
+class ScheduledExecutorServiceScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
+  extends Scheduler {}
+

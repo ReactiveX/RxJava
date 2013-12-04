@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2013 Netflix, Inc.
  *
@@ -22,7 +23,6 @@ package rx.lang.scala
  * This interface is the equivalent of `IDisposable` in the .NET Rx implementation.
  */
 trait Subscription {
-
   val asJavaSubscription: rx.Subscription
 
   /**
@@ -38,19 +38,21 @@ trait Subscription {
 }
 
 object Subscription {
+
   import java.util.concurrent.atomic.AtomicBoolean
   import rx.lang.scala.subscriptions._
-  
+
+
   /**
    * Creates an [[rx.lang.scala.Subscription]] from an [[rx.Subscription]].
    */
-  def apply(subscription: rx.Subscription): Subscription = {
+  private [scala] def apply(subscription: rx.Subscription): Subscription = {
     subscription match {
       case x: rx.subscriptions.BooleanSubscription => new BooleanSubscription(x)
       case x: rx.subscriptions.CompositeSubscription => new CompositeSubscription(x)
       case x: rx.subscriptions.MultipleAssignmentSubscription => new MultipleAssignmentSubscription(x)
       case x: rx.subscriptions.SerialSubscription => new SerialSubscription(x)
-      case x: rx.Subscription => Subscription { x.unsubscribe() }
+      case x: rx.Subscription => apply { x.unsubscribe() }
     }
   }
 
@@ -61,6 +63,7 @@ object Subscription {
     new Subscription() {
 
       private val unsubscribed = new AtomicBoolean(false)
+
       def isUnsubscribed = unsubscribed.get()
 
       val asJavaSubscription = new rx.Subscription {
@@ -70,9 +73,3 @@ object Subscription {
   }
 
 }
-
-
-
-
-
-

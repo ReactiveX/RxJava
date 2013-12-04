@@ -30,8 +30,7 @@ import org.scalatest.junit.JUnitSuite
 
 import rx.lang.scala.Notification
 import rx.lang.scala.Observable
-import rx.lang.scala.observable
-import rx.lang.scala.concurrency.Schedulers
+import rx.lang.scala.concurrency._
 
 @Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
@@ -167,21 +166,21 @@ class RxScalaDemo extends JUnitSuite {
   @Test def testTwoSubscriptionsToOneInterval() {
     val o = Observable.interval(100 millis).take(8)
     o.subscribe(
-      i => println(s"${i}a (on thread #${Thread.currentThread().getId()})")
+      i => println(s"${i}a (on thread #${Thread.currentThread().getId})")
     )
     o.subscribe(
-      i => println(s"${i}b (on thread #${Thread.currentThread().getId()})")
+      i => println(s"${i}b (on thread #${Thread.currentThread().getId})")
     )
     waitFor(o)
   }
 
   @Test def schedulersExample() {
     val o = Observable.interval(100 millis).take(8)
-    o.observeOn(Schedulers.newThread).subscribe(
-      i => println(s"${i}a (on thread #${Thread.currentThread().getId()})")
+    o.observeOn(NewThreadScheduler()).subscribe(
+      i => println(s"${i}a (on thread #${Thread.currentThread().getId})")
     )
-    o.observeOn(Schedulers.newThread).subscribe(
-      i => println(s"${i}b (on thread #${Thread.currentThread().getId()})")
+    o.observeOn(NewThreadScheduler()).subscribe(
+      i => println(s"${i}b (on thread #${Thread.currentThread().getId})")
     )
     waitFor(o)
   }
@@ -357,13 +356,13 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   def square(x: Int): Int = {
-    println(s"$x*$x is being calculated on thread ${Thread.currentThread().getId()}")
+    println(s"$x*$x is being calculated on thread ${Thread.currentThread().getId}")
     Thread.sleep(100) // calculating a square is heavy work :)
     x*x
   }
 
   def work(o1: Observable[Int]): Observable[String] = {
-    println(s"map() is being called on thread ${Thread.currentThread().getId()}")
+    println(s"map() is being called on thread ${Thread.currentThread().getId}")
     o1.map(i => s"The square of $i is ${square(i)}")
   }
 
@@ -426,40 +425,6 @@ class RxScalaDemo extends JUnitSuite {
   @Test def elementAtOrDefaultReplacement() {
     assertEquals("b", Observable("a", "b", "c").drop(1).firstOrElse("!").toBlockingObservable.single)
     assertEquals("!!", Observable("a", "b", "c").drop(10).firstOrElse("!!").toBlockingObservable.single)
-  }
-
-  @Test def observableLikeFuture1() {
-    implicit val scheduler = Schedulers.threadPoolForIO
-    val o1 = observable {
-      Thread.sleep(1000)
-      5
-    }
-    val o2 = observable {
-      Thread.sleep(500)
-      4
-    }
-    Thread.sleep(500)
-    val t1 = System.currentTimeMillis
-    println((o1 merge o2).first.toBlockingObservable.single)
-    println(System.currentTimeMillis - t1)
-  }
-
-  @Test def observableLikeFuture2() {
-    class Friend {}
-    val session = new Object {
-      def getFriends: List[Friend] = List(new Friend, new Friend)
-    }
-
-    implicit val scheduler = Schedulers.threadPoolForIO
-    val o: Observable[List[Friend]] = observable {
-      session.getFriends
-    }
-    o.subscribe(
-      friendList => println(friendList),
-      err => println(err.getMessage)
-    )
-
-    Thread.sleep(1500) // or convert to BlockingObservable
   }
 
   @Test def takeWhileWithIndexAlternative {

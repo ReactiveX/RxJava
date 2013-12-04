@@ -28,7 +28,7 @@ class TestSchedulerExample extends JUnitSuite {
 
     scheduler.advanceTimeTo(2 seconds)
 
-    val inOrdr = inOrder(observer);
+    val inOrdr = inOrder(observer)
     inOrdr.verify(observer, times(1)).onNext(0L)
     inOrdr.verify(observer, times(1)).onNext(1L)
     inOrdr.verify(observer, never).onNext(2L)
@@ -37,7 +37,7 @@ class TestSchedulerExample extends JUnitSuite {
 
     verify(observer, never).onNext(2L)
     
-    sub.unsubscribe();
+    sub.unsubscribe()
 
     scheduler.advanceTimeTo(4 seconds)
     
