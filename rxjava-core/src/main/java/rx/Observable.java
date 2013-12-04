@@ -6130,11 +6130,14 @@ public class Observable<T> {
     /**
      * Return an Observable that skips elements from the source Observable until the secondary
      * observable emits an element.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipUntil.png">
      * 
      * @param other the other Observable that has to emit an element before this
      *              Observable's elements are relayed
      * @return an Observable that skips elements from the source Observable until the secondary
      *         observable emits an element.
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skipuntil">RxJava Wiki: skipUntil()</a>
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229358.aspx'>MSDN: Observable.SkipUntil</a>
      */
     public <U> Observable<T> skipUntil(Observable<U> other) {
