@@ -3,9 +3,8 @@ package rx.lang.scala.subscriptions
 import org.junit.Assert._
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
-import rx.lang.scala._
 
-
+import rx.lang.scala.Subscription
 
 class SubscriptionTests extends JUnitSuite {
 
@@ -47,7 +46,7 @@ class SubscriptionTests extends JUnitSuite {
     val s0 = BooleanSubscription{ u0 = true }
 
     var u1 = false
-    val s1 = rx.lang.scala.Subscription{ u1 = true }
+    val s1 = Subscription{ u1 = true }
 
     val composite = CompositeSubscription()
 
