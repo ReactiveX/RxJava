@@ -15,7 +15,13 @@
  */
 package rx.subscriptions;
 
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,53 +30,94 @@ import org.mockito.MockitoAnnotations;
 import rx.Subscription;
 
 public class SerialSubscriptionTests {
-    private SerialSubscription serialSubscription;
+	private SerialSubscription serialSubscription;
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() {
+		MockitoAnnotations.initMocks(this);
 
-        serialSubscription = new SerialSubscription();
-    }
+		serialSubscription = new SerialSubscription();
+	}
 
-    @Test
-    public void unsubscribingWithoutUnderlyingDoesNothing() {
-        serialSubscription.unsubscribe();
-    }
+	@Test
+	public void unsubscribingWithoutUnderlyingDoesNothing() {
+		serialSubscription.unsubscribe();
+	}
 
-    @Test
-    public void unsubscribingWithSingleUnderlyingUnsubscribes() {
-        Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
-        underlying.unsubscribe();
-        verify(underlying).unsubscribe();
-    }
+	@Test
+	public void unsubscribingWithSingleUnderlyingUnsubscribes() {
+		Subscription underlying = mock(Subscription.class);
+		serialSubscription.setSubscription(underlying);
+		underlying.unsubscribe();
+		verify(underlying).unsubscribe();
+	}
 
-    @Test
-    public void replacingFirstUnderlyingCausesUnsubscription() {
-        Subscription first = mock(Subscription.class);
-        serialSubscription.setSubscription(first);
-        Subscription second = mock(Subscription.class);
-        serialSubscription.setSubscription(second);
-        verify(first).unsubscribe();
-    }
+	@Test
+	public void replacingFirstUnderlyingCausesUnsubscription() {
+		Subscription first = mock(Subscription.class);
+		serialSubscription.setSubscription(first);
+		Subscription second = mock(Subscription.class);
+		serialSubscription.setSubscription(second);
+		verify(first).unsubscribe();
+	}
 
-    @Test
-    public void whenUnsubscribingSecondUnderlyingUnsubscribed() {
-        Subscription first = mock(Subscription.class);
-        serialSubscription.setSubscription(first);
-        Subscription second = mock(Subscription.class);
-        serialSubscription.setSubscription(second);
-        serialSubscription.unsubscribe();
-        verify(second).unsubscribe();
-    }
+	@Test
+	public void whenUnsubscribingSecondUnderlyingUnsubscribed() {
+		Subscription first = mock(Subscription.class);
+		serialSubscription.setSubscription(first);
+		Subscription second = mock(Subscription.class);
+		serialSubscription.setSubscription(second);
+		serialSubscription.unsubscribe();
+		verify(second).unsubscribe();
+	}
 
-    @Test
-    public void settingUnderlyingWhenUnsubscribedCausesImmediateUnsubscription()
-    {
-        serialSubscription.unsubscribe();
-        Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
-        verify(underlying).unsubscribe();
-    }
+	@Test
+	public void settingUnderlyingWhenUnsubscribedCausesImmediateUnsubscription() {
+		serialSubscription.unsubscribe();
+		Subscription underlying = mock(Subscription.class);
+		serialSubscription.setSubscription(underlying);
+		verify(underlying).unsubscribe();
+	}
+
+	@Test(timeout = 1000)
+	public void settingUnderlyingWhenUnsubscribedCausesImmediateUnsubscriptionConcurrently()
+			throws InterruptedException {
+		final Subscription firstSet = mock(Subscription.class);
+		serialSubscription.setSubscription(firstSet);
+
+		final CountDownLatch start = new CountDownLatch(1);
+
+		final int count = 10;
+		final CountDownLatch end = new CountDownLatch(count);
+
+		final List<Thread> threads = new ArrayList<Thread>();
+		for (int i = 0 ; i < count ; i++) {
+			final Thread t = new Thread() {
+				@Override
+				public void run() {
+					try {
+						start.await();
+						serialSubscription.unsubscribe();
+					} catch (InterruptedException e) {
+						fail(e.getMessage());
+					} finally {
+						end.countDown();
+					}
+				}
+			};
+			t.start();
+			threads.add(t);
+		}
+
+		final Subscription underlying = mock(Subscription.class);
+		start.countDown();
+		serialSubscription.setSubscription(underlying);
+		end.await();
+		verify(firstSet).unsubscribe();
+		verify(underlying).unsubscribe();
+
+		for (final Thread t : threads) {
+			t.interrupt();
+		}
+	}
 }

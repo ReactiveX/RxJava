@@ -15,6 +15,11 @@
  */
 package rx.subscriptions;
 
+import static rx.subscriptions.Subscriptions.empty;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Subscription;
 
 /**
@@ -24,47 +29,25 @@ import rx.Subscription;
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.serialdisposable(v=vs.103).aspx">Rx.Net equivalent SerialDisposable</a>
  */
 public class SerialSubscription implements Subscription {
-    private boolean unsubscribed;
-    private Subscription subscription;
-    private final Object gate = new Object();
+	private final AtomicBoolean unsubscribed = new AtomicBoolean();
+	private final AtomicReference<Subscription> reference = new AtomicReference<Subscription>(empty());
 
-    @Override
-    public void unsubscribe() {
-        Subscription toUnsubscribe = null;
-        synchronized (gate) {
-            if (!unsubscribed) {
-                if (subscription != null) {
-                    toUnsubscribe = subscription;
-                    subscription = null;
-                }
-                unsubscribed = true;
-            }
-        }
-        if (toUnsubscribe != null) {
-            toUnsubscribe.unsubscribe();
-        }
-    }
+	@Override
+	public void unsubscribe() {
+		if (unsubscribed.compareAndSet(false, true)) {
+			reference.getAndSet(empty()).unsubscribe();
+		}
+	}
 
-    public Subscription getSubscription() {
-        synchronized (gate) {
-            return subscription;
-        }
-    }
+	public void setSubscription(final Subscription subscription) {
+		if (unsubscribed.get()) {
+			subscription.unsubscribe();
+		} else {
+			reference.getAndSet(subscription == null ? empty() : subscription).unsubscribe();
+		}
+	}
 
-    public void setSubscription(Subscription subscription) {
-        Subscription toUnsubscribe = null;
-        synchronized (gate) {
-            if (!unsubscribed) {
-                if (this.subscription != null) {
-                    toUnsubscribe = this.subscription;
-                }
-                this.subscription = subscription;
-            } else {
-                toUnsubscribe = subscription;
-            }
-        }
-        if (toUnsubscribe != null) {
-            toUnsubscribe.unsubscribe();
-        }
-    }
+	public Subscription getSubscription() {
+		return reference.get();
+	}
 }
