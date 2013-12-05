@@ -17,6 +17,7 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
+import rx.Scheduler;
 import rx.util.Timestamped;
 import rx.util.functions.Func1;
 
@@ -41,6 +42,17 @@ public final class OperationTimestamp {
             @Override
             public Timestamped<T> call(T value) {
                 return new Timestamped<T>(System.currentTimeMillis(), value);
+            }
+        });
+    }
+    /**
+     * Timestamp the source elements based on the timing provided by the scheduler.
+     */
+    public static <T> OnSubscribeFunc<Timestamped<T>> timestamp(Observable<? extends T> source, final Scheduler scheduler) {
+        return OperationMap.map(source, new Func1<T, Timestamped<T>>() {
+            @Override
+            public Timestamped<T> call(T value) {
+                return new Timestamped<T>(scheduler.now(), value);
             }
         });
     }
