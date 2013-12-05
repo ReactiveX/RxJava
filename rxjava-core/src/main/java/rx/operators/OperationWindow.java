@@ -23,8 +23,6 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
-import rx.util.Closing;
-import rx.util.Opening;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
@@ -42,7 +40,7 @@ public final class OperationWindow extends ChunkedOperation {
     /**
      * <p>This method creates a {@link rx.util.functions.Func1} object which represents the window operation. This operation takes
      * values from the specified {@link rx.Observable} source and stores them in a window until the {@link rx.Observable} constructed using the {@link rx.util.functions.Func0} argument, produces a
-     * {@link rx.util.Closing} value. The window is then
+     * value. The window is then
      * emitted, and a new window is created to replace it. A new {@link rx.Observable} will be constructed using the
      * provided {@link rx.util.functions.Func0} object, which will determine when this new window is emitted. When the source {@link rx.Observable} completes or produces an error, the current window
      * is emitted, and the event is propagated
@@ -55,16 +53,16 @@ public final class OperationWindow extends ChunkedOperation {
      *            The {@link rx.Observable} which produces values.
      * @param windowClosingSelector
      *            A {@link rx.util.functions.Func0} object which produces {@link rx.Observable}s. These {@link rx.Observable}s determine when a window is emitted and replaced by simply
-     *            producing an {@link rx.util.Closing} object.
+     *            producing an object.
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final Func0<? extends Observable<? extends Closing>> windowClosingSelector) {
+    public static <T, TClosing> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final Func0<? extends Observable<? extends TClosing>> windowClosingSelector) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 NonOverlappingChunks<T, Observable<T>> windows = new NonOverlappingChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker());
-                ChunkCreator creator = new ObservableBasedSingleChunkCreator<T, Observable<T>>(windows, windowClosingSelector);
+                ChunkCreator creator = new ObservableBasedSingleChunkCreator<T, Observable<T>, TClosing>(windows, windowClosingSelector);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
             }
 
@@ -76,9 +74,9 @@ public final class OperationWindow extends ChunkedOperation {
      * values from the specified {@link rx.Observable} source and stores them in the currently active window. Initially
      * there are no windows active.</p>
      * 
-     * <p>Windows can be created by pushing a {@link rx.util.Opening} value to the "windowOpenings" {@link rx.Observable}.
+     * <p>Windows can be created by pushing a value to the "windowOpenings" {@link rx.Observable}.
      * This creates a new window which will then start recording values which are produced by the "source" {@link rx.Observable}. Additionally the "windowClosingSelector" will be used to construct an
-     * {@link rx.Observable} which can produce {@link rx.util.Closing} values. When it does so it will close this (and only this) newly created
+     * {@link rx.Observable} which can produce values. When it does so it will close this (and only this) newly created
      * window. When the source {@link rx.Observable} completes or produces an error, all windows are emitted, and the
      * event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
@@ -88,20 +86,20 @@ public final class OperationWindow extends ChunkedOperation {
      * @param source
      *            The {@link rx.Observable} which produces values.
      * @param windowOpenings
-     *            An {@link rx.Observable} which when it produces a {@link rx.util.Opening} value will
+     *            An {@link rx.Observable} which when it produces a value will
      *            create a new window which instantly starts recording the "source" {@link rx.Observable}.
      * @param windowClosingSelector
      *            A {@link rx.util.functions.Func0} object which produces {@link rx.Observable}s. These {@link rx.Observable}s determine when a window is emitted and replaced by simply
-     *            producing an {@link rx.util.Closing} object.
+     *            producing an object.
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final Observable<? extends Opening> windowOpenings, final Func1<Opening, ? extends Observable<? extends Closing>> windowClosingSelector) {
+    public static <T, TOpening, TClosing> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final Observable<? extends TOpening> windowOpenings, final Func1<? super TOpening, ? extends Observable<? extends TClosing>> windowClosingSelector) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 OverlappingChunks<T, Observable<T>> windows = new OverlappingChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker());
-                ChunkCreator creator = new ObservableBasedMultiChunkCreator<T, Observable<T>>(windows, windowOpenings, windowClosingSelector);
+                ChunkCreator creator = new ObservableBasedMultiChunkCreator<T, Observable<T>, TOpening, TClosing>(windows, windowOpenings, windowClosingSelector);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
             }
         };
