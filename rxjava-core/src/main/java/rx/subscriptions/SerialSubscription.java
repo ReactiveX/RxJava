@@ -38,16 +38,7 @@ public class SerialSubscription implements Subscription {
 
     @Override
     public void unsubscribe() {
-        do {
-            final Subscription current = reference.get();
-            if (current == UNSUBSCRIBED) {
-                break;
-            }
-            if (reference.compareAndSet(current, UNSUBSCRIBED)) {
-                current.unsubscribe();
-                break;
-            }
-        } while (true);
+        setSubscription(UNSUBSCRIBED);
     }
 
     public void setSubscription(final Subscription subscription) {
@@ -62,9 +53,5 @@ public class SerialSubscription implements Subscription {
                 break;
             }
         } while (true);
-    }
-
-    public Subscription getSubscription() {
-        return reference.get();
     }
 }
