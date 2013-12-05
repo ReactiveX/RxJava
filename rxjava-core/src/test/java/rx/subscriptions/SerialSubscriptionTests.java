@@ -163,4 +163,48 @@ public class SerialSubscriptionTests {
             t.join();
         }
     }
+    
+    @Test
+    public void concurrentSetSubscriptionShouldNotInterleave()
+            throws InterruptedException {
+    	final int count = 10;
+    	final List<Subscription> subscriptions = new ArrayList<Subscription>();
+    	
+        final CountDownLatch start = new CountDownLatch(1);
+        final CountDownLatch end = new CountDownLatch(count);
+
+        final List<Thread> threads = new ArrayList<Thread>();
+		for (int i = 0 ; i < count ; i++) {
+			final Subscription subscription = mock(Subscription.class);
+        	subscriptions.add(subscription);
+        	
+            final Thread t = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        start.await();
+						serialSubscription.setSubscription(subscription);
+                    } catch (InterruptedException e) {
+                        fail(e.getMessage());
+                    } finally {
+                        end.countDown();
+                    }
+                }
+            };
+            t.start();
+            threads.add(t);
+        }
+
+        start.countDown();
+        end.await();
+        serialSubscription.unsubscribe();
+        
+        for(final Subscription subscription : subscriptions) {
+        	verify(subscription).unsubscribe();
+        }
+
+        for (final Thread t : threads) {
+            t.join();
+        }
+    }
 }
