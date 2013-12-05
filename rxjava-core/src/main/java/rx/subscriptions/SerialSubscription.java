@@ -17,11 +17,7 @@ package rx.subscriptions;
 
 import static rx.subscriptions.Subscriptions.empty;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import rx.Subscription;
 
@@ -32,40 +28,40 @@ import rx.Subscription;
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.serialdisposable(v=vs.103).aspx">Rx.Net equivalent SerialDisposable</a>
  */
 public class SerialSubscription implements Subscription {
-    private final AtomicBoolean unsubscribed = new AtomicBoolean();
     private final AtomicReference<Subscription> reference = new AtomicReference<Subscription>(empty());
-    private final Lock read;
-    private final Lock write;
 
-    public SerialSubscription() {
-        final ReadWriteLock lock = new ReentrantReadWriteLock();
-        read = lock.readLock();
-        write = lock.writeLock();
-    }
+    private static final Subscription UNSUBSCRIBED = new Subscription() {
+        @Override
+        public void unsubscribe() {
+        }
+    };
 
     @Override
     public void unsubscribe() {
-        write.lock();
-        try {
-            if (unsubscribed.compareAndSet(false, true)) {
-                reference.getAndSet(empty()).unsubscribe();
+        do {
+            final Subscription current = reference.get();
+            if (current == UNSUBSCRIBED) {
+                break;
             }
-        } finally {
-            write.unlock();
-        }
+            if (reference.compareAndSet(current, UNSUBSCRIBED)) {
+                current.unsubscribe();
+                break;
+            }
+        } while (true);
     }
 
     public void setSubscription(final Subscription subscription) {
-        read.lock();
-        try {
-            if (unsubscribed.get()) {
+        do {
+            final Subscription current = reference.get();
+            if (current == UNSUBSCRIBED) {
                 subscription.unsubscribe();
-            } else {
-                reference.getAndSet(subscription).unsubscribe();
+                break;
             }
-        } finally {
-            read.unlock();
-        }
+            if (reference.compareAndSet(current, subscription)) {
+                current.unsubscribe();
+                break;
+            }
+        } while (true);
     }
 
     public Subscription getSubscription() {
