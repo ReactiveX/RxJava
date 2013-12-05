@@ -21,6 +21,7 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.duration.DurationLong
 import scala.language.postfixOps
+import scala.language.implicitConversions
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -28,8 +29,7 @@ import org.junit.Ignore
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 
-import rx.lang.scala.Notification
-import rx.lang.scala.Observable
+import rx.lang.scala._
 import rx.lang.scala.concurrency._
 
 @Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
@@ -132,15 +132,14 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def rangeAndBufferExample() {
-    val o = Observable(1 to 18)
+    val o = Observable.from(1 to 18)
     o.buffer(5).subscribe((l: Seq[Int]) => println(l.mkString("[", ", ", "]")))
   }
 
   @Test def windowExample() {
-    // this will be nicer once we have zipWithIndex
-    (for ((o, i) <- Observable(1 to 18).window(5) zip Observable(0 until 4); n <- o)
-    yield s"Observable#$i emits $n")
-      .subscribe(output(_))
+    (for ((o, i) <- Observable.from(1 to 18).window(5).zipWithIndex; n <- o)
+      yield s"Observable#$i emits $n"
+    ).subscribe(output(_))
   }
 
   @Test def testReduce() {
@@ -217,6 +216,7 @@ class RxScalaDemo extends JUnitSuite {
     }).flatten.toBlockingObservable.foreach(println(_))
   }
 
+  @Ignore // TODO something's bad here
   @Test def timingTest1() {
     val numbersByModulo3 = Observable.interval(1000 millis).take(9).groupBy(_ % 3)
 
@@ -368,13 +368,13 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def parallelExample() {
     val t0 = System.currentTimeMillis()
-    Observable(1 to 10).parallel(work(_)).toBlockingObservable.foreach(println(_))
+    Observable.from(1 to 10).parallel(work(_)).toBlockingObservable.foreach(println(_))
     println(s"Work took ${System.currentTimeMillis()-t0} ms")
   }
 
   @Test def exampleWithoutParallel() {
     val t0 = System.currentTimeMillis()
-    work(Observable(1 to 10)).toBlockingObservable.foreach(println(_))
+    work(Observable.from(1 to 10)).toBlockingObservable.foreach(println(_))
     println(s"Work took ${System.currentTimeMillis()-t0} ms")
   }
 
@@ -402,11 +402,10 @@ class RxScalaDemo extends JUnitSuite {
     }
 
     val o1 = Observable.interval(100 millis).take(3)
-    val o2 = Observable(new IOException("Oops"))
+    val o2 = Observable.error(new IOException("Oops"))
     printObservable(o1)
-    //waitFor(o1)
     printObservable(o2)
-    //waitFor(o2)
+    Thread.sleep(500)
   }
 
   @Test def materializeExample2() {
@@ -430,6 +429,17 @@ class RxScalaDemo extends JUnitSuite {
   @Test def takeWhileWithIndexAlternative {
     val condition = true
     Observable("a", "b").zipWithIndex.takeWhile{case (elem, index) => condition}.map(_._1)
+  }
+  
+  @Test def createExample() {
+    val o = Observable.create[String](observer => {
+      // this is bad because you cannot unsubscribe!
+      observer.onNext("a")
+      observer.onNext("b")
+      observer.onCompleted()
+      Subscription {}
+    })
+    o.subscribe(println(_))
   }
 
   def output(s: String): Unit = println(s)

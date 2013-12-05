@@ -18,19 +18,22 @@ package rx.lang.scala
 import java.lang.Exception
 import java.{ lang => jlang }
 
-import scala.collection.Seq
 import scala.language.implicitConversions
+import scala.collection.Seq
 
 import rx.util.functions._
+import rx.lang.scala.JavaConversions._
+
 
 /**
  * These function conversions convert between Scala functions and Rx `Func`s and `Action`s.
  * Most RxScala users won't need them, but they might be useful if one wants to use
  * the `rx.Observable` directly instead of using `rx.lang.scala.Observable` or if one wants
  * to use a Java library taking/returning `Func`s and `Action`s.
+ * This object only contains conversions between functions. For conversions between types,
+ * use [[rx.lang.scala.JavaConversions]].
  */
 object ImplicitFunctionConversions {
-  import language.implicitConversions
 
 //  implicit def schedulerActionToFunc2[T](action: (Scheduler, T) => Subscription): Func2[rx.Scheduler, T, rx.Subscription] with Object {def call(s: rx.Scheduler, t: T): rx.Subscription} =
 //    new Func2[rx.Scheduler, T, rx.Subscription] {
@@ -46,25 +49,10 @@ object ImplicitFunctionConversions {
       }
     }
 
-  implicit def toJavaNotification[T](s: Notification[T]): rx.Notification[_ <: T] = s.asJava
-  implicit def toScalaNotification[T](s: rx.Notification[_ <: T]): Notification[T] = Notification(s)
-
-  implicit def toJavaSubscription(s: Subscription): rx.Subscription = s.asJavaSubscription
-  implicit def toScalaSubscription(s: rx.Subscription): Subscription = Subscription(s)
-
-  implicit def scalaSchedulerToJavaScheduler(s: Scheduler): rx.Scheduler = s.asJavaScheduler
-  implicit def javaSchedulerToScalaScheduler(s: rx.Scheduler): Scheduler = Scheduler(s)
-
-  implicit def toJavaObserver[T](s: Observer[T]): rx.Observer[_ >: T] = s.asJavaObserver
-  implicit def toScalaObserver[T](s: rx.Observer[_ >: T]): Observer[T] = Observer(s)
-
-  implicit def toJavaObservable[T](s: Observable[T]): rx.Observable[_ <: T] = s.asJavaObservable
-  implicit def toScalaObservable[T](s: rx.Observable[_ <: T]): Observable[T] = Observable(s)
-
   implicit def scalaFunction1ToOnSubscribeFunc[T](f: rx.lang.scala.Observer[T] => Subscription) =
     new rx.Observable.OnSubscribeFunc[T] {
       def onSubscribe(obs: rx.Observer[_ >: T]): rx.Subscription = {
-        f(Observer(obs))
+        f(obs)
       }
     }
 
