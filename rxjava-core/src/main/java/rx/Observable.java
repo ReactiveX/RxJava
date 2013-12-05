@@ -2208,6 +2208,19 @@ public class Observable<T> {
     }
 
     /**
+     * Wraps each item emitted by a source Observable in a {@link Timestamped}
+     * object with timestamps provided by the given Scheduler.
+     * 
+     * @param scheduler the {@link Scheduler} to use as a time source.
+     * @return an Observable that emits timestamped items from the source
+     *         Observable with timestamps provided by the given Scheduler
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229003.aspx'>MSDN: Observable.Timestamp</a>
+     */
+    public Observable<Timestamped<T>> timestamp(Scheduler scheduler) {
+        return create(OperationTimestamp.timestamp(this, scheduler));
+    }
+
+    /**
      * Converts a {@link Future} into an Observable.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.Future.png">
