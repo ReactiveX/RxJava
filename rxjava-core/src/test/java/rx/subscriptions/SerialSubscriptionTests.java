@@ -18,6 +18,8 @@ package rx.subscriptions;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,23 +27,44 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.MockitoAnnotations;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import rx.Subscription;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SerialSubscriptionTests {
     private SerialSubscription serialSubscription;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         serialSubscription = new SerialSubscription();
     }
 
     @Test
     public void unsubscribingWithoutUnderlyingDoesNothing() {
         serialSubscription.unsubscribe();
+    }
+    
+    @Test
+    public void unsubscribingTwiceDoesUnsubscribeOnce() {
+    	 Subscription underlying = mock(Subscription.class);
+         serialSubscription.setSubscription(underlying);
+         
+         serialSubscription.unsubscribe();
+         verify(underlying).unsubscribe();
+         
+         serialSubscription.unsubscribe();
+         verifyNoMoreInteractions(underlying);
+    }
+    
+    @Test
+    public void settingSameSubscriptionTwiceDoesUnsubscribeIt() {
+    	 Subscription underlying = mock(Subscription.class);
+         serialSubscription.setSubscription(underlying);
+         verifyZeroInteractions(underlying);
+         serialSubscription.setSubscription(underlying);
+         verify(underlying).unsubscribe();;
     }
 
     @Test
@@ -117,7 +140,7 @@ public class SerialSubscriptionTests {
         verify(underlying).unsubscribe();
 
         for (final Thread t : threads) {
-            t.interrupt();
+            t.join();
         }
     }
 }
