@@ -13,9 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.lang.scala
+package rx.lang.scala.concurrency
 
-/**
- * Provides `Subscription`, and specialized versions of it.
- */
-package object subscriptions {}
+import rx.lang.scala.Scheduler
+
+object ImmediateScheduler {
+
+  /**
+   * Returns a [[rx.lang.scala.Scheduler]] that executes work immediately on the current thread.
+   */
+  def apply(): ImmediateScheduler =  {
+    new ImmediateScheduler(rx.concurrency.Schedulers.immediate())
+  }
+}
+
+class ImmediateScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
+  extends Scheduler {}
+
+

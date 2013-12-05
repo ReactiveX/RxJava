@@ -22,8 +22,6 @@ import rx.Observable.OnSubscribeFunc
 /**
  * The Observable interface that implements the Reactive Pattern.
  *
- * @param asJavaObservable the underlying Java observable
- *
  * @define subscribeObserverMain
  * Call this method to subscribe an [[rx.lang.scala.Observer]] for receiving 
  * items and notifications from the Observable.
@@ -228,7 +226,6 @@ trait Observable[+T]
    * otherwise you'll get a compilation error.
    *
    * @usecase def concat[U]: Observable[U]
-   *    @inheritdoc
    */
   def concat[U](implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[U] = {
     val o2: Observable[Observable[U]] = this
@@ -274,7 +271,19 @@ trait Observable[+T]
    * is the minumum of the number of `onNext` invocations of `this` and `that`. 
    */
   def zip[U](that: Observable[U]): Observable[(T, U)] = {
-    toScalaObservable[(T, U)](rx.Observable.zip[T, U, (T, U)](this.asJavaObservable, that.asJavaObservable, (t: T, u: U) => (t, u)))
+    zip(that, (t: T, u: U) => (t, u))
+  }
+
+  /**
+   * Returns an Observable formed from this Observable and another Observable by combining
+   * corresponding elements using the selector function.
+   * The number of `onNext` invocations of the resulting `Observable[(T, U)]`
+   * is the minumum of the number of `onNext` invocations of `this` and `that`.
+   *
+   * Note that this function is private because Scala collections don't have such a function.
+   */
+  private def zip[U, R](that: Observable[U], selector: (T,U) => R): Observable[R] = {
+    toScalaObservable[R](rx.Observable.zip[T, U, R](this.asJavaObservable, that.asJavaObservable, selector))
   }
 
   /**
@@ -1819,6 +1828,65 @@ trait Observable[+T]
     new WithFilter[T](p, asJavaObservable)
   }
 
+  /**
+   * Returns an Observable that applies the given function to each item emitted by an
+   * Observable.
+   *
+   * @param observer the observer
+   *
+   * @return an Observable with the side-effecting behavior applied.
+   */
+  def doOnEach(observer: Observer[T]): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.doOnEach(observer.asJavaObserver))
+  }
+
+  /**
+   * Returns an Observable that applies the given function to each item emitted by an
+   * Observable.
+   *
+   * @param onNext this function will be called whenever the Observable emits an item
+   *
+   * @return an Observable with the side-effecting behavior applied.
+   */
+  def doOnEach(onNext: T => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.doOnEach(
+      onNext
+    ))
+  }
+
+  /**
+   * Returns an Observable that applies the given function to each item emitted by an
+   * Observable.
+   *
+   * @param onNext this function will be called whenever the Observable emits an item
+   * @param onError this function will be called if an error occurs
+   *
+   * @return an Observable with the side-effecting behavior applied.
+   */
+  def doOnEach(onNext: T => Unit, onError: Throwable => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.doOnEach(
+      onNext,
+      onError
+    ))
+  }
+
+  /**
+   * Returns an Observable that applies the given function to each item emitted by an
+   * Observable.
+   *
+   * @param onNext this function will be called whenever the Observable emits an item
+   * @param onError this function will be called if an error occurs
+   * @param onCompleted the action to invoke when the source Observable calls
+   *
+   * @return an Observable with the side-effecting behavior applied.
+   */
+  def doOnEach(onNext: T => Unit, onError: Throwable => Unit, onCompleted: () => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.doOnEach(
+      onNext,
+      onError,
+      onCompleted
+    ))
+  }
 }
 
 /**
@@ -1863,13 +1931,13 @@ object Observable {
    *
    *
    * @tparam T
-   *            the type of the items that this Observable emits
+   *            the type of the items that this Observable emits.
    * @param func
    *            a function that accepts an `Observer[T]`, invokes its `onNext`, `onError`, and `onCompleted` methods
    *            as appropriate, and returns a [[rx.lang.scala.Subscription]] to allow the Observer to
-   *            canceling the subscription
-   * @return an Observable that, when an [[rx.lang.scala.Observer]] subscribes to it, will execute the given
-   *         function
+   *            canceling the subscription.
+   * @return
+   *         an Observable that, when an [[rx.lang.scala.Observer]] subscribes to it, will execute the given function.
    */
   def create[T](func: Observer[T] => Subscription): Observable[T] = {
     toScalaObservable[T](rx.Observable.create(new OnSubscribeFunc[T] {
@@ -1880,7 +1948,8 @@ object Observable {
   }
 
   /**
-   * Returns an Observable that invokes an [[rx.lang.scala.Observer]]'s [[rx.lang.scala.Observer.onError onError]] method when the Observer subscribes to it
+   * Returns an Observable that invokes an [[rx.lang.scala.Observer]]'s [[rx.lang.scala.Observer.onError onError]]
+   * method when the Observer subscribes to it.
    *
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.png">
    *
@@ -1888,7 +1957,8 @@ object Observable {
    *            the particular error to report
    * @tparam T
    *            the type of the items (ostensibly) emitted by the Observable
-   * @return an Observable that invokes the [[rx.lang.scala.Observer]]'s [[rx.lang.scala.Observer.onError onError]] method when the Observer subscribes to it
+   * @return an Observable that invokes the [[rx.lang.scala.Observer]]'s [[rx.lang.scala.Observer.onError onError]]
+   *         method when the Observer subscribes to it
    */
   def error[T](exception: Throwable): Observable[T] = {
     toScalaObservable[T](rx.Observable.error(exception))

@@ -19,15 +19,24 @@ import scala.concurrent.duration.Duration
 import rx.lang.scala.Scheduler
 
 /**
+ * Provides constructors for `TestScheduler`.
+ */
+object TestScheduler {
+  def apply(): TestScheduler = {
+    new TestScheduler(new rx.concurrency.TestScheduler())
+  }
+}
+
+/**
  * Scheduler with artificial time, useful for testing.
- * 
+ *
  * For example, you could test the `Observable.interval` operation using a `TestScheduler` as follows:
- * 
+ *
  * {{{
  * @Test def testInterval() {
  *   import org.mockito.Matchers._
  *   import org.mockito.Mockito._
- *   
+ *
  *   val scheduler = TestScheduler()
  *   val observer = mock(classOf[rx.Observer[Long]])
  *
@@ -55,8 +64,7 @@ import rx.lang.scala.Scheduler
  * }
  * }}}
  */
-class TestScheduler extends Scheduler {
-  val asJavaScheduler = new rx.concurrency.TestScheduler
+class TestScheduler private[scala] (val asJavaScheduler: rx.concurrency.TestScheduler) extends Scheduler {
 
   def advanceTimeBy(time: Duration) {
     asJavaScheduler.advanceTimeBy(time.length, time.unit)
@@ -70,13 +78,3 @@ class TestScheduler extends Scheduler {
     asJavaScheduler.triggerActions()
   }
 }
-
-/**
- * Provides constructors for `TestScheduler`.
- */
-object TestScheduler {
-  def apply(): TestScheduler = {
-    new TestScheduler
-  }
-}
-

@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.lang.scala
+package rx.lang.scala.concurrency
 
-/**
- * Contains special Observables.
- * 
- * In Scala, this package only contains [[rx.lang.scala.observables.BlockingObservable]].
- * In the corresponding Java package `rx.observables`, there is also a
- * `GroupedObservable` and a `ConnectableObservable`, but these are not needed
- * in Scala, because we use a pair `(key, observable)` instead of `GroupedObservable`
- * and a pair `(startFunction, observable)` instead of `ConnectableObservable`. 
- */
-package object observables {}
+import rx.lang.scala.Scheduler
+
+object NewThreadScheduler {
+
+  /**
+   * Returns a [[rx.lang.scala.Scheduler]] that creates a new {@link Thread} for each unit of work.
+   */
+  def apply(): NewThreadScheduler =  {
+    new NewThreadScheduler(rx.concurrency.Schedulers.newThread())
+  }
+}
+
+class NewThreadScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
+  extends Scheduler {}

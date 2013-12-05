@@ -15,6 +15,8 @@
  */
 package rx.lang.scala
 
+import rx.joins.ObserverBase
+
 /**
  Provides a mechanism for receiving push-based notifications.
 *
@@ -24,7 +26,11 @@ package rx.lang.scala
 */
 trait Observer[-T] {
 
-  def asJavaObserver: rx.Observer[_ >: T]
+  private [scala] def asJavaObserver: rx.Observer[_ >: T] = new ObserverBase[T] {
+    protected def onCompletedCore(): Unit = onCompleted()
+    protected def onErrorCore(error: Throwable): Unit = onError(error)
+    protected def onNextCore(value: T): Unit = onNext(value)
+  }
 
  /**
  * Provides the Observer with new data.
@@ -33,30 +39,37 @@ trait Observer[-T] {
  *
  * The [[rx.lang.scala.Observable]] will not call this method again after it calls either `onCompleted` or `onError`.
  */
-  def onNext(value: T): Unit          = asJavaObserver.onNext(value)
+  def onNext(value: T): Unit
 
   /**
   * Notifies the Observer that the [[rx.lang.scala.Observable]] has experienced an error condition.
   *
   * If the [[rx.lang.scala.Observable]] calls this method, it will not thereafter call `onNext` or `onCompleted`.
   */
-  def onError(error: Throwable): Unit = asJavaObserver.onError(error)
+  def onError(error: Throwable): Unit
 
   /**
    * Notifies the Observer that the [[rx.lang.scala.Observable]] has finished sending push-based notifications.
    *
    * The [[rx.lang.scala.Observable]] will not call this method if it calls `onError`.
    */
-  def onCompleted(): Unit             = asJavaObserver.onCompleted()
+  def onCompleted(): Unit
 
 }
 
 object Observer {
-  def apply[T](observer: rx.Observer[T]) : Observer[T] = {
-    new Observer[T]() {
-      def asJavaObserver: rx.Observer[_ >: T] = observer
-    }
-  }
+  /**
+   * Assume that the underlying rx.Observer does not need to be wrapped.
+   */
+  private [scala] def apply[T](observer: rx.Observer[T]) : Observer[T] = {
+     new Observer[T] {
+
+       override def asJavaObserver = observer
+
+       def onNext(value: T): Unit = asJavaObserver.onNext(value)
+       def onError(error: Throwable): Unit = asJavaObserver.onError(error)
+       def onCompleted(): Unit = asJavaObserver.onCompleted()
+
+     }
+   }
 }
-
-
