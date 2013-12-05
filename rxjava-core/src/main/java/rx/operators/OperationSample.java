@@ -25,6 +25,8 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.SerialSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 
@@ -113,6 +115,99 @@ public final class OperationSample {
                     sourceSubscription.unsubscribe();
                 }
             });
+        }
+    }
+    /** 
+     * Sample with the help of another observable. 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229742.aspx'>MSDN: Observable.Sample</a>
+     */
+    public static class SampleWithObservable<T, U> implements OnSubscribeFunc<T> {
+        final Observable<T> source;
+        final Observable<U> sampler;
+        public SampleWithObservable(Observable<T> source, Observable<U> sampler) {
+            this.source = source;
+            this.sampler = sampler;
+        }
+        @Override
+        public Subscription onSubscribe(Observer<? super T> t1) {
+            return new ResultManager(t1).init();
+        }
+        /** Observe source values. */
+        class ResultManager implements Observer<T> {
+            final Observer<? super T> observer;
+            final CompositeSubscription cancel;
+            final SerialSubscription toSource;
+            T value;
+            boolean valueTaken = true;
+            boolean done;
+            final Object guard;
+            public ResultManager(Observer<? super T> observer) {
+                this.observer = observer;
+                cancel = new CompositeSubscription();
+                guard = new Object();
+                toSource = new SerialSubscription();
+                cancel.add(toSource);
+            }
+            public Subscription init() {
+                toSource.setSubscription(source.subscribe(this));
+                cancel.add(sampler.subscribe(new Sampler()));
+                
+                return cancel;
+            }
+            @Override
+            public void onNext(T args) {
+                synchronized (guard) {
+                    valueTaken = false;
+                    value = args;
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                synchronized (guard) {
+                    observer.onError(e);
+                    cancel.unsubscribe();
+                }
+            }
+            
+            @Override
+            public void onCompleted() {
+                synchronized (guard) {
+                    done = true;
+                    toSource.unsubscribe();
+                }
+            }
+            /** Take the latest value, but only once. */
+            class Sampler implements Observer<U> {
+                @Override
+                public void onNext(U args) {
+                    emit();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    ResultManager.this.onError(e);
+                }
+
+                @Override
+                public void onCompleted() {
+                    emit();
+                }
+                /** Emit an untaken value and/or the completion. */
+                void emit() {
+                    synchronized (guard) {
+                        if (!valueTaken) {
+                            valueTaken = true;
+                            observer.onNext(value);
+                        }
+                        
+                        if (done) {
+                            observer.onCompleted();
+                            cancel.unsubscribe();
+                        }
+                    }
+                }
+            }
         }
     }
 }

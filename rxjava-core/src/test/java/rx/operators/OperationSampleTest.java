@@ -15,7 +15,6 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
@@ -28,12 +27,14 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.concurrency.TestScheduler;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 
 public class OperationSampleTest {
     private TestScheduler scheduler;
     private Observer<Long> observer;
+    private Observer<Object> observer2;
 
     @Before
     @SuppressWarnings("unchecked")
@@ -41,6 +42,7 @@ public class OperationSampleTest {
     public void before() {
         scheduler = new TestScheduler();
         observer = mock(Observer.class);
+        observer2 = mock(Observer.class);
     }
 
     @Test
@@ -104,5 +106,158 @@ public class OperationSampleTest {
         inOrder.verify(observer, times(2)).onNext(2L);
         verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void sampleWithSamplerNormal() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> sampler = PublishSubject.create();
+        
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
+        
+        source.onNext(1);
+        source.onNext(2);
+        sampler.onNext(1);
+        source.onNext(3);
+        source.onNext(4);
+        sampler.onNext(2);
+        source.onCompleted();
+        sampler.onNext(3);
+        
+        
+        InOrder inOrder = inOrder(observer2);  
+        inOrder.verify(observer2, never()).onNext(1);
+        inOrder.verify(observer2, times(1)).onNext(2);
+        inOrder.verify(observer2, never()).onNext(3);
+        inOrder.verify(observer2, times(1)).onNext(4);
+        inOrder.verify(observer2, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void sampleWithSamplerNoDuplicates() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> sampler = PublishSubject.create();
+        
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
+        
+        source.onNext(1);
+        source.onNext(2);
+        sampler.onNext(1);
+        sampler.onNext(1);
+        
+        source.onNext(3);
+        source.onNext(4);
+        sampler.onNext(2);
+        sampler.onNext(2);
+
+        source.onCompleted();
+        sampler.onNext(3);
+        
+        
+        InOrder inOrder = inOrder(observer2);  
+        inOrder.verify(observer2, never()).onNext(1);
+        inOrder.verify(observer2, times(1)).onNext(2);
+        inOrder.verify(observer2, never()).onNext(3);
+        inOrder.verify(observer2, times(1)).onNext(4);
+        inOrder.verify(observer2, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void sampleWithSamplerTerminatingEarly() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> sampler = PublishSubject.create();
+        
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
+        
+        source.onNext(1);
+        source.onNext(2);
+        sampler.onNext(1);
+        sampler.onCompleted();
+        
+        source.onNext(3);
+        source.onNext(4);
+
+        
+        
+        InOrder inOrder = inOrder(observer2);  
+        inOrder.verify(observer2, never()).onNext(1);
+        inOrder.verify(observer2, times(1)).onNext(2);
+        inOrder.verify(observer2, never()).onNext(any());
+        inOrder.verify(observer2, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void sampleWithSamplerEmitAndTerminate() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> sampler = PublishSubject.create();
+        
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
+        
+        source.onNext(1);
+        source.onNext(2);
+        sampler.onNext(1);
+        source.onNext(3);
+        source.onCompleted();
+        sampler.onCompleted();
+        
+        InOrder inOrder = inOrder(observer2);  
+        inOrder.verify(observer2, never()).onNext(1);
+        inOrder.verify(observer2, times(1)).onNext(2);
+        inOrder.verify(observer2, times(1)).onNext(3);
+        inOrder.verify(observer2, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void sampleWithSamplerEmptySource() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> sampler = PublishSubject.create();
+        
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
+        
+        source.onCompleted();
+        sampler.onNext(1);
+        
+        InOrder inOrder = inOrder(observer2);  
+        inOrder.verify(observer2, times(1)).onCompleted();
+        verify(observer2, never()).onNext(any());
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void sampleWithSamplerSourceThrows() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> sampler = PublishSubject.create();
+        
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
+        
+        source.onNext(1);
+        source.onError(new RuntimeException("Forced failure!"));
+        sampler.onNext(1);
+        
+        InOrder inOrder = inOrder(observer2);  
+        inOrder.verify(observer2, times(1)).onError(any(Throwable.class));
+        verify(observer2, never()).onNext(any());
+        verify(observer, never()).onCompleted();
+    }
+    @Test
+    public void sampleWithSamplerThrows() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> sampler = PublishSubject.create();
+        
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
+        
+        source.onNext(1);
+        sampler.onNext(1);
+        sampler.onError(new RuntimeException("Forced failure!"));
+        
+        InOrder inOrder = inOrder(observer2);  
+        inOrder.verify(observer2, times(1)).onNext(1);
+        inOrder.verify(observer2, times(1)).onError(any(RuntimeException.class));
+        verify(observer, never()).onCompleted();
     }
 }
