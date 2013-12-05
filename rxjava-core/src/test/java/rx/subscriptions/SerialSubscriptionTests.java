@@ -15,6 +15,7 @@
  */
 package rx.subscriptions;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -44,6 +45,25 @@ public class SerialSubscriptionTests {
     @Test
     public void unsubscribingWithoutUnderlyingDoesNothing() {
         serialSubscription.unsubscribe();
+    }
+    
+    @Test
+    public void getSubscriptionShouldReturnSubscriptionAfterUnsubscribe() {
+    	 final Subscription underlying = mock(Subscription.class);
+         serialSubscription.setSubscription(underlying);
+         serialSubscription.unsubscribe();
+         assertSame(underlying, serialSubscription.getSubscription());
+    }
+    
+    @Test
+    public void getSubscriptionShouldReturnSetSubscription() {
+    	 final Subscription underlying = mock(Subscription.class);
+         serialSubscription.setSubscription(underlying);
+         assertSame(underlying, serialSubscription.getSubscription());
+         
+         final Subscription another = mock(Subscription.class);
+         serialSubscription.setSubscription(another);
+         assertSame(another, serialSubscription.getSubscription());
     }
     
     @Test
