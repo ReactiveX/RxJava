@@ -21,7 +21,7 @@ import rx.joins.ObserverBase
 * A Subject is an Observable and an Observer at the same time.
 */
 trait Subject[-T, +R] extends Observable[R] with Observer[T] {
-  val asJavaSubject: rx.subjects.Subject[_ >: T, _<: R]
+  private [scala] val asJavaSubject: rx.subjects.Subject[_ >: T, _<: R]
 
   def asJavaObservable: rx.Observable[_ <: R] = asJavaSubject
 

@@ -25,7 +25,7 @@ import rx.util.functions.{Action0, Action1, Func2}
 trait Scheduler {
   import rx.lang.scala.ImplicitFunctionConversions._
 
-  val asJavaScheduler: rx.Scheduler
+  private [scala] val asJavaScheduler: rx.Scheduler
 
   /**
    * Schedules a cancelable action to be executed.
@@ -75,8 +75,7 @@ trait Scheduler {
    * @return a subscription to be able to unsubscribe from action.
    */
   private def schedule[T](state: T, action: (Scheduler, T) => Subscription, delayTime: Duration): Subscription = {
-    val xxx = schedulerActionToFunc2(action)
-    Subscription(asJavaScheduler.schedule(state, xxx, delayTime.length, delayTime.unit))
+    Subscription(asJavaScheduler.schedule(state, schedulerActionToFunc2(action), delayTime.length, delayTime.unit))
   }
 
   /**
@@ -213,8 +212,8 @@ trait Scheduler {
 
 }
 
-object Scheduler {
-  private [scala] def apply(scheduler: rx.Scheduler): Scheduler = {
+private [scala] object Scheduler {
+  def apply(scheduler: rx.Scheduler): Scheduler = {
     new Scheduler() {
        val asJavaScheduler = scheduler
     }

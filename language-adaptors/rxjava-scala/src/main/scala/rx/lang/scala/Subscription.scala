@@ -17,34 +17,41 @@
 
 package rx.lang.scala
 
+import java.util.concurrent.atomic.AtomicBoolean
+import rx.lang.scala.subscriptions._
+
 /**
  * Subscriptions are returned from all `Observable.subscribe` methods to allow unsubscribing.
  *
  * This interface is the equivalent of `IDisposable` in the .NET Rx implementation.
  */
 trait Subscription {
-  val asJavaSubscription: rx.Subscription
+  private [scala] val asJavaSubscription: rx.Subscription = new rx.Subscription {
+    override def unsubscribe(){ this.unsubscribe(); unsubscribed.set(true) }
+  }
 
   /**
    * Call this method to stop receiving notifications on the Observer that was registered when
    * this Subscription was received.
    */
-  def unsubscribe(): Unit = asJavaSubscription.unsubscribe()
+  def unsubscribe(): Unit
 
   /**
    * Checks if the subscription is unsubscribed.
+   * You typically do not want to override this.
    */
-  def isUnsubscribed: Boolean
+  def isUnsubscribed: Boolean = unsubscribed.get()
+  private [scala] val unsubscribed = new AtomicBoolean(false)
+
 }
 
 object Subscription {
 
   import java.util.concurrent.atomic.AtomicBoolean
-  import rx.lang.scala.subscriptions._
 
 
   /**
-   * Creates an [[rx.lang.scala.Subscription]] from an [[rx.Subscription]].
+   * Creates an [[rx.lang.scala.Subscription]] from an [[rx.Subscription]].             ß
    */
   private [scala] def apply(subscription: rx.Subscription): Subscription = {
     subscription match {
@@ -59,17 +66,8 @@ object Subscription {
   /**
    * Creates an [[rx.lang.scala.Subscription]] that invokes the specified action when unsubscribed.
    */
-  def apply(u: => Unit): Subscription = {
-    new Subscription() {
-
-      private val unsubscribed = new AtomicBoolean(false)
-
-      def isUnsubscribed = unsubscribed.get()
-
-      val asJavaSubscription = new rx.Subscription {
-        def unsubscribe() { if(!unsubscribed.get()) { u ; unsubscribed.set(true) }}
-      }
-    }
+  def apply(u: => Unit): Subscription =  new Subscription {
+    def unsubscribe() = { u }
   }
 
 }

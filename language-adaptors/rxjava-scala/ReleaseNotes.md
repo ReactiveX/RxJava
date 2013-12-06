@@ -6,11 +6,11 @@ include all Rx types. In particular this release focuses on the `Subject` and `S
 To makes these notes self-contained, we will start with the `Observer[T]` and `Observable[T]` traits
 that lay at the heart of Rx.
 
-In this release we have made the constructor in the companion object `Observer` and the `asJavaObserver` property
-in `Observable[T]`private to the Scala bindings package.
-
 Observer
 --------
+
+In this release we have made the constructor in the companion object `Observer` and the `asJavaObserver` property
+in `Observable[T]`private to the Scala bindings package.
 
 ```scala
 trait Observer[-T] {
@@ -23,6 +23,7 @@ trait Observer[-T] {
 
 private [scala] object Observer {…}
 ```
+
 To create an instance of say `Observer[String]` in user code, you create a new instance of the `Observer` trait
 and implement any of the methods that you care about:
 ```scala
@@ -32,6 +33,7 @@ and implement any of the methods that you care about:
       override def onCompleted(): Unit = {...}
    }
 ```
+
 Note that typically you do not need to create an `Observer` since all of the methods that accept an `Observer[T]`
 (for instance `subscribe`) usually come with overloads that accept the individual methods
 `onNext`, `onError`, and `onCompleted` and will automatically create an `Observer` for you.
@@ -57,19 +59,86 @@ object Observable {
 }
 ```
 
+The major changes in `Observable` are wrt to the factory methods *Can't write this when I don't have Samuel's changes*.
+
 Subject
 -------
 
-object Subject {…}
+The `Subject` trait now also hides the underlying Java `asJavaSubject: rx.subjects.Subject[_ >: T, _<: R]`.
+
+```scala
 trait Subject[-T, +R] extends Observable[R] with Observer[T] {
-  val asJavaSubject: rx.subjects.Subject[_ >: T, _<: R]
+  private [scala] val asJavaSubject: rx.subjects.Subject[_ >: T, _<: R]
+}
+```
+
+There is no companion object for `Subject` but instead there are a number of subtypes for each kind of subject,
+that follows the pattern of a companion object and a class with a private constructor:
+
+```scala
+object XXXSubject {
+  def apply[T](...): XXXSubject[T] = {
+    new XXXSubject[T](... create corresponding rx subject ...)
+  }
 }
 
-object Scheduler {…}
+class XXXSubject[T] private[scala] (val asJavaSubject: rx.subjects.XXXSubject[T]) extends Subject[T,T] {}
+```
+
+The subjects that are available are:
+
+* AsyncSubject[T]()
+* BehaviorSubject[T](T value)
+* PublishSubject[T]()
+* ReplaySubject[T]()
+
+The latter is still missing various overloads http://msdn.microsoft.com/en-us/library/hh211810(v=vs.103).aspx which
+you can expect to appear once they are added to the underlying RxJava implementation.
+
+Compared with release 0.15.1 there are no breaking changes in `Subject` for this release, except for
+making `asJavaSubject` private.
+
+Schedulers
+----------
+
+The biggest breaking change compared to the 0.15.1 release is giving `Scheduler` the same structure as the other types.
+The trait itself remains unchanged, except that we made the underlying Java representation hidden as above.
+
+```scala
 trait Scheduler {
-   def asJavaScheduler: rx.Scheduler;
+   private[scala] def asJavaScheduler: rx.Scheduler;
 }
 
+private [scala] object Scheduler {…}
+```
+
+In the previous release, you created schedulers by selecting them from the `Schedulers` object,
+as in `Schedulers.immediate` or `Schedulers.newThread` where each would return an instance of the `Scheduler` trait.
+However, several of the scheduler implementations have additional methods, such as the `testScheduler`,
+which already deviated from the pattern.
+
+In this release, we changed this to make scheduler more like `Subject` and provide a family of schedulers
+that you create using their factory function:
+
+* CurrentThreadScheduler()
+* ExecutorScheduler(executor: Executor)
+* ImmediateScheduler()
+* NewThreadScheduler()
+* ScheduledExecutorServiceScheduler(executor: ScheduledExecutorService)
+* TestScheduler()
+* ThreadPoolForComputationScheduler()
+* ThreadPoolForIOScheduler()
+
+In the future we expect that this list will grow further.
+
+To make your code compile in the new release you will have to change all occurrences of `Schedulers.xxx`
+into `XxxScheduler()`.
+
+
+Notifications
+-------------
+
+```scala
 object Notification {…}
 trait Notification[+T] {
   def asJavaNotification: rx.Notification[_ <: T]

@@ -1933,6 +1933,10 @@ object Observable {
    *            resulting Observable
    * @return an Observable that emits each item in the source Array
    */
+  def apply[T](items: T*): Observable[T] = {
+    Observable[T](rx.Observable.from(items.toIterable.asJava))
+  }
+
   def from[T](items: T*): Observable[T] = {
     Observable[T](rx.Observable.from(items.toIterable.asJava))
   }

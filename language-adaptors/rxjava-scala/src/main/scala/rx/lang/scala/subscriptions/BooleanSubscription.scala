@@ -17,7 +17,7 @@ package rx.lang.scala.subscriptions
 
 import rx.lang.scala._
 
-object BooleanSubscription {
+private [scala] object BooleanSubscription {
 
   /**
    * Creates a [[rx.lang.scala.subscriptions.BooleanSubscription]].
@@ -44,12 +44,12 @@ object BooleanSubscription {
 /**
  * Represents a [[rx.lang.scala.Subscription]] that can be checked for status.
  */
-class BooleanSubscription private[scala] (val asJavaSubscription: rx.subscriptions.BooleanSubscription)
+private [scala] class BooleanSubscription private[scala] (override val asJavaSubscription: rx.subscriptions.BooleanSubscription)
   extends Subscription {
 
   /**
    * Checks whether the subscription has been unsubscribed.
    */
-  def isUnsubscribed: Boolean = asJavaSubscription.isUnsubscribed
-
+  override def isUnsubscribed: Boolean = asJavaSubscription.isUnsubscribed
+  def unsubscribe(): Unit =  asJavaSubscription.unsubscribe()
 }
