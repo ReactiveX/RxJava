@@ -4465,6 +4465,24 @@ public class Observable<T> {
     }
 
     /**
+     * Return an Observable that emits the results of sampling the items
+     * emitted by this Observable when the <code>sampler</code>
+     * Observable produces an item or completes.
+     * <p>
+     * Note: if the <code>sampler</code> completes before this completes, no <code>onCompleted</code>
+     * event is emitted (in par with Rx.NET behavior).
+     * 
+     * @param sampler the Observable to use for sampling this
+     * 
+     * @return an Observable that emits the results of sampling the items
+     *         emitted by this Observable when the <code>sampler</code>
+     *         Observable produces an item or completes.
+     */
+    public <U> Observable<T> sample(Observable<U> sampler) {
+        return create(new OperationSample.SampleWithObservable<T, U>(this, sampler));
+    }
+    
+    /**
      * Returns an Observable that applies a function of your choosing to the
      * first item emitted by a source Observable, then feeds the result of that
      * function along with the second item emitted by an Observable into the
