@@ -8,7 +8,7 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import rx.lang.scala.subscriptions.{MultipleAssignmentSubscription, CompositeSubscription}
+import rx.lang.scala.subscriptions.{SerialSubscription, MultipleAssignmentSubscription, CompositeSubscription}
 
 class SubscriptionTests extends JUnitSuite {
   @Test
@@ -98,7 +98,7 @@ class SubscriptionTests extends JUnitSuite {
       assertFalse(s1.isUnsubscribed)
 
       multiple.subscription = s1
-      assertFalse(s0.isUnsubscribed)
+      assertFalse(s0.isUnsubscribed)   // difference with SerialSubscription
       assertFalse(s1.isUnsubscribed)
 
       multiple.unsubscribe()
@@ -111,5 +111,34 @@ class SubscriptionTests extends JUnitSuite {
       multiple.subscription = s2
       assertTrue(s2.isUnsubscribed)
       assertFalse(s0.isUnsubscribed)
+  }
+
+  @Test
+  def serialSubscriptionAdd() {
+
+    val s0 = Subscription()
+    val s1 = Subscription()
+    val serial = SerialSubscription()
+
+    assertFalse(serial.isUnsubscribed)
+    assertFalse(s0.isUnsubscribed)
+    assertFalse(s1.isUnsubscribed)
+
+    serial.subscription = s0
+    assertFalse(s0.isUnsubscribed)
+    assertFalse(s1.isUnsubscribed)
+
+    serial.subscription = s1
+    assertTrue(s0.isUnsubscribed)    // difference with MultipleAssignmentSubscription
+    assertFalse(s1.isUnsubscribed)
+
+    serial.unsubscribe()
+    assertTrue(serial.isUnsubscribed)
+    assertTrue(s1.isUnsubscribed)
+
+    val s2 = Subscription()
+    assertFalse(s2.isUnsubscribed)
+    serial.subscription = s2
+    assertTrue(s2.isUnsubscribed)
   }
 }
