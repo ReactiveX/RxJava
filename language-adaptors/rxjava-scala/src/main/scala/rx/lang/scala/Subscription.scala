@@ -29,19 +29,18 @@ trait Subscription {
   private [scala] val asJavaSubscription: rx.Subscription = new rx.Subscription {
     override def unsubscribe(){
       Subscription.this.unsubscribe();
-      Subscription.this.unsubscribed.set(true)
     }
   }
+
 
   /**
    * Call this method to stop receiving notifications on the Observer that was registered when
    * this Subscription was received.
    */
-  def unsubscribe(): Unit = { }
+  def unsubscribe(): Unit = { unsubscribed.set(true) }
 
   /**
    * Checks if the subscription is unsubscribed.
-   * You typically do not want to override this.
    */
   def isUnsubscribed: Boolean = unsubscribed.get()
   private [scala] val unsubscribed = new AtomicBoolean(false)
@@ -69,8 +68,15 @@ object Subscription {
    */
   def apply(u: => Unit): Subscription =  {
     new Subscription() {
-      override def unsubscribe(): Unit = { u }
+      override def unsubscribe(): Unit = {
+        if(!super.isUnsubscribed) { u; super.unsubscribe() }
+      }
     }
   }
+
+  /**
+   * Checks if the subscription is unsubscribed.
+   */
+  def apply(): Subscription = { new Subscription {} }
 
 }
