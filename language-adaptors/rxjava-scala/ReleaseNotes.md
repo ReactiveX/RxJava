@@ -9,7 +9,8 @@ that lay at the heart of Rx.
 Observer
 --------
 
-In this release we have made the `asJavaObserver` property in `Observable[T]`private to the Scala bindings package.
+In this release we have made the `asJavaObserver` property in `Observable[T]`as well the the factory method in the
+ companion object that takes an `rx.Observer` private to the Scala bindings package.
 
 ```scala
 trait Observer[-T] {
@@ -33,7 +34,7 @@ and implement any of the methods that you care about:
    }
 ```
  or you can use one of the overloads of the companion `Observer` object by passing in implementations of the `onNext`,
- `onError` or `onCompleted` methods.
+ `onError` or `onCompleted` methods. The advantage of this is that you get type inference as in `Observer(println(_))`.
 
 Note that typically you do not need to create an `Observer` since all of the methods that accept an `Observer[T]`
 (for instance `subscribe`) usually come with overloads that accept the individual methods
@@ -103,6 +104,7 @@ Schedulers
 
 The biggest breaking change compared to the 0.15.1 release is giving `Scheduler` the same structure as the other types.
 The trait itself remains unchanged, except that we made the underlying Java representation hidden as above.
+The scheduler package has been renamed from `rx.lang.scala.concurrency` to `rx.lang.scala.schedulers`.
 
 ```scala
 trait Scheduler {
@@ -129,10 +131,11 @@ that you create using their factory function:
 * `ThreadPoolForComputationScheduler()`
 * `ThreadPoolForIOScheduler()`
 
-In the future we expect that this list will grow further.
+In the future we expect that this list will grow further with new schedulers as they are imported from .NET
+(http://msdn.microsoft.com/en-us/library/system.reactive.concurrency(v=vs.103).aspx).
 
 To make your code compile in the new release you will have to change all occurrences of `Schedulers.xxx`
-into `XxxScheduler()`.
+into `XxxScheduler()`, and import `rx.lang.scala.schedulers` instead of `rx.lang.scala.concurrency`.
 
 Subscriptions
 -------------
@@ -148,8 +151,8 @@ trait Subscription {
   private [scala] val asJavaSubscription: rx.Subscription = {...}
   private [scala] val unsubscribed = new AtomicBoolean(false)
 
-  def unsubscribe(): Unit = { unsubscribed.set(true) }
-  def isUnsubscribed: Boolean = unsubscribed.get()
+  def unsubscribe(): Unit = { ... }
+  def isUnsubscribed: Boolean = ...
 }
 
 object Subscription {...}
@@ -162,19 +165,28 @@ object Subscription {...}
  * `MultipleAssignmentSubscription`
  * `SerialSubscription`
 
- In case you do feel tempted to call `new Subscription{ ...}` directly make sure you wire up `isUnsubscribed` properly.
+ In case you do feel tempted to call `new Subscription{ ...}` directly make sure you wire up `isUnsubscribed`
+ and with the `unsubscribed` field properly, but for all practical purposes you should just use one of the factory methods.
 
 Notifications
 -------------
 
+All underlying wrapped `Java` types in the `Notification` trait are made private like all previous types. The companion
+`Notification` now has both constructor and destructor functions:
+
 ```scala
 object Notification {…}
 trait Notification[+T] {
-  def asJavaNotification: rx.Notification[_ <: T]
+  private [scala] def asJavaNotification: rx.Notification[_ <: T]
 }
 
-object Subscription {…}
-trait Subscription {
-   def asJavaSubscription: rx.Subscription
+object Notification {
+   object OnNext { def apply(...){}; def unapply(..){...} }
+   object OnError { def apply(...){}; def unapply(..){...} }
+   object OnCompleted { def apply(...){}; def unapply(..){...} }
 }
 ```
+To construct a `Notification`, you use `Notification.OnNext("hello")`, or `Notification.OnError`(new Exception("Oops!"))`.
+To pattern match on a notification you can create a partial function like so: `case OnNext(v) => { ... v ... }`.
+
+There are no breaking changes for notifications.

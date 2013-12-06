@@ -19,7 +19,7 @@ package rx.lang.scala
  * Emitted by Observables returned by [[rx.lang.scala.Observable.materialize]].
  */
 sealed trait Notification[+T] {
-  def asJava: rx.Notification[_ <: T]
+  private [scala] def asJava: rx.Notification[_ <: T]
 }
 
 /**
@@ -37,7 +37,7 @@ sealed trait Notification[+T] {
  */
 object Notification {
 
-  def apply[T](n: rx.Notification[_ <: T]): Notification[T] = n.getKind match {
+  private [scala] def apply[T](n: rx.Notification[_ <: T]): Notification[T] = n.getKind match {
     case rx.Notification.Kind.OnNext => new OnNext(n)
     case rx.Notification.Kind.OnCompleted => new OnCompleted(n)
     case rx.Notification.Kind.OnError => new OnError(n)
@@ -46,9 +46,7 @@ object Notification {
   // OnNext, OnError, OnCompleted are not case classes because we don't want pattern matching
   // to extract the rx.Notification
   
-  class OnNext[+T](val asJava: rx.Notification[_ <: T]) extends Notification[T] {
-    def value: T = asJava.getValue
-  }
+
   
   object OnNext {
 
@@ -57,13 +55,13 @@ object Notification {
     }
 
     def unapply[U](n: Notification[U]): Option[U] = n match {
-      case n2: OnNext[U] => Some(n.asJava.getValue)
+      case n2: OnNext[U] => Some(n.getValue)
       case _ => None
     }
   }
-  
-  class OnError[+T](val asJava: rx.Notification[_ <: T]) extends Notification[T] {
-    def error: Throwable = asJava.getThrowable
+
+  class OnNext[+T] private[scala] (val asJava: rx.Notification[_ <: T]) extends Notification[T] {
+    def value: T = asJava.getValue
   }
   
   object OnError {
@@ -73,13 +71,15 @@ object Notification {
     }
 
     def unapply[U](n: Notification[U]): Option[Throwable] = n match {
-      case n2: OnError[U] => Some(n2.asJava.getThrowable)
+      case n2: OnError[U] => Some(n2.error)
       case _ => None
     }
   }
-  
-  class OnCompleted[T](val asJava: rx.Notification[_ <: T]) extends Notification[T] {}
-  
+
+  class OnError[+T] private[scala] (val asJava: rx.Notification[_ <: T]) extends Notification[T] {
+    def error: Throwable = asJava.getThrowable
+  }
+
   object OnCompleted {
 
     def apply[T](): Notification[T] = {
@@ -91,6 +91,9 @@ object Notification {
       case _ => None
     }
   }
+
+  class OnCompleted[T] private[scala](val asJava: rx.Notification[_ <: T]) extends Notification[T] {}
+
 
 }
 
