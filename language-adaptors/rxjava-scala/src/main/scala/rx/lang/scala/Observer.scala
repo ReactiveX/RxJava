@@ -75,11 +75,8 @@ object Observer {
 
   def apply[T](                                                                ): Observer[T] = apply(v=>{}, e=>{}, ()=>{})
   def apply[T](onNext: T=>Unit                                                 ): Observer[T] = apply(onNext, e=>{}, ()=>{})
-  def apply[T](                 onError: Throwable=>Unit                       ): Observer[T] = apply(v=>{}, onError, ()=>{})
-  def apply[T](                                           onCompleted: ()=>Unit): Observer[T] = apply(v=>{}, e=>{}, onCompleted)
   def apply[T](onNext: T=>Unit, onError: Throwable=>Unit                       ): Observer[T] = apply(onNext, onError, ()=>{})
   def apply[T](onNext: T=>Unit,                           onCompleted: ()=>Unit): Observer[T] = apply(onNext, e=>{}, onCompleted)
-  def apply[T](                 onError: Throwable=>Unit, onCompleted: ()=>Unit): Observer[T] = apply(v=>{}, onError, onCompleted)
   def apply[T](onNext: T=>Unit, onError: Throwable=>Unit, onCompleted: ()=>Unit): Observer[T] = {
        val n = onNext; val e = onError; val c = onCompleted
        new Observer[T] {

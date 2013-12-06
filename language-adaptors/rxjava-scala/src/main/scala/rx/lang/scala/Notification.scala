@@ -19,7 +19,7 @@ package rx.lang.scala
  * Emitted by Observables returned by [[rx.lang.scala.Observable.materialize]].
  */
 sealed trait Notification[+T] {
-  private [scala] def asJava: rx.Notification[_ <: T]
+  private [scala] val asJava: rx.Notification[_ <: T]
 }
 
 /**
@@ -54,8 +54,8 @@ object Notification {
       Notification(new rx.Notification[T](value))
     }
 
-    def unapply[U](n: Notification[U]): Option[U] = n match {
-      case n2: OnNext[U] => Some(n.getValue)
+    def unapply[U](notification: Notification[U]): Option[U] = notification match {
+      case onNext: OnNext[U] => Some(onNext.value)
       case _ => None
     }
   }
@@ -70,8 +70,8 @@ object Notification {
       Notification(new rx.Notification[T](error))
     }
 
-    def unapply[U](n: Notification[U]): Option[Throwable] = n match {
-      case n2: OnError[U] => Some(n2.error)
+    def unapply[U](notification: Notification[U]): Option[Throwable] = notification match {
+      case onError: OnError[U] => Some(onError.error)
       case _ => None
     }
   }
@@ -86,8 +86,8 @@ object Notification {
       Notification(new rx.Notification())
     }
 
-    def unapply[U](n: Notification[U]): Option[Unit] = n match {
-      case n2: OnCompleted[U] => Some()
+    def unapply[U](notification: Notification[U]): Option[Unit] = notification match {
+      case onCompleted: OnCompleted[U] => Some()
       case _ => None
     }
   }
