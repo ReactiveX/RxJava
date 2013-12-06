@@ -44,9 +44,10 @@ object CompositeSubscription {
 /**
  * Represents a group of [[rx.lang.scala.Subscription]] that are disposed together.
  */
-class CompositeSubscription private[scala] (subscription: rx.subscriptions.CompositeSubscription) extends Subscription
+class CompositeSubscription private[scala] (override val asJavaSubscription: rx.subscriptions.CompositeSubscription) extends Subscription
 {
-  override def asJavaSubscription = subscription
+  //override def asJavaSubscription = subscription
+
   /**
    * Adds a subscription to the group,
    * or unsubscribes immediately is the [[rx.subscriptions.CompositeSubscription]] is unsubscribed.

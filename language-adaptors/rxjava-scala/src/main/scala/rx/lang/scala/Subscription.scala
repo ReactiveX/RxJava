@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 trait Subscription {
 
-  private [scala] def asJavaSubscription: rx.Subscription = new rx.Subscription {
+  private [scala] val asJavaSubscription: rx.Subscription = new rx.Subscription {
     override def unsubscribe(){
       Subscription.this.unsubscribe();
       Subscription.this.unsubscribed.set(true)
@@ -55,14 +55,13 @@ object Subscription {
    * Creates an [[rx.lang.scala.Subscription]] from an [[rx.Subscription]].             ß
    */
   private [scala] def apply(subscription: rx.Subscription): Subscription = {
-    /*subscription match {
+    subscription match {
       case x: rx.subscriptions.BooleanSubscription => new rx.lang.scala.subscriptions.BooleanSubscription(x)
       case x: rx.subscriptions.CompositeSubscription => new rx.lang.scala.subscriptions.CompositeSubscription(x)
       case x: rx.subscriptions.MultipleAssignmentSubscription => new rx.lang.scala.subscriptions.MultipleAssignmentSubscription(x)
       case x: rx.subscriptions.SerialSubscription => new rx.lang.scala.subscriptions.SerialSubscription(x)
       case x: rx.Subscription => apply { x.unsubscribe() }
-    }*/
-    apply { subscription.unsubscribe() }
+    }
   }
 
   /**

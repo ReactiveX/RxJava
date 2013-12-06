@@ -1,17 +1,18 @@
-import org.junit.Assert._
-import org.junit.Test
-import rx.lang.scala.subjects._
-import org.mockito.InOrder
-import rx.lang.scala._
-import org.mockito.Matchers._
-import org.mockito.Mockito._
+package rx.lang.scala
 
-import org.junit.Assert._
-import org.junit.Test
-import org.scalatest.junit.JUnitSuite
 
-class SubjectTests extends JUnitSuite {
-
+//package rx.lang.scala.examples
+//
+//import org.junit.{Assert, Test}
+//import org.scalatest.junit.JUnitSuite
+//import scala.concurrent.duration._
+//import scala.language.postfixOps
+//import rx.lang.scala.{ Observable, Observer }
+//import rx.lang.scala.concurrency.TestScheduler
+//import rx.lang.scala.subjects.BehaviorSubject
+//import org.mockito.Mockito._
+//import org.mockito.Matchers._
+//
 //  @Test def PublishSubjectIsAChannel() {
 //
 //    val channel: BehaviorSubject[Integer] = BehaviorSubject(2013)
@@ -53,5 +54,5 @@ class SubjectTests extends JUnitSuite {
 //    x.verifyNoMoreInteractions()
 //
 //  }
-
-}
+//
+//}

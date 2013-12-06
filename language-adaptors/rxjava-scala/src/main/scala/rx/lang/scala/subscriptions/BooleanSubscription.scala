@@ -41,10 +41,10 @@ private [scala] object BooleanSubscription {
 /**
  * Represents a [[rx.lang.scala.Subscription]] that can be checked for status.
  */
-private [scala] class BooleanSubscription private[scala] (subscription: rx.subscriptions.BooleanSubscription)
+private [scala] class BooleanSubscription private[scala] (override val asJavaSubscription: rx.subscriptions.BooleanSubscription)
   extends Subscription {
 
-  override def asJavaSubscription =  subscription
+  //override def asJavaSubscription =  subscription
 
   /**
    * Checks whether the subscription has been unsubscribed.

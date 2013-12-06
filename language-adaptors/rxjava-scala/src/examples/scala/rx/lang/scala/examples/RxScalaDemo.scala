@@ -28,9 +28,13 @@ import org.junit.Ignore
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 
-import rx.lang.scala.Notification
-import rx.lang.scala.Observable
+import rx.lang.scala.{Observer, Notification, Observable}
 import rx.lang.scala.concurrency._
+import rx.lang.scala.subjects.BehaviorSubject
+import org.mockito.Mockito._
+import scala.Some
+import org.mockito.Matchers._
+import scala.Some
 
 @Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {

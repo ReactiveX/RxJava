@@ -40,9 +40,9 @@ object SerialSubscription {
 /**
  * Represents a [[rx.lang.scala.Subscription]] that can be checked for status.
  */
-class SerialSubscription private[scala] (s: rx.subscriptions.SerialSubscription) extends Subscription {
+class SerialSubscription private[scala] (override val asJavaSubscription: rx.subscriptions.SerialSubscription) extends Subscription {
 
-  override def asJavaSubscription = s
+  //override def asJavaSubscription = s
   /**
    * Unsubscribes this subscription, setting isUnsubscribed to true.
    */
