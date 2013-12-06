@@ -29,7 +29,6 @@ import rx.Subscription;
  */
 public class SerialSubscription implements Subscription {
     private final AtomicReference<Subscription> reference = new AtomicReference<Subscription>(empty());
-    private volatile Subscription unsubscribe;
     
     private static final Subscription UNSUBSCRIBED = new Subscription() {
         @Override
@@ -51,16 +50,13 @@ public class SerialSubscription implements Subscription {
             }
             if (reference.compareAndSet(current, subscription)) {
                 current.unsubscribe();
-                if(subscription == UNSUBSCRIBED) {
-                	unsubscribe = current;
-                }
                 break;
             }
         } while (true);
     }
     
     public Subscription getSubscription() {
-    	Subscription subscription = reference.get();
-		return subscription == UNSUBSCRIBED ? unsubscribe : subscription;
+        final Subscription subscription = reference.get();
+        return subscription == UNSUBSCRIBED ? null : subscription;
     }
 }
