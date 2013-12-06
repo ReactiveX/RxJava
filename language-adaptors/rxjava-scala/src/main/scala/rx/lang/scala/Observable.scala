@@ -528,7 +528,7 @@ trait Observable[+T]
     val o1: rx.Observable[_ <: rx.Observable[_]] = asJavaObservable.window[Closing](func)
     val o2 = Observable[rx.Observable[_]](o1).map((x: rx.Observable[_]) => {
       val x2 = x.asInstanceOf[rx.Observable[_ <: T]]
-      Observable[T](x2)
+      toScalaObservable[T](x2)
     })
     o2
   }
