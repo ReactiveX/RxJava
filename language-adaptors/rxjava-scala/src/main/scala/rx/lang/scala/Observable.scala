@@ -1015,7 +1015,11 @@ trait Observable[+T]
    * This is useful when you want an Observable to cache responses and you can't control the
    * subscribe/unsubscribe behavior of all the [[rx.lang.scala.Observer]]s.
    *
-   * NOTE: You sacrifice the ability to unsubscribe from the origin when you use the
+   * When you call `cache`, it does not yet subscribe to the
+   * source Observable. This only happens when `subscribe` is called
+   * the first time on the Observable returned by `cache()`.
+   * 
+   * Note: You sacrifice the ability to unsubscribe from the origin when you use the
    * `cache()` operator so be careful not to use this operator on Observables that
    * emit an infinite or very large number of items that will use up memory.
    *
