@@ -212,6 +212,7 @@ trait Scheduler {
 
 }
 
+// TODO add switch statement to pick specific constructor so you can downcast
 private [scala] object Scheduler {
   def apply(scheduler: rx.Scheduler): Scheduler = {
     new Scheduler() {

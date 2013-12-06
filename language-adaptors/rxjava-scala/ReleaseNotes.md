@@ -87,10 +87,10 @@ class XXXSubject[T] private[scala] (val asJavaSubject: rx.subjects.XXXSubject[T]
 
 The subjects that are available are:
 
-* AsyncSubject[T]()
-* BehaviorSubject[T](T value)
-* PublishSubject[T]()
-* ReplaySubject[T]()
+* `AsyncSubject[T]()`
+* `BehaviorSubject[T](value)`
+* `PublishSubject[T]()`
+* `ReplaySubject[T]()`
 
 The latter is still missing various overloads http://msdn.microsoft.com/en-us/library/hh211810(v=vs.103).aspx which
 you can expect to appear once they are added to the underlying RxJava implementation.
@@ -120,20 +120,49 @@ which already deviated from the pattern.
 In this release, we changed this to make scheduler more like `Subject` and provide a family of schedulers
 that you create using their factory function:
 
-* CurrentThreadScheduler()
-* ExecutorScheduler(executor: Executor)
-* ImmediateScheduler()
-* NewThreadScheduler()
-* ScheduledExecutorServiceScheduler(executor: ScheduledExecutorService)
-* TestScheduler()
-* ThreadPoolForComputationScheduler()
-* ThreadPoolForIOScheduler()
+* `CurrentThreadScheduler()`
+* `ExecutorScheduler(executor)`
+* `ImmediateScheduler()`
+* `NewThreadScheduler()`
+* `ScheduledExecutorServiceScheduler(scheduledExecutorService)`
+* `TestScheduler()`
+* `ThreadPoolForComputationScheduler()`
+* `ThreadPoolForIOScheduler()`
 
 In the future we expect that this list will grow further.
 
 To make your code compile in the new release you will have to change all occurrences of `Schedulers.xxx`
 into `XxxScheduler()`.
 
+Subscriptions
+-------------
+
+The `Subscription` trait in Scala now has `isUnsubscribed` as a member, effectively collapsing the old `Subscription`
+and `BooleanSubscription`, and the latter has been removed from the public surface. Pending a bugfix in RxJava,
+`SerialSubscription` implements its own `isUnsubscribed`.
+
+
+```scala
+trait Subscription {
+
+  private [scala] val asJavaSubscription: rx.Subscription = {...}
+  private [scala] val unsubscribed = new AtomicBoolean(false)
+
+  def unsubscribe(): Unit = { unsubscribed.set(true) }
+  def isUnsubscribed: Boolean = unsubscribed.get()
+}
+
+object Subscription {...}
+ ```
+
+ To create a `Subscription` use one of the following factory methods:
+
+ * `Subscription{...}`, `Subscription()`
+ * `CompositeSubscription(subscriptions)`
+ * `MultipleAssignmentSubscription`
+ * `SerialSubscription`
+
+ In case you do feel tempted to call `new Subscription{ ...}` directly make sure you wire up `isUnsubscribed` properly.
 
 Notifications
 -------------
