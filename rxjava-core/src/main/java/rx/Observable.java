@@ -5245,9 +5245,11 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item from the
      *         source, or an empty Observable if the source Observable completes without
      *         emitting a single item
+     * @deprecated Use <code>take(1)</code> directly.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first">RxJava Wiki: first()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
      */
+    @Deprecated
     public Observable<T> takeFirst() {
         return take(1);
     }
