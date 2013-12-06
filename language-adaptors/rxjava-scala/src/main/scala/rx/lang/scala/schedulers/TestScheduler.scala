@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.lang.scala.concurrency
+package rx.lang.scala.schedulers
 
 import scala.concurrent.duration.Duration
 import rx.lang.scala.Scheduler

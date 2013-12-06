@@ -27,9 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 trait Subscription {
 
   private [scala] val asJavaSubscription: rx.Subscription = new rx.Subscription {
-    override def unsubscribe(){
-      Subscription.this.unsubscribe();
-    }
+    override def unsubscribe(){  Subscription.this.unsubscribe() }
   }
 
 

@@ -104,7 +104,7 @@ Schedulers
 
 The biggest breaking change compared to the 0.15.1 release is giving `Scheduler` the same structure as the other types.
 The trait itself remains unchanged, except that we made the underlying Java representation hidden as above.
-The scheduler package has been renamed from `rx.lang.scala.concurrency` to `rx.lang.scala.schedulers`.
+The scheduler package has been renamed from `rx.lang.scala.schedulers` to `rx.lang.scala.schedulers`.
 
 ```scala
 trait Scheduler {
@@ -135,7 +135,7 @@ In the future we expect that this list will grow further with new schedulers as 
 (http://msdn.microsoft.com/en-us/library/system.reactive.concurrency(v=vs.103).aspx).
 
 To make your code compile in the new release you will have to change all occurrences of `Schedulers.xxx`
-into `XxxScheduler()`, and import `rx.lang.scala.schedulers` instead of `rx.lang.scala.concurrency`.
+into `XxxScheduler()`, and import `rx.lang.scala.schedulers` instead of `rx.lang.scala.schedulers`.
 
 Subscriptions
 -------------

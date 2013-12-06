@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.lang.scala.concurrency
+package rx.lang.scala.schedulers
 
 import rx.lang.scala.Scheduler
 
-object NewThreadScheduler {
+object CurrentThreadScheduler {
 
   /**
-   * Returns a [[rx.lang.scala.Scheduler]] that creates a new {@link Thread} for each unit of work.
+   * Returns a [[rx.lang.scala.Scheduler]] that queues work on the current thread to be executed after the current work completes.
    */
-  def apply(): NewThreadScheduler =  {
-    new NewThreadScheduler(rx.concurrency.Schedulers.newThread())
+  def apply(): CurrentThreadScheduler =  {
+    new CurrentThreadScheduler(rx.concurrency.Schedulers.currentThread())
   }
 }
 
-class NewThreadScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
+class CurrentThreadScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
   extends Scheduler {}

@@ -88,7 +88,7 @@ public class SynchronizedObserverTest {
         // so commenting out for now as this is not a critical thing to test here
         //            verify(s, times(1)).unsubscribe();
 
-        // we can have concurrency ...
+        // we can have schedulers ...
         assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
         // ... but the onNext execution should be single threaded
         assertEquals(1, busyObserver.maxConcurrentThreads.get());
@@ -128,7 +128,7 @@ public class SynchronizedObserverTest {
         // so commenting out for now as this is not a critical thing to test here
         //            verify(s, times(1)).unsubscribe();
 
-        // we can have concurrency ...
+        // we can have schedulers ...
         assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
         // ... but the onNext execution should be single threaded
         assertEquals(1, busyObserver.maxConcurrentThreads.get());
@@ -160,7 +160,7 @@ public class SynchronizedObserverTest {
         // so commenting out for now as this is not a critical thing to test here
         //verify(s, times(1)).unsubscribe();
 
-        // we can have concurrency ...
+        // we can have schedulers ...
         assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
         // ... but the onNext execution should be single threaded
         assertEquals(1, busyObserver.maxConcurrentThreads.get());
@@ -206,7 +206,7 @@ public class SynchronizedObserverTest {
         // so commenting out for now as this is not a critical thing to test here
         //verify(s, times(1)).unsubscribe();
 
-        // we can have concurrency ...
+        // we can have schedulers ...
         assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
         // ... but the onNext execution should be single threaded
         assertEquals(1, busyObserver.maxConcurrentThreads.get());
@@ -236,7 +236,7 @@ public class SynchronizedObserverTest {
         // so commenting out for now as this is not a critical thing to test here
         // verify(s, times(1)).unsubscribe();
 
-        // we can have concurrency ...
+        // we can have schedulers ...
         assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
         // ... but the onNext execution should be single threaded
         assertEquals(1, busyObserver.maxConcurrentThreads.get());
@@ -280,7 +280,7 @@ public class SynchronizedObserverTest {
         // so commenting out for now as this is not a critical thing to test here
         // verify(s, times(1)).unsubscribe();
 
-        // we can have concurrency ...
+        // we can have schedulers ...
         assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
         // ... but the onNext execution should be single threaded
         assertEquals(1, busyObserver.maxConcurrentThreads.get());

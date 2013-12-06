@@ -5,7 +5,7 @@ import org.scalatest.junit.JUnitSuite
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import rx.lang.scala.{ Observable, Observer }
-import rx.lang.scala.concurrency.TestScheduler
+import rx.lang.scala.schedulers.TestScheduler
 import rx.lang.scala.subjects.BehaviorSubject
 import org.mockito.Mockito._
 import org.mockito.Matchers._
