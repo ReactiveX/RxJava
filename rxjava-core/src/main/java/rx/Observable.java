@@ -2203,6 +2203,7 @@ public class Observable<T> {
      * @return an Observable that emits timestamped items from the source
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#timestamp">RxJava Wiki: timestamp()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229003.aspx">MSDN: Observable.Timestamp</a>
      */
     public Observable<Timestamped<T>> timestamp() {
         return create(OperationTimestamp.timestamp(this));
@@ -2211,11 +2212,14 @@ public class Observable<T> {
     /**
      * Wraps each item emitted by a source Observable in a {@link Timestamped}
      * object with timestamps provided by the given Scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timestamp.s.png">
      * 
      * @param scheduler the {@link Scheduler} to use as a time source.
      * @return an Observable that emits timestamped items from the source
      *         Observable with timestamps provided by the given Scheduler
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229003.aspx'>MSDN: Observable.Timestamp</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#timestamp">RxJava Wiki: timestamp()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229003.aspx">MSDN: Observable.Timestamp</a>
      */
     public Observable<Timestamped<T>> timestamp(Scheduler scheduler) {
         return create(OperationTimestamp.timestamp(this, scheduler));
@@ -5115,6 +5119,8 @@ public class Observable<T> {
 
     /**
      * Return an Observable which correlates two sequences when they overlap and groups the results.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupJoin.png">
      * 
      * @param right the other Observable to correlate values of this observable to
      * @param leftDuration function that returns an Observable which indicates the duration of
@@ -5126,6 +5132,7 @@ public class Observable<T> {
      * @return an Observable that emits grouped values based on overlapping durations from this and
      *         another Observable
      * 
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#join-and-groupjoin">RxJava Wiiki: groupJoin</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244235.aspx">MSDN: Observable.GroupJoin</a>
      */
     public <T2, D1, D2, R> Observable<R> groupJoin(Observable<T2> right, Func1<? super T, ? extends Observable<D1>> leftDuration, 
@@ -6165,42 +6172,56 @@ public class Observable<T> {
     } 
     
     /**
-     * Return an Observable that skips elements from the source Observable until the secondary
-     * observable emits an element.
+     * Return an Observable that skips elements from the source Observable until
+     * the secondary Observable emits an element.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipUntil.png">
      * 
      * @param other the other Observable that has to emit an element before this
      *              Observable's elements are relayed
-     * @return an Observable that skips elements from the source Observable until the secondary
-     *         observable emits an element.
+     * @return an Observable that skips elements from the source Observable
+     *         until the secondary Observable emits an element.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skipuntil">RxJava Wiki: skipUntil()</a>
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229358.aspx'>MSDN: Observable.SkipUntil</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229358.aspx">MSDN: Observable.SkipUntil</a>
      */
     public <U> Observable<T> skipUntil(Observable<U> other) {
         return create(new OperationSkipUntil<T, U>(this, other));
     }
-        
+
     /**
-     * Groups the elements of an observable sequence according to a specified key selector function until the duration observable expires for the key.
-     * @param keySelector A function to extract the key for each element.
-     * @param durationSelector A function to signal the expiration of a group.
-     * @return A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211932.aspx'>MSDN: Observable.GroupByUntil</a>
+     * Groups the items emitted by an Observable according to a specified key
+     * selector function until the duration Observable expires for the key.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupByUntil.png">
+     *
+     * @param keySelector a function to extract the key for each item
+     * @param durationSelector a function to signal the expiration of a group
+     * @return a sequence of Observable groups, each of which corresponds to a
+     *         unique key value, containing all items that share that same
+     *         key value
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava Wiki: groupByUntil()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211932.aspx">MSDN: Observable.GroupByUntil</a>
      */
     public <TKey, TDuration> Observable<GroupedObservable<TKey, T>> groupByUntil(Func1<? super T, ? extends TKey> keySelector, Func1<? super GroupedObservable<TKey, T>, ? extends Observable<TDuration>> durationSelector) {
         return groupByUntil(keySelector, Functions.<T>identity(), durationSelector);
     }
     
     /**
-     * Groups the elements of an observable sequence according to a specified key and value selector function  until the duration observable expires for the key.
-     * @param keySelector A function to extract the key for each element.
-     * @param valueSelector A function to map each source element to an element in an onbservable group.
-     * @param durationSelector A function to signal the expiration of a group.
-     * @return A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229433.aspx'>MSDN: Observable.GroupByUntil</a>
+     * Groups the items emitted by an Observable according to specified key and
+     * value selector functions until the duration Observable expires for the
+     * key.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupByUntil.png">
+     *
+     * @param keySelector a function to extract the key for each item
+     * @param valueSelector a function to map each source element to an item
+     *                      emitted by an Observable group
+     * @param durationSelector a function to signal the expiration of a group
+     * @return a sequence of Observable groups, each of which corresponds to a
+     *         unique key value, containing all items that share that same key
+     *         value
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava Wiki: groupByUntil()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229433.aspx">MSDN: Observable.GroupByUntil</a>
      */
     public <TKey, TValue, TDuration> Observable<GroupedObservable<TKey, TValue>> groupByUntil(Func1<? super T, ? extends TKey> keySelector, Func1<? super T, ? extends TValue> valueSelector, Func1<? super GroupedObservable<TKey, TValue>, ? extends Observable<TDuration>> durationSelector) {
         return create(new OperationGroupByUntil<T, TKey, TValue, TDuration>(this, keySelector, valueSelector, durationSelector));
