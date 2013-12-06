@@ -45,6 +45,7 @@ import rx.operators.OperationConcat;
 import rx.operators.OperationDebounce;
 import rx.operators.OperationDefaultIfEmpty;
 import rx.operators.OperationDefer;
+import rx.operators.OperationDelay;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
@@ -2013,9 +2014,38 @@ public class Observable<T> {
      * @param scheduler
      *            the scheduler to use for scheduling the item
      */
-    public static Observable<Void> timer(long interval, TimeUnit unit,
-            Scheduler scheduler) {
+    public static Observable<Void> timer(long interval, TimeUnit unit, Scheduler scheduler) {
         return create(OperationTimer.timer(interval, unit, scheduler));
+    }
+
+    /**
+     * Returns an Observable that emits the results of shifting the items emitted by the source
+     * Observable by a specified delay. Errors emitted by the source Observable are not delayed.
+     * @param delay
+     *            the delay to shift the source by
+     * @param unit
+     *            the {@link TimeUnit} in which <code>period</code> is defined
+     * @return the source Observable, but shifted by the specified delay
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229810%28v=vs.103%29.aspx">MSDN: Observable.Delay</a>
+     */
+    public Observable<T> delay(long delay, TimeUnit unit) {
+        return OperationDelay.delay(this, delay, unit, Schedulers.threadPoolForComputation());
+    }
+
+    /**
+     * Returns an Observable that emits the results of shifting the items emitted by the source
+     * Observable by a specified delay. Errors emitted by the source Observable are not delayed.
+     * @param delay
+     *            the delay to shift the source by
+     * @param unit
+     *            the {@link TimeUnit} in which <code>period</code> is defined
+     * @param scheduler
+     *            the {@link Scheduler} to use for delaying
+     * @return the source Observable, but shifted by the specified delay
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229280(v=vs.103).aspx">MSDN: Observable.Delay</a>
+     */
+    public Observable<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
+        return OperationDelay.delay(this, delay, unit, scheduler);
     }
 
     /**
