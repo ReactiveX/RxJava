@@ -3309,7 +3309,7 @@ public class Observable<T> {
      * invoke {@code onNext} as many times as the number of {@code onNext}
      * invokations of the source Observable that emits the fewest items.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.o.png">
      * 
      * @param ws an Observable of source Observables
      * @param zipFunction a function that, when applied to an item emitted by
