@@ -38,7 +38,7 @@ public class OperationDelayTest {
     @Test
     public void testDelay() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
-        Observable<Long> delayed = OperationDelay.delay(source, 500L, TimeUnit.MILLISECONDS, scheduler);
+        Observable<Long> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
         delayed.subscribe(observer);
         
         InOrder inOrder = inOrder(observer);
@@ -78,7 +78,7 @@ public class OperationDelayTest {
     @Test
     public void testLongDelay() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
-        Observable<Long> delayed = OperationDelay.delay(source, 5L, TimeUnit.SECONDS, scheduler);
+        Observable<Long> delayed = source.delay(5L, TimeUnit.SECONDS, scheduler);
         delayed.subscribe(observer);
         
         InOrder inOrder = inOrder(observer);
@@ -115,7 +115,7 @@ public class OperationDelayTest {
                 return value; 
             }
         });
-        Observable<Long> delayed = OperationDelay.delay(source, 1L, TimeUnit.SECONDS, scheduler);
+        Observable<Long> delayed = source.delay(1L, TimeUnit.SECONDS, scheduler);
         delayed.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -141,7 +141,7 @@ public class OperationDelayTest {
     @Test
     public void testDelayWithMultipleSubscriptions() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
-        Observable<Long> delayed = OperationDelay.delay(source, 500L, TimeUnit.MILLISECONDS, scheduler);
+        Observable<Long> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
         delayed.subscribe(observer);
         delayed.subscribe(observer2);
         
