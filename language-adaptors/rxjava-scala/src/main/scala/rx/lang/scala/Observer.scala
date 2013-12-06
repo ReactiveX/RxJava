@@ -39,29 +39,29 @@ trait Observer[-T] {
  *
  * The [[rx.lang.scala.Observable]] will not call this method again after it calls either `onCompleted` or `onError`.
  */
-  def onNext(value: T): Unit
+  def onNext(value: T): Unit = {}
 
   /**
   * Notifies the Observer that the [[rx.lang.scala.Observable]] has experienced an error condition.
   *
   * If the [[rx.lang.scala.Observable]] calls this method, it will not thereafter call `onNext` or `onCompleted`.
   */
-  def onError(error: Throwable): Unit
+  def onError(error: Throwable): Unit = {}
 
   /**
    * Notifies the Observer that the [[rx.lang.scala.Observable]] has finished sending push-based notifications.
    *
    * The [[rx.lang.scala.Observable]] will not call this method if it calls `onError`.
    */
-  def onCompleted(): Unit
+  def onCompleted(): Unit = {}
 
 }
 
-object Observer {
+private [scala] object Observer {
   /**
    * Assume that the underlying rx.Observer does not need to be wrapped.
    */
-  private [scala] def apply[T](observer: rx.Observer[T]) : Observer[T] = {
+  def apply[T](observer: rx.Observer[T]) : Observer[T] = {
      new Observer[T] {
 
        override def asJavaObserver = observer
