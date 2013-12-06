@@ -73,6 +73,7 @@ import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallel;
 import rx.operators.OperationParallelMerge;
+import rx.operators.OperationRepeat;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
@@ -5534,6 +5535,126 @@ public class Observable<T> {
      */
     public static <T> Observable<T> amb(Iterable<? extends Observable<? extends T>> sources) {
         return create(OperationAmb.amb(sources));
+    }
+
+    /**
+     * Generates an observable sequence that repeats the given element infinitely.
+     * 
+     * @param value
+     *            The element to repeat.
+     * @return An observable sequence that repeats the given element infinitely
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212126(v=vs.103).aspx">MSDN: Observable.Repeat</a>
+     */
+    public static <T> Observable<T> repeat(T value) {
+        return Observable.from(value).repeat();
+    }
+
+    /**
+     * Generates an observable sequence that repeats the given element
+     * of the specified number of times.
+     * 
+     * @param value
+     *            The element to repeat.
+     * @param repeatCount
+     *            The number of times to repeat the element.
+     * @return An observable sequence that repeats the given element of
+     *         the specified number of times.
+     * @throws IllegalArgumentException
+     *            If repeatCount is less than 0.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229193(v=vs.103).aspx">MSDN: Observable.Repeat</a>
+     */
+    public static <T> Observable<T> repeat(T value, int repeatCount) {
+        return Observable.from(value).repeat(repeatCount);
+    }
+
+    /**
+     * Generates an observable sequence that repeats the given element infinitely.
+     * 
+     * @param value
+     *            The element to repeat.
+     * @param scheduler
+     *            The scheduler to run the producer loop on.
+     * @return An observable sequence that repeats the given element infinitely
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211855(v=vs.103).aspx">MSDN: Observable.Repeat</a>
+     */
+    public static <T> Observable<T> repeat(T value, Scheduler scheduler) {
+        return Observable.from(value).repeat(scheduler);
+    }
+
+    /**
+     * Generates an observable sequence that repeats the given element
+     * of the specified number of times.
+     * 
+     * @param value
+     *            The element to repeat.
+     * @param repeatCount
+     *            The number of times to repeat the element.
+     * @param scheduler
+     *            The scheduler to run the producer loop on.
+     * @return An observable sequence that repeats the given element of
+     *         the specified number of times.
+     * @throws IllegalArgumentException
+     *            If repeatCount is less than 0.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229401(v=vs.103).aspx">MSDN: Observable.Repeat</a>
+     */
+    public static <T> Observable<T> repeat(T value, int repeatCount, Scheduler scheduler) {
+        return Observable.from(value).repeat(repeatCount, scheduler);
+    }
+
+    /**
+     * Generates an observable sequence that repeats the given source sequence infinitely.
+     * 
+     * @return An observable sequence that repeats the given source sequence infinitely.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428(v=vs.103).aspx">MSDN: Observable.Repeat</a>
+     */
+    public Observable<T> repeat() {
+        return create(OperationRepeat.repeat(this));
+    }
+
+    /**
+     * Generates an observable sequence that repeats the given source sequence
+     * of the specified number of times.
+     * 
+     * @param repeatCount
+     *            The number of times to repeat the source sequence.
+     * @return An observable sequence that repeats the given source sequence of
+     *         the specified number of times.
+     * @throws IllegalArgumentException
+     *            If repeatCount is less than 0.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244273(v=vs.103).aspx">MSDN: Observable.Repeat</a>
+     */
+    public Observable<T> repeat(int repeatCount) {
+        return create(OperationRepeat.repeat(this, repeatCount));
+    }
+
+    /**
+     * Generates an observable sequence that repeats the given source sequence infinitely.
+     * 
+     * @param scheduler
+     *            The scheduler to run the producer loop on.
+     * @return An observable sequence that repeats the given source sequence infinitely.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229830.aspx">MSDN: Observable.Repeat</a>
+     */
+    public Observable<T> repeat(Scheduler scheduler) {
+        return create(OperationRepeat.repeat(this, scheduler));
+    }
+
+    /**
+     * Generates an observable sequence that repeats the given source sequence
+     * of the specified number of times.
+     * 
+     * @param repeatCount
+     *            The number of times to repeat the source sequence.
+     * @param scheduler
+     *            The scheduler to run the producer loop on.
+     * @return An observable sequence that repeats the given source sequence of
+     *         the specified number of times.
+     * @throws IllegalArgumentException
+     *            If repeatCount is less than 0.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229830.aspx">MSDN: Observable.Repeat</a>
+     */
+    public Observable<T> repeat(int repeatCount, Scheduler scheduler) {
+        return create(OperationRepeat.repeat(this, repeatCount, scheduler));
     }
 
     /**
