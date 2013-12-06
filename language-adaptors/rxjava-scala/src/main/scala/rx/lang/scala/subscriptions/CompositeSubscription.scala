@@ -36,7 +36,7 @@ object CompositeSubscription {
   /**
    * Creates a [[rx.lang.scala.subscriptions.CompositeSubscription]].
    */
-  def apply(subscription: rx.subscriptions.CompositeSubscription): CompositeSubscription = {
+  private [scala] def apply(subscription: rx.subscriptions.CompositeSubscription): CompositeSubscription = {
     new CompositeSubscription(subscription)
   }
 }
@@ -44,9 +44,9 @@ object CompositeSubscription {
 /**
  * Represents a group of [[rx.lang.scala.Subscription]] that are disposed together.
  */
-class CompositeSubscription private[scala] (override val asJavaSubscription: rx.subscriptions.CompositeSubscription)
-  extends Subscription
+class CompositeSubscription private[scala] (subscription: rx.subscriptions.CompositeSubscription) extends Subscription
 {
+  override def asJavaSubscription = subscription
   /**
    * Adds a subscription to the group,
    * or unsubscribes immediately is the [[rx.subscriptions.CompositeSubscription]] is unsubscribed.
@@ -68,7 +68,7 @@ class CompositeSubscription private[scala] (override val asJavaSubscription: rx.
     this
   }
 
-  def unsubscribe(): Unit =  asJavaSubscription.unsubscribe()
+  override def unsubscribe(): Unit =  asJavaSubscription.unsubscribe()
   override def isUnsubscribed: Boolean = asJavaSubscription.isUnsubscribed
 
 }

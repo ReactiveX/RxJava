@@ -32,10 +32,7 @@ private [scala] object BooleanSubscription {
   def apply(u: => Unit): BooleanSubscription = {
     new BooleanSubscription(new rx.subscriptions.BooleanSubscription {
       override def unsubscribe(): Unit = {
-        if(!super.isUnsubscribed) {
-            u
-            super.unsubscribe()
-        }
+        if(!super.isUnsubscribed) { u; super.unsubscribe() }
       }
     })
   }
@@ -44,12 +41,14 @@ private [scala] object BooleanSubscription {
 /**
  * Represents a [[rx.lang.scala.Subscription]] that can be checked for status.
  */
-private [scala] class BooleanSubscription private[scala] (override val asJavaSubscription: rx.subscriptions.BooleanSubscription)
+private [scala] class BooleanSubscription private[scala] (subscription: rx.subscriptions.BooleanSubscription)
   extends Subscription {
+
+  override def asJavaSubscription =  subscription
 
   /**
    * Checks whether the subscription has been unsubscribed.
    */
   override def isUnsubscribed: Boolean = asJavaSubscription.isUnsubscribed
-  def unsubscribe(): Unit =  asJavaSubscription.unsubscribe()
+  override def unsubscribe(): Unit =  asJavaSubscription.unsubscribe()
 }
