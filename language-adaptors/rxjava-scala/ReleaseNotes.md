@@ -7,7 +7,10 @@ To makes these notes self-contained, we will start with the `Observer[T]` and `O
 that lay at the heart of Rx.
 
 In this release we have made the constructor in the companion object `Observer` and the `asJavaObserver` property
-in `Observable[T]`private to the Scala bindings package:
+in `Observable[T]`private to the Scala bindings package.
+
+Observer
+--------
 
 ```scala
 trait Observer[-T] {
@@ -33,20 +36,29 @@ Note that typically you do not need to create an `Observer` since all of the met
 (for instance `subscribe`) usually come with overloads that accept the individual methods
 `onNext`, `onError`, and `onCompleted` and will automatically create an `Observer` for you.
 
-In the future we may make the `Observer` companion object public and add overloads to this extent.
+While *technically* it is a breaking change to make the companion object `Observer` and the `asJavaObserver` property
+private, you should probably not have touched `asjavaObserver` in the first place.In the future we may make the
+`Observer` companion object public and add overloads that take functions corresponding to the `Observer` methods.
+
+Observable
+----------
+
+Just like for `Observer`, the `Observable` trait now also hides its `asJavaObservable` property and makes the constructor
+function in the companion object that takes an `rx.Observable` private (but leaves the companion object itself public).
+Again, while *technically* this is a breaking change, this should not have any influence on user code.
 
 ```scala
-object Observable {…}
 trait Observable[+T] {
-   def asJavaObservable: rx.Observable[_ <: T]
+   private [scala] def asJavaObservable: rx.Observable[_ <: T]
 }
 
-object Observer {…}
-trait Observer[-T] {
-  def asJavaObserver: rx.Observer[_ >: T]
+object Observable {
+   private [scala] def apply[T](observable: rx.Observable[_ <: T]): Observable[T] = {...}
 }
 ```
 
+Subject
+-------
 
 object Subject {…}
 trait Subject[-T, +R] extends Observable[R] with Observer[T] {
