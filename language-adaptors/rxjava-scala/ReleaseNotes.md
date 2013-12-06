@@ -72,8 +72,8 @@ trait Subject[-T, +R] extends Observable[R] with Observer[T] {
 }
 ```
 
-There is no companion object for `Subject` but instead there are a number of subtypes for each kind of subject,
-that follows the pattern of a companion object and a class with a private constructor:
+*I will remove PublishSubject making it *Subject* There is no companion object for `Subject` but instead*
+For each kind of subject, there is a pair of a companion object and a class with a private constructor:
 
 ```scala
 object XXXSubject {
@@ -89,7 +89,7 @@ The subjects that are available are:
 
 * `AsyncSubject[T]()`
 * `BehaviorSubject[T](value)`
-* `PublishSubject[T]()`
+* `Subject[T]()`
 * `ReplaySubject[T]()`
 
 The latter is still missing various overloads http://msdn.microsoft.com/en-us/library/hh211810(v=vs.103).aspx which
