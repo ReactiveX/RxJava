@@ -27,9 +27,9 @@ To create an instance of say `Observer[String]` in user code, you create a new i
 and implement any of the methods that you care about:
 ```scala
    val printObserver = new Observer[String] {
-      def onNext(value: String): Unit = {...}
-      def onError(error: Throwable): Unit = {...}
-      def onCompleted(): Unit = {...}
+      override def onNext(value: String): Unit = {...}
+      override def onError(error: Throwable): Unit = {...}
+      override def onCompleted(): Unit = {...}
    }
 ```
 Note that typically you do not need to create an `Observer` since all of the methods that accept an `Observer[T]`

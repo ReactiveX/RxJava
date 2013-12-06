@@ -66,9 +66,9 @@ private [scala] object Observer {
 
        override def asJavaObserver = observer
 
-       def onNext(value: T): Unit = asJavaObserver.onNext(value)
-       def onError(error: Throwable): Unit = asJavaObserver.onError(error)
-       def onCompleted(): Unit = asJavaObserver.onCompleted()
+       override def onNext(value: T): Unit = asJavaObserver.onNext(value)
+       override def onError(error: Throwable): Unit = asJavaObserver.onError(error)
+       override def onCompleted(): Unit = asJavaObserver.onCompleted()
 
      }
    }
