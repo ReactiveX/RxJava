@@ -75,7 +75,6 @@ trait Observable[+T]
   import scala.collection.Seq
   import scala.concurrent.duration.{Duration, TimeUnit}
   import rx.util.functions._
-  import rx.lang.scala.util._
   import rx.lang.scala.observables.BlockingObservable
   import ImplicitFunctionConversions._
   import JavaConversions._
