@@ -57,11 +57,11 @@ trait Observer[-T] {
 
 }
 
-private [scala] object Observer {
+object Observer {
   /**
    * Assume that the underlying rx.Observer does not need to be wrapped.
    */
-  def apply[T](observer: rx.Observer[T]) : Observer[T] = {
+  private [scala] def apply[T](observer: rx.Observer[T]) : Observer[T] = {
      new Observer[T] {
 
        override def asJavaObserver = observer
@@ -72,4 +72,20 @@ private [scala] object Observer {
 
      }
    }
+
+  def apply[T](                                                                ): Observer[T] = apply(v=>{}, e=>{}, ()=>{})
+  def apply[T](onNext: T=>Unit                                                 ): Observer[T] = apply(onNext, e=>{}, ()=>{})
+  def apply[T](                 onError: Throwable=>Unit                       ): Observer[T] = apply(v=>{}, onError, ()=>{})
+  def apply[T](                                           onCompleted: ()=>Unit): Observer[T] = apply(v=>{}, e=>{}, onCompleted)
+  def apply[T](onNext: T=>Unit, onError: Throwable=>Unit                       ): Observer[T] = apply(onNext, onError, ()=>{})
+  def apply[T](onNext: T=>Unit,                           onCompleted: ()=>Unit): Observer[T] = apply(onNext, e=>{}, onCompleted)
+  def apply[T](                 onError: Throwable=>Unit, onCompleted: ()=>Unit): Observer[T] = apply(v=>{}, onError, onCompleted)
+  def apply[T](onNext: T=>Unit, onError: Throwable=>Unit, onCompleted: ()=>Unit): Observer[T] = {
+       val n = onNext; val e = onError; val c = onCompleted
+       new Observer[T] {
+         override def onNext(value: T): Unit = n(value)
+         override def onError(error: Throwable): Unit = e(error)
+         override def onCompleted(): Unit = c()
+    }
+  }
 }

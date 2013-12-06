@@ -9,8 +9,7 @@ that lay at the heart of Rx.
 Observer
 --------
 
-In this release we have made the constructor in the companion object `Observer` and the `asJavaObserver` property
-in `Observable[T]`private to the Scala bindings package.
+In this release we have made the `asJavaObserver` property in `Observable[T]`private to the Scala bindings package.
 
 ```scala
 trait Observer[-T] {
@@ -21,10 +20,10 @@ trait Observer[-T] {
   def onCompleted(): Unit
 }
 
-private [scala] object Observer {…}
+object Observer {…}
 ```
 
-To create an instance of say `Observer[String]` in user code, you create a new instance of the `Observer` trait
+To create an instance of say `Observer[String]` in user code, you can create a new instance of the `Observer` trait
 and implement any of the methods that you care about:
 ```scala
    val printObserver = new Observer[String] {
@@ -33,14 +32,15 @@ and implement any of the methods that you care about:
       override def onCompleted(): Unit = {...}
    }
 ```
+ or you can use one of the overloads of the companion `Observer` object by passing in implementations of the `onNext`,
+ `onError` or `onCompleted` methods.
 
 Note that typically you do not need to create an `Observer` since all of the methods that accept an `Observer[T]`
 (for instance `subscribe`) usually come with overloads that accept the individual methods
-`onNext`, `onError`, and `onCompleted` and will automatically create an `Observer` for you.
+`onNext`, `onError`, and `onCompleted` and will automatically create an `Observer` for you under the covers.
 
-While *technically* it is a breaking change to make the companion object `Observer` and the `asJavaObserver` property
-private, you should probably not have touched `asjavaObserver` in the first place.In the future we may make the
-`Observer` companion object public and add overloads that take functions corresponding to the `Observer` methods.
+While *technically* it is a breaking change make the `asJavaObserver` property
+private, you should probably not have touched `asjavaObserver` in the first place.
 
 Observable
 ----------
