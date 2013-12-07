@@ -23,7 +23,7 @@ object ReplaySubject {
   }
 }
 
-class ReplaySubject[T] private[scala] (val asJavaSubject: rx.subjects.ReplaySubject[T]) extends Subject[T,T]  {
+class ReplaySubject[T] private[scala] (val asJavaSubject: rx.subjects.ReplaySubject[T]) extends Subject[T]  {
 }
 
 

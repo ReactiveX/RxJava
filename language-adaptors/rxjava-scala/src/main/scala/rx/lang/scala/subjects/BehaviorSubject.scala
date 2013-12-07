@@ -23,7 +23,7 @@ object BehaviorSubject {
   }
 }
 
-class BehaviorSubject[T] private[scala] (val asJavaSubject: rx.subjects.BehaviorSubject[T]) extends Subject[T,T]  {}
+class BehaviorSubject[T] private[scala] (val asJavaSubject: rx.subjects.BehaviorSubject[T]) extends Subject[T]  {}
 
 
 

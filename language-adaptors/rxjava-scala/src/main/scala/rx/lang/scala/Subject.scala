@@ -20,16 +20,22 @@ import rx.joins.ObserverBase
 /**
 * A Subject is an Observable and an Observer at the same time.
 */
-trait Subject[-T, +R] extends Observable[R] with Observer[T] {
-  private [scala] val asJavaSubject: rx.subjects.Subject[_ >: T, _<: R]
+trait Subject[T] extends Observable[T] with Observer[T] {
+  private [scala] val asJavaSubject: rx.subjects.Subject[_ >: T, _<: T]
 
-  val asJavaObservable: rx.Observable[_ <: R] = asJavaSubject
+  val asJavaObservable: rx.Observable[_ <: T] = asJavaSubject
 
   val asJavaObserver: rx.Observer[_ >: T] = asJavaSubject
   def onNext(value: T): Unit = { asJavaObserver.onNext(value)}
   def onError(error: Throwable): Unit = { asJavaObserver.onError(error)  }
   def onCompleted() { asJavaObserver.onCompleted() }
-
-
 }
+
+object Subject {
+  def apply[T](): Subject[T] = new rx.lang.scala.subjects.PublishSubject[T](rx.subjects.PublishSubject.create())
+}
+
+
+
+
 

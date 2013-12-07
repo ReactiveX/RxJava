@@ -190,14 +190,13 @@ trait Observable[+T]
    *
    * @param subject
    *            the `rx.lang.scala.subjects.Subject` to push source items into
-   * @tparam R
-   *            result type
    * @return a pair of a start function and an [[rx.lang.scala.Observable]] such that when the start function
    *         is called, the Observable starts to push results into the specified Subject
    */
-  def multicast[R](subject: rx.lang.scala.Subject[T, R]): (() => Subscription, Observable[R]) = {
-    val javaCO = asJavaObservable.multicast[R](subject.asJavaSubject)
-    (() => javaCO.connect(), Observable[R](javaCO))
+  def multicast[R >: T](subject: rx.lang.scala.Subject[R]): (() => Subscription, Observable[R]) = {
+    val s: rx.subjects.Subject[_ >: T, _<: R] = subject.asJavaSubject
+    val javaCO: rx.observables.ConnectableObservable[R] = asJavaObservable.multicast(s)
+    (() => javaCO.connect(), Observable(javaCO))
   }
 
   /**

@@ -16,7 +16,7 @@ import org.mockito.Matchers._
  */
 class SubjectTest extends JUnitSuite {
 
-  @Test def PublishSubjectIsAChannel() {
+  @Test def SubjectIsAChannel() {
 
     var lastA: Integer = null
     var errorA: Throwable = null
@@ -45,15 +45,13 @@ class SubjectTest extends JUnitSuite {
       () => { completedC = true }
     )
 
-    val channel: BehaviorSubject[Integer] = BehaviorSubject(2013)
+    val channel: Subject[Integer] = Subject[Integer]()
 
     val a = channel.subscribe(observerA)
-
-      Assert.assertEquals(2013, lastA)
-
     val b = channel.subscribe(observerB)
 
-      Assert.assertEquals(2013, lastB)
+      Assert.assertEquals(null, lastA)
+      Assert.assertEquals(null, lastB)
 
     channel.onNext(42)
 
@@ -93,8 +91,6 @@ class SubjectTest extends JUnitSuite {
       Assert.assertTrue(completedB)
       Assert.assertEquals(42, lastA)
       Assert.assertEquals(4711, lastB)
-
-
   }
 
   @Test def ReplaySubjectIsAChannel() {
