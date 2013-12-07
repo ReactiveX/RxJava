@@ -2315,6 +2315,9 @@ public class Observable<T> {
         return sequenceEqual(first, second, new Func2<T, T, Boolean>() {
             @Override
             public Boolean call(T first, T second) {
+                if(first == null) {
+                    return second == null;
+                }
                 return first.equals(second);
             }
         });

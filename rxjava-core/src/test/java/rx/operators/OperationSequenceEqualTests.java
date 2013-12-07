@@ -25,6 +25,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.util.functions.Func2;
 
 public class OperationSequenceEqualTests {
 
@@ -104,18 +105,30 @@ public class OperationSequenceEqualTests {
     }
 
     @Test
-    public void testWithEqualityError() {
+    public void testWithNull1() {
         Observable<Boolean> observable = Observable.sequenceEqual(
                 Observable.from((String) null), Observable.from("one"));
+        verifyResult(observable, false);
+    }
 
-        @SuppressWarnings("unchecked")
-        Observer<Boolean> observer = mock(Observer.class);
-        observable.subscribe(observer);
+    @Test
+    public void testWithNull2() {
+        Observable<Boolean> observable = Observable.sequenceEqual(
+                Observable.from((String) null), Observable.from((String) null));
+        verifyResult(observable, true);
+    }
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onError(
-                isA(NullPointerException.class));
-        inOrder.verifyNoMoreInteractions();
+    @Test
+    public void testWithEqualityError() {
+        Observable<Boolean> observable = Observable.sequenceEqual(
+                Observable.from("one"), Observable.from("one"),
+                new Func2<String, String, Boolean>() {
+                    @Override
+                    public Boolean call(String t1, String t2) {
+                        throw new TestException();
+                    }
+                });
+        verifyError(observable);
     }
 
     private void verifyResult(Observable<Boolean> observable, boolean result) {
