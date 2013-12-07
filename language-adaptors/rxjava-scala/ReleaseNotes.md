@@ -52,7 +52,7 @@ Again, while *technically* this is a breaking change, this should not have any i
 
 ```scala
 trait Observable[+T] {
-   private [scala] def asJavaObservable: rx.Observable[_ <: T]
+   private [scala] val asJavaObservable: rx.Observable[_ <: T]
 }
 
 object Observable {
@@ -108,7 +108,7 @@ The scheduler package has been renamed from `rx.lang.scala.concurrency` to `rx.l
 
 ```scala
 trait Scheduler {
-   private[scala] def asJavaScheduler: rx.Scheduler;
+   private[scala] val asJavaScheduler: rx.Scheduler;
 }
 
 private [scala] object Scheduler {...}
@@ -177,7 +177,7 @@ objects of `Notification` now have both constructor (`apply`) and extractor (`un
 ```scala
 object Notification {...}
 trait Notification[+T] {
-  private [scala] def asJavaNotification: rx.Notification[_ <: T]
+  private [scala] val asJavaNotification: rx.Notification[_ <: T]
 }
 
 object Notification {
@@ -186,7 +186,9 @@ object Notification {
    object OnCompleted { def apply(...){}; def unapply(...){...} }
 }
 ```
-To construct a `Notification`, you import `rx.lang.scala.Notification._` and use `OnNext("hello")`, or `OnError(new Exception("Oops!"))`, or `OnCompleted()`.
+To construct a `Notification`, you import `rx.lang.scala.Notification._` and use `OnNext("hello")`,
+or `OnError(new Exception("Oops!"))`, or `OnCompleted()`.
+
 To pattern match on a notification you can create a partial function like so: `case OnNext(v) => { ... v ... }`.
 
 There are no breaking changes for notifications.
