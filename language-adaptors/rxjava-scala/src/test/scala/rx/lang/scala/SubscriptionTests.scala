@@ -10,6 +10,8 @@ import org.mockito.Mockito._
 import org.mockito.Matchers._
 import rx.lang.scala.subscriptions.{SerialSubscription, MultipleAssignmentSubscription, CompositeSubscription}
 
+
+
 class SubscriptionTests extends JUnitSuite {
   @Test
   def subscriptionCreate() {

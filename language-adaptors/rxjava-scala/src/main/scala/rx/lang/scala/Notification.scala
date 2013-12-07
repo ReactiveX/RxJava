@@ -20,6 +20,24 @@ package rx.lang.scala
  */
 sealed trait Notification[+T] {
   private [scala] val asJava: rx.Notification[_ <: T]
+
+  /**
+   * Invokes the function corresponding to the notification.
+   *
+   * @param onNext
+   *               The function to invoke for an [[rx.lang.scala.Notification.OnNext]] notification.
+   * @param onError
+   *               The function to invoke for an [[rx.lang.scala.Notification.OnError]] notification.
+   * @param onCompleted
+   *               The function to invoke for an [[rx.lang.scala.Notification.OnCompleted]] notification.
+   */
+  def accept[R](onNext: T=>R, onError: Throwable=>R, onCompleted: ()=>R): R = {
+    this match {
+      case Notification.OnNext(value)  => onNext(value)
+      case Notification.OnError(error) => onError(error)
+      case Notification.OnCompleted()  => onCompleted()
+    }
+  }
 }
 
 /**
