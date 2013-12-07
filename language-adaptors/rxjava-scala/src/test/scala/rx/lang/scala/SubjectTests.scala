@@ -18,8 +18,6 @@ class SubjectTest extends JUnitSuite {
 
   @Test def PublishSubjectIsAChannel() {
 
-    val zzz = Observer[Integer]()
-
     var lastA: Integer = null
     var errorA: Throwable = null
     var completedA: Boolean = false
