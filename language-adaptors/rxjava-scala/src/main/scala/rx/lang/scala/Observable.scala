@@ -1840,22 +1840,22 @@ object Observable {
 
   private[scala]
   def jObsOfListToScObsOfSeq[T](jObs: rx.Observable[_ <: java.util.List[T]]): Observable[Seq[T]] = {
-    val oScala1: Observable[java.util.List[T]] = new Observable[java.util.List[T]]{ def asJavaObservable = jObs }
+    val oScala1: Observable[java.util.List[T]] = new Observable[java.util.List[T]]{ val asJavaObservable = jObs }
     oScala1.map((lJava: java.util.List[T]) => lJava.asScala)
   }
 
   private[scala]
   def jObsOfJObsToScObsOfScObs[T](jObs: rx.Observable[_ <: rx.Observable[_ <: T]]): Observable[Observable[T]] = {
-    val oScala1: Observable[rx.Observable[_ <: T]] = new Observable[rx.Observable[_ <: T]]{ def asJavaObservable = jObs }
-    oScala1.map((oJava: rx.Observable[_ <: T]) => new Observable[T]{ def asJavaObservable = oJava})
+    val oScala1: Observable[rx.Observable[_ <: T]] = new Observable[rx.Observable[_ <: T]]{ val asJavaObservable = jObs }
+    oScala1.map((oJava: rx.Observable[_ <: T]) => new Observable[T]{ val asJavaObservable = oJava})
   }
 
   /**
    * Creates a new Scala Observable from a given Java Observable.
    */
   private [scala] def apply[T](observable: rx.Observable[_ <: T]): Observable[T] = {
-    new Observable[T]{
-      def asJavaObservable = observable
+    new Observable[T] {
+      val asJavaObservable = observable
     }
   }
 
