@@ -24,11 +24,11 @@ trait Observer[-T] {
 object Observer {...}
 ```
 
-To create an instance of say `Observer[String]` in user code, you can create a new instance of the `Observer` trait
+To create an instance of say `Observer[SensorEvent]` in user code, you can create a new instance of the `Observer` trait
 and implement any of the methods that you care about:
 ```scala
-   val printObserver = new Observer[String] {
-      override def onNext(value: String): Unit = {...}
+   val printObserver = new Observer[SensorEvent] {
+      override def onNext(value: SensorEvent): Unit = {...value.toString...}
       override def onError(error: Throwable): Unit = {...}
       override def onCompleted(): Unit = {...}
    }
@@ -65,15 +65,15 @@ The major changes in `Observable` are wrt to the factory methods *Can't write th
 Subject
 -------
 
-The `Subject` trait now also hides the underlying Java `asJavaSubject: rx.subjects.Subject[_ >: T, _<: R]`.
+The `Subject` trait now also hides the underlying Java `asJavaSubject: rx.subjects.Subject[_ >: T, _<: T]`
+and takes only a single *invariant* type parameter `T`. all existing implementations of `Subject` are parametrized
+by a single type, and this reflects that reality.
 
 ```scala
-trait Subject[-T, +R] extends Observable[R] with Observer[T] {
-  private [scala] val asJavaSubject: rx.subjects.Subject[_ >: T, _<: R]
+trait Subject[T] extends Observable[T] with Observer[T] {
+  private [scala] val asJavaSubject: rx.subjects.Subject[_ >: T, _<: T]
 }
 ```
-
-*I will remove PublishSubject making it *Subject* There is no companion object for `Subject` but instead*
 For each kind of subject, there is a pair of a companion object and a class with a private constructor:
 
 ```scala
@@ -97,7 +97,7 @@ The latter is still missing various overloads http://msdn.microsoft.com/en-us/li
 you can expect to appear once they are added to the underlying RxJava implementation.
 
 Compared with release 0.15.1 there are no breaking changes in `Subject` for this release, except for
-making `asJavaSubject` private.
+making `asJavaSubject` private, and collapsing its type parameters. Neither of these should cause trouble.
 
 Schedulers
 ----------
