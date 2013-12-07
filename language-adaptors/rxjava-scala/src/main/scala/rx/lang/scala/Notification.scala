@@ -29,9 +29,9 @@ sealed trait Notification[+T] {
  * {{{
  * import Notification._
  * Observable(1, 2, 3).materialize.subscribe(n => n match {
- *   case OnNext(v) => println("Got value " + v)
+ *   case OnNext(v)     => println("Got value " + v)
  *   case OnCompleted() => println("Completed")
- *   case OnError(err) => println("Error: " + err.getMessage)
+ *   case OnError(err)  => println("Error: " + err.getMessage)
  * })
  * }}}
  */
@@ -45,15 +45,25 @@ object Notification {
   
   // OnNext, OnError, OnCompleted are not case classes because we don't want pattern matching
   // to extract the rx.Notification
-  
-
-  
   object OnNext {
 
+    /**
+     * Constructor for onNext notifications.
+     *
+     * @param value
+     * The item passed to the onNext method.
+     */
     def apply[T](value: T): Notification[T] = {
       Notification(new rx.Notification[T](value))
     }
 
+    /**
+     * Destructor for oNNext notifications.
+     * @param notification
+     *                     The [[rx.lang.scala.Notification]] to be destructed.
+     * @return
+     *         The item contained in this notification.
+     */
     def unapply[U](notification: Notification[U]): Option[U] = notification match {
       case onNext: OnNext[U] => Some(onNext.value)
       case _ => None
@@ -66,10 +76,24 @@ object Notification {
   
   object OnError {
 
+    /**
+     * Constructor for onError notifications.
+     *
+     * @param error
+     * The exception passed to the onNext method.
+     */
     def apply[T](error: Throwable): Notification[T] = {
       Notification(new rx.Notification[T](error))
     }
 
+    /**
+     * Destructor for onError notifications.
+     *
+     * @param notification
+     *                     The [[rx.lang.scala.Notification]] to be deconstructed
+     * @return
+     *         The [[java.lang.Throwable]] value contained in this notification.
+     */
     def unapply[U](notification: Notification[U]): Option[Throwable] = notification match {
       case onError: OnError[U] => Some(onError.error)
       case _ => None
@@ -82,10 +106,16 @@ object Notification {
 
   object OnCompleted {
 
+    /**
+     * Constructor for onCompleted notifications.
+     */
     def apply[T](): Notification[T] = {
       Notification(new rx.Notification())
     }
 
+    /**
+     * Destructor for onCompleted notifications.
+     */
     def unapply[U](notification: Notification[U]): Option[Unit] = notification match {
       case onCompleted: OnCompleted[U] => Some()
       case _ => None
