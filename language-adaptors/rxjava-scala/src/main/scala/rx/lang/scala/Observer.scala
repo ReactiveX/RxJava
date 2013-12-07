@@ -71,10 +71,10 @@ object Observer {
 
    }
 
-  def apply[T](                                                                ): Observer[T] = apply(v=>{}, e=>{}, ()=>{})
-  def apply[T](onNext: T=>Unit                                                 ): Observer[T] = apply(onNext, e=>{}, ()=>{})
-  def apply[T](onNext: T=>Unit, onError: Throwable=>Unit                       ): Observer[T] = apply(onNext, onError, ()=>{})
-  def apply[T](onNext: T=>Unit,                           onCompleted: ()=>Unit): Observer[T] = apply(onNext, e=>{}, onCompleted)
+  def apply[T](                                                                ): Observer[T] = apply[T]((v:T)=>(), (e: Throwable)=>(), ()=>())
+  def apply[T](onNext: T=>Unit                                                 ): Observer[T] = apply[T](onNext, (e: Throwable)=>(), ()=>())
+  def apply[T](onNext: T=>Unit, onError: Throwable=>Unit                       ): Observer[T] = apply[T](onNext, onError, ()=>())
+  def apply[T](onNext: T=>Unit,                           onCompleted: ()=>Unit): Observer[T] = apply[T](onNext, (e: Throwable)=>(), onCompleted)
   def apply[T](n: T=>Unit, e: Throwable=>Unit, c: ()=>Unit): Observer[T] = {
       // Java calls XXX; Scala receives XXX.
       Observer(new rx.Observer[T]{
