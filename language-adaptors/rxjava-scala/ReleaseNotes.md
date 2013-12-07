@@ -34,7 +34,7 @@ and implement any of the methods that you care about:
    }
 ```
  or you can use one of the overloads of the companion `Observer` object by passing in implementations of the `onNext`,
- `onError` or `onCompleted` methods. The advantage of this is that you get type inference as in `Observer(println(_))`.
+ `onError` or `onCompleted` methods.
 
 Note that typically you do not need to create an `Observer` since all of the methods that accept an `Observer[T]`
 (for instance `subscribe`) usually come with overloads that accept the individual methods

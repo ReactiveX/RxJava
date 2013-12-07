@@ -1,58 +1,95 @@
 package rx.lang.scala
 
+import org.junit.{Assert, Test}
+import org.scalatest.junit.JUnitSuite
+import scala.concurrent.duration._
+import scala.language.postfixOps
+import rx.lang.scala.schedulers.TestScheduler
+import rx.lang.scala.subjects.BehaviorSubject
+import org.mockito.Mockito._
+import org.mockito.Matchers._
 
-//package rx.lang.scala.examples
-//
-//import org.junit.{Assert, Test}
-//import org.scalatest.junit.JUnitSuite
-//import scala.concurrent.duration._
-//import scala.language.postfixOps
-//import rx.lang.scala.{ Observable, Observer }
-//import rx.lang.scala.schedulers.TestScheduler
-//import rx.lang.scala.subjects.BehaviorSubject
-//import org.mockito.Mockito._
-//import org.mockito.Matchers._
-//
-//  @Test def PublishSubjectIsAChannel() {
-//
-//    val channel: BehaviorSubject[Integer] = BehaviorSubject(2013)
-//    val observerA: Observer[Integer]  = mock(classOf[Observer[Integer]])
-//    val observerB: Observer[Integer] = mock(classOf[Observer[Integer]])
-//    val observerC: Observer[Integer] = mock(classOf[Observer[Integer]])
-//
-//    val x = inOrder(observerA, observerB, observerC)
-//
-//    val a = channel.subscribe(observerA)
-//    val b = channel.subscribe(observerB)
-//
-//    x.verify(observerA).onNext(2013)
-//    x.verify(observerB).onNext(2013)
-//
-//    channel.onNext(42)
-//
-//    x.verify(observerA).onNext(42)
-//    x.verify(observerB).onNext(42)
-//
-//    a.unsubscribe()
-//
-//    channel.onNext(4711)
-//
-//    x.verify(observerA, never()).onNext(any())
-//    x.verify(observerB).onNext(4711)
-//
-//    channel.onCompleted()
-//
-//    x.verify(observerA, never()).onCompleted()
-//    x.verify(observerB).onCompleted()
-//
-//    val c = channel.subscribe(observerC)
-//
-//    x.verify(observerC).onCompleted()
-//
-//    channel.onNext(13)
-//
-//    x.verifyNoMoreInteractions()
-//
-//  }
-//
-//}
+
+/**
+ * No fucking clue how to properly mock traits.
+ * Some old-school imperative code works just as well.
+ */
+class SubjectTest extends JUnitSuite {
+
+  @Test def PublishSubjectIsAChannel() {
+
+    var lastA: Integer = null
+    var errorA: Throwable = null
+    var completedA: Boolean = false
+    val observerA = Observer[Integer](
+      (next: Integer) => { lastA = next },
+      (error: Throwable) => { errorA = error },
+      () => { completedA = true }
+    )
+
+    var lastB: Integer = null
+    var errorB: Throwable = null
+    var completedB: Boolean = false
+    val observerB = Observer[Integer](
+      (next: Integer) => { lastB = next },
+      (error: Throwable) => { errorB = error },
+      () => { completedB = true }
+    )
+
+    var lastC: Integer = null
+    var errorC: Throwable = null
+    var completedC: Boolean = false
+    val observerC = Observer[Integer](
+      (next: Integer) => { lastC = next },
+      (error: Throwable) => { errorC = error },
+      () => { completedC = true }
+    )
+
+    val channel: BehaviorSubject[Integer] = BehaviorSubject(2013)
+
+    val a = channel.subscribe(observerA)
+    Assert.assertEquals(2013, lastA)
+
+    val b = channel.subscribe(observerB)
+    Assert.assertEquals(2013, lastB)
+
+    channel.onNext(42)
+    Assert.assertEquals(42, lastA)
+    Assert.assertEquals(42, lastB)
+
+    a.unsubscribe()
+    channel.onNext(4711)
+    Assert.assertEquals(42, lastA)
+    Assert.assertEquals(4711, lastB)
+
+    channel.onCompleted()
+    Assert.assertFalse(completedA)
+    Assert.assertTrue(completedB)
+    Assert.assertEquals(42, lastA)
+    Assert.assertEquals(4711, lastB)
+
+    val c = channel.subscribe(observerC)
+    channel.onNext(13)
+
+    Assert.assertEquals(null, lastC)
+    Assert.assertTrue(completedC)
+
+    Assert.assertFalse(completedA)
+    Assert.assertTrue(completedB)
+    Assert.assertEquals(42, lastA)
+    Assert.assertEquals(4711, lastB)
+
+    channel.onError(new Exception("!"))
+
+    Assert.assertEquals(null, lastC)
+    Assert.assertTrue(completedC)
+
+    Assert.assertFalse(completedA)
+    Assert.assertTrue(completedB)
+    Assert.assertEquals(42, lastA)
+    Assert.assertEquals(4711, lastB)
+
+
+  }
+
+}

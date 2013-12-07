@@ -16,6 +16,7 @@
 package rx.lang.scala
 
 import rx.joins.ObserverBase
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  Provides a mechanism for receiving push-based notifications.
@@ -26,11 +27,7 @@ import rx.joins.ObserverBase
 */
 trait Observer[-T] {
 
-  private [scala] def asJavaObserver: rx.Observer[_ >: T] = new ObserverBase[T] {
-    protected def onCompletedCore(): Unit = onCompleted()
-    protected def onErrorCore(error: Throwable): Unit = onError(error)
-    protected def onNextCore(value: T): Unit = onNext(value)
-  }
+  private [scala] val asJavaObserver: rx.Observer[_ >: T]
 
  /**
  * Provides the Observer with new data.
@@ -39,50 +36,51 @@ trait Observer[-T] {
  *
  * The [[rx.lang.scala.Observable]] will not call this method again after it calls either `onCompleted` or `onError`.
  */
-  def onNext(value: T): Unit = {}
+  def onNext(value: T): Unit
 
   /**
   * Notifies the Observer that the [[rx.lang.scala.Observable]] has experienced an error condition.
   *
   * If the [[rx.lang.scala.Observable]] calls this method, it will not thereafter call `onNext` or `onCompleted`.
   */
-  def onError(error: Throwable): Unit = {}
+  def onError(error: Throwable): Unit
 
   /**
    * Notifies the Observer that the [[rx.lang.scala.Observable]] has finished sending push-based notifications.
    *
    * The [[rx.lang.scala.Observable]] will not call this method if it calls `onError`.
    */
-  def onCompleted(): Unit = {}
+  def onCompleted(): Unit
 
 }
 
 object Observer {
+
   /**
-   * Assume that the underlying rx.Observer does not need to be wrapped.
+   * Scala calls XXX; Java receives XXX.
    */
   private [scala] def apply[T](observer: rx.Observer[T]) : Observer[T] = {
      new Observer[T] {
 
-       override def asJavaObserver = observer
+       val asJavaObserver = observer
 
-       override def onNext(value: T): Unit = asJavaObserver.onNext(value)
-       override def onError(error: Throwable): Unit = asJavaObserver.onError(error)
-       override def onCompleted(): Unit = asJavaObserver.onCompleted()
-
+       def onNext(value: T): Unit = asJavaObserver.onNext(value)
+       def onError(error: Throwable): Unit = asJavaObserver.onError(error)
+       def onCompleted(): Unit = asJavaObserver.onCompleted()
      }
+
    }
 
   def apply[T](                                                                ): Observer[T] = apply(v=>{}, e=>{}, ()=>{})
   def apply[T](onNext: T=>Unit                                                 ): Observer[T] = apply(onNext, e=>{}, ()=>{})
   def apply[T](onNext: T=>Unit, onError: Throwable=>Unit                       ): Observer[T] = apply(onNext, onError, ()=>{})
   def apply[T](onNext: T=>Unit,                           onCompleted: ()=>Unit): Observer[T] = apply(onNext, e=>{}, onCompleted)
-  def apply[T](onNext: T=>Unit, onError: Throwable=>Unit, onCompleted: ()=>Unit): Observer[T] = {
-       val n = onNext; val e = onError; val c = onCompleted
-       new Observer[T] {
-         override def onNext(value: T): Unit = n(value)
-         override def onError(error: Throwable): Unit = e(error)
-         override def onCompleted(): Unit = c()
-    }
+  def apply[T](n: T=>Unit, e: Throwable=>Unit, c: ()=>Unit): Observer[T] = {
+      // Java calls XXX; Scala receives XXX.
+      Observer(new rx.Observer[T]{
+         def onNext(value: T): Unit = n(value)
+         def onError(error: Throwable): Unit = e(error)
+         def onCompleted(): Unit = c()
+       })
   }
 }

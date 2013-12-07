@@ -79,7 +79,7 @@ trait Observable[+T]
   import rx.lang.scala.observables.BlockingObservable
   import rx.lang.scala.ImplicitFunctionConversions._
 
-  private [scala] def asJavaObservable: rx.Observable[_ <: T]
+  private [scala] val asJavaObservable: rx.Observable[_ <: T]
 
   /**
    * $subscribeObserverMain

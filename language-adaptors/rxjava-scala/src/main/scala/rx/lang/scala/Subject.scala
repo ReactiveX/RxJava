@@ -23,18 +23,13 @@ import rx.joins.ObserverBase
 trait Subject[-T, +R] extends Observable[R] with Observer[T] {
   private [scala] val asJavaSubject: rx.subjects.Subject[_ >: T, _<: R]
 
-  def asJavaObservable: rx.Observable[_ <: R] = asJavaSubject
+  val asJavaObservable: rx.Observable[_ <: R] = asJavaSubject
 
-  // temporary hack to workaround bugs in rx Subjects
-  override def asJavaObserver: rx.Observer[_ >: T] = new ObserverBase[T] {
-    protected def onNextCore(value: T) = asJavaSubject.onNext(value)
-    protected def onErrorCore(error: Throwable) =  asJavaSubject.onError(error)
-    protected def onCompletedCore() = asJavaSubject.onCompleted()
-  }
+  val asJavaObserver: rx.Observer[_ >: T] = asJavaSubject
+  def onNext(value: T): Unit = { asJavaObserver.onNext(value)}
+  def onError(error: Throwable): Unit = { asJavaObserver.onError(error)  }
+  def onCompleted() { asJavaObserver.onCompleted() }
 
-  override def onNext(value: T): Unit = asJavaObserver.onNext(value)
-  override def onError(error: Throwable): Unit = asJavaObserver.onError(error)
-  override def onCompleted(): Unit = asJavaObserver.onCompleted()
 
 }
 
