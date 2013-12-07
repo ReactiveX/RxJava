@@ -21,7 +21,7 @@ trait Observer[-T] {
   def onCompleted(): Unit
 }
 
-object Observer {…}
+object Observer {...}
 ```
 
 To create an instance of say `Observer[String]` in user code, you can create a new instance of the `Observer` trait
@@ -41,7 +41,7 @@ Note that typically you do not need to create an `Observer` since all of the met
 `onNext`, `onError`, and `onCompleted` and will automatically create an `Observer` for you under the covers.
 
 While *technically* it is a breaking change make the `asJavaObserver` property
-private, you should probably not have touched `asjavaObserver` in the first place.
+private, you should probably not have touched `asJavaObserver` in the first place.
 
 Observable
 ----------
@@ -104,14 +104,14 @@ Schedulers
 
 The biggest breaking change compared to the 0.15.1 release is giving `Scheduler` the same structure as the other types.
 The trait itself remains unchanged, except that we made the underlying Java representation hidden as above.
-The scheduler package has been renamed from `rx.lang.scala.schedulers` to `rx.lang.scala.schedulers`.
+The scheduler package has been renamed from `rx.lang.scala.concurrency` to `rx.lang.scala.schedulers`.
 
 ```scala
 trait Scheduler {
    private[scala] def asJavaScheduler: rx.Scheduler;
 }
 
-private [scala] object Scheduler {…}
+private [scala] object Scheduler {...}
 ```
 
 In the previous release, you created schedulers by selecting them from the `Schedulers` object,
@@ -165,28 +165,28 @@ object Subscription {...}
  * `MultipleAssignmentSubscription`
  * `SerialSubscription`
 
- In case you do feel tempted to call `new Subscription{ ...}` directly make sure you wire up `isUnsubscribed`
+ In case you do feel tempted to call `new Subscription{...}` directly make sure you wire up `isUnsubscribed`
  and with the `unsubscribed` field properly, but for all practical purposes you should just use one of the factory methods.
 
 Notifications
 -------------
 
 All underlying wrapped `Java` types in the `Notification` trait are made private like all previous types. The companion
-`Notification` now has both constructor and destructor functions:
+objects of `Notification` now have both constructor (`apply`) and extractor (`unapply`) functions:
 
 ```scala
-object Notification {…}
+object Notification {...}
 trait Notification[+T] {
   private [scala] def asJavaNotification: rx.Notification[_ <: T]
 }
 
 object Notification {
-   object OnNext { def apply(...){}; def unapply(..){...} }
-   object OnError { def apply(...){}; def unapply(..){...} }
-   object OnCompleted { def apply(...){}; def unapply(..){...} }
+   object OnNext { def apply(...){}; def unapply(...){...} }
+   object OnError { def apply(...){}; def unapply(...){...} }
+   object OnCompleted { def apply(...){}; def unapply(...){...} }
 }
 ```
-To construct a `Notification`, you use `Notification.OnNext("hello")`, or `Notification.OnError`(new Exception("Oops!"))`.
+To construct a `Notification`, you import `rx.lang.scala.Notification._` and use `OnNext("hello")`, or `OnError(new Exception("Oops!"))`, or `OnCompleted()`.
 To pattern match on a notification you can create a partial function like so: `case OnNext(v) => { ... v ... }`.
 
 There are no breaking changes for notifications.
