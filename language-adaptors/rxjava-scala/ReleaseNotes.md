@@ -14,8 +14,6 @@ In this release we have made the `asJavaObserver` property in `Observable[T]`as 
 
 ```scala
 trait Observer[-T] {
-  private [scala] def asJavaObserver: rx.Observer[_ >: T]
-
   def onNext(value: T): Unit
   def onError(error: Throwable): Unit
   def onCompleted(): Unit
@@ -53,11 +51,13 @@ Again, while *technically* this is a breaking change, this should not have any i
 
 ```scala
 trait Observable[+T] {
-   private [scala] val asJavaObservable: rx.Observable[_ <: T]
+    def subscribe(observer: Observer[T]): Subscription = {...}
+    def apply(observer: Observer[T]): Subscription = {...}
+    ...
 }
-
 object Observable {
-   private [scala] def apply[T](observable: rx.Observable[_ <: T]): Observable[T] = {...}
+   def create[T](func: Observer[T] => Subscription): Observable[T] = {...}
+   ...
 }
 ```
 
@@ -79,17 +79,17 @@ and takes only a single *invariant* type parameter `T`. all existing implementat
 by a single type, and this reflects that reality.
 
 ```scala
-trait Subject[T] extends Observable[T] with Observer[T] {
-  private [scala] val asJavaSubject: rx.subjects.Subject[_ >: T, _<: T]
+trait Subject[T] extends Observable[T] with Observer[T] {}
+object Subject {
+   def apply(): Subject[T] = {...}
 }
 ```
-For each kind of subject, there is a pair of a companion object and a class with a private constructor:
+For each kind of subject, there is a class with a private constructor and a companion object
+that you should use to create a new kind of subject :
 
 ```scala
 object XXXSubject {
-  def apply[T](...): XXXSubject[T] = {
-    new XXXSubject[T](... create corresponding rx subject ...)
-  }
+  def apply[T](...): XXXSubject[T] = {...}
 }
 
 class XXXSubject[T] private[scala] (val asJavaSubject: rx.subjects.XXXSubject[T]) extends Subject[T,T] {}
@@ -116,11 +116,7 @@ The trait itself remains unchanged, except that we made the underlying Java repr
 The scheduler package has been renamed from `rx.lang.scala.concurrency` to `rx.lang.scala.schedulers`.
 
 ```scala
-trait Scheduler {
-   private[scala] val asJavaScheduler: rx.Scheduler;
-}
-
-private [scala] object Scheduler {...}
+trait Scheduler {...}
 ```
 
 In the previous release, you created schedulers by selecting them from the `Schedulers` object,
@@ -156,9 +152,6 @@ and `BooleanSubscription`, and the latter has been removed from the public surfa
 
 ```scala
 trait Subscription {
-
-  private [scala] val asJavaSubscription: rx.Subscription = {...}
-
   def unsubscribe(): Unit = { ... }
   def isUnsubscribed: Boolean = ...
 }
@@ -185,9 +178,13 @@ objects of `Notification` now have both constructor (`apply`) and extractor (`un
 ```scala
 object Notification {...}
 trait Notification[+T] {
-  private [scala] val asJavaNotification: rx.Notification[_ <: T]
+   override def equals(that: Any): Boolean = {...}
+   override def hashCode(): Int = {...}
+   def accept[R](onNext: T=>R, onError: Throwable=>R, onCompleted: ()=>R): R = {...}
 }
-
+```
+The nested companion objects of `Notification` now have both constructor (`apply`) and extractor (`unapply`) functions:
+```scala
 object Notification {
    object OnNext { def apply(...){}; def unapply(...){...} }
    object OnError { def apply(...){}; def unapply(...){...} }
