@@ -38,6 +38,12 @@ sealed trait Notification[+T] {
       case Notification.OnCompleted()  => onCompleted()
     }
   }
+
+  override def equals(that: Any): Boolean = that match {
+    case other: Notification[_] => asJava.equals(other.asJava)
+    case _ => false
+  }
+  override def hashCode(): Int = asJava.hashCode()
 }
 
 /**
@@ -63,6 +69,12 @@ object Notification {
   
   // OnNext, OnError, OnCompleted are not case classes because we don't want pattern matching
   // to extract the rx.Notification
+  
+  class OnNext[+T] private[scala] (val asJava: rx.Notification[_ <: T]) extends Notification[T] {
+    def value: T = asJava.getValue
+    override def toString = s"OnNext($value)"
+  }
+  
   object OnNext {
 
     /**
@@ -76,7 +88,7 @@ object Notification {
     }
 
     /**
-     * Destructor for oNNext notifications.
+     * Extractor for onNext notifications.
      * @param notification
      *                     The [[rx.lang.scala.Notification]] to be destructed.
      * @return
@@ -88,10 +100,11 @@ object Notification {
     }
   }
 
-  class OnNext[+T] private[scala] (val asJava: rx.Notification[_ <: T]) extends Notification[T] {
-    def value: T = asJava.getValue
+  class OnError[+T] private[scala] (val asJava: rx.Notification[_ <: T]) extends Notification[T] {
+    def error: Throwable = asJava.getThrowable
+    override def toString = s"OnError($error)"
   }
-  
+
   object OnError {
 
     /**
@@ -118,8 +131,8 @@ object Notification {
     }
   }
 
-  class OnError[+T] private[scala] (val asJava: rx.Notification[_ <: T]) extends Notification[T] {
-    def error: Throwable = asJava.getThrowable
+  class OnCompleted[T] private[scala] (val asJava: rx.Notification[_ <: T]) extends Notification[T] {
+    override def toString = "OnCompleted()"
   }
 
   object OnCompleted {
@@ -132,16 +145,13 @@ object Notification {
     }
 
     /**
-     * Destructor for onCompleted notifications.
+     * Extractor for onCompleted notifications.
      */
     def unapply[U](notification: Notification[U]): Option[Unit] = notification match {
       case onCompleted: OnCompleted[U] => Some()
       case _ => None
     }
   }
-
-  class OnCompleted[T] private[scala](val asJava: rx.Notification[_ <: T]) extends Notification[T] {}
-
 
 }
 

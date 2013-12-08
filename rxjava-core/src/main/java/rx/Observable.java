@@ -54,6 +54,8 @@ import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFirstOrDefault;
 import rx.operators.OperationGroupBy;
+import rx.operators.OperationGroupByUntil;
+import rx.operators.OperationGroupJoin;
 import rx.operators.OperationInterval;
 import rx.operators.OperationJoin;
 import rx.operators.OperationJoinPatterns;
@@ -76,6 +78,7 @@ import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSkipLast;
+import rx.operators.OperationSkipUntil;
 import rx.operators.OperationSkipWhile;
 import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSum;
@@ -128,6 +131,7 @@ import rx.util.functions.Func8;
 import rx.util.functions.Func9;
 import rx.util.functions.FuncN;
 import rx.util.functions.Function;
+import rx.util.functions.Functions;
 
 /**
  * The Observable interface that implements the Reactive Pattern.
@@ -1103,6 +1107,8 @@ public class Observable<T> {
      * Returns an Observable that emits a single item and then completes on a
      * specified scheduler.
      * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.s.png">
+     * <p>
      * This is a scheduler version of {@link Observable#just(Object)}.
      * 
      * @param value the item to pass to the {@link Observer}'s
@@ -1387,7 +1393,6 @@ public class Observable<T> {
      * @param t1 an Observable to be concatenated
      * @param t2 an Observable to be concatenated
      * @param t3 an Observable to be concatenated
-     * 
      * @return an Observable that emits items that are the result of combining
      *         the items emitted by the {@code source} Observables, one after
      *         the other
@@ -1972,7 +1977,7 @@ public class Observable<T> {
     /**
      * Emits an item each time interval (containing a sequential number).
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/interval.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/interval.s.png">
      * 
      * @param interval interval size in time units (see below)
      * @param unit time units to use for the interval size
@@ -2021,7 +2026,7 @@ public class Observable<T> {
      * Note: If events keep firing faster than the timeout then no data will be
      * emitted.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/debounce.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/debounce.s.png">
      * <p>
      * Information on debounce vs throttle:
      * <p>
@@ -2081,7 +2086,7 @@ public class Observable<T> {
      * Note: If events keep firing faster than the timeout then no data will be
      * emitted.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleWithTimeout.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleWithTimeout.s.png">
      * <p>
      * Information on debounce vs throttle:
      * <p>
@@ -2131,7 +2136,7 @@ public class Observable<T> {
      * This differs from {@link #throttleLast} in that this only tracks passage
      * of time whereas {@link #throttleLast} ticks at scheduled intervals.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleFirst.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleFirst.s.png">
      * 
      * @param skipDuration time to wait before sending another item after
      *                     emitting the last item
@@ -2174,11 +2179,13 @@ public class Observable<T> {
      * scheduled interval whereas {@link #throttleFirst} does not tick, it just
      * tracks passage of time.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleLast.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleLast.s.png">
      * 
      * @param intervalDuration duration of windows within which the last item
      *                         will be emitted
      * @param unit the unit of time for the specified interval
+     * @param scheduler the {@link Scheduler} to use internally to manage the
+     *                  timers that handle timeout for each event
      * @return an Observable that performs the throttle operation
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#takelast">RxJava Wiki: throttleLast()</a>
      * @see #sample(long, TimeUnit, Scheduler)
@@ -2196,9 +2203,26 @@ public class Observable<T> {
      * @return an Observable that emits timestamped items from the source
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#timestamp">RxJava Wiki: timestamp()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229003.aspx">MSDN: Observable.Timestamp</a>
      */
     public Observable<Timestamped<T>> timestamp() {
         return create(OperationTimestamp.timestamp(this));
+    }
+
+    /**
+     * Wraps each item emitted by a source Observable in a {@link Timestamped}
+     * object with timestamps provided by the given Scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timestamp.s.png">
+     * 
+     * @param scheduler the {@link Scheduler} to use as a time source.
+     * @return an Observable that emits timestamped items from the source
+     *         Observable with timestamps provided by the given Scheduler
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#timestamp">RxJava Wiki: timestamp()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229003.aspx">MSDN: Observable.Timestamp</a>
+     */
+    public Observable<Timestamped<T>> timestamp(Scheduler scheduler) {
+        return create(OperationTimestamp.timestamp(this, scheduler));
     }
 
     /**
@@ -2227,7 +2251,7 @@ public class Observable<T> {
     /**
      * Converts a {@link Future} into an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.Future.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.Future.s.png">
      * <p>
      * You can convert any object that supports the {@link Future} interface
      * into an Observable that emits the return value of the {@link Future#get}
@@ -2913,7 +2937,7 @@ public class Observable<T> {
     /**
      * Creates an Observable that produces buffers of collected values.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer5.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer5.s.png">
      * <p>
      * This Observable produces connected, non-overlapping buffers, each of a
      * fixed duration specified by the <code>timespan</code> argument. When the
@@ -2966,7 +2990,7 @@ public class Observable<T> {
      * first). When the source Observable completes or encounters an error, the
      * current buffer is emitted and the event is propagated.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer6.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer6.s.png">
      * 
      * @param timespan the period of time each buffer collects values before it
      *                 should be emitted and replaced with a new buffer
@@ -3016,7 +3040,7 @@ public class Observable<T> {
      * source Observable completes or encounters an error, the current buffer is
      * emitted and the event is propagated.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer7.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer7.s.png">
      * 
      * @param timespan the period of time each buffer collects values before it
      *                 should be emitted
@@ -3153,7 +3177,7 @@ public class Observable<T> {
      * source Observable completes or encounters an error, the current window is
      * emitted and the event is propagated.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window5.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window5.s.png">
      * 
      * @param timespan the period of time each window collects items before it
      *                 should be emitted and replaced with a new window
@@ -3201,7 +3225,7 @@ public class Observable<T> {
      * first). When the source Observable completes or encounters an error, the
      * current window is emitted and the event is propagated.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window6.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window6.s.png">
      * 
      * @param timespan the period of time each window collects values before it
      *                 should be emitted and replaced with a new window
@@ -3251,7 +3275,7 @@ public class Observable<T> {
      * source Observable completes or encounters an error, the current window is
      * emitted and the event is propagated.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window7.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window7.s.png">
      * 
      * @param timespan the period of time each window collects values before it
      *                 should be emitted
@@ -4239,7 +4263,6 @@ public class Observable<T> {
      *         {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#parallel">RxJava Wiki: parallel()</a>
      */
-
     public <R> Observable<R> parallel(final Func1<Observable<T>, Observable<R>> f, final Scheduler s) {
         return OperationParallel.parallel(this, f, s);
     }
@@ -4288,6 +4311,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallelMerge.png">
      * 
      * @param parallelObservables the number of Observables to merge into
+     * @param scheduler
      * @return an Observable of Observables constrained to number defined by
      *         <code>parallelObservables</code>.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#parallelmerge">RxJava Wiki: parallelMerge()</a>
@@ -4427,7 +4451,7 @@ public class Observable<T> {
      * Returns an Observable that emits the results of sampling the items
      * emitted by the source Observable at a specified time interval.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.s.png">
      * 
      * @param period the sampling rate
      * @param unit the {@link TimeUnit} in which <code>period</code> is defined
@@ -5094,6 +5118,30 @@ public class Observable<T> {
     }
 
     /**
+     * Return an Observable which correlates two sequences when they overlap and groups the results.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupJoin.png">
+     * 
+     * @param right the other Observable to correlate values of this observable to
+     * @param leftDuration function that returns an Observable which indicates the duration of
+     *                     the values of this Observable
+     * @param rightDuration function that returns an Observable which indicates the duration of
+     *                      the values of the right Observable
+     * @param resultSelector function that takes a left value, the right observable and returns the
+     *                       value to be emitted
+     * @return an Observable that emits grouped values based on overlapping durations from this and
+     *         another Observable
+     * 
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#join-and-groupjoin">RxJava Wiiki: groupJoin</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244235.aspx">MSDN: Observable.GroupJoin</a>
+     */
+    public <T2, D1, D2, R> Observable<R> groupJoin(Observable<T2> right, Func1<? super T, ? extends Observable<D1>> leftDuration, 
+            Func1<? super T2, ? extends Observable<D2>> rightDuration,
+            Func2<? super T, ? super Observable<T2>, ? extends R> resultSelector) {
+        return create(new OperationGroupJoin<T, T2, D1, D2, R>(this, right, leftDuration, rightDuration, resultSelector));
+    }
+    
+    /**
      * Returns an {@link Observable} that emits <code>true</code> if the source
      * {@link Observable} is empty, otherwise <code>false</code>.
      * <p>
@@ -5233,7 +5281,7 @@ public class Observable<T> {
      * isn't received within the specified timeout duration starting from its
      * predecessor, a TimeoutException is propagated to the observer.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.1.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.1s.png">
      *
      * @param timeout maximum duration between values before a timeout occurs
      * @param timeUnit the unit of time which applies to the
@@ -5255,7 +5303,7 @@ public class Observable<T> {
      * predecessor, the other observable sequence is used to produce future
      * messages from that point on.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.2.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.2s.png">
      *
      * @param timeout maximum duration between values before a timeout occurs
      * @param timeUnit the unit of time which applies to the
@@ -5289,7 +5337,7 @@ public class Observable<T> {
      * Records the time interval between consecutive items emitted by an
      * Observable, using the specified Scheduler to compute time intervals.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeInterval.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeInterval.s.png">
      * 
      * @param scheduler Scheduler used to compute time intervals
      * @return an Observable that emits time interval information items
@@ -5514,7 +5562,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnEach()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<T> onNext) {
+    public Observable<T> doOnEach(final Action1<? super T> onNext) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {}
@@ -5595,6 +5643,8 @@ public class Observable<T> {
 
     /**
      * Invokes an action for each item emitted by an Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.e.png">
      *
      * @param onNext the action to invoke for each item in the source sequence
      * @param onError the action to invoke when the source Observable calls
@@ -5603,7 +5653,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnEach()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229539.aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<T> onNext, final Action1<Throwable> onError) {
+    public Observable<T> doOnEach(final Action1<? super T> onNext, final Action1<Throwable> onError) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {}
@@ -5626,6 +5676,8 @@ public class Observable<T> {
 
     /**
      * Invokes an action for each item emitted by an Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.ce.png">
      *
      * @param onNext the action to invoke for each item in the source sequence
      * @param onError the action to invoke when the source Observable calls
@@ -5636,7 +5688,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnEach()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229830.aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<T> onNext, final Action1<Throwable> onError, final Action0 onCompleted) {
+    public Observable<T> doOnEach(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onCompleted) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {
@@ -5654,7 +5706,6 @@ public class Observable<T> {
             }
 
         };
-
 
         return create(OperationDoOnEach.doOnEach(this, observer));
     }
@@ -6119,4 +6170,60 @@ public class Observable<T> {
     public <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, Collection<V>>> mapFactory, Func1<? super K, ? extends Collection<V>> collectionFactory) {
         return create(OperationToMultimap.toMultimap(this, keySelector, valueSelector, mapFactory, collectionFactory));
     } 
+    
+    /**
+     * Return an Observable that skips elements from the source Observable until
+     * the secondary Observable emits an element.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipUntil.png">
+     * 
+     * @param other the other Observable that has to emit an element before this
+     *              Observable's elements are relayed
+     * @return an Observable that skips elements from the source Observable
+     *         until the secondary Observable emits an element.
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skipuntil">RxJava Wiki: skipUntil()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229358.aspx">MSDN: Observable.SkipUntil</a>
+     */
+    public <U> Observable<T> skipUntil(Observable<U> other) {
+        return create(new OperationSkipUntil<T, U>(this, other));
+    }
+
+    /**
+     * Groups the items emitted by an Observable according to a specified key
+     * selector function until the duration Observable expires for the key.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupByUntil.png">
+     *
+     * @param keySelector a function to extract the key for each item
+     * @param durationSelector a function to signal the expiration of a group
+     * @return a sequence of Observable groups, each of which corresponds to a
+     *         unique key value, containing all items that share that same
+     *         key value
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava Wiki: groupByUntil()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211932.aspx">MSDN: Observable.GroupByUntil</a>
+     */
+    public <TKey, TDuration> Observable<GroupedObservable<TKey, T>> groupByUntil(Func1<? super T, ? extends TKey> keySelector, Func1<? super GroupedObservable<TKey, T>, ? extends Observable<TDuration>> durationSelector) {
+        return groupByUntil(keySelector, Functions.<T>identity(), durationSelector);
+    }
+    
+    /**
+     * Groups the items emitted by an Observable according to specified key and
+     * value selector functions until the duration Observable expires for the
+     * key.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupByUntil.png">
+     *
+     * @param keySelector a function to extract the key for each item
+     * @param valueSelector a function to map each source element to an item
+     *                      emitted by an Observable group
+     * @param durationSelector a function to signal the expiration of a group
+     * @return a sequence of Observable groups, each of which corresponds to a
+     *         unique key value, containing all items that share that same key
+     *         value
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava Wiki: groupByUntil()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229433.aspx">MSDN: Observable.GroupByUntil</a>
+     */
+    public <TKey, TValue, TDuration> Observable<GroupedObservable<TKey, TValue>> groupByUntil(Func1<? super T, ? extends TKey> keySelector, Func1<? super T, ? extends TValue> valueSelector, Func1<? super GroupedObservable<TKey, TValue>, ? extends Observable<TDuration>> durationSelector) {
+        return create(new OperationGroupByUntil<T, TKey, TValue, TDuration>(this, keySelector, valueSelector, durationSelector));
+    }
 }
