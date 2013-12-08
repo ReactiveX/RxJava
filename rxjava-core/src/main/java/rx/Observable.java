@@ -4463,7 +4463,22 @@ public class Observable<T> {
     public Observable<T> sample(long period, TimeUnit unit, Scheduler scheduler) {
         return create(OperationSample.sample(this, period, unit, scheduler));
     }
-
+    
+    /**
+     * Return an Observable that emits the results of sampling the items
+     * emitted by this Observable when the <code>sampler</code>
+     * Observable produces an item or completes.
+     * 
+     * @param sampler the Observable to use for sampling this
+     * 
+     * @return an Observable that emits the results of sampling the items
+     *         emitted by this Observable when the <code>sampler</code>
+     *         Observable produces an item or completes.
+     */
+    public <U> Observable<T> sample(Observable<U> sampler) {
+        return create(new OperationSample.SampleWithObservable<T, U>(this, sampler));
+    }
+    
     /**
      * Returns an Observable that applies a function of your choosing to the
      * first item emitted by a source Observable, then feeds the result of that
