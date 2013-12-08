@@ -8,12 +8,14 @@ import rx.lang.scala.schedulers.TestScheduler
 import rx.lang.scala.subjects.{AsyncSubject, ReplaySubject, BehaviorSubject}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
+import org.junit.Ignore
+import org.junit.Test
+import org.scalatest.junit.JUnitSuite
 
 
-/**
- * No fucking clue how to properly mock traits.
- * Some old-school imperative code works just as well.
- */
 class SubjectTest extends JUnitSuite {
 
   @Test def SubjectIsAChannel() {
@@ -50,47 +52,47 @@ class SubjectTest extends JUnitSuite {
     val a = channel.subscribe(observerA)
     val b = channel.subscribe(observerB)
 
-      Assert.assertEquals(null, lastA)
-      Assert.assertEquals(null, lastB)
+      assertEquals(null, lastA)
+      assertEquals(null, lastB)
 
     channel.onNext(42)
 
-      Assert.assertEquals(42, lastA)
-      Assert.assertEquals(42, lastB)
+      assertEquals(42, lastA)
+      assertEquals(42, lastB)
 
     a.unsubscribe()
     channel.onNext(4711)
 
-      Assert.assertEquals(42, lastA)
-      Assert.assertEquals(4711, lastB)
+      assertEquals(42, lastA)
+      assertEquals(4711, lastB)
 
     channel.onCompleted()
 
-      Assert.assertFalse(completedA)
-      Assert.assertTrue(completedB)
-      Assert.assertEquals(42, lastA)
-      Assert.assertEquals(4711, lastB)
+      assertFalse(completedA)
+      assertTrue(completedB)
+      assertEquals(42, lastA)
+      assertEquals(4711, lastB)
 
     val c = channel.subscribe(observerC)
     channel.onNext(13)
 
-      Assert.assertEquals(null, lastC)
-      Assert.assertTrue(completedC)
+      assertEquals(null, lastC)
+      assertTrue(completedC)
 
-      Assert.assertFalse(completedA)
-      Assert.assertTrue(completedB)
-      Assert.assertEquals(42, lastA)
-      Assert.assertEquals(4711, lastB)
+      assertFalse(completedA)
+      assertTrue(completedB)
+      assertEquals(42, lastA)
+      assertEquals(4711, lastB)
 
     channel.onError(new Exception("!"))
 
-      Assert.assertEquals(null, lastC)
-      Assert.assertTrue(completedC)
+      assertEquals(null, lastC)
+      assertTrue(completedC)
 
-      Assert.assertFalse(completedA)
-      Assert.assertTrue(completedB)
-      Assert.assertEquals(42, lastA)
-      Assert.assertEquals(4711, lastB)
+      assertFalse(completedA)
+      assertTrue(completedB)
+      assertEquals(42, lastA)
+      assertEquals(4711, lastB)
   }
 
   @Test def ReplaySubjectIsAChannel() {
@@ -107,61 +109,61 @@ class SubjectTest extends JUnitSuite {
 
     channel.onNext(42)
 
-      Assert.assertEquals(42, lastA)
-      Assert.assertEquals(42, lastB)
+      assertEquals(42, lastA)
+      assertEquals(42, lastB)
     
     a.unsubscribe()
 
     channel.onNext(4711)
 
-      Assert.assertEquals(42, lastA)
-      Assert.assertEquals(4711, lastB)
+      assertEquals(42, lastA)
+      assertEquals(4711, lastB)
     
     channel.onCompleted()
 
-    Assert.assertEquals(42, lastA)
-      Assert.assertFalse(completedA)
-      Assert.assertFalse(errorA)
+      assertEquals(42, lastA)
+      assertFalse(completedA)
+      assertFalse(errorA)
 
-      Assert.assertEquals(4711, lastB)
-      Assert.assertTrue(completedB)
-      Assert.assertFalse(errorB)
+      assertEquals(4711, lastB)
+      assertTrue(completedB)
+      assertFalse(errorB)
 
     var lastC: Integer = null
     var errorC, completedC: Boolean = false
     val c = channel.subscribe(x => { lastC = x}, e => { errorC = true} , () => { completedC = true })
 
-      Assert.assertEquals(4711, lastC)
-      Assert.assertTrue(completedC)
-      Assert.assertFalse(errorC)
+      assertEquals(4711, lastC)
+      assertTrue(completedC)
+      assertFalse(errorC)
 
     channel.onNext(13)
 
-      Assert.assertEquals(42, lastA)
-      Assert.assertFalse(completedA)
-      Assert.assertFalse(errorA)
+      assertEquals(42, lastA)
+      assertFalse(completedA)
+      assertFalse(errorA)
 
-      Assert.assertEquals(4711, lastB)
-      Assert.assertTrue(completedB)
-      Assert.assertFalse(errorB)
+      assertEquals(4711, lastB)
+      assertTrue(completedB)
+      assertFalse(errorB)
 
-      Assert.assertEquals(4711, lastC)
-      Assert.assertTrue(completedC)
-      Assert.assertFalse(errorC)
+      assertEquals(4711, lastC)
+      assertTrue(completedC)
+      assertFalse(errorC)
 
     channel.onError(new Exception("Boom"))
 
-      Assert.assertEquals(42, lastA)
-      Assert.assertFalse(completedA)
-      Assert.assertFalse(errorA)
+      assertEquals(42, lastA)
+      assertFalse(completedA)
+      assertFalse(errorA)
 
-      Assert.assertEquals(4711, lastB)
-      Assert.assertTrue(completedB)
-      Assert.assertFalse(errorB)
+      assertEquals(4711, lastB)
+      assertTrue(completedB)
+      assertFalse(errorB)
 
-      Assert.assertEquals(4711, lastC)
-      Assert.assertTrue(completedC)
-      Assert.assertFalse(errorC)
+      assertEquals(4711, lastC)
+      assertTrue(completedC)
+      assertFalse(errorC)
   }
 
   @Test def BehaviorSubjectIsACache() {
@@ -176,20 +178,20 @@ class SubjectTest extends JUnitSuite {
     var errorB, completedB: Boolean = false
     val b = channel.subscribe(x => { lastB = x}, e => { errorB = true} , () => { completedB = true })
 
-    Assert.assertEquals(2013, lastA)
-    Assert.assertEquals(2013, lastB)
+      assertEquals(2013, lastA)
+      assertEquals(2013, lastB)
 
     channel.onNext(42)
 
-    Assert.assertEquals(42, lastA)
-    Assert.assertEquals(42, lastB)
+      assertEquals(42, lastA)
+      assertEquals(42, lastB)
 
     a.unsubscribe()
 
     channel.onNext(4711)
 
-    Assert.assertEquals(42, lastA)
-    Assert.assertEquals(4711, lastB)
+      assertEquals(42, lastA)
+      assertEquals(4711, lastB)
 
     channel.onCompleted()
 
@@ -197,37 +199,37 @@ class SubjectTest extends JUnitSuite {
     var errorC, completedC: Boolean = false
     val c = channel.subscribe(x => { lastC = x}, e => { errorC = true} , () => { completedC = true })
 
-    Assert.assertEquals(null, lastC)
-    Assert.assertTrue(completedC)
-    Assert.assertFalse(errorC)
+      assertEquals(null, lastC)
+      assertTrue(completedC)
+      assertFalse(errorC)
 
     channel.onNext(13)
 
-    Assert.assertEquals(42, lastA)
-    Assert.assertFalse(completedA)
-    Assert.assertFalse(errorA)
+      assertEquals(42, lastA)
+      assertFalse(completedA)
+      assertFalse(errorA)
 
-    Assert.assertEquals(4711, lastB)
-    Assert.assertTrue(completedB)
-    Assert.assertFalse(errorB)
+      assertEquals(4711, lastB)
+      assertTrue(completedB)
+      assertFalse(errorB)
 
-    Assert.assertEquals(null, lastC)
-    Assert.assertTrue(completedC)
-    Assert.assertFalse(errorC)
+      assertEquals(null, lastC)
+      assertTrue(completedC)
+      assertFalse(errorC)
 
     channel.onError(new Exception("Boom"))
 
-    Assert.assertEquals(42, lastA)
-    Assert.assertFalse(completedA)
-    Assert.assertFalse(errorA)
+      assertEquals(42, lastA)
+      assertFalse(completedA)
+      assertFalse(errorA)
 
-    Assert.assertEquals(4711, lastB)
-    Assert.assertTrue(completedB)
-    Assert.assertFalse(errorB)
+      assertEquals(4711, lastB)
+      assertTrue(completedB)
+      assertFalse(errorB)
 
-    Assert.assertEquals(null, lastC)
-    Assert.assertTrue(completedC)
-    Assert.assertFalse(errorC)
+      assertEquals(null, lastC)
+      assertTrue(completedC)
+      assertFalse(errorC)
 
   }
 
