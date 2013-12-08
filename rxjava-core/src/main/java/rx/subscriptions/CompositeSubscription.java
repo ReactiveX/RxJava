@@ -38,6 +38,8 @@ public class CompositeSubscription implements Subscription {
      */
     private AtomicBoolean unsubscribed = new AtomicBoolean(false);
     private final ConcurrentHashMap<Subscription, Boolean> subscriptions = new ConcurrentHashMap<Subscription, Boolean>();
+    
+    private final Object guard = new Object();
 
     public CompositeSubscription(List<Subscription> subscriptions) {
         for (Subscription s : subscriptions) {
@@ -87,19 +89,32 @@ public class CompositeSubscription implements Subscription {
         return unsubscribed.get();
     }
 
-    public synchronized void add(Subscription s) {
-        if (unsubscribed.get()) {
-            s.unsubscribe();
-        } else {
-            subscriptions.put(s, Boolean.TRUE);
+    public void add(Subscription s) {
+        Subscription q = null;
+        synchronized (guard) {
+            if (unsubscribed.get()) {
+                q = s;
+            } else {
+                subscriptions.put(s, Boolean.TRUE);
+            }
+        }
+        if (q != null) {
+            q.unsubscribe();
         }
     }
 
     @Override
-    public synchronized void unsubscribe() {
-        if (unsubscribed.compareAndSet(false, true)) {
+    public void unsubscribe() {
+        List<Subscription> toUnsubscribe = null;
+        synchronized (guard) {
+            if (unsubscribed.compareAndSet(false, true)) {
+                toUnsubscribe = new ArrayList<Subscription>(subscriptions.keySet());
+                subscriptions.clear();
+            }
+        }
+        if (toUnsubscribe != null) {
             Collection<Throwable> es = null;
-            for (Subscription s : subscriptions.keySet()) {
+            for (Subscription s : toUnsubscribe) {
                 try {
                     s.unsubscribe();
                 } catch (Throwable e) {
