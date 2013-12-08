@@ -37,7 +37,7 @@ sealed trait Notification[+T] {
    * @param onCompleted
    *               The function to invoke for an [[rx.lang.scala.Notification.OnCompleted]] notification.
    */
-  def accept[R](onNext: T=>R, onError: Throwable=>R, onCompleted: ()=>R): R = {
+  def apply[R](onNext: T=>R, onError: Throwable=>R, onCompleted: ()=>R): R = {
     this match {
       case Notification.OnNext(value)  => onNext(value)
       case Notification.OnError(error) => onError(error)

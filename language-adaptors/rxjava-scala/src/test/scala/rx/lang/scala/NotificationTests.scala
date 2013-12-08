@@ -30,14 +30,14 @@ class NotificationTests extends JUnitSuite {
   def accept() {
 
     val onNext = OnNext(42)
-    Assert.assertEquals(42, onNext.accept(x=>42, e=>4711,()=>13))
+    Assert.assertEquals(42, onNext(x=>42, e=>4711,()=>13))
 
     val oops = new Exception("Oops")
     val onError = OnError(oops)
-    Assert.assertEquals(4711, onError.accept(x=>42, e=>4711,()=>13))
+    Assert.assertEquals(4711, onError(x=>42, e=>4711,()=>13))
 
     val onCompleted = OnCompleted()
-    Assert.assertEquals(13, onCompleted.accept(x=>42, e=>4711,()=>13))
+    Assert.assertEquals(13, onCompleted(x=>42, e=>4711,()=>13))
 
   }
 }
