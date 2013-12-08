@@ -111,9 +111,7 @@ import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
-import rx.util.Closing;
 import rx.util.OnErrorNotImplementedException;
-import rx.util.Opening;
 import rx.util.Range;
 import rx.util.TimeInterval;
 import rx.util.Timestamped;
@@ -2812,31 +2810,31 @@ public class Observable<T> {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, o8, o9, combineFunction));
     }
 
-    /**
+/**
      * Creates an Observable that produces buffers of collected items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer1.png">
      * <p>
      * This Observable produces connected, non-overlapping buffers. The current
      * buffer is emitted and replaced with a new buffer when the Observable
-     * produced by the specified <code>bufferClosingSelector</code> produces a
-     * {@link rx.util.Closing} object. The <code>bufferClosingSelector</code>
+     * produced by the specified <code>bufferClosingSelector</code> produces an
+     * object. The <code>bufferClosingSelector</code>
      * will then be used to create a new Observable to listen for the end of
      * the next buffer.
      * 
      * @param bufferClosingSelector the {@link Func0} which is used to produce
      *                              an {@link Observable} for every buffer
      *                              created. When this {@link Observable}
-     *                              produces a {@link rx.util.Closing} object,
+     *                              produces an object,
      *                              the associated buffer is emitted and
      *                              replaced with a new one.
      * @return an {@link Observable} which produces connected, non-overlapping
      *         buffers, which are emitted when the current {@link Observable}
-     *         created with the {@link Func0} argument produces a
-     *         {@link rx.util.Closing} object
+     *         created with the {@link Func0} argument produces an
+     *         object
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer">RxJava Wiki: buffer()</a>
      */
-    public Observable<List<T>> buffer(Func0<? extends Observable<? extends Closing>> bufferClosingSelector) {
+    public <TClosing> Observable<List<T>> buffer(Func0<? extends Observable<? extends TClosing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferClosingSelector));
     }
 
@@ -2846,26 +2844,26 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer2.png">
      * <p>
      * This Observable produces buffers. Buffers are created when the specified
-     * <code>bufferOpenings</code> Observable produces a {@link rx.util.Opening}
+     * <code>bufferOpenings</code> Observable produces an
      * object. Additionally the <code>bufferClosingSelector</code> argument is
-     * used to create an Observable which produces {@link rx.util.Closing}
+     * used to create an Observable which produces
      * objects. When this Observable produces such an object, the associated
      * buffer is emitted.
      * 
-     * @param bufferOpenings the {@link Observable} that, when it produces a
-     *                       {@link rx.util.Opening} object, will cause another
+     * @param bufferOpenings the {@link Observable} that, when it produces an
+     *                       object, will cause another
      *                       buffer to be created
      * @param bufferClosingSelector the {@link Func1} that is used to produce
      *                              an {@link Observable} for every buffer
      *                              created. When this {@link Observable}
-     *                              produces a {@link rx.util.Closing} object,
+     *                              produces an object,
      *                              the associated buffer is emitted.
      * @return an {@link Observable} that produces buffers that are created and
      *         emitted when the specified {@link Observable}s publish certain
      *         objects
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer">RxJava Wiki: buffer()</a>
      */
-    public Observable<List<T>> buffer(Observable<? extends Opening> bufferOpenings, Func1<Opening, ? extends Observable<? extends Closing>> bufferClosingSelector) {
+    public <TOpening, TClosing> Observable<List<T>> buffer(Observable<? extends TOpening> bufferOpenings, Func1<? super TOpening, ? extends Observable<? extends TClosing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferOpenings, bufferClosingSelector));
     }
 
@@ -3062,8 +3060,8 @@ public class Observable<T> {
      * Creates an Observable that produces windows of collected items. This
      * Observable produces connected, non-overlapping windows. The current
      * window is emitted and replaced with a new window when the Observable
-     * produced by the specified <code>closingSelector</code> produces a
-     * {@link rx.util.Closing} object. The <code>closingSelector</code> will
+     * produced by the specified <code>closingSelector</code> produces an
+     * object. The <code>closingSelector</code> will
      * then be used to create a new Observable to listen for the end of the next
      * window.
      * <p>
@@ -3071,45 +3069,45 @@ public class Observable<T> {
      * 
      * @param closingSelector the {@link Func0} used to produce an
      *            {@link Observable} for every window created. When this
-     *            {@link Observable} emits a {@link rx.util.Closing} object, the
+     *            {@link Observable} emits an object, the
      *            associated window is emitted and replaced with a new one.
      * @return an {@link Observable} that produces connected, non-overlapping
      *         windows, which are emitted when the current {@link Observable}
-     *         created with the <code>closingSelector</code> argument emits a
-     *         {@link rx.util.Closing} object.
+     *         created with the <code>closingSelector</code> argument emits an
+     *         object.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window">RxJava Wiki: window()</a>
      */
-    public Observable<Observable<T>> window(Func0<? extends Observable<? extends Closing>> closingSelector) {
+    public <TClosing> Observable<Observable<T>> window(Func0<? extends Observable<? extends TClosing>> closingSelector) {
         return create(OperationWindow.window(this, closingSelector));
     }
 
     /**
      * Creates an Observable that produces windows of collected items. This
      * Observable produces windows. Chunks are created when the
-     * <code>windowOpenings</code> Observable produces a {@link rx.util.Opening}
+     * <code>windowOpenings</code> Observable produces an
      * object. Additionally the <code>closingSelector</code> argument creates an
-     * Observable that produces {@link rx.util.Closing} objects. When this
+     * Observable that produces objects. When this
      * Observable produces such an object, the associated window is emitted.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window2.png">
      * 
-     * @param windowOpenings the {@link Observable} that, when it produces a
-     *                       {@link rx.util.Opening} object, causes another
+     * @param windowOpenings the {@link Observable} that, when it produces an
+     *                       object, causes another
      *                       window to be created
      * @param closingSelector the {@link Func1} that produces an
      *                        {@link Observable} for every window created. When
-     *                        this {@link Observable} produces a
-     *                        {@link rx.util.Closing} object, the associated
+     *                        this {@link Observable} produces an
+     *                        object, the associated
      *                        window is emitted.
      * @return an {@link Observable} that produces windows that are created and
      *         emitted when the specified {@link Observable}s publish certain
      *         objects
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window">RxJava Wiki: window()</a>
      */
-    public Observable<Observable<T>> window(Observable<? extends Opening> windowOpenings, Func1<Opening, ? extends Observable<? extends Closing>> closingSelector) {
+    public <TOpening, TClosing> Observable<Observable<T>> window(Observable<? extends TOpening> windowOpenings, Func1<? super TOpening, ? extends Observable<? extends TClosing>> closingSelector) {
         return create(OperationWindow.window(this, windowOpenings, closingSelector));
     }
-
+    
     /**
      * Creates an Observable that produces windows of collected items. This
      * Observable produces connected, non-overlapping windows, each containing
