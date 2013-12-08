@@ -61,7 +61,7 @@ class ObservableTests extends JUnitSuite {
   @Test def testFirstOrElse() {
     def mustNotBeCalled: String = sys.error("this method should not be called")
     def mustBeCalled: String = "this is the default value"
-    assertEquals("hello", Observable.from("hello").firstOrElse(mustNotBeCalled).toBlockingObservable.single)
+    assertEquals("hello", Observable("hello").firstOrElse(mustNotBeCalled).toBlockingObservable.single)
     assertEquals("this is the default value", Observable().firstOrElse(mustBeCalled).toBlockingObservable.single)
   }
 
@@ -111,11 +111,5 @@ class ObservableTests extends JUnitSuite {
    verify(observer, times(1)).onError(any(classOf[NoSuchElementException]))
  }
  */
-
-  //@Test def testTest() = {
-    //val a: Observable[Int] = Observable.from()
-    //assertEquals(4, Observable.from(1, 2, 3, 4).toBlockingObservable.toIterable.last)
-    //println("This UnitTestSuite.testTest() for rx.lang.scala.Observable")
-  //}
 
 }
