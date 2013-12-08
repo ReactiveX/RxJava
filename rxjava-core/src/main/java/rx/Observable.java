@@ -4216,6 +4216,10 @@ public class Observable<T> {
      * can't control the subscribe/unsubscribe behavior of all the
      * {@link Observer}s.
      * <p>
+     * When you call {@code cache()}, it does not yet subscribe to the
+     * source Observable. This only happens when {@code subscribe} is called
+     * the first time on the Observable returned by {@code cache()}.
+     * <p>
      * Note: You sacrifice the ability to unsubscribe from the origin when you
      * use the <code>cache()</code> operator so be careful not to use this
      * operator on Observables that emit an infinite or very large number of
