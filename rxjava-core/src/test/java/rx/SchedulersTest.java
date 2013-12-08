@@ -460,7 +460,7 @@ public class SchedulersTest {
         }
 
         if (observer.error.get() == null) {
-            fail("We expected error messages due to schedulers");
+            fail("We expected error messages due to concurrency");
         }
     }
 
