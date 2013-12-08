@@ -60,7 +60,7 @@ object Observable {
 }
 ```
 
-The major changes in `Observable` are wrt to the factory methods *Can't write this when I don't have Samuel's changes*.
+The major changes in `Observable` are wrt to the factory methods *TODO: add constructor changes*.
 
 Subject
 -------
