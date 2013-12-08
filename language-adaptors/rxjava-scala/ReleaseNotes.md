@@ -40,8 +40,9 @@ Note that typically you do not need to create an `Observer` since all of the met
 (for instance `subscribe`) usually come with overloads that accept the individual methods
 `onNext`, `onError`, and `onCompleted` and will automatically create an `Observer` for you under the covers.
 
-While *technically* it is a breaking change make the `asJavaObserver` property
-private, you should probably not have touched `asJavaObserver` in the first place.
+While *technically* it is a breaking change make the `asJavaObserver` property private, you should probably not have
+touched `asJavaObserver` in the first place. If you really feel you need to access the underlying `rx.Observer`
+call `toJava`.
 
 Observable
 ----------
@@ -60,7 +61,15 @@ object Observable {
 }
 ```
 
-The major changes in `Observable` are wrt to the factory methods *TODO: add constructor changes*.
+The major changes in `Observable` are wrt to the factory methods where too libral use of overloading of the `apply`
+method hindered type inference and made Scala code look unnecessarily different than that in other language bindings.
+In fact the only occurence left of `apply` if for the varargs case. All other factory methods now have their own name.
+
+* `def apply[T](items: T*): Observable[T]`
+* `def from[T](f: Future[T]): Observable[T]`
+* `def from[T](iterable: Iterable[T]): Observable[T]`
+* `def create[T](subscribe: Observer[T] => Subscription): Observable[T]`
+* `def error[T](exception: Throwable): Observable[T]`
 
 Subject
 -------
@@ -197,7 +206,9 @@ Java Interop Helpers
 
 Since the Scala traits *wrap* the underlying Java types, yoo may occasionally will have to wrap an unwrap
 between the two representations. The `JavaConversion` object provides helper functions of the form `toJavaXXX` and
-`toScalaXXX` for this purpose. Note these are defined as implicit conversions in Scala.
+`toScalaXXX` for this purpose, properly hiding how precisely the wrapped types are stored.
+Note the (un)wrap conversions are defined as implicits in Scala, but in the unlikely event that you do need them
+be kind to the reader of your code and call them explicitly.
 
 ```scala
 object JavaConversions {

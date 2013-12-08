@@ -837,7 +837,7 @@ trait Observable[+T]
   // with =:= it does not work, why?
   def dematerialize[U](implicit evidence: Observable[T] <:< Observable[Notification[U]]): Observable[U] = {
     val o1: Observable[Notification[U]] = this
-    val o2: Observable[rx.Notification[_ <: U]] = o1.map(_.asJava)
+    val o2: Observable[rx.Notification[_ <: U]] = o1.map(_.asJavaNotification)
     val o3 = o2.asJavaObservable.dematerialize[U]()
     toScalaObservable[U](o3)
   }
@@ -1137,7 +1137,7 @@ trait Observable[+T]
    */
   def forall(predicate: T => Boolean): Observable[Boolean] = {
     // type mismatch; found : rx.Observable[java.lang.Boolean] required: rx.Observable[_ <: scala.Boolean]
-    // new Observable[Boolean](asJava.all(predicate))
+    // new Observable[Boolean](asJavaNotification.all(predicate))
     // it's more fun in Scala:
     this.map(predicate).foldLeft(true)(_ && _)
   }

@@ -19,7 +19,13 @@ package rx.lang.scala
  * Emitted by Observables returned by [[rx.lang.scala.Observable.materialize]].
  */
 sealed trait Notification[+T] {
-  private [scala] val asJava: rx.Notification[_ <: T]
+  private [scala] val asJavaNotification: rx.Notification[_ <: T]
+
+  override def equals(that: Any): Boolean = that match {
+    case other: Notification[_] => asJavaNotification.equals(other.asJavaNotification)
+    case _ => false
+  }
+  override def hashCode(): Int = asJavaNotification.hashCode()
 
   /**
    * Invokes the function corresponding to the notification.
@@ -38,12 +44,6 @@ sealed trait Notification[+T] {
       case Notification.OnCompleted()  => onCompleted()
     }
   }
-
-  override def equals(that: Any): Boolean = that match {
-    case other: Notification[_] => asJava.equals(other.asJava)
-    case _ => false
-  }
-  override def hashCode(): Int = asJava.hashCode()
 }
 
 /**
@@ -69,12 +69,7 @@ object Notification {
   
   // OnNext, OnError, OnCompleted are not case classes because we don't want pattern matching
   // to extract the rx.Notification
-  
-  class OnNext[+T] private[scala] (val asJava: rx.Notification[_ <: T]) extends Notification[T] {
-    def value: T = asJava.getValue
-    override def toString = s"OnNext($value)"
-  }
-  
+
   object OnNext {
 
     /**
@@ -100,9 +95,9 @@ object Notification {
     }
   }
 
-  class OnError[+T] private[scala] (val asJava: rx.Notification[_ <: T]) extends Notification[T] {
-    def error: Throwable = asJava.getThrowable
-    override def toString = s"OnError($error)"
+  class OnNext[+T] private[scala] (val asJavaNotification: rx.Notification[_ <: T]) extends Notification[T] {
+    def value: T = asJavaNotification.getValue
+    override def toString = s"OnNext($value)"
   }
 
   object OnError {
@@ -131,8 +126,9 @@ object Notification {
     }
   }
 
-  class OnCompleted[T] private[scala] (val asJava: rx.Notification[_ <: T]) extends Notification[T] {
-    override def toString = "OnCompleted()"
+  class OnError[+T] private[scala] (val asJavaNotification: rx.Notification[_ <: T]) extends Notification[T] {
+    def error: Throwable = asJavaNotification.getThrowable
+    override def toString = s"OnError($error)"
   }
 
   object OnCompleted {
@@ -151,6 +147,10 @@ object Notification {
       case onCompleted: OnCompleted[U] => Some()
       case _ => None
     }
+  }
+
+  class OnCompleted[T] private[scala](val asJavaNotification: rx.Notification[_ <: T]) extends Notification[T] {
+    override def toString = "OnCompleted()"
   }
 
 }

@@ -9,7 +9,7 @@ package rx.lang.scala
 object JavaConversions {
   import language.implicitConversions
   
-  implicit def toJavaNotification[T](s: Notification[T]): rx.Notification[_ <: T] = s.asJava
+  implicit def toJavaNotification[T](s: Notification[T]): rx.Notification[_ <: T] = s.asJavaNotification
   
   implicit def toScalaNotification[T](s: rx.Notification[_ <: T]): Notification[T] = Notification(s)
 
