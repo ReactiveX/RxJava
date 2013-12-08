@@ -1,21 +1,19 @@
 package rx.lang.scala.examples
 
-import org.junit.{Assert, Test}
-import org.scalatest.junit.JUnitSuite
-import scala.concurrent.duration._
+import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
-import rx.lang.scala.{ Observable, Observer }
-import rx.lang.scala.schedulers.TestScheduler
-import rx.lang.scala.subjects.BehaviorSubject
-import org.mockito.Mockito._
+
+import org.junit.Test
 import org.mockito.Matchers._
+import org.mockito.Mockito._
+import org.scalatest.junit.JUnitSuite
+
+import rx.lang.scala._
+import rx.lang.scala.schedulers.TestScheduler
 
 class TestSchedulerExample extends JUnitSuite {
 
   @Test def testInterval() {
-    import org.mockito.Matchers._
-    import org.mockito.Mockito._
-
     val scheduler = TestScheduler()
     // Use a Java Observer for Mockito
     val observer = mock(classOf[rx.Observer[Long]])
