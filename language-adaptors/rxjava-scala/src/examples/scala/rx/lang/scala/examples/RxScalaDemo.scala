@@ -137,7 +137,7 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def windowExample() {
-    (for ((o, i) <- Observable(1 to 18).window(5).zipWithIndex; n <- o)
+    (for ((o, i) <- Observable.from(1 to 18).window(5).zipWithIndex; n <- o)
       yield s"Observable#$i emits $n"
     ).subscribe(output(_))
   }
