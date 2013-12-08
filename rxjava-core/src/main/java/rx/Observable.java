@@ -76,6 +76,7 @@ import rx.operators.OperationParallelMerge;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
+import rx.operators.OperationSequenceEqual;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipUntil;
@@ -2296,31 +2297,34 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits Boolean values that indicate whether the
-     * pairs of items emitted by two source Observables are equal.
+     * Returns an Observable that emits a Boolean value that indicate
+     * whether two sequences are equal by comparing the elements pairwise.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sequenceEqual.png">
      * 
      * @param first the first Observable to compare
      * @param second the second Observable to compare
      * @param <T> the type of items emitted by each Observable
-     * @return an Observable that emits Booleans that indicate whether the
-     *         corresponding items emitted by the source Observables are equal
+     * @return an Observable that emits a Boolean value that indicate
+     *         whether two sequences are equal by comparing the elements pairwise.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#sequenceequal">RxJava Wiki: sequenceEqual()</a>
      */
     public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second) {
         return sequenceEqual(first, second, new Func2<T, T, Boolean>() {
             @Override
             public Boolean call(T first, T second) {
+                if(first == null) {
+                    return second == null;
+                }
                 return first.equals(second);
             }
         });
     }
 
     /**
-     * Returns an Observable that emits Boolean values that indicate whether the
-     * pairs of items emitted by two source Observables are equal based on the
-     * results of a specified equality function.
+     * Returns an Observable that emits a Boolean value that indicate
+     * whether two sequences are equal by comparing the elements pairwise
+     * based on the results of a specified equality function.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sequenceEqual.png">
      * 
@@ -2329,12 +2333,12 @@ public class Observable<T> {
      * @param equality a function used to compare items emitted by both
      *                 Observables
      * @param <T> the type of items emitted by each Observable
-     * @return an Observable that emits Booleans that indicate whether the
-     *         corresponding items emitted by the source Observables are equal
+     * @return an Observable that emits a Boolean value that indicate
+     *         whether two sequences are equal by comparing the elements pairwise.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#sequenceequal">RxJava Wiki: sequenceEqual()</a>
      */
     public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality) {
-        return zip(first, second, equality);
+        return OperationSequenceEqual.sequenceEqual(first, second, equality);
     }
 
     /**
