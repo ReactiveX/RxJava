@@ -95,9 +95,9 @@ object Notification {
       Notification(new rx.Notification())
     }
 
-    def unapply[U](n: Notification[U]): Option[Unit] = n match {
-      case n2: OnCompleted[U] => Some()
-      case _ => None
+    def unapply[U](n: Notification[U]): Boolean = n match {
+      case n2: OnCompleted[U] => true
+      case _ => false
     }
   }
 
