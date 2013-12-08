@@ -3871,6 +3871,7 @@ public class Observable<T> {
      *         source Observable as its single item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#count">RxJava Wiki: count()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229470.aspx">MSDN: Observable.Count</a>
+     * @see #longCount()
      */
     public Observable<Integer> count() {
         return reduce(0, new Func2<Integer, T, Integer>() {
@@ -5172,6 +5173,27 @@ public class Observable<T> {
         return create(OperationLast.last(this));
     }
 
+/**
+     * Returns an Observable that counts the total number of items in the
+     * source Observable as a 64 bit long.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/count.png">
+     * 
+     * @return an Observable that emits the number of counted elements of the
+     *         source Observable as its single, 64 bit long item 
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#count">RxJava Wiki: count()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229120.aspx">MSDN: Observable.LongCount</a>
+     * @see #count()
+     */
+    public Observable<Long> longCount() {
+        return reduce(0L, new Func2<Long, T, Long>() {
+            @Override
+            public Long call(Long t1, T t2) {
+                return t1 + 1;
+            }
+        });
+    }
+    
     /**
      * Converts an Observable into a {@link BlockingObservable} (an Observable
      * with blocking operators).
