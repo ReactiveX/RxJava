@@ -15,7 +15,6 @@
  */
 package rx.subscriptions;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
@@ -28,33 +27,45 @@ import rx.Subscription;
  */
 public class MultipleAssignmentSubscription implements Subscription {
 
-    private final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-    private AtomicReference<Subscription> subscription = new AtomicReference<Subscription>();
-
+    private final AtomicReference<Subscription> inner = new AtomicReference<Subscription>();
+    private static final Subscription UNSUBSCRIBED = new Subscription() {
+        @Override
+        public void unsubscribe() {
+        }
+    };
     public boolean isUnsubscribed() {
-        return unsubscribed.get();
+        return inner.get() == UNSUBSCRIBED;
     }
 
     @Override
-    public synchronized void unsubscribe() {
-        unsubscribed.set(true);
-        Subscription s = getSubscription();
+    public void unsubscribe() {
+        Subscription s = inner.getAndSet(UNSUBSCRIBED);
         if (s != null) {
             s.unsubscribe();
         }
-
     }
 
-    public synchronized void setSubscription(Subscription s) {
-        if (unsubscribed.get()) {
-            s.unsubscribe();
-        } else {
-            subscription.set(s);
-        }
+    public void setSubscription(Subscription s) {
+        do {
+            Subscription r = inner.get();
+            if (r == UNSUBSCRIBED) {
+                s.unsubscribe();
+                return;
+            } else {
+                if (inner.compareAndSet(r, s)) {
+                    return;
+                }
+            }
+        } while (true);
     }
 
     public Subscription getSubscription() {
-        return subscription.get();
+        Subscription r = inner.get();
+        // don't leak the unsubscription sentinel
+        if (r == UNSUBSCRIBED) {
+            return Subscriptions.empty();
+        }
+        return r;
     }
 
 }
