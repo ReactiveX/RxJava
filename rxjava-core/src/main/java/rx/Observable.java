@@ -91,6 +91,7 @@ import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
 import rx.operators.OperationTimeInterval;
 import rx.operators.OperationTimeout;
+import rx.operators.OperationTimer;
 import rx.operators.OperationTimestamp;
 import rx.operators.OperationToMap;
 import rx.operators.OperationToMultimap;
@@ -5232,7 +5233,67 @@ public class Observable<T> {
     public Observable<T> ignoreElements() {
         return filter(alwaysFalse());
     }
-
+    
+    /**
+     * Return an Observable which emits a single 0L after the specified
+     * delay time and completes.
+     * 
+     * @param delay the delay time
+     * @param unit the delay unit
+     * @return an Observable which emits a single 0L after the specified delay time and completes.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh212050.aspx'>MSDN: Observable.Timer</a>
+     */
+    public static Observable<Long> timer(long delay, TimeUnit unit) {
+        return timer(delay, unit, Schedulers.threadPoolForComputation());
+    }
+    
+    /**
+     * Return an Observable which emits a single 0L after the specified
+     * delay time and completes while running on the specified scheduler.
+     * 
+     * @param delay the delay time
+     * @param unit the delay unit
+     * @param scheduler the scheduler where the wait and emit should happen
+     * @return an Observable which emits a single 0L after the specified delay time and completes.
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229503.aspx'>MSDN: Observable.Timer</a>
+     */
+    public static Observable<Long> timer(long delay, TimeUnit unit, Scheduler scheduler) {
+        return create(new OperationTimer.TimerOnce(delay, unit, scheduler));
+    }
+    
+    /**
+     * Return an Observable which emits a 0L after the initialDelay and ever increasing
+     * numbers after each period.
+     * 
+     * @param initialDelay the initial delay time to wait before emitting the first value of 0L
+     * @param period the time period after emitting the subsequent numbers
+     * @param unit the time unit for both <code>initialDelay</code> and <code>period</code>
+     * @return an Observable which emits a 0L after the initialDelay and ever increasing
+     *         numbers after each period
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229435.aspx'>MSDN: Observable.Timer</a>
+     */
+    public static Observable<Long> timer(long initialDelay, long period, TimeUnit unit) {
+        return timer(initialDelay, period, unit, Schedulers.threadPoolForComputation());
+    }
+    
+    /**
+     * Return an Observable which emits a 0L after the initialDelay and ever increasing
+     * numbers after each period while running on the given scheduler.
+     * 
+     * @param initialDelay the initial delay time to wait before emitting the first value of 0L
+     * @param period the time period after emitting the subsequent numbers
+     * @param unit the time unit for both <code>initialDelay</code> and <code>period</code>
+     * @param scheduler the scheduler where the waiting happens and value emissions run.
+     * @return an Observable which emits a 0L after the initialDelay and ever increasing
+     *         numbers after each period while running on the given scheduler
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229652.aspx'>MSDN: Observable.Timer</a>
+     */
+    public static Observable<Long> timer(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
+        return create(new OperationTimer.TimerPeriodically(initialDelay, period, unit, scheduler));
+    }
+    
     /**
      * Applies a timeout policy for each element in the observable sequence,
      * using the specified scheduler to run timeout timers. If the next element
