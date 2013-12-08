@@ -112,7 +112,7 @@ public class ObservableHttp<T> {
      * <p>
      * A client can be retrieved like this:
      * <p>
-     * <pre> {@code      CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault(); } </pre> </p>
+     * <pre> {@code      CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault(); } </pre> 
      * <p>
      * A client with custom configurations can be created like this:
      * </p>
