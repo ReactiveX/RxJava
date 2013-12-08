@@ -15,9 +15,6 @@
  */
 package rx.lang.scala
 
-import rx.joins.ObserverBase
-import java.util.concurrent.atomic.AtomicBoolean
-
 /**
  Provides a mechanism for receiving push-based notifications.
 *

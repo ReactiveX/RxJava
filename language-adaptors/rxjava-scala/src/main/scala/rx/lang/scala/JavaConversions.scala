@@ -32,5 +32,4 @@ object JavaConversions {
       val asJavaObservable = observable
     }
   }
-
 }

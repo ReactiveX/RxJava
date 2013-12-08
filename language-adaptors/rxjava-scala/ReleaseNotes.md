@@ -149,7 +149,6 @@ and `BooleanSubscription`, and the latter has been removed from the public surfa
 trait Subscription {
 
   private [scala] val asJavaSubscription: rx.Subscription = {...}
-  private [scala] val unsubscribed = new AtomicBoolean(false)
 
   def unsubscribe(): Unit = { ... }
   def isUnsubscribed: Boolean = ...
@@ -192,3 +191,27 @@ or `OnError(new Exception("Oops!"))`, or `OnCompleted()`.
 To pattern match on a notification you can create a partial function like so: `case OnNext(v) => { ... v ... }`.
 
 There are no breaking changes for notifications.
+
+Java Interop Helpers
+--------------------
+
+Since the Scala traits *wrap* the underlying Java types, yoo may occasionally will have to wrap an unwrap
+between the two representations. The `JavaConversion` object provides helper functions of the form `toJavaXXX` and
+`toScalaXXX` for this purpose. Note these are defined as implicit conversions in Scala.
+
+```scala
+object JavaConversions {
+  import language.implicitConversions
+
+  implicit def toJavaNotification[T](s: Notification[T]): rx.Notification[_ <: T] = {...}
+  implicit def toScalaNotification[T](s: rx.Notification[_ <: T]): Notification[T] = {...}
+  implicit def toJavaSubscription(s: Subscription): rx.Subscription = {...}
+  implicit def toScalaSubscription(s: rx.Subscription): Subscription = {...}
+  implicit def scalaSchedulerToJavaScheduler(s: Scheduler): rx.Scheduler = {...}
+  implicit def javaSchedulerToScalaScheduler(s: rx.Scheduler): Scheduler = {...}
+  implicit def toJavaObserver[T](s: Observer[T]): rx.Observer[_ >: T] = {...}
+  implicit def toScalaObserver[T](s: rx.Observer[_ >: T]): Observer[T] = {...}
+  implicit def toJavaObservable[T](s: Observable[T]): rx.Observable[_ <: T] = {...}
+  implicit def toScalaObservable[T](observable: rx.Observable[_ <: T]): Observable[T] = {...}
+}
+```
