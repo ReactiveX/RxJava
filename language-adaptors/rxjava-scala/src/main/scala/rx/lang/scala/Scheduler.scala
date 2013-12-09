@@ -45,7 +45,7 @@ trait Scheduler {
    * @param action Action to schedule.
    * @return a subscription to be able to unsubscribe from action.
    */
-  private def schedule[T](state: T, action: (Scheduler, T) => Subscription): Subscription = {
+  private [scala] def schedule[T](state: T, action: (Scheduler, T) => Subscription): Subscription = {
     Subscription(asJavaScheduler.schedule(state, new Func2[rx.Scheduler, T, rx.Subscription] {
       def call(t1: rx.Scheduler, t2: T): rx.Subscription = {
         action(Scheduler(t1), t2).asJavaSubscription
@@ -75,7 +75,7 @@ trait Scheduler {
    *            Time the action is to be delayed before executing.
    * @return a subscription to be able to unsubscribe from action.
    */
-  private def schedule[T](state: T, action: (Scheduler, T) => Subscription, delayTime: Duration): Subscription = {
+  private [scala] def schedule[T](state: T, action: (Scheduler, T) => Subscription, delayTime: Duration): Subscription = {
     Subscription(asJavaScheduler.schedule(state, schedulerActionToFunc2(action), delayTime.length, delayTime.unit))
   }
 
@@ -108,7 +108,7 @@ trait Scheduler {
    *            The time interval to wait each time in between executing the action.
    * @return A subscription to be able to unsubscribe from action.
    */
-  private def schedulePeriodically[T](state: T, action: (Scheduler, T) => Subscription, initialDelay: Duration, period: Duration): Subscription = {
+  private [scala] def schedulePeriodically[T](state: T, action: (Scheduler, T) => Subscription, initialDelay: Duration, period: Duration): Subscription = {
     Subscription(asJavaScheduler.schedulePeriodically(state, action, initialDelay.length, initialDelay.unit.convert(period.length, period.unit), initialDelay.unit))
   }
 
@@ -134,7 +134,7 @@ trait Scheduler {
    *            Time the action is to be executed. If in the past it will be executed immediately.
    * @return a subscription to be able to unsubscribe from action.
    */
-  private def schedule[T](state: T, action: (Scheduler, T) => Subscription, dueTime: Date): Subscription = {
+  private [scala] def schedule[T](state: T, action: (Scheduler, T) => Subscription, dueTime: Date): Subscription = {
     Subscription(asJavaScheduler.schedule(state, action, dueTime))
   }
 
