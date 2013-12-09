@@ -49,11 +49,11 @@ public class SerialSubscriptionTests {
     }
 
     @Test
-    public void getSubscriptionShouldReturnSubscriptionAfterUnsubscribe() {
+    public void getSubscriptionShouldReturnEmptySubscriptionAfterUnsubscribe() {
         final Subscription underlying = mock(Subscription.class);
         serialSubscription.setSubscription(underlying);
         serialSubscription.unsubscribe();
-        assertEquals(null, serialSubscription.getSubscription());
+        assertEquals(Subscriptions.empty(), serialSubscription.getSubscription());
     }
 
     @Test

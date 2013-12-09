@@ -29,22 +29,27 @@ import rx.Subscription;
  */
 public class SerialSubscription implements Subscription {
     private final AtomicReference<Subscription> reference = new AtomicReference<Subscription>(empty());
-    
-    private static final Subscription UNSUBSCRIBED = new Subscription() {
+    /** Sentinel for the unsubscribed state. */
+    private static final Subscription UNSUBSCRIBED_SENTINEL = new Subscription() {
         @Override
         public void unsubscribe() {
         }
     };
-
+    public boolean isUnsubscribed() {
+        return reference.get() == UNSUBSCRIBED_SENTINEL;
+    }
     @Override
     public void unsubscribe() {
-        setSubscription(UNSUBSCRIBED);
+        Subscription s = reference.getAndSet(UNSUBSCRIBED_SENTINEL);
+        if (s != null) {
+            s.unsubscribe();
+        }
     }
 
     public void setSubscription(final Subscription subscription) {
         do {
             final Subscription current = reference.get();
-            if (current == UNSUBSCRIBED) {
+            if (current == UNSUBSCRIBED_SENTINEL) {
                 subscription.unsubscribe();
                 break;
             }
@@ -57,6 +62,6 @@ public class SerialSubscription implements Subscription {
     
     public Subscription getSubscription() {
         final Subscription subscription = reference.get();
-        return subscription == UNSUBSCRIBED ? null : subscription;
+        return subscription == UNSUBSCRIBED_SENTINEL ? Subscriptions.empty() : subscription;
     }
 }
