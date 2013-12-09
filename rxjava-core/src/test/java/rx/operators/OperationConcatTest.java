@@ -16,7 +16,6 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import static rx.operators.OperationConcat.*;
 
@@ -33,6 +32,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.concurrency.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 
 public class OperationConcatTest {
@@ -555,5 +555,47 @@ public class OperationConcatTest {
             t.start();
             return s;
         }
+    }
+    @Test
+    public void testMultipleObservers() {
+        Observer<Object> o1 = mock(Observer.class);
+        Observer<Object> o2 = mock(Observer.class);
+        
+        TestScheduler s = new TestScheduler();
+        
+        Observable<Long> timer = Observable.interval(500, TimeUnit.MILLISECONDS, s).take(2);
+        Observable<Long> o = Observable.concat(timer, timer);
+        
+        o.subscribe(o1);
+        o.subscribe(o2);
+        
+        InOrder inOrder1 = inOrder(o1);
+        InOrder inOrder2 = inOrder(o2);
+
+        s.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+        
+        inOrder1.verify(o1, times(1)).onNext(0L);
+        inOrder2.verify(o2, times(1)).onNext(0L);
+
+        s.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+
+        inOrder1.verify(o1, times(1)).onNext(1L);
+        inOrder2.verify(o2, times(1)).onNext(1L);
+
+        s.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+
+        inOrder1.verify(o1, times(1)).onNext(0L);
+        inOrder2.verify(o2, times(1)).onNext(0L);
+
+        s.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+
+        inOrder1.verify(o1, times(1)).onNext(1L);
+        inOrder2.verify(o2, times(1)).onNext(1L);
+
+        inOrder1.verify(o1, times(1)).onCompleted();
+        inOrder2.verify(o2, times(1)).onCompleted();
+
+        verify(o1, never()).onError(any(Throwable.class));
+        verify(o2, never()).onError(any(Throwable.class));
     }
 }

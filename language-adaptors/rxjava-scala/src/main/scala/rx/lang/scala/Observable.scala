@@ -75,7 +75,6 @@ trait Observable[+T]
   import scala.collection.Seq
   import scala.concurrent.duration.{Duration, TimeUnit}
   import rx.util.functions._
-  import rx.lang.scala.util._
   import rx.lang.scala.observables.BlockingObservable
   import ImplicitFunctionConversions._
   import JavaConversions._
@@ -309,45 +308,44 @@ trait Observable[+T]
    * Creates an Observable which produces buffers of collected values.
    *
    * This Observable produces connected non-overlapping buffers. The current buffer is
-   * emitted and replaced with a new buffer when the Observable produced by the specified function produces a [[rx.lang.scala.util.Closing]] object. The function will then
+   * emitted and replaced with a new buffer when the Observable produced by the specified function produces an object. The function will then
    * be used to create a new Observable to listen for the end of the next buffer.
    *
    * @param closings
    *            The function which is used to produce an [[rx.lang.scala.Observable]] for every buffer created.
-   *            When this [[rx.lang.scala.Observable]] produces a [[rx.lang.scala.util.Closing]] object, the associated buffer
+   *            When this [[rx.lang.scala.Observable]] produces an object, the associated buffer
    *            is emitted and replaced with a new one.
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers, which are emitted
-   *         when the current [[rx.lang.scala.Observable]] created with the function argument produces a [[rx.lang.scala.util.Closing]] object.
+   *         when the current [[rx.lang.scala.Observable]] created with the function argument produces an object.
    */
-  def buffer(closings: () => Observable[Closing]) : Observable[Seq[T]] = {
+  def buffer[Closing](closings: () => Observable[_ <: Closing]) : Observable[Seq[T]] = {
     val f: Func0[_ <: rx.Observable[_ <: Closing]] = closings().asJavaObservable
-    val jObs: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(f)
+    val jObs: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer[Closing](f)
     Observable.jObsOfListToScObsOfSeq(jObs.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
-
   /**
    * Creates an Observable which produces buffers of collected values.
    *
    * This Observable produces buffers. Buffers are created when the specified `openings`
-   * Observable produces a [[rx.lang.scala.util.Opening]] object. Additionally the function argument
+   * Observable produces an object. Additionally the function argument
    * is used to create an Observable which produces [[rx.lang.scala.util.Closing]] objects. When this
    * Observable produces such an object, the associated buffer is emitted.
    *
    * @param openings
-   *            The [[rx.lang.scala.Observable]] which, when it produces a [[rx.lang.scala.util.Opening]] object, will cause
+   *            The [[rx.lang.scala.Observable]] which, when it produces an object, will cause
    *            another buffer to be created.
    * @param closings
    *            The function which is used to produce an [[rx.lang.scala.Observable]] for every buffer created.
-   *            When this [[rx.lang.scala.Observable]] produces a [[rx.lang.scala.util.Closing]] object, the associated buffer
+   *            When this [[rx.lang.scala.Observable]] produces an object, the associated buffer
    *            is emitted.
    * @return
    *         An [[rx.lang.scala.Observable]] which produces buffers which are created and emitted when the specified [[rx.lang.scala.Observable]]s publish certain objects.
    */
-  def buffer(openings: Observable[Opening], closings: Opening => Observable[Closing]): Observable[Seq[T]] = {
+  def buffer[Opening, Closing](openings: Observable[Opening], closings: Opening => Observable[Closing]): Observable[Seq[T]] = {
     val opening: rx.Observable[_ <: Opening] = openings.asJavaObservable
-    val closing: Func1[Opening, _ <: rx.Observable[_ <: Closing]] = (o: Opening) => closings(o).asJavaObservable
-    val jObs: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(opening, closing)
+    val closing: Func1[_ >: Opening, _ <: rx.Observable[_ <: Closing]] = (o: Opening) => closings(o).asJavaObservable
+    val jObs: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer[Opening, Closing](opening, closing)
     Observable.jObsOfListToScObsOfSeq(jObs.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
 
@@ -519,22 +517,22 @@ trait Observable[+T]
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces connected
    * non-overlapping windows. The current window is emitted and replaced with a new window when the
-   * Observable produced by the specified function produces a [[rx.lang.scala.util.Closing]] object. 
+   * Observable produced by the specified function produces an object. 
    * The function will then be used to create a new Observable to listen for the end of the next
    * window.
    *
    * @param closings
    *            The function which is used to produce an [[rx.lang.scala.Observable]] for every window created.
-   *            When this [[rx.lang.scala.Observable]] produces a [[rx.lang.scala.util.Closing]] object, the associated window
+   *            When this [[rx.lang.scala.Observable]] produces an object, the associated window
    *            is emitted and replaced with a new one.
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows, which are emitted
-   *         when the current [[rx.lang.scala.Observable]] created with the function argument produces a [[rx.lang.scala.util.Closing]] object.
+   *         when the current [[rx.lang.scala.Observable]] created with the function argument produces an object.
    */
-  def window(closings: () => Observable[Closing]): Observable[Observable[T]] = {
+  def window[Closing](closings: () => Observable[Closing]): Observable[Observable[T]] = {
     val func : Func0[_ <: rx.Observable[_ <: Closing]] = closings().asJavaObservable
-    val o1: rx.Observable[_ <: rx.Observable[_]] = asJavaObservable.window(func)
-    val o2 = toScalaObservable[rx.Observable[_]](o1).map((x: rx.Observable[_]) => {
+    val o1: rx.Observable[_ <: rx.Observable[_]] = asJavaObservable.window[Closing](func)
+    val o2 = Observable[rx.Observable[_]](o1).map((x: rx.Observable[_]) => {
       val x2 = x.asInstanceOf[rx.Observable[_ <: T]]
       toScalaObservable[T](x2)
     })
@@ -543,23 +541,23 @@ trait Observable[+T]
 
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces windows.
-   * Chunks are created when the specified `openings` Observable produces a [[rx.lang.scala.util.Opening]] object.
+   * Chunks are created when the specified `openings` Observable produces an object.
    * Additionally the `closings` argument is used to create an Observable which produces [[rx.lang.scala.util.Closing]] objects. 
    * When this Observable produces such an object, the associated window is emitted.
    *
    * @param openings
-   *            The [[rx.lang.scala.Observable]] which when it produces a [[rx.lang.scala.util.Opening]] object, will cause
+   *            The [[rx.lang.scala.Observable]] which when it produces an object, will cause
    *            another window to be created.
    * @param closings
    *            The function which is used to produce an [[rx.lang.scala.Observable]] for every window created.
-   *            When this [[rx.lang.scala.Observable]] produces a [[rx.lang.scala.util.Closing]] object, the associated window
+   *            When this [[rx.lang.scala.Observable]] produces an object, the associated window
    *            is emitted.
    * @return
    *         An [[rx.lang.scala.Observable]] which produces windows which are created and emitted when the specified [[rx.lang.scala.Observable]]s publish certain objects.
    */
-  def window(openings: Observable[Opening], closings: Opening => Observable[Closing]) = {
+  def window[Opening, Closing](openings: Observable[Opening], closings: Opening => Observable[Closing]) = {
     Observable.jObsOfJObsToScObsOfScObs(
-      asJavaObservable.window(openings.asJavaObservable, (op: Opening) => closings(op).asJavaObservable))
+      asJavaObservable.window[Opening, Closing](openings.asJavaObservable, (op: Opening) => closings(op).asJavaObservable))
       : Observable[Observable[T]] // SI-7818
   }
 
@@ -1022,7 +1020,11 @@ trait Observable[+T]
    * This is useful when you want an Observable to cache responses and you can't control the
    * subscribe/unsubscribe behavior of all the [[rx.lang.scala.Observer]]s.
    *
-   * NOTE: You sacrifice the ability to unsubscribe from the origin when you use the
+   * When you call `cache`, it does not yet subscribe to the
+   * source Observable. This only happens when `subscribe` is called
+   * the first time on the Observable returned by `cache()`.
+   * 
+   * Note: You sacrifice the ability to unsubscribe from the origin when you use the
    * `cache()` operator so be careful not to use this operator on Observables that
    * emit an infinite or very large number of items that will use up memory.
    *

@@ -15,8 +15,14 @@
  */
 package rx.subscriptions;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -49,6 +55,48 @@ public class CompositeSubscriptionTest {
         s.unsubscribe();
 
         assertEquals(2, counter.get());
+    }
+
+    @Test(timeout = 1000)
+    public void shouldUnsubscribeAll() throws InterruptedException {
+        final AtomicInteger counter = new AtomicInteger();
+        final CompositeSubscription s = new CompositeSubscription();
+
+        final int count = 10;
+        final CountDownLatch start = new CountDownLatch(1);
+        for (int i = 0; i < count; i++) {
+            s.add(new Subscription() {
+
+                @Override
+                public void unsubscribe() {
+                    counter.incrementAndGet();
+                }
+            });
+        }
+
+        final List<Thread> threads = new ArrayList<Thread>();
+        for (int i = 0; i < count; i++) {
+            final Thread t = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        start.await();
+                        s.unsubscribe();
+                    } catch (final InterruptedException e) {
+                        fail(e.getMessage());
+                    }
+                }
+            };
+            t.start();
+            threads.add(t);
+        }
+
+        start.countDown();
+        for (final Thread t : threads) {
+            t.join();
+        }
+
+        assertEquals(count, counter.get());
     }
 
     @Test
@@ -140,6 +188,48 @@ public class CompositeSubscriptionTest {
         s.unsubscribe();
         s.unsubscribe();
         s.unsubscribe();
+
+        // we should have only unsubscribed once
+        assertEquals(1, counter.get());
+    }
+
+    @Test(timeout = 1000)
+    public void testUnsubscribeIdempotenceConcurrently()
+            throws InterruptedException {
+        final AtomicInteger counter = new AtomicInteger();
+        final CompositeSubscription s = new CompositeSubscription();
+
+        final int count = 10;
+        final CountDownLatch start = new CountDownLatch(1);
+        s.add(new Subscription() {
+
+            @Override
+            public void unsubscribe() {
+                counter.incrementAndGet();
+            }
+        });
+
+        final List<Thread> threads = new ArrayList<Thread>();
+        for (int i = 0; i < count; i++) {
+            final Thread t = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        start.await();
+                        s.unsubscribe();
+                    } catch (final InterruptedException e) {
+                        fail(e.getMessage());
+                    }
+                }
+            };
+            t.start();
+            threads.add(t);
+        }
+
+        start.countDown();
+        for (final Thread t : threads) {
+            t.join();
+        }
 
         // we should have only unsubscribed once
         assertEquals(1, counter.get());

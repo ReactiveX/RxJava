@@ -15,103 +15,123 @@
  */
 package rx.subscriptions;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableSet;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
 import rx.util.CompositeException;
 
 /**
- * Subscription that represents a group of Subscriptions that are unsubscribed together.
+ * Subscription that represents a group of Subscriptions that are unsubscribed
+ * together.
  * 
- * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net equivalent CompositeDisposable</a>
+ * @see <a
+ *      href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net
+ *      equivalent CompositeDisposable</a>
  */
 public class CompositeSubscription implements Subscription {
+    private static final Set<Subscription> MUTATE_STATE = unmodifiableSet(new HashSet<Subscription>());
+    private static final Set<Subscription> UNSUBSCRIBED_STATE = unmodifiableSet(new HashSet<Subscription>());
 
-    /*
-     * The reason 'synchronized' is used on 'add' and 'unsubscribe' is because AtomicBoolean/ConcurrentLinkedQueue are both being modified so it needs to be done atomically.
-     * 
-     * TODO evaluate whether use of synchronized is a performance issue here and if it's worth using an atomic state machine or other non-locking approach
-     */
-    private AtomicBoolean unsubscribed = new AtomicBoolean(false);
-    private final ConcurrentHashMap<Subscription, Boolean> subscriptions = new ConcurrentHashMap<Subscription, Boolean>();
+    private final AtomicReference<Set<Subscription>> reference = new AtomicReference<Set<Subscription>>();
 
-    public CompositeSubscription(List<Subscription> subscriptions) {
-        for (Subscription s : subscriptions) {
-            this.subscriptions.put(s, Boolean.TRUE);
-        }
-    }
-
-    public CompositeSubscription(Subscription... subscriptions) {
-        for (Subscription s : subscriptions) {
-            this.subscriptions.put(s, Boolean.TRUE);
-        }
-    }
-
-    /**
-     * Remove and unsubscribe all subscriptions but do not unsubscribe the outer CompositeSubscription.
-     */
-    public void clear() {
-        Collection<Throwable> es = null;
-        for (Subscription s : subscriptions.keySet()) {
-            try {
-                s.unsubscribe();
-                this.subscriptions.remove(s);
-            } catch (Throwable e) {
-                if (es == null) {
-                    es = new ArrayList<Throwable>();
-                }
-                es.add(e);
-            }
-        }
-        if (es != null) {
-            throw new CompositeException("Failed to unsubscribe to 1 or more subscriptions.", es);
-        }
-    }
-
-    /**
-     * Remove the {@link Subscription} and unsubscribe it.
-     * 
-     * @param s
-     */
-    public void remove(Subscription s) {
-        this.subscriptions.remove(s);
-        // also unsubscribe from it: http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable.remove(v=vs.103).aspx
-        s.unsubscribe();
+    public CompositeSubscription(final Subscription... subscriptions) {
+        reference.set(new HashSet<Subscription>(asList(subscriptions)));
     }
 
     public boolean isUnsubscribed() {
-        return unsubscribed.get();
+        return reference.get() == UNSUBSCRIBED_STATE;
     }
 
-    public synchronized void add(Subscription s) {
-        if (unsubscribed.get()) {
-            s.unsubscribe();
-        } else {
-            subscriptions.put(s, Boolean.TRUE);
-        }
+    public void add(final Subscription s) {
+        do {
+            final Set<Subscription> existing = reference.get();
+            if (existing == UNSUBSCRIBED_STATE) {
+                s.unsubscribe();
+                break;
+            }
+
+            if (reference.compareAndSet(existing, MUTATE_STATE)) {
+                existing.add(s);
+                reference.set(existing);
+                break;
+            }
+        } while (true);
+    }
+
+    public void remove(final Subscription s) {
+        do {
+            final Set<Subscription> subscriptions = reference.get();
+            if (subscriptions == UNSUBSCRIBED_STATE) {
+                s.unsubscribe();
+                break;
+            }
+
+            if (reference.compareAndSet(subscriptions, MUTATE_STATE)) {
+                // also unsubscribe from it:
+                // http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable.remove(v=vs.103).aspx
+                subscriptions.remove(s);
+                reference.set(subscriptions);
+                s.unsubscribe();
+                break;
+            }
+        } while (true);
+    }
+
+    public void clear() {
+        do {
+            final Set<Subscription> subscriptions = reference.get();
+            if (subscriptions == UNSUBSCRIBED_STATE) {
+                break;
+            }
+
+            if (reference.compareAndSet(subscriptions, MUTATE_STATE)) {
+                final Set<Subscription> copy = new HashSet<Subscription>(
+                        subscriptions);
+                subscriptions.clear();
+                reference.set(subscriptions);
+
+                for (final Subscription subscription : copy) {
+                    subscription.unsubscribe();
+                }
+                break;
+            }
+        } while (true);
     }
 
     @Override
-    public synchronized void unsubscribe() {
-        if (unsubscribed.compareAndSet(false, true)) {
-            Collection<Throwable> es = null;
-            for (Subscription s : subscriptions.keySet()) {
-                try {
-                    s.unsubscribe();
-                } catch (Throwable e) {
-                    if (es == null) {
-                        es = new ArrayList<Throwable>();
+    public void unsubscribe() {
+        do {
+            final Set<Subscription> subscriptions = reference.get();
+            if (subscriptions == UNSUBSCRIBED_STATE) {
+                break;
+            }
+
+            if (subscriptions == MUTATE_STATE) {
+                continue;
+            }
+
+            if (reference.compareAndSet(subscriptions, UNSUBSCRIBED_STATE)) {
+                final Collection<Throwable> es = new ArrayList<Throwable>();
+                for (final Subscription s : subscriptions) {
+                    try {
+                        s.unsubscribe();
+                    } catch (final Throwable e) {
+                        es.add(e);
                     }
-                    es.add(e);
                 }
+                if (es.isEmpty()) {
+                    break;
+                }
+                throw new CompositeException(
+                        "Failed to unsubscribe to 1 or more subscriptions.", es);
             }
-            if (es != null) {
-                throw new CompositeException("Failed to unsubscribe to 1 or more subscriptions.", es);
-            }
-        }
+        } while (true);
     }
 }
