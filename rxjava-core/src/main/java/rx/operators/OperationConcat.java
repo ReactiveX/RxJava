@@ -51,7 +51,12 @@ public final class OperationConcat {
     }
 
     public static <T> OnSubscribeFunc<T> concat(final Observable<? extends Observable<? extends T>> sequences) {
-        return new Concat<T>(sequences);
+        return new OnSubscribeFunc<T>() {
+            @Override
+            public Subscription onSubscribe(Observer<? super T> t1) {
+                return new Concat<T>(sequences).onSubscribe(t1);
+            }            
+        };
     }
 
     private static class Concat<T> implements OnSubscribeFunc<T> {
@@ -121,8 +126,12 @@ public final class OperationConcat {
                 @Override
                 public void onError(Throwable e) {
                     if (completedOrErred.compareAndSet(false, true)) {
-                        if (innerSubscription != null) {
-                            innerSubscription.unsubscribe();
+                        Subscription q;
+                        synchronized (nextSequences) {
+                            q = innerSubscription;
+                        }
+                        if (q != null) {
+                            q.unsubscribe();
                         }
                         observer.onError(e);
                     }
@@ -131,7 +140,11 @@ public final class OperationConcat {
                 @Override
                 public void onCompleted() {
                     allSequencesReceived.set(true);
-                    if (innerSubscription == null) {
+                    Subscription q;
+                    synchronized (nextSequences) {
+                        q = innerSubscription;
+                    }
+                    if (q == null) {
                         // We are not subscribed to any sequence, and none are coming anymore
                         if (completedOrErred.compareAndSet(false, true)) {
                             observer.onCompleted();
@@ -143,11 +156,14 @@ public final class OperationConcat {
             return new Subscription() {
                 @Override
                 public void unsubscribe() {
+                    Subscription q;
                     synchronized (nextSequences) {
-                        if (innerSubscription != null)
-                            innerSubscription.unsubscribe();
-                        outerSubscription.unsubscribe();
+                        q = innerSubscription;
                     }
+                    if (q != null) {
+                        q.unsubscribe();
+                    }
+                    outerSubscription.unsubscribe();
                 }
             };
         }
