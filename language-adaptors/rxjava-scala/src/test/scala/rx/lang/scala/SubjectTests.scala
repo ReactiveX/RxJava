@@ -98,7 +98,7 @@ class SubjectTest extends JUnitSuite {
   @Test def ReplaySubjectIsAChannel() {
 
     val channel = ReplaySubject[Integer]
-    
+
     var lastA: Integer = null
     var errorA, completedA: Boolean = false
     val a = channel.subscribe(x => { lastA = x}, e => { errorA = true} , () => { completedA = true })

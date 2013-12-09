@@ -41,7 +41,7 @@ class SerialSubscription private[scala] (serial: rx.subscriptions.SerialSubscrip
   * As long as rx.subscriptions.SerialSubscription has no isUnsubscribed,
   * we need to intercept and do it ourselves.
    */
-  val asJavaSubscription: rx.subscriptions.SerialSubscription = new rx.subscriptions.SerialSubscription() {
+  override val asJavaSubscription: rx.subscriptions.SerialSubscription = new rx.subscriptions.SerialSubscription() {
     override def unsubscribe(): Unit = {
       if(unsubscribed.compareAndSet(false, true)) { serial.unsubscribe() }
     }

@@ -27,7 +27,7 @@ private [scala] object BooleanSubscription {
 private [scala] class BooleanSubscription private[scala] (boolean: rx.subscriptions.BooleanSubscription)
   extends Subscription {
 
-  val asJavaSubscription: rx.subscriptions.BooleanSubscription = new rx.subscriptions.BooleanSubscription() {
+  override val asJavaSubscription: rx.subscriptions.BooleanSubscription = new rx.subscriptions.BooleanSubscription() {
     override def unsubscribe(): Unit = {
       if(unsubscribed.compareAndSet(false, true)) {
         if(!boolean.isUnsubscribed) { boolean.unsubscribe() }

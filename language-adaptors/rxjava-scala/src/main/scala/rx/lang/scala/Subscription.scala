@@ -26,8 +26,11 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 trait Subscription {
 
-  private [scala] val asJavaSubscription: rx.Subscription
   private [scala] val unsubscribed = new AtomicBoolean(false)
+  private [scala] val asJavaSubscription: rx.Subscription = new rx.Subscription {
+    override def unsubscribe() { unsubscribed.compareAndSet(false, true) }
+  }
+
 
   /**
    * Call this method to stop receiving notifications on the Observer that was registered when
@@ -61,7 +64,7 @@ object Subscription {
    * Creates an [[rx.lang.scala.Subscription]] that invokes the specified action when unsubscribed.
    */
   def apply(u: => Unit): Subscription = new Subscription() {
-    val asJavaSubscription = new rx.Subscription {
+    override val asJavaSubscription = new rx.Subscription {
       override def unsubscribe() { if(unsubscribed.compareAndSet(false, true)) { u } }
     }
   }
