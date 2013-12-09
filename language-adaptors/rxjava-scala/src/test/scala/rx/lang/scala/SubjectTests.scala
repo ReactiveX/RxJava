@@ -49,8 +49,8 @@ class SubjectTest extends JUnitSuite {
 
     val channel: Subject[Integer] = Subject[Integer]()
 
-    val a = channel.subscribe(observerA)
-    val b = channel.subscribe(observerB)
+    val a = channel(observerA)
+    val b = channel(observerB)
 
       assertEquals(null, lastA)
       assertEquals(null, lastB)

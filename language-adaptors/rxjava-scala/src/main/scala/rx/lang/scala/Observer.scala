@@ -74,7 +74,7 @@ object Observer {
   def apply[T](onNext: T=>Unit,                           onCompleted: ()=>Unit): Observer[T] = apply[T](onNext, (e: Throwable)=>(), onCompleted)
   def apply[T](n: T=>Unit, e: Throwable=>Unit, c: ()=>Unit): Observer[T] = {
       // Java calls XXX; Scala receives XXX.
-      Observer(new rx.Observer[T]{
+      Observer(new rx.Observer[T] {
          def onNext(value: T): Unit = n(value)
          def onError(error: Throwable): Unit = e(error)
          def onCompleted(): Unit = c()
