@@ -26,27 +26,23 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 trait Subscription {
 
-  private [scala] val asJavaSubscription: rx.Subscription = new rx.Subscription {
-    override def unsubscribe(){  Subscription.this.unsubscribe() }
-  }
-
+  private [scala] val asJavaSubscription: rx.Subscription
+  private [scala] val unsubscribed = new AtomicBoolean(false)
 
   /**
    * Call this method to stop receiving notifications on the Observer that was registered when
    * this Subscription was received.
    */
-  def unsubscribe(): Unit = { unsubscribed.set(true) }
+  def unsubscribe() = asJavaSubscription.unsubscribe()
 
   /**
    * Checks if the subscription is unsubscribed.
    */
-  def isUnsubscribed: Boolean = unsubscribed.get()
-  private [scala] val unsubscribed = new AtomicBoolean(false)
+  def isUnsubscribed = unsubscribed.get()
 
 }
 
 object Subscription {
-
 
   /**
    * Creates an [[rx.lang.scala.Subscription]] from an [[rx.Subscription]].             ß
@@ -57,24 +53,22 @@ object Subscription {
       case x: rx.subscriptions.CompositeSubscription => new rx.lang.scala.subscriptions.CompositeSubscription(x)
       case x: rx.subscriptions.MultipleAssignmentSubscription => new rx.lang.scala.subscriptions.MultipleAssignmentSubscription(x)
       case x: rx.subscriptions.SerialSubscription => new rx.lang.scala.subscriptions.SerialSubscription(x)
-      case x: rx.Subscription => apply { x.unsubscribe() }
+      case x: rx.Subscription => apply{ x.unsubscribe }
     }
   }
 
   /**
    * Creates an [[rx.lang.scala.Subscription]] that invokes the specified action when unsubscribed.
    */
-  def apply(u: => Unit): Subscription =  {
-    new Subscription() {
-      override def unsubscribe(): Unit = {
-        if(!super.isUnsubscribed) { u; super.unsubscribe() }
-      }
+  def apply(u: => Unit): Subscription = new Subscription() {
+    val asJavaSubscription = new rx.Subscription {
+      override def unsubscribe() { if(unsubscribed.compareAndSet(false, true)) { u } }
     }
   }
 
   /**
-   * Checks if the subscription is unsubscribed.
+   * Creates an empty [[rx.lang.scala.Subscription]].
    */
-  def apply(): Subscription = { new Subscription {} }
+  def apply(): Subscription = Subscription {}
 
 }

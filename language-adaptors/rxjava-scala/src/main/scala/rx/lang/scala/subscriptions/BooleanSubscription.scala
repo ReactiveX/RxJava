@@ -17,17 +17,22 @@ package rx.lang.scala.subscriptions
 
 import rx.lang.scala._
 
+private [scala] object BooleanSubscription {
+  def apply(): BooleanSubscription = new BooleanSubscription(new rx.subscriptions.BooleanSubscription())
+}
+
 /**
  * Represents a [[rx.lang.scala.Subscription]] that can be checked for status.
  */
-private [scala] class BooleanSubscription private[scala] (override val asJavaSubscription: rx.subscriptions.BooleanSubscription)
+private [scala] class BooleanSubscription private[scala] (boolean: rx.subscriptions.BooleanSubscription)
   extends Subscription {
 
-  //override def asJavaSubscription =  subscription
-
-  /**
-   * Checks whether the subscription has been unsubscribed.
-   */
-  override def isUnsubscribed: Boolean = asJavaSubscription.isUnsubscribed
-  override def unsubscribe(): Unit =  asJavaSubscription.unsubscribe()
+  val asJavaSubscription: rx.subscriptions.BooleanSubscription = new rx.subscriptions.BooleanSubscription() {
+    override def unsubscribe(): Unit = {
+      if(unsubscribed.compareAndSet(false, true)) {
+        if(!boolean.isUnsubscribed) { boolean.unsubscribe() }
+      }
+    }
+    override def isUnsubscribed(): Boolean = unsubscribed.get() || boolean.isUnsubscribed
+  }
 }

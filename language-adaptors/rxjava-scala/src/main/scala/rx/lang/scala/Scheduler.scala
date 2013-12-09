@@ -180,17 +180,6 @@ trait Scheduler {
         work{ t1.call() }
       }
     }))
-    //action1[action0]
-
-//    val subscription = new rx.subscriptions.MultipleAssignmentSubscription()
-//
-//    subscription.setSubscription(
-//      this.schedule(scheduler => {
-//        def loop(): Unit =  subscription.setSubscription(scheduler.schedule{ work{ loop() }})
-//        loop()
-//        subscription
-//      }))
-//    subscription
   }
 
   /**

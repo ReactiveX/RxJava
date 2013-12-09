@@ -24,11 +24,13 @@ class SubscriptionTests extends JUnitSuite {
       assertFalse(subscription.isUnsubscribed)
 
     subscription.unsubscribe()
+
       assertTrue(subscription.isUnsubscribed)
   }
 
   @Test
   def subscriptionUnsubscribeIdempotent() {
+
     var called = false
 
     val subscription = Subscription{ called = !called }
@@ -37,10 +39,12 @@ class SubscriptionTests extends JUnitSuite {
       assertFalse(subscription.isUnsubscribed)
 
     subscription.unsubscribe()
+
       assertTrue(called)
       assertTrue(subscription.isUnsubscribed)
 
     subscription.unsubscribe()
+
       assertTrue(called)
       assertTrue(subscription.isUnsubscribed)
   }
@@ -62,11 +66,14 @@ class SubscriptionTests extends JUnitSuite {
 
       assertTrue(composite.isUnsubscribed)
       assertTrue(s0.isUnsubscribed)
-      assertTrue(s0.isUnsubscribed)
+      assertTrue(s1.isUnsubscribed)
 
     val s2 = Subscription{}
+
       assertFalse(s2.isUnsubscribed)
+
     composite += s2
+
       assertTrue(s2.isUnsubscribed)
 
   }
@@ -84,7 +91,9 @@ class SubscriptionTests extends JUnitSuite {
       assertTrue(s0.isUnsubscribed)
 
     composite.unsubscribe()
+
       assertTrue(composite.isUnsubscribed)
+      assertTrue(s0.isUnsubscribed)
   }
 
   @Test
@@ -99,21 +108,27 @@ class SubscriptionTests extends JUnitSuite {
         assertFalse(s1.isUnsubscribed)
 
       multiple.subscription = s0
+
         assertFalse(s0.isUnsubscribed)
         assertFalse(s1.isUnsubscribed)
 
       multiple.subscription = s1
+
         assertFalse(s0.isUnsubscribed)   // difference with SerialSubscription
         assertFalse(s1.isUnsubscribed)
 
       multiple.unsubscribe()
+
         assertTrue(multiple.isUnsubscribed)
         assertFalse(s0.isUnsubscribed)
         assertTrue(s1.isUnsubscribed)
 
       val s2 = Subscription()
+
         assertFalse(s2.isUnsubscribed)
+
       multiple.subscription = s2
+
         assertTrue(s2.isUnsubscribed)
         assertFalse(s0.isUnsubscribed)
   }
@@ -130,20 +145,27 @@ class SubscriptionTests extends JUnitSuite {
       assertFalse(s1.isUnsubscribed)
 
     serial.subscription = s0
+
       assertFalse(s0.isUnsubscribed)
       assertFalse(s1.isUnsubscribed)
 
     serial.subscription = s1
+
       assertTrue(s0.isUnsubscribed)    // difference with MultipleAssignmentSubscription
       assertFalse(s1.isUnsubscribed)
 
     serial.unsubscribe()
+
       assertTrue(serial.isUnsubscribed)
       assertTrue(s1.isUnsubscribed)
 
     val s2 = Subscription()
+
       assertFalse(s2.isUnsubscribed)
+
     serial.subscription = s2
+
       assertTrue(s2.isUnsubscribed)
   }
+
 }
