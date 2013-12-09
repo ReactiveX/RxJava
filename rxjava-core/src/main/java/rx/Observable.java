@@ -76,6 +76,7 @@ import rx.operators.OperationParallelMerge;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
+import rx.operators.OperationSequenceEqual;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipUntil;
@@ -111,9 +112,7 @@ import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
-import rx.util.Closing;
 import rx.util.OnErrorNotImplementedException;
-import rx.util.Opening;
 import rx.util.Range;
 import rx.util.TimeInterval;
 import rx.util.Timestamped;
@@ -2298,31 +2297,34 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits Boolean values that indicate whether the
-     * pairs of items emitted by two source Observables are equal.
+     * Returns an Observable that emits a Boolean value that indicate
+     * whether two sequences are equal by comparing the elements pairwise.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sequenceEqual.png">
      * 
      * @param first the first Observable to compare
      * @param second the second Observable to compare
      * @param <T> the type of items emitted by each Observable
-     * @return an Observable that emits Booleans that indicate whether the
-     *         corresponding items emitted by the source Observables are equal
+     * @return an Observable that emits a Boolean value that indicate
+     *         whether two sequences are equal by comparing the elements pairwise.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#sequenceequal">RxJava Wiki: sequenceEqual()</a>
      */
     public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second) {
         return sequenceEqual(first, second, new Func2<T, T, Boolean>() {
             @Override
             public Boolean call(T first, T second) {
+                if(first == null) {
+                    return second == null;
+                }
                 return first.equals(second);
             }
         });
     }
 
     /**
-     * Returns an Observable that emits Boolean values that indicate whether the
-     * pairs of items emitted by two source Observables are equal based on the
-     * results of a specified equality function.
+     * Returns an Observable that emits a Boolean value that indicate
+     * whether two sequences are equal by comparing the elements pairwise
+     * based on the results of a specified equality function.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sequenceEqual.png">
      * 
@@ -2331,12 +2333,12 @@ public class Observable<T> {
      * @param equality a function used to compare items emitted by both
      *                 Observables
      * @param <T> the type of items emitted by each Observable
-     * @return an Observable that emits Booleans that indicate whether the
-     *         corresponding items emitted by the source Observables are equal
+     * @return an Observable that emits a Boolean value that indicate
+     *         whether two sequences are equal by comparing the elements pairwise.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#sequenceequal">RxJava Wiki: sequenceEqual()</a>
      */
     public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality) {
-        return zip(first, second, equality);
+        return OperationSequenceEqual.sequenceEqual(first, second, equality);
     }
 
     /**
@@ -2812,31 +2814,31 @@ public class Observable<T> {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, o8, o9, combineFunction));
     }
 
-    /**
+/**
      * Creates an Observable that produces buffers of collected items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer1.png">
      * <p>
      * This Observable produces connected, non-overlapping buffers. The current
      * buffer is emitted and replaced with a new buffer when the Observable
-     * produced by the specified <code>bufferClosingSelector</code> produces a
-     * {@link rx.util.Closing} object. The <code>bufferClosingSelector</code>
+     * produced by the specified <code>bufferClosingSelector</code> produces an
+     * object. The <code>bufferClosingSelector</code>
      * will then be used to create a new Observable to listen for the end of
      * the next buffer.
      * 
      * @param bufferClosingSelector the {@link Func0} which is used to produce
      *                              an {@link Observable} for every buffer
      *                              created. When this {@link Observable}
-     *                              produces a {@link rx.util.Closing} object,
+     *                              produces an object,
      *                              the associated buffer is emitted and
      *                              replaced with a new one.
      * @return an {@link Observable} which produces connected, non-overlapping
      *         buffers, which are emitted when the current {@link Observable}
-     *         created with the {@link Func0} argument produces a
-     *         {@link rx.util.Closing} object
+     *         created with the {@link Func0} argument produces an
+     *         object
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer">RxJava Wiki: buffer()</a>
      */
-    public Observable<List<T>> buffer(Func0<? extends Observable<? extends Closing>> bufferClosingSelector) {
+    public <TClosing> Observable<List<T>> buffer(Func0<? extends Observable<? extends TClosing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferClosingSelector));
     }
 
@@ -2846,26 +2848,26 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer2.png">
      * <p>
      * This Observable produces buffers. Buffers are created when the specified
-     * <code>bufferOpenings</code> Observable produces a {@link rx.util.Opening}
+     * <code>bufferOpenings</code> Observable produces an
      * object. Additionally the <code>bufferClosingSelector</code> argument is
-     * used to create an Observable which produces {@link rx.util.Closing}
+     * used to create an Observable which produces
      * objects. When this Observable produces such an object, the associated
      * buffer is emitted.
      * 
-     * @param bufferOpenings the {@link Observable} that, when it produces a
-     *                       {@link rx.util.Opening} object, will cause another
+     * @param bufferOpenings the {@link Observable} that, when it produces an
+     *                       object, will cause another
      *                       buffer to be created
      * @param bufferClosingSelector the {@link Func1} that is used to produce
      *                              an {@link Observable} for every buffer
      *                              created. When this {@link Observable}
-     *                              produces a {@link rx.util.Closing} object,
+     *                              produces an object,
      *                              the associated buffer is emitted.
      * @return an {@link Observable} that produces buffers that are created and
      *         emitted when the specified {@link Observable}s publish certain
      *         objects
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer">RxJava Wiki: buffer()</a>
      */
-    public Observable<List<T>> buffer(Observable<? extends Opening> bufferOpenings, Func1<Opening, ? extends Observable<? extends Closing>> bufferClosingSelector) {
+    public <TOpening, TClosing> Observable<List<T>> buffer(Observable<? extends TOpening> bufferOpenings, Func1<? super TOpening, ? extends Observable<? extends TClosing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferOpenings, bufferClosingSelector));
     }
 
@@ -3062,8 +3064,8 @@ public class Observable<T> {
      * Creates an Observable that produces windows of collected items. This
      * Observable produces connected, non-overlapping windows. The current
      * window is emitted and replaced with a new window when the Observable
-     * produced by the specified <code>closingSelector</code> produces a
-     * {@link rx.util.Closing} object. The <code>closingSelector</code> will
+     * produced by the specified <code>closingSelector</code> produces an
+     * object. The <code>closingSelector</code> will
      * then be used to create a new Observable to listen for the end of the next
      * window.
      * <p>
@@ -3071,45 +3073,45 @@ public class Observable<T> {
      * 
      * @param closingSelector the {@link Func0} used to produce an
      *            {@link Observable} for every window created. When this
-     *            {@link Observable} emits a {@link rx.util.Closing} object, the
+     *            {@link Observable} emits an object, the
      *            associated window is emitted and replaced with a new one.
      * @return an {@link Observable} that produces connected, non-overlapping
      *         windows, which are emitted when the current {@link Observable}
-     *         created with the <code>closingSelector</code> argument emits a
-     *         {@link rx.util.Closing} object.
+     *         created with the <code>closingSelector</code> argument emits an
+     *         object.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window">RxJava Wiki: window()</a>
      */
-    public Observable<Observable<T>> window(Func0<? extends Observable<? extends Closing>> closingSelector) {
+    public <TClosing> Observable<Observable<T>> window(Func0<? extends Observable<? extends TClosing>> closingSelector) {
         return create(OperationWindow.window(this, closingSelector));
     }
 
     /**
      * Creates an Observable that produces windows of collected items. This
      * Observable produces windows. Chunks are created when the
-     * <code>windowOpenings</code> Observable produces a {@link rx.util.Opening}
+     * <code>windowOpenings</code> Observable produces an
      * object. Additionally the <code>closingSelector</code> argument creates an
-     * Observable that produces {@link rx.util.Closing} objects. When this
+     * Observable that produces objects. When this
      * Observable produces such an object, the associated window is emitted.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window2.png">
      * 
-     * @param windowOpenings the {@link Observable} that, when it produces a
-     *                       {@link rx.util.Opening} object, causes another
+     * @param windowOpenings the {@link Observable} that, when it produces an
+     *                       object, causes another
      *                       window to be created
      * @param closingSelector the {@link Func1} that produces an
      *                        {@link Observable} for every window created. When
-     *                        this {@link Observable} produces a
-     *                        {@link rx.util.Closing} object, the associated
+     *                        this {@link Observable} produces an
+     *                        object, the associated
      *                        window is emitted.
      * @return an {@link Observable} that produces windows that are created and
      *         emitted when the specified {@link Observable}s publish certain
      *         objects
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window">RxJava Wiki: window()</a>
      */
-    public Observable<Observable<T>> window(Observable<? extends Opening> windowOpenings, Func1<Opening, ? extends Observable<? extends Closing>> closingSelector) {
+    public <TOpening, TClosing> Observable<Observable<T>> window(Observable<? extends TOpening> windowOpenings, Func1<? super TOpening, ? extends Observable<? extends TClosing>> closingSelector) {
         return create(OperationWindow.window(this, windowOpenings, closingSelector));
     }
-
+    
     /**
      * Creates an Observable that produces windows of collected items. This
      * Observable produces connected, non-overlapping windows, each containing
@@ -3871,6 +3873,7 @@ public class Observable<T> {
      *         source Observable as its single item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#count">RxJava Wiki: count()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229470.aspx">MSDN: Observable.Count</a>
+     * @see #longCount()
      */
     public Observable<Integer> count() {
         return reduce(0, new Func2<Integer, T, Integer>() {
@@ -4218,6 +4221,10 @@ public class Observable<T> {
      * can't control the subscribe/unsubscribe behavior of all the
      * {@link Observer}s.
      * <p>
+     * When you call {@code cache()}, it does not yet subscribe to the
+     * source Observable. This only happens when {@code subscribe} is called
+     * the first time on the Observable returned by {@code cache()}.
+     * <p>
      * Note: You sacrifice the ability to unsubscribe from the origin when you
      * use the <code>cache()</code> operator so be careful not to use this
      * operator on Observables that emit an infinite or very large number of
@@ -4463,7 +4470,22 @@ public class Observable<T> {
     public Observable<T> sample(long period, TimeUnit unit, Scheduler scheduler) {
         return create(OperationSample.sample(this, period, unit, scheduler));
     }
-
+    
+    /**
+     * Return an Observable that emits the results of sampling the items
+     * emitted by this Observable when the <code>sampler</code>
+     * Observable produces an item or completes.
+     * 
+     * @param sampler the Observable to use for sampling this
+     * 
+     * @return an Observable that emits the results of sampling the items
+     *         emitted by this Observable when the <code>sampler</code>
+     *         Observable produces an item or completes.
+     */
+    public <U> Observable<T> sample(Observable<U> sampler) {
+        return create(new OperationSample.SampleWithObservable<T, U>(this, sampler));
+    }
+    
     /**
      * Returns an Observable that applies a function of your choosing to the
      * first item emitted by a source Observable, then feeds the result of that
@@ -5172,6 +5194,27 @@ public class Observable<T> {
         return create(OperationLast.last(this));
     }
 
+/**
+     * Returns an Observable that counts the total number of items in the
+     * source Observable as a 64 bit long.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/count.png">
+     * 
+     * @return an Observable that emits the number of counted elements of the
+     *         source Observable as its single, 64 bit long item 
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#count">RxJava Wiki: count()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229120.aspx">MSDN: Observable.LongCount</a>
+     * @see #count()
+     */
+    public Observable<Long> longCount() {
+        return reduce(0L, new Func2<Long, T, Long>() {
+            @Override
+            public Long call(Long t1, T t2) {
+                return t1 + 1;
+            }
+        });
+    }
+    
     /**
      * Converts an Observable into a {@link BlockingObservable} (an Observable
      * with blocking operators).
