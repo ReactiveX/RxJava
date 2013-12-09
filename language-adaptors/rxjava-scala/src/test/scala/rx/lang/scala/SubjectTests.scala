@@ -15,7 +15,6 @@ import org.junit.Ignore
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 
-
 class SubjectTest extends JUnitSuite {
 
   @Test def SubjectIsAChannel() {

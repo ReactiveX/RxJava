@@ -2,7 +2,7 @@ RxScala Release Notes
 =====================
 
 This release of the RxScala bindings builds on the previous 0.15 release to make the Rx bindings for Scala
-include all Rx types. In particular this release focuses on the `Subject` and `Scheduler` types.
+include all Rx types. In particular this release focuses on fleshing out the bindings for the `Subject` and `Scheduler` types.
 To makes these notes self-contained, we will start with the `Observer[T]` and `Observable[T]` traits
 that lay at the heart of Rx.
 
@@ -10,7 +10,8 @@ Observer
 --------
 
 In this release we have made the `asJavaObserver` property in `Observable[T]`as well the the factory method in the
- companion object that takes an `rx.Observer` private to the Scala bindings package.
+ companion object that takes an `rx.Observer` private to the Scala bindings package, thus properly hiding irrelevant
+ implementation details from the user-facing API. The `Observer[T]` trait now looks like a clean, native Scala type:
 
 ```scala
 trait Observer[-T] {
@@ -22,13 +23,11 @@ trait Observer[-T] {
 object Observer {...}
 ```
 
-To create an instance of say `Observer[SensorEvent]` in user code, you can create a new instance of the `Observer` trait
-and implement any of the methods that you care about:
+To create an instance of a specific `Observer`, say  `Observer[SensorEvent]` in user code, you can create a new instance
+of the `Observer` trait by implementing any of the methods that you care about:
 ```scala
    val printObserver = new Observer[SensorEvent] {
       override def onNext(value: SensorEvent): Unit = {...value.toString...}
-      override def onError(error: Throwable): Unit = {...}
-      override def onCompleted(): Unit = {...}
    }
 ```
  or you can use one of the overloads of the companion `Observer` object by passing in implementations of the `onNext`,
@@ -63,7 +62,7 @@ object Observable {
 
 The major changes in `Observable` are wrt to the factory methods where too libral use of overloading of the `apply`
 method hindered type inference and made Scala code look unnecessarily different than that in other language bindings.
-In fact the only occurence left of `apply` if for the varargs case. All other factory methods now have their own name.
+In fact the only occurrence left of `apply` is for the varargs case. All other factory methods now have their own name.
 
 * `def apply[T](items: T*): Observable[T]`
 * `def from[T](f: Future[T]): Observable[T]`
@@ -84,18 +83,8 @@ object Subject {
    def apply(): Subject[T] = {...}
 }
 ```
-For each kind of subject, there is a class with a private constructor and a companion object
-that you should use to create a new kind of subject :
-
-```scala
-object XXXSubject {
-  def apply[T](...): XXXSubject[T] = {...}
-}
-
-class XXXSubject[T] private[scala] (val asJavaSubject: rx.subjects.XXXSubject[T]) extends Subject[T,T] {}
-```
-
-The subjects that are available are:
+For each kind of subject, there is a class with a private constructor and a companion object that you should use
+to create a new kind of subject. The subjects that are available are:
 
 * `AsyncSubject[T]()`
 * `BehaviorSubject[T](value)`
@@ -105,15 +94,17 @@ The subjects that are available are:
 The latter is still missing various overloads http://msdn.microsoft.com/en-us/library/hh211810(v=vs.103).aspx which
 you can expect to appear once they are added to the underlying RxJava implementation.
 
-Compared with release 0.15.1 there are no breaking changes in `Subject` for this release, except for
-making `asJavaSubject` private, and collapsing its type parameters. Neither of these should cause trouble.
+Compared with release 0.15.1, the breaking changes in `Subject` for this release are
+making `asJavaSubject` private, and collapsing its type parameters, neither of these should cause trouble,
+and renaming `PublishSubject` to `Subject`.
 
 Schedulers
 ----------
 
 The biggest breaking change compared to the 0.15.1 release is giving `Scheduler` the same structure as the other types.
 The trait itself remains unchanged, except that we made the underlying Java representation hidden as above.
-The scheduler package has been renamed from `rx.lang.scala.concurrency` to `rx.lang.scala.schedulers`.
+as part of this reshuffling, the scheduler package has been renamed from `rx.lang.scala.concurrency`
+to `rx.lang.scala.schedulers`. There is a high probability that this package renaming will also happen in RxJava.
 
 ```scala
 trait Scheduler {...}
@@ -121,7 +112,7 @@ trait Scheduler {...}
 
 In the previous release, you created schedulers by selecting them from the `Schedulers` object,
 as in `Schedulers.immediate` or `Schedulers.newThread` where each would return an instance of the `Scheduler` trait.
-However, several of the scheduler implementations have additional methods, such as the `testScheduler`,
+However, several of the scheduler implementations have additional methods, such as the `TestScheduler`,
 which already deviated from the pattern.
 
 In this release, we changed this to make scheduler more like `Subject` and provide a family of schedulers
