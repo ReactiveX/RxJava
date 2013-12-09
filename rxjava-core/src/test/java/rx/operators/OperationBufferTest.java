@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import static rx.operators.OperationBuffer.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 import rx.Observable;
 import rx.Observer;
@@ -358,5 +361,26 @@ public class OperationBufferTest {
                 observer.onCompleted();
             }
         }, delay, TimeUnit.MILLISECONDS);
+    }
+    
+    @Test
+    public void testBufferStopsWhenUnsubscribed1() {
+        Observable<Integer> source = Observable.never();
+        
+        Observer<List<Integer>> o = mock(Observer.class);
+        
+        Subscription s = source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler).subscribe(o);
+        
+        InOrder inOrder = Mockito.inOrder(o);
+        
+        scheduler.advanceTimeBy(1001, TimeUnit.MILLISECONDS);
+        
+        inOrder.verify(o, times(5)).onNext(Arrays.<Integer>asList());
+        
+        s.unsubscribe();
+
+        scheduler.advanceTimeBy(999, TimeUnit.MILLISECONDS);
+        
+        inOrder.verifyNoMoreInteractions();
     }
 }

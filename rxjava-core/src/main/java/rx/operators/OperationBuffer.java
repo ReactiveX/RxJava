@@ -17,6 +17,7 @@ package rx.operators;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
@@ -24,6 +25,7 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.concurrency.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
@@ -65,11 +67,14 @@ public final class OperationBuffer extends ChunkedOperation {
             public Subscription onSubscribe(Observer<? super List<T>> observer) {
                 NonOverlappingChunks<T, List<T>> buffers = new NonOverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new ObservableBasedSingleChunkCreator<T, List<T>, TClosing>(buffers, bufferClosingSelector);
-                return source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator));
+                return new CompositeSubscription(
+                        new ChunkToSubscription(creator),
+                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator))
+                );
             }
         };
     }
-
+    
     /**
      * <p>This method creates a {@link Func1} object which represents the buffer operation. This operation takes
      * values from the specified {@link Observable} source and stores them in the currently active chunks. Initially
@@ -101,7 +106,10 @@ public final class OperationBuffer extends ChunkedOperation {
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
                 OverlappingChunks<T, List<T>> buffers = new OverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new ObservableBasedMultiChunkCreator<T, List<T>, TOpening, TClosing>(buffers, bufferOpenings, bufferClosingSelector);
-                return source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator));
+                return new CompositeSubscription(
+                        new ChunkToSubscription(creator),
+                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator))
+                );
             }
         };
     }
@@ -156,7 +164,10 @@ public final class OperationBuffer extends ChunkedOperation {
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
                 Chunks<T, List<T>> chunks = new SizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), count);
                 ChunkCreator creator = new SkippingChunkCreator<T, List<T>>(chunks, skip);
-                return source.subscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator));
+                return new CompositeSubscription(
+                        new ChunkToSubscription(creator),
+                        source.subscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator))
+                );
             }
         };
     }
@@ -211,7 +222,10 @@ public final class OperationBuffer extends ChunkedOperation {
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
                 NonOverlappingChunks<T, List<T>> buffers = new NonOverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new TimeBasedChunkCreator<T, List<T>>(buffers, timespan, unit, scheduler);
-                return source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator));
+                return new CompositeSubscription(
+                        new ChunkToSubscription(creator),
+                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator))
+                );
             }
         };
     }
@@ -270,9 +284,13 @@ public final class OperationBuffer extends ChunkedOperation {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
-                Chunks<T, List<T>> chunks = new TimeAndSizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), count, timespan, unit, scheduler);
+                TimeAndSizeBasedChunks<T, List<T>> chunks = new TimeAndSizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), count, timespan, unit, scheduler);
                 ChunkCreator creator = new SingleChunkCreator<T, List<T>>(chunks);
-                return source.subscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator));
+                return new CompositeSubscription(
+                        chunks,
+                        new ChunkToSubscription(creator),
+                        source.subscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator))
+                );
             }
         };
     }
@@ -331,9 +349,13 @@ public final class OperationBuffer extends ChunkedOperation {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
-                OverlappingChunks<T, List<T>> buffers = new TimeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), timespan, unit, scheduler);
+                TimeBasedChunks<T, List<T>> buffers = new TimeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), timespan, unit, scheduler);
                 ChunkCreator creator = new TimeBasedChunkCreator<T, List<T>>(buffers, timeshift, unit, scheduler);
-                return source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator));
+                return new CompositeSubscription(
+                        buffers,
+                        new ChunkToSubscription(creator),
+                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator))
+                );
             }
         };
     }
@@ -353,6 +375,26 @@ public final class OperationBuffer extends ChunkedOperation {
         @Override
         public List<T> getContents() {
             return contents;
+        }
+    }
+    
+    /**
+     * Converts a chunk creator into a subscription which stops the chunk.
+     */
+    private static class ChunkToSubscription implements Subscription {
+        private ChunkCreator cc;
+        private final AtomicBoolean done;
+        public ChunkToSubscription(ChunkCreator cc) {
+            this.cc = cc;
+            this.done = new AtomicBoolean();
+        }
+        @Override
+        public void unsubscribe() {
+            if (done.compareAndSet(false, true)) {
+                ChunkCreator cc0 = cc;
+                cc = null;
+                cc0.stop();
+            }
         }
     }
 }
