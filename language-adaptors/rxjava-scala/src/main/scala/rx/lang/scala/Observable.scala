@@ -19,6 +19,8 @@ package rx.lang.scala
 import rx.util.functions.FuncN
 import rx.Observable.OnSubscribeFunc
 
+
+
 /**
  * The Observable interface that implements the Reactive Pattern.
  *
@@ -1993,6 +1995,10 @@ object Observable {
     toScalaObservable[T](rx.Observable.from(items.toIterable.asJava))
   }
 
+  def items[T](items: T*): Observable[T] = {
+    toScalaObservable[T](rx.Observable.from(items.toIterable.asJava))
+  }
+
  /** Returns an Observable emitting the value produced by the Future as its single item.
    * If the future fails, the Observable will fail as well.
    *
@@ -2022,7 +2028,7 @@ object Observable {
    * the sequence before it completes.
    *
    * @param iterable the source `Iterable` sequence
-   * @param <T> the type of items in the `Iterable` sequence and the
+   * @param T the type of items in the `Iterable` sequence and the
    *            type of items to be emitted by the resulting Observable
    * @return an Observable that emits each item in the source `Iterable`
    *         sequence
@@ -2030,6 +2036,20 @@ object Observable {
   def from[T](iterable: Iterable[T]): Observable[T] = {
     toScalaObservable(rx.Observable.from(iterable.asJava))
   }
+
+  /**
+   *
+   * @param iterable  the source `Iterable` sequence
+   * @param scheduler the scheduler to use
+   * @tparam T   the type of items in the `Iterable` sequence and the
+   *            type of items to be emitted by the resulting Observable
+   * @return   an Observable that emits each item in the source `Iterable`
+   *         sequence
+   */
+  def from[T](iterable: Iterable[T], scheduler: Scheduler): Observable[T] = {
+    toScalaObservable(rx.Observable.from(iterable.asJava, scheduler.asJavaScheduler))
+  }
+
 
   /**
    * Returns an Observable that calls an Observable factory to create its Observable for each

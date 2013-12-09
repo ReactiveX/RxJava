@@ -25,10 +25,10 @@ trait Subject[T] extends Observable[T] with Observer[T] {
 
   val asJavaObservable: rx.Observable[_ <: T] = asJavaSubject
 
-  val asJavaObserver: rx.Observer[_ >: T] = asJavaSubject
-  def onNext(value: T): Unit = { asJavaObserver.onNext(value)}
-  def onError(error: Throwable): Unit = { asJavaObserver.onError(error)  }
-  def onCompleted() { asJavaObserver.onCompleted() }
+  override val asJavaObserver: rx.Observer[_ >: T] = asJavaSubject
+  override def onNext(value: T): Unit = { asJavaObserver.onNext(value)}
+  override def onError(error: Throwable): Unit = { asJavaObserver.onError(error)  }
+  override def onCompleted() { asJavaObserver.onCompleted() }
 }
 
 object Subject {

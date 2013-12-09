@@ -97,7 +97,7 @@ class SubjectTest extends JUnitSuite {
 
   @Test def ReplaySubjectIsAChannel() {
 
-    val channel = ReplaySubject[Int]
+    val channel = ReplaySubject[Integer]
     
     var lastA: Integer = null
     var errorA, completedA: Boolean = false
@@ -105,7 +105,12 @@ class SubjectTest extends JUnitSuite {
 
     var lastB: Integer = null
     var errorB, completedB: Boolean = false
-    val b = channel.subscribe(x => { lastB = x}, e => { errorB = true} , () => { completedB = true })
+
+    val b = channel(new Observer[Integer] {
+      override def onNext(value: Integer): Unit = { lastB = value }
+      override def onError(error: Throwable): Unit = { errorB = true }
+      override def onCompleted(): Unit = { completedB = true }
+    })
 
     channel.onNext(42)
 
