@@ -104,8 +104,16 @@ trait Observable[+T]
   }
 
   /**
+   * $subscribeObserverMain
+   *
+   * @param observer $subscribeObserverParamObserver
+   * @return $subscribeAllReturn
+   */
+  def apply(observer: Observer[T]): Subscription = subscribe(observer)
+
+  /**
    * $subscribeCallbacksMainNoNotifications
-   *                                                               ``
+   *
    * @param onNext $subscribeCallbacksParamOnNext
    * @return $subscribeAllReturn
    */
