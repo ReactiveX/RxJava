@@ -33,6 +33,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import rx.Observable.OnSubscribeFunc;
 import rx.concurrency.TestScheduler;
@@ -41,6 +43,7 @@ import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
+import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -946,5 +949,67 @@ public class ObservableTests {
         inOrder.verify(aObserver, times(1)).onNext(6);
         inOrder.verify(aObserver, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testStartWithAction() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Action0 action = mock(Action0.class);
+        Observable<Void> observable = Observable.start(action, scheduler);
+        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+
+        assertEquals(null, observable.toBlockingObservable().single());
+        assertEquals(null, observable.toBlockingObservable().single());
+        verify(action, times(1)).call();
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testStartWithActionError() {
+        Action0 action = new Action0() {
+            @Override
+            public void call() {
+                throw new RuntimeException("Some error");
+            }
+        };
+
+        Observable<Void> observable = Observable.start(action);
+        observable.toBlockingObservable().single();
+    }
+
+    @Test
+    public void testStartWithFunc() {
+        TestScheduler scheduler = new TestScheduler();
+
+        @SuppressWarnings("unchecked")
+        Func0<String> func = (Func0<String>) mock(Func0.class);
+        doAnswer(new Answer<String>() {
+
+            @Override
+            public String answer(InvocationOnMock invocation) throws Throwable {
+                return "one";
+            }
+
+        }).when(func).call();
+
+        Observable<String> observable = Observable.start(func, scheduler);
+        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+
+        assertEquals("one", observable.toBlockingObservable().single());
+        assertEquals("one", observable.toBlockingObservable().single());
+        verify(func, times(1)).call();
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testStartWithFuncError() {
+        Func0<String> func = new Func0<String>() {
+            @Override
+            public String call() {
+                throw new RuntimeException("Some error");
+            }
+        };
+
+        Observable<String> observable = Observable.start(func);
+        observable.toBlockingObservable().single();
     }
 }

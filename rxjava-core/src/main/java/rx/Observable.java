@@ -118,6 +118,7 @@ import rx.util.TimeInterval;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
+import rx.util.functions.Async;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -6269,4 +6270,77 @@ public class Observable<T> {
     public <TKey, TValue, TDuration> Observable<GroupedObservable<TKey, TValue>> groupByUntil(Func1<? super T, ? extends TKey> keySelector, Func1<? super T, ? extends TValue> valueSelector, Func1<? super GroupedObservable<TKey, TValue>, ? extends Observable<TDuration>> durationSelector) {
         return create(new OperationGroupByUntil<T, TKey, TValue, TDuration>(this, keySelector, valueSelector, durationSelector));
     }
+
+    /**
+     * Invokes the action asynchronously, surfacing the result through an observable sequence.
+     * <p>
+     * Note: The action is called immediately, not during the subscription of the resulting
+     * sequence. Multiple subscriptions to the resulting sequence can observe the
+     * action's outcome.
+     * 
+     * @param action
+     *            Action to run asynchronously.
+     * @return An observable sequence exposing a null value upon completion of the action,
+     *            or an exception.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229265(v=vs.103).aspx">MSDN: Observable.Start</a>
+     */
+    public static Observable<Void> start(Action0 action) {
+        return Async.toAsync(action).call();
+    }
+
+    /**
+     * Invokes the action asynchronously on the specified scheduler, surfacing the
+     * result through an observable sequence.
+     * <p>
+     * Note: The action is called immediately, not during the subscription of the resulting
+     * sequence. Multiple subscriptions to the resulting sequence can observe the
+     * action's outcome.
+     * 
+     * @param action
+     *            Action to run asynchronously.
+     * @param scheduler
+     *            Scheduler to run the function on.
+     * @return An observable sequence exposing a null value upon completion of the action,
+     *            or an exception.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211971(v=vs.103).aspx">MSDN: Observable.Start</a>
+     */
+    public static Observable<Void> start(Action0 action, Scheduler scheduler) {
+        return Async.toAsync(action, scheduler).call();
+    }
+
+    /**
+     * Invokes the specified function asynchronously, surfacing the result through an observable sequence.
+     * <p>
+     * Note: The function is called immediately, not during the subscription of the resulting
+     * sequence. Multiple subscriptions to the resulting sequence can observe the
+     * function's result.
+     * 
+     * @param func
+     *            Function to run asynchronously.
+     * @return An observable sequence exposing the function's result value, or an exception.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229036(v=vs.103).aspx">MSDN: Observable.Start</a>
+     */
+    public static <T> Observable<T> start(Func0<T> func) {
+        return Async.toAsync(func).call();
+    }
+
+    /**
+     * Invokes the specified function asynchronously on the specified scheduler, surfacing
+     * the result through an observable sequence.
+     * <p>
+     * Note: The function is called immediately, not during the subscription of the resulting
+     * sequence. Multiple subscriptions to the resulting sequence can observe the
+     * function's result.
+     * 
+     * @param func
+     *            Function to run asynchronously.
+     * @param scheduler
+     *            Scheduler to run the function on.
+     * @return An observable sequence exposing the function's result value, or an exception.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211721(v=vs.103).aspx">MSDN: Observable.Start</a>
+     */
+    public static <T> Observable<T> start(Func0<T> func, Scheduler scheduler) {
+        return Async.toAsync(func, scheduler).call();
+    }
+
 }
