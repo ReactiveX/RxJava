@@ -16,6 +16,10 @@
 package rx.lang.scala.subjects
 
 import rx.lang.scala.Subject
+import rx.subjects
 
-private [scala] class PublishSubject[T] private[scala] (val asJavaSubject: rx.subjects.PublishSubject[T])
-  extends Subject[T]  {}
+private [scala] object PublishSubject {
+  private [scala] def apply[T](): PublishSubject[T] =  return new PublishSubject[T](new subjects.PublishSubject[T]())
+}
+
+private [scala] class PublishSubject[T] private[scala] (val asJavaSubject: rx.subjects.PublishSubject[T]) extends Subject[T]  {}
