@@ -48,7 +48,7 @@ public final class OperationTimestamp {
     /**
      * Timestamp the source elements based on the timing provided by the scheduler.
      */
-    public static <T> OnSubscribeFunc<Timestamped<T>> timestamp(Observable<? extends T> source, final Scheduler scheduler) {
+    public static <T> OnGetSubscriptionFunc<Timestamped<T>> timestamp(Observable<? extends T> source, final Scheduler scheduler) {
         return OperationMap.map(source, new Func1<T, Timestamped<T>>() {
             @Override
             public Timestamped<T> call(T value) {

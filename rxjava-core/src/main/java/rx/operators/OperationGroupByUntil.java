@@ -21,7 +21,11 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
+import rx.Observable.OnGetSubscriptionFunc;
+import rx.Observable.OnPartialSubscribeFunc;
+import rx.Observable.OnPartialUnsubscribeFunc;
 import rx.Observable.OnSubscribeFunc;
+import rx.Observable.PartialSubscription;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
@@ -29,7 +33,6 @@ import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
-import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
 /**
@@ -197,11 +200,19 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             
         }
     }
-    protected static <T> OnSubscribeFunc<T> neverSubscribe() {
-        return new OnSubscribeFunc<T>() {
+    protected static <T> OnGetSubscriptionFunc<T> neverSubscribe() {
+        return new OnGetSubscriptionFunc<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> t1) {
-                return Subscriptions.empty();
+            public PartialSubscription<T> onGetSubscription() {
+                return PartialSubscription.create(new OnPartialSubscribeFunc<T>() {
+                    @Override
+                    public void onSubscribe(Observer<? super T> observer) {
+                    }
+                }, new OnPartialUnsubscribeFunc() {
+                    @Override
+                    public void onUnsubscribe() {
+                    }
+                });
             }
         };
     }
