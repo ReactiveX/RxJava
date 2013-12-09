@@ -146,7 +146,7 @@ Subscriptions
 -------------
 
 The `Subscription` trait in Scala now has `isUnsubscribed` as a member, effectively collapsing the old `Subscription`
-and `BooleanSubscription`, and the latter has been removed from the public surface. Pending a bugfix in RxJava,
+and `BooleanSubscription`, and the latter has been removed from the public surface. Pending a bug fix in RxJava,
 `SerialSubscription` implements its own `isUnsubscribed`.
 
 
@@ -163,11 +163,11 @@ object Subscription {...}
 
  * `Subscription{...}`, `Subscription()`
  * `CompositeSubscription(subscriptions)`
- * `MultipleAssignmentSubscription`
- * `SerialSubscription`
+ * `MultipleAssignmentSubscription()`
+ * `SerialSubscription()`
 
  In case you do feel tempted to call `new Subscription{...}` directly make sure you wire up `isUnsubscribed`
- and with the `unsubscribed` field properly, but for all practical purposes you should just use one of the factory methods.
+ and `unsubscribe()` properly, but for all practical purposes you should just use one of the factory methods.
 
 Notifications
 -------------
@@ -180,7 +180,7 @@ object Notification {...}
 trait Notification[+T] {
    override def equals(that: Any): Boolean = {...}
    override def hashCode(): Int = {...}
-   def accept[R](onNext: T=>R, onError: Throwable=>R, onCompleted: ()=>R): R = {...}
+   def apply[R](onNext: T=>R, onError: Throwable=>R, onCompleted: ()=>R): R = {...}
 }
 ```
 The nested companion objects of `Notification` now have both constructor (`apply`) and extractor (`unapply`) functions:
@@ -194,7 +194,8 @@ object Notification {
 To construct a `Notification`, you import `rx.lang.scala.Notification._` and use `OnNext("hello")`,
 or `OnError(new Exception("Oops!"))`, or `OnCompleted()`.
 
-To pattern match on a notification you can create a partial function like so: `case OnNext(v) => { ... v ... }`.
+To pattern match on a notification you create a partial function like so: `case Notification.OnNext(v) => { ... v ... }`,
+or you use the `apply` function to pass in functions for each possibility.
 
 There are no breaking changes for notifications.
 
