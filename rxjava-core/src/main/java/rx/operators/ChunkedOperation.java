@@ -148,7 +148,7 @@ public class ChunkedOperation {
      *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
      *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class TimeAndSizeBasedChunks<T, C> extends Chunks<T, C> {
+    protected static class TimeAndSizeBasedChunks<T, C> extends Chunks<T, C> implements Subscription {
 
         private final ConcurrentMap<Chunk<T, C>, Subscription> subscriptions = new ConcurrentHashMap<Chunk<T, C>, Subscription>();
 
@@ -207,6 +207,12 @@ public class ChunkedOperation {
                 }
             }
         }
+        @Override
+        public void unsubscribe() {
+            for (Subscription s : subscriptions.values()) {
+                s.unsubscribe();
+            }
+        }
     }
 
     /**
@@ -218,7 +224,7 @@ public class ChunkedOperation {
      *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
      *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class TimeBasedChunks<T, C> extends OverlappingChunks<T, C> {
+    protected static class TimeBasedChunks<T, C> extends OverlappingChunks<T, C> implements Subscription {
 
         private final ConcurrentMap<Chunk<T, C>, Subscription> subscriptions = new ConcurrentHashMap<Chunk<T, C>, Subscription>();
 
@@ -250,6 +256,14 @@ public class ChunkedOperation {
             subscriptions.remove(chunk);
             super.emitChunk(chunk);
         }
+
+        @Override
+        public void unsubscribe() {
+            for (Subscription s : subscriptions.values()) {
+                s.unsubscribe();
+            }
+        }
+        
     }
 
     /**
