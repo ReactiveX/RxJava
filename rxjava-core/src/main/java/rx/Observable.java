@@ -45,6 +45,7 @@ import rx.operators.OperationConcat;
 import rx.operators.OperationDebounce;
 import rx.operators.OperationDefaultIfEmpty;
 import rx.operators.OperationDefer;
+import rx.operators.OperationDelay;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
@@ -92,6 +93,7 @@ import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
 import rx.operators.OperationTimeInterval;
 import rx.operators.OperationTimeout;
+import rx.operators.OperationTimer;
 import rx.operators.OperationTimestamp;
 import rx.operators.OperationToMap;
 import rx.operators.OperationToMultimap;
@@ -1987,6 +1989,62 @@ public class Observable<T> {
      */
     public static Observable<Long> interval(long interval, TimeUnit unit, Scheduler scheduler) {
         return create(OperationInterval.interval(interval, unit, scheduler));
+    }
+
+    /**
+     * Emits one item after a given delay, and then completes.
+     * 
+     * @param interval
+     *            interval size in time units
+     * @param unit
+     *            time units to use for the interval size
+     */
+    public static Observable<Void> timer(long interval, TimeUnit unit) {
+        return create(OperationTimer.timer(interval, unit));
+    }
+
+    /**
+     * Emits one item after a given delay, and then completes.
+     * 
+     * @param interval
+     *            interval size in time units
+     * @param unit
+     *            time units to use for the interval size
+     * @param scheduler
+     *            the scheduler to use for scheduling the item
+     */
+    public static Observable<Void> timer(long interval, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationTimer.timer(interval, unit, scheduler));
+    }
+
+    /**
+     * Returns an Observable that emits the results of shifting the items emitted by the source
+     * Observable by a specified delay. Errors emitted by the source Observable are not delayed.
+     * @param delay
+     *            the delay to shift the source by
+     * @param unit
+     *            the {@link TimeUnit} in which <code>period</code> is defined
+     * @return the source Observable, but shifted by the specified delay
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229810%28v=vs.103%29.aspx">MSDN: Observable.Delay</a>
+     */
+    public Observable<T> delay(long delay, TimeUnit unit) {
+        return OperationDelay.delay(this, delay, unit, Schedulers.threadPoolForComputation());
+    }
+
+    /**
+     * Returns an Observable that emits the results of shifting the items emitted by the source
+     * Observable by a specified delay. Errors emitted by the source Observable are not delayed.
+     * @param delay
+     *            the delay to shift the source by
+     * @param unit
+     *            the {@link TimeUnit} in which <code>period</code> is defined
+     * @param scheduler
+     *            the {@link Scheduler} to use for delaying
+     * @return the source Observable, but shifted by the specified delay
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229280(v=vs.103).aspx">MSDN: Observable.Delay</a>
+     */
+    public Observable<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
+        return OperationDelay.delay(this, delay, unit, scheduler);
     }
 
     /**
