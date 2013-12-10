@@ -953,15 +953,8 @@ public class ObservableTests {
 
     @Test
     public void testStartWithAction() {
-        TestScheduler scheduler = new TestScheduler();
-
         Action0 action = mock(Action0.class);
-        Observable<Void> observable = Observable.start(action, scheduler);
-        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
-
-        assertEquals(null, observable.toBlockingObservable().single());
-        assertEquals(null, observable.toBlockingObservable().single());
-        verify(action, times(1)).call();
+        assertEquals(null, Observable.start(action).toBlockingObservable().single());
     }
 
     @Test(expected = RuntimeException.class)
@@ -972,32 +965,102 @@ public class ObservableTests {
                 throw new RuntimeException("Some error");
             }
         };
+        Observable.start(action).toBlockingObservable().single();
+    }
 
-        Observable<Void> observable = Observable.start(action);
-        observable.toBlockingObservable().single();
+    @Test
+    public void testStartWhenSubscribeRunBeforeAction() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Action0 action = mock(Action0.class);
+
+        Observable<Void> observable = Observable.start(action, scheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<Void> observer = mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verifyNoMoreInteractions();
+
+        // Run action
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        inOrder.verify(observer, times(1)).onNext(null);
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testStartWhenSubscribeRunAfterAction() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Action0 action = mock(Action0.class);
+
+        Observable<Void> observable = Observable.start(action, scheduler);
+
+        // Run action
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        @SuppressWarnings("unchecked")
+        Observer<Void> observer = mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(null);
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testStartWithActionAndMultipleObservers() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Action0 action = mock(Action0.class);
+
+        Observable<Void> observable = Observable.start(action, scheduler);
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        @SuppressWarnings("unchecked")
+        Observer<Void> observer1 = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<Void> observer2 = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<Void> observer3 = mock(Observer.class);
+
+        observable.subscribe(observer1);
+        observable.subscribe(observer2);
+        observable.subscribe(observer3);
+
+        InOrder inOrder;
+        inOrder = inOrder(observer1);
+        inOrder.verify(observer1, times(1)).onNext(null);
+        inOrder.verify(observer1, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+        inOrder = inOrder(observer2);
+        inOrder.verify(observer2, times(1)).onNext(null);
+        inOrder.verify(observer2, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+        inOrder = inOrder(observer3);
+        inOrder.verify(observer3, times(1)).onNext(null);
+        inOrder.verify(observer3, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+        verify(action, times(1)).call();
     }
 
     @Test
     public void testStartWithFunc() {
-        TestScheduler scheduler = new TestScheduler();
-
-        @SuppressWarnings("unchecked")
-        Func0<String> func = (Func0<String>) mock(Func0.class);
-        doAnswer(new Answer<String>() {
-
+        Func0<String> func = new Func0<String>() {
             @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
+            public String call() {
                 return "one";
             }
-
-        }).when(func).call();
-
-        Observable<String> observable = Observable.start(func, scheduler);
-        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
-
-        assertEquals("one", observable.toBlockingObservable().single());
-        assertEquals("one", observable.toBlockingObservable().single());
-        verify(func, times(1)).call();
+        };
+        assertEquals("one", Observable.start(func).toBlockingObservable().single());
     }
 
     @Test(expected = RuntimeException.class)
@@ -1008,8 +1071,108 @@ public class ObservableTests {
                 throw new RuntimeException("Some error");
             }
         };
-
-        Observable<String> observable = Observable.start(func);
-        observable.toBlockingObservable().single();
+        Observable.start(func).toBlockingObservable().single();
     }
+
+    @Test
+    public void testStartWhenSubscribeRunBeforeFunc() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Func0<String> func = new Func0<String>() {
+            @Override
+            public String call() {
+                return "one";
+            }
+        };
+
+        Observable<String> observable = Observable.start(func, scheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verifyNoMoreInteractions();
+
+        // Run func
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testStartWhenSubscribeRunAfterFunc() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Func0<String> func = new Func0<String>() {
+            @Override
+            public String call() {
+                return "one";
+            }
+        };
+
+        Observable<String> observable = Observable.start(func, scheduler);
+
+        // Run func
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testStartWithFuncAndMultipleObservers() {
+        TestScheduler scheduler = new TestScheduler();
+
+        @SuppressWarnings("unchecked")
+        Func0<String> func = (Func0<String>) mock(Func0.class);
+        doAnswer(new Answer<String>() {
+            @Override
+            public String answer(InvocationOnMock invocation) throws Throwable {
+                return "one";
+            }
+        }).when(func).call();
+
+        Observable<String> observable = Observable.start(func, scheduler);
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer1 = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<String> observer2 = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<String> observer3 = mock(Observer.class);
+
+        observable.subscribe(observer1);
+        observable.subscribe(observer2);
+        observable.subscribe(observer3);
+
+        InOrder inOrder;
+        inOrder = inOrder(observer1);
+        inOrder.verify(observer1, times(1)).onNext("one");
+        inOrder.verify(observer1, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+        inOrder = inOrder(observer2);
+        inOrder.verify(observer2, times(1)).onNext("one");
+        inOrder.verify(observer2, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+        inOrder = inOrder(observer3);
+        inOrder.verify(observer3, times(1)).onNext("one");
+        inOrder.verify(observer3, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+        verify(func, times(1)).call();
+    }
+
 }
