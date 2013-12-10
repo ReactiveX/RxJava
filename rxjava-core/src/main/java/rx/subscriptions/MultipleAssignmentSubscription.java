@@ -27,34 +27,41 @@ import rx.Subscription;
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.multipleassignmentdisposable">Rx.Net equivalent MultipleAssignmentDisposable</a>
  */
 public class MultipleAssignmentSubscription implements Subscription {
-
-    private final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-    private AtomicReference<Subscription> subscription = new AtomicReference<Subscription>();
-
+    private AtomicReference<Subscription> reference = new AtomicReference<Subscription>();
+    /** Sentinel for the unsubscribed state. */
+    private static final Subscription UNSUBSCRIBED_SENTINEL = new Subscription() {
+        @Override
+        public void unsubscribe() {
+        }
+    };
     public boolean isUnsubscribed() {
-        return unsubscribed.get();
+        return reference.get() == UNSUBSCRIBED_SENTINEL;
     }
 
     @Override
-    public synchronized void unsubscribe() {
-        unsubscribed.set(true);
-        Subscription s = getSubscription();
+    public void unsubscribe() {
+        Subscription s = reference.getAndSet(UNSUBSCRIBED_SENTINEL);
         if (s != null) {
             s.unsubscribe();
         }
-
     }
 
-    public synchronized void setSubscription(Subscription s) {
-        if (unsubscribed.get()) {
-            s.unsubscribe();
-        } else {
-            subscription.set(s);
-        }
+    public void setSubscription(Subscription s) {
+        do {
+            Subscription r = reference.get();
+            if (r == UNSUBSCRIBED_SENTINEL) {
+                s.unsubscribe();
+                return;
+            }
+            if (reference.compareAndSet(r, s)) {
+                break;
+            }
+        } while (true);
     }
 
     public Subscription getSubscription() {
-        return subscription.get();
+        Subscription s = reference.get();
+        return s != UNSUBSCRIBED_SENTINEL ? s : Subscriptions.empty();
     }
 
 }

@@ -32,7 +32,7 @@ public final class SingleAssignmentSubscription implements Subscription {
     /** Holds the current resource. */
     private final AtomicReference<Subscription> current = new AtomicReference<Subscription>();
     /** Sentinel for the unsubscribed state. */
-    private static final Subscription SENTINEL = new Subscription() {
+    private static final Subscription UNSUBSCRIBED_SENTINEL = new Subscription() {
         @Override
         public void unsubscribe() {
         }
@@ -42,7 +42,7 @@ public final class SingleAssignmentSubscription implements Subscription {
      */
     public Subscription get() {
         Subscription s = current.get();
-        if (s == SENTINEL) {
+        if (s == UNSUBSCRIBED_SENTINEL) {
             return Subscriptions.empty();
         }
         return s;
@@ -57,7 +57,7 @@ public final class SingleAssignmentSubscription implements Subscription {
         if (current.compareAndSet(null, s)) {
             return;
         }
-        if (current.get() != SENTINEL) {
+        if (current.get() != UNSUBSCRIBED_SENTINEL) {
             throw new IllegalStateException("Subscription already set");
         }
         if (s != null) {
@@ -66,7 +66,7 @@ public final class SingleAssignmentSubscription implements Subscription {
     }
     @Override
     public void unsubscribe() {
-        Subscription old = current.getAndSet(SENTINEL);
+        Subscription old = current.getAndSet(UNSUBSCRIBED_SENTINEL);
         if (old != null) {
             old.unsubscribe();
         }
@@ -75,7 +75,7 @@ public final class SingleAssignmentSubscription implements Subscription {
      * Test if this subscription is already unsubscribed.
      */
     public boolean isUnsubscribed() {
-        return current.get() == SENTINEL;
+        return current.get() == UNSUBSCRIBED_SENTINEL;
     }
     
 }
