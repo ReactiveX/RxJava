@@ -2297,7 +2297,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits a Boolean value that indicate
+     * Returns an Observable that emits a Boolean value that indicates
      * whether two sequences are equal by comparing the elements pairwise.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sequenceEqual.png">
@@ -2305,8 +2305,8 @@ public class Observable<T> {
      * @param first the first Observable to compare
      * @param second the second Observable to compare
      * @param <T> the type of items emitted by each Observable
-     * @return an Observable that emits a Boolean value that indicate
-     *         whether two sequences are equal by comparing the elements pairwise.
+     * @return an Observable that emits a Boolean value that indicates
+     *         whether two sequences are equal by comparing the elements pairwise
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#sequenceequal">RxJava Wiki: sequenceEqual()</a>
      */
     public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second) {
@@ -2322,7 +2322,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits a Boolean value that indicate
+     * Returns an Observable that emits a Boolean value that indicates
      * whether two sequences are equal by comparing the elements pairwise
      * based on the results of a specified equality function.
      * <p>
@@ -2333,8 +2333,8 @@ public class Observable<T> {
      * @param equality a function used to compare items emitted by both
      *                 Observables
      * @param <T> the type of items emitted by each Observable
-     * @return an Observable that emits a Boolean value that indicate
-     *         whether two sequences are equal by comparing the elements pairwise.
+     * @return an Observable that emits a Boolean value that indicates
+     *         whether two sequences are equal by comparing the elements pairwise
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#sequenceequal">RxJava Wiki: sequenceEqual()</a>
      */
     public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality) {
@@ -3311,7 +3311,7 @@ public class Observable<T> {
      * invoke {@code onNext} as many times as the number of {@code onNext}
      * invokations of the source Observable that emits the fewest items.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.o.png">
      * 
      * @param ws an Observable of source Observables
      * @param zipFunction a function that, when applied to an item emitted by
@@ -3871,7 +3871,7 @@ public class Observable<T> {
      * 
      * @return an Observable that emits the number of counted elements of the
      *         source Observable as its single item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#count">RxJava Wiki: count()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#count-and-longcount">RxJava Wiki: count()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229470.aspx">MSDN: Observable.Count</a>
      * @see #longCount()
      */
@@ -4475,12 +4475,14 @@ public class Observable<T> {
      * Return an Observable that emits the results of sampling the items
      * emitted by this Observable when the <code>sampler</code>
      * Observable produces an item or completes.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.o.png">
      * 
      * @param sampler the Observable to use for sampling this
-     * 
      * @return an Observable that emits the results of sampling the items
      *         emitted by this Observable when the <code>sampler</code>
      *         Observable produces an item or completes.
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast">RxJava Wiki: sample()</a>
      */
     public <U> Observable<T> sample(Observable<U> sampler) {
         return create(new OperationSample.SampleWithObservable<T, U>(this, sampler));
@@ -5198,11 +5200,11 @@ public class Observable<T> {
      * Returns an Observable that counts the total number of items in the
      * source Observable as a 64 bit long.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/count.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/longCount.png">
      * 
      * @return an Observable that emits the number of counted elements of the
      *         source Observable as its single, 64 bit long item 
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#count">RxJava Wiki: count()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#count-and-longcount">RxJava Wiki: count()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229120.aspx">MSDN: Observable.LongCount</a>
      * @see #count()
      */
