@@ -204,11 +204,11 @@ trait Scheduler {
 
 private [scala] object Scheduler {
   def apply(scheduler: rx.Scheduler): Scheduler = scheduler match {
-    case s: rx.concurrency.CurrentThreadScheduler => new CurrentThreadScheduler(s)
-    case s: rx.concurrency.ExecutorScheduler => new ExecutorScheduler(s)
-    case s: rx.concurrency.ImmediateScheduler => new ImmediateScheduler(s)
-    case s: rx.concurrency.NewThreadScheduler => new NewThreadScheduler(s)
-    case s: rx.concurrency.TestScheduler => new TestScheduler(s)
+    case s: rx.schedulers.CurrentThreadScheduler => new CurrentThreadScheduler(s)
+    case s: rx.schedulers.ExecutorScheduler => new ExecutorScheduler(s)
+    case s: rx.schedulers.ImmediateScheduler => new ImmediateScheduler(s)
+    case s: rx.schedulers.NewThreadScheduler => new NewThreadScheduler(s)
+    case s: rx.schedulers.TestScheduler => new TestScheduler(s)
     case s: rx.Scheduler => new Scheduler{ val asJavaScheduler = s }
   }
 

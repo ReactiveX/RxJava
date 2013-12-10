@@ -33,7 +33,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
-import rx.concurrency.Schedulers;
+import rx.schedulers.Schedulers;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 import rx.util.functions.Action1;

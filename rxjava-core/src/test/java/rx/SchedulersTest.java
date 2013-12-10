@@ -31,8 +31,8 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import rx.Observable.OnSubscribeFunc;
-import rx.concurrency.Schedulers;
-import rx.concurrency.TestScheduler;
+import rx.schedulers.Schedulers;
+import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;

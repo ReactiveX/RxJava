@@ -27,7 +27,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import rx.Observer;
-import rx.concurrency.Schedulers;
+import rx.schedulers.Schedulers;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Action2;

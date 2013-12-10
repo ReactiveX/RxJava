@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.MockitoAnnotations;
 
-import rx.concurrency.TestScheduler;
+import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
 public class TimeoutTests {

@@ -29,7 +29,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.concurrency.TestScheduler;
+import rx.schedulers.TestScheduler;
 import rx.subscriptions.CompositeSubscription;
 import rx.util.functions.Action0;
 

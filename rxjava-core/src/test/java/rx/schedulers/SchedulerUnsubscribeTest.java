@@ -1,4 +1,4 @@
-package rx.concurrency;
+package rx.schedulers;
 
 import static org.junit.Assert.*;
 
@@ -11,6 +11,7 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
+import rx.schedulers.Schedulers;
 import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Func1;
 

@@ -19,7 +19,7 @@ import org.junit.Test
 
 import rx.Observable
 import rx.Scheduler
-import rx.concurrency.Schedulers
+import rx.schedulers.Schedulers
 import rx.util.functions.Func1
 
 class TestParallel {

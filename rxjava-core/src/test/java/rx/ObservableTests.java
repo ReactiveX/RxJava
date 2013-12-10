@@ -35,7 +35,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable.OnSubscribeFunc;
-import rx.concurrency.TestScheduler;
+import rx.schedulers.TestScheduler;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;

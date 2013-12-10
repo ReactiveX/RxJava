@@ -18,7 +18,7 @@ import org.mockito.Mock;
 
 import rx.Observable;
 import rx.Observer;
-import rx.concurrency.TestScheduler;
+import rx.schedulers.TestScheduler;
 import rx.util.functions.Func1;
 
 public class OperationDelayTest {
