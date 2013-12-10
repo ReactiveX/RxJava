@@ -67,11 +67,12 @@ method hindered type inference and made Scala code look unnecessarily different 
 All factory methods now have their own name corresponding to the Java and .NET operators
 (plus overloads that take a `Scheduler`).
 
-* `def from[T](future: Future[T]): Observable[T]`
-* `def from[T](iterable: Iterable[T]): Observable[T]`
-* `def error[T](exception: Throwable): Observable[T]`
-* `def empty[T]: Observable[T]`
-* `def items[T](items: T*): Observable[T]
+* `def from[T](future: Future[T]): Observable[T]`,
+* `def from[T](iterable: Iterable[T]): Observable[T]`,
+* `def error[T](exception: Throwable): Observable[T]`,
+* `def empty[T]: Observable[T]`,
+* `def items[T](items: T*): Observable[T],
+* Extension method on `toObservable: Observable[T]` on `List[T]`.
 
 In the *pre-release* of this version, we expose both `apply` and `create` for the mother of all creation functions.
 We would like to solicit feedback which of these two names is preferred
@@ -96,10 +97,10 @@ object Subject {
 For each kind of subject, there is a class with a private constructor and a companion object that you should use
 to create a new kind of subject. The subjects that are available are:
 
-* `AsyncSubject[T]()`
-* `BehaviorSubject[T](value)`
-* `Subject[T]()`
-* `ReplaySubject[T]()`
+* `AsyncSubject[T]()`,
+* `BehaviorSubject[T](value)`,
+* `Subject[T]()`,
+* `ReplaySubject[T]()`.
 
 The latter is still missing various overloads http://msdn.microsoft.com/en-us/library/hh211810(v=vs.103).aspx which
 you can expect to appear once they are added to the underlying RxJava implementation.
@@ -128,14 +129,14 @@ which already deviated from the pattern.
 In this release, we changed this to make scheduler more like `Subject` and provide a family of schedulers
 that you create using their factory function:
 
-* `CurrentThreadScheduler()`
-* `ExecutorScheduler(executor)`
-* `ImmediateScheduler()`
-* `NewThreadScheduler()`
-* `ScheduledExecutorServiceScheduler(scheduledExecutorService)`
-* `TestScheduler()`
-* `ThreadPoolForComputationScheduler()`
-* `ThreadPoolForIOScheduler()`
+* `CurrentThreadScheduler()`,
+* `ExecutorScheduler(executor)`,
+* `ImmediateScheduler()`,
+* `NewThreadScheduler()`,
+* `ScheduledExecutorServiceScheduler(scheduledExecutorService)`,
+* `TestScheduler()`,
+* `ThreadPoolForComputationScheduler()`,
+* `ThreadPoolForIOScheduler()`.
 
 In the future we expect that this list will grow further with new schedulers as they are imported from .NET
 (http://msdn.microsoft.com/en-us/library/system.reactive.concurrency(v=vs.103).aspx).
@@ -162,10 +163,10 @@ object Subscription {...}
 
  To create a `Subscription` use one of the following factory methods:
 
- * `Subscription{...}`, `Subscription()`
- * `CompositeSubscription(subscriptions)`
- * `MultipleAssignmentSubscription()`
- * `SerialSubscription()`
+ * `Subscription{...}`, `Subscription()`,
+ * `CompositeSubscription(subscriptions)`,
+ * `MultipleAssignmentSubscription()`,
+ * `SerialSubscription()`.
 
  In case you do feel tempted to call `new Subscription{...}` directly make sure you wire up `isUnsubscribed`
  and `unsubscribe()` properly, but for all practical purposes you should just use one of the factory methods.
