@@ -2,16 +2,18 @@ RxScala Release Notes
 =====================
 
 This release of the RxScala bindings builds on the previous 0.15 release to make the Rx bindings for Scala
-include all Rx types. In particular this release focuses on fleshing out the bindings for the `Subject` and `Scheduler` types.
-To makes these notes self-contained, we will start with the `Observer[T]` and `Observable[T]` traits
-that lay at the heart of Rx.
+include all Rx types. In particular this release focuses on fleshing out the bindings for the `Subject` and `Scheduler`
+types, as well as aligning the constructor functions for `Observable` with those in the RxJava.
+
+Expect to see ongoing additions to make the Scala binding match the equivalent underlying Java API,
+as well as minor changes in the existing API as we keep fine-tuning the experience on our way to a V1.0 release.
 
 Observer
 --------
 
 In this release we have made the `asJavaObserver` property in `Observable[T]`as well the the factory method in the
- companion object that takes an `rx.Observer` private to the Scala bindings package, thus properly hiding irrelevant
- implementation details from the user-facing API. The `Observer[T]` trait now looks like a clean, native Scala type:
+companion object that takes an `rx.Observer` private to the Scala bindings package, thus properly hiding irrelevant
+implementation details from the user-facing API. The `Observer[T]` trait now looks like a clean, native Scala type:
 
 ```scala
 trait Observer[-T] {
