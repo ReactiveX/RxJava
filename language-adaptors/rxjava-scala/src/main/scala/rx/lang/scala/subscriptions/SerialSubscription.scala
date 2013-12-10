@@ -15,48 +15,41 @@
  */
 package rx.lang.scala.subscriptions
 
-import rx.lang.scala.Subscription
-import java.util.concurrent.atomic.AtomicBoolean
-
+import rx.lang.scala._
 
 object SerialSubscription {
 
   /**
    * Creates a [[rx.lang.scala.subscriptions.SerialSubscription]].
    */
-  def apply(): SerialSubscription =  {
-    new SerialSubscription(new rx.subscriptions.SerialSubscription())
-  }
+  def apply(): SerialSubscription =  new SerialSubscription(new rx.subscriptions.SerialSubscription())
 
   /**
    * Creates a [[rx.lang.scala.subscriptions.SerialSubscription]] that invokes the specified action when unsubscribed.
    */
   def apply(unsubscribe: => Unit): SerialSubscription = {
-    val s= SerialSubscription()
-    s.subscription  = Subscription{ unsubscribe }
-    s
+   SerialSubscription().subscription = Subscription(unsubscribe)
   }
 }
 
 /**
  * Represents a [[rx.lang.scala.Subscription]] that can be checked for status.
  */
-class SerialSubscription private[scala] (val asJavaSubscription: rx.subscriptions.SerialSubscription)
-  extends Subscription {
+class SerialSubscription private[scala] (serial: rx.subscriptions.SerialSubscription) extends Subscription {
 
-  private val unsubscribed = new AtomicBoolean(false)
-
-  /**
-   * Checks whether the subscription has been unsubscribed.
+  /*
+  * As long as rx.subscriptions.SerialSubscription has no isUnsubscribed,
+  * we need to intercept and do it ourselves.
    */
-  def isUnsubscribed: Boolean = unsubscribed.get()
+  override val asJavaSubscription: rx.subscriptions.SerialSubscription = new rx.subscriptions.SerialSubscription() {
+    override def unsubscribe(): Unit = {
+      if(unsubscribed.compareAndSet(false, true)) { serial.unsubscribe() }
+    }
+    override def setSubscription(subscription: rx.Subscription): Unit = serial.setSubscription(subscription)
+    override def getSubscription(): rx.Subscription = serial.getSubscription()
+  }
 
-  /**
-   * Unsubscribes this subscription, setting isUnsubscribed to true.
-   */
-  override def unsubscribe(): Unit = { super.unsubscribe(); unsubscribed.set(true) }
-
-  def subscription_=(value: Subscription): Unit = asJavaSubscription.setSubscription(value.asJavaSubscription)
+  def subscription_=(value: Subscription): this.type = { asJavaSubscription.setSubscription(value.asJavaSubscription); this }
   def subscription: Subscription = Subscription(asJavaSubscription.getSubscription)
 
 }

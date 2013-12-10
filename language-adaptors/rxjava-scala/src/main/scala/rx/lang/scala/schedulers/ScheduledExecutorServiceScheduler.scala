@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.lang.scala.concurrency
+package rx.lang.scala.schedulers
 
-import java.util.concurrent.Executor
+import java.util.concurrent.ScheduledExecutorService
 import rx.lang.scala.Scheduler
 
-object ExecutorScheduler {
+object ScheduledExecutorServiceScheduler {
 
   /**
-  * Returns a [[rx.lang.scala.Scheduler]] that queues work on an `java.util.concurrent.Executor`.
-  *
-  * Note that this does not support scheduled actions with a delay.
-  */
-  def apply(executor: Executor): ExecutorScheduler =  {
-    new ExecutorScheduler(rx.concurrency.Schedulers.executor(executor))
+   * Returns a [[rx.lang.scala.Scheduler]] that queues work on an `java.util.concurrent.ScheduledExecutorService`.
+   */
+  def apply(executor: ScheduledExecutorService): ScheduledExecutorServiceScheduler =  {
+    new ScheduledExecutorServiceScheduler(rx.concurrency.Schedulers.executor(executor))
   }
 }
 
-
-class ExecutorScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
+class ScheduledExecutorServiceScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
   extends Scheduler {}
-
-
 

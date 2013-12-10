@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.lang.scala.concurrency
+package rx.lang.scala.schedulers
 
 import rx.lang.scala.Scheduler
 
@@ -26,7 +26,7 @@ object ThreadPoolForIOScheduler {
    *
    * This can be used for asynchronously performing blocking IO.
    *
-   * Do not perform computational work on this scheduler. Use [[rx.lang.scala.concurrency.ThreadPoolForComputationScheduler]] instead.
+   * Do not perform computational work on this scheduler. Use [[rx.lang.scala.schedulers.ThreadPoolForComputationScheduler]] instead.
    */
   def apply(): ThreadPoolForIOScheduler = {
     new ThreadPoolForIOScheduler(rx.concurrency.Schedulers.threadPoolForIO())

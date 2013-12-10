@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.lang.scala.concurrency
+package rx.lang.scala.schedulers
 
 import rx.lang.scala.Scheduler
 
@@ -26,7 +26,7 @@ object ThreadPoolForComputationScheduler {
    *
    * This can be used for event-loops, processing callbacks and other computational work.
    *
-   * Do not perform IO-bound work on this scheduler. Use [[rx.lang.scala.concurrency.ThreadPoolForIOScheduler]] instead.
+   * Do not perform IO-bound work on this scheduler. Use [[rx.lang.scala.schedulers.ThreadPoolForIOScheduler]] instead.
    */
   def apply(): ThreadPoolForComputationScheduler = {
     new ThreadPoolForComputationScheduler(rx.concurrency.Schedulers.threadPoolForComputation())

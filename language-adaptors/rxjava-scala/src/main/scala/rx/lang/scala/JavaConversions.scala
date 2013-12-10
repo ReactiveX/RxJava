@@ -9,7 +9,7 @@ package rx.lang.scala
 object JavaConversions {
   import language.implicitConversions
   
-  implicit def toJavaNotification[T](s: Notification[T]): rx.Notification[_ <: T] = s.asJava
+  implicit def toJavaNotification[T](s: Notification[T]): rx.Notification[_ <: T] = s.asJavaNotification
   
   implicit def toScalaNotification[T](s: rx.Notification[_ <: T]): Notification[T] = Notification(s)
 
@@ -29,8 +29,7 @@ object JavaConversions {
   
   implicit def toScalaObservable[T](observable: rx.Observable[_ <: T]): Observable[T] = {
     new Observable[T]{
-      def asJavaObservable = observable
+      val asJavaObservable = observable
     }
   }
-
 }

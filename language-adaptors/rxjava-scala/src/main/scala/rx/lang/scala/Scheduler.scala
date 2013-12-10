@@ -18,6 +18,7 @@ package rx.lang.scala
 import java.util.Date
 import scala.concurrent.duration.Duration
 import rx.util.functions.{Action0, Action1, Func2}
+import rx.lang.scala.schedulers._
 
 /**
  * Represents an object that schedules units of work.
@@ -25,7 +26,7 @@ import rx.util.functions.{Action0, Action1, Func2}
 trait Scheduler {
   import rx.lang.scala.ImplicitFunctionConversions._
 
-  val asJavaScheduler: rx.Scheduler
+  private [scala] val asJavaScheduler: rx.Scheduler
 
   /**
    * Schedules a cancelable action to be executed.
@@ -44,7 +45,7 @@ trait Scheduler {
    * @param action Action to schedule.
    * @return a subscription to be able to unsubscribe from action.
    */
-  private def schedule[T](state: T, action: (Scheduler, T) => Subscription): Subscription = {
+  private [scala] def schedule[T](state: T, action: (Scheduler, T) => Subscription): Subscription = {
     Subscription(asJavaScheduler.schedule(state, new Func2[rx.Scheduler, T, rx.Subscription] {
       def call(t1: rx.Scheduler, t2: T): rx.Subscription = {
         action(Scheduler(t1), t2).asJavaSubscription
@@ -74,9 +75,8 @@ trait Scheduler {
    *            Time the action is to be delayed before executing.
    * @return a subscription to be able to unsubscribe from action.
    */
-  private def schedule[T](state: T, action: (Scheduler, T) => Subscription, delayTime: Duration): Subscription = {
-    val xxx = schedulerActionToFunc2(action)
-    Subscription(asJavaScheduler.schedule(state, xxx, delayTime.length, delayTime.unit))
+  private [scala] def schedule[T](state: T, action: (Scheduler, T) => Subscription, delayTime: Duration): Subscription = {
+    Subscription(asJavaScheduler.schedule(state, schedulerActionToFunc2(action), delayTime.length, delayTime.unit))
   }
 
   /**
@@ -108,7 +108,7 @@ trait Scheduler {
    *            The time interval to wait each time in between executing the action.
    * @return A subscription to be able to unsubscribe from action.
    */
-  private def schedulePeriodically[T](state: T, action: (Scheduler, T) => Subscription, initialDelay: Duration, period: Duration): Subscription = {
+  private [scala] def schedulePeriodically[T](state: T, action: (Scheduler, T) => Subscription, initialDelay: Duration, period: Duration): Subscription = {
     Subscription(asJavaScheduler.schedulePeriodically(state, action, initialDelay.length, initialDelay.unit.convert(period.length, period.unit), initialDelay.unit))
   }
 
@@ -134,7 +134,7 @@ trait Scheduler {
    *            Time the action is to be executed. If in the past it will be executed immediately.
    * @return a subscription to be able to unsubscribe from action.
    */
-  private def schedule[T](state: T, action: (Scheduler, T) => Subscription, dueTime: Date): Subscription = {
+  private [scala] def schedule[T](state: T, action: (Scheduler, T) => Subscription, dueTime: Date): Subscription = {
     Subscription(asJavaScheduler.schedule(state, action, dueTime))
   }
 
@@ -180,17 +180,6 @@ trait Scheduler {
         work{ t1.call() }
       }
     }))
-    //action1[action0]
-
-//    val subscription = new rx.subscriptions.MultipleAssignmentSubscription()
-//
-//    subscription.setSubscription(
-//      this.schedule(scheduler => {
-//        def loop(): Unit =  subscription.setSubscription(scheduler.schedule{ work{ loop() }})
-//        loop()
-//        subscription
-//      }))
-//    subscription
   }
 
   /**
@@ -213,12 +202,16 @@ trait Scheduler {
 
 }
 
-object Scheduler {
-  private [scala] def apply(scheduler: rx.Scheduler): Scheduler = {
-    new Scheduler() {
-       val asJavaScheduler = scheduler
-    }
+private [scala] object Scheduler {
+  def apply(scheduler: rx.Scheduler): Scheduler = scheduler match {
+    case s: rx.concurrency.CurrentThreadScheduler => new CurrentThreadScheduler(s)
+    case s: rx.concurrency.ExecutorScheduler => new ExecutorScheduler(s)
+    case s: rx.concurrency.ImmediateScheduler => new ImmediateScheduler(s)
+    case s: rx.concurrency.NewThreadScheduler => new NewThreadScheduler(s)
+    case s: rx.concurrency.TestScheduler => new TestScheduler(s)
+    case s: rx.Scheduler => new Scheduler{ val asJavaScheduler = s }
   }
+
 }
 
 
