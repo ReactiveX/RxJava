@@ -86,6 +86,15 @@ trait Observable[+T]
   /**
    * $subscribeObserverMain
    *
+   * @return $subscribeAllReturn
+   */
+  def subscribe(): Subscription = {
+    asJavaObservable.subscribe()
+  }
+
+  /**
+   * $subscribeObserverMain
+   *
    * @param observer $subscribeObserverParamObserver
    * @param scheduler $subscribeObserverParamScheduler
    * @return $subscribeAllReturn
@@ -111,6 +120,7 @@ trait Observable[+T]
    * @return $subscribeAllReturn
    */
   def apply(observer: Observer[T]): Subscription = subscribe(observer)
+  def apply(): Subscription = subscribe()
 
   /**
    * $subscribeCallbacksMainNoNotifications
