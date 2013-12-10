@@ -25,7 +25,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.concurrency.Schedulers;
+import rx.schedulers.Schedulers;
 import rx.test.OperatorTester;
 import rx.util.functions.Action0;
 import rx.util.functions.Func2;

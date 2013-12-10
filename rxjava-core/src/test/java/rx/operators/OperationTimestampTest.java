@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
-import rx.concurrency.TestScheduler;
+import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.util.Timestamped;
 

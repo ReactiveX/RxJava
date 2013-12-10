@@ -26,7 +26,7 @@ object ExecutorScheduler {
   * Note that this does not support scheduled actions with a delay.
   */
   def apply(executor: Executor): ExecutorScheduler =  {
-    new ExecutorScheduler(rx.concurrency.Schedulers.executor(executor))
+    new ExecutorScheduler(rx.schedulers.Schedulers.executor(executor))
   }
 }
 

@@ -31,12 +31,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.android.concurrency.AndroidSchedulers;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Looper;

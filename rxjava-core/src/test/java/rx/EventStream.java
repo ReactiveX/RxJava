@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import rx.Observable.OnSubscribeFunc;
-import rx.concurrency.Schedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.BooleanSubscription;
 import rx.util.functions.Action0;
 

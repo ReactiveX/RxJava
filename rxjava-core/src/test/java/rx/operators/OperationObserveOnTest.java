@@ -30,8 +30,8 @@ import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observer;
-import rx.concurrency.Schedulers;
-import rx.concurrency.TestScheduler;
+import rx.schedulers.Schedulers;
+import rx.schedulers.TestScheduler;
 import rx.util.functions.Action1;
 
 public class OperationObserveOnTest {

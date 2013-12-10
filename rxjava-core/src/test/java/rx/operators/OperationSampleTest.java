@@ -26,7 +26,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.concurrency.TestScheduler;
+import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;

@@ -23,7 +23,7 @@ import rx.lang.scala.Scheduler
  */
 object TestScheduler {
   def apply(): TestScheduler = {
-    new TestScheduler(new rx.concurrency.TestScheduler())
+    new TestScheduler(new rx.schedulers.TestScheduler())
   }
 }
 
@@ -64,7 +64,7 @@ object TestScheduler {
  * }
  * }}}
  */
-class TestScheduler private[scala] (val asJavaScheduler: rx.concurrency.TestScheduler) extends Scheduler {
+class TestScheduler private[scala] (val asJavaScheduler: rx.schedulers.TestScheduler) extends Scheduler {
 
   def advanceTimeBy(time: Duration) {
     asJavaScheduler.advanceTimeBy(time.length, time.unit)

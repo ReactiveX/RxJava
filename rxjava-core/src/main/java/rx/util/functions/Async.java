@@ -18,8 +18,8 @@ package rx.util.functions;
 
 import rx.Observable;
 import rx.Scheduler;
-import rx.concurrency.ExecutorScheduler;
-import rx.concurrency.Schedulers;
+import rx.schedulers.ExecutorScheduler;
+import rx.schedulers.Schedulers;
 import rx.subjects.AsyncSubject;
 
 /**

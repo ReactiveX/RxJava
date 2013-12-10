@@ -23,7 +23,7 @@ object ImmediateScheduler {
    * Returns a [[rx.lang.scala.Scheduler]] that executes work immediately on the current thread.
    */
   def apply(): ImmediateScheduler =  {
-    new ImmediateScheduler(rx.concurrency.Schedulers.immediate())
+    new ImmediateScheduler(rx.schedulers.Schedulers.immediate())
   }
 }
 

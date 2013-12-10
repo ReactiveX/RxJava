@@ -27,7 +27,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import rx.concurrency.Schedulers;
 import rx.joins.Pattern2;
 import rx.joins.Plan0;
 import rx.observables.BlockingObservable;
@@ -109,6 +108,7 @@ import rx.operators.SafeObserver;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
+import rx.schedulers.Schedulers;
 import rx.subjects.AsyncSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;

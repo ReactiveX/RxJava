@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.concurrency.Schedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;

@@ -30,7 +30,7 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.concurrency.Schedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;

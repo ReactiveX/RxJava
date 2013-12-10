@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.concurrency;
+package rx.schedulers;
 
 import rx.Scheduler;
 import rx.Subscription;

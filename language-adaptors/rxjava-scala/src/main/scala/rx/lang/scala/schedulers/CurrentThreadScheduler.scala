@@ -23,7 +23,7 @@ object CurrentThreadScheduler {
    * Returns a [[rx.lang.scala.Scheduler]] that queues work on the current thread to be executed after the current work completes.
    */
   def apply(): CurrentThreadScheduler =  {
-    new CurrentThreadScheduler(rx.concurrency.Schedulers.currentThread())
+    new CurrentThreadScheduler(rx.schedulers.Schedulers.currentThread())
   }
 }
 

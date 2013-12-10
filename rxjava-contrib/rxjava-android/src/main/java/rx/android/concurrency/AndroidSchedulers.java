@@ -15,37 +15,25 @@
  */
 package rx.android.concurrency;
 
-import android.os.Handler;
-import android.os.Looper;
 import rx.Scheduler;
+import android.os.Handler;
 
 /**
- * Schedulers that have Android specific functionality
+ * Deprecated. Package changed from rx.android.concurrency to rx.android.schedulers.
+ * 
+ * @deprecated Use {@link rx.android.schedulers.AndroidSchedulers} instead. This will be removed before 1.0 release.
  */
+@Deprecated
 public class AndroidSchedulers {
 
-    private static final Scheduler MAIN_THREAD_SCHEDULER =
-            new HandlerThreadScheduler(new Handler(Looper.getMainLooper()));
-
-    private AndroidSchedulers(){
-
-    }
-
-    /**
-     * {@link Scheduler} which uses the provided {@link Handler} to execute an action
-     * @param handler The handler that will be used when executing the action
-     * @return A handler based scheduler
-     */
+    @Deprecated
     public static Scheduler handlerThread(final Handler handler) {
-        return new HandlerThreadScheduler(handler);
+        return rx.android.schedulers.AndroidSchedulers.handlerThread(handler);
     }
 
-    /**
-     * {@link Scheduler} which will execute an action on the main Android UI thread.
-     *
-     * @return A Main {@link Looper} based scheduler
-     */
+    @Deprecated
     public static Scheduler mainThread() {
-        return MAIN_THREAD_SCHEDULER;
+        return rx.android.schedulers.AndroidSchedulers.mainThread();
     }
+
 }

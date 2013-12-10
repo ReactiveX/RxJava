@@ -29,7 +29,7 @@ object ThreadPoolForIOScheduler {
    * Do not perform computational work on this scheduler. Use [[rx.lang.scala.schedulers.ThreadPoolForComputationScheduler]] instead.
    */
   def apply(): ThreadPoolForIOScheduler = {
-    new ThreadPoolForIOScheduler(rx.concurrency.Schedulers.threadPoolForIO())
+    new ThreadPoolForIOScheduler(rx.schedulers.Schedulers.threadPoolForIO())
   }
 }
 

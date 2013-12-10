@@ -16,4 +16,4 @@
 /**
  * Rx Schedulers
  */
-package rx.concurrency;
+package rx.schedulers;
