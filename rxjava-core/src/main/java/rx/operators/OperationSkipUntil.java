@@ -16,6 +16,7 @@
 package rx.operators;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;

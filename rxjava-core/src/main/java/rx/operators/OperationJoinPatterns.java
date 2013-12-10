@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -29,11 +30,9 @@ import rx.joins.JoinObserver;
 import rx.joins.Pattern1;
 import rx.joins.Pattern2;
 import rx.joins.Plan0;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
-import rx.util.functions.Func2;
 
 /**
  * Join patterns: And, Then, When.
