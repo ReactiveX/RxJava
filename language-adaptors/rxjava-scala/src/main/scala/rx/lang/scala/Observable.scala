@@ -120,7 +120,6 @@ trait Observable[+T]
    * @return $subscribeAllReturn
    */
   def apply(observer: Observer[T]): Subscription = subscribe(observer)
-  def apply(): Subscription = subscribe()
 
   /**
    * $subscribeCallbacksMainNoNotifications
@@ -544,7 +543,7 @@ trait Observable[+T]
   def window[Closing](closings: () => Observable[Closing]): Observable[Observable[T]] = {
     val func : Func0[_ <: rx.Observable[_ <: Closing]] = closings().asJavaObservable
     val o1: rx.Observable[_ <: rx.Observable[_]] = asJavaObservable.window[Closing](func)
-    val o2 = Observable[rx.Observable[_]](o1).map((x: rx.Observable[_]) => {
+    val o2 = Observable.items(o1).map((x: rx.Observable[_]) => {
       val x2 = x.asInstanceOf[rx.Observable[_ <: T]]
       toScalaObservable[T](x2)
     })
@@ -1986,6 +1985,48 @@ object Observable {
   }
 
   /**
+   * Returns an Observable that emits no data to the [[rx.lang.scala.Observer]] and
+   * immediately invokes its [[rx.lang.scala.Observer#onCompleted onCompleted]] method
+   * with the specified scheduler.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/empty.s.png">
+   *
+   * @param scheduler the scheduler to call the
+                        [[rx.lang.scala.Observer#onCompleted onCompleted]] method
+   * @param T the type of the items (ostensibly) emitted by the Observable
+   * @return an Observable that returns no data to the [[rx.lang.scala.Observer]] and
+   *         immediately invokes the [[rx.lang.scala.Observer]]r's
+   *        [[rx.lang.scala.Observer#onCompleted onCompleted]] method with the
+   *         specified scheduler
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava Wiki: empty()</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229066.aspx">MSDN: Observable.Empty Method (IScheduler)</a>
+   */
+  def empty[T]: Observable[T] = {
+    toScalaObservable(rx.Observable.empty[T]())
+  }
+
+  /**
+   * Returns an Observable that emits no data to the [[rx.lang.scala.Observer]] and
+   * immediately invokes its [[rx.lang.scala.Observer#onCompleted onCompleted]] method
+   * with the specified scheduler.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/empty.s.png">
+   *
+   * @param scheduler the scheduler to call the
+                        [[rx.lang.scala.Observer#onCompleted onCompleted]] method
+   * @param T the type of the items (ostensibly) emitted by the Observable
+   * @return an Observable that returns no data to the [[rx.lang.scala.Observer]] and
+   *         immediately invokes the [[rx.lang.scala.Observer]]r's
+   *        [[rx.lang.scala.Observer#onCompleted onCompleted]] method with the
+   *         specified scheduler
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava Wiki: empty()</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229066.aspx">MSDN: Observable.Empty Method (IScheduler)</a>
+   */
+  def empty[T](scheduler: Scheduler): Observable[T] = {
+    toScalaObservable(rx.Observable.empty[T](scalaSchedulerToJavaScheduler(scheduler)))
+  }
+
+  /**
    * Converts a sequence of values into an Observable.
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
@@ -2001,10 +2042,6 @@ object Observable {
    *            resulting Observable
    * @return an Observable that emits each item in the source Array
    */
-  def apply[T](items: T*): Observable[T] = {
-    toScalaObservable[T](rx.Observable.from(items.toIterable.asJava))
-  }
-
   def items[T](items: T*): Observable[T] = {
     toScalaObservable[T](rx.Observable.from(items.toIterable.asJava))
   }

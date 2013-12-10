@@ -21,7 +21,7 @@ class ObservableTests extends JUnitSuite {
   def testCovariance = {
     //println("hey, you shouldn't run this test")
 
-    val o1: Observable[Nothing] = Observable()
+    val o1: Observable[Nothing] = Observable.empty
     val o2: Observable[Int] = o1
     val o3: Observable[App] = o1
     val o4: Observable[Any] = o2
@@ -32,7 +32,7 @@ class ObservableTests extends JUnitSuite {
 
   @Test
   def testDematerialize() {
-    val o = Observable(1, 2, 3)
+    val o = List(1, 2, 3).toObservable
     val mat = o.materialize
     val demat = mat.dematerialize
 
@@ -61,8 +61,8 @@ class ObservableTests extends JUnitSuite {
   @Test def testFirstOrElse() {
     def mustNotBeCalled: String = sys.error("this method should not be called")
     def mustBeCalled: String = "this is the default value"
-    assertEquals("hello", Observable("hello").firstOrElse(mustNotBeCalled).toBlockingObservable.single)
-    assertEquals("this is the default value", Observable().firstOrElse(mustBeCalled).toBlockingObservable.single)
+    assertEquals("hello", Observable.items("hello").firstOrElse(mustNotBeCalled).toBlockingObservable.single)
+    assertEquals("this is the default value", Observable.empty.firstOrElse(mustBeCalled).toBlockingObservable.single)
   }
 
   @Test def testTestWithError() {

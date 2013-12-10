@@ -62,13 +62,21 @@ object Observable {
 
 The major changes in `Observable` are wrt to the factory methods where too libral use of overloading of the `apply`
 method hindered type inference and made Scala code look unnecessarily different than that in other language bindings.
-In fact the only occurrence left of `apply` is for the varargs case. All other factory methods now have their own name.
+All factory methods now have their own name corresponding to the Java and .NET operators
+(plus overloads that take a `Scheduler`).
 
-* `def apply[T](items: T*): Observable[T]`
-* `def from[T](f: Future[T]): Observable[T]`
+* `def from[T](future: Future[T]): Observable[T]`
 * `def from[T](iterable: Iterable[T]): Observable[T]`
-* `def create[T](subscribe: Observer[T] => Subscription): Observable[T]`
 * `def error[T](exception: Throwable): Observable[T]`
+* `def empty[T]: Observable[T]`
+* `def items[T](items: T*): Observable[T]
+
+In the *pre-release* of this version, we expose both `apply` and `create` for the mother of all creation functions.
+We would like to solicit feedback which of these two names is preferred
+(or both, but there is a high probability that only one will be chosen).
+
+* `def apply[T](subscribe: Observer[T]=>Subscription): Observable[T]`
+* `def create[T](subscribe: Observer[T] => Subscription): Observable[T]`
 
 Subject
 -------

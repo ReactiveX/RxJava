@@ -26,7 +26,7 @@ package object scala {
    * Placeholder for extension methods into Observable[T] from other types
    */
   implicit class ObservableExtensions[T](val source: Iterable[T]) extends AnyVal {
-      def toObservable(): Observable[T] = {  Observable.from(source) }
+      def toObservable: Observable[T] = {  Observable.from(source) }
       def toObservable(scheduler: Scheduler): Observable[T] = {  Observable.from(source, scheduler) }
   }
 
