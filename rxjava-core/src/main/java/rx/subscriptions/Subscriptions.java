@@ -15,10 +15,13 @@
  */
 package rx.subscriptions;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.Future;
 
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
+import rx.util.CompositeException;
 import rx.util.functions.Action0;
 
 /**
@@ -123,4 +126,26 @@ public class Subscriptions {
         public void unsubscribe() {
         }
     };
+    /**
+     * Unsubscribe from the sequence of subscriptions.
+     * <p>
+     * Exceptions thrown by any of the {@code unsubscribe()} methods are
+     * collected into a {@link CompositeException} and thrown once
+     * all unsubscriptions have been attempted.
+     * @param subs the collection of subscriptions
+     */
+    public static void unsubscribeAll(Iterable<? extends Subscription> subs) {
+        final Collection<Throwable> es = new ArrayList<Throwable>();
+        for (final Subscription s : subs) {
+            try {
+                s.unsubscribe();
+            } catch (final Throwable e) {
+                es.add(e);
+            }
+        }
+        if (!es.isEmpty()) {
+            throw new CompositeException(
+                    "Failed to unsubscribe to 1 or more subscriptions.", es);
+        }
+    }
 }

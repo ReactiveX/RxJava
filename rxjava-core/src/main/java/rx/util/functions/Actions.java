@@ -354,4 +354,45 @@ public final class Actions {
             }
         };
     }
+    /** A no-op Action0. */
+    private static final Action0 EMPTY0 = new Action0() {
+        @Override
+        public void call() {
+        }
+    };
+    /**
+     * Returns a no-op Action0 instance.
+     * @return a no-op Action0 instance
+     */
+    public static Action0 empty0() {
+        return EMPTY0;
+    }
+    /** A no-op Action1. */
+    private static final Action1<Object> EMPTY1 = new Action1<Object>() {
+        @Override
+        public void call(Object t1) {
+        }
+    };
+    /**
+     * Returns a no-op Action1 instance.
+     * @return a no-op Action1 instance
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Action1<T> empty1() {
+        return (Action1<T>)EMPTY1;
+    }
+        /** A no-op Action1. */
+    private static final Action2<Object, Object> EMPTY2 = new Action2<Object, Object>() {
+        @Override
+        public void call(Object t1, Object t2) {
+        }
+    };
+    /**
+     * Returns a no-op Action2 instance.
+     * @return a no-op Action2 instance
+     */
+    @SuppressWarnings("unchecked")
+    public static <T1, T2> Action2<T1, T2> empty2() {
+        return (Action2<T1, T2>)EMPTY2;
+    }
 }
