@@ -27,7 +27,7 @@ import rx.Subscription;
 import rx.schedulers.CurrentThreadScheduler;
 import rx.schedulers.ImmediateScheduler;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
+import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func2;
@@ -61,66 +61,69 @@ public class OperationObserveOn {
                 // do nothing if we request CurrentThreadScheduler so we don't invoke overhead
                 return source.subscribe(observer);
             } else {
-                return new Observation(observer).init();
+                return new Observation(observer).subscribe();
             }
         }
+
         /** Observe through individual queue per observer. */
-        private class Observation implements Action1<Notification<? extends T>> {
+        private class Observation {
             final Observer<? super T> observer;
-            final CompositeSubscription s;
-            final ConcurrentLinkedQueue<Notification<? extends T>> queue;
-            final AtomicInteger counter;
-            private volatile Scheduler recursiveScheduler;
+            final CompositeSubscription compositeSubscription = new CompositeSubscription();
+            final MultipleAssignmentSubscription recursiveSubscription = new MultipleAssignmentSubscription();
+            final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
+            final AtomicInteger counter = new AtomicInteger(0);
+
             public Observation(Observer<? super T> observer) {
                 this.observer = observer;
-                this.queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
-                this.counter = new AtomicInteger(0);
-                this.s = new CompositeSubscription();
-            }
-            public Subscription init() {
-                s.add(source.materialize().subscribe(this));
-                return s;
+                // we want the recursiveSubscription unsubscribed if the parent compositiveSubscription is unsubscribed
+                compositeSubscription.add(recursiveSubscription);
             }
 
-            @Override
-            public void call(Notification<? extends T> e) {
-                queue.offer(e);
-                if (counter.getAndIncrement() == 0) {
-                    if (recursiveScheduler == null) {
-                        s.add(scheduler.schedule(null, new Func2<Scheduler, T, Subscription>() {
-                                @Override
-                                public Subscription call(Scheduler innerScheduler, T state) {
-                                    // record innerScheduler so 'processQueue' can use it for all subsequent executions
-                                    recursiveScheduler = innerScheduler;
-
-                                    processQueue();
-
-                                    return Subscriptions.empty();
-                                }
-                            }));
-                    } else {
-                        processQueue();
-                    }
-                }
-            }
-            void processQueue() {
-                s.add(recursiveScheduler.schedule(new Action1<Action0>() {
+            public Subscription subscribe() {
+                // schedule on the outer scheduler first to perform the subscription
+                compositeSubscription.add(scheduler.schedule(null, new Func2<Scheduler, T, Subscription>() {
                     @Override
-                    public void call(Action0 self) {
-                        Notification<? extends T> not = queue.poll();
-                        if (not != null) {
-                            not.accept(observer);
-                        }
+                    public Subscription call(final Scheduler innerScheduler, T state) {
+                        // we're now on the scheduler so let's subscribe
+                        return source.materialize().subscribe(new Action1<Notification<? extends T>>() {
 
-                        // decrement count and if we still have work to do
-                        // recursively schedule ourselves to process again
-                        if (counter.decrementAndGet() > 0) {
-                            self.call();
-                        }
+                            @Override
+                            public void call(Notification<? extends T> notification) {
+                                // we are receiving events so put them in the queue
+                                queue.offer(notification);
+                                /*
+                                 * We use a counter to track whether the inner scheduler is processing or not
+                                 * 
+                                 * If 0 then we schedule on the inner scheduler, otherwise there is a task already running
+                                 * and it will iterate to pick up what was put in the queue.
+                                 */
+                                if (counter.getAndIncrement() == 0) {
+                                    // no task running so schedule the work
+                                    recursiveSubscription.setSubscription(innerScheduler.schedule(new Action1<Action0>() {
+                                        @Override
+                                        public void call(Action0 self) {
+                                            Notification<? extends T> not = queue.poll();
+                                            if (not != null) {
+                                                not.accept(observer);
+                                            }
 
+                                            // decrement count and if we still have work to do
+                                            // recursively schedule ourselves to process again
+                                            if (counter.decrementAndGet() > 0) {
+                                                self.call();
+                                            }
+                                        }
+                                    }));
+                                }
+
+                            }
+                        });
                     }
                 }));
+                return compositeSubscription;
+
             }
+
         }
     }
 
