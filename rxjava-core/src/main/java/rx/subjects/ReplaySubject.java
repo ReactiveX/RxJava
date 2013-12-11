@@ -164,6 +164,9 @@ public final class ReplaySubject<T> extends Subject<T, T>
     public void onNext(T args)
     {
         synchronized (subscriptions) {
+            if (isDone) {
+                return;
+            }
             history.add(args);
             for (Observer<? super T> observer : new ArrayList<Observer<? super T>>(subscriptions.values())) {
                 observer.onNext(args);
