@@ -23,11 +23,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import rx.Subscription;
 import rx.subscriptions.AbstractAtomicSubscription.SubscriptionState;
 import rx.util.functions.Action0;
-import rx.util.functions.Actions;
 
 /**
  * A composite subscription which contains other subscriptions with an associated
@@ -332,18 +330,6 @@ public class ValuedCompositeSubscription<T> extends AbstractAtomicSubscription {
         return Collections.emptyList();
     }
     /**
-     * Adds the value to this composite and generates a subscription token for it.
-     * @param value the value to add
-     * @return the subscription token
-     */
-    public Subscription add(T value) {
-        Token token = new Token();
-        if (tryAdd(token.composite, value)) {
-            return token.client;
-        }
-        return Subscriptions.empty();
-    }
-    /**
      * Return a value associated with the key.
      * @param key the key to look for
      * @return the associated value or null if
@@ -601,46 +587,6 @@ public class ValuedCompositeSubscription<T> extends AbstractAtomicSubscription {
         @Override
         public void call() {
             result = new ArrayList<T>(map.values());
-        }
-    }
-    /** Just deletes a key of a token. */
-    private final class DeleteToken implements Action0 {
-        final Subscription key;
-        public DeleteToken(Subscription key) {
-            this.key = key;
-        }
-        @Override
-        public void call() {
-            delete(key);
-        }
-    }
-    /** The two-sided token to unsubscribe. */
-    private final class Token {
-        /** What to do on unsubscribe? */
-        final AtomicReference<Action0> onUnsubscribe = new AtomicReference<Action0>();
-        /** 
-         * If the client calls and not already unsubscribed, the subscription key
-         * is  deleted from the map.
-         */
-        final Subscription client = new Subscription() {
-            @Override
-            public void unsubscribe() {
-                onUnsubscribe.getAndSet(Actions.empty0()).call();
-            }
-        };
-        /**
-         * Simply set the onUnsubscribe to none since the removal was
-         * triggered by the composite and the map no longer contains
-         * the item anyway.
-         */
-        final Subscription composite = new Subscription() {
-            @Override
-            public void unsubscribe() {
-                onUnsubscribe.set(Actions.empty0());
-            }
-        };
-        public Token() {
-            onUnsubscribe.set(new DeleteToken(composite));
         }
     }
     /**

@@ -106,26 +106,6 @@ public class ValuedCompositeSubscriptionTest {
         Assert.assertEquals(1, vcs.size());
     }
     @Test
-    public void testAddToken() {
-        Subscription s = vcs.add(1);
-
-        Assert.assertEquals(1, vcs.size());
-        
-        s.unsubscribe();
-        
-        Assert.assertEquals(0, vcs.size());
-    }
-    @Test
-    public void testAddTokenThenTerminate() {
-        Subscription s = vcs.add(1);
-
-        Assert.assertEquals(1, vcs.size());
-
-        vcs.unsubscribe();
-        
-        Assert.assertEquals(0, vcs.size());
-    }
-    @Test
     public void testGetKeysAndUnsubscribe() {
         BooleanSubscription s1 = new BooleanSubscription();
         BooleanSubscription s2 = new BooleanSubscription();
