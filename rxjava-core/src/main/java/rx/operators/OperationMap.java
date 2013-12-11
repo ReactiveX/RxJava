@@ -15,8 +15,15 @@
  */
 package rx.operators;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Observable;
+import rx.Observable.OnGetSubscriptionFunc;
+import rx.Observable.OnPartialSubscribeFunc;
+import rx.Observable.OnPartialUnsubscribeFunc;
 import rx.Observable.OnSubscribeFunc;
+import rx.Observable.PartialSubscription;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -42,9 +49,10 @@ public final class OperationMap {
      *            the type of the input sequence.
      * @param <R>
      *            the type of the output sequence.
-     * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
+     * @return a sequence that is the result of applying the transformation function to each item in
+     *         the input sequence.
      */
-    public static <T, R> OnSubscribeFunc<R> map(final Observable<? extends T> sequence, final Func1<? super T, ? extends R> func) {
+    public static <T, R> OnGetSubscriptionFunc<R> map(final Observable<? extends T> sequence, final Func1<? super T, ? extends R> func) {
         return mapWithIndex(sequence, new Func2<T, Integer, R>() {
             @Override
             public R call(T value, @SuppressWarnings("unused") Integer unused) {
@@ -60,26 +68,30 @@ public final class OperationMap {
      * @param sequence
      *            the input sequence.
      * @param func
-     *            a function to apply to each item in the sequence. The function gets the index of the emitted item
+     *            a function to apply to each item in the sequence. The function gets the index of
+     *            the emitted item
      *            as additional parameter.
      * @param <T>
      *            the type of the input sequence.
      * @param <R>
      *            the type of the output sequence.
-     * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
+     * @return a sequence that is the result of applying the transformation function to each item in
+     *         the input sequence.
      */
-    public static <T, R> OnSubscribeFunc<R> mapWithIndex(final Observable<? extends T> sequence, final Func2<? super T, Integer, ? extends R> func) {
-        return new OnSubscribeFunc<R>() {
+    public static <T, R> OnGetSubscriptionFunc<R> mapWithIndex(final Observable<? extends T> sequence, final Func2<? super T, Integer, ? extends R> func) {
+        return new OnGetSubscriptionFunc<R>() {
             @Override
-            public Subscription onSubscribe(Observer<? super R> observer) {
-                return new MapObservable<T, R>(sequence, func).onSubscribe(observer);
+            public PartialSubscription<R> onGetSubscription() {
+                return new MapObservable<T, R>(sequence, func).onGetSubscription();
             }
         };
     }
 
     /**
-     * Accepts a sequence of observable sequences and a transformation function. Returns a flattened sequence that is the result of
-     * applying the transformation function to each item in the sequence of each observable sequence.
+     * Accepts a sequence of observable sequences and a transformation function. Returns a flattened
+     * sequence that is the result of
+     * applying the transformation function to each item in the sequence of each observable
+     * sequence.
      * <p>
      * The closure should return an Observable which will then be merged.
      * 
@@ -91,21 +103,23 @@ public final class OperationMap {
      *            the type of the input sequence.
      * @param <R>
      *            the type of the output sequence.
-     * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
+     * @return a sequence that is the result of applying the transformation function to each item in
+     *         the input sequence.
      */
     public static <T, R> OnSubscribeFunc<R> mapMany(Observable<? extends T> sequence, Func1<? super T, ? extends Observable<? extends R>> func) {
         return OperationMerge.merge(Observable.create(map(sequence, func)));
     }
 
     /**
-     * An observable sequence that is the result of applying a transformation to each item in an input sequence.
+     * An observable sequence that is the result of applying a transformation to each item in an
+     * input sequence.
      * 
      * @param <T>
      *            the type of the input sequence.
      * @param <R>
      *            the type of the output sequence.
      */
-    private static class MapObservable<T, R> implements OnSubscribeFunc<R> {
+    private static class MapObservable<T, R> implements OnGetSubscriptionFunc<R> {
         public MapObservable(Observable<? extends T> sequence, Func2<? super T, Integer, ? extends R> func) {
             this.sequence = sequence;
             this.func = func;
@@ -116,25 +130,38 @@ public final class OperationMap {
         private int index;
 
         @Override
-        public Subscription onSubscribe(final Observer<? super R> observer) {
-            final SafeObservableSubscription subscription = new SafeObservableSubscription();
-            return subscription.wrap(sequence.subscribe(new SafeObserver<T>(subscription, new Observer<T>() {
-                @Override
-                public void onNext(T value) {
-                    observer.onNext(func.call(value, index));
-                    index++;
-                }
+        public PartialSubscription<R> onGetSubscription() {
+            final AtomicReference<PartialSubscription<? extends T>> subscription = new AtomicReference<PartialSubscription<? extends T>>();
+            return PartialSubscription.create(new OnPartialSubscribeFunc<R>() {
 
                 @Override
-                public void onError(Throwable ex) {
-                    observer.onError(ex);
+                public void onSubscribe(final Observer<? super R> observer) {
+                    subscription.set(sequence.getSubscription());
+                    subscription.get().subscribe(new Observer<T>() {
+                        @Override
+                        public void onNext(T value) {
+                            observer.onNext(func.call(value, index));
+                            index++;
+                        }
+
+                        @Override
+                        public void onError(Throwable ex) {
+                            observer.onError(ex);
+                        }
+
+                        @Override
+                        public void onCompleted() {
+                            observer.onCompleted();
+                        }
+                    });
                 }
+            }, new OnPartialUnsubscribeFunc() {
 
                 @Override
-                public void onCompleted() {
-                    observer.onCompleted();
+                public void onUnsubscribe() {
+                    subscription.get().unsubscribe();
                 }
-            })));
+            });
         }
     }
 }

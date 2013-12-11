@@ -15,7 +15,13 @@
  */
 package rx.operators;
 
-import rx.Observable.OnSubscribeFunc;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import rx.Observable.OnGetSubscriptionFunc;
+import rx.Observable.OnPartialSubscribeFunc;
+import rx.Observable.OnPartialUnsubscribeFunc;
+import rx.Observable.PartialSubscription;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -30,24 +36,38 @@ import rx.subscriptions.Subscriptions;
  */
 public final class OperationToObservableIterable<T> {
 
-    public static <T> OnSubscribeFunc<T> toObservableIterable(Iterable<? extends T> list) {
+    public static <T> OnGetSubscriptionFunc<T> toObservableIterable(Iterable<? extends T> list) {
         return new ToObservableIterable<T>(list);
     }
 
-    private static class ToObservableIterable<T> implements OnSubscribeFunc<T> {
+    private static class ToObservableIterable<T> implements OnGetSubscriptionFunc<T> {
         public ToObservableIterable(Iterable<? extends T> list) {
             this.iterable = list;
         }
 
         public Iterable<? extends T> iterable;
 
-        public Subscription onSubscribe(Observer<? super T> observer) {
-            for (T item : iterable) {
-                observer.onNext(item);
-            }
-            observer.onCompleted();
-
-            return Subscriptions.empty();
+        @Override
+        public PartialSubscription<T> onGetSubscription() {
+            final AtomicReference<PartialSubscription<T>> subscription = new AtomicReference<PartialSubscription<T>>();
+            
+            subscription.set(PartialSubscription.create(new OnPartialSubscribeFunc<T>() {
+                @Override
+                public void onSubscribe(Observer<? super T> observer) {
+                    for (T item : iterable) {
+                        if (!subscription.get().isUnsubscribed())
+                            observer.onNext(item);
+                    }
+                    if (!subscription.get().isUnsubscribed())
+                        observer.onCompleted();
+                }
+            }, new OnPartialUnsubscribeFunc() {
+                @Override
+                public void onUnsubscribe() {
+                }
+            }));
+            
+            return subscription.get();
         }
     }
 }

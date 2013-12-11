@@ -16,8 +16,8 @@
 package rx.operators;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Scheduler;
+import rx.Observable.OnGetSubscriptionFunc;
 import rx.util.Timestamped;
 import rx.util.functions.Func1;
 
@@ -37,7 +37,7 @@ public final class OperationTimestamp {
      *            the type of the input sequence.
      * @return a sequence of timestamped values created by adding timestamps to each item in the input sequence.
      */
-    public static <T> OnSubscribeFunc<Timestamped<T>> timestamp(Observable<? extends T> sequence) {
+    public static <T> OnGetSubscriptionFunc<Timestamped<T>> timestamp(Observable<? extends T> sequence) {
         return OperationMap.map(sequence, new Func1<T, Timestamped<T>>() {
             @Override
             public Timestamped<T> call(T value) {
@@ -48,7 +48,7 @@ public final class OperationTimestamp {
     /**
      * Timestamp the source elements based on the timing provided by the scheduler.
      */
-    public static <T> OnSubscribeFunc<Timestamped<T>> timestamp(Observable<? extends T> source, final Scheduler scheduler) {
+    public static <T> OnGetSubscriptionFunc<Timestamped<T>> timestamp(Observable<? extends T> source, final Scheduler scheduler) {
         return OperationMap.map(source, new Func1<T, Timestamped<T>>() {
             @Override
             public Timestamped<T> call(T value) {

@@ -53,5 +53,5 @@ public interface Observer<T> {
      * 
      * @param args
      */
-    public void onNext(T args);
+    public void onNext(T data);
 }

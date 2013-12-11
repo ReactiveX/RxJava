@@ -15,13 +15,16 @@
  */
 package rx.operators;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.Observable.OnGetSubscriptionFunc;
+import rx.Observable.OnPartialSubscribeFunc;
+import rx.Observable.OnPartialUnsubscribeFunc;
+import rx.Observable.PartialSubscription;
 import rx.Observer;
-import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 
 /**
  * Returns an Observable that emits the first <code>num</code> items emitted by the source
@@ -29,10 +32,10 @@ import rx.subscriptions.Subscriptions;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/take.png">
  * <p>
- * You can choose to pay attention only to the first <code>num</code> items emitted by an
- * Observable by using the take operation. This operation returns an Observable that will invoke a
- * subscribing Observer's <code>onNext</code> function a maximum of <code>num</code> times before
- * invoking <code>onCompleted</code>.
+ * You can choose to pay attention only to the first <code>num</code> items emitted by an Observable
+ * by using the take operation. This operation returns an Observable that will invoke a subscribing
+ * Observer's <code>onNext</code> function a maximum of <code>num</code> times before invoking
+ * <code>onCompleted</code>.
  */
 public final class OperationTake {
 
@@ -41,18 +44,13 @@ public final class OperationTake {
      * 
      * @param items
      * @param num
-     * @return the specified number of contiguous values from the start of the given observable sequence
+     * @return the specified number of contiguous values from the start of the given observable
+     *         sequence
      */
-    public static <T> OnSubscribeFunc<T> take(final Observable<? extends T> items, final int num) {
-        // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new OnSubscribeFunc<T>() {
-
-            @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                return new Take<T>(items, num).onSubscribe(observer);
-            }
-
-        };
+    public static <T> OnGetSubscriptionFunc<T> take(final Observable<? extends T> items, final int num) {
+        // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we
+        // will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
+        return new Take<T>(items, num);
     }
 
     /**
@@ -66,10 +64,10 @@ public final class OperationTake {
      * 
      * @param <T>
      */
-    private static class Take<T> implements OnSubscribeFunc<T> {
+    private static class Take<T> implements OnGetSubscriptionFunc<T> {
         private final Observable<? extends T> items;
         private final int num;
-        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
+        private final AtomicReference<PartialSubscription<? extends T>> subscription = new AtomicReference<Observable.PartialSubscription<? extends T>>();
 
         private Take(Observable<? extends T> items, int num) {
             this.items = items;
@@ -77,30 +75,26 @@ public final class OperationTake {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
-            if (num < 1) {
-                items.subscribe(new Observer<T>()
-                {
-                    @Override
-                    public void onCompleted()
-                    {
+        public PartialSubscription<T> onGetSubscription() {
+            return PartialSubscription.create(new OnPartialSubscribeFunc<T>() {
+                @Override
+                public void onSubscribe(Observer<? super T> observer) {
+                    PartialSubscription<? extends T> partialSubscription = items.getSubscription();
+                    subscription.set(partialSubscription);
+                    if (num < 1) {
+                        // signal that we don't really want any values by unsubscribing before we've
+                        // even subscribed.
+                        subscription.get().unsubscribe();
                     }
 
-                    @Override
-                    public void onError(Throwable e)
-                    {
-                    }
-
-                    @Override
-                    public void onNext(T args)
-                    {
-                    }
-                }).unsubscribe();
-                observer.onCompleted();
-                return Subscriptions.empty();
-            }
-
-            return subscription.wrap(items.subscribe(new ItemObserver(observer)));
+                    partialSubscription.subscribe(new ItemObserver(observer));
+                }
+            }, new OnPartialUnsubscribeFunc() {
+                @Override
+                public void onUnsubscribe() {
+                    subscription.get().unsubscribe();
+                }
+            });
         }
 
         private class ItemObserver implements Observer<T> {
@@ -145,7 +139,7 @@ public final class OperationTake {
                     } catch (Throwable ex) {
                         hasEmitedError = true;
                         observer.onError(ex);
-                        subscription.unsubscribe();
+                        subscription.get().unsubscribe();
                         return;
                     }
                     if (count == num) {
@@ -153,12 +147,12 @@ public final class OperationTake {
                     }
                 }
                 if (count >= num) {
-                    // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
-                    subscription.unsubscribe();
+                    // OLD: this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
+                    // NEW: with the two phase getSubscription and subscribe event synchronous observables can be interrupted.
+                    subscription.get().unsubscribe();
                 }
             }
 
         }
-
     }
 }

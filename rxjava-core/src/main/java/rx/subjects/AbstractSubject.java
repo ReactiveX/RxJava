@@ -24,70 +24,62 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import rx.Notification;
 import rx.Observer;
-import rx.Subscription;
-import rx.operators.SafeObservableSubscription;
-import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action2;
 
 public abstract class AbstractSubject<T> extends Subject<T, T> {
 
-    protected AbstractSubject(rx.Observable.OnSubscribeFunc<T> onSubscribe) {
-        super(onSubscribe);
+    protected AbstractSubject(OnGetSubscriptionFunc<T> onGetSubscription) {
+        super(onGetSubscription);
     }
 
     protected static class SubjectState<T> {
-        protected final ConcurrentHashMap<Subscription, Observer<? super T>> observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
+        protected final ConcurrentHashMap<Object, Observer<? super T>> observers = new ConcurrentHashMap<Object, Observer<? super T>>();
         protected final AtomicReference<Notification<T>> currentValue = new AtomicReference<Notification<T>>();
         protected final AtomicBoolean completed = new AtomicBoolean();
         protected final ReentrantLock SUBSCRIPTION_LOCK = new ReentrantLock();
     }
 
-    protected static <T> OnSubscribeFunc<T> getOnSubscribeFunc(final SubjectState<T> state, final Action2<SubjectState<T>, Observer<? super T>> onEach) {
-        return new OnSubscribeFunc<T>() {
+    protected static <T> OnGetSubscriptionFunc<T> getOnGetSubscriptionFunc(final SubjectState<T> state, final Action2<SubjectState<T>, Observer<? super T>> onEach) {
+        return new OnGetSubscriptionFunc<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                /*
-                 * Subscription needs to be synchronized with terminal states to ensure
-                 * race conditions are handled. When subscribing we must make sure
-                 * onComplete/onError is correctly emitted to all observers, even if it
-                 * comes in while the onComplete/onError is being propagated.
-                 */
-                state.SUBSCRIPTION_LOCK.lock();
-                try {
-                    if (state.completed.get()) {
-                        emitNotification(state.currentValue.get(), observer);
-                        if (onEach != null) {
-                            onEach.call(state, observer);
-                        }
-                        return Subscriptions.empty();
-                    } else {
-                        // the subject is not completed so we subscribe
-                        final SafeObservableSubscription subscription = new SafeObservableSubscription();
+            public PartialSubscription<T> onGetSubscription() {
+                final Object marker = new Object();
+                return PartialSubscription.create(new OnPartialSubscribeFunc<T>() {
+                    @Override
+                    public void onSubscribe(Observer<? super T> observer) {
+                        /*
+                         * Subscription needs to be synchronized with terminal states to ensure
+                         * race conditions are handled. When subscribing we must make sure
+                         * onComplete/onError is correctly emitted to all observers, even if it
+                         * comes in while the onComplete/onError is being propagated.
+                         */
+                        state.SUBSCRIPTION_LOCK.lock();
+                        try {
+                            if (state.completed.get()) {
+                                emitNotification(state.currentValue.get(), observer);
+                                if (onEach != null) {
+                                    onEach.call(state, observer);
+                                }
+                            } else {
+                                // on subscribe add it to the map of outbound observers to notify
+                                state.observers.put(marker, observer);
 
-                        subscription.wrap(new Subscription() {
-                            @Override
-                            public void unsubscribe() {
-                                // on unsubscribe remove it from the map of outbound observers to notify
-                                state.observers.remove(subscription);
+                                // invoke onSubscribe logic
+                                if (onEach != null) {
+                                    onEach.call(state, observer);
+                                }
                             }
-                        });
-
-                        // on subscribe add it to the map of outbound observers to notify
-                        state.observers.put(subscription, observer);
-
-                        // invoke onSubscribe logic
-                        if (onEach != null) {
-                            onEach.call(state, observer);
+                        } finally {
+                            state.SUBSCRIPTION_LOCK.unlock();
                         }
-
-                        return subscription;
                     }
-                } finally {
-                    state.SUBSCRIPTION_LOCK.unlock();
-                }
-
+                }, new OnPartialUnsubscribeFunc() {
+                    @Override
+                    public void onUnsubscribe() {
+                        state.observers.remove(marker);
+                    }
+                });
             }
-
         };
     }
 
@@ -110,7 +102,7 @@ public abstract class AbstractSubject<T> extends Subject<T, T> {
      * @param state
      */
     protected static <T> void emitNotification(final SubjectState<T> state, final Action2<SubjectState<T>, Observer<? super T>> onEach) {
-        for (Subscription s : snapshotOfObservers(state)) {
+        for (Object s : snapshotOfObservers(state)) {
             Observer<? super T> o = state.observers.get(s);
             // emit notifications to this observer
             emitNotification(state.currentValue.get(), o);
@@ -133,7 +125,7 @@ public abstract class AbstractSubject<T> extends Subject<T, T> {
         state.SUBSCRIPTION_LOCK.lock();
         try {
             if (state.completed.compareAndSet(false, true)) {
-                for (Subscription s : snapshotOfObservers(state)) {
+                for (Object s : snapshotOfObservers(state)) {
                     Observer<? super T> o = state.observers.get(s);
                     // emit notifications to this observer
                     emitNotification(state.currentValue.get(), o);
@@ -161,7 +153,7 @@ public abstract class AbstractSubject<T> extends Subject<T, T> {
      * 
      * @return List<Observer<T>>
      */
-    private static <T> Collection<Subscription> snapshotOfObservers(final SubjectState<T> state) {
-        return new ArrayList<Subscription>(state.observers.keySet());
+    private static <T> Collection<Object> snapshotOfObservers(final SubjectState<T> state) {
+        return new ArrayList<Object>(state.observers.keySet());
     }
 }
