@@ -6272,43 +6272,6 @@ public class Observable<T> {
     }
 
     /**
-     * Invokes the action asynchronously, surfacing the result through an observable sequence.
-     * <p>
-     * Note: The action is called immediately, not during the subscription of the resulting
-     * sequence. Multiple subscriptions to the resulting sequence can observe the
-     * action's outcome.
-     * 
-     * @param action
-     *            Action to run asynchronously.
-     * @return An observable sequence exposing a null value upon completion of the action,
-     *            or an exception.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229265(v=vs.103).aspx">MSDN: Observable.Start</a>
-     */
-    public static Observable<Void> start(Action0 action) {
-        return Async.toAsync(action).call();
-    }
-
-    /**
-     * Invokes the action asynchronously on the specified scheduler, surfacing the
-     * result through an observable sequence.
-     * <p>
-     * Note: The action is called immediately, not during the subscription of the resulting
-     * sequence. Multiple subscriptions to the resulting sequence can observe the
-     * action's outcome.
-     * 
-     * @param action
-     *            Action to run asynchronously.
-     * @param scheduler
-     *            Scheduler to run the function on.
-     * @return An observable sequence exposing a null value upon completion of the action,
-     *            or an exception.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211971(v=vs.103).aspx">MSDN: Observable.Start</a>
-     */
-    public static Observable<Void> start(Action0 action, Scheduler scheduler) {
-        return Async.toAsync(action, scheduler).call();
-    }
-
-    /**
      * Invokes the specified function asynchronously, surfacing the result through an observable sequence.
      * <p>
      * Note: The function is called immediately, not during the subscription of the resulting
