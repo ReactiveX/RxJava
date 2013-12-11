@@ -269,4 +269,35 @@ public class ReplaySubjectTest {
                 }
                 );
     }
+    @Test
+    public void testFirstErrorOnly() {
+        ReplaySubject<Integer> subject = ReplaySubject.create();
+        Observer<Object> observer = mock(Observer.class);
+        
+        subject.subscribe(observer);
+        
+        RuntimeException ex = new RuntimeException("Forced failure");
+        
+        subject.onNext(0);
+        subject.onError(ex);
+
+        verify(observer, times(1)).onNext(0);
+        verify(observer, times(1)).onError(ex);
+        verify(observer, never()).onCompleted();
+        
+        RuntimeException ex2 = new RuntimeException("Forced failure 2");
+        
+        subject.onNext(1);
+        subject.onError(ex2);
+
+        Observer<Object> observer2 = mock(Observer.class);
+        
+        subject.subscribe(observer2);
+        verify(observer2, times(1)).onNext(0);
+        verify(observer2, times(1)).onError(ex);
+
+        verify(observer2, never()).onNext(1);
+        verify(observer2, never()).onError(ex2);
+        verify(observer2, never()).onCompleted();
+    }
 }

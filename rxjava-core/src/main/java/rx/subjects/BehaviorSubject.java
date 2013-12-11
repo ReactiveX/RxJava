@@ -15,9 +15,10 @@
  */
 package rx.subjects;
 
-import rx.Notification;
 import rx.Observer;
-import rx.util.functions.Action2;
+import rx.Subscription;
+import rx.subjects.AbstractSubject.DefaultState;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Subject that publishes the most recent and all subsequent events to each subscribed {@link Observer}.
@@ -47,8 +48,11 @@ import rx.util.functions.Action2;
  * 
  * @param <T>
  */
-public class BehaviorSubject<T> extends AbstractSubject<T> {
-
+public class BehaviorSubject<T> extends Subject<T, T> {
+    /** The inner state. */
+    protected static final class State<T> extends DefaultState<T> {
+        protected T value;
+    }    
     /**
      * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each {@link Observer} that subscribes to it.
      * 
@@ -69,54 +73,69 @@ public class BehaviorSubject<T> extends AbstractSubject<T> {
      * @return the constructed {@link BehaviorSubject}.
      */
     public static <T> BehaviorSubject<T> create(T defaultValue) {
-        final SubjectState<T> state = new SubjectState<T>();
-        // set a default value so subscriptions will immediately receive this until a new notification is received
-        state.currentValue.set(new Notification<T>(defaultValue));
-        OnSubscribeFunc<T> onSubscribe = getOnSubscribeFunc(state, new Action2<SubjectState<T>, Observer<? super T>>() {
-
-            @Override
-            public void call(SubjectState<T> state, Observer<? super T> o) {
-                /**
-                 * When we subscribe we always emit the latest value to the observer, including
-                 * terminal states which are recorded as the last value.
-                 */
-                emitNotification(state.currentValue.get(), o);
-            }
-        });
-        return new BehaviorSubject<T>(onSubscribe, state);
+        final State<T> state = new State<T>();
+        state.value = defaultValue;
+        return new BehaviorSubject<T>(new BehaviorSubjectSubscribeFunc<T>(state), state);
     }
 
-    private final SubjectState<T> state;
+    private final State<T> state;
 
-    protected BehaviorSubject(OnSubscribeFunc<T> onSubscribe, SubjectState<T> state) {
+    protected BehaviorSubject(OnSubscribeFunc<T> onSubscribe, State<T> state) {
         super(onSubscribe);
         this.state = state;
     }
 
     @Override
     public void onCompleted() {
-        /**
-         * Mark this subject as completed and emit latest value + 'onCompleted' to all Observers
-         */
-        state.currentValue.set(new Notification<T>());
-        emitNotificationAndTerminate(state, null);
+        state.defaultOnCompleted();
     }
 
     @Override
     public void onError(Throwable e) {
-        /**
-         * Mark this subject as completed with an error as the last value and emit 'onError' to all Observers
-         */
-        state.currentValue.set(new Notification<T>(e));
-        emitNotificationAndTerminate(state, null);
+        state.defaultOnError(e);
     }
 
     @Override
     public void onNext(T v) {
-        /**
-         * Store the latest value and send it to all observers;
-         */
-        state.currentValue.set(new Notification<T>(v));
-        emitNotification(state, null);
+        state.lock();
+        try {
+            if (state.done) {
+                return;
+            }
+            state.value = v;
+            state.defaultDispatch(v);
+        } finally {
+            state.unlock();
+        }
+    }
+    /** The subscription function. */
+    protected static final class BehaviorSubjectSubscribeFunc<T> implements OnSubscribeFunc<T> {
+        protected final State<T> state;
+        protected BehaviorSubjectSubscribeFunc(State<T> state) {
+            this.state = state;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super T> t1) {
+            Throwable error;
+            T value;
+            state.lock();
+            try {
+                value = state.value;
+                if (!state.done) {
+                    t1.onNext(value);
+                    return state.addObserver(t1);
+                }
+                error = state.error;
+            } finally {
+                state.unlock();
+            }
+            if (error != null) {
+                t1.onError(error);
+            } else {
+                t1.onCompleted();
+            }
+            return Subscriptions.empty();
+        }
     }
 }

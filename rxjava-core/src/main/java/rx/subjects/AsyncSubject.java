@@ -15,9 +15,11 @@
  */
 package rx.subjects;
 
-import rx.Notification;
+import rx.Observable;
 import rx.Observer;
-import rx.util.functions.Action2;
+import rx.Subscription;
+import rx.subjects.AbstractSubject.DefaultState;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Subject that publishes only the last event to each {@link Observer} that has subscribed when the
@@ -48,68 +50,109 @@ import rx.util.functions.Action2;
  * 
  * @param <T>
  */
-public class AsyncSubject<T> extends AbstractSubject<T> {
-
+public class AsyncSubject<T> extends Subject<T, T> {
+    /** The inner state. */
+    protected static final class State<T> extends DefaultState<T> {
+        protected boolean hasValue;
+        protected T value;
+    }
     /**
      * Create a new AsyncSubject
      * 
      * @return a new AsyncSubject
      */
     public static <T> AsyncSubject<T> create() {
-        final SubjectState<T> state = new SubjectState<T>();
-        OnSubscribeFunc<T> onSubscribe = getOnSubscribeFunc(state, new Action2<SubjectState<T>, Observer<? super T>>() {
-
-            @Override
-            public void call(SubjectState<T> state, Observer<? super T> o) {
-                // we want the last value + completed so add this extra logic 
-                // to send onCompleted if the last value is an onNext
-                if (state.completed.get()) {
-                    Notification<T> value = state.currentValue.get();
-                    if (value != null && value.isOnNext()) {
-                        o.onCompleted();
-                    }
-                }
-            }
-        });
-        return new AsyncSubject<T>(onSubscribe, state);
+        State<T> state = new State<T>();
+        return new AsyncSubject<T>(new AsyncSubjectSubscribeFunc<T>(state), state);
     }
-
-    private final SubjectState<T> state;
-
-    protected AsyncSubject(OnSubscribeFunc<T> onSubscribe, SubjectState<T> state) {
-        super(onSubscribe);
+    /** The state. */
+    protected final State<T> state;
+    
+    protected AsyncSubject(Observable.OnSubscribeFunc<T> osf, State<T> state) {
+        super(osf);
         this.state = state;
     }
 
     @Override
-    public void onCompleted() {
-        /**
-         * Mark this subject as completed and emit latest value + 'onCompleted' to all Observers
-         */
-        emitNotificationAndTerminate(state, new Action2<SubjectState<T>, Observer<? super T>>() {
-
-            @Override
-            public void call(SubjectState<T> state, Observer<? super T> o) {
-                o.onCompleted();
+    public void onNext(T args) {
+        state.lock();
+        try {
+            if (state.done) {
+                return;
             }
-        });
+            state.hasValue = true;
+            state.value = args;
+        } finally {
+            state.unlock();
+        }
     }
 
     @Override
     public void onError(Throwable e) {
-        /**
-         * Mark this subject as completed with an error as the last value and emit 'onError' to all Observers
-         */
-        state.currentValue.set(new Notification<T>(e));
-        emitNotificationAndTerminate(state, null);
+        state.lock();
+        try {
+            if (state.done) {
+                return;
+            }
+            state.value = null;
+            state.hasValue = false;
+            
+            state.defaultDispatchError(e);
+        } finally {
+            state.unlock();
+        }
     }
-
+    
     @Override
-    public void onNext(T v) {
-        /**
-         * Store the latest value but do not send it. It only gets sent when 'onCompleted' occurs.
-         */
-        state.currentValue.set(new Notification<T>(v));
+    public void onCompleted() {
+        state.lock();
+        try {
+            if (state.done) {
+                return;
+            }
+            state.done = true;
+            for (Observer<? super T> o : state.removeAll()) {
+                if (state.hasValue) {
+                    o.onNext(state.value);
+                }
+                o.onCompleted();
+            }
+        } finally {
+            state.unlock();
+        }
     }
+    /** The subscription function. */
+    protected static final class AsyncSubjectSubscribeFunc<T> implements OnSubscribeFunc<T> {
+        protected final State<T> state;
+        protected AsyncSubjectSubscribeFunc(State<T> state) {
+            this.state = state;
+        }
 
+        @Override
+        public Subscription onSubscribe(Observer<? super T> t1) {
+            Throwable error;
+            boolean hasValue;
+            T value;
+            state.lock();
+            try {
+                if (!state.done) {
+                    return state.addObserver(t1);
+                }
+                error = state.error;
+                hasValue = state.hasValue;
+                value = state.value;
+            } finally {
+                state.unlock();
+            }
+            if (error != null) {
+                t1.onError(error);
+            } else {
+                if (hasValue) {
+                    t1.onNext(value);
+                }
+                t1.onCompleted();
+            }
+            return Subscriptions.empty();
+        }
+    }
 }

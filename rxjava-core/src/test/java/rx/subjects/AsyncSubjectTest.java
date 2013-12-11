@@ -16,7 +16,6 @@
 package rx.subjects;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
@@ -300,5 +299,31 @@ public class AsyncSubjectTest {
             }
         }
     }
+    @Test
+    public void testFirstErrorOnly() {
+        AsyncSubject<Object> subject = AsyncSubject.create();
+        Observer<Object> observer = mock(Observer.class);
+        
+        subject.subscribe(observer);
+        
+        RuntimeException ex = new RuntimeException("Forced failure");
+        
+        subject.onError(ex);
 
+        verify(observer, times(1)).onError(ex);
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onNext(any());
+        
+        RuntimeException ex2 = new RuntimeException("Forced failure 2");
+        
+        subject.onError(ex2);
+
+        Observer<Object> observer2 = mock(Observer.class);
+        
+        subject.subscribe(observer2);
+        verify(observer2, times(1)).onError(ex);
+        verify(observer2, never()).onError(ex2);
+        verify(observer2, never()).onCompleted();
+        verify(observer2, never()).onNext(any());
+    }
 }
