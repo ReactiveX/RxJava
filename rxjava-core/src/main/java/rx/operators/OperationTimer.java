@@ -1,74 +1,86 @@
-/**
- * Copyright 2013 Netflix, Inc.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ /**
+  * Copyright 2013 Netflix, Inc.
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at
+  *
+  * http://www.apache.org/licenses/LICENSE-2.0
+  *
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
 package rx.operators;
 
 import java.util.concurrent.TimeUnit;
-
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 
+/**
+ * Operation Timer with several overloads.
+ *
+ * @see <a href='http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.timer.aspx'>MSDN Observable.Timer</a>
+ */
 public final class OperationTimer {
-
-	public static OnSubscribeFunc<Void> timer(long interval, TimeUnit unit) {
-        return timer(interval, unit, Schedulers.threadPoolForComputation());
+    private OperationTimer() { throw new IllegalStateException("No instances!"); }
+    
+    /**
+     * Emit a single 0L after the specified time elapses.
+     */
+    public static class TimerOnce implements OnSubscribeFunc<Long> {
+        private final Scheduler scheduler;
+        private final long dueTime;
+        private final TimeUnit dueUnit;
+        public TimerOnce(long dueTime, TimeUnit unit, Scheduler scheduler) {
+            this.scheduler = scheduler;
+            this.dueTime = dueTime;
+            this.dueUnit = unit;
+        }
+        
+        @Override
+        public Subscription onSubscribe(final Observer<? super Long> t1) {
+            return scheduler.schedule(new Action0() {
+                @Override
+                public void call() {
+                    t1.onNext(0L);
+                    t1.onCompleted();
+                }
+                
+            }, dueTime, dueUnit);
+        }
     }
-
-    public static OnSubscribeFunc<Void> timer(final long delay, final TimeUnit unit, final Scheduler scheduler) {
-        return new OnSubscribeFunc<Void>() {
-            @Override
-            public Subscription onSubscribe(Observer<? super Void> observer) {
-                return new Timer(delay, unit, scheduler, observer).start();
-            }
-        };
-    }
-	
-	private static class Timer {
+    /**
+     * Emit 0L after the initial period and ever increasing number after each period.
+     */
+    public static class TimerPeriodically implements OnSubscribeFunc<Long> {
+        private final Scheduler scheduler;
+        private final long initialDelay;
         private final long period;
         private final TimeUnit unit;
-        private final Scheduler scheduler;
-        private final Observer<? super Void> observer;
-        
-        private Timer(long period, TimeUnit unit, Scheduler scheduler, Observer<? super Void> observer) {
+        public TimerPeriodically(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
+            this.scheduler = scheduler;
+            this.initialDelay = initialDelay;
             this.period = period;
             this.unit = unit;
-            this.scheduler = scheduler;
-            this.observer = observer;
         }
-
-        public Subscription start() {
-            final Subscription s = scheduler.schedule(new Action0() {
+        
+        @Override
+        public Subscription onSubscribe(final Observer<? super Long> t1) {
+            return scheduler.schedulePeriodically(new Action0() {
+                long count;
                 @Override
                 public void call() {
-                    observer.onNext(null);
-                    observer.onCompleted();
+                    t1.onNext(count++);
                 }
-            }, period, unit);
-
-            return Subscriptions.create(new Action0() {
-                @Override
-                public void call() {
-                    s.unsubscribe();
-                }
-            });
+            },
+            initialDelay, period, unit
+            );
         }
     }
-
 }

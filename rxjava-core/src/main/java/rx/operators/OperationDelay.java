@@ -28,8 +28,9 @@ public final class OperationDelay {
         // observable.map(x => Observable.timer(t).map(_ => x).startItAlreadyNow()).concat()
         Observable<Observable<T>> seqs = observable.map(new Func1<T, Observable<T>>() {
             public Observable<T> call(final T x) {
-                ConnectableObservable<T> co = Observable.timer(delay, unit, scheduler).map(new Func1<Void, T>() {
-                    public T call(Void ignored) {
+                ConnectableObservable<T> co = Observable.timer(delay, unit, scheduler).map(new Func1<Long, T>() {
+                    @Override
+                    public T call(Long ignored) {
                         return x;
                     }
                 }).replay();
