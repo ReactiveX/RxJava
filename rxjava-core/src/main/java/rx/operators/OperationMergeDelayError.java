@@ -24,6 +24,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
 import rx.util.CompositeException;
 
 /**
@@ -151,13 +152,26 @@ public final class OperationMergeDelayError {
         }
 
         public Subscription onSubscribe(Observer<? super T> actualObserver) {
+            CompositeSubscription completeSubscription = new CompositeSubscription();
+
+            /**
+             * We must synchronize a merge because we subscribe to multiple sequences in parallel that will each be emitting.
+             * <p>
+             * The calls from each sequence must be serialized.
+             * <p>
+             * Bug report: https://github.com/Netflix/RxJava/issues/614
+             */
+            SafeObservableSubscription subscription = new SafeObservableSubscription(ourSubscription);
+            completeSubscription.add(subscription);
+            SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(actualObserver, subscription);
+
             /**
              * Subscribe to the parent Observable to get to the children Observables
              */
-            sequences.subscribe(new ParentObserver(actualObserver));
+            completeSubscription.add(sequences.subscribe(new ParentObserver(actualObserver)));
 
             /* return our subscription to allow unsubscribing */
-            return ourSubscription;
+            return completeSubscription;
         }
 
         /**
