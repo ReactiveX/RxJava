@@ -4279,6 +4279,19 @@ public class Observable<T> {
     }
 
     /**
+     * Returns a {@link ConnectableObservable} that shares a single subscription
+     * to the underlying Observable that will replay all of its items and
+     * notifications to any future {@link Observer} on the given scheduler
+     *
+     * @param scheduler
+     * @return 
+     * 
+     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211699.aspx'>MSDN: Observable.Replay</a>
+     */
+    public ConnectableObservable<T> replay(Scheduler scheduler) {
+        return OperationMulticast.multicast(this, ReplaySubject.<T> create());
+    }
+    /**
      * Retry subscription to the source Observable when it calls
      * <code>onError</code> up to a certain number of retries.
      * <p>
