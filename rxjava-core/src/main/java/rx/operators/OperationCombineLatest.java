@@ -182,37 +182,48 @@ public class OperationCombineLatest {
                 this.lock = new ReentrantLock();
             }
             public void next(int index, T value) {
+                Throwable err = null;
                 lock.lock();
                 try {
-                    values[index] = value;
-                    if (!hasValue.get(index)) {
-                        hasValue.set(index);
-                        hasCount++;
-                    }
-                    if (hasCount == values.length) {
-                        // clone: defensive copy due to varargs
-                        try {
-                            observer.onNext(combiner.call(values.clone()));
-                        } catch (Throwable t) {
-                            terminate();
-                            observer.onError(t);
-                            cancel.unsubscribe();
+                    if (!isTerminated()) {
+                        values[index] = value;
+                        if (!hasValue.get(index)) {
+                            hasValue.set(index);
+                            hasCount++;
+                        }
+                        if (hasCount == values.length) {
+                            // clone: defensive copy due to varargs
+                            try {
+                                observer.onNext(combiner.call(values.clone()));
+                            } catch (Throwable t) {
+                                terminate();
+                                err = t;
+                            }
                         }
                     }
                 } finally {
                     lock.unlock();
                 }
+                if (err != null) {
+                    // no need to lock here
+                    observer.onError(err);
+                    cancel.unsubscribe();
+                }
             }
             public void error(int index, Throwable e) {
+                boolean unsub = false;
                 lock.lock();
                 try {
                     if (!isTerminated()) {
                         terminate();
-                        observer.onError(e);
-                        cancel.unsubscribe();
+                        unsub = true;
                     }
                 } finally {
                     lock.unlock();
+                }
+                if (unsub) {
+                    observer.onError(e);
+                    cancel.unsubscribe();
                 }
             }
             boolean isTerminated() {
@@ -223,6 +234,7 @@ public class OperationCombineLatest {
                 Arrays.fill(values, null);
             }
             public void completed(int index) {
+                boolean unsub = false;
                 lock.lock();
                 try {
                     if (!completed.get(index)) {
@@ -232,13 +244,16 @@ public class OperationCombineLatest {
                     if ((!hasValue.get(index) || completedCount == values.length)
                             && !isTerminated()) {
                         terminate();
-                        observer.onCompleted();
-                        cancel.unsubscribe();
+                        unsub = true;
                     }
                 } finally {
                     lock.unlock();
                 }
-                
+                if (unsub) {
+                    // no need to hold a lock at this point
+                    observer.onCompleted();
+                    cancel.unsubscribe();
+                }
             }
         }
         /**
