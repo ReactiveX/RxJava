@@ -23,10 +23,10 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.MalformedInputException;
 
 import org.junit.Test;
+import static org.mockito.Mockito.*;
 
 import rx.Observable;
-import rx.observables.BlockingObservable;
-import rx.observables.StringObservable;
+import rx.Observer;
 import rx.util.AssertObservable;
 
 public class StringObservableTest {
@@ -126,5 +126,90 @@ public class StringObservableTest {
         Observable<String> act = StringObservable.split(src, regex);
         Observable<String> exp = Observable.from(parts);
         AssertObservable.assertObservableEqualsBlocking("when input is "+message+" and limit = "+ limit, exp, act);
+    }
+    
+    @Test
+    public void testJoinMixed() {
+        Observable<Object> source = Observable.<Object>from("a", 1, "c");
+        
+        Observable<String> result = StringObservable.join(source, ", ");
+        
+        Observer<Object> observer = mock(Observer.class);
+        
+        result.subscribe(observer);
+        
+        verify(observer, times(1)).onNext("a, 1, c");
+        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void testJoinWithEmptyString() {
+        Observable<String> source = Observable.from("", "b", "c");
+        
+        Observable<String> result = StringObservable.join(source, ", ");
+        
+        Observer<Object> observer = mock(Observer.class);
+        
+        result.subscribe(observer);
+        
+        verify(observer, times(1)).onNext(", b, c");
+        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void testJoinWithNull() {
+        Observable<String> source = Observable.from("a", null, "c");
+        
+        Observable<String> result = StringObservable.join(source, ", ");
+        
+        Observer<Object> observer = mock(Observer.class);
+        
+        result.subscribe(observer);
+        
+        verify(observer, times(1)).onNext("a, null, c");
+        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void testJoinSingle() {
+        Observable<String> source = Observable.from("a");
+        
+        Observable<String> result = StringObservable.join(source, ", ");
+        
+        Observer<Object> observer = mock(Observer.class);
+        
+        result.subscribe(observer);
+        
+        verify(observer, times(1)).onNext("a");
+        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void testJoinEmpty() {
+        Observable<String> source = Observable.empty();
+        
+        Observable<String> result = StringObservable.join(source, ", ");
+        
+        Observer<Object> observer = mock(Observer.class);
+        
+        result.subscribe(observer);
+        
+        verify(observer, times(1)).onNext("");
+        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void testJoinThrows() {
+        Observable<String> source = Observable.concat(Observable.just("a"), Observable.<String>error(new RuntimeException("Forced failure")));
+        
+        Observable<String> result = StringObservable.join(source, ", ");
+        
+        Observer<Object> observer = mock(Observer.class);
+        
+        result.subscribe(observer);
+        
+        verify(observer, never()).onNext("a");
+        verify(observer, never()).onCompleted();
+        verify(observer, times(1)).onError(any(Throwable.class));
     }
 }

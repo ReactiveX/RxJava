@@ -197,6 +197,7 @@ public class StringObservable {
      */
     public static Observable<String> stringConcat(Observable<String> src) {
         return src.aggregate(new Func2<String, String, String>() {
+            @Override
             public String call(String a, String b) {
                 return a + b;
             }
@@ -262,6 +263,60 @@ public class StringObservable {
                                 observer.onNext("");
                             observer.onNext(part);
                         }
+                    }
+                });
+            }
+        });
+    }
+    /**
+     * Concatenates the sequence of values by adding a separator
+     * between them and emitting the result once the source completes.
+     * <p>
+     * The conversion from the value type to String is performed via
+     * {@link java.lang.String#valueOf(java.lang.Object)} calls.
+     * <p>
+     * For example:
+     * <pre>
+     * Observable&lt;Object> source = Observable.from("a", 1, "c");
+     * Observable&lt;String> result = join(source, ", ");
+     * </pre>
+     * 
+     * will yield a single element equal to "a, 1, c".
+     * 
+     * @param source the source sequence of CharSequence values
+     * @param separator the separator to a
+     * @return an Observable which emits a single String value having the concatenated
+     *         values of the source observable with the separator between elements
+     */
+    public static <T> Observable<String> join(final Observable<T> source, final CharSequence separator) {
+        return Observable.create(new OnSubscribeFunc<String>() {
+
+            @Override
+            public Subscription onSubscribe(final Observer<? super String> t1) {
+                return source.subscribe(new Observer<T>() {
+                    boolean mayAddSeparator;
+                    StringBuilder b = new StringBuilder();
+                    @Override
+                    public void onNext(T args) {
+                        if (mayAddSeparator) {
+                            b.append(separator);
+                        }
+                        mayAddSeparator = true;
+                        b.append(String.valueOf(args));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        b = null;
+                        t1.onError(e);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        String str = b.toString();
+                        b = null;
+                        t1.onNext(str);
+                        t1.onCompleted();
                     }
                 });
             }
