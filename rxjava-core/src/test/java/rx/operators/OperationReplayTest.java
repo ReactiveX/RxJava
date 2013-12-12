@@ -16,9 +16,18 @@
 package rx.operators;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.InOrder;
+import static org.mockito.Mockito.*;
+import rx.Observable;
+import rx.Observer;
+import rx.observables.ConnectableObservable;
 import rx.operators.OperationReplay.VirtualBoundedList;
+import rx.schedulers.TestScheduler;
+import rx.subjects.PublishSubject;
+import rx.util.functions.Func1;
 
 public class OperationReplayTest {
     @Test
@@ -69,5 +78,366 @@ public class OperationReplayTest {
         list.add(4); // idx: 3
         
         list.get(4);
+    }
+    @Test
+    public void testBufferedReplay() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        ConnectableObservable<Integer> co = source.replay(3);
+        co.connect();
+        
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+
+            source.onNext(1);
+            source.onNext(2);
+            source.onNext(3);
+
+            inOrder.verify(observer1, times(1)).onNext(1);
+            inOrder.verify(observer1, times(1)).onNext(2);
+            inOrder.verify(observer1, times(1)).onNext(3);
+
+            source.onNext(4);
+            source.onCompleted();
+            inOrder.verify(observer1, times(1)).onNext(4);
+            inOrder.verify(observer1, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onError(any(Throwable.class));
+            
+        }
+        
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+
+            inOrder.verify(observer1, times(1)).onNext(2);
+            inOrder.verify(observer1, times(1)).onNext(3);
+            inOrder.verify(observer1, times(1)).onNext(4);
+            inOrder.verify(observer1, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onError(any(Throwable.class));
+        }
+    }
+    @Test
+    public void testWindowedReplay() {
+        TestScheduler scheduler = new TestScheduler();
+        
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        ConnectableObservable<Integer> co = source.replay(100, TimeUnit.MILLISECONDS, scheduler);
+        co.connect();
+        
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+
+            source.onNext(1);
+            scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
+            source.onNext(2);
+            scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
+            source.onNext(3);
+            scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
+            source.onCompleted();
+            scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
+
+            inOrder.verify(observer1, times(1)).onNext(1);
+            inOrder.verify(observer1, times(1)).onNext(2);
+            inOrder.verify(observer1, times(1)).onNext(3);
+            
+            inOrder.verify(observer1, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onError(any(Throwable.class));
+            
+        }        
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+            inOrder.verify(observer1, times(1)).onNext(3);
+            
+            inOrder.verify(observer1, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onError(any(Throwable.class));
+        }
+    }
+    @Test
+    public void testReplaySelector() {
+        final Func1<Integer, Integer> dbl = new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t1) {
+                return t1 * 2;
+            }
+            
+        };
+        
+        Func1<Observable<Integer>, Observable<Integer>> selector = new Func1<Observable<Integer>, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Observable<Integer> t1) {
+                return t1.map(dbl);
+            }
+            
+        };
+        
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        Observable<Integer> co = source.replay(selector);
+
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+
+            source.onNext(1);
+            source.onNext(2);
+            source.onNext(3);
+
+            inOrder.verify(observer1, times(1)).onNext(2);
+            inOrder.verify(observer1, times(1)).onNext(4);
+            inOrder.verify(observer1, times(1)).onNext(6);
+
+            source.onNext(4);
+            source.onCompleted();
+            inOrder.verify(observer1, times(1)).onNext(8);
+            inOrder.verify(observer1, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onError(any(Throwable.class));
+
+        }
+        
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+
+            inOrder.verify(observer1, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onError(any(Throwable.class));
+
+        }
+
+    }
+    
+    @Test
+    public void testBufferedReplaySelector() {
+        
+        final Func1<Integer, Integer> dbl = new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t1) {
+                return t1 * 2;
+            }
+            
+        };
+        
+        Func1<Observable<Integer>, Observable<Integer>> selector = new Func1<Observable<Integer>, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Observable<Integer> t1) {
+                return t1.map(dbl);
+            }
+            
+        };
+        
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        Observable<Integer> co = source.replay(selector, 3);
+        
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+
+            source.onNext(1);
+            source.onNext(2);
+            source.onNext(3);
+
+            inOrder.verify(observer1, times(1)).onNext(2);
+            inOrder.verify(observer1, times(1)).onNext(4);
+            inOrder.verify(observer1, times(1)).onNext(6);
+
+            source.onNext(4);
+            source.onCompleted();
+            inOrder.verify(observer1, times(1)).onNext(8);
+            inOrder.verify(observer1, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onError(any(Throwable.class));
+            
+        }
+        
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+
+            inOrder.verify(observer1, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onError(any(Throwable.class));
+        }
+    }
+    @Test
+    public void testWindowedReplaySelector() {
+        
+        final Func1<Integer, Integer> dbl = new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t1) {
+                return t1 * 2;
+            }
+            
+        };
+        
+        Func1<Observable<Integer>, Observable<Integer>> selector = new Func1<Observable<Integer>, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Observable<Integer> t1) {
+                return t1.map(dbl);
+            }
+            
+        };
+        
+        TestScheduler scheduler = new TestScheduler();
+        
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        Observable<Integer> co = source.replay(selector, 100, TimeUnit.MILLISECONDS, scheduler);
+        
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+
+            source.onNext(1);
+            scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
+            source.onNext(2);
+            scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
+            source.onNext(3);
+            scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
+            source.onCompleted();
+            scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
+
+            inOrder.verify(observer1, times(1)).onNext(2);
+            inOrder.verify(observer1, times(1)).onNext(4);
+            inOrder.verify(observer1, times(1)).onNext(6);
+            
+            inOrder.verify(observer1, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onError(any(Throwable.class));
+            
+        }        
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+            
+            inOrder.verify(observer1, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onError(any(Throwable.class));
+        }
+    }
+    @Test
+    public void testBufferedReplayError() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        ConnectableObservable<Integer> co = source.replay(3);
+        co.connect();
+        
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+
+            source.onNext(1);
+            source.onNext(2);
+            source.onNext(3);
+
+            inOrder.verify(observer1, times(1)).onNext(1);
+            inOrder.verify(observer1, times(1)).onNext(2);
+            inOrder.verify(observer1, times(1)).onNext(3);
+
+            source.onNext(4);
+            source.onError(new RuntimeException("Forced failure"));
+            
+            inOrder.verify(observer1, times(1)).onNext(4);
+            inOrder.verify(observer1, times(1)).onError(any(RuntimeException.class));
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onCompleted();
+            
+        }
+        
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+
+            inOrder.verify(observer1, times(1)).onNext(2);
+            inOrder.verify(observer1, times(1)).onNext(3);
+            inOrder.verify(observer1, times(1)).onNext(4);
+            inOrder.verify(observer1, times(1)).onError(any(RuntimeException.class));
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onCompleted();
+        }
+    }
+    @Test
+    public void testWindowedReplayError() {
+        TestScheduler scheduler = new TestScheduler();
+        
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        ConnectableObservable<Integer> co = source.replay(100, TimeUnit.MILLISECONDS, scheduler);
+        co.connect();
+        
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+
+            source.onNext(1);
+            scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
+            source.onNext(2);
+            scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
+            source.onNext(3);
+            scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
+            source.onError(new RuntimeException("Forced failure"));
+            scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
+
+            inOrder.verify(observer1, times(1)).onNext(1);
+            inOrder.verify(observer1, times(1)).onNext(2);
+            inOrder.verify(observer1, times(1)).onNext(3);
+            
+            inOrder.verify(observer1, times(1)).onError(any(RuntimeException.class));
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onCompleted();
+            
+        }        
+        {
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+            inOrder.verify(observer1, times(1)).onNext(3);
+            
+            inOrder.verify(observer1, times(1)).onError(any(RuntimeException.class));
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onCompleted();
+        }
     }
 }

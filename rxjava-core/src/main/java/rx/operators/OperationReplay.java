@@ -49,7 +49,7 @@ public final class OperationReplay {
     /**
      * Create a BoundedReplaySubject with the given buffer size.
      */
-    public static <T> Subject<T, T> replayWithBufferSize(int bufferSize) {
+    public static <T> Subject<T, T> replayBuffered(int bufferSize) {
         return CustomReplaySubject.create(bufferSize);
     }
     /**
@@ -61,22 +61,12 @@ public final class OperationReplay {
         SubjectWrapper<T> s = new SubjectWrapper<T>(subscriberOf(observedOn), subject);
         return s;
     }
-    /**
-     * Return an OnSubscribeFunc which delegates the subscription to the given observable.
-     */
-    public static <T> OnSubscribeFunc<T> subscriberOf(final Observable<T> target) {
-        return new OnSubscribeFunc<T>() {
-            @Override
-            public Subscription onSubscribe(Observer<? super T> t1) {
-                return target.subscribe(t1);
-            }
-        };
-    }
     
     /**
      * Create a CustomReplaySubject with the given time window length
      * and optional buffer size.
      * 
+     * @param <T> the source and return type
      * @param time the length of the time window
      * @param unit the unit of the time window length
      * @param bufferSize the buffer size if >= 0, otherwise, the buffer will be unlimited
@@ -84,7 +74,7 @@ public final class OperationReplay {
      *                  observers will not observe on this scheduler.
      * @return a Subject with the required replay behavior
      */
-    public static <T> Subject<T, T> replayWithTimeWindowOrBufferSize(long time, TimeUnit unit, int bufferSize, final Scheduler scheduler) {
+    public static <T> Subject<T, T> replayWindowed(long time, TimeUnit unit, int bufferSize, final Scheduler scheduler) {
         final long ms = unit.toMillis(time);
         if (ms <= 0) {
             throw new IllegalArgumentException("The time window is less than 1 millisecond!");
@@ -134,6 +124,19 @@ public final class OperationReplay {
         
         return brs;
     }
+    
+    /**
+     * Return an OnSubscribeFunc which delegates the subscription to the given observable.
+     */
+    public static <T> OnSubscribeFunc<T> subscriberOf(final Observable<T> target) {
+        return new OnSubscribeFunc<T>() {
+            @Override
+            public Subscription onSubscribe(Observer<? super T> t1) {
+                return target.subscribe(t1);
+            }
+        };
+    }
+    
     /**
      * Subject that wraps another subject and uses a mapping function
      * to transform the received values.
@@ -208,12 +211,15 @@ public final class OperationReplay {
     }
     /**
      * Base interface for logically indexing a list.
-     * @param <T>
+     * @param <T> the value type
      */
     public interface VirtualList<T> {
         /** @return the number of elements in this list */
         int size();
-        /** Add an element to the list. */
+        /** 
+         * Add an element to the list. 
+         * @param value the value to add
+         */
         void add(T value);
         /**
          * Retrieve an element at the specified logical index.
@@ -249,6 +255,11 @@ public final class OperationReplay {
          * Clears and resets the indexes of the list.
          */
         void reset();
+        /**
+         * Returns the current content as a list.
+         * @return 
+         */
+        List<T> toList();
     }
     /**
      * Behaves like a normal, unbounded ArrayList but with virtual index.
@@ -301,6 +312,10 @@ public final class OperationReplay {
         public void reset() {
             list.clear();
             startIndex = 0;
+        }
+        @Override
+        public List<T> toList() {
+            return new ArrayList<T>(list);
         }
         
     }
@@ -396,10 +411,7 @@ public final class OperationReplay {
             startIndex = index;
             head = head2 % maxSize;
         }
-        /**
-         * Returns a list with the current elements in this bounded list.
-         * @return
-         */
+        @Override
         public List<T> toList() {
             List<T> r = new ArrayList<T>(list.size() + 1);
             for (int i = head; i < head + count; i++) {
