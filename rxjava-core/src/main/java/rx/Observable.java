@@ -1034,11 +1034,6 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
      * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer}
-     * subscribes. Since this occurs before the {@link Subscription} is
-     * returned, it is not possible to unsubscribe from the sequence before it
-     * completes.
-     * 
      * @param t1 first item
      * @param t2 second item
      * @param t3 third item
@@ -1066,11 +1061,6 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/range.png">
      * <p>
-     * Note: the entire range is immediately emitted each time an
-     * {@link Observer} subscribes. Since this occurs before the
-     * {@link Subscription} is returned, it is not possible to unsubscribe from
-     * the sequence before it completes.
-     * 
      * @param start the value of the first Integer in the sequence
      * @param count the number of sequential Integers to generate
      * @return an Observable that emits a range of sequential Integers

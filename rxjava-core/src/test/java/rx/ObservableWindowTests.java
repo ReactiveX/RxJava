@@ -30,23 +30,6 @@ public class ObservableWindowTests {
     @Test
     public void testWindow() {
         final ArrayList<List<Integer>> lists = new ArrayList<List<Integer>>();
-        /*
-        Observable.from(1, 2, 3, 4, 5, 6)
-                .window(3).map(new Func1<Observable<Integer>, List<Integer>>() {
-
-                    @Override
-                    public List<Integer> call(Observable<Integer> o) {
-                        return o.toList().toBlockingObservable().single();
-                    }
-
-                }).toBlockingObservable().forEach(new Action1<List<Integer>>() {
-
-                    @Override
-                    public void call(List<Integer> t) {
-                        lists.add(t);
-                    }
-                });
-        */
 
         Observable.concat(Observable.from(1, 2, 3, 4, 5, 6).window(3).map(new Func1<Observable<Integer>, Observable<List<Integer>>>() {
             @Override
