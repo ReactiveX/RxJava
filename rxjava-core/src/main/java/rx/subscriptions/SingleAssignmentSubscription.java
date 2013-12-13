@@ -27,7 +27,7 @@ import rx.Subscription;
  * If the unsubscribe has been called, setting a new subscription will
  * unsubscribe it immediately.
  */
-public final class SingleAssignmentSubscription extends MultipleAssignmentSubscription {
+public final class SingleAssignmentSubscription extends AbstractAssignmentSubscription {
     /** Creates an empty SingleAssignmentSubscription. */
     public SingleAssignmentSubscription() {
         super();
@@ -42,7 +42,7 @@ public final class SingleAssignmentSubscription extends MultipleAssignmentSubscr
         super(s);
     }
     @Override
-    protected void onCurrentSubscription(Subscription current) {
+    protected void onPreSwap(Subscription current) {
         if (current != null) {
             throw new IllegalStateException("Can not set subscription more than once!");
         }

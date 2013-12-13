@@ -24,7 +24,7 @@ import rx.Subscription;
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.serialdisposable(v=vs.103).aspx">Rx.Net equivalent SerialDisposable</a>
  */
-public class SerialSubscription extends MultipleAssignmentSubscription {
+public class SerialSubscription extends AbstractAssignmentSubscription {
     /** Creates an empty SerialSubscription. */
     public SerialSubscription() {
         super();
@@ -39,7 +39,7 @@ public class SerialSubscription extends MultipleAssignmentSubscription {
         super(s);
     }
     @Override
-    protected void onSubscriptionSwapped(Subscription old) {
+    protected void onPostSwap(Subscription old) {
         if (old != null) {
             old.unsubscribe();
         }
