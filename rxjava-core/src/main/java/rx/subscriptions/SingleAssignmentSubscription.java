@@ -16,66 +16,44 @@
 
 package rx.subscriptions;
 
-import java.util.concurrent.atomic.AtomicReference;
 import rx.Subscription;
 
 /**
- * A subscription that allows only a single resource to be assigned.
+ * A subscription that allows only a single subscription to be assigned.
  * <p>
- * If this subscription is live, no other subscription may be set() and
+ * If this subscription is live, no other subscription may be set and
  * yields an {@link IllegalStateException}.
  * <p>
  * If the unsubscribe has been called, setting a new subscription will
  * unsubscribe it immediately.
  */
-public final class SingleAssignmentSubscription implements Subscription {
-    /** Holds the current resource. */
-    private final AtomicReference<Subscription> current = new AtomicReference<Subscription>();
-    /** Sentinel for the unsubscribed state. */
-    private static final Subscription UNSUBSCRIBED_SENTINEL = new Subscription() {
-        @Override
-        public void unsubscribe() {
-        }
-    };
-    /**
-     * Returns the current subscription or null if not yet set.
-     */
-    public Subscription get() {
-        Subscription s = current.get();
-        if (s == UNSUBSCRIBED_SENTINEL) {
-            return Subscriptions.empty();
-        }
-        return s;
+public final class SingleAssignmentSubscription extends MultipleAssignmentSubscription {
+    /** Creates an empty SingleAssignmentSubscription. */
+    public SingleAssignmentSubscription() {
+        super();
     }
     /**
-     * Sets a new subscription if not already set.
-     * @param s the new subscription
-     * @throws IllegalStateException if this subscription is live and contains
-     * another subscription.
+     * Creates a SerialSubscription with the given subscription
+     * as its initial value.
+     * 
+     * @param s the initial subscription
      */
-    public void set(Subscription s) {
-        if (current.compareAndSet(null, s)) {
-            return;
-        }
-        if (current.get() != UNSUBSCRIBED_SENTINEL) {
-            throw new IllegalStateException("Subscription already set");
-        }
-        if (s != null) {
-            s.unsubscribe();
-        }
+    public SingleAssignmentSubscription(Subscription s) {
+        super(s);
     }
     @Override
-    public void unsubscribe() {
-        Subscription old = current.getAndSet(UNSUBSCRIBED_SENTINEL);
-        if (old != null) {
-            old.unsubscribe();
+    protected void onCurrentSubscription(Subscription current) {
+        if (current != null) {
+            throw new IllegalStateException("Can not set subscription more than once!");
         }
     }
     /**
-     * Test if this subscription is already unsubscribed.
+     * Sets the subscription if not already set.
+     * 
+     * @param s 
+     * @deprecated use the common {@link #setSubscription(rx.Subscription)} method instead.
      */
-    public boolean isUnsubscribed() {
-        return current.get() == UNSUBSCRIBED_SENTINEL;
+    public void set(Subscription s) {
+        setSubscription(s);
     }
-    
 }

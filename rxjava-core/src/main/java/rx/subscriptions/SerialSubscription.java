@@ -15,9 +15,6 @@
  */
 package rx.subscriptions;
 
-import static rx.subscriptions.Subscriptions.empty;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
 
@@ -27,41 +24,25 @@ import rx.Subscription;
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.serialdisposable(v=vs.103).aspx">Rx.Net equivalent SerialDisposable</a>
  */
-public class SerialSubscription implements Subscription {
-    private final AtomicReference<Subscription> reference = new AtomicReference<Subscription>(empty());
-    /** Sentinel for the unsubscribed state. */
-    private static final Subscription UNSUBSCRIBED_SENTINEL = new Subscription() {
-        @Override
-        public void unsubscribe() {
-        }
-    };
-    public boolean isUnsubscribed() {
-        return reference.get() == UNSUBSCRIBED_SENTINEL;
+public class SerialSubscription extends MultipleAssignmentSubscription {
+    /** Creates an empty SerialSubscription. */
+    public SerialSubscription() {
+        super();
+    }
+    /**
+     * Creates a SerialSubscription with the given subscription
+     * as its initial value.
+     * 
+     * @param s the initial subscription
+     */
+    public SerialSubscription(Subscription s) {
+        super(s);
     }
     @Override
-    public void unsubscribe() {
-        Subscription s = reference.getAndSet(UNSUBSCRIBED_SENTINEL);
-        if (s != null) {
-            s.unsubscribe();
+    protected void onSubscriptionSwapped(Subscription old) {
+        if (old != null) {
+            old.unsubscribe();
         }
     }
-
-    public void setSubscription(final Subscription subscription) {
-        do {
-            final Subscription current = reference.get();
-            if (current == UNSUBSCRIBED_SENTINEL) {
-                subscription.unsubscribe();
-                break;
-            }
-            if (reference.compareAndSet(current, subscription)) {
-                current.unsubscribe();
-                break;
-            }
-        } while (true);
-    }
     
-    public Subscription getSubscription() {
-        final Subscription subscription = reference.get();
-        return subscription == UNSUBSCRIBED_SENTINEL ? Subscriptions.empty() : subscription;
-    }
 }

@@ -52,7 +52,7 @@ public final class JoinObserver1<T> extends ObserverBase<Notification<T>> implem
     @Override
     public void subscribe(Object gate) {
         this.gate = gate;
-        subscription.set(source.materialize().subscribe(this));
+        subscription.setSubscription(source.materialize().subscribe(this));
     }
 
     @Override

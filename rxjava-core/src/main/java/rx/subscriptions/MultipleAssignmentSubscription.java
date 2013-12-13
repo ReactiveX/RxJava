@@ -15,7 +15,6 @@
  */
 package rx.subscriptions;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
@@ -27,13 +26,28 @@ import rx.Subscription;
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.multipleassignmentdisposable">Rx.Net equivalent MultipleAssignmentDisposable</a>
  */
 public class MultipleAssignmentSubscription implements Subscription {
-    private AtomicReference<Subscription> reference = new AtomicReference<Subscription>();
+    /** The subscription holding the reference. */
+    protected final AtomicReference<Subscription> reference = new AtomicReference<Subscription>();
     /** Sentinel for the unsubscribed state. */
     private static final Subscription UNSUBSCRIBED_SENTINEL = new Subscription() {
         @Override
         public void unsubscribe() {
         }
     };
+    /** Creates an empty MultipleAssignmentSubscription. */
+    public MultipleAssignmentSubscription() {
+        
+    }
+    /**
+     * Creates a MultipleAssignmentSubscription with the given subscription
+     * as its initial value.
+     * 
+     * @param s the initial subscription
+     */
+    public MultipleAssignmentSubscription(Subscription s) {
+        this();
+        reference.set(s);
+    }
     public boolean isUnsubscribed() {
         return reference.get() == UNSUBSCRIBED_SENTINEL;
     }
@@ -53,12 +67,26 @@ public class MultipleAssignmentSubscription implements Subscription {
                 s.unsubscribe();
                 return;
             }
+            onCurrentSubscription(r);
             if (reference.compareAndSet(r, s)) {
+                onSubscriptionSwapped(r);
                 break;
             }
         } while (true);
     }
-
+    /**
+     * Override this method to perform logic on a subscription before
+     * an attempt is tried to swap it for a new subscription.
+     * @param current the current subscription value
+     */
+    protected void onCurrentSubscription(Subscription current) { }
+    /**
+     * Override this method to perform actions once a subscription has been
+     * swapped to a new one.
+     * @param old the old subscription value
+     */
+    protected void onSubscriptionSwapped(Subscription old) { }
+    
     public Subscription getSubscription() {
         Subscription s = reference.get();
         return s != UNSUBSCRIBED_SENTINEL ? s : Subscriptions.empty();
