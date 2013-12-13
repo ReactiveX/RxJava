@@ -532,13 +532,14 @@ public class Observable<T> {
      * produced by multicasting the source sequence within a selector function.
      * 
      * @param subjectFactory the subject factory
-     * @param selector The selector function which can use the multicasted 
+     * @param selector the selector function which can use the multicasted 
      *                 source sequence subject to the policies enforced by the 
-     *                 created subject.
+     *                 created subject
      * @return the Observable sequence that contains the elements of a sequence
-     *         produced by multicasting the source sequence within a selector function.
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229708.aspx'>MSDN: Observable.Multicast</a>
+     *         produced by multicasting the source sequence within a selector
+     *         function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablepublish-and-observablemulticast">RxJava: Observable.publish() and Observable.multicast()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229708.aspx">MSDN: Observable.Multicast</a>
      */
     public <TIntermediate, TResult> Observable<TResult> multicast(
             final Func0<? extends Subject<? super T, ? extends TIntermediate>> subjectFactory, 
@@ -2044,31 +2045,44 @@ public class Observable<T> {
     }
     
     /**
-     * Return an Observable which emits a 0L after the initialDelay and ever increasing
-     * numbers after each period.
+     * Return an Observable which emits a 0L after the {@code initialDelay} and
+     * ever increasing numbers after each {@code period}.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.p.png">
      * 
-     * @param initialDelay the initial delay time to wait before emitting the first value of 0L
+     * @param initialDelay the initial delay time to wait before emitting the
+     *                     first value of 0L
      * @param period the time period after emitting the subsequent numbers
-     * @param unit the time unit for both <code>initialDelay</code> and <code>period</code>
-     * @return an Observable which emits a 0L after the initialDelay and ever increasing
-     *         numbers after each period
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229435.aspx'>MSDN: Observable.Timer</a>
+     * @param unit the time unit for both <code>initialDelay</code> and
+     *             <code>period</code>
+     * @return an Observable which emits a 0L after the {@code initialDelay} and
+     *         ever increasing numbers after each {@code period}
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#timer">RxJava Wiki: timer()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229435.aspx">MSDN: Observable.Timer</a>
      */
     public static Observable<Long> timer(long initialDelay, long period, TimeUnit unit) {
         return timer(initialDelay, period, unit, Schedulers.threadPoolForComputation());
     }
     
     /**
-     * Return an Observable which emits a 0L after the initialDelay and ever increasing
-     * numbers after each period while running on the given scheduler.
+     * Return an Observable which emits a 0L after the {@code initialDelay} and
+     * ever increasing numbers after each {@code period} while running on the
+     * given {@code scheduler}.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.ps.png">
      * 
-     * @param initialDelay the initial delay time to wait before emitting the first value of 0L
+     * @param initialDelay the initial delay time to wait before emitting the
+     *                     first value of 0L
      * @param period the time period after emitting the subsequent numbers
-     * @param unit the time unit for both <code>initialDelay</code> and <code>period</code>
-     * @param scheduler the scheduler where the waiting happens and value emissions run.
-     * @return an Observable which emits a 0L after the initialDelay and ever increasing
-     *         numbers after each period while running on the given scheduler
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229652.aspx'>MSDN: Observable.Timer</a>
+     * @param unit the time unit for both <code>initialDelay</code> and
+     *             <code>period</code>
+     * @param scheduler the scheduler on which the waiting happens and value
+     *                  emissions run
+     * @return an Observable that emits a 0L after the {@code initialDelay} and
+     *         ever increasing numbers after each {@code period} while running
+     *         on the given {@code scheduler}
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#timer">RxJava Wiki: timer()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229652.aspx">MSDN: Observable.Timer</a>
      */
     public static Observable<Long> timer(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
         return create(new OperationTimer.TimerPeriodically(initialDelay, period, unit, scheduler));
@@ -4332,27 +4346,35 @@ public class Observable<T> {
      * Returns a {@link ConnectableObservable} that shares a single subscription
      * to the underlying Observable that will replay all of its items and
      * notifications to any future {@link Observer} on the given scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.s.png">
      *
-     * @param scheduler the scheduler where the Observers will receive the events
+     * @param scheduler the scheduler on which the Observers will observe the
+     *                  emitted items
      * @return a {@link ConnectableObservable} that shares a single subscription
-     *         to the underlying Observable that will replay all of its items and
-     *         notifications to any future {@link Observer} on the given scheduler
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211699.aspx'>MSDN: Observable.Replay</a>
+     *         to the source Observable that will replay all of its items and
+     *         notifications to any future {@link Observer} on the given
+     *         scheduler
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211699.aspx">MSDN: Observable.Replay</a>
      */
     public ConnectableObservable<T> replay(Scheduler scheduler) {
          return OperationMulticast.multicast(this, OperationReplay.createScheduledSubject(ReplaySubject.<T>create(), scheduler));
     }
 
     /**
-     * Returns a connectable observable sequence that shares a single subscription 
-     * to the underlying sequence replaying bufferSize notifications.
+     * Returns a connectable observable sequence that shares a single
+     * subscription to the source Observable that replays at most
+     * {@code bufferSize} items emitted by that Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.n.png">
      * 
      * @param bufferSize the buffer size
-     * @return a connectable observable sequence that shares a single subscription 
-     *         to the underlying sequence replaying bufferSize notifications
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211976.aspx'>MSDN: Observable.Replay</a>
+     * @return a connectable observable sequence that shares a single 
+     *         subscription to the source Observable and replays at most
+     *         {@code bufferSize} items emitted by that Observable
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211976.aspx">MSDN: Observable.Replay</a>
      */
     public ConnectableObservable<T> replay(int bufferSize) {
         return OperationMulticast.multicast(this, OperationReplay.<T>replayBuffered(bufferSize));
@@ -4360,14 +4382,19 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that shares a single 
-     * subscription to the underlying sequence replaying bufferSize notifications.
+     * subscription to the source Observable and replays at most
+     * {@code bufferSize} items emitted by that Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ns.png">
      * 
      * @param bufferSize the buffer size
-     * @param scheduler the scheduler where the Observers will receive the events
+     * @param scheduler the scheduler on which the Observers will observe the
+     *                  emitted items
      * @return a connectable observable sequence that shares a single 
-     *         subscription to the underlying sequence replaying bufferSize notifications
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229814.aspx'>MSDN: Observable.Replay</a>
+     *         subscription to the source Observable and replays at most
+     *         {@code bufferSize} items emitted by that Observable
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229814.aspx">MSDN: Observable.Replay</a>
      */
     public ConnectableObservable<T> replay(int bufferSize, Scheduler scheduler) {
         return OperationMulticast.multicast(this, 
@@ -4377,13 +4404,19 @@ public class Observable<T> {
     
     /**
      * Returns a connectable observable sequence that shares a single 
-     * subscription to the underlying sequence replaying all notifications within window.
+     * subscription to the source Observable and replays all items emitted by
+     * that Observable within a time window.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.t.png">
      * 
      * @param time the window length
      * @param unit the window length time unit
      * @return a connectable observable sequence that shares a single 
-     *         subscription to the underlying sequence replaying all notifications within window
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229232.aspx'>MSDN: Observable.Replay</a>
+     *         subscription to the source Observable and that replays all items
+     *         emitted by that Observable during the window defined by
+     *         {@code time} and {@code unit}
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229232.aspx">MSDN: Observable.Replay</a>
      */
     public ConnectableObservable<T> replay(long time, TimeUnit unit) {
         return replay(time, unit, Schedulers.threadPoolForComputation());
@@ -4391,14 +4424,21 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that shares a single 
-     * subscription to the underlying sequence replaying all notifications within window.
+     * subscription to the source Observable and replays all items emitted by
+     * that Observable within a time window.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ts.png">
      * 
      * @param time the window length
      * @param unit the window length time unit
-     * @param scheduler the scheduler which is used as a time source for the window
+     * @param scheduler the scheduler that is used as a time source for the
+     *                  window
      * @return a connectable observable sequence that shares a single 
-     *         subscription to the underlying sequence replaying all notifications within window
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211811.aspx'>MSDN: Observable.Replay</a>
+     *         subscription to the source Observable and replays all items
+     *         emitted by that Observable within the window defined by
+     *         {@code time} and {@code unit}
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211811.aspx">MSDN: Observable.Replay</a>
      */
     public ConnectableObservable<T> replay(long time, TimeUnit unit, Scheduler scheduler) {
         return OperationMulticast.multicast(this, OperationReplay.<T>replayWindowed(time, unit, -1, scheduler));
@@ -4406,15 +4446,18 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that shares a single 
-     * subscription to the underlying sequence replaying bufferSize notifications within window.
+     * subscription to the underlying sequence replaying {@code bufferSize}
+     * notifications within window.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nt.png">
      * 
      * @param bufferSize the buffer size
      * @param time the window length
      * @param unit the window length time unit
      * @return Returns a connectable observable sequence that shares a single 
      *         subscription to the underlying sequence replaying bufferSize notifications within window
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229874.aspx'>MSDN: Observable.Replay</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229874.aspx">MSDN: Observable.Replay</a>
      */
     public ConnectableObservable<T> replay(int bufferSize, long time, TimeUnit unit) {
          return replay(bufferSize, time, unit, Schedulers.threadPoolForComputation());
@@ -4422,16 +4465,23 @@ public class Observable<T> {
 
     /**
      * Returns a connectable observable sequence that shares a single 
-     * subscription to the underlying sequence replaying bufferSize notifications within window.
+     * subscription to the underlying sequence and that replays a maximum of
+     * {@code bufferSize} items that are emitted within the window defined by
+     * {@code time} and {@code unit}.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nts.png">
      * 
      * @param bufferSize the buffer size
      * @param time the window length
      * @param unit the window length time unit
-     * @param scheduler the scheduler which is used as a time source for the window
+     * @param scheduler the scheduler that is used as a time source for the
+     *                  window
      * @return a connectable observable sequence that shares a single 
-     *         subscription to the underlying sequence replaying bufferSize notifications within window
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211759.aspx'>MSDN: Observable.Replay</a>
+     *         subscription to the underlying sequence that replays a maximum of
+     *         {@code bufferSize} items that are emitted within the window
+     *         defined by {@code time} and {@code unit}
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211759.aspx">MSDN: Observable.Replay</a>
      */
     public ConnectableObservable<T> replay(int bufferSize, long time, TimeUnit unit, Scheduler scheduler) {
         if (bufferSize < 0) {
@@ -4441,19 +4491,20 @@ public class Observable<T> {
     }
     
     /**
-     * Returns an observable sequence that is the result of invoking the selector 
-     * on a connectable observable sequence that shares a single subscription to 
-     * the underlying sequence and starts with initial value.
+     * Returns an observable sequence that is the result of invoking the
+     * selector on a connectable observable sequence that shares a single
+     * subscription to the underlying sequence and starts with initial value.
      * 
      * @param <R> the return element type
-     * @param selector The selector function which can use the multicasted 
+     * @param selector the selector function which can use the multicasted 
      *                 this sequence as many times as needed, without causing 
-     *                 multiple subscriptions to this sequence.
-     * @return an observable sequence that is the result of invoking the selector 
-     *         on a connectable observable sequence that shares a single subscription to 
-     *         the underlying sequence and starts with initial value
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229653.aspx'>MSDN: Observable.Replay</a>
+     *                 multiple subscriptions to this sequence
+     * @return an observable sequence that is the result of invoking the
+     *         selector on a connectable observable sequence that shares a
+     *         single subscription to the underlying sequence and starts with
+     *         initial value
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229653.aspx">MSDN: Observable.Replay</a>
      */
     public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
@@ -4470,15 +4521,16 @@ public class Observable<T> {
      * subscription to the underlying sequence replaying all notifications.
      * 
      * @param <R> the return element type
-     * @param selector The selector function which can use the multicasted 
+     * @param selector the selector function which can use the multicasted 
      *                 this sequence as many times as needed, without causing 
-     *                 multiple subscriptions to this sequence.
+     *                 multiple subscriptions to this sequence
      * @param scheduler the scheduler where the replay is observed
      * @return an observable sequence that is the result of invoking the 
-     *         selector on a connectable observable sequence that shares a single 
-     *         subscription to the underlying sequence replaying all notifications
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211644.aspx'>MSDN: Observable.Replay</a>
+     *         selector on a connectable observable sequence that shares a
+     *         single subscription to the underlying sequence replaying all
+     *         notifications
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211644.aspx">MSDN: Observable.Replay</a>
      */
     public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final Scheduler scheduler) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
@@ -4492,18 +4544,20 @@ public class Observable<T> {
     /**
      * Returns an observable sequence that is the result of invoking the 
      * selector on a connectable observable sequence that shares a single 
-     * subscription to the underlying sequence replaying bufferSize notifications.
+     * subscription to the underlying sequence replaying {@code bufferSize}
+     * notifications.
      * 
      * @param <R> the return element type
-     * @param selector The selector function which can use the multicasted 
+     * @param selector the selector function which can use the multicasted 
      *                 this sequence as many times as needed, without causing 
-     *                 multiple subscriptions to this sequence.
+     *                 multiple subscriptions to this sequence
      * @param bufferSize the buffer size
      * @return an observable sequence that is the result of invoking the 
-     *         selector on a connectable observable sequence that shares a single 
-     *         subscription to the underlying sequence replaying bufferSize notifications
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh211675.aspx'>MSDN: Observable.Replay</a>
+     *         selector on a connectable observable sequence that shares a
+     *         single subscription to the underlying sequence replaying
+     *         {@code bufferSize} notifications
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211675.aspx">MSDN: Observable.Replay</a>
      */
     public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
@@ -4517,19 +4571,21 @@ public class Observable<T> {
     /**
      * Returns an observable sequence that is the result of invoking the 
      * selector on a connectable observable sequence that shares a single 
-     * subscription to the underlying sequence replaying bufferSize notifications.
+     * subscription to the underlying sequence replaying {@code bufferSize}
+     * notifications.
      * 
      * @param <R> the return element type
-     * @param selector The selector function which can use the multicasted 
+     * @param selector the selector function which can use the multicasted 
      *                 this sequence as many times as needed, without causing 
-     *                 multiple subscriptions to this sequence.
+     *                 multiple subscriptions to this sequence
      * @param bufferSize the buffer size
      * @param scheduler the scheduler where the replay is observed
      * @return an observable sequence that is the result of invoking the 
-     *         selector on a connectable observable sequence that shares a single 
-     *         subscription to the underlying sequence replaying bufferSize notifications
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229928.aspx'>MSDN: Observable.Replay</a>
+     *         selector on a connectable observable sequence that shares a
+     *         single subscription to the underlying sequence replaying
+     *         {@code bufferSize} notifications
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229928.aspx">MSDN: Observable.Replay</a>
      */
     public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize, final Scheduler scheduler) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
@@ -4541,21 +4597,23 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an observable sequence that is the result of invoking 
-     * the selector on a connectable observable sequence that shares a single 
-     * subscription to the underlying sequence replaying all notifications within window.
+     * Returns an observable sequence that is the result of invoking the
+     * selector on a connectable observable sequence that shares a single 
+     * subscription to the underlying sequence replaying all notifications
+     * within window.
      * 
      * @param <R> the return element type
-     * @param selector The selector function which can use the multicasted 
+     * @param selector the selector function which can use the multicasted 
      *                 this sequence as many times as needed, without causing 
-     *                 multiple subscriptions to this sequence.
+     *                 multiple subscriptions to this sequence
      * @param time the window length
      * @param unit the window length time unit
-     * @return an observable sequence that is the result of invoking 
-     *         the selector on a connectable observable sequence that shares a single 
-     *         subscription to the underlying sequence replaying all notifications within window
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229526.aspx'>MSDN: Observable.Replay</a>
+     * @return an observable sequence that is the result of invoking the
+     *         selector on a connectable observable sequence that shares a
+     *         single subscription to the underlying sequence replaying all
+     *         notifications within window
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229526.aspx">MSDN: Observable.Replay</a>
      */
     public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, long time, TimeUnit unit) {
         return replay(selector, time, unit, Schedulers.threadPoolForComputation());
@@ -4564,20 +4622,23 @@ public class Observable<T> {
     /**
      * Returns an observable sequence that is the result of invoking the 
      * selector on a connectable observable sequence that shares a single 
-     * subscription to the underlying sequence replaying all notifications within window.
+     * subscription to the underlying sequence replaying all notifications
+     * within window.
      * 
      * @param <R> the return element type
-     * @param selector The selector function which can use the multicasted 
+     * @param selector the selector function which can use the multicasted 
      *                 this sequence as many times as needed, without causing 
-     *                 multiple subscriptions to this sequence.
+     *                 multiple subscriptions to this sequence
      * @param time the window length
      * @param unit the window length time unit
-     * @param scheduler the scheduler which is used as a time source for the window
+     * @param scheduler the scheduler that is used as a time source for the
+     *                  window
      * @return an observable sequence that is the result of invoking the 
-     *         selector on a connectable observable sequence that shares a single 
-     *         subscription to the underlying sequence replaying all notifications within window
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh244327.aspx'>MSDN: Observable.Replay</a>
+     *         selector on a connectable observable sequence that shares a
+     *         single subscription to the underlying sequence replaying all
+     *         notifications within window
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244327.aspx">MSDN: Observable.Replay</a>
      */
     public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final long time, final TimeUnit unit, final Scheduler scheduler) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
@@ -4591,23 +4652,22 @@ public class Observable<T> {
     /**
      * Returns an observable sequence that is the result of invoking the 
      * selector on a connectable observable sequence that shares a single 
-     * subscription to the underlying sequence replaying bufferSize notifications 
-     * within window.
+     * subscription to the underlying sequence replaying {@code bufferSize}
+     * notifications within window.
      * 
      * @param <R> the return element type
-     * @param selector The selector function which can use the multicasted 
+     * @param selector the selector function which can use the multicasted 
      *                 this sequence as many times as needed, without causing 
-     *                 multiple subscriptions to this sequence.
+     *                 multiple subscriptions to this sequence
      * @param bufferSize the buffer size
      * @param time the window length
      * @param unit the window length time unit
-     * 
      * @return an observable sequence that is the result of invoking the 
-     *         selector on a connectable observable sequence that shares a single 
-     *         subscription to the underlying sequence replaying bufferSize notifications 
-     *         within window
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh228952.aspx'>MSDN: Observable.Replay</a>
+     *         selector on a connectable observable sequence that shares a
+     *         single subscription to the underlying sequence replaying
+     *         {@code bufferSize} notifications within window
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh228952.aspx">MSDN: Observable.Replay</a>
      */
     public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, int bufferSize, long time, TimeUnit unit) {
         return replay(selector, bufferSize, time, unit, Schedulers.threadPoolForComputation());
@@ -4617,24 +4677,24 @@ public class Observable<T> {
     /**
      * Returns an observable sequence that is the result of invoking the 
      * selector on a connectable observable sequence that shares a single 
-     * subscription to the underlying sequence replaying bufferSize notifications 
-     * within window.
+     * subscription to the underlying sequence replaying {@code bufferSize}
+     * notifications within window.
      * 
      * @param <R> the return element type
-     * @param selector The selector function which can use the multicasted 
+     * @param selector the selector function which can use the multicasted 
      *                 this sequence as many times as needed, without causing 
-     *                 multiple subscriptions to this sequence.
+     *                 multiple subscriptions to this sequence
      * @param bufferSize the buffer size
      * @param time the window length
      * @param unit the window length time unit
-     * @param scheduler the scheduler which is used as a time source for the window
-     * 
+     * @param scheduler the scheduler which is used as a time source for the
+     *                  window
      * @return an observable sequence that is the result of invoking the 
-     *         selector on a connectable observable sequence that shares a single 
-     *         subscription to the underlying sequence replaying bufferSize notifications 
-     *         within window
-     * 
-     * @see <a href='http://msdn.microsoft.com/en-us/library/hh229404.aspx'>MSDN: Observable.Replay</a>
+     *         selector on a connectable observable sequence that shares a
+     *         single subscription to the underlying sequence replaying
+     *         {@code bufferSize} notifications within window
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229404.aspx">MSDN: Observable.Replay</a>
      */
     public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
         if (bufferSize < 0) {
