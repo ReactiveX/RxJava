@@ -15,146 +15,91 @@
   */
 package rx.subscriptions;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableSet;
-
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
-import rx.util.CompositeException;
+import rx.util.functions.Action0;
 
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed
  * together.
  *
  * @see <a
- *      href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net
+ *      href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable.aspx">Rx.Net
  *      equivalent CompositeDisposable</a>
  */
-public class CompositeSubscription implements Subscription {
-    /** Sentinel to indicate a thread is modifying the subscription set. */
-    private static final Set<Subscription> MUTATE_SENTINEL = unmodifiableSet(Collections.<Subscription>emptySet());
-    /** Sentinel to indicate the entire CompositeSubscription has been unsubscribed.*/
-    private static final Set<Subscription> UNSUBSCRIBED_SENTINEL = unmodifiableSet(Collections.<Subscription>emptySet());
-    /** The reference to the set of subscriptions. */
-    private final AtomicReference<Set<Subscription>> reference = new AtomicReference<Set<Subscription>>();
-    
+public class CompositeSubscription extends AbstractAtomicSubscription {
+    /** The tracked subscriptions. */
+    protected final Set<Subscription> subscriptions = new LinkedHashSet<Subscription>();
     public CompositeSubscription(final Subscription... subscriptions) {
-        reference.set(new HashSet<Subscription>(asList(subscriptions)));
-    }
-    
-    public boolean isUnsubscribed() {
-        return reference.get() == UNSUBSCRIBED_SENTINEL;
+        this.subscriptions.addAll(Arrays.asList(subscriptions));
     }
     
     public void add(final Subscription s) {
-        do {
-            final Set<Subscription> existing = reference.get();
-            if (existing == UNSUBSCRIBED_SENTINEL) {
-                s.unsubscribe();
-                break;
-            }
-            
-            if (existing == MUTATE_SENTINEL) {
-                continue;
-            }
-            
-            if (reference.compareAndSet(existing, MUTATE_SENTINEL)) {
-                existing.add(s);
-                reference.set(existing);
-                break;
-            }
-        } while (true);
+        Add a = new Add(s);
+        if (!call(a) && s != null) {
+            s.unsubscribe();
+        }
     }
     
     public void remove(final Subscription s) {
-        do {
-            final Set<Subscription> subscriptions = reference.get();
-            if (subscriptions == UNSUBSCRIBED_SENTINEL) {
-                s.unsubscribe();
-                break;
-            }
-            
-            if (subscriptions == MUTATE_SENTINEL) {
-                continue;
-            }
-            
-            if (reference.compareAndSet(subscriptions, MUTATE_SENTINEL)) {
-                // also unsubscribe from it:
-                // http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable.remove(v=vs.103).aspx
-                subscriptions.remove(s);
-                reference.set(subscriptions);
-                s.unsubscribe();
-                break;
-            }
-        } while (true);
+        Remove r = new Remove(s);
+        call(r);
+        if (s != null) {
+            s.unsubscribe();
+        }
     }
     
     public void clear() {
-        do {
-            final Set<Subscription> subscriptions = reference.get();
-            if (subscriptions == UNSUBSCRIBED_SENTINEL) {
-                break;
-            }
-            
-            if (subscriptions == MUTATE_SENTINEL) {
-                continue;
-            }
-            
-            if (reference.compareAndSet(subscriptions, MUTATE_SENTINEL)) {
-                final Set<Subscription> copy = new HashSet<Subscription>(
-                        subscriptions);
-                subscriptions.clear();
-                reference.set(subscriptions);
-                
-                unsubscribeAll(copy);
-                break;
-            }
-        } while (true);
-    }
-    /**
-     * Unsubscribe from the collection of subscriptions.
-     * <p>
-     * Exceptions thrown by any of the {@code unsubscribe()} methods are
-     * collected into a {@link CompositeException} and thrown once
-     * all unsubscriptions have been attempted.
-     * @param subs the collection of subscriptions
-     */
-    private void unsubscribeAll(Collection<Subscription> subs) {
-        final Collection<Throwable> es = new ArrayList<Throwable>();
-        for (final Subscription s : subs) {
-            try {
-                s.unsubscribe();
-            } catch (final Throwable e) {
-                es.add(e);
-            }
-        }
-        if (!es.isEmpty()) {
-            throw new CompositeException(
-                    "Failed to unsubscribe to 1 or more subscriptions.", es);
+        Clear c = new Clear();
+        if (call(c)) {
+            Subscriptions.unsubscribeAll(c.list);
         }
     }
+    
     @Override
     public void unsubscribe() {
-        do {
-            final Set<Subscription> subscriptions = reference.get();
-            if (subscriptions == UNSUBSCRIBED_SENTINEL) {
-                break;
-            }
-            
-            if (subscriptions == MUTATE_SENTINEL) {
-                continue;
-            }
-            
-            if (reference.compareAndSet(subscriptions, UNSUBSCRIBED_SENTINEL)) {
-                unsubscribeAll(subscriptions);
-                break;
-            }
-        } while (true);
+        Clear c = new Clear();
+        if (callAndSet(SubscriptionState.UNSUBSCRIBED, c)) {
+            Subscriptions.unsubscribeAll(c.list);
+        }
+    }
+    /** Add a subscription. */
+    private final class Add implements Action0 {
+        final Subscription s;
+        public Add(Subscription s) {
+            this.s = s;
+        }
+        @Override
+        public void call() {
+            subscriptions.add(s);
+        }
+    }
+    /** Remove a subscription if present. */
+    private final class Remove implements Action0 {
+        final Subscription s;
+        boolean found;
+        public Remove(Subscription s) {
+            this.s = s;
+        }
+        @Override
+        public void call() {
+            found = subscriptions.remove(s);
+        }
+    }
+    /**
+     * Clears and returns the subscriptions from this composite.
+     */
+    private final class Clear implements Action0 {
+        List<Subscription> list;
+        @Override
+        public void call() {
+            list = new ArrayList<Subscription>(subscriptions);
+            subscriptions.clear();
+        }
     }
 }
