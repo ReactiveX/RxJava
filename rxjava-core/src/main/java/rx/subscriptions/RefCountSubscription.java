@@ -15,9 +15,6 @@
  */
 package rx.subscriptions;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import rx.Subscription;
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;

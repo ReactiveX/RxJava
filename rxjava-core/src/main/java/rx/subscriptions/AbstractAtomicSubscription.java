@@ -81,10 +81,10 @@ public abstract class AbstractAtomicSubscription implements Subscription {
             throw new NullPointerException("newState");
         }
         if (action == null && func == null) {
-            throw new NullPointerException("action & func both null!");
+            throw new IllegalArgumentException("action & func both null!");
         }
         if (action != null && func != null) {
-            throw new NullPointerException("action & func both non-null!");
+            throw new IllegalArgumentException("action & func both non-null!");
         }
         do {
             SubscriptionState s = state.get();
