@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -57,6 +58,7 @@ import rx.operators.OperationGroupBy;
 import rx.operators.OperationGroupByUntil;
 import rx.operators.OperationGroupJoin;
 import rx.operators.OperationInterval;
+import rx.operators.OperationFromFunctionals;
 import rx.operators.OperationJoin;
 import rx.operators.OperationJoinPatterns;
 import rx.operators.OperationLast;
@@ -5822,7 +5824,132 @@ public class Observable<T> {
     public Observable<T> ignoreElements() {
         return filter(alwaysFalse());
     }
-
+    
+    /**
+     * Return an Observable which calls the given action and emits the given
+     * result when an Observer subscribes.
+     * <p>
+     * The action is run on the default thread pool for computation.
+     * @param <R> the return type
+     * @param action the action to invoke on each subscription
+     * @param result the result to emit to observers
+     * @return an Observable which calls the given action and emits the given
+     * result when an Observer subscribes
+     */
+    public static <R> Observable<R> fromAction(Action0 action, R result) {
+        return fromAction(action, result, Schedulers.threadPoolForComputation());
+    }
+    
+    /**
+     * Return an Observable which calls the given function and emits its
+     * result when an Observer subscribes.
+     * <p>
+     * The function is called on the default thread pool for computation.
+     * 
+     * @param <R> the return type
+     * @param function the function to call on each subscription
+     * @return an Observable which calls the given function and emits its
+     * result when an Observer subscribes
+     * @see #start(rx.util.functions.Func0) 
+     * @see #fromCallable(java.util.concurrent.Callable) 
+     */
+    public static <R> Observable<R> fromFunc0(Func0<? extends R> function) {
+        return fromFunc0(function, Schedulers.threadPoolForComputation());
+    }
+    /**
+     * Return an Observable which calls the given Callable and emits its
+     * result or Exception when an Observer subscribes.
+     * <p>
+     * The Callable is called on the default thread pool for computation.
+     * 
+     * @param <R> the return type
+     * @param callable the callable to call on each subscription
+     * @return an Observable which calls the given Callable and emits its
+     * result or Exception when an Observer subscribes
+     * @see #start(rx.util.functions.Func0) 
+     * @see #fromFunc0(rx.util.functions.Func0) 
+     */
+    public static <R> Observable<R> fromCallable(Callable<? extends R> callable) {
+        return fromCallable(callable, Schedulers.threadPoolForComputation());
+    }
+    
+    /**
+     * Return an Observable which calls the given Runnable and emits the given
+     * result when an Observer subscribes.
+     * <p>
+     * The Runnable is called on the default thread pool for computation.
+     * 
+     * @param <R> the return type
+     * @param run the runnable to invoke on each subscription
+     * @param result the result to emit to observers
+     * @return an Observable which calls the given Runnable and emits the given
+     * result when an Observer subscribes
+     */
+    public static <R> Observable<R> fromRunnable(final Runnable run, final R result) {
+        return fromRunnable(run, result, Schedulers.threadPoolForComputation());
+    }
+    
+    /**
+     * Return an Observable which calls the given action and emits the given
+     * result when an Observer subscribes.
+     * 
+     * @param <R> the return type
+     * @param action the action to invoke on each subscription
+     * @param scheduler the scheduler where the function is called and the result is emitted
+     * @param result the result to emit to observers
+     * @return an Observable which calls the given action and emits the given
+     * result when an Observer subscribes
+     */
+    public static <R> Observable<R> fromAction(Action0 action, R result, Scheduler scheduler) {
+        return create(OperationFromFunctionals.fromAction(action, result)).subscribeOn(scheduler);
+    }
+    
+    /**
+     * Return an Observable which calls the given function and emits its
+     * result when an Observer subscribes.
+     * 
+     * @param <R> the return type
+     * @param function the function to call on each subscription
+     * @param scheduler the scheduler where the function is called and the result is emitted
+     * @return an Observable which calls the given function and emits its
+     * result when an Observer subscribes
+     * @see #start(rx.util.functions.Func0) 
+     * @see #fromCallable(java.util.concurrent.Callable) 
+     */
+    public static <R> Observable<R> fromFunc0(Func0<? extends R> function, Scheduler scheduler) {
+        return create(OperationFromFunctionals.fromFunc0(function)).subscribeOn(scheduler);
+    }
+    /**
+     * Return an Observable which calls the given Callable and emits its
+     * result or Exception when an Observer subscribes.
+     * 
+     * @param <R> the return type
+     * @param callable the callable to call on each subscription
+     * @param scheduler the scheduler where the function is called and the result is emitted
+     * @return an Observable which calls the given Callable and emits its
+     * result or Exception when an Observer subscribes
+     * @see #start(rx.util.functions.Func0) 
+     * @see #fromFunc0(rx.util.functions.Func0) 
+     */
+    public static <R> Observable<R> fromCallable(Callable<? extends R> callable, Scheduler scheduler) {
+        return create(OperationFromFunctionals.fromCallable(callable)).subscribeOn(scheduler);
+    }
+    
+    /**
+     * Return an Observable which calls the given Runnable and emits the given
+     * result when an Observer subscribes.
+     * 
+     * @param <R> the return type
+     * @param run the runnable to invoke on each subscription
+     * @param scheduler the scheduler where the function is called and the result is emitted
+     * @param result the result to emit to observers
+     * @return an Observable which calls the given Runnable and emits the given
+     * result when an Observer subscribes
+     */
+    public static <R> Observable<R> fromRunnable(final Runnable run, final R result, Scheduler scheduler) {
+        return create(OperationFromFunctionals.fromRunnable(run, result)).subscribeOn(scheduler);
+    }
+    
     /**
      * Applies a timeout policy for each item emitted by the Observable, using
      * the specified scheduler to run timeout timers. If the next item isn't
