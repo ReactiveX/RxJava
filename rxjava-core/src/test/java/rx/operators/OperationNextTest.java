@@ -24,13 +24,16 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.Assert;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observables.BlockingObservable;
 import rx.schedulers.Schedulers;
+import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
@@ -292,5 +295,26 @@ public class OperationNextTest {
         assertFalse(it.hasNext());
 
         System.out.println("a: " + a + " b: " + b + " c: " + c);
+    }
+    @Test(timeout = 2000)
+    public void testSingleSourceManyIterators() throws InterruptedException {
+        BlockingObservable<Long> source = Observable.interval(50, TimeUnit.MILLISECONDS).take(10).toBlockingObservable();
+        
+        Iterable<Long> iter = source.next();
+        
+        for (int j = 0; j < 3; j++) {
+            Iterator<Long> it = iter.iterator();
+            
+            for (int i = 0; i < 9; i++) {
+                // hasNext has to set the waiting to true, otherwise, all onNext will be skipped
+                Assert.assertEquals(true, it.hasNext());
+                Assert.assertEquals(Long.valueOf(i), it.next());
+            }
+            
+            Thread.sleep(100);
+            
+            Assert.assertEquals(false, it.hasNext());
+        }
+        
     }
 }

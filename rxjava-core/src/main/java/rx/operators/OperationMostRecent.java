@@ -31,16 +31,16 @@ import rx.util.Exceptions;
  */
 public final class OperationMostRecent {
 
-    public static <T> Iterable<T> mostRecent(final Observable<? extends T> source, T initialValue) {
-
-        MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
-        final MostRecentIterator<T> nextIterator = new MostRecentIterator<T>(mostRecentObserver);
-
-        source.subscribe(mostRecentObserver);
+    public static <T> Iterable<T> mostRecent(final Observable<? extends T> source, final T initialValue) {
 
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
+                MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
+                final MostRecentIterator<T> nextIterator = new MostRecentIterator<T>(mostRecentObserver);
+                
+                source.subscribe(mostRecentObserver);
+        
                 return nextIterator;
             }
         };

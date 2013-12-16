@@ -16,6 +16,7 @@
 package rx.operators;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -63,27 +64,26 @@ public class OperationToIterator {
 
         return new Iterator<T>() {
             private Notification<? extends T> buf;
-
+            
             @Override
             public boolean hasNext() {
-                if (buf == null) {
-                    buf = take();
-                }
-                return !buf.isOnCompleted();
-            }
-
-            @Override
-            public T next() {
                 if (buf == null) {
                     buf = take();
                 }
                 if (buf.isOnError()) {
                     throw Exceptions.propagate(buf.getThrowable());
                 }
+                return !buf.isOnCompleted();
+            }
 
-                T result = buf.getValue();
-                buf = null;
-                return result;
+            @Override
+            public T next() {
+                if (hasNext()) {
+                    T result = buf.getValue();
+                    buf = null;
+                    return result;
+                }
+                throw new NoSuchElementException();
             }
 
             private Notification<? extends T> take() {
