@@ -168,7 +168,7 @@ public final class OperationMergeDelayError {
             /**
              * Subscribe to the parent Observable to get to the children Observables
              */
-            completeSubscription.add(sequences.subscribe(new ParentObserver(actualObserver)));
+            completeSubscription.add(sequences.subscribe(new ParentObserver(synchronizedObserver)));
 
             /* return our subscription to allow unsubscribing */
             return completeSubscription;
