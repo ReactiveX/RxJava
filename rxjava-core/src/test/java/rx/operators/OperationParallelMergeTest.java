@@ -58,24 +58,8 @@ public class OperationParallelMergeTest {
 
     @Test
     public void testNumberOfThreads() {
-        final ConcurrentHashMap<String, String> threads = new ConcurrentHashMap<String, String>();
-        Observable.merge(getStreams())
-                .toBlockingObservable().forEach(new Action1<String>() {
-
-                    @Override
-                    public void call(String o) {
-                        System.out.println("o: " + o + " Thread: " + Thread.currentThread());
-                        threads.put(Thread.currentThread().getName(), Thread.currentThread().getName());
-                    }
-                });
-
-        // without injecting anything, the getStream() method uses Interval which runs on a default scheduler
-        assertEquals(Runtime.getRuntime().availableProcessors(), threads.keySet().size());
-
-        // clear
-        threads.clear();
-
-        // now we parallelMerge into 3 streams and observeOn for each
+        final ConcurrentHashMap<Long, Long> threads = new ConcurrentHashMap<Long, Long>();
+        // parallelMerge into 3 streams and observeOn for each
         // we expect 3 threads in the output
         OperationParallelMerge.parallelMerge(getStreams(), 3)
                 .flatMap(new Func1<Observable<String>, Observable<String>>() {
@@ -90,8 +74,8 @@ public class OperationParallelMergeTest {
 
                     @Override
                     public void call(String o) {
-                        System.out.println("o: " + o + " Thread: " + Thread.currentThread());
-                        threads.put(Thread.currentThread().getName(), Thread.currentThread().getName());
+                        System.out.println("o: " + o + " Thread: " + Thread.currentThread().getId());
+                        threads.put(Thread.currentThread().getId(), Thread.currentThread().getId());
                     }
                 });
 
@@ -100,7 +84,7 @@ public class OperationParallelMergeTest {
 
     @Test
     public void testNumberOfThreadsOnScheduledMerge() {
-        final ConcurrentHashMap<String, String> threads = new ConcurrentHashMap<String, String>();
+        final ConcurrentHashMap<Long, Long> threads = new ConcurrentHashMap<Long, Long>();
 
         // now we parallelMerge into 3 streams and observeOn for each
         // we expect 3 threads in the output
@@ -109,8 +93,8 @@ public class OperationParallelMergeTest {
 
                     @Override
                     public void call(String o) {
-                        System.out.println("o: " + o + " Thread: " + Thread.currentThread());
-                        threads.put(Thread.currentThread().getName(), Thread.currentThread().getName());
+                        System.out.println("o: " + o + " Thread: " + Thread.currentThread().getId());
+                        threads.put(Thread.currentThread().getId(), Thread.currentThread().getId());
                     }
                 });
 
