@@ -104,7 +104,7 @@ public class OperationLatestTest {
             Assert.assertEquals(Long.valueOf(i), it.next());
         }
     }
-    @Test(timeout = 1000, expected = RuntimeException.class)
+    @Test(/*timeout = 1000, */expected = RuntimeException.class)
     public void testHasNextThrows() {
         TestScheduler scheduler = new TestScheduler();
         

@@ -18,8 +18,7 @@ package rx.operators;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicReference;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
@@ -39,33 +38,20 @@ public final class OperationLatest {
             @Override
             public Iterator<T> iterator() {
                 LatestObserverIterator<T> lio = new LatestObserverIterator<T>();
-                source.subscribe(lio);
+                source.materialize().subscribe(lio);
                 return lio;
             }
         };
     }
     
     /** Observer of source, iterator for output. */
-    static final class LatestObserverIterator<T> implements Observer<T>, Iterator<T> {
-        final Lock lock = new ReentrantLock();
+    static final class LatestObserverIterator<T> implements Observer<Notification<? extends T>>, Iterator<T> {
         final Semaphore notify = new Semaphore(0);
-        // observer's values
-        boolean oHasValue;
-        Notification.Kind oKind;
-        T oValue;
-        Throwable oError;
+        // observer's notification
+        final AtomicReference<Notification<? extends T>> reference = new AtomicReference<Notification<? extends T>>();
         @Override
-        public void onNext(T args) {
-            boolean wasntAvailable;
-            lock.lock();
-            try {
-                wasntAvailable = !oHasValue;
-                oHasValue = true;
-                oValue = args;
-                oKind = Notification.Kind.OnNext;
-            } finally {
-                lock.unlock();
-            }
+        public void onNext(Notification<? extends T> args) {
+            boolean wasntAvailable = reference.getAndSet(args) == null;
             if (wasntAvailable) {
                 notify.release();
             }
@@ -73,102 +59,46 @@ public final class OperationLatest {
 
         @Override
         public void onError(Throwable e) {
-            boolean wasntAvailable;
-            lock.lock();
-            try {
-                wasntAvailable = !oHasValue;
-                oHasValue = true;
-                oValue = null;
-                oError = e;
-                oKind = Notification.Kind.OnError;
-            } finally {
-                lock.unlock();
-            }
-            if (wasntAvailable) {
-                notify.release();
-            }
+            // not expected
         }
 
         @Override
         public void onCompleted() {
-            boolean wasntAvailable;
-            lock.lock();
-            try {
-                wasntAvailable = !oHasValue;
-                oHasValue = true;
-                oValue = null;
-                oKind = Notification.Kind.OnCompleted;
-            } finally {
-                lock.unlock();
-            }
-            if (wasntAvailable) {
-                notify.release();
-            }
+            // not expected
         }
         
-        // iterator's values
-        
-        boolean iDone;
-        boolean iHasValue;
-        T iValue;
-        Throwable iError;
-        Notification.Kind iKind;
-        
+        // iterator's notification
+        Notification<? extends T> iNotif;
         @Override
         public boolean hasNext() {
-            if (iError != null) {
-                Exceptions.propagate(iError);
+            if (iNotif != null && iNotif.isOnError()) {
+                throw Exceptions.propagate(iNotif.getThrowable());
             }
-            if (!iDone) {
-                if (!iHasValue) {
+            if (iNotif == null || !iNotif.isOnCompleted()) {
+                if (iNotif == null) {
                     try {
                         notify.acquire();
                     } catch (InterruptedException ex) {
-                        iError = ex;
-                        iHasValue = true;
-                        iKind = Notification.Kind.OnError;
-                        return true;
+                        Thread.currentThread().interrupt();
+                        iNotif = new Notification<T>(ex);
+                        throw Exceptions.propagate(ex);
                     }
                     
-                    lock.lock();
-                    try {
-                        iKind = oKind;
-                        switch (oKind) {
-                        case OnNext:
-                            iValue = oValue;
-                            oValue = null; // handover
-                            break;
-                        case OnError:
-                            iError = oError;
-                            oError = null; // handover
-                            if (iError != null) {
-                                Exceptions.propagate(iError);
-                            }
-                            break;
-                        case OnCompleted:
-                            iDone = true;
-                            break;
-                        }
-                        oHasValue = false;
-                    } finally {
-                        lock.unlock();
+                    iNotif = reference.getAndSet(null);
+                    if (iNotif.isOnError()) {
+                        throw Exceptions.propagate(iNotif.getThrowable());
                     }
-                    iHasValue = true;
                 }
             }
-            return !iDone;
+            return !iNotif.isOnCompleted();
         }
 
         @Override
         public T next() {
-            if (iKind == Notification.Kind.OnError) {
-                Exceptions.propagate(iError);
-            }
             if (hasNext()) {
-                if (iKind == Notification.Kind.OnNext) {
-                    T v = iValue;
-                    iValue = null; // handover
-                    iHasValue = false;
+                if (iNotif.isOnNext()) {
+                    T v = iNotif.getValue();
+                    iNotif = null;
                     return v;
                 }
             }

@@ -274,10 +274,7 @@ public class BlockingObservable<T> {
      * If the underlying observable produces items faster than the Iterator.next() takes them
      * onNext events might be skipped, but onError or onCompleted events are not.
      * <p>
-     * The difference between BlockingObservable.next() and BlockingObservable.latest() is that
-     * the former does not overwrite untaken values whereas the latter does.
-     * <p>
-     * Note also that an onNext() directly followed by onCompleted() might hide the given onNext() event.
+     * Note also that an onNext() directly followed by onCompleted() might hide the onNext() event.
      * 
      * @return the Iterable sequence
      */
