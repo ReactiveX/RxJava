@@ -2447,7 +2447,7 @@ public class Observable<T> {
      * @param <T> the type of items emitted by each Observable
      * @return an Observable that emits a Boolean value that indicates whether
      *         two sequences are equal by comparing the elements pairwise
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#sequenceequal">RxJava Wiki: sequenceEqual()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#sequenceequal">RxJava Wiki: sequenceEqual()</a>
      */
     public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second) {
         return sequenceEqual(first, second, new Func2<T, T, Boolean>() {
@@ -2476,7 +2476,7 @@ public class Observable<T> {
      * @param <T> the type of items emitted by each Observable
      * @return an Observable that emits a Boolean value that indicates whether
      *         two sequences are equal by comparing the elements pairwise
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#sequenceequal">RxJava Wiki: sequenceEqual()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#sequenceequal">RxJava Wiki: sequenceEqual()</a>
      */
     public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality) {
         return OperationSequenceEqual.sequenceEqual(first, second, equality);
@@ -3652,7 +3652,7 @@ public class Observable<T> {
      * @param predicate the condition to test every item emitted by the source
      *                  Observable
      * @return a subscription function for creating the target Observable
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#exists-and-isempty">RxJava Wiki: exists()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#exists-and-isempty">RxJava Wiki: exists()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211993.aspx" >MSDN: Observable.Any</a> Note: the description in this page was wrong at the time of this writing.
      */
     public Observable<Boolean> exists(Func1<? super T, Boolean> predicate) {
@@ -3670,7 +3670,7 @@ public class Observable<T> {
      * @return an Observable that emits <code>true</code> if the specified item
      *         is emitted by the source Observable, or <code>false</code> if the
      *         source Observable completes without emitting that item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#contains">RxJava Wiki: contains()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#contains">RxJava Wiki: contains()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228965.aspx">MSDN: Observable.Contains</a>
      */
     public Observable<Boolean> contains(final T element) {
@@ -5069,7 +5069,7 @@ public class Observable<T> {
      * @return an Observable that emits <code>true</code> if all items emitted
      *         by the source Observable satisfy the predicate; otherwise,
      *         <code>false</code>
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#all">RxJava Wiki: all()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#all">RxJava Wiki: all()</a>
      */
     public Observable<Boolean> all(Func1<? super T, Boolean> predicate) {
         return create(OperationAll.all(this, predicate));
@@ -5172,7 +5172,7 @@ public class Observable<T> {
      * @return an Observable that emits either the specified default item if the
      *         source Observable emits no items, or the items emitted by the
      *         source Observable
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#defaultifempty">RxJava Wiki: defaultIfEmpty()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#defaultifempty">RxJava Wiki: defaultIfEmpty()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229624.aspx">MSDN: Observable.DefaultIfEmpty</a>
      */
     public Observable<T> defaultIfEmpty(T defaultValue) {
@@ -5212,7 +5212,7 @@ public class Observable<T> {
      * @return an Observable that emits the items from the source Observable so
      *         long as each item satisfies the condition defined by
      *         <code>predicate</code>
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#takewhile-and-takewhilewithindex">RxJava Wiki: takeWhile()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#takewhile-and-takewhilewithindex">RxJava Wiki: takeWhile()</a>
      */
     public Observable<T> takeWhile(final Func1<? super T, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhile(this, predicate));
@@ -5232,7 +5232,7 @@ public class Observable<T> {
      * @return an Observable that emits items from the source Observable so long
      *         as the predicate continues to return <code>true</code> for each
      *         item, then completes
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#takewhile-and-takewhilewithindex">RxJava Wiki: takeWhileWithIndex()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#takewhile-and-takewhilewithindex">RxJava Wiki: takeWhileWithIndex()</a>
      */
     public Observable<T> takeWhileWithIndex(final Func2<? super T, ? super Integer, Boolean> predicate) {
         return create(OperationTakeWhile.takeWhileWithIndex(this, predicate));
@@ -5301,7 +5301,7 @@ public class Observable<T> {
      * @param <E> the type of items emitted by <code>other</code>
      * @return an Observable that emits the items of the source Observable until
      *         such time as <code>other</code> emits its first item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#takeuntil">RxJava Wiki: takeUntil()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#takeuntil">RxJava Wiki: takeUntil()</a>
      */
     public <E> Observable<T> takeUntil(Observable<? extends E> other) {
         return OperationTakeUntil.takeUntil(this, other);
@@ -5320,7 +5320,7 @@ public class Observable<T> {
      *                  as a second parameter.
      * @return an Observable that emits all items from the source Observable as
      *         soon as the condition becomes false
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skipwhile-and-skipwhilewithindex">RxJava Wiki: skipWhileWithIndex()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#skipwhile-and-skipwhilewithindex">RxJava Wiki: skipWhileWithIndex()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211631.aspx">MSDN: Observable.SkipWhile</a>
      */
     public Observable<T> skipWhileWithIndex(Func2<? super T, Integer, Boolean> predicate) {
@@ -5338,7 +5338,7 @@ public class Observable<T> {
      *                  Observable for a condition
      * @return an Observable that emits all items from the source Observable as
      *         soon as the condition becomes false
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skipwhile-and-skipwhilewithindex">RxJava Wiki: skipWhile()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#skipwhile-and-skipwhilewithindex">RxJava Wiki: skipWhile()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229685.aspx">MSDN: Observable.SkipWhile</a>
      */
     public Observable<T> skipWhile(Func1<? super T, Boolean> predicate) {
@@ -5719,7 +5719,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/isEmpty.png">
      * 
      * @return an Observable that emits a Boolean
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#exists-and-isempty">RxJava Wiki: isEmpty()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#exists-and-isempty">RxJava Wiki: isEmpty()</a>
      * @see <a href= "http://msdn.microsoft.com/en-us/library/hh229905.aspx" >MSDN: Observable.Any</a>
      */
     public Observable<Boolean> isEmpty() {
@@ -5964,7 +5964,7 @@ public class Observable<T> {
      * @param o2 an Observable competing to react first
      * @return an Observable that reflects whichever of the given Observables
      *         reacted first
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#amb">RxJava Wiki: amb()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2) {
@@ -5981,7 +5981,7 @@ public class Observable<T> {
      * @param o3 an Observable competing to react first
      * @return an Observable that reflects whichever of the given Observables
      *         reacted first
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#amb">RxJava Wiki: amb()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3) {
@@ -5999,7 +5999,7 @@ public class Observable<T> {
      * @param o4 an Observable competing to react first
      * @return an Observable that reflects whichever of the given Observables
      *         reacted first
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#amb">RxJava Wiki: amb()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4) {
@@ -6018,7 +6018,7 @@ public class Observable<T> {
      * @param o5 an Observable competing to react first
      * @return an Observable that reflects whichever of the given Observables
      *         reacted first
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#amb">RxJava Wiki: amb()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5) {
@@ -6038,7 +6038,7 @@ public class Observable<T> {
      * @param o6 an Observable competing to react first
      * @return an Observable that reflects whichever of the given Observables
      *         reacted first
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#amb">RxJava Wiki: amb()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6) {
@@ -6059,7 +6059,7 @@ public class Observable<T> {
      * @param o7 an Observable competing to react first
      * @return an Observable that reflects whichever of the given Observables
      *         reacted first
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#amb">RxJava Wiki: amb()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7) {
@@ -6081,7 +6081,7 @@ public class Observable<T> {
      * @param o8 an observable competing to react first
      * @return an Observable that reflects whichever of the given Observables
      *         reacted first
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#amb">RxJava Wiki: amb()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8) {
@@ -6104,7 +6104,7 @@ public class Observable<T> {
      * @param o9 an Observable competing to react first
      * @return an Observable that reflects whichever of the given Observables
      *         reacted first
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#amb">RxJava Wiki: amb()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8, Observable<? extends T> o9) {
@@ -6119,7 +6119,7 @@ public class Observable<T> {
      * @param sources Observable sources competing to react first
      * @return an Observable that reflects whichever of the given Observables
      *         reacted first
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#amb">RxJava Wiki: amb()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229115.aspx">MSDN: Observable.Amb</a>
      */
     public static <T> Observable<T> amb(Iterable<? extends Observable<? extends T>> sources) {
