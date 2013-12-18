@@ -2124,6 +2124,31 @@ public class Observable<T> {
     }
 
     /**
+     * Return an Observable which delays the subscription to this Observable sequence
+     * by the given amount.
+     * @param delay the time to delay the subscription
+     * @param unit the time unit
+     * @return an Observable which delays the subscription to this Observable sequence
+     *         by the given amount.
+     */
+    public Observable<T> delaySubscription(long delay, TimeUnit unit) {
+        return delaySubscription(delay, unit, Schedulers.threadPoolForComputation());
+    }
+    
+    /**
+     * Return an Observable which delays the subscription to this Observable sequence
+     * by the given amount, waiting and subscribing on the given scheduler.
+     * @param delay the time to delay the subscription
+     * @param unit the time unit
+     * @param scheduler the scheduler where the waiting and subscription will happen
+     * @return an Observable which delays the subscription to this Observable sequence
+     *         by the given amount, waiting and subscribing on the given scheduler
+     */
+    public Observable<T> delaySubscription(long delay, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationDelay.delaySubscription(this, delay, unit, scheduler));
+    }
+    
+    /**
      * Drops items emitted by an Observable that are followed by newer items
      * before a timeout value expires. The timer resets on each emission.
      * <p>
@@ -5288,6 +5313,148 @@ public class Observable<T> {
     public Observable<T> takeLast(final int count) {
         return create(OperationTakeLast.takeLast(this, count));
     }
+
+    /**
+     * Return an Observable which contains the items from this observable which
+     * were emitted not before this completed minus a time window.
+     * 
+     * @param time the length of the time window, relative to the completion of this
+     *             observable.
+     * @param unit the time unit
+     * @return an Observable which contains the items from this observable which
+     *         were emitted not before this completed minus a time window.
+     */
+    public Observable<T> takeLast(long time, TimeUnit unit) {
+        return takeLast(time, unit, Schedulers.threadPoolForComputation());
+    }
+    
+    /**
+     * Return an Observable which contains the items from this observable which
+     * were emitted not before this completed minus a time window, where the timing
+     * information is provided by the given scheduler.
+     * 
+     * @param time the length of the time window, relative to the completion of this
+     *             observable.
+     * @param unit the time unit
+     * @param scheduler the scheduler which provides the timestamps for the observed
+     *                  elements
+     * @return an Observable which contains the items from this observable which
+     *         were emitted not before this completed minus a time window, where the timing
+     * information is provided by the given scheduler
+     */
+    public Observable<T> takeLast(long time, TimeUnit unit, Scheduler scheduler) {
+        return create(OperationTakeLast.takeLast(this, time, unit, scheduler));
+    }
+    
+    /**
+     * Return an Observable which contains at most count items from this Observable
+     * which were emitted not before this completed minus a time window.
+     * 
+     * @param count the maximum number of items to return
+     * @param time the length of the time window, relative to the completion of this
+     *             observable.
+     * @param unit the time unit
+     * @return Return an Observable which contains at most count items from this Observable
+     *         which were emitted not before this completed minus a time window.
+     */
+    public Observable<T> takeLast(int count, long time, TimeUnit unit) {
+        return takeLast(count, time, unit, Schedulers.threadPoolForComputation());
+    }
+
+    /**
+     * Return an Observable which contains at most count items from this Observable
+     * which were emitted not before this completed minus a time window, where the timing
+     * information is provided by the given scheduler.
+     * 
+     * @param count the maximum number of items to return
+     * @param time the length of the time window, relative to the completion of this
+     *             observable.
+     * @param unit the time unit
+     * @param scheduler the scheduler which provides the timestamps for the observed
+     *                  elements
+     * @return Return an Observable which contains at most count items from this Observable
+     *         which were emitted not before this completed minus a time window, where the timing
+     *         information is provided by the given scheduler
+     */
+    public Observable<T> takeLast(int count, long time, TimeUnit unit, Scheduler scheduler) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 required");
+        }
+        return create(OperationTakeLast.takeLast(this, count, time, unit, scheduler));
+    }
+
+    /**
+     * Return an Observable which emits single List containing the last count 
+     * elements from this Observable.
+     * 
+     * @param count the number of items to take last
+     * @return an Observable which emits single list containing  the last count 
+     *         elements from this Observable.
+     */
+    public Observable<List<T>> takeLastBuffer(int count) {
+        return takeLast(count).toList();
+    }
+    
+    /**
+     * Return an Observable which emits single List containing items which
+     * were emitted not before this completed minus a time window.
+     * @param time the length of the time window, relative to the completion of this
+     *             observable.
+     * @param unit the time unit
+     * @return an Observable which emits single list containing items which
+     *         were emitted not before this completed minus a time window
+     */
+    public Observable<List<T>> takeLastBuffer(long time, TimeUnit unit) {
+        return takeLast(time, unit).toList();
+    }
+
+    /**
+     * Return an Observable which emits single List containing items which 
+     * were emitted not before this completed minus a time window, where the timing
+     * information is provided by the given scheduler.
+     * @param time the length of the time window, relative to the completion of this
+     *             observable.
+     * @param unit the time unit
+     * @param scheduler the scheduler which provides the timestamps for the observed
+     *                  elements
+     * @return an Observable which emits single list containing items which 
+     *         were emitted not before this completed minus a time window, where the timing
+     *         information is provided by the given scheduler
+     */
+    public Observable<List<T>> takeLastBuffer(long time, TimeUnit unit, Scheduler scheduler) {
+        return takeLast(time, unit, scheduler).toList();
+    }
+
+    /**
+     * Return an Observable which emits a single List containing at most count items 
+     * from this Observable which were emitted not before this completed minus a time window.
+     * @param count the number of items to take last
+     * @param time the length of the time window, relative to the completion of this
+     *             observable.
+     * @param unit the time unit
+     * @return an Observable which emits a single List containing at most count items 
+     *         from this Observable which were emitted not before this completed minus a time window.
+     */
+    public Observable<List<T>> takeLastBuffer(int count, long time, TimeUnit unit) {
+        return takeLast(count, time, unit).toList();
+    }
+
+    /**
+     * Return an Observable which emits a single List containing at most count items 
+     * from this Observable which were emitted not before this completed minus a time window.
+     * @param count the number of items to take last
+     * @param time the length of the time window, relative to the completion of this
+     *             observable.
+     * @param unit the time unit
+     * @param scheduler the scheduler which provides the timestamps for the observed
+     *                  elements
+     * @return an Observable which emits a single List containing at most count items 
+     *         from this Observable which were emitted not before this completed minus a time window.
+     */
+    public Observable<List<T>> takeLastBuffer(int count, long time, TimeUnit unit, Scheduler scheduler) {
+        return takeLast(count, time, unit, scheduler).toList();
+    }
+    
 
     /**
      * Returns an Observable that emits the items from the source Observable

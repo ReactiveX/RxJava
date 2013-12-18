@@ -18,8 +18,13 @@ package rx.operators;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
+import rx.Observer;
 import rx.Scheduler;
+import rx.Subscription;
 import rx.observables.ConnectableObservable;
+import rx.subscriptions.SerialSubscription;
+import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
 public final class OperationDelay {
@@ -39,5 +44,42 @@ public final class OperationDelay {
             }
         });
         return Observable.concat(seqs);
+    }
+    
+    /**
+     * Delays the subscription to the source by the given amount, running on the given scheduler.
+     */
+    public static <T> OnSubscribeFunc<T> delaySubscription(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+        return new DelaySubscribeFunc<T>(source, time, unit, scheduler);
+    }
+    
+    /** Subscribe function which schedules the actual subscription to source on a scheduler at a later time. */
+    private static final class DelaySubscribeFunc<T> implements OnSubscribeFunc<T> {
+        final Observable<? extends T> source;
+        final Scheduler scheduler;
+        final long time;
+        final TimeUnit unit;
+
+        public DelaySubscribeFunc(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+            this.source = source;
+            this.scheduler = scheduler;
+            this.time = time;
+            this.unit = unit;
+        }
+        @Override
+        public Subscription onSubscribe(final Observer<? super T> t1) {
+            final SerialSubscription ssub = new SerialSubscription();
+            
+            ssub.setSubscription(scheduler.schedule(new Action0() {
+                @Override
+                public void call() {
+                    if (!ssub.isUnsubscribed()) {
+                        ssub.setSubscription(source.subscribe(t1));
+                    }
+                }
+            }, time, unit));
+            
+            return ssub;
+        }
     }
 }
