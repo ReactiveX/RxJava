@@ -15,6 +15,7 @@
  */
 package rx.operators;
 
+import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,6 +24,8 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.SerialSubscription;
+import rx.util.functions.Func1;
 
 /**
  * Returns an Observable that emits the items emitted by two or more Observables, one after the
@@ -167,5 +170,93 @@ public final class OperationConcat {
                 }
             };
         }
+    }
+    /**
+     * Concatenates the observable sequences obtained by running the
+     * resultSelector for each element in the given Iterable source.
+     * @param <T> the source value type
+     * @param <R> the result value type
+     * @param source the source sequence
+     * @param resultSelector the result selector function to return
+     *                       an Observable sequence for concatenation
+     * @return a subscriber function
+     */
+    public static <T, R> OnSubscribeFunc<R> forIterable(Iterable<? extends T> source, Func1<? super T, ? extends Observable<? extends R>> resultSelector) {
+        return new For<T, R>(source, resultSelector);
+    }
+    
+    /** 
+     * For each source element in an iterable, concatenate
+     * the observables returned by a selector function.
+     * @param <T> the source value type
+     * @param <R> the result value type
+     */
+    private static final class For<T, R> implements OnSubscribeFunc<R> {
+        final Iterable<? extends T> source;
+        final Func1<? super T, ? extends Observable<? extends R>> resultSelector;
+
+        public For(Iterable<? extends T> source, Func1<? super T, ? extends Observable<? extends R>> resultSelector) {
+            this.source = source;
+            this.resultSelector = resultSelector;
+        }
+        
+        @Override
+        public Subscription onSubscribe(Observer<? super R> t1) {
+            SerialSubscription ssub = new SerialSubscription();
+            Iterator<? extends T> it = source.iterator();
+            ValueObserver<T, R> vo = new ValueObserver<T, R>(t1, ssub, it, resultSelector);
+            vo.onCompleted(); // trigger the first subscription
+            return ssub;
+        }
+    }
+    /**
+     * The observer of values in the returned observables.
+     */
+    private static final class ValueObserver<T, R> implements Observer<R> {
+        final Observer<? super R> observer;
+        final SerialSubscription cancel;
+        final Iterator<? extends T> iterator;
+        final Func1<? super T, ? extends Observable<? extends R>> resultSelector;
+        public ValueObserver(
+                Observer<? super R> observer, 
+                SerialSubscription cancel, 
+                Iterator<? extends T> iterator,
+                Func1<? super T, ? extends Observable<? extends R>> resultSelector
+                ) {
+            this.observer = observer;
+            this.cancel = cancel;
+            this.iterator = iterator;
+            this.resultSelector = resultSelector;
+        }
+
+        @Override
+        public void onNext(R args) {
+            observer.onNext(args);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            observer.onError(e);
+            cancel.unsubscribe();
+        }
+
+        @Override
+        public void onCompleted() {
+            try {
+                if (iterator.hasNext()) {
+                    T v = iterator.next();
+                    Observable<? extends R> o = resultSelector.call(v);
+                    cancel.setSubscription(o.subscribe(this));
+                    return;
+                }
+            } catch (Throwable t) {
+                observer.onError(t);
+                cancel.unsubscribe();
+                return;
+            }
+            observer.onCompleted();
+            cancel.unsubscribe();
+        }
+
     }
 }
