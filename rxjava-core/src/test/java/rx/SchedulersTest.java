@@ -327,12 +327,13 @@ public class SchedulersTest {
         // use latches instead of Thread.sleep
         final CountDownLatch latch = new CountDownLatch(10);
         final CountDownLatch completionLatch = new CountDownLatch(1);
+        final BooleanSubscription cancel = new BooleanSubscription();
 
-        Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
+        Observable<Integer> obs = Observable.create(new Observable.OnSubscribeFunc<Integer>() {
             @Override
             public Subscription onSubscribe(final Observer<? super Integer> observer) {
 
-                return Schedulers.threadPoolForComputation().schedule(new BooleanSubscription(), new Func2<Scheduler, BooleanSubscription, Subscription>() {
+                return Schedulers.threadPoolForComputation().schedule(cancel, new Func2<Scheduler, BooleanSubscription, Subscription>() {
                     @Override
                     public Subscription call(Scheduler scheduler, BooleanSubscription cancel) {
                         if (cancel.isUnsubscribed()) {
@@ -378,6 +379,15 @@ public class SchedulersTest {
             fail("Timed out waiting on onNext latch");
         }
 
+        
+        // wait some turn to let the action run
+        Thread.sleep(100);
+        
+        cancel.unsubscribe();
+        
+        // allow seeing the cancellation
+        Thread.sleep(100);
+        
         // now unsubscribe and ensure it stops the recursive loop
         subscribe.unsubscribe();
         System.out.println("unsubscribe");
