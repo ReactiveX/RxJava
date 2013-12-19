@@ -341,6 +341,52 @@ public class Functions {
         };
     }
 
+    /**
+     * Return a Func0 which returns the given constant value.
+     * @param <R> the result type
+     * @param value the constant value to return
+     * @return a function which returns the given constant value.
+     */
+    public static <R> Func0<R> just0(final R value) {
+        return new Func0<R>() {
+            @Override
+            public R call() {
+                return value;
+            }
+        };
+    }
+    /**
+     * Return a Func1 which returns the given constant value.
+     * @param <T1> the first parameter type
+     * @param <R> the result type
+     * @param value the constant value to return
+     * @return a function which returns the given constant value.
+     */
+    public static <T1, R> Func1<T1, R> just1(final R value) {
+        return new Func1<T1, R>() {
+            @Override
+            public R call(T1 t1) {
+                return value;
+            }
+        };
+    }
+    /**
+     * Return a Func2 which returns the given constant value.
+     * @param <T1> the first parameter type
+     * @param <T2> the second parameter type
+     * @param <R> the result type
+     * @param value the constant value to return
+     * @return a function which returns the given constant value.
+     */
+    public static <T1, T2, R> Func2<T1, T2, R> just2(final R value) {
+        return new Func2<T1, T2, R>() {
+            @Override
+            public R call(T1 t1, T2 t2) {
+                return value;
+            }
+        };
+    }
+
     private enum AlwaysTrue implements Func1<Object, Boolean> {
         INSTANCE;
 
