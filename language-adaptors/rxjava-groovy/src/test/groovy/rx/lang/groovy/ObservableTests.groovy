@@ -278,7 +278,7 @@ def class ObservableTests {
         assertEquals("one", s)
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testSingle2() {
         Observable.from("one", "two").toBlockingObservable().single({ x -> x.length() == 3})
     }
