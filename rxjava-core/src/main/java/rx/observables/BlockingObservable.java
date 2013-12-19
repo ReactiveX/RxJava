@@ -62,25 +62,6 @@ public class BlockingObservable<T> {
         return new BlockingObservable<T>(o);
     }
 
-    private static <T> T _singleOrDefault(BlockingObservable<? extends T> source, boolean hasDefault, T defaultValue) {
-        Iterator<? extends T> it = source.toIterable().iterator();
-
-        if (!it.hasNext()) {
-            if (hasDefault) {
-                return defaultValue;
-            }
-            throw new IllegalStateException("Expected single entry. Actually empty stream.");
-        }
-
-        T result = it.next();
-
-        if (it.hasNext()) {
-            throw new IllegalStateException("Expected single entry. Actually more than one entry.");
-        }
-
-        return result;
-    }
-
     /**
      * Used for protecting against errors being thrown from {@link Observer} implementations and
      * ensuring onNext/onError/onCompleted contract compliance.
@@ -211,20 +192,7 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229320(v=vs.103).aspx">MSDN: Observable.FirstOrDefault</a>
      */
     public T firstOrDefault(T defaultValue) {
-        boolean found = false;
-        T result = null;
-
-        for (T value : toIterable()) {
-            found = true;
-            result = value;
-            break;
-        }
-
-        if (!found) {
-            return defaultValue;
-        }
-
-        return result;
+        return from(o.take(1)).singleOrDefault(defaultValue);
     }
 
     /**
@@ -244,7 +212,8 @@ public class BlockingObservable<T> {
     }
 
     /**
-     * Returns the last item emitted by a specified {@link Observable}.
+     * Returns the last item emitted by a specified {@link Observable}, or throws IllegalArgumentException
+     * if source contains no elements.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.png">
      * 
@@ -252,20 +221,23 @@ public class BlockingObservable<T> {
      * @throws IllegalArgumentException if source contains no elements
      */
     public T last() {
-        return new BlockingObservable<T>(o.last()).single();
+        return from(o.last()).single();
     }
 
     /**
-     * Returns the last item emitted by a specified {@link Observable} that matches a predicate.
+     * Returns the last item emitted by a specified {@link Observable} that matches a predicate,
+     * or throws IllegalArgumentException if no such items are emitted.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
      * 
      * @param predicate
      *            a predicate function to evaluate items emitted by the {@link Observable}
      * @return the last item emitted by the {@link Observable} that matches the predicate
+     * @throws IllegalArgumentException
+     *            if no such items are emitted.
      */
     public T last(final Func1<? super T, Boolean> predicate) {
-        return from(o.filter(predicate)).last();
+        return from(o.last(predicate)).single();
     }
 
     /**
@@ -280,19 +252,7 @@ public class BlockingObservable<T> {
      *         are emitted
      */
     public T lastOrDefault(T defaultValue) {
-        boolean found = false;
-        T result = null;
-
-        for (T value : toIterable()) {
-            found = true;
-            result = value;
-        }
-
-        if (!found) {
-            return defaultValue;
-        }
-
-        return result;
+        return from(o.takeLast(1)).singleOrDefault(defaultValue);
     }
 
     /**
@@ -339,19 +299,19 @@ public class BlockingObservable<T> {
 
     /**
      * If the {@link Observable} completes after emitting a single item, return that item,
-     * otherwise throw an exception.
+     * otherwise throw an IllegalArgumentException.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.png">
      * 
      * @return the single item emitted by the {@link Observable}
      */
     public T single() {
-        return _singleOrDefault(this, false, null);
+        return from(o.single()).toIterable().iterator().next();
     }
 
     /**
      * If the {@link Observable} completes after emitting a single item that matches a given
-     * predicate, return that item, otherwise throw an exception.
+     * predicate, return that item, otherwise throw an IllegalArgumentException.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
      * 
@@ -360,12 +320,12 @@ public class BlockingObservable<T> {
      * @return the single item emitted by the source {@link Observable} that matches the predicate
      */
     public T single(Func1<? super T, Boolean> predicate) {
-        return _singleOrDefault(from(o.filter(predicate)), false, null);
+        return from(o.single(predicate)).toIterable().iterator().next();
     }
 
     /**
      * If the {@link Observable} completes after emitting a single item, return that item; if it
-     * emits more than one item, throw an exception; if it emits no items, return a default value.
+     * emits more than one item, throw an IllegalArgumentException; if it emits no items, return a default value.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.png">
      * 
@@ -375,12 +335,22 @@ public class BlockingObservable<T> {
      *         are emitted
      */
     public T singleOrDefault(T defaultValue) {
-        return _singleOrDefault(this, true, defaultValue);
+        Iterator<? extends T> it = this.toIterable().iterator();
+
+        if (!it.hasNext()) {
+            return defaultValue;
+        }
+
+        T result = it.next();
+        if (it.hasNext()) {
+            throw new IllegalArgumentException("Sequence contains too many elements");
+        }
+        return result;
     }
 
     /**
      * If the {@link Observable} completes after emitting a single item that matches a predicate,
-     * return that item; if it emits more than one such item, throw an exception; if it emits no
+     * return that item; if it emits more than one such item, throw an IllegalArgumentException; if it emits no
      * items, return a default value.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png">
@@ -393,7 +363,7 @@ public class BlockingObservable<T> {
      *         default value if no such items are emitted
      */
     public T singleOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
-        return _singleOrDefault(from(o.filter(predicate)), true, defaultValue);
+        return from(o.filter(predicate)).singleOrDefault(defaultValue);
     }
 
     /**

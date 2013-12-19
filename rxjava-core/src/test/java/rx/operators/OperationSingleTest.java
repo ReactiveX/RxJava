@@ -15,7 +15,6 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -28,49 +27,11 @@ import rx.Observable;
 import rx.Observer;
 import rx.util.functions.Func1;
 
-public class OperationLastTest {
+public class OperationSingleTest {
 
     @Test
-    public void testLastWithElements() {
-        Observable<Integer> last = Observable.from(1, 2, 3).last();
-        assertEquals(3, last.toBlockingObservable().single().intValue());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testLastWithNoElements() {
-        Observable<?> last = Observable.empty().last();
-        last.toBlockingObservable().single();
-    }
-    
-    @Test
-    public void testLastMultiSubscribe() {
-        Observable<Integer> last = Observable.from(1, 2, 3).last();
-        assertEquals(3, last.toBlockingObservable().single().intValue());
-        assertEquals(3, last.toBlockingObservable().single().intValue());
-    }
-
-    @Test
-    public void testLastViaObservable() {
-        Observable.from(1, 2, 3).last();
-    }
-
-    @Test
-    public void testLast() {
-        Observable<Integer> observable = Observable.from(1, 2, 3).last();
-
-        @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(observer);
-
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(3);
-        inOrder.verify(observer, times(1)).onCompleted();
-        inOrder.verifyNoMoreInteractions();
-    }
-
-    @Test
-    public void testLastWithOneElement() {
-        Observable<Integer> observable = Observable.from(1).last();
+    public void testSingle() {
+        Observable<Integer> observable = Observable.from(1).single();
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -83,8 +44,8 @@ public class OperationLastTest {
     }
 
     @Test
-    public void testLastWithEmpty() {
-        Observable<Integer> observable = Observable.<Integer> empty().last();
+    public void testSingleWithTooManyElements() {
+        Observable<Integer> observable = Observable.from(1, 2).single();
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -97,29 +58,22 @@ public class OperationLastTest {
     }
 
     @Test
-    public void testLastWithPredicate() {
-        Observable<Integer> observable = Observable.from(1, 2, 3, 4, 5, 6)
-                .last(new Func1<Integer, Boolean>() {
-
-                    @Override
-                    public Boolean call(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                });
+    public void testSingleWithEmpty() {
+        Observable<Integer> observable = Observable.<Integer> empty().single();
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
         observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(6);
-        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verify(observer, times(1)).onError(
+                isA(IllegalArgumentException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
-    public void testLastWithPredicateAndOneElement() {
-        Observable<Integer> observable = Observable.from(1, 2).last(
+    public void testSingleWithPredicate() {
+        Observable<Integer> observable = Observable.from(1, 2).single(
                 new Func1<Integer, Boolean>() {
 
                     @Override
@@ -139,8 +93,29 @@ public class OperationLastTest {
     }
 
     @Test
-    public void testLastWithPredicateAndEmpty() {
-        Observable<Integer> observable = Observable.from(1).last(
+    public void testSingleWithPredicateAndTooManyElements() {
+        Observable<Integer> observable = Observable.from(1, 2, 3, 4).single(
+                new Func1<Integer, Boolean>() {
+
+                    @Override
+                    public Boolean call(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                });
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(
+                isA(IllegalArgumentException.class));
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testSingleWithPredicateAndEmpty() {
+        Observable<Integer> observable = Observable.from(1).single(
                 new Func1<Integer, Boolean>() {
 
                     @Override
@@ -159,23 +134,8 @@ public class OperationLastTest {
     }
 
     @Test
-    public void testLastOrDefault() {
-        Observable<Integer> observable = Observable.from(1, 2, 3)
-                .lastOrDefault(4);
-
-        @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(observer);
-
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(3);
-        inOrder.verify(observer, times(1)).onCompleted();
-        inOrder.verifyNoMoreInteractions();
-    }
-
-    @Test
-    public void testLastOrDefaultWithOneElement() {
-        Observable<Integer> observable = Observable.from(1).lastOrDefault(2);
+    public void testSingleOrDefault() {
+        Observable<Integer> observable = Observable.from(1).singleOrDefault(2);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -188,9 +148,24 @@ public class OperationLastTest {
     }
 
     @Test
-    public void testLastOrDefaultWithEmpty() {
+    public void testSingleOrDefaultWithTooManyElements() {
+        Observable<Integer> observable = Observable.from(1, 2).singleOrDefault(
+                3);
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(
+                isA(IllegalArgumentException.class));
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testSingleOrDefaultWithEmpty() {
         Observable<Integer> observable = Observable.<Integer> empty()
-                .lastOrDefault(1);
+                .singleOrDefault(1);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -203,30 +178,9 @@ public class OperationLastTest {
     }
 
     @Test
-    public void testLastOrDefaultWithPredicate() {
-        Observable<Integer> observable = Observable.from(1, 2, 3, 4, 5, 6)
-                .lastOrDefault(8, new Func1<Integer, Boolean>() {
-
-                    @Override
-                    public Boolean call(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                });
-
-        @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(observer);
-
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(6);
-        inOrder.verify(observer, times(1)).onCompleted();
-        inOrder.verifyNoMoreInteractions();
-    }
-
-    @Test
-    public void testLastOrDefaultWithPredicateAndOneElement() {
-        Observable<Integer> observable = Observable.from(1, 2).lastOrDefault(4,
-                new Func1<Integer, Boolean>() {
+    public void testSingleOrDefaultWithPredicate() {
+        Observable<Integer> observable = Observable.from(1, 2).singleOrDefault(
+                4, new Func1<Integer, Boolean>() {
 
                     @Override
                     public Boolean call(Integer t1) {
@@ -245,8 +199,29 @@ public class OperationLastTest {
     }
 
     @Test
-    public void testLastOrDefaultWithPredicateAndEmpty() {
-        Observable<Integer> observable = Observable.from(1).lastOrDefault(2,
+    public void testSingleOrDefaultWithPredicateAndTooManyElements() {
+        Observable<Integer> observable = Observable.from(1, 2, 3, 4)
+                .singleOrDefault(6, new Func1<Integer, Boolean>() {
+
+                    @Override
+                    public Boolean call(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                });
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(
+                isA(IllegalArgumentException.class));
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testSingleOrDefaultWithPredicateAndEmpty() {
+        Observable<Integer> observable = Observable.from(1).singleOrDefault(2,
                 new Func1<Integer, Boolean>() {
 
                     @Override

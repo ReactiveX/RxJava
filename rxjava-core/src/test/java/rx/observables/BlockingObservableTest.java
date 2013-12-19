@@ -127,7 +127,7 @@ public class BlockingObservableTest {
         assertEquals("default", observable.singleOrDefault("default"));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testSingleDefaultPredicateMatchesMoreThanOne() {
         BlockingObservable.from(Observable.from("one", "two")).singleOrDefault("default", new Func1<String, Boolean>() {
             @Override
@@ -149,7 +149,7 @@ public class BlockingObservableTest {
         assertEquals("default", result);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testSingleDefaultWithMoreThanOne() {
         BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
         observable.singleOrDefault("default");
@@ -166,13 +166,13 @@ public class BlockingObservableTest {
         }));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testSingleWrong() {
         BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(1, 2));
         observable.single();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testSingleWrongPredicate() {
         BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(-1));
         observable.single(new Func1<Integer, Boolean>() {

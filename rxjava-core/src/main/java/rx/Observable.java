@@ -52,14 +52,12 @@ import rx.operators.OperationDoOnEach;
 import rx.operators.OperationElementAt;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
-import rx.operators.OperationFirstOrDefault;
 import rx.operators.OperationGroupBy;
 import rx.operators.OperationGroupByUntil;
 import rx.operators.OperationGroupJoin;
 import rx.operators.OperationInterval;
 import rx.operators.OperationJoin;
 import rx.operators.OperationJoinPatterns;
-import rx.operators.OperationLast;
 import rx.operators.OperationMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
@@ -78,6 +76,7 @@ import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperationScan;
 import rx.operators.OperationSequenceEqual;
+import rx.operators.OperationSingle;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipUntil;
@@ -5092,6 +5091,78 @@ public class Observable<T> {
     }
 
     /**
+     * If the Observable completes after emitting a single item, return an
+     * Observable containing that item. If it emits more than one item or no
+     * item, throw an IllegalArgumentException.
+     * 
+     * @return an Observable containing the single item emitted by the source
+     *         Observable that matches the predicate.
+     * @throws IllegalArgumentException
+     *             if the source emits more than one item or no item
+     */
+    public Observable<T> single() {
+        return create(OperationSingle.<T> single(this));
+    }
+
+    /**
+     * If the Observable completes after emitting a single item that matches a
+     * predicate, return an Observable containing that item. If it emits more
+     * than one such item or no item, throw an IllegalArgumentException.
+     * 
+     * @param predicate
+     *            a predicate function to evaluate items emitted by the source
+     *            Observable
+     * @return an Observable containing the single item emitted by the source
+     *         Observable that matches the predicate.
+     * @throws IllegalArgumentException
+     *             if the source emits more than one item or no item matching
+     *             the predicate
+     */
+    public Observable<T> single(Func1<? super T, Boolean> predicate) {
+        return filter(predicate).single();
+    }
+
+    /**
+     * If the Observable completes after emitting a single item, return an
+     * Observable containing that item. If it's empty, return an Observable
+     * containing the defaultValue. If it emits more than one item, throw an
+     * IllegalArgumentException.
+     * 
+     * @param defaultValue
+     *            a default value to return if the Observable emits no item
+     * @return an Observable containing the single item emitted by the source
+     *         Observable, or an Observable containing the defaultValue if no
+     *         item.
+     * @throws IllegalArgumentException
+     *             if the source emits more than one item
+     */
+    public Observable<T> singleOrDefault(T defaultValue) {
+        return create(OperationSingle.<T> singleOrDefault(this, defaultValue));
+    }
+
+    /**
+     * If the Observable completes after emitting a single item that matches a
+     * predicate, return an Observable containing that item. If it emits no such
+     * item, return an Observable containing the defaultValue. If it emits more
+     * than one such item, throw an IllegalArgumentException.
+     * 
+     * @param defaultValue
+     *            a default value to return if the {@link Observable} emits no
+     *            matching items
+     * @param predicate
+     *            a predicate function to evaluate items emitted by the
+     *            Observable
+     * @return an Observable containing the single item emitted by the source
+     *         Observable that matches the predicate, or an Observable
+     *         containing the defaultValue if no item matches the predicate
+     * @throws IllegalArgumentException
+     *             if the source emits more than one item matching the predicate
+     */
+    public Observable<T> singleOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
+        return filter(predicate).singleOrDefault(defaultValue);
+    }
+
+    /**
      * Returns an Observable that emits only the very first item emitted by the
      * source Observable, or an <code>IllegalArgumentException</code> if the source
      * {@link Observable} is empty.
@@ -5103,7 +5174,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first">RxJava Wiki: first()</a>
      */
     public Observable<T> first() {
-        return takeFirst().last();
+        return take(1).single();
     }
 
     /**
@@ -5119,7 +5190,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first">RxJava Wiki: first()</a>
      */
     public Observable<T> first(Func1<? super T, Boolean> predicate) {
-        return takeFirst(predicate).last();
+        return takeFirst(predicate).single();
     }
 
     /**
@@ -5137,7 +5208,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229320.aspx">MSDN: Observable.FirstOrDefault</a>
      */
     public Observable<T> firstOrDefault(T defaultValue) {
-        return create(OperationFirstOrDefault.firstOrDefault(this, defaultValue));
+        return take(1).singleOrDefault(defaultValue);
     }
 
     /**
@@ -5155,8 +5226,8 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#firstordefault">RxJava Wiki: firstOrDefault()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229759.aspx">MSDN: Observable.FirstOrDefault</a>
      */
-    public Observable<T> firstOrDefault(Func1<? super T, Boolean> predicate, T defaultValue) {
-        return create(OperationFirstOrDefault.firstOrDefault(this, predicate, defaultValue));
+    public Observable<T> firstOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
+        return takeFirst(predicate).singleOrDefault(defaultValue);
     }
 
     /**
@@ -5268,7 +5339,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
      */
     public Observable<T> takeFirst(Func1<? super T, Boolean> predicate) {
-        return skipWhile(not(predicate)).take(1);
+        return filter(predicate).take(1);
     }
 
     /**
@@ -5723,7 +5794,7 @@ public class Observable<T> {
     public Observable<Boolean> isEmpty() {
         return create(OperationAny.isEmpty(this));
     }
-    
+
     /**
      * Returns an Observable that emits the last item emitted by the source or
      * notifies observers of an <code>IllegalArgumentException</code> if the
@@ -5736,7 +5807,53 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observable-Operators#last">RxJava Wiki: last()</a>
      */
     public Observable<T> last() {
-        return create(OperationLast.last(this));
+        return takeLast(1).single();
+    }
+
+    /**
+     * Returns an Observable that emits only the last item emitted by the source
+     * Observable that satisfies a given condition, or an
+     * IllegalArgumentException if no such items are emitted.
+     * 
+     * @param predicate
+     *            the condition any source emitted item has to satisfy
+     * @return an Observable that emits only the last item satisfying the given
+     *         condition from the source, or an IllegalArgumentException if no
+     *         such items are emitted.
+     * @throws IllegalArgumentException
+     *             if no such itmes are emmited
+     */
+    public Observable<T> last(Func1<? super T, Boolean> predicate) {
+        return filter(predicate).takeLast(1).single();
+    }
+
+    /**
+     * Returns an Observable that emits only the last item emitted by the source
+     * Observable, or a default item if the source is empty.
+     * 
+     * @param defaultValue
+     *            the default item to emit if the source Observable is empty
+     * @return an Observable that emits only the last item from the source, or a
+     *         default item if the source is empty
+     */
+    public Observable<T> lastOrDefault(T defaultValue) {
+        return takeLast(1).singleOrDefault(defaultValue);
+    }
+
+    /**
+     * Returns an Observable that emits only the last item emitted by the source
+     * Observable that satisfies a given condition, or a default item otherwise.
+     * 
+     * @param defaultValue
+     *            the default item to emit if the source Observable doesn't emit
+     *            anything that satisfies the given condition
+     * @param predicate
+     *            the condition any source emitted item has to satisfy
+     * @return an Observable that emits only the last item from the source that
+     *         satisfies the given condition, or a default item otherwise
+     */
+    public Observable<T> lastOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
+        return filter(predicate).takeLast(1).singleOrDefault(defaultValue);
     }
 
     /**
