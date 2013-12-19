@@ -15,6 +15,11 @@
  */
 package rx;
 
+import rx.util.functions.Action0;
+import rx.util.functions.Action1;
+import rx.util.functions.Func0;
+import rx.util.functions.Func1;
+
 /**
  * An object representing a notification sent to an {@link Observable}.
  * 
@@ -52,13 +57,43 @@ public class Notification<T> {
 
     /**
      * A constructor used to represent an onCompleted notification.
+     * @deprecated use the static #createOnCompleted() method since an
+     *             onCompleted notification doesn't hold any state so
+     *             there is no need to have more than one instance of it.
      */
     public Notification() {
         this.throwable = null;
         this.value = null;
         this.kind = Kind.OnCompleted;
     }
-
+    /** A single instanceof a completed notification. */
+    private static final Notification<Object> ON_COMPLETED_NOTIFICATION;
+    static {
+        ON_COMPLETED_NOTIFICATION = new Notification<Object>();
+    }
+    
+    /**
+     * Return an Notificication representing an onCompleted event.
+     * @param <T> the value type of the notification
+     * @return an Notificication representing an onCompleted event
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Notification<T> createOnCompleted() {
+        return (Notification<T>)ON_COMPLETED_NOTIFICATION;
+    }
+    
+    /**
+     * Return an Notificication representing an onCompleted event
+     * with the help of a type witness.
+     * @param <T> the value type of the notification
+     * @param typeWitness the object to help the compiler determine the return type
+     * @return an Notificication representing an onCompleted event
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Notification<T> createOnCompleted(T typeWitness) {
+        return (Notification<T>)ON_COMPLETED_NOTIFICATION;
+    }
+    
     /**
      * Retrieves the exception associated with an onError notification.
      * 
@@ -126,6 +161,46 @@ public class Notification<T> {
         }
     }
 
+    /**
+     * Call the appropriate action based on the type of this notification.
+     * @param onNext the action to call if this notification is of kind OnNext.
+     * @param onError the action to call if this notification is of kind OnError.
+     * @param onCompleted the action to call if this notification is of kind OnCompleted
+     */
+    public void accept(Action1<? super T> onNext, Action1<? super Throwable> onError, Action0 onCompleted) {
+        if (isOnNext()) {
+            onNext.call(getValue());
+        } else
+        if (isOnCompleted()) {
+            onCompleted.call();
+        } else
+        if (isOnError()) {
+            onError.call(getThrowable());
+        }
+        throw new IllegalStateException("This Notification is neither onNext, onError nor onCompleted?!");
+    }
+    /**
+     * Call the appropriate function based on the type of this notification and
+     * return the function's result.
+     * @param <R> the result type of the functions
+     * @param onNext the function to call if this notification is of kind OnNext.
+     * @param onError the function to call if this notification is of kind OnError.
+     * @param onCompleted the function to call if this notification is of kind OnCompleted
+     * @return the result of the function call
+     */
+    public <R> R accept(Func1<? super T, ? extends R> onNext, Func1<? super Throwable, ? extends R> onError, Func0<? extends R> onCompleted) {
+        if (isOnNext()) {
+            return onNext.call(getValue());
+        } else
+        if (isOnCompleted()) {
+            return onCompleted.call();
+        } else
+        if (isOnError()) {
+            return onError.call(getThrowable());
+        }
+        throw new IllegalStateException("This Notification is neither onNext, onError nor onCompleted?!");
+    }
+    
     public static enum Kind {
         OnNext, OnError, OnCompleted
     }

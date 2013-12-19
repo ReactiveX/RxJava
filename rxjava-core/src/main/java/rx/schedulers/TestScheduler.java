@@ -15,14 +15,26 @@
  */
 package rx.schedulers;
 
+import rx.observables.TestableObservable;
+import rx.observables.HotObservable;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import rx.Notification;
+import rx.Observable;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.observables.ColdObservable;
+import rx.observers.TestObserver;
+import rx.observers.TestableObserver;
+import rx.subscriptions.SingleAssignmentSubscription;
+import rx.util.Recorded;
+import rx.util.functions.Action0;
+import rx.util.functions.Func0;
 import rx.util.functions.Func2;
 
 public class TestScheduler extends Scheduler {
@@ -99,6 +111,20 @@ public class TestScheduler extends Scheduler {
         }
         time = targetTimeInNanos;
     }
+    /**
+     * Run the test scheduler until no more actions are queued.
+     */
+    @SuppressWarnings("unchecked")
+    private void triggerAllActions() {
+        while (!queue.isEmpty()) {
+            TimedAction<?> current = queue.poll();
+            time = current.time;
+            if (!current.isCancelled.get()) {
+                // because the queue can have wildcards we have to ignore the type T for the state
+                ((Func2<Scheduler, Object, Subscription>) current.action).call(current.scheduler, current.state);
+            }
+        }
+    }
 
     @Override
     public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
@@ -116,5 +142,156 @@ public class TestScheduler extends Scheduler {
                 timedAction.cancel();
             }
         };
+    }
+    /**
+     * Schedule a task with absolute time.
+     * @param <T> the state type
+     * @param state the state
+     * @param timeInMillis the absolute time in milliseconds
+     * @param action the action to schedule
+     * @return the subscription to cancel the schedule
+     */
+    public <T> Subscription scheduleAbsolute(T state, 
+            long timeInMillis, 
+            Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
+        long delay = Math.max(0L, timeInMillis - now());
+        return schedule(state, action, delay, TimeUnit.MILLISECONDS);
+    }
+    
+    /**
+     * Schedule a task with absolute time.
+     * @param <T> the state type
+     * @param timeInMillis the absolute time in milliseconds
+     * @param action the action to schedule
+     * @return the subscription to cancel the schedule
+     */
+    public <T> Subscription scheduleAbsolute(
+            long timeInMillis, 
+            Action0 action) {
+        long delay = Math.max(0L, timeInMillis - now());
+        return schedule(action, delay, TimeUnit.MILLISECONDS);
+    }
+    
+    /**
+     * Schedule a task with relative time.
+     * @param <T> the state type
+     * @param state the state
+     * @param timeInMillis the relative time in milliseconds
+     * @param action the action to schedule
+     * @return the subscription to cancel the schedule
+     */
+    public <T> Subscription scheduleRelative(T state, 
+            long timeInMillis, 
+            Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
+        return schedule(state, action, timeInMillis, TimeUnit.MILLISECONDS);
+    }
+    
+    /**
+     * Schedule a task with relative time.
+     * @param <T> the state type
+     * @param timeInMillis the absolute time in milliseconds
+     * @param action the action to schedule
+     * @return the subscription to cancel the schedule
+     */
+    public <T> Subscription scheduleRelative(
+            long timeInMillis, 
+            Action0 action) {
+        return schedule(action, timeInMillis, TimeUnit.MILLISECONDS);
+    }
+    
+    /**
+     * Creates a hot observable using the given timestamped notification messages.
+     * @param <T> the value type
+     * @param messages the messages
+     * @return a testable observable
+     */
+    public <T> TestableObservable<T> createHotObservable(Recorded<Notification<T>>... messages) {
+        return HotObservable.create(this, messages);
+    }
+    /**
+     * Creates a hot observable using the given timestamped notification messages.
+     * @param <T> the value type
+     * @param messages the messages
+     * @return a testable observable
+     */
+    public <T> TestableObservable<T> createHotObservable(Iterable<? extends Recorded<Notification<T>>> messages) {
+        return HotObservable.create(this, messages);
+    }
+    /**
+     * Creates a cold observable using the given timestamped notification messages.
+     * @param <T> the value type
+     * @param messages the messages
+     * @return a testable observable
+     */
+    public <T> TestableObservable<T> createColdObservable(Recorded<Notification<T>>... messages) {
+        return ColdObservable.create(this, messages);
+    }
+    /**
+     * Creates a cold observable using the given timestamped notification messages.
+     * @param <T> the value type
+     * @param messages the messages
+     * @return a testable observable
+     */
+    public <T> TestableObservable<T> createColdObservable(Iterable<? extends Recorded<Notification<T>>> messages) {
+        return ColdObservable.create(this, messages);
+    }
+    /**
+     * Creates an observer that records received notification messages and timestamps of those.
+     * @param <T> the observed value type
+     * @return an observer with recorded notifications
+     */
+    public <T> TestableObserver<T> createObserver() {
+        return new TestObserver<T>(this);
+    }
+    /**
+     * Creates an observer that records received notification messages and timestamps of those,
+     * with the help of a type witness.
+     * @param <T> the observed value type
+     * @param typeWitness the type example to help the compiler infer types
+     * @return an observer with recorded notifications
+     */
+    public <T> TestableObserver<T> createObserver(T typeWitness) {
+        return new TestObserver<T>(this);
+    }
+    
+    /**
+     * Runs the test scheduler and uses the specified virtual times to
+     * invoke the factory function, subscribe to it and then unsubscribe.
+     * @param <T> the result value type
+     * @param create the factory function that will be invoked on time {@code created} to
+     *               return an observable.
+     * @param createdMillis the virtual time when the factory method should be invoked
+     * @param subscribedMillis the virtual time when the subscription should happen
+     * @param unsubscribedMillis the virtual time when the subscription should be unsubscribed
+     * @return a testable observer which records the subscription, unsubscription and event timestamps
+     */
+    public <T> TestableObserver<T> start(final Func0<? extends Observable<? extends T>> create, 
+            long createdMillis, long subscribedMillis, long unsubscribedMillis) {
+        final AtomicReference<Observable<? extends T>> source = new AtomicReference<Observable<? extends T>>();
+        final SingleAssignmentSubscription sas = new SingleAssignmentSubscription();
+        final TestableObserver<T> observer = createObserver();
+        
+        scheduleAbsolute(createdMillis, new Action0() {
+            @Override
+            public void call() {
+                source.set(create.call());
+            }
+        });
+        scheduleAbsolute(subscribedMillis, new Action0() {
+            @Override
+            public void call() {
+                sas.set(source.get().subscribe(observer));
+            }
+        });
+        scheduleAbsolute(unsubscribedMillis, new Action0() {
+            @Override
+            public void call() {
+                sas.unsubscribe();
+            }
+        });
+        
+        triggerAllActions();
+        
+        return observer;
     }
 }
