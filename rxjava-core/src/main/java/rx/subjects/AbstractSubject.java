@@ -17,9 +17,13 @@ package rx.subjects;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import rx.Notification;
@@ -30,7 +34,151 @@ import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action2;
 
 public abstract class AbstractSubject<T> extends Subject<T, T> {
-
+    /** Base state with lock. */
+    static class BaseState {
+        /** The lock to protect the other fields. */
+        private final Lock lock = new ReentrantLock();
+        /** Lock. */
+        public void lock() {
+            lock.lock();
+        }
+        /** Unlock. */
+        public void unlock() {
+            lock.unlock();
+        }
+        
+    } 
+    /** The default state of Subjects.*/
+    static class DefaultState<T> extends BaseState {
+        /** The currently subscribed observers. */
+        private final Map<Subscription, Observer<? super T>> observers = new LinkedHashMap<Subscription, Observer<? super T>>();
+        /** Indicator that the subject has completed. */
+        public boolean done;
+        /** If not null, the subject completed with an error. */
+        public Throwable error;
+        /** 
+         * Add an observer to the observers and create a Subscription for it.
+         * Caller should hold the lock.
+         * @param obs
+         * @return 
+         */
+        public Subscription addObserver(Observer<? super T> obs) {
+            Subscription s = new Subscription() {
+                final AtomicBoolean once = new AtomicBoolean();
+                @Override
+                public void unsubscribe() {
+                    if (once.compareAndSet(false, true)) {
+                        remove(this);
+                    }
+                }
+                
+            };
+            observers.put(s, obs);
+            return s;
+        }
+        /**
+         * Returns a live collection of the observers.
+         * <p>
+         * Caller should hold the lock.
+         * @return 
+         */
+        public Collection<Observer<? super T>> observers() {
+            return new ArrayList<Observer<? super T>>(observers.values());
+        }
+        /**
+         * Removes and returns all observers from the mapping.
+         * <p>
+         * Caller should hold the lock.
+         * @return 
+         */
+        public Collection<Observer<? super T>> removeAll() {
+            List<Observer<? super T>> list = new ArrayList<Observer<? super T>>(observers.values());
+            observers.clear();
+            return list;
+        }
+        /** 
+         * Remove the subscription. 
+         * @param s
+         */
+        protected void remove(Subscription s) {
+            lock();
+            try {
+                observers.remove(s);
+            } finally {
+                unlock();
+            }
+        }
+        /**
+         * Set the error state and dispatch it to the observers.
+         * @param e 
+         */
+        public void defaultOnError(Throwable e) {
+            lock();
+            try {
+                if (done) {
+                    return;
+                }
+                defaultDispatchError(e);
+            } finally {
+                unlock();
+            }
+        }
+        /**
+         * Set the completion state and dispatch it to the observers.
+         */
+        public void defaultOnCompleted() {
+            lock();
+            try {
+                if (done) {
+                    return;
+                }
+                done = true;
+                for (Observer<? super T> o : removeAll()) {
+                    o.onCompleted();
+                }
+            } finally {
+                unlock();
+            }
+        }
+        /**
+         * Dispatch the value to all subscribed observers.
+         * @param value 
+         */
+        public void defaultOnNext(T value) {
+            lock();
+            try {
+                if (done) {
+                    return;
+                }
+                defaultDispatch(value);
+            } finally {
+                unlock();
+            }
+        }
+        /**
+         * Dispatch the value to all subscribed observers.
+         * <p>
+         * Caller should hold the lock.
+         * @param value 
+         */
+        public void defaultDispatch(T value) {
+            for (Observer<? super T> o : observers()) {
+                o.onNext(value);
+            }
+        }
+        /**
+         * Dispatch the exception to all subscribed observers and
+         * remove them.
+         * @param e 
+         */
+        public void defaultDispatchError(Throwable e) {
+            done = true;
+            error = e;
+            for (Observer<? super T> o : removeAll()) {
+                o.onError(e);
+            }
+        }
+    }
     protected AbstractSubject(rx.Observable.OnSubscribeFunc<T> onSubscribe) {
         super(onSubscribe);
     }

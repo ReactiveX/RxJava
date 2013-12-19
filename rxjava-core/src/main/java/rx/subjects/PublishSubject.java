@@ -15,8 +15,12 @@
  */
 package rx.subjects;
 
-import rx.Notification;
+import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscription;
+import rx.subjects.AbstractSubject.DefaultState;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Subject that, once and {@link Observer} has subscribed, publishes all subsequent events to the subscriber.
@@ -41,44 +45,62 @@ import rx.Observer;
  * 
  * @param <T>
  */
-public class PublishSubject<T> extends AbstractSubject<T> {
-    public static <T> PublishSubject<T> create() {
-        final SubjectState<T> state = new SubjectState<T>();
-        OnSubscribeFunc<T> onSubscribe = getOnSubscribeFunc(state, null);
-        return new PublishSubject<T>(onSubscribe, state);
+public class PublishSubject<T> extends Subject<T, T> {
+    /** The inner state. */
+    protected static final class State<T> extends DefaultState<T> {
     }
-
-    private final SubjectState<T> state;
-
-    protected PublishSubject(OnSubscribeFunc<T> onSubscribe, SubjectState<T> state) {
-        super(onSubscribe);
+    
+    public static <T> PublishSubject<T> create() {
+        State<T> state = new State<T>();
+        return new PublishSubject<T>(new PublishSubjectSubscribeFunc<T>(state), state);
+    }
+/** The state. */
+    protected final State<T> state;
+    
+    protected PublishSubject(Observable.OnSubscribeFunc<T> osf, State<T> state) {
+        super(osf);
         this.state = state;
     }
 
     @Override
-    public void onCompleted() {
-        /**
-         * Mark this subject as completed and emit latest value + 'onCompleted' to all Observers
-         */
-        state.currentValue.set(new Notification<T>());
-        emitNotificationAndTerminate(state, null);
+    public void onNext(T args) {
+        state.defaultOnNext(args);
     }
 
     @Override
     public void onError(Throwable e) {
-        /**
-         * Mark this subject as completed with an error as the last value and emit 'onError' to all Observers
-         */
-        state.currentValue.set(new Notification<T>(e));
-        emitNotificationAndTerminate(state, null);
+        state.defaultOnError(e);
     }
-
+    
     @Override
-    public void onNext(T v) {
-        /**
-         * Store the latest value and send it to all observers;
-         */
-        state.currentValue.set(new Notification<T>(v));
-        emitNotification(state, null);
+    public void onCompleted() {
+        state.defaultOnCompleted();
+    }
+    /** The subscription function. */
+    protected static final class PublishSubjectSubscribeFunc<T> implements OnSubscribeFunc<T> {
+        protected final State<T> state;
+        protected PublishSubjectSubscribeFunc(State<T> state) {
+            this.state = state;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super T> t1) {
+            Throwable error;
+            state.lock();
+            try {
+                if (!state.done) {
+                    return state.addObserver(t1);
+                }
+                error = state.error;
+            } finally {
+                state.unlock();
+            }
+            if (error != null) {
+                t1.onError(error);
+            } else {
+                t1.onCompleted();
+            }
+            return Subscriptions.empty();
+        }
     }
 }

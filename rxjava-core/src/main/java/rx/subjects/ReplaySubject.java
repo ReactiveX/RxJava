@@ -15,16 +15,20 @@
  */
 package rx.subjects;
 
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.concurrent.atomic.AtomicBoolean;
+import rx.Notification;
 import rx.Observer;
 import rx.Subscription;
+import rx.subjects.AbstractSubject.BaseState;
+import rx.subjects.ReplaySubject.State.Replayer;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func1;
 
 /**
  * Subject that retains all events and will replay them to an {@link Observer} that subscribes.
@@ -49,128 +53,180 @@ import rx.util.functions.Func1;
  * 
  * @param <T>
  */
-public final class ReplaySubject<T> extends Subject<T, T>
-{
-
-    private boolean isDone = false;
-    private Throwable exception = null;
-    private final Map<Subscription, Observer<? super T>> subscriptions = new HashMap<Subscription, Observer<? super T>>();
-    private final List<T> history = Collections.synchronizedList(new ArrayList<T>());
-
-    public static <T> ReplaySubject<T> create() {
-        return new ReplaySubject<T>(new DelegateSubscriptionFunc<T>());
-    }
-
-    private ReplaySubject(DelegateSubscriptionFunc<T> onSubscribe) {
-        super(onSubscribe);
-        onSubscribe.wrap(new SubscriptionFunc());
-    }
-
-    private static final class DelegateSubscriptionFunc<T> implements OnSubscribeFunc<T>
-    {
-        private Func1<? super Observer<? super T>, ? extends Subscription> delegate = null;
-
-        public void wrap(Func1<? super Observer<? super T>, ? extends Subscription> delegate)
-        {
-            if (this.delegate != null) {
-                throw new UnsupportedOperationException("delegate already set");
-            }
-            this.delegate = delegate;
+public final class ReplaySubject<T> extends Subject<T, T> {
+    /** The state class. */
+    protected static final class State<T> extends BaseState {
+        /** The values observed so far. */
+        protected final List<Notification<T>> values = Collections.synchronizedList(new ArrayList<Notification<T>>());
+        /** General completion indicator. */
+        protected boolean done;
+        /** The map of replayers. */
+        protected final Map<Subscription, Replayer> replayers = new LinkedHashMap<Subscription, Replayer>();
+        /**
+         * Returns a live collection of the observers.
+         * <p>
+         * Caller should hold the lock.
+         * @return 
+         */
+        protected Collection<Replayer> replayers() {
+            return new ArrayList<Replayer>(replayers.values());
         }
-
-        @Override
-        public Subscription onSubscribe(Observer<? super T> observer)
-        {
-            return delegate.call(observer);
-        }
-    }
-
-    private class SubscriptionFunc implements Func1<Observer<? super T>, Subscription>
-    {
-        @Override
-        public Subscription call(Observer<? super T> observer) {
-            int item = 0;
-            Subscription subscription;
-
-            for (;;) {
-                while (item < history.size()) {
-                    observer.onNext(history.get(item++));
+        /** 
+         * Add a replayer to the replayers and create a Subscription for it.
+         * <p>
+         * Caller should hold the lock.
+         * 
+         * @param obs
+         * @return 
+         */
+        protected Subscription addReplayer(Observer<? super T> obs) {
+            Subscription s = new Subscription() {
+                final AtomicBoolean once = new AtomicBoolean();
+                @Override
+                public void unsubscribe() {
+                    if (once.compareAndSet(false, true)) {
+                        remove(this);
+                    }
                 }
-
-                synchronized (subscriptions) {
-                    if (item < history.size()) {
-                        continue;
+                
+            };
+            Replayer rp = new Replayer(obs, s);
+            replayers.put(s, rp);
+            rp.replayTill(values.size());
+            return s;
+        }
+        /** The replayer that holds a value where the given observer is currently at. */
+        protected final class Replayer {
+            protected final Observer<? super T> wrapped;
+            protected int index;
+            protected final Subscription cancel;
+            protected Replayer(Observer<? super T> wrapped, Subscription cancel) {
+                this.wrapped = wrapped;
+                this.cancel = cancel;
+            }
+            /** 
+             * Replay up to the given index
+             * @param limit
+             */
+            protected void replayTill(int limit) {
+                while (index < limit) {
+                    Notification<T> not = values.get(index);
+                    index++;
+                    if (!not.acceptSafe(wrapped)) {
+                        replayers.remove(cancel);
+                        return;
                     }
+                }
+            }
+        }
+        /** 
+         * Remove the subscription. 
+         * @param s
+         */
+        protected void remove(Subscription s) {
+            lock();
+            try {
+                replayers.remove(s);
+            } finally {
+                unlock();
+            }
+        }
+    }
+    /**
+     * Return a subject that retains all events and will replay them to an {@link Observer} that subscribes.
+     * @return a subject that retains all events and will replay them to an {@link Observer} that subscribes.
+     */
+    public static <T> ReplaySubject<T> create() {
+        State<T> state = new State<T>();
+        return new ReplaySubject<T>(new ReplaySubjectSubscribeFunc<T>(state), state);
+    }
+    private final State<T> state;
+    private ReplaySubject(OnSubscribeFunc<T> onSubscribe, State<T> state) {
+        super(onSubscribe);
+        this.state = state;
+    }
 
-                    if (exception != null) {
-                        observer.onError(exception);
-                        return Subscriptions.empty();
-                    }
-                    if (isDone) {
-                        observer.onCompleted();
-                        return Subscriptions.empty();
-                    }
 
-                    subscription = new RepeatSubjectSubscription();
-                    subscriptions.put(subscription, observer);
+    @Override
+    public void onCompleted() {
+        state.lock();
+        try {
+            if (state.done) {
+                return;
+            }
+            state.done = true;
+            state.values.add(new Notification<T>());
+            replayValues();
+        } finally {
+            state.unlock();
+        }
+    }
+
+    @Override
+    public void onError(Throwable e) {
+        state.lock();
+        try {
+            if (state.done) {
+                return;
+            }
+            state.done = true;
+            state.values.add(new Notification<T>(e));
+            replayValues();
+        } finally {
+            state.unlock();
+        }
+    }
+
+    @Override
+    public void onNext(T args) {
+        state.lock();
+        try {
+            if (state.done) {
+                return;
+            }
+            state.values.add(new Notification<T>(args));
+            replayValues();
+        } finally {
+            state.unlock();
+        }
+    }
+    /**
+     * Replay values up to the current index.
+     */
+    protected void replayValues() {
+        int s = state.values.size();
+        for (Replayer rp : state.replayers()) {
+            rp.replayTill(s);
+        }
+    }
+    /** The subscription function. */
+    protected static final class ReplaySubjectSubscribeFunc<T> implements OnSubscribeFunc<T> {
+        
+        private final State<T> state;
+        protected ReplaySubjectSubscribeFunc(State<T> state) {
+            this.state = state;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super T> t1) {
+            List<Notification<T>> values;
+            
+            state.lock();
+            try {
+                values = state.values;
+                if (!state.done) {
+                    return state.addReplayer(t1);
+                }
+            } finally {
+                state.unlock();
+            }
+            
+            for (Notification<T> v : values) {
+                if (!v.acceptSafe(t1)) {
                     break;
                 }
             }
-
-            return subscription;
-        }
-    }
-
-    private class RepeatSubjectSubscription implements Subscription
-    {
-        @Override
-        public void unsubscribe()
-        {
-            synchronized (subscriptions) {
-                subscriptions.remove(this);
-            }
-        }
-    }
-
-    @Override
-    public void onCompleted()
-    {
-        synchronized (subscriptions) {
-            isDone = true;
-            for (Observer<? super T> observer : new ArrayList<Observer<? super T>>(subscriptions.values())) {
-                observer.onCompleted();
-            }
-            subscriptions.clear();
-        }
-    }
-
-    @Override
-    public void onError(Throwable e)
-    {
-        synchronized (subscriptions) {
-            if (isDone) {
-                return;
-            }
-            isDone = true;
-            exception = e;
-            for (Observer<? super T> observer : new ArrayList<Observer<? super T>>(subscriptions.values())) {
-                observer.onError(e);
-            }
-            subscriptions.clear();
-        }
-    }
-
-    @Override
-    public void onNext(T args)
-    {
-        synchronized (subscriptions) {
-            if (isDone) {
-                return;
-            }
-            history.add(args);
-            for (Observer<? super T> observer : new ArrayList<Observer<? super T>>(subscriptions.values())) {
-                observer.onNext(args);
-            }
+            return Subscriptions.empty();
         }
     }
 }

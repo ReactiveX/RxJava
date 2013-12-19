@@ -15,7 +15,6 @@
  */
 package rx.subjects;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
@@ -178,5 +177,32 @@ public class BehaviorSubjectTest {
                     }
                 }
                 );
+    }
+    @Test
+    public void testFirstErrorOnly() {
+        BehaviorSubject<Integer> subject = BehaviorSubject.create(0);
+        Observer<Object> observer = mock(Observer.class);
+        
+        subject.subscribe(observer);
+        
+        RuntimeException ex = new RuntimeException("Forced failure");
+        
+        subject.onError(ex);
+
+        verify(observer, times(1)).onNext(0);
+        verify(observer, times(1)).onError(ex);
+        verify(observer, never()).onCompleted();
+        
+        RuntimeException ex2 = new RuntimeException("Forced failure 2");
+        
+        subject.onError(ex2);
+
+        Observer<Object> observer2 = mock(Observer.class);
+        
+        subject.subscribe(observer2);
+        verify(observer2, never()).onNext(any());
+        verify(observer2, times(1)).onError(ex);
+        verify(observer2, never()).onError(ex2);
+        verify(observer2, never()).onCompleted();
     }
 }

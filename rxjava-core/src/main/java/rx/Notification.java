@@ -125,6 +125,33 @@ public class Notification<T> {
             observer.onError(getThrowable());
         }
     }
+    /**
+     * Emits the notification value to the observer
+     * and captures the exception thrown by the onNext method.
+     * @param observer the observer to send the notification to
+     * @return false if a terminal condition was reached, i.e.,
+     * this is an isOnCompleted, isOnError or the observer.onNext threw
+     */
+    public boolean acceptSafe(Observer<? super T> observer) {
+        if (isOnNext()) {
+            try {
+                observer.onNext(getValue());
+                return true;
+            } catch (Throwable t) {
+                observer.onError(t);
+                return false;
+            }
+        } else 
+        if (isOnCompleted()) {
+            observer.onCompleted();
+            return false;
+        } else 
+        if (isOnError()) {
+            observer.onError(getThrowable());
+            return false;
+        }
+        return false;
+    }
 
     public static enum Kind {
         OnNext, OnError, OnCompleted

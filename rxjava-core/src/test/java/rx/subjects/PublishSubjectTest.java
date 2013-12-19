@@ -328,4 +328,32 @@ public class PublishSubjectTest {
 
     private final Throwable testException = new Throwable();
 
+    
+    @Test
+    public void testFirstErrorOnly() {
+        PublishSubject<Object> subject = PublishSubject.create();
+        Observer<Object> observer = mock(Observer.class);
+        
+        subject.subscribe(observer);
+        
+        RuntimeException ex = new RuntimeException("Forced failure");
+        
+        subject.onError(ex);
+
+        verify(observer, times(1)).onError(ex);
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onNext(any());
+        
+        RuntimeException ex2 = new RuntimeException("Forced failure 2");
+        
+        subject.onError(ex2);
+
+        Observer<Object> observer2 = mock(Observer.class);
+        
+        subject.subscribe(observer2);
+        verify(observer2, times(1)).onError(ex);
+        verify(observer2, never()).onError(ex2);
+        verify(observer2, never()).onCompleted();
+        verify(observer2, never()).onNext(any());
+    }
 }
