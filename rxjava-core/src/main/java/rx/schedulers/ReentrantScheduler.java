@@ -1,18 +1,18 @@
- /**
-  * Copyright 2013 Netflix, Inc.
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *
-  * http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
+/**
+ * Copyright 2013 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.schedulers;
 
 import java.util.concurrent.TimeUnit;
@@ -66,9 +66,11 @@ public final class ReentrantScheduler extends Scheduler {
             }
         };
         
-        scheduler.scheduleTask(r, scheduleSub);
+        Subscription sbefore = scheduleSub.getSubscription();
+        Subscription s = scheduler.scheduleTask(r);
+        scheduleSub.compareExchange(sbefore, s);
         
-        return composite;
+        return s;
     }
     
     @Override
@@ -77,7 +79,7 @@ public final class ReentrantScheduler extends Scheduler {
             // don't bother scheduling a task which wouldn't run anyway
             return Subscriptions.empty();
         }
-
+        
         Subscription before = actionSub.getSubscription();
         final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
         actionSub.compareExchange(before, discardableAction);
@@ -90,11 +92,13 @@ public final class ReentrantScheduler extends Scheduler {
                 actionSub.compareExchange(sbefore, s);
             }
         };
-        scheduler.scheduleTask(r, scheduleSub, delayTime, unit);
+        Subscription sbefore = scheduleSub.getSubscription();
+        Subscription s = scheduler.scheduleTask(r, delayTime, unit);;
+        scheduleSub.compareExchange(sbefore, s);
         
-        return composite;
+        return s;
     }
-
+    
     @Override
     public <T> Subscription schedulePeriodically(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long initialDelay, long period, TimeUnit unit) {
         if (composite.isUnsubscribed()) {
@@ -114,9 +118,11 @@ public final class ReentrantScheduler extends Scheduler {
                 actionSub.compareExchange(sbefore, s);
             }
         };
-        scheduler.scheduleTask(r, scheduleSub, initialDelay, period, unit);
+        Subscription sbefore = scheduleSub.getSubscription();
+        Subscription s = scheduler.scheduleTask(r, initialDelay, period, unit);
+        scheduleSub.compareExchange(sbefore, s);
         
-        return composite;
+        return s;
     }
     /**
      * An action that calls the underlying function in a periodic environment.
@@ -126,7 +132,7 @@ public final class ReentrantScheduler extends Scheduler {
         final T state;
         final Func2<? super Scheduler, ? super T, ? extends Subscription> underlying;
         final SerialSubscription ssub;
-
+        
         public PeriodicAction(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> underlying) {
             this.state = state;
             this.underlying = underlying;
@@ -142,10 +148,44 @@ public final class ReentrantScheduler extends Scheduler {
             }
             return Subscriptions.empty();
         }
-
+        
         @Override
         public void unsubscribe() {
             ssub.unsubscribe();
         }
+    }
+    /**
+     * Simple scheduler API used by the ReentrantScheduler to
+     * communicate with the actual scheduler implementation.
+     */
+    public interface ReentrantSchedulerHelper {
+        /**
+         * Schedule a task to be run immediately and update the subscription
+         * describing the schedule.
+         * @param r the task to run immediately
+         * @return the subscription to cancel the schedule
+         */
+        Subscription scheduleTask(Runnable r);
+        
+        /**
+         * Schedule a task to be run after the delay time and update the subscription
+         * describing the schedule.
+         * @param r the task to schedule
+         * @param delayTime the time to delay the execution
+         * @param unit the time unit
+         * @return the subscription to cancel the schedule
+         */
+        Subscription scheduleTask(Runnable r, long delayTime, TimeUnit unit);
+        
+        /**
+         * Schedule a task to be run after the delay time and after
+         * each period, then update the subscription describing the schedule.
+         * @param r the task to schedule
+         * @param initialDelay the initial delay of the schedule
+         * @param period the between period of the schedule
+         * @param unit the time unit
+         * @return the subscription to cancel the schedule
+         */
+        Subscription scheduleTask(Runnable r, long initialDelay, long period, TimeUnit unit);
     }
 }

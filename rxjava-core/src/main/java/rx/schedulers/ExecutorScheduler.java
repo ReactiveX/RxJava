@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.schedulers.ReentrantScheduler.ReentrantSchedulerHelper;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.ForwardSubscription;
 import rx.subscriptions.Subscriptions;
@@ -34,8 +35,10 @@ import rx.util.functions.Func2;
  * <p>
  * Note that if an {@link Executor} implementation is used instead of {@link ScheduledExecutorService} then a system-wide Timer will be used to handle delayed events.
  */
-public class ExecutorScheduler extends Scheduler implements ReentrantSchedulerHelper {
+public class ExecutorScheduler extends Scheduler {
     private final Executor executor;
+    /** The reentrant scheduler helper. */
+    private final ReentrantSchedulerHelper helper = new ESReentrantSchedulerHelper();
 
     public ExecutorScheduler(Executor executor) {
         this.executor = executor;
@@ -54,7 +57,7 @@ public class ExecutorScheduler extends Scheduler implements ReentrantSchedulerHe
             subscription.add(scheduleSub);
             subscription.add(actionSub);
 
-            final Scheduler _scheduler = new ReentrantScheduler(this, scheduleSub, actionSub, subscription);
+            final Scheduler _scheduler = new ReentrantScheduler(helper, scheduleSub, actionSub, subscription);
 
             _scheduler.schedulePeriodically(state, action, initialDelay, period, unit);
             
@@ -73,7 +76,7 @@ public class ExecutorScheduler extends Scheduler implements ReentrantSchedulerHe
         subscription.add(scheduleSub);
         subscription.add(actionSub);
         
-        final Scheduler _scheduler = new ReentrantScheduler(this, scheduleSub, actionSub, subscription);
+        final Scheduler _scheduler = new ReentrantScheduler(helper, scheduleSub, actionSub, subscription);
 
         _scheduler.schedule(state, action, delayTime, unit);
 
@@ -89,58 +92,71 @@ public class ExecutorScheduler extends Scheduler implements ReentrantSchedulerHe
         subscription.add(scheduleSub);
         subscription.add(actionSub);
         
-        final Scheduler _scheduler = new ReentrantScheduler(this, scheduleSub, actionSub, subscription);
+        final Scheduler _scheduler = new ReentrantScheduler(helper, scheduleSub, actionSub, subscription);
 
         _scheduler.schedule(state, action);
 
         return subscription;
     }
     
-    @Override
-    public void scheduleTask(Runnable r, ForwardSubscription out, long delayTime, TimeUnit unit) {
-        Subscription before = out.getSubscription();
+    protected Subscription scheduleTask(Runnable r, long delayTime, TimeUnit unit) {
         if (executor instanceof ScheduledExecutorService) {
             // we are a ScheduledExecutorService so can do proper scheduling
             ScheduledFuture<?> f = ((ScheduledExecutorService) executor).schedule(r, delayTime, unit);
             // add the ScheduledFuture as a subscription so we can cancel the scheduled action if an unsubscribe happens
-            out.compareExchange(before, Subscriptions.from(f));
+            return Subscriptions.from(f);
         } else {
             // we are not a ScheduledExecutorService so can't directly schedule
             if (delayTime == 0) {
                 // no delay so put on the thread-pool right now
-                scheduleTask(r, out);
+                return scheduleTask(r);
             } else {
                 // there is a delay and this isn't a ScheduledExecutorService so we'll use a system-wide ScheduledExecutorService
                 // to handle the scheduling and once it's ready then execute on this Executor
                 ScheduledFuture<?> f = GenericScheduledExecutorService.getInstance().schedule(r, delayTime, unit);
                 // add the ScheduledFuture as a subscription so we can cancel the scheduled action if an unsubscribe happens
-                out.compareExchange(before, Subscriptions.from(f));
+                return Subscriptions.from(f);
             }
         }
     }
     
-    @Override
-    public void scheduleTask(Runnable r, ForwardSubscription out) {
-        Subscription before = out.getSubscription();
+    public Subscription scheduleTask(Runnable r) {
         // submit for immediate execution
         if (executor instanceof ExecutorService) {
             // we are an ExecutorService so get a Future back that supports unsubscribe
             Future<?> f = ((ExecutorService) executor).submit(r);
             // add the Future as a subscription so we can cancel the scheduled action if an unsubscribe happens
-            out.compareExchange(before, Subscriptions.from(f));
+            return Subscriptions.from(f);
         } else {
             // we are the lowest common denominator so can't unsubscribe once we execute
             executor.execute(r);
-            out.compareExchange(before, Subscriptions.empty());
+            return Subscriptions.empty();
         }
     }
 
-    @Override
-    public void scheduleTask(Runnable r, ForwardSubscription out, long initialDelay, long period, TimeUnit unit) {
-        Subscription before = out.getSubscription();
+    public Subscription scheduleTask(Runnable r, long initialDelay, long period, TimeUnit unit) {
         ScheduledFuture<?> f = ((ScheduledExecutorService) executor).scheduleAtFixedRate(r, initialDelay, period, unit);
 
-        out.compareExchange(before, Subscriptions.from(f));
+        return Subscriptions.from(f);
     }
     
+    /** The reentrant helper. */
+    private final class ESReentrantSchedulerHelper implements ReentrantSchedulerHelper {
+
+        @Override
+        public Subscription scheduleTask(Runnable r) {
+            return ExecutorScheduler.this.scheduleTask(r);
+        }
+
+        @Override
+        public Subscription scheduleTask(Runnable r, long delayTime, TimeUnit unit) {
+            return ExecutorScheduler.this.scheduleTask(r, delayTime, unit);
+        }
+
+        @Override
+        public Subscription scheduleTask(Runnable r, long initialDelay, long period, TimeUnit unit) {
+            return ExecutorScheduler.this.scheduleTask(r, initialDelay, period, unit);
+        }
+        
+    }
 }
