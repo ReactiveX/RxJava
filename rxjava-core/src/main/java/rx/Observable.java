@@ -54,6 +54,7 @@ import rx.operators.OperationElementAt;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFirstOrDefault;
+import rx.operators.OperationFromFuture;
 import rx.operators.OperationGroupBy;
 import rx.operators.OperationGroupByUntil;
 import rx.operators.OperationGroupJoin;
@@ -6942,6 +6943,66 @@ public class Observable<T> {
             Func1<? super BooleanSubscription, ? extends Future<? extends Observable<? extends T>>> observableFactoryAsync,
             Scheduler scheduler) {
         return OperationDeferFuture.deferFuture(observableFactoryAsync, scheduler);
+    }
+    
+    /**
+     * Converts to asynchronous function into an observable sequence where 
+     * each subscription to the resulting sequence causes the function to be started.
+     * <p>
+     * <em>Important note</em> subscribing to the resulting observable blocks until
+     * the future completes.
+     * @param <T> the result type
+     * @param functionAsync the function to call when an Observer subscribes
+     * @return an Observable which returns the single result or exception of the future
+     * @see #fromFuture(rx.util.functions.Func0, rx.Scheduler) 
+     */
+    public static <T> Observable<T> fromFuture(Func0<? extends Future<? extends T>> functionAsync) {
+        return create(OperationFromFuture.fromFuture(functionAsync));
+    }
+    /**
+     * Converts to asynchronous function into an observable sequence where 
+     * each subscription to the resulting sequence causes the function to be started
+     * and run on the given scheduler.
+     * @param <T> the result type
+     * @param functionAsync the function to call when an Observer subscribes
+     * @param scheduler the scheduler where the Future returned by the functionAsync is started
+     * @return an Observable which returns the single result or exception of the future
+     */
+    public static <T> Observable<T> fromFuture(Func0<? extends Future<? extends T>> functionAsync, Scheduler scheduler) {
+        return create(OperationFromFuture.fromFuture(functionAsync, scheduler));
+    }
+    /**
+     * Converts to asynchronous function into an observable sequence
+     * where each subscription to the resulting sequence causes the function to be started and
+     * the passed-in BooleanSubscription is tied to the Observable sequence's subscription.
+     * <p>
+     * <em>Important note</em> subscribing to the resulting observable blocks until
+     * the future completes.
+     * @param <T> the result type
+     * @param functionAsync the function to call when an Observer subscribes which receives
+     *                      a BooleanSubscription that is tied to the subscription of the returned Observable
+     * @return an Observable which returns the single result or exception of the future
+     * @see #fromCancellableFuture(rx.util.functions.Func1, rx.Scheduler) 
+     */
+    public static <T> Observable<T> fromCancellableFuture(Func1<? super BooleanSubscription, ? extends Future<? extends T>> functionAsync) {
+        return create(OperationFromFuture.fromFuture(functionAsync));
+    }
+    
+    /**
+     * Converts to asynchronous function into an observable sequence
+     * where each subscription to the resulting sequence causes the function to be started and
+     * run on the given scheduler, and
+     * the passed-in BooleanSubscription is tied to the Observable sequence's subscription.
+     * @param <T> the result type
+     * @param functionAsync the function to call when an Observer subscribes which receives
+     *                      a BooleanSubscription that is tied to the subscription of the returned Observable
+     * @param scheduler the scheduler where the Future returned by the functionAsync is started
+     * @return an Observable which returns the single result or exception of the future
+     */
+    public static <T> Observable<T> fromCancellableFuture(
+            Func1<? super BooleanSubscription, ? extends Future<? extends T>> functionAsync,
+            Scheduler scheduler) {
+        return create(OperationFromFuture.fromFuture(functionAsync, scheduler));
     }
     
     /**
