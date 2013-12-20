@@ -111,6 +111,7 @@ import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
 import rx.schedulers.Schedulers;
 import rx.subjects.AsyncSubject;
+import rx.subjects.BoundedReplaySubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
@@ -4377,7 +4378,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211976.aspx">MSDN: Observable.Replay</a>
      */
     public ConnectableObservable<T> replay(int bufferSize) {
-        return OperationMulticast.multicast(this, OperationReplay.<T>replayBuffered(bufferSize));
+        return OperationMulticast.multicast(this, BoundedReplaySubject.<T>createBuffered(bufferSize));
     }
 
     /**
@@ -4399,7 +4400,7 @@ public class Observable<T> {
     public ConnectableObservable<T> replay(int bufferSize, Scheduler scheduler) {
         return OperationMulticast.multicast(this, 
                 OperationReplay.createScheduledSubject(
-                OperationReplay.<T>replayBuffered(bufferSize), scheduler));
+                BoundedReplaySubject.<T>createBuffered(bufferSize), scheduler));
     }
     
     /**
@@ -4441,7 +4442,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211811.aspx">MSDN: Observable.Replay</a>
      */
     public ConnectableObservable<T> replay(long time, TimeUnit unit, Scheduler scheduler) {
-        return OperationMulticast.multicast(this, OperationReplay.<T>replayWindowed(time, unit, -1, scheduler));
+        return OperationMulticast.multicast(this, BoundedReplaySubject.<T>createWindowed(time, unit, scheduler));
     }
 
     /**
@@ -4487,7 +4488,7 @@ public class Observable<T> {
         if (bufferSize < 0) {
             throw new IllegalArgumentException("bufferSize < 0");
         }
-        return OperationMulticast.multicast(this, OperationReplay.<T>replayWindowed(time, unit, bufferSize, scheduler));
+        return OperationMulticast.multicast(this, BoundedReplaySubject.<T>createWindowedAndBuffered(time, unit, bufferSize, scheduler));
     }
     
     /**
@@ -4563,7 +4564,7 @@ public class Observable<T> {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
-                return OperationReplay.replayBuffered(bufferSize);
+                return BoundedReplaySubject.createBuffered(bufferSize);
             }
         }, selector);
     }
@@ -4591,7 +4592,7 @@ public class Observable<T> {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
-                return OperationReplay.<T>createScheduledSubject(OperationReplay.<T>replayBuffered(bufferSize), scheduler);
+                return OperationReplay.<T>createScheduledSubject(BoundedReplaySubject.<T>createBuffered(bufferSize), scheduler);
             }
         }, selector);
     }
@@ -4644,7 +4645,7 @@ public class Observable<T> {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
-                return OperationReplay.replayWindowed(time, unit, -1, scheduler);
+                return BoundedReplaySubject.<T>createWindowed(time, unit, scheduler);
             }
         }, selector);
     }
@@ -4703,7 +4704,7 @@ public class Observable<T> {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
-                return OperationReplay.replayWindowed(time, unit, bufferSize, scheduler);
+                return BoundedReplaySubject.<T>createWindowedAndBuffered(time, unit, bufferSize, scheduler);
             }
         }, selector);
     }

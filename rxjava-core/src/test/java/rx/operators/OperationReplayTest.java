@@ -24,8 +24,8 @@ import static org.mockito.Mockito.*;
 import rx.Observable;
 import rx.Observer;
 import rx.observables.ConnectableObservable;
-import rx.operators.OperationReplay.VirtualBoundedList;
 import rx.schedulers.TestScheduler;
+import rx.subjects.BoundedReplaySubject.VirtualBoundedList;
 import rx.subjects.PublishSubject;
 import rx.util.functions.Func1;
 
