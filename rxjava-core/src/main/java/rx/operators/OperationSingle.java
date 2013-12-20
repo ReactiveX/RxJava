@@ -47,9 +47,9 @@ public class OperationSingle {
                 final SafeObservableSubscription subscription = new SafeObservableSubscription();
                 subscription.wrap(source.subscribe(new Observer<T>() {
 
-                    private volatile T value;
-                    private volatile boolean isEmpty = true;
-                    private volatile boolean hasTooManyElemenets;
+                    private T value;
+                    private boolean isEmpty = true;
+                    private boolean hasTooManyElemenets;
 
                     @Override
                     public void onCompleted() {
