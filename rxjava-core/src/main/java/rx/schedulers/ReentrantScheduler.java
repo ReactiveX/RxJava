@@ -30,17 +30,17 @@ import rx.util.functions.Func2;
  * unnecessarily chain the subscriptions of every invocation.
  */
 public final class ReentrantScheduler extends Scheduler {
-    final ReentrantSchedulerHelper scheduler;
+    final Scheduler parent;
     final ForwardSubscription scheduleSub;
     final ForwardSubscription actionSub;
     final CompositeSubscription composite;
     
     public ReentrantScheduler(
-            ReentrantSchedulerHelper scheduler,
+            Scheduler parent,
             ForwardSubscription scheduleSub,
             ForwardSubscription actionSub,
             CompositeSubscription composite) {
-        this.scheduler = scheduler;
+        this.parent = parent;
         this.scheduleSub = scheduleSub;
         this.actionSub = actionSub;
         this.composite = composite;
@@ -57,17 +57,10 @@ public final class ReentrantScheduler extends Scheduler {
         
         actionSub.compareExchange(before, discardableAction);
         
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                Subscription sbefore = actionSub.getSubscription();
-                Subscription s = discardableAction.call(ReentrantScheduler.this);
-                actionSub.compareExchange(sbefore, s);
-            }
-        };
+        Runnable r = new RunTask(discardableAction);
         
         Subscription sbefore = scheduleSub.getSubscription();
-        Subscription s = scheduler.scheduleTask(r);
+        Subscription s = parent.scheduleRunnable(r);
         scheduleSub.compareExchange(sbefore, s);
         
         return s;
@@ -84,16 +77,10 @@ public final class ReentrantScheduler extends Scheduler {
         final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
         actionSub.compareExchange(before, discardableAction);
         
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                Subscription sbefore = actionSub.getSubscription();
-                Subscription s = discardableAction.call(ReentrantScheduler.this);
-                actionSub.compareExchange(sbefore, s);
-            }
-        };
+        Runnable r = new RunTask(discardableAction);
+        
         Subscription sbefore = scheduleSub.getSubscription();
-        Subscription s = scheduler.scheduleTask(r, delayTime, unit);;
+        Subscription s = parent.scheduleRunnable(r, delayTime, unit);
         scheduleSub.compareExchange(sbefore, s);
         
         return s;
@@ -110,19 +97,29 @@ public final class ReentrantScheduler extends Scheduler {
         final PeriodicAction<T> periodicAction = new PeriodicAction<T>(state, action);
         actionSub.compareExchange(before, periodicAction);
         
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                Subscription sbefore = actionSub.getSubscription();
-                Subscription s = periodicAction.call(ReentrantScheduler.this);
-                actionSub.compareExchange(sbefore, s);
-            }
-        };
+        Runnable r = new RunTask(periodicAction);
+        
         Subscription sbefore = scheduleSub.getSubscription();
-        Subscription s = scheduler.scheduleTask(r, initialDelay, period, unit);
+        Subscription s = parent.scheduleRunnable(r, initialDelay, period, unit);
         scheduleSub.compareExchange(sbefore, s);
         
         return s;
+    }
+    /** The task runner. */
+    private final class RunTask implements Runnable {
+        final Func1<Scheduler, Subscription> action;
+
+        public RunTask(Func1<Scheduler, Subscription> action) {
+            this.action = action;
+        }
+
+        @Override
+        public void run() {
+            Subscription sbefore = actionSub.getSubscription();
+            Subscription s = action.call(ReentrantScheduler.this);
+            actionSub.compareExchange(sbefore, s);
+        }
+        
     }
     /**
      * An action that calls the underlying function in a periodic environment.
@@ -153,39 +150,5 @@ public final class ReentrantScheduler extends Scheduler {
         public void unsubscribe() {
             ssub.unsubscribe();
         }
-    }
-    /**
-     * Simple scheduler API used by the ReentrantScheduler to
-     * communicate with the actual scheduler implementation.
-     */
-    public interface ReentrantSchedulerHelper {
-        /**
-         * Schedule a task to be run immediately and update the subscription
-         * describing the schedule.
-         * @param r the task to run immediately
-         * @return the subscription to cancel the schedule
-         */
-        Subscription scheduleTask(Runnable r);
-        
-        /**
-         * Schedule a task to be run after the delay time and update the subscription
-         * describing the schedule.
-         * @param r the task to schedule
-         * @param delayTime the time to delay the execution
-         * @param unit the time unit
-         * @return the subscription to cancel the schedule
-         */
-        Subscription scheduleTask(Runnable r, long delayTime, TimeUnit unit);
-        
-        /**
-         * Schedule a task to be run after the delay time and after
-         * each period, then update the subscription describing the schedule.
-         * @param r the task to schedule
-         * @param initialDelay the initial delay of the schedule
-         * @param period the between period of the schedule
-         * @param unit the time unit
-         * @return the subscription to cancel the schedule
-         */
-        Subscription scheduleTask(Runnable r, long initialDelay, long period, TimeUnit unit);
     }
 }
