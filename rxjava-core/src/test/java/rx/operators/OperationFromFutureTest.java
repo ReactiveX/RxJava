@@ -64,7 +64,7 @@ public class OperationFromFutureTest {
                 
                 result.subscribe(new OperationStartFutureTest.MockHelper<Integer>(o, done));
                 
-                if (!done.await(1000, TimeUnit.MILLISECONDS)) {
+                if (!done.await(1500, TimeUnit.MILLISECONDS)) {
                     fail("Not completed in time!");
                 }
                 
@@ -106,7 +106,7 @@ public class OperationFromFutureTest {
                 
                 result.subscribe(new OperationStartFutureTest.MockHelper<Integer>(o, done));
                 
-                if (!done.await(1000, TimeUnit.MILLISECONDS)) {
+                if (!done.await(1500, TimeUnit.MILLISECONDS)) {
                     fail("Not completed in time!");
                 }
                 

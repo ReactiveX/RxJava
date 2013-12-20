@@ -113,7 +113,7 @@ public class OperationStartFutureTest {
 
             ready.countDown();
 
-            if (!done.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!done.await(1500, TimeUnit.MILLISECONDS)) {
                 fail("Not completed in time!");
             }
 
@@ -202,7 +202,7 @@ public class OperationStartFutureTest {
 
             ready.countDown();
 
-            if (!done.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!done.await(1500, TimeUnit.MILLISECONDS)) {
                 fail("Not completed in time!");
             }
 
@@ -263,7 +263,7 @@ public class OperationStartFutureTest {
             // resume call
             ready2.countDown();
 
-            if (!done.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!done.await(1500, TimeUnit.MILLISECONDS)) {
                 fail("Not completed in time!");
             }
 
