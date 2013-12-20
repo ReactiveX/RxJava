@@ -20,22 +20,21 @@ public class Exceptions {
 
     }
 
+    /**
+     * The return type of RuntimeException is a trick for code to be like this:
+     * 
+     * throw Exceptions.propagate(e);
+     * 
+     * Even though nothing will return and throw via that 'throw', it allows the code to look like
+     * it so it's easy to read and understand that it will always result in a throw.
+     */
     public static RuntimeException propagate(Throwable t) {
-        /**
-         * The return type of RuntimeException is a trick for code to be like this:
-         * 
-         * throw Exceptions.propagate(e);
-         * 
-         * Even though nothing will return and throw via that 'throw', it allows the code to look like it
-         * so it's easy to read and understand that it will always result in a throw.
-         */
-        if (t instanceof RuntimeException) {
-            throw (RuntimeException) t;
-        } else if (t instanceof Error) {
-            throw (Error) t;
-        } else {
-            throw new RuntimeException(t);
-        }
+        // from the javadoc of Thread.stop(t) "An additional danger of this method is that it may be used to generate
+        // exceptions that the target thread is unprepared to handle (including checked exceptions
+        // that the thread could not possibly throw, were it not for this method)"
+        
+        // that seems like exactly what we are trying to do here
+        Thread.currentThread().stop(t);
+        return null;
     }
-
 }
