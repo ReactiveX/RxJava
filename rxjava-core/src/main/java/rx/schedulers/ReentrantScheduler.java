@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.ForwardSubscription;
+import rx.subscriptions.IncrementalSubscription;
 import rx.subscriptions.SerialSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
@@ -31,14 +31,14 @@ import rx.util.functions.Func2;
  */
 public final class ReentrantScheduler extends Scheduler {
     final Scheduler parent;
-    final ForwardSubscription scheduleSub;
-    final ForwardSubscription actionSub;
+    final IncrementalSubscription scheduleSub;
+    final IncrementalSubscription actionSub;
     final CompositeSubscription composite;
     
     public ReentrantScheduler(
             Scheduler parent,
-            ForwardSubscription scheduleSub,
-            ForwardSubscription actionSub,
+            IncrementalSubscription scheduleSub,
+            IncrementalSubscription actionSub,
             CompositeSubscription composite) {
         this.parent = parent;
         this.scheduleSub = scheduleSub;
@@ -52,16 +52,16 @@ public final class ReentrantScheduler extends Scheduler {
             // don't bother scheduling a task which wouldn't run anyway
             return Subscriptions.empty();
         }
-        Subscription before = actionSub.getSubscription();
+        long index = actionSub.nextIndex();
         final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
         
-        actionSub.compareExchange(before, discardableAction);
+        actionSub.compareExchange(index, discardableAction, false);
         
         Runnable r = new RunTask(discardableAction);
         
-        Subscription sbefore = scheduleSub.getSubscription();
+        long sindex = scheduleSub.nextIndex();
         Subscription s = parent.scheduleRunnable(r);
-        scheduleSub.compareExchange(sbefore, s);
+        scheduleSub.compareExchange(sindex, s, false);
         
         return s;
     }
@@ -73,15 +73,15 @@ public final class ReentrantScheduler extends Scheduler {
             return Subscriptions.empty();
         }
         
-        Subscription before = actionSub.getSubscription();
+        long index = actionSub.nextIndex();
         final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
-        actionSub.compareExchange(before, discardableAction);
+        actionSub.compareExchange(index, discardableAction, false);
         
         Runnable r = new RunTask(discardableAction);
         
-        Subscription sbefore = scheduleSub.getSubscription();
+        long sindex = scheduleSub.nextIndex();
         Subscription s = parent.scheduleRunnable(r, delayTime, unit);
-        scheduleSub.compareExchange(sbefore, s);
+        scheduleSub.compareExchange(sindex, s, false);
         
         return s;
     }
@@ -92,16 +92,16 @@ public final class ReentrantScheduler extends Scheduler {
             // don't bother scheduling a task which wouldn't run anyway
             return Subscriptions.empty();
         }
-        
-        Subscription before = actionSub.getSubscription();
+
+        long index = actionSub.nextIndex();
         final PeriodicAction<T> periodicAction = new PeriodicAction<T>(state, action);
-        actionSub.compareExchange(before, periodicAction);
+        actionSub.compareExchange(index, periodicAction, false);
         
         Runnable r = new RunTask(periodicAction);
         
-        Subscription sbefore = scheduleSub.getSubscription();
+        long sindex = scheduleSub.nextIndex();
         Subscription s = parent.scheduleRunnable(r, initialDelay, period, unit);
-        scheduleSub.compareExchange(sbefore, s);
+        scheduleSub.compareExchange(sindex, s, false);
         
         return s;
     }
@@ -115,9 +115,9 @@ public final class ReentrantScheduler extends Scheduler {
 
         @Override
         public void run() {
-            Subscription sbefore = actionSub.getSubscription();
+            long index = actionSub.nextIndex();
             Subscription s = action.call(ReentrantScheduler.this);
-            actionSub.compareExchange(sbefore, s);
+            actionSub.compareExchange(index, s, false);
         }
         
     }

@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.ForwardSubscription;
+import rx.subscriptions.IncrementalSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func2;
 
@@ -49,8 +49,8 @@ public class ExecutorScheduler extends Scheduler {
     public <T> Subscription schedulePeriodically(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long initialDelay, long period, TimeUnit unit) {
         if (executor instanceof ScheduledExecutorService) {
             CompositeSubscription subscription = new CompositeSubscription();
-            final ForwardSubscription scheduleSub = new ForwardSubscription();
-            final ForwardSubscription actionSub = new ForwardSubscription();
+            final IncrementalSubscription scheduleSub = new IncrementalSubscription();
+            final IncrementalSubscription actionSub = new IncrementalSubscription();
             subscription.add(scheduleSub);
             subscription.add(actionSub);
 
@@ -68,8 +68,8 @@ public class ExecutorScheduler extends Scheduler {
     @Override
     public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
         CompositeSubscription subscription = new CompositeSubscription();
-        final ForwardSubscription scheduleSub = new ForwardSubscription();
-        final ForwardSubscription actionSub = new ForwardSubscription();
+        final IncrementalSubscription scheduleSub = new IncrementalSubscription();
+        final IncrementalSubscription actionSub = new IncrementalSubscription();
         subscription.add(scheduleSub);
         subscription.add(actionSub);
         
@@ -84,8 +84,8 @@ public class ExecutorScheduler extends Scheduler {
     public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
         // all subscriptions that may need to be unsubscribed
         CompositeSubscription subscription = new CompositeSubscription();
-        final ForwardSubscription scheduleSub = new ForwardSubscription();
-        final ForwardSubscription actionSub = new ForwardSubscription();
+        final IncrementalSubscription scheduleSub = new IncrementalSubscription();
+        final IncrementalSubscription actionSub = new IncrementalSubscription();
         subscription.add(scheduleSub);
         subscription.add(actionSub);
         
@@ -141,7 +141,7 @@ public class ExecutorScheduler extends Scheduler {
 
             return Subscriptions.from(f);
         } else {
-            final ForwardSubscription fs = new ForwardSubscription();
+            final IncrementalSubscription fs = new IncrementalSubscription();
             Runnable rerun = new Runnable() {
                 @Override
                 public void run() {
@@ -150,15 +150,18 @@ public class ExecutorScheduler extends Scheduler {
                         r.run();
                         long delta = Math.max(0L, System.nanoTime() - time);
                         long periodNanos = Math.max(0L, unit.toNanos(period) - delta);
-                        
-                        Subscription before = fs.getSubscription();
+
+                        long index = fs.nextIndex();
                         Subscription s = scheduleRunnable(this, periodNanos, TimeUnit.NANOSECONDS);
-                        fs.compareExchange(before, s);
+                        fs.compareExchange(index, s, false);
                     }
                 }
             };
+            
+            long index = fs.nextIndex();
+            
             Subscription s = scheduleRunnable(rerun, initialDelay, unit);
-            fs.compareExchange(null, s);
+            fs.compareExchange(index, s, false);
             return fs;
         }
     }
