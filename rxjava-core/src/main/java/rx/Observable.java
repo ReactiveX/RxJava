@@ -676,6 +676,36 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits no items to the {@link Observer} and
+     * immediately invokes its {@link Observer#onCompleted onCompleted} method.
+     * @param <T> the result type
+     * @param witness the witness to help the compiler infer the result type
+     * @return an Observable that returns no data to the {@link Observer} and
+     *         immediately invokes the {@link Observer}'s
+     *         {@link Observer#onCompleted() onCompleted} method
+     */
+    public static <T> Observable<T> empty(T witness) {
+        return empty();
+    }
+    
+    /**
+     * Returns an Observable that emits no items to the {@link Observer} and
+     * immediately invokes its {@link Observer#onCompleted onCompleted} method
+     * with the specified scheduler.
+     * @param <T> the result type
+     * @param scheduler the scheduler to call the
+                        {@link Observer#onCompleted onCompleted} method
+     * @param witness the witness to help the compiler infer the result type
+     * @return an Observable that returns no data to the {@link Observer} and
+     *         immediately invokes the {@link Observer}'s
+     *         {@link Observer#onCompleted() onCompleted} method with the
+     *         specified scheduler
+     */
+    public static <T> Observable<T> empty(Scheduler scheduler, T witness) {
+        return empty(scheduler);
+    }
+
+    /**
      * Returns an Observable that invokes an {@link Observer}'s
      * {@link Observer#onError onError} method when the Observer subscribes to
      * it.
@@ -711,6 +741,47 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211711.aspx">MSDN: Observable.Throw Method</a>
      */
     public static <T> Observable<T> error(Throwable exception, Scheduler scheduler) {
+        return Observable.<T> error(exception).subscribeOn(scheduler);
+    }
+
+        /**
+     * Returns an Observable that invokes an {@link Observer}'s
+     * {@link Observer#onError onError} method when the Observer subscribes to
+     * it.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.png">
+     * 
+     * @param exception the particular error to report
+     * @param witness the value to help the compiler infer the value type
+     * @param <T> the type of the items (ostensibly) emitted by the Observable
+     * @return an Observable that invokes the {@link Observer}'s
+     *         {@link Observer#onError onError} method when the Observer
+     *         subscribes to it
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava Wiki: error()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244299.aspx">MSDN: Observable.Throw Method</a>
+     */
+    public static <T> Observable<T> error(Throwable exception, T witness) {
+        return new ThrowObservable<T>(exception);
+    }
+
+    /**
+     * Returns an Observable that invokes an {@link Observer}'s
+     * {@link Observer#onError onError} method with the specified scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.s.png">
+     * 
+     * @param exception the particular error to report
+     * @param scheduler the scheduler to call the
+     *                  {@link Observer#onError onError} method
+     * @param witness the value to help the compiler infer the value type
+     * @param <T> the type of the items (ostensibly) emitted by the Observable
+     * @return an Observable that invokes the {@link Observer}'s
+     *         {@link Observer#onError onError} method with the specified
+     *         scheduler
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava Wiki: error()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211711.aspx">MSDN: Observable.Throw Method</a>
+     */
+    public static <T> Observable<T> error(Throwable exception, Scheduler scheduler, T witness) {
         return Observable.<T> error(exception).subscribeOn(scheduler);
     }
 
@@ -1888,7 +1959,24 @@ public class Observable<T> {
     public static <T> Observable<T> never() {
         return new NeverObservable<T>();
     }
-
+    
+    /**
+     * Returns an Observable that never sends any items or notifications to an
+     * {@link Observer}.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/never.png">
+     * <p>
+     * This Observable is useful primarily for testing purposes.
+     * 
+     * @param <T> the type of items (not) emitted by the Observable
+     * @param witness the value to help the compiler infer the item type
+     * @return an Observable that never emits any items or sends any
+     *         notifications to an {@link Observer}
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava Wiki: never()</a>
+     */
+    public static <T> Observable<T> never(T witness) {
+        return new NeverObservable<T>();
+    }
     /**
      * Given an Observable that emits Observables, returns an Observable that
      * emits the items emitted by the most recently emitted of those
