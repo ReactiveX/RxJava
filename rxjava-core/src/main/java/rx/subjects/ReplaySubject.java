@@ -15,11 +15,15 @@
  */
 package rx.subjects;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observer;
+import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
 
 /**
@@ -31,7 +35,7 @@ import rx.util.functions.Action1;
  * <p>
  * <pre> {@code
 
- * eplaySubject<Object> subject = ReplaySubject.create();
+ * ReplaySubject<Object> subject = ReplaySubject.create();
   subject.onNext("one");
   subject.onNext("two");
   subject.onNext("three");
@@ -59,26 +63,26 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                  * 
                  * This will always run, even if Subject is in terminal state.
                  */
-                new Action1<Observer<? super T>>() {
+                new Action1<SubjectObserver<? super T>>() {
 
                     @Override
-                    public void call(Observer<? super T> o) {
+                    public void call(SubjectObserver<? super T> o) {
                         // replay history for this observer using the subscribing thread
-                        Link<T> last = replayObserverFromLink(state.history.head, o);
+                        int lastIndex = replayObserverFromIndex(state.history, 0, o);
 
                         // now that it is caught up add to observers
-                        state.replayState.put(o, last);
+                        state.replayState.put(o, lastIndex);
                     }
                 },
                 /**
                  * This function executes if the Subject is terminated.
                  */
-                new Action1<Observer<? super T>>() {
+                new Action1<SubjectObserver<? super T>>() {
 
                     @Override
-                    public void call(Observer<? super T> o) {
+                    public void call(SubjectObserver<? super T> o) {
                         // we will finish replaying if there is anything left
-                        replayObserverFromLink(state.replayState.get(o), o);
+                        replayObserverFromIndex(state.history, state.replayState.get(o), o);
                     }
                 });
 
@@ -89,7 +93,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         // single-producer, multi-consumer
         final History<T> history = new History<T>();
         // each Observer is tracked here for what events they have received
-        final ConcurrentHashMap<Observer<? super T>, Link<T>> replayState = new ConcurrentHashMap<Observer<? super T>, Link<T>>();
+        final ConcurrentHashMap<Observer<? super T>, Integer> replayState = new ConcurrentHashMap<Observer<? super T>, Integer>();
     }
 
     private final SubjectSubscriptionManager<T> subscriptionManager;
@@ -103,13 +107,15 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-        subscriptionManager.terminate(new Action1<Collection<Observer<? super T>>>() {
+        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
 
             @Override
-            public void call(Collection<Observer<? super T>> observers) {
-                state.history.add(new Notification<T>());
-                for (Observer<? super T> o : observers) {
-                    replayObserverToTail(o);
+            public void call(Collection<SubjectObserver<? super T>> observers) {
+                state.history.complete(new Notification<T>());
+                for (SubjectObserver<? super T> o : observers) {
+                    if (caughtUp(o)) {
+                        o.onCompleted();
+                    }
                 }
             }
         });
@@ -117,13 +123,15 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     @Override
     public void onError(final Throwable e) {
-        subscriptionManager.terminate(new Action1<Collection<Observer<? super T>>>() {
+        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
 
             @Override
-            public void call(Collection<Observer<? super T>> observers) {
-                state.history.add(new Notification<T>(e));
-                for (Observer<? super T> o : observers) {
-                    replayObserverToTail(o);
+            public void call(Collection<SubjectObserver<? super T>> observers) {
+                state.history.complete(new Notification<T>(e));
+                for (SubjectObserver<? super T> o : observers) {
+                    if (caughtUp(o)) {
+                        o.onError(e);
+                    }
                 }
             }
         });
@@ -131,28 +139,52 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     @Override
     public void onNext(T v) {
-        state.history.add(new Notification<T>(v));
-        for (Observer<? super T> o : subscriptionManager.snapshotOfObservers()) {
-            replayObserverToTail(o);
+        if (state.history.terminalValue.get() != null) {
+            return;
+        }
+        state.history.next(v);
+        for (SubjectObserver<? super T> o : subscriptionManager.snapshotOfObservers()) {
+            if (caughtUp(o)) {
+                o.onNext(v);
+            }
         }
     }
 
-    private void replayObserverToTail(Observer<? super T> observer) {
-        Link<T> lastEmittedLink = state.replayState.get(observer);
+    /*
+     * This is not very elegant but resulted in non-trivial performance improvement by
+     * eliminating the 'replay' code-path on the normal fast-path of emitting values.
+     * 
+     * With this method: 16,151,174 ops/sec
+     * Without: 8,632,358 ops/sec
+     */
+    private boolean caughtUp(SubjectObserver<? super T> o) {
+        if (!o.caughtUp) {
+            o.caughtUp = true;
+            replayObserver(o);
+            return false;
+        } else {
+            // it was caught up so proceed the "raw route"
+            return true;
+        }
+    }
+
+    private void replayObserver(SubjectObserver<? super T> observer) {
+        Integer lastEmittedLink = state.replayState.get(observer);
         if (lastEmittedLink != null) {
-            Link<T> l = replayObserverFromLink(lastEmittedLink, observer);
+            int l = replayObserverFromIndex(state.history, lastEmittedLink, observer);
             state.replayState.put(observer, l);
         } else {
             throw new IllegalStateException("failed to find lastEmittedLink for: " + observer);
         }
     }
 
-    private static <T> Link<T> replayObserverFromLink(Link<T> l, Observer<? super T> observer) {
-        while (l.nextLink != null) {
-            // forward to next link
-            l = l.nextLink;
-            // emit value on this link
-            l.n.accept(observer);
+    private static <T> int replayObserverFromIndex(History<T> history, Integer l, SubjectObserver<? super T> observer) {
+        while (l < history.index.get()) {
+            observer.onNext(history.list.get(l));
+            l++;
+        }
+        if (history.terminalValue.get() != null) {
+            history.terminalValue.get().accept(observer);
         }
 
         return l;
@@ -165,40 +197,23 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @param <T>
      */
     private static class History<T> {
-        private final Link<T> head = new Link<T>(null);
-        private volatile Link<T> tail = head;
+        private AtomicInteger index = new AtomicInteger(0);
+        private final ArrayList<T> list = new ArrayList<T>();
+        private AtomicReference<Notification<T>> terminalValue = new AtomicReference<Notification<T>>();
 
-        public Link<T> add(Notification<T> n) {
-            tail = tail.addNext(n);
-            return tail;
-        }
-    }
-
-    /**
-     * Very simple linked-list so each Observer retains a reference to the last Link they saw
-     * and can replay forward down the links.
-     * 
-     * Mutation of the list is NOT thread-safe as it expects single-writer.
-     * 
-     * Reading of the list is thread-safe as 'Notification' is final and 'nextLink' is volatile.
-     * 
-     * @param <T>
-     */
-    private static class Link<T> {
-        private final Notification<T> n;
-        private volatile Link<T> nextLink;
-
-        private Link(Notification<T> n) {
-            this.n = n;
-        }
-
-        public Link<T> addNext(Notification<T> n) {
-            if (nextLink != null) {
-                throw new IllegalStateException("Link is already set");
+        public boolean next(T n) {
+            if (terminalValue.get() == null) {
+                list.add(n);
+                index.getAndIncrement();
+                return true;
+            } else {
+                return false;
             }
-            nextLink = new Link<T>(n);
-            return nextLink;
         }
 
+        public void complete(Notification<T> n) {
+            terminalValue.set(n);
+        }
     }
+
 }

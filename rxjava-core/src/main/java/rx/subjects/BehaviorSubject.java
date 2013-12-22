@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observer;
+import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
 
 /**
@@ -95,10 +96,10 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                  * 
                  * This will always run, even if Subject is in terminal state.
                  */
-                new Action1<Observer<? super T>>() {
+                new Action1<SubjectObserver<? super T>>() {
 
                     @Override
-                    public void call(Observer<? super T> o) {
+                    public void call(SubjectObserver<? super T> o) {
                         /*
                          * When we subscribe we always emit the latest value to the observer.
                          * 
@@ -113,10 +114,10 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                 /**
                  * This function executes if the Subject is terminated before subscription occurs.
                  */
-                new Action1<Observer<? super T>>() {
+                new Action1<SubjectObserver<? super T>>() {
 
                     @Override
-                    public void call(Observer<? super T> o) {
+                    public void call(SubjectObserver<? super T> o) {
                         /*
                          * If we are already terminated, or termination happens while trying to subscribe
                          * this will be invoked and we emit whatever the last terminal value was.
@@ -139,10 +140,10 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-        subscriptionManager.terminate(new Action1<Collection<Observer<? super T>>>() {
+        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
 
             @Override
-            public void call(Collection<Observer<? super T>> observers) {
+            public void call(Collection<SubjectObserver<? super T>> observers) {
                 lastNotification.set(new Notification<T>());
                 for (Observer<? super T> o : observers) {
                     o.onCompleted();
@@ -153,10 +154,10 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
     @Override
     public void onError(final Throwable e) {
-        subscriptionManager.terminate(new Action1<Collection<Observer<? super T>>>() {
+        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
 
             @Override
-            public void call(Collection<Observer<? super T>> observers) {
+            public void call(Collection<SubjectObserver<? super T>> observers) {
                 lastNotification.set(new Notification<T>(e));
                 for (Observer<? super T> o : observers) {
                     o.onError(e);

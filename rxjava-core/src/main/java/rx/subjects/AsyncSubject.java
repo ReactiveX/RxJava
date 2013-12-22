@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observer;
+import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
 
 /**
@@ -63,20 +64,20 @@ public final class AsyncSubject<T> extends Subject<T, T> {
                  * 
                  * This will always run, even if Subject is in terminal state.
                  */
-                new Action1<Observer<? super T>>() {
+                new Action1<SubjectObserver<? super T>>() {
 
                     @Override
-                    public void call(Observer<? super T> o) {
+                    public void call(SubjectObserver<? super T> o) {
                         // nothing to do if not terminated
                     }
                 },
                 /**
                  * This function executes if the Subject is terminated.
                  */
-                new Action1<Observer<? super T>>() {
+                new Action1<SubjectObserver<? super T>>() {
 
                     @Override
-                    public void call(Observer<? super T> o) {
+                    public void call(SubjectObserver<? super T> o) {
                         // we want the last value + completed so add this extra logic 
                         // to send onCompleted if the last value is an onNext
                         emitValueToObserver(lastNotification.get(), o);
@@ -104,10 +105,10 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-        subscriptionManager.terminate(new Action1<Collection<Observer<? super T>>>() {
+        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
 
             @Override
-            public void call(Collection<Observer<? super T>> observers) {
+            public void call(Collection<SubjectObserver<? super T>> observers) {
                 for (Observer<? super T> o : observers) {
                     emitValueToObserver(lastNotification.get(), o);
                 }
@@ -117,10 +118,10 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     @Override
     public void onError(final Throwable e) {
-        subscriptionManager.terminate(new Action1<Collection<Observer<? super T>>>() {
+        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
 
             @Override
-            public void call(Collection<Observer<? super T>> observers) {
+            public void call(Collection<SubjectObserver<? super T>> observers) {
                 lastNotification.set(new Notification<T>(e));
                 for (Observer<? super T> o : observers) {
                     emitValueToObserver(lastNotification.get(), o);

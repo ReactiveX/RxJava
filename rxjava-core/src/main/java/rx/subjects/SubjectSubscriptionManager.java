@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable.OnSubscribeFunc;
@@ -41,10 +42,11 @@ import rx.util.functions.Action1;
      *            Only runs if Subject is in terminal state and the Observer ends up not being registered.
      * @return
      */
-    public OnSubscribeFunc<T> getOnSubscribeFunc(final Action1<Observer<? super T>> onSubscribe, final Action1<Observer<? super T>> onTerminated) {
+    public OnSubscribeFunc<T> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, final Action1<SubjectObserver<? super T>> onTerminated) {
         return new OnSubscribeFunc<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
+            public Subscription onSubscribe(Observer<? super T> actualObserver) {
+                SubjectObserver<T> observer = new SubjectObserver<T>(actualObserver);
                 // invoke onSubscribe logic 
                 if (onSubscribe != null) {
                     onSubscribe.call(observer);
@@ -104,7 +106,7 @@ import rx.util.functions.Action1;
         };
     }
 
-    protected void terminate(Action1<Collection<Observer<? super T>>> onTerminate) {
+    protected void terminate(Action1<Collection<SubjectObserver<? super T>>> onTerminate) {
         State<T> current = null;
         State<T> newState = null;
         do {
@@ -141,7 +143,7 @@ import rx.util.functions.Action1;
      * 
      * @return List<Observer<T>>
      */
-    public Collection<Observer<? super T>> snapshotOfObservers() {
+    public Collection<SubjectObserver<? super T>> snapshotOfObservers() {
         // we don't need to copy since state is immutable
         return state.get().observers.values();
     }
@@ -149,9 +151,9 @@ import rx.util.functions.Action1;
     protected static class State<T> {
         final boolean terminated;
         final CountDownLatch terminationLatch;
-        final Map<Subscription, Observer<? super T>> observers;
+        final Map<Subscription, SubjectObserver<? super T>> observers;
 
-        private State(boolean isTerminated, CountDownLatch terminationLatch, Map<Subscription, Observer<? super T>> observers) {
+        private State(boolean isTerminated, CountDownLatch terminationLatch, Map<Subscription, SubjectObserver<? super T>> observers) {
             this.terminationLatch = terminationLatch;
             this.terminated = isTerminated;
             this.observers = Collections.unmodifiableMap(observers);
@@ -170,18 +172,44 @@ import rx.util.functions.Action1;
             return new State<T>(true, new CountDownLatch(1), observers);
         }
 
-        public State<T> addObserver(Subscription s, Observer<? super T> observer) {
-            Map<Subscription, Observer<? super T>> newMap = new HashMap<Subscription, Observer<? super T>>();
+        public State<T> addObserver(Subscription s, SubjectObserver<? super T> observer) {
+            Map<Subscription, SubjectObserver<? super T>> newMap = new HashMap<Subscription, SubjectObserver<? super T>>();
             newMap.putAll(observers);
             newMap.put(s, observer);
             return new State<T>(terminated, terminationLatch, newMap);
         }
 
         public State<T> removeObserver(Subscription s) {
-            Map<Subscription, Observer<? super T>> newMap = new HashMap<Subscription, Observer<? super T>>(observers);
+            Map<Subscription, SubjectObserver<? super T>> newMap = new HashMap<Subscription, SubjectObserver<? super T>>(observers);
             newMap.remove(s);
             return new State<T>(terminated, terminationLatch, newMap);
         }
+    }
+
+    protected static class SubjectObserver<T> implements Observer<T> {
+
+        private final Observer<? super T> actual;
+        protected volatile boolean caughtUp = false;
+
+        SubjectObserver(Observer<? super T> actual) {
+            this.actual = actual;
+        }
+
+        @Override
+        public void onCompleted() {
+            this.actual.onCompleted();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            this.actual.onError(e);
+        }
+
+        @Override
+        public void onNext(T v) {
+            this.actual.onNext(v);
+        }
+
     }
 
 }
