@@ -17,8 +17,6 @@ package rx.subjects;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -126,7 +124,7 @@ import rx.util.functions.Action1;
          */
         try {
             // had to circumvent type check, we know what the array contains
-            onTerminate.call((Collection)newState.observersList);
+            onTerminate.call((Collection)Arrays.asList(newState.observers));
         } finally {
             // mark that termination is completed
             newState.terminationLatch.countDown();
@@ -141,25 +139,22 @@ import rx.util.functions.Action1;
         return state.get().observers;
     }
 
+    @SuppressWarnings("rawtypes")
     protected static class State<T> {
         final boolean terminated;
         final CountDownLatch terminationLatch;
         final Subscription[] subscriptions;
-        final SubjectObserver<Object>[] observers;
+        final SubjectObserver[] observers;
         // to avoid lots of empty arrays
         final Subscription[] EMPTY_S = new Subscription[0];
-        @SuppressWarnings("rawtypes")
         // to avoid lots of empty arrays
         final SubjectObserver[] EMPTY_O = new SubjectObserver[0];
-        @SuppressWarnings("rawtypes")
-        final List<SubjectObserver<Object>> observersList;
         private State(boolean isTerminated, CountDownLatch terminationLatch, 
                 Subscription[] subscriptions, SubjectObserver[] observers) {
             this.terminationLatch = terminationLatch;
             this.terminated = isTerminated;
             this.subscriptions = subscriptions;
             this.observers = observers;
-            this.observersList = Arrays.asList(this.observers);
         }
 
         State() {
@@ -167,7 +162,6 @@ import rx.util.functions.Action1;
             this.terminationLatch = null;
             this.subscriptions = EMPTY_S;
             this.observers = EMPTY_O;
-            observersList = Collections.emptyList();
         }
 
         public State<T> terminate() {
