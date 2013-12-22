@@ -15,7 +15,6 @@
  */
 package rx.subjects;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,7 +51,7 @@ import rx.util.functions.Action1;
                     onSubscribe.call(observer);
                 }
 
-                State<T> current = null;
+                State<T> current;
                 State<T> newState = null;
                 boolean addedObserver = false;
                 Subscription s;
@@ -107,7 +106,7 @@ import rx.util.functions.Action1;
     }
 
     protected void terminate(Action1<Collection<SubjectObserver<? super T>>> onTerminate) {
-        State<T> current = null;
+        State<T> current;
         State<T> newState = null;
         do {
             current = state.get();
@@ -132,21 +131,6 @@ import rx.util.functions.Action1;
             // mark that termination is completed
             newState.terminationLatch.countDown();
         }
-    }
-
-    /**
-     * Current snapshot of 'state.observers.keySet()' so that concurrent modifications aren't included.
-     * 
-     * This makes it behave deterministically in a single-threaded execution when nesting subscribes.
-     * 
-     * In multi-threaded execution it will cause new subscriptions to wait until the following onNext instead
-     * of possibly being included in the current onNext iteration.
-     * 
-     * @return List<Observer<T>>
-     */
-    private Collection<SubjectObserver<? super T>> snapshotOfObservers() {
-        // had to circumvent type check, we know what the array contains
-        return (Collection)state.get().observersList;
     }
     /**
      * Returns the array of observers directly.

@@ -50,10 +50,12 @@ import rx.util.functions.Action1;
  * @param <T>
  */
 public final class ReplaySubject<T> extends Subject<T, T> {
-
     public static <T> ReplaySubject<T> create() {
+        return create(16);
+    }
+    public static <T> ReplaySubject<T> create(int initialCapacity) {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
-        final ReplayState<T> state = new ReplayState<T>();
+        final ReplayState<T> state = new ReplayState<T>(initialCapacity);
 
         OnSubscribeFunc<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
@@ -91,9 +93,13 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     private static class ReplayState<T> {
         // single-producer, multi-consumer
-        final History<T> history = new History<T>();
+        final History<T> history;
         // each Observer is tracked here for what events they have received
-        final ConcurrentHashMap<Observer<? super T>, Integer> replayState = new ConcurrentHashMap<Observer<? super T>, Integer>();
+        final ConcurrentHashMap<Observer<? super T>, Integer> replayState;
+        public ReplayState(int initialCapacity) {
+            history = new History<T>(initialCapacity);
+            replayState = new ConcurrentHashMap<Observer<? super T>, Integer>();
+        }
     }
 
     private final SubjectSubscriptionManager<T> subscriptionManager;
@@ -197,10 +203,14 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @param <T>
      */
     private static class History<T> {
-        private AtomicInteger index = new AtomicInteger(0);
-        private final ArrayList<T> list = new ArrayList<T>(/* 1024 */);
-        private AtomicReference<Notification<T>> terminalValue = new AtomicReference<Notification<T>>();
-
+        private final AtomicInteger index;
+        private final ArrayList<T> list;
+        private final AtomicReference<Notification<T>> terminalValue;
+        public History(int initialCapacity) {
+             index = new AtomicInteger(0);
+             list = new ArrayList<T>(initialCapacity);
+             terminalValue = new AtomicReference<Notification<T>>();
+        }
         public boolean next(T n) {
             if (terminalValue.get() == null) {
                 list.add(n);
