@@ -15,12 +15,12 @@
  */
 package rx.subjects;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable.OnSubscribeFunc;
@@ -126,7 +126,8 @@ import rx.util.functions.Action1;
          * inated)
          */
         try {
-            onTerminate.call(newState.observers.values());
+            // had to circumvent type check, we know what the array contains
+            onTerminate.call((Collection)newState.observersList);
         } finally {
             // mark that termination is completed
             newState.terminationLatch.countDown();
@@ -143,46 +144,104 @@ import rx.util.functions.Action1;
      * 
      * @return List<Observer<T>>
      */
-    public Collection<SubjectObserver<? super T>> snapshotOfObservers() {
-        // we don't need to copy since state is immutable
-        return state.get().observers.values();
+    private Collection<SubjectObserver<? super T>> snapshotOfObservers() {
+        // had to circumvent type check, we know what the array contains
+        return (Collection)state.get().observersList;
+    }
+    /**
+     * Returns the array of observers directly.
+     * <em>Don't modify the array!</em>
+     * @return the array of current observers
+     */
+    public SubjectObserver<Object>[] rawSnapshot() {
+        return state.get().observers;
     }
 
     protected static class State<T> {
         final boolean terminated;
         final CountDownLatch terminationLatch;
-        final Map<Subscription, SubjectObserver<? super T>> observers;
-
-        private State(boolean isTerminated, CountDownLatch terminationLatch, Map<Subscription, SubjectObserver<? super T>> observers) {
+        final Subscription[] subscriptions;
+        final SubjectObserver<Object>[] observers;
+        // to avoid lots of empty arrays
+        final Subscription[] EMPTY_S = new Subscription[0];
+        @SuppressWarnings("rawtypes")
+        // to avoid lots of empty arrays
+        final SubjectObserver[] EMPTY_O = new SubjectObserver[0];
+        @SuppressWarnings("rawtypes")
+        final List<SubjectObserver<Object>> observersList;
+        private State(boolean isTerminated, CountDownLatch terminationLatch, 
+                Subscription[] subscriptions, SubjectObserver[] observers) {
             this.terminationLatch = terminationLatch;
             this.terminated = isTerminated;
-            this.observers = Collections.unmodifiableMap(observers);
+            this.subscriptions = subscriptions;
+            this.observers = observers;
+            this.observersList = Arrays.asList(this.observers);
         }
 
         State() {
             this.terminated = false;
             this.terminationLatch = null;
-            this.observers = Collections.emptyMap();
+            this.subscriptions = EMPTY_S;
+            this.observers = EMPTY_O;
+            observersList = Collections.emptyList();
         }
 
         public State<T> terminate() {
             if (terminated) {
                 throw new IllegalStateException("Already terminated.");
             }
-            return new State<T>(true, new CountDownLatch(1), observers);
+            return new State<T>(true, new CountDownLatch(1), subscriptions, observers);
         }
 
         public State<T> addObserver(Subscription s, SubjectObserver<? super T> observer) {
-            Map<Subscription, SubjectObserver<? super T>> newMap = new HashMap<Subscription, SubjectObserver<? super T>>();
-            newMap.putAll(observers);
-            newMap.put(s, observer);
-            return new State<T>(terminated, terminationLatch, newMap);
+            int n = this.observers.length;
+            
+            Subscription[] newsubscriptions = Arrays.copyOf(this.subscriptions, n + 1);
+            SubjectObserver[] newobservers = Arrays.copyOf(this.observers, n + 1);
+            
+            newsubscriptions[n] = s;
+            newobservers[n] = observer;
+            
+            return createNewWith(newsubscriptions, newobservers);
+        }
+        private State<T> createNewWith(Subscription[] newsubscriptions, SubjectObserver[] newobservers) {
+            return new State<T>(terminated, terminationLatch, newsubscriptions, newobservers);
         }
 
         public State<T> removeObserver(Subscription s) {
-            Map<Subscription, SubjectObserver<? super T>> newMap = new HashMap<Subscription, SubjectObserver<? super T>>(observers);
-            newMap.remove(s);
-            return new State<T>(terminated, terminationLatch, newMap);
+            // we are empty, nothing to remove
+            if (this.observers.length == 0) {
+                return this;
+            }
+            int n = Math.max(this.observers.length - 1, 1);
+            int copied = 0;
+            Subscription[] newsubscriptions = Arrays.copyOf(this.subscriptions, n);
+            SubjectObserver[] newobservers = Arrays.copyOf(this.observers, n);
+
+            for (int i = 0; i < this.subscriptions.length; i++) {
+                Subscription s0 = this.subscriptions[i];
+                if (s0 != s) {
+                    if (copied == n) {
+                        // if s was not found till the end of the iteration
+                        // we return ourselves since no modification should
+                        // have happened
+                        return this;
+                    }
+                    newsubscriptions[copied] = s0;
+                    newobservers[copied] = this.observers[i];
+                    copied++;
+                }
+            }
+            
+            if (copied == 0) {
+                return createNewWith(EMPTY_S, EMPTY_O);
+            }
+            // if somehow copied less than expected, truncate the arrays
+            // if s is unique, this should never happen
+            if (copied < n) {
+                return createNewWith(Arrays.copyOf(newsubscriptions, copied), Arrays.copyOf(newobservers, copied));
+            }
+            return createNewWith(newsubscriptions, newobservers);
         }
     }
 

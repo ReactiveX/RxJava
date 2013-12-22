@@ -173,7 +173,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
          * Store the latest value but do not send it. It only gets sent when 'onCompleted' occurs.
          */
         lastNotification.set(new Notification<T>(v));
-        for (Observer<? super T> o : subscriptionManager.snapshotOfObservers()) {
+        for (Observer<? super T> o : subscriptionManager.rawSnapshot()) {
             o.onNext(v);
         }
     }

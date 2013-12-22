@@ -143,7 +143,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             return;
         }
         state.history.next(v);
-        for (SubjectObserver<? super T> o : subscriptionManager.snapshotOfObservers()) {
+        for (SubjectObserver<? super T> o : subscriptionManager.rawSnapshot()) {
             if (caughtUp(o)) {
                 o.onNext(v);
             }
@@ -198,7 +198,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      */
     private static class History<T> {
         private AtomicInteger index = new AtomicInteger(0);
-        private final ArrayList<T> list = new ArrayList<T>();
+        private final ArrayList<T> list = new ArrayList<T>(/* 1024 */);
         private AtomicReference<Notification<T>> terminalValue = new AtomicReference<Notification<T>>();
 
         public boolean next(T n) {

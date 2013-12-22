@@ -124,7 +124,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
     @Override
     public void onNext(T v) {
-        for (Observer<? super T> o : subscriptionManager.snapshotOfObservers()) {
+        for (Observer<? super T> o : subscriptionManager.rawSnapshot()) {
             o.onNext(v);
         }
     }
