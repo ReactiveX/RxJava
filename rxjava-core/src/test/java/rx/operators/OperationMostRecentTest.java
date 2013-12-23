@@ -19,8 +19,13 @@ import static org.junit.Assert.*;
 import static rx.operators.OperationMostRecent.*;
 
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
+import org.junit.Assert;
 
 import org.junit.Test;
+import rx.Observable;
+import rx.observables.BlockingObservable;
+import rx.schedulers.TestScheduler;
 
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
@@ -70,5 +75,30 @@ public class OperationMostRecentTest {
 
     private static class TestException extends RuntimeException {
         private static final long serialVersionUID = 1L;
+    }
+    
+    @Test(timeout = 1000)
+    public void testSingleSourceManyIterators() {
+        TestScheduler scheduler = new TestScheduler();
+        BlockingObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlockingObservable();
+        
+        Iterable<Long> iter = source.mostRecent(-1L);
+        
+        for (int j = 0; j < 3; j++) {
+            Iterator<Long> it = iter.iterator();
+            
+            Assert.assertEquals(Long.valueOf(-1), it.next());
+            
+            for (int i = 0; i < 9; i++) {
+                scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+                
+                Assert.assertEquals(true, it.hasNext());
+                Assert.assertEquals(Long.valueOf(i), it.next());
+            }
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            
+            Assert.assertEquals(false, it.hasNext());
+        }
+        
     }
 }

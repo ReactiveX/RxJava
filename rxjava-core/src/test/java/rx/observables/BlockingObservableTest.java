@@ -18,6 +18,8 @@ package rx.observables;
 import static org.junit.Assert.*;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+import org.junit.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -200,6 +202,58 @@ public class BlockingObservableTest {
 
         assertEquals(false, it.hasNext());
 
+    }
+    @Test(expected = NoSuchElementException.class)
+    public void testToIterableNextOnly() {
+        BlockingObservable<Integer> obs = BlockingObservable.from(Observable.from(1, 2, 3));
+
+        Iterator<Integer> it = obs.toIterable().iterator();
+        
+        Assert.assertEquals((Integer)1, it.next());
+        Assert.assertEquals((Integer)2, it.next());
+        Assert.assertEquals((Integer)3, it.next());
+        
+        it.next();
+    }
+    
+    @Test(expected = NoSuchElementException.class)
+    public void testToIterableNextOnlyTwice() {
+        BlockingObservable<Integer> obs = BlockingObservable.from(Observable.from(1, 2, 3));
+
+        Iterator<Integer> it = obs.toIterable().iterator();
+        
+        Assert.assertEquals((Integer)1, it.next());
+        Assert.assertEquals((Integer)2, it.next());
+        Assert.assertEquals((Integer)3, it.next());
+        
+        boolean exc = false;
+        try {
+            it.next();
+        } catch (NoSuchElementException ex) {
+            exc = true;
+        }
+        Assert.assertEquals(true, exc);
+        
+        it.next();
+    }
+    
+    @Test
+    public void testToIterableManyTimes() {
+        BlockingObservable<Integer> obs = BlockingObservable.from(Observable.from(1, 2, 3));
+        
+        Iterable<Integer> iter = obs.toIterable();
+        
+        for (int j = 0; j < 3; j++) {
+            Iterator<Integer> it = iter.iterator();
+            
+            Assert.assertTrue(it.hasNext());
+            Assert.assertEquals((Integer)1, it.next());
+            Assert.assertTrue(it.hasNext());
+            Assert.assertEquals((Integer)2, it.next());
+            Assert.assertTrue(it.hasNext());
+            Assert.assertEquals((Integer)3, it.next());
+            Assert.assertFalse(it.hasNext());
+        }
     }
 
     @Test(expected = TestException.class)
