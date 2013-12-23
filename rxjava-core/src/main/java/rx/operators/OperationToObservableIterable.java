@@ -17,8 +17,14 @@ package rx.operators;
 
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscription;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
+import rx.util.functions.Action1;
+
+import java.util.Iterator;
 
 /**
  * Converts an Iterable sequence into an Observable.
@@ -30,24 +36,42 @@ import rx.subscriptions.Subscriptions;
  */
 public final class OperationToObservableIterable<T> {
 
+    public static <T> OnSubscribeFunc<T> toObservableIterable(Iterable<? extends T> list, Scheduler scheduler) {
+        return new ToObservableIterable<T>(list, scheduler);
+    }
+
     public static <T> OnSubscribeFunc<T> toObservableIterable(Iterable<? extends T> list) {
-        return new ToObservableIterable<T>(list);
+        return toObservableIterable(list, Schedulers.currentThread());
     }
 
     private static class ToObservableIterable<T> implements OnSubscribeFunc<T> {
-        public ToObservableIterable(Iterable<? extends T> list) {
+
+        public ToObservableIterable(Iterable<? extends T> list, Scheduler scheduler) {
             this.iterable = list;
+            this.scheduler = scheduler;
         }
 
-        public Iterable<? extends T> iterable;
+        Scheduler scheduler;
+        final Iterable<? extends T> iterable;
 
-        public Subscription onSubscribe(Observer<? super T> observer) {
-            for (T item : iterable) {
-                observer.onNext(item);
-            }
-            observer.onCompleted();
-
-            return Subscriptions.empty();
+        public Subscription onSubscribe(final Observer<? super T> observer) {
+            final Iterator<? extends T> iterator = iterable.iterator();
+            return scheduler.schedule(new Action1<Action0>() {
+                @Override
+                public void call(Action0 self) {
+                    try {
+                        if (iterator.hasNext()) {
+                            T x = iterator.next();
+                            observer.onNext(x);
+                            self.call();
+                        } else {
+                            observer.onCompleted();
+                        }
+                    } catch (Exception e) {
+                        observer.onError(e);
+                    }
+                }
+            });
         }
     }
 }

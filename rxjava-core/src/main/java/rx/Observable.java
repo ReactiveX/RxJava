@@ -731,7 +731,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
      */
     public static <T> Observable<T> from(Iterable<? extends T> iterable) {
-        return create(OperationToObservableIterable.toObservableIterable(iterable));
+        return from(iterable, Schedulers.currentThread());
     }
 
     /**
@@ -750,7 +750,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
      */
     public static <T> Observable<T> from(Iterable<? extends T> iterable, Scheduler scheduler) {
-        return from(iterable).observeOn(scheduler);
+        return create(OperationToObservableIterable.toObservableIterable(iterable, scheduler));
     }
 
     /**
@@ -763,14 +763,35 @@ public class Observable<T> {
      * {@link Subscription} is returned, it is not possible to unsubscribe from
      * the sequence before it completes.
      * 
-     * @param items the source sequence
+     * @param items the source array
      * @param <T> the type of items in the Array and the type of items to be
      *            emitted by the resulting Observable
      * @return an Observable that emits each item in the source Array
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
      */
     public static <T> Observable<T> from(T[] items) {
-        return create(OperationToObservableIterable.toObservableIterable(Arrays.asList(items)));
+        return from(Arrays.asList(items));
+    }
+
+    /**
+     * Converts an Array into an Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <p>
+     * Note: the entire array is immediately emitted each time an
+     * {@link Observer} subscribes. Since this occurs before the
+     * {@link Subscription} is returned, it is not possible to unsubscribe from
+     * the sequence before it completes.
+     *
+     * @param items the source array
+     * @param scheduler the scheduler to emit the items of the array
+     * @param <T> the type of items in the Array and the type of items to be
+     *            emitted by the resulting Observable
+     * @return an Observable that emits each item in the source Array
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
+     */
+    public static <T> Observable<T> from(T[] items, Scheduler scheduler) {
+        return from(Arrays.asList(items), scheduler);
     }
 
     /**
@@ -827,7 +848,7 @@ public class Observable<T> {
      * subscribes. Since this occurs before the {@link Subscription} is
      * returned, it is not possible to unsubscribe from the sequence before it
      * completes.
-     * 
+     *
      * @param t1 first item
      * @param t2 second item
      * @param t3 third item
@@ -1012,11 +1033,6 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
      * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer}
-     * subscribes. Since this occurs before the {@link Subscription} is
-     * returned, it is not possible to unsubscribe from the sequence before it
-     * completes.
-     * 
      * @param t1 first item
      * @param t2 second item
      * @param t3 third item
@@ -1044,11 +1060,6 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/range.png">
      * <p>
-     * Note: the entire range is immediately emitted each time an
-     * {@link Observer} subscribes. Since this occurs before the
-     * {@link Subscription} is returned, it is not possible to unsubscribe from
-     * the sequence before it completes.
-     * 
      * @param start the value of the first Integer in the sequence
      * @param count the number of sequential Integers to generate
      * @return an Observable that emits a range of sequential Integers
@@ -1073,7 +1084,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211896.aspx">Observable.Range Method (Int32, Int32, IScheduler)</a>
      */
     public static Observable<Integer> range(int start, int count, Scheduler scheduler) {
-        return range(start, count).observeOn(scheduler);
+        return from(Range.createWithCount(start, count), scheduler);
     }
 
     /**
@@ -1120,10 +1131,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava Wiki: just()</a>
      */
     public static <T> Observable<T> just(T value) {
-        List<T> list = new ArrayList<T>();
-        list.add(value);
-
-        return from(list);
+        return from(Arrays.asList((value)));
     }
 
     /**
@@ -1142,7 +1150,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava Wiki: just()</a>
      */
     public static <T> Observable<T> just(T value, Scheduler scheduler) {
-        return just(value).observeOn(scheduler);
+        return from(Arrays.asList((value)), scheduler);
     }
 
     /**

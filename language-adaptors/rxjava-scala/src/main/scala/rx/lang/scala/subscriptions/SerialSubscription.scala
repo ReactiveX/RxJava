@@ -35,21 +35,15 @@ object SerialSubscription {
 /**
  * Represents a [[rx.lang.scala.Subscription]] that can be checked for status.
  */
-class SerialSubscription private[scala] (serial: rx.subscriptions.SerialSubscription) extends Subscription {
+class SerialSubscription private[scala] (override val asJavaSubscription: rx.subscriptions.SerialSubscription) extends Subscription {
 
-  /*
-  * As long as rx.subscriptions.SerialSubscription has no isUnsubscribed,
-  * we need to intercept and do it ourselves.
-   */
-  override val asJavaSubscription: rx.subscriptions.SerialSubscription = new rx.subscriptions.SerialSubscription() {
-    override def unsubscribe(): Unit = {
-      if(unsubscribed.compareAndSet(false, true)) { serial.unsubscribe() }
-    }
-    override def setSubscription(subscription: rx.Subscription): Unit = serial.setSubscription(subscription)
-    override def getSubscription(): rx.Subscription = serial.getSubscription()
+  override def unsubscribe(): Unit =  asJavaSubscription.unsubscribe()
+  override def isUnsubscribed: Boolean = asJavaSubscription.isUnsubscribed
+
+  def subscription_=(value: Subscription): this.type = {
+      asJavaSubscription.setSubscription(value.asJavaSubscription)
+      this
   }
-
-  def subscription_=(value: Subscription): this.type = { asJavaSubscription.setSubscription(value.asJavaSubscription); this }
   def subscription: Subscription = Subscription(asJavaSubscription.getSubscription)
 
 }
