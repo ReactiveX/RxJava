@@ -173,29 +173,6 @@ public class AsyncSubjectTest {
     }
 
     @Test
-    public void testUnsubscribe() {
-        UnsubscribeTester.test(
-                new Func0<AsyncSubject<Object>>() {
-                    @Override
-                    public AsyncSubject<Object> call() {
-                        return AsyncSubject.create();
-                    }
-                }, new Action1<AsyncSubject<Object>>() {
-                    @Override
-                    public void call(AsyncSubject<Object> DefaultSubject) {
-                        DefaultSubject.onCompleted();
-                    }
-                }, new Action1<AsyncSubject<Object>>() {
-                    @Override
-                    public void call(AsyncSubject<Object> DefaultSubject) {
-                        DefaultSubject.onError(new Throwable());
-                    }
-                },
-                null
-                );
-    }
-
-    @Test
     public void testEmptySubjectCompleted() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
@@ -215,7 +192,7 @@ public class AsyncSubjectTest {
     /**
      * Can receive timeout if subscribe never receives an onError/onCompleted ... which reveals a race condition.
      */
-    @Test
+    @Test(timeout=10000)
     public void testSubscribeCompletionRaceCondition() {
         /*
          * With non-threadsafe code this fails most of the time on my dev laptop and is non-deterministic enough

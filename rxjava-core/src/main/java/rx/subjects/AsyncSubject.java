@@ -15,9 +15,13 @@
  */
 package rx.subjects;
 
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Notification;
 import rx.Observer;
-import rx.util.functions.Action2;
+import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
+import rx.util.functions.Action1;
 
 /**
  * Subject that publishes only the last event to each {@link Observer} that has subscribed when the
@@ -28,8 +32,8 @@ import rx.util.functions.Action2;
  * Example usage:
  * <p>
  * <pre> {@code
-
- * / observer will receive no onNext events because the subject.onCompleted() isn't called.
+ * 
+ * // observer will receive no onNext events because the subject.onCompleted() isn't called.
   AsyncSubject<Object> subject = AsyncSubject.create();
   subject.subscribe(observer);
   subject.onNext("one");
@@ -48,68 +52,88 @@ import rx.util.functions.Action2;
  * 
  * @param <T>
  */
-public class AsyncSubject<T> extends AbstractSubject<T> {
+public final class AsyncSubject<T> extends Subject<T, T> {
 
-    /**
-     * Create a new AsyncSubject
-     * 
-     * @return a new AsyncSubject
-     */
     public static <T> AsyncSubject<T> create() {
-        final SubjectState<T> state = new SubjectState<T>();
-        OnSubscribeFunc<T> onSubscribe = getOnSubscribeFunc(state, new Action2<SubjectState<T>, Observer<? super T>>() {
+        final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
+        final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>(new Notification<T>());
 
-            @Override
-            public void call(SubjectState<T> state, Observer<? super T> o) {
-                // we want the last value + completed so add this extra logic 
-                // to send onCompleted if the last value is an onNext
-                if (state.completed.get()) {
-                    Notification<T> value = state.currentValue.get();
-                    if (value != null && value.isOnNext()) {
-                        o.onCompleted();
+        OnSubscribeFunc<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+                /**
+                 * This function executes at beginning of subscription.
+                 * 
+                 * This will always run, even if Subject is in terminal state.
+                 */
+                new Action1<SubjectObserver<? super T>>() {
+
+                    @Override
+                    public void call(SubjectObserver<? super T> o) {
+                        // nothing to do if not terminated
                     }
-                }
-            }
-        });
-        return new AsyncSubject<T>(onSubscribe, state);
+                },
+                /**
+                 * This function executes if the Subject is terminated.
+                 */
+                new Action1<SubjectObserver<? super T>>() {
+
+                    @Override
+                    public void call(SubjectObserver<? super T> o) {
+                        // we want the last value + completed so add this extra logic 
+                        // to send onCompleted if the last value is an onNext
+                        emitValueToObserver(lastNotification.get(), o);
+                    }
+                });
+
+        return new AsyncSubject<T>(onSubscribe, subscriptionManager, lastNotification);
     }
 
-    private final SubjectState<T> state;
+    protected static <T> void emitValueToObserver(Notification<T> n, Observer<? super T> o) {
+        n.accept(o);
+        if (n.isOnNext()) {
+            o.onCompleted();
+        }
+    }
 
-    protected AsyncSubject(OnSubscribeFunc<T> onSubscribe, SubjectState<T> state) {
+    private final SubjectSubscriptionManager<T> subscriptionManager;
+    final AtomicReference<Notification<T>> lastNotification;
+
+    protected AsyncSubject(OnSubscribeFunc<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
         super(onSubscribe);
-        this.state = state;
+        this.subscriptionManager = subscriptionManager;
+        this.lastNotification = lastNotification;
     }
 
     @Override
     public void onCompleted() {
-        /**
-         * Mark this subject as completed and emit latest value + 'onCompleted' to all Observers
-         */
-        emitNotificationAndTerminate(state, new Action2<SubjectState<T>, Observer<? super T>>() {
+        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
 
             @Override
-            public void call(SubjectState<T> state, Observer<? super T> o) {
-                o.onCompleted();
+            public void call(Collection<SubjectObserver<? super T>> observers) {
+                for (Observer<? super T> o : observers) {
+                    emitValueToObserver(lastNotification.get(), o);
+                }
             }
         });
     }
 
     @Override
-    public void onError(Throwable e) {
-        /**
-         * Mark this subject as completed with an error as the last value and emit 'onError' to all Observers
-         */
-        state.currentValue.set(new Notification<T>(e));
-        emitNotificationAndTerminate(state, null);
+    public void onError(final Throwable e) {
+        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
+
+            @Override
+            public void call(Collection<SubjectObserver<? super T>> observers) {
+                lastNotification.set(new Notification<T>(e));
+                for (Observer<? super T> o : observers) {
+                    emitValueToObserver(lastNotification.get(), o);
+                }
+            }
+        });
+
     }
 
     @Override
     public void onNext(T v) {
-        /**
-         * Store the latest value but do not send it. It only gets sent when 'onCompleted' occurs.
-         */
-        state.currentValue.set(new Notification<T>(v));
+        lastNotification.set(new Notification<T>(v));
     }
 
 }

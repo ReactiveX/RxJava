@@ -15,8 +15,12 @@
  */
 package rx.subjects;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -24,8 +28,7 @@ import org.mockito.Mockito;
 
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Action1;
-import rx.util.functions.Func0;
+import rx.schedulers.Schedulers;
 
 public class ReplaySubjectTest {
 
@@ -243,30 +246,90 @@ public class ReplaySubjectTest {
         verify(aObserver, Mockito.never()).onCompleted();
     }
 
-    @Test
-    public void testUnsubscribe() {
-        UnsubscribeTester.test(
-                new Func0<ReplaySubject<Object>>() {
-                    @Override
-                    public ReplaySubject<Object> call() {
-                        return ReplaySubject.create();
+    @Test(timeout = 2000)
+    public void testNewSubscriberDoesntBlockExisting() throws InterruptedException {
+
+        final AtomicReference<String> lastValueForObserver1 = new AtomicReference<String>();
+        Observer<String> observer1 = new Observer<String>() {
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(String v) {
+                System.out.println("observer1: " + v);
+                lastValueForObserver1.set(v);
+            }
+
+        };
+
+        final AtomicReference<String> lastValueForObserver2 = new AtomicReference<String>();
+        final CountDownLatch oneReceived = new CountDownLatch(1);
+        final CountDownLatch makeSlow = new CountDownLatch(1);
+        final CountDownLatch completed = new CountDownLatch(1);
+        Observer<String> observer2 = new Observer<String>() {
+
+            @Override
+            public void onCompleted() {
+                completed.countDown();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(String v) {
+                System.out.println("observer2: " + v);
+                if (v.equals("one")) {
+                    oneReceived.countDown();
+                } else {
+                    try {
+                        makeSlow.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                }, new Action1<ReplaySubject<Object>>() {
-                    @Override
-                    public void call(ReplaySubject<Object> repeatSubject) {
-                        repeatSubject.onCompleted();
-                    }
-                }, new Action1<ReplaySubject<Object>>() {
-                    @Override
-                    public void call(ReplaySubject<Object> repeatSubject) {
-                        repeatSubject.onError(new Throwable());
-                    }
-                }, new Action1<ReplaySubject<Object>>() {
-                    @Override
-                    public void call(ReplaySubject<Object> repeatSubject) {
-                        repeatSubject.onNext("one");
-                    }
+                    lastValueForObserver2.set(v);
                 }
-                );
+            }
+
+        };
+
+        ReplaySubject<String> subject = ReplaySubject.create();
+        Subscription s1 = subject.subscribe(observer1);
+        subject.onNext("one");
+        assertEquals("one", lastValueForObserver1.get());
+        subject.onNext("two");
+        assertEquals("two", lastValueForObserver1.get());
+
+        Subscription s2 = subject.observeOn(Schedulers.newThread()).subscribe(observer2);
+
+        System.out.println("before waiting for one");
+        
+        // wait until observer2 starts having replay occur
+        oneReceived.await();
+        
+        System.out.println("after waiting for one");
+        
+        subject.onNext("three");
+        // if subscription blocked existing subscribers then 'makeSlow' would cause this to not be there yet 
+        assertEquals("three", lastValueForObserver1.get());
+        subject.onCompleted();
+
+        // release 
+        makeSlow.countDown();
+        completed.await();
+        // all of them should be emitted with the last being "three"
+        assertEquals("three", lastValueForObserver2.get());
+
     }
+
 }

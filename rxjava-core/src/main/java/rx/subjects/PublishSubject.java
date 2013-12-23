@@ -15,8 +15,13 @@
  */
 package rx.subjects;
 
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Notification;
 import rx.Observer;
+import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
+import rx.util.functions.Action1;
 
 /**
  * Subject that, once and {@link Observer} has subscribed, publishes all subsequent events to the subscriber.
@@ -41,44 +46,86 @@ import rx.Observer;
  * 
  * @param <T>
  */
-public class PublishSubject<T> extends AbstractSubject<T> {
+public final class PublishSubject<T> extends Subject<T, T> {
+
     public static <T> PublishSubject<T> create() {
-        final SubjectState<T> state = new SubjectState<T>();
-        OnSubscribeFunc<T> onSubscribe = getOnSubscribeFunc(state, null);
-        return new PublishSubject<T>(onSubscribe, state);
+        final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
+        // set a default value so subscriptions will immediately receive this until a new notification is received
+        final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>();
+
+        OnSubscribeFunc<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+                /**
+                 * This function executes at beginning of subscription.
+                 * 
+                 * This will always run, even if Subject is in terminal state.
+                 */
+                new Action1<SubjectObserver<? super T>>() {
+
+                    @Override
+                    public void call(SubjectObserver<? super T> o) {
+                        // nothing onSubscribe unless in terminal state which is the next function
+                    }
+                },
+                /**
+                 * This function executes if the Subject is terminated before subscription occurs.
+                 */
+                new Action1<SubjectObserver<? super T>>() {
+
+                    @Override
+                    public void call(SubjectObserver<? super T> o) {
+                        /*
+                         * If we are already terminated, or termination happens while trying to subscribe
+                         * this will be invoked and we emit whatever the last terminal value was.
+                         */
+                        lastNotification.get().accept(o);
+                    }
+                });
+
+        return new PublishSubject<T>(onSubscribe, subscriptionManager, lastNotification);
     }
 
-    private final SubjectState<T> state;
+    private final SubjectSubscriptionManager<T> subscriptionManager;
+    final AtomicReference<Notification<T>> lastNotification;
 
-    protected PublishSubject(OnSubscribeFunc<T> onSubscribe, SubjectState<T> state) {
+    protected PublishSubject(OnSubscribeFunc<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
         super(onSubscribe);
-        this.state = state;
+        this.subscriptionManager = subscriptionManager;
+        this.lastNotification = lastNotification;
     }
 
     @Override
     public void onCompleted() {
-        /**
-         * Mark this subject as completed and emit latest value + 'onCompleted' to all Observers
-         */
-        state.currentValue.set(new Notification<T>());
-        emitNotificationAndTerminate(state, null);
+        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
+
+            @Override
+            public void call(Collection<SubjectObserver<? super T>> observers) {
+                lastNotification.set(new Notification<T>());
+                for (Observer<? super T> o : observers) {
+                    o.onCompleted();
+                }
+            }
+        });
     }
 
     @Override
-    public void onError(Throwable e) {
-        /**
-         * Mark this subject as completed with an error as the last value and emit 'onError' to all Observers
-         */
-        state.currentValue.set(new Notification<T>(e));
-        emitNotificationAndTerminate(state, null);
+    public void onError(final Throwable e) {
+        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
+
+            @Override
+            public void call(Collection<SubjectObserver<? super T>> observers) {
+                lastNotification.set(new Notification<T>(e));
+                for (Observer<? super T> o : observers) {
+                    o.onError(e);
+                }
+            }
+        });
+
     }
 
     @Override
     public void onNext(T v) {
-        /**
-         * Store the latest value and send it to all observers;
-         */
-        state.currentValue.set(new Notification<T>(v));
-        emitNotification(state, null);
+        for (Observer<? super T> o : subscriptionManager.rawSnapshot()) {
+            o.onNext(v);
+        }
     }
 }
