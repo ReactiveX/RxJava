@@ -17,12 +17,17 @@ package rx.operators;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
+import rx.util.Timestamped;
+import rx.util.functions.Action0;
 
 /**
  * Returns an Observable that emits the last <code>count</code> items emitted by the source
@@ -118,5 +123,125 @@ public final class OperationTakeLast {
 
         }
 
+    }
+    
+    /**
+     * Takes the last values before completion determined by the given time window.
+     * @param <T> the result value type
+     */
+    public static final class TakeLastTimed<T> implements OnSubscribeFunc<T> {
+        final Observable<? extends T> source;
+        final long timeInMillis;
+        final Scheduler scheduler;
+        final Scheduler drain;
+
+        public TakeLastTimed(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler, Scheduler drain) {
+            this.source = source;
+            this.timeInMillis = unit.toMillis(time);
+            this.scheduler = scheduler;
+            this.drain = drain;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super T> t1) {
+            CompositeSubscription csub = new CompositeSubscription();
+            csub.add(source.subscribe(new SourceObserver<T>(t1, timeInMillis, scheduler, drain, csub)));
+            return csub;
+        }
+        
+        /** Observes the source. */
+        private static final class SourceObserver<T> implements Observer<T> {
+            final Observer<? super T> observer;
+            final long timeInMillis;
+            final Scheduler scheduler;
+            final Scheduler drain;
+            final CompositeSubscription csub;
+            
+            LinkedList<Timestamped<T>> buffer = new LinkedList<Timestamped<T>>();
+
+            public SourceObserver(Observer<? super T> observer, long timeInMillis, Scheduler scheduler, Scheduler drain, CompositeSubscription csub) {
+                this.observer = observer;
+                this.timeInMillis = timeInMillis;
+                this.scheduler = scheduler;
+                this.drain = drain;
+                this.csub = csub;
+            }
+
+            @Override
+            public void onNext(T args) {
+                long now = scheduler.now();
+                buffer.addLast(new Timestamped<T>(now, args));
+                evict(now);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                clear();
+                observer.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                long now = scheduler.now();
+                evict(now);
+                LinkedList<Timestamped<T>> remaining = buffer;
+                clear();
+                if (!csub.isUnsubscribed()) {
+                    csub.add(drain.schedule(new Drain<T>(observer, remaining, csub)));
+                }
+            }
+            
+            void clear() {
+                buffer = new LinkedList<Timestamped<T>>();
+            }
+            /**
+             * Remove buffer entries with timestamps before the given time.
+             * @param now 
+             */
+            void evict(long now) {
+                long limit = now - timeInMillis;
+
+                while (!buffer.isEmpty()) {
+                    Timestamped<T> v = buffer.peekFirst();
+                    if (v.getTimestampMillis() < limit) {
+                        buffer.pollFirst();
+                    } else {
+                        break;
+                    }
+                }
+            }
+            /** Drain the values from the list. */
+            private static final class Drain<T> implements Action0 {
+                final Observer<? super T> observer;
+                final LinkedList<Timestamped<T>> list;
+                final CompositeSubscription cancel;
+
+                public Drain(Observer<? super T> observer, LinkedList<Timestamped<T>> list,
+                        CompositeSubscription cancel) {
+                    this.observer = observer;
+                    this.list = list;
+                    this.cancel = cancel;
+                }
+
+                @Override
+                public void call() {
+                    for (Timestamped<T> v : list) {
+                        if (!cancel.isUnsubscribed()) {
+                            try {
+                                observer.onNext(v.getValue());
+                            } catch (Throwable t) {
+                                observer.onError(t);
+                                return;
+                            }
+                        } else {
+                            return;
+                        }
+                    }
+                    if (!cancel.isUnsubscribed()) {
+                        observer.onCompleted();
+                    }
+                }
+            }
+        }
     }
 }

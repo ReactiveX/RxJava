@@ -15,13 +15,19 @@
  */
 package rx.operators;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.SingleAssignmentSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 
 /**
  * Returns an Observable that emits the first <code>num</code> items emitted by the source
@@ -160,5 +166,124 @@ public final class OperationTake {
 
         }
 
+    }
+    
+    /**
+     * Takes values from the source until a timer fires.
+     * @param <T> the result value type
+     */
+    public static final class TakeTimed<T> implements OnSubscribeFunc<T> {
+        final Observable<? extends T> source;
+        final long time;
+        final TimeUnit unit;
+        final Scheduler scheduler;
+
+        public TakeTimed(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+            this.source = source;
+            this.time = time;
+            this.unit = unit;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super T> t1) {
+            
+            SingleAssignmentSubscription timer = new SingleAssignmentSubscription();
+            SingleAssignmentSubscription data = new SingleAssignmentSubscription();
+
+            CompositeSubscription csub = new CompositeSubscription(timer, data);
+            
+            SourceObserver<T> so = new SourceObserver<T>(t1, csub);
+            data.set(source.subscribe(so));
+            if (!data.isUnsubscribed()) {
+                timer.set(scheduler.schedule(so, time, unit));
+            }
+            
+            return csub;
+        }
+        /**
+         * Observes the source and relays its values until gate turns into false.
+         * @param <T> the observed value type
+         */
+        private static final class SourceObserver<T> implements Observer<T>, Action0 {
+            final Observer<? super T> observer;
+            final Subscription cancel;
+            final AtomicInteger state = new AtomicInteger();
+            static final int ACTIVE = 0;
+            static final int NEXT = 1;
+            static final int DONE = 2;
+
+            public SourceObserver(Observer<? super T> observer, 
+                    Subscription cancel) {
+                this.observer = observer;
+                this.cancel = cancel;
+            }
+
+            @Override
+            public void onNext(T args) {
+                do {
+                    int s = state.get();
+                    if (s == DONE) {
+                        return;
+                    }
+                    if (state.compareAndSet(s, NEXT)) {
+                        try {
+                            observer.onNext(args);
+                        } finally {
+                            state.set(ACTIVE);
+                            return;
+                        }
+                    }
+                } while (true);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                do {
+                    int s = state.get();
+                    if (s == DONE) {
+                        return;
+                    } else
+                    if (s == NEXT) {
+                        continue;
+                    } else
+                    if (state.compareAndSet(s, DONE)) {
+                        try {
+                            observer.onError(e);
+                        } finally {
+                            cancel.unsubscribe();
+                        }
+                        return;
+                    }
+                } while (true);
+            }
+
+            @Override
+            public void onCompleted() {
+                do {
+                    int s = state.get();
+                    if (s == DONE) {
+                        return;
+                    } else
+                    if (s == NEXT) {
+                        continue;
+                    } else
+                    if (state.compareAndSet(s, DONE)) {
+                        try {
+                            observer.onCompleted();
+                        } finally {
+                            cancel.unsubscribe();
+                        }
+                        return;
+                    }
+                } while (true);
+            }
+
+            @Override
+            public void call() {
+                onCompleted();
+            }
+            
+        }
     }
 }
