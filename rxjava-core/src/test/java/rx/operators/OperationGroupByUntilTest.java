@@ -15,8 +15,10 @@
   */
 package rx.operators;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import junit.framework.Assert;
@@ -29,6 +31,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.observables.GroupedObservable;
+import rx.subjects.PublishSubject;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
@@ -298,5 +301,69 @@ public class OperationGroupByUntilTest {
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onCompleted();
         verify(observer, never()).onNext(any());
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testAsGroupByMaxGroups() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        int n = 10;
+        int k = 3;
+        
+        final List<Observer<Object>> observers = new ArrayList<Observer<Object>>();
+        // capture group events
+        final Observer<Object> main = mock(Observer.class);
+        observers.add(main);
+        
+        for (int i = 1; i <= n; i++) {
+            Observer<Object> o = mock(Observer.class);
+            observers.add(o);
+        }
+        
+        InOrder inOrder = inOrder(observers.toArray());
+        
+        Observable<GroupedObservable<Integer, Integer>> result = source.groupBy(
+                Functions.<Integer>identity(), k);
+
+        result.subscribe(new Observer<GroupedObservable<Integer, Integer>>() {
+            @Override
+            public void onNext(GroupedObservable<Integer, Integer> args) {
+                main.onNext(args.getKey());
+                args.subscribe(observers.get(args.getKey()));
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                main.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                main.onCompleted();
+            }
+        });
+        
+        for (int i = 1; i <= n; i++) {
+            source.onNext(i);
+        }
+        source.onCompleted();
+        
+        for (int i = 1; i <= n; i++) {
+            if (i > k) {
+                inOrder.verify(observers.get(i - k)).onCompleted();
+            }
+            inOrder.verify(main).onNext(i);
+            inOrder.verify(observers.get(i)).onNext(i);
+        }
+        
+        for (int i = n - k + 1; i <= n; i++) {
+            inOrder.verify(observers.get(i)).onCompleted();
+        }
+        inOrder.verify(main).onCompleted();
+        
+        for (Observer<Object> o : observers) {
+            verify(o, never()).onError(any(Throwable.class));
+        }
     }
 }
