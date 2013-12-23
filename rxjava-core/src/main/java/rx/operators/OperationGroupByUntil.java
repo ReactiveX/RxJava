@@ -17,6 +17,7 @@ package rx.operators;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +30,6 @@ import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
-import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
 /**
@@ -43,14 +43,19 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
     final Func1<? super TSource, ? extends TKey> keySelector;
     final Func1<? super TSource, ? extends TResult> valueSelector;
     final Func1<? super GroupedObservable<TKey, TResult>, ? extends Observable<TDuration>> durationSelector;
+    /** Number of active groups at once. */
+    final int capacity;
     public OperationGroupByUntil(Observable<TSource> source,
             Func1<? super TSource, ? extends TKey> keySelector,
             Func1<? super TSource, ? extends TResult> valueSelector,
-            Func1<? super GroupedObservable<TKey, TResult>, ? extends Observable<TDuration>> durationSelector) {
+            Func1<? super GroupedObservable<TKey, TResult>, ? extends Observable<TDuration>> durationSelector,
+            int capacity
+    ) {
         this.source = source;
         this.keySelector = keySelector;
         this.valueSelector = valueSelector;
         this.durationSelector = durationSelector;
+        this.capacity = capacity;
     }
     
     @Override
@@ -61,17 +66,35 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
         return cancel;
     }
     /** The source value sink and group manager. */
-    class ResultSink implements Observer<TSource> {
+    final class ResultSink implements Observer<TSource> {
         /** Guarded by gate. */
         protected final Observer<? super GroupedObservable<TKey, TResult>> observer;
         protected final Subscription cancel;
         protected final CompositeSubscription group = new CompositeSubscription();
         protected final Object gate = new Object();
         /** Guarded by gate. */
-        protected final Map<TKey, GroupSubject<TKey, TResult>> map = new HashMap<TKey, GroupSubject<TKey, TResult>>();
+        protected final Map<TKey, GroupSubject<TKey, TResult>> map;
         public ResultSink(Observer<? super GroupedObservable<TKey, TResult>> observer, Subscription cancel) {
             this.observer = observer;
             this.cancel = cancel;
+            Map<TKey, GroupSubject<TKey, TResult>> map0;
+            if (capacity < 0) {
+                map0 = new HashMap<TKey, GroupSubject<TKey, TResult>>();
+            } else {
+                map0 = new LinkedHashMap<TKey, GroupSubject<TKey, TResult>>() {
+
+                    @Override
+                    protected boolean removeEldestEntry(Map.Entry<TKey, GroupSubject<TKey, TResult>> eldest) {
+                        if (size() > capacity) {
+                            eldest.getValue().onCompleted();
+                            return true;
+                        }
+                        return false;
+                    }
+                    
+                };
+            }
+            this.map = map0;
         }
         /** Prepare the subscription tree. */
         public Subscription run() {
@@ -173,7 +196,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             handle.unsubscribe();
         }
         /** Observe the completion of a group. */
-        class DurationObserver implements Observer<TDuration> {
+        final class DurationObserver implements Observer<TDuration> {
             final TKey key;
             final Subscription handle;
             public DurationObserver(TKey key, Subscription handle) {
@@ -197,25 +220,12 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             
         }
     }
-    protected static <T> OnSubscribeFunc<T> neverSubscribe() {
-        return new OnSubscribeFunc<T>() {
-            @Override
-            public Subscription onSubscribe(Observer<? super T> t1) {
-                return Subscriptions.empty();
-            }
-        };
-    }
     /** A grouped observable with subject-like behavior. */
-    public static class GroupSubject<K, V> extends GroupedObservable<K, V> implements Observer<V> {
+    public static final class GroupSubject<K, V> extends GroupedObservable<K, V> implements Observer<V> {
         protected final Subject<V, V> publish;
         public GroupSubject(K key, Subject<V, V> publish) {
-            super(key, OperationGroupByUntil.<V>neverSubscribe());
+            super(key, OperationReplay.subscriberOf(publish));
             this.publish = publish;
-        }
-        
-        @Override
-        public Subscription subscribe(Observer<? super V> observer) {
-            return publish.subscribe(observer);
         }
         
         @Override

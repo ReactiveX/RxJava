@@ -35,6 +35,7 @@ import rx.observables.GroupedObservable;
 import rx.operators.OperationAll;
 import rx.operators.OperationAmb;
 import rx.operators.OperationAny;
+import rx.operators.OperationAsObservable;
 import rx.operators.OperationAverage;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCache;
@@ -510,7 +511,15 @@ public class Observable<T> {
     public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError, onComplete);
     }
-
+    
+    /**
+     * Hides the identity of this observable.
+     * @return an Observable hiding the identity of this Observable.
+     */
+    public Observable<T> asObservable() {
+        return create(new OperationAsObservable<T>(this));
+    }
+    
     /**
      * Returns a {@link ConnectableObservable} that upon connection causes the
      * source Observable to push results into the specified subject.
@@ -7228,9 +7237,99 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229433.aspx">MSDN: Observable.GroupByUntil</a>
      */
     public <TKey, TValue, TDuration> Observable<GroupedObservable<TKey, TValue>> groupByUntil(Func1<? super T, ? extends TKey> keySelector, Func1<? super T, ? extends TValue> valueSelector, Func1<? super GroupedObservable<TKey, TValue>, ? extends Observable<TDuration>> durationSelector) {
-        return create(new OperationGroupByUntil<T, TKey, TValue, TDuration>(this, keySelector, valueSelector, durationSelector));
+        return create(new OperationGroupByUntil<T, TKey, TValue, TDuration>(this, keySelector, valueSelector, durationSelector, -1));
     }
 
+    /**
+     * Return an Observable which groups the items emitted by this Observable according to a specified key
+     * selector function until the duration Observable expires for the key or
+     * the total number of active groups exceeds the maxGroups value.
+     * 
+     * @param <TKey> the group key type
+     * @param <TDuration> the duration element type
+     * @param keySelector a function to extract the key for each item
+     * @param durationSelector a function to signal the expiration of a group
+     * @param maxGroups the maximum allowed concurrent groups
+     * @return 
+     */
+    public <TKey, TDuration> Observable<GroupedObservable<TKey, T>> groupByUntil(
+            Func1<? super T, ? extends TKey> keySelector, 
+            Func1<? super GroupedObservable<TKey, T>, ? extends Observable<TDuration>> durationSelector,
+            int maxGroups) {
+        return groupByUntil(keySelector, Functions.<T>identity(), durationSelector, maxGroups);
+    }
+    
+    /**
+     * Return an Observable which groups the items emitted by this Observable according to specified key and
+     * value selector functions until the duration Observable expires for the
+     * key.
+     * @param <TKey> the group key type
+     * @param <TValue> the value type within the groups
+     * @param <TDuration> the duration element type
+     * @param keySelector a function to extract the key for each item
+     * @param valueSelector a function to map each source item to an item
+     *                      emitted by an Observable group
+     * @param durationSelector a function to signal the expiration of a group
+     * @param maxGroups the maximum allowed concurrent groups
+     * @return 
+     */
+    public <TKey, TValue, TDuration> Observable<GroupedObservable<TKey, TValue>> groupByUntil(
+            Func1<? super T, ? extends TKey> keySelector, 
+            Func1<? super T, ? extends TValue> valueSelector, 
+            Func1<? super GroupedObservable<TKey, TValue>, ? extends Observable<TDuration>> durationSelector,
+            int maxGroups) {
+        if (maxGroups < 0) {
+            throw new IllegalArgumentException("maxGroups >= 0 required");
+        }
+        return create(new OperationGroupByUntil<T, TKey, TValue, TDuration>(this, keySelector, valueSelector, durationSelector, maxGroups));
+    }
+    
+    /**
+     * Groups the items emitted by an Observable according to a specified
+     * criterion, and emits these grouped items as {@link GroupedObservable}s,
+     * one GroupedObservable per group and limits the number of active groups.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupBy.png">
+     * 
+     * @param keySelector a function that extracts the key from an item
+     * @param elementSelector a function to map a source item to an item in a
+     *                        {@link GroupedObservable}
+     * @param maxGroups the maximum number of active groups.
+     * @param <K> the key type
+     * @param <R> the type of items emitted by the resulting
+     *            {@link GroupedObservable}s
+     * @return an Observable that emits {@link GroupedObservable}s, each of
+     *         which corresponds to a unique key value and emits items
+     *         representing items from the source Observable that share that key
+     *         value
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava Wiki: groupBy</a>
+     */
+    public <K, R> Observable<GroupedObservable<K, R>> groupBy(
+            final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector,
+            int maxGroups) {
+        return groupByUntil(keySelector, elementSelector, Functions.just1(never()), maxGroups);
+    }
+
+    /**
+     * Groups the items emitted by an Observable according to a specified
+     * criterion, and emits these grouped items as {@link GroupedObservable}s,
+     * one GroupedObservable per group and limits the number of active groups.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupBy.png">
+     * 
+     * @param keySelector a function that extracts the key for each item
+     * @param maxGroups the maximum number of active groups.
+     * @param <K> the key type
+     * @return an Observable that emits {@link GroupedObservable}s, each of
+     *         which corresponds to a unique key value and emits items
+     *         representing items from the source Observable that share that key
+     *         value
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava Wiki: groupBy</a>
+     */
+    public <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector, int maxGroups) {
+        return groupByUntil(keySelector, Functions.just1(never()), maxGroups);
+    }
+    
     /**
      * Invokes the specified function asynchronously and returns an Observable
      * that emits the result.
