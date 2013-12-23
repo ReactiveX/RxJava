@@ -15,7 +15,13 @@
  */
 package rx.subjects;
 
-import static org.mockito.Matchers.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
@@ -166,6 +172,97 @@ public class BehaviorSubjectTest {
         inOrderC.verifyNoMoreInteractions();
     }
 
+    @Test
+    public void testValueSkipWhileSubscribing() throws InterruptedException {
+        final BehaviorSubject<Integer> bs = BehaviorSubject.create(1);
+
+        final CountDownLatch firstValuePause = new CountDownLatch(1);
+        final CountDownLatch done = new CountDownLatch(1);
+
+        final List<Integer> values = new ArrayList<Integer>();
+        
+        final Observer<Integer> onNext = new Observer<Integer>() {
+
+            @Override
+            public void onNext(Integer t1) {
+                values.add(t1);
+                try {
+                    firstValuePause.await();
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onCompleted() {
+                done.countDown();
+            }
+            
+        };
+        
+        bs.onNext(2);
+        bs.onNext(3);
+        
+        Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                bs.subscribe(onNext);
+            }
+        });
+        t1.start();
+        
+        final CountDownLatch t2ready = new CountDownLatch(1);
+        
+        Thread t2 = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    t2ready.countDown();
+                    Thread.sleep(1000);
+                    bs.onNext(4);
+                    Thread.sleep(1000);
+                    bs.onNext(5);
+                    Thread.sleep(1000);
+                    bs.onNext(6);
+                    Thread.sleep(1000);
+                    bs.onNext(7);
+                    Thread.sleep(1000);
+                    bs.onNext(8);
+                    Thread.sleep(1000);
+                    bs.onNext(9);
+                    Thread.sleep(1000);
+                    bs.onCompleted();
+                } catch (InterruptedException ex) {
+                    
+                }
+            }
+        });
+        
+        t2.start();
+        
+        if (!t2ready.await(10000, TimeUnit.MILLISECONDS)) {
+            fail("Couldn't get t2 ready in time.");
+        }
+        
+        Thread.sleep(3000);
+        
+        firstValuePause.countDown();
+        
+        t1.join();
+        t2.join();
+        
+        if (!done.await(10000, TimeUnit.MILLISECONDS)) {
+            fail("Not done in time");
+        }
+        
+        assertEquals(Arrays.asList(3, 4, 5, 6, 7, 8, 9), values);
+    }
+    
     @Test
     public void testCompletedAfterErrorIsNotSent() {
         BehaviorSubject<String> subject = BehaviorSubject.create("default");
