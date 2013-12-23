@@ -2467,6 +2467,21 @@ public class Observable<T> {
             }
         });
     }
+    
+    /**
+     * Return an Observable which concatenates the observable sequences obtained by running the
+     * resultSelector for each element in the given Iterable source.
+     * @param <T> the Iterable sequence value type
+     * @param <R> the result type
+     * @param source the source iterable
+     * @param resultSelector the selector function that returns an Observable
+     *                       sequence for each value of the {@code source} iterable sequence
+     * @return an Observable which concatenates the observable sequences obtained by running the
+     * resultSelector for each element in the given Iterable source.
+     */
+    public static <T, R> Observable<R> forIterable(Iterable<? extends T> source, Func1<? super T, ? extends Observable<? extends R>> resultSelector) {
+        return create(OperationConcat.forIterable(source, resultSelector));
+    }
 
     /**
      * Returns an Observable that emits a Boolean value that indicates whether

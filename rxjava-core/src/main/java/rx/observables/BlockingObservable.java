@@ -16,6 +16,7 @@
 package rx.observables;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,6 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.operators.OperationCollect;
 import rx.operators.OperationMostRecent;
 import rx.operators.OperationNext;
 import rx.operators.OperationToFuture;
@@ -30,7 +32,9 @@ import rx.operators.OperationToIterator;
 import rx.operators.SafeObservableSubscription;
 import rx.operators.SafeObserver;
 import rx.util.functions.Action1;
+import rx.util.functions.Func0;
 import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 /**
  * An extension of {@link Observable} that provides blocking operators.
@@ -394,5 +398,29 @@ public class BlockingObservable<T> {
                 return getIterator();
             }
         };
+    }
+    
+    /**
+     * Return an Iterable sequence that returns elements 
+     * collected/aggregated from the source sequence between consecutive next calls.
+     * @param <U> the type of the collector
+     * @param initialCollector factory function to create the initial collector
+     * @param merger function that merges the current collector with the observed value and returns a (new) collector
+     * @param replaceCollector function that replaces the current collector with a new collector when the current collector is consumed by an Iterator.next()
+     * @return an Iterable sequence that returns elements 
+     *         collected/aggregated from the source sequence between
+     *         consecutive next calls.
+     */
+    public <U> Iterable<U> collect(Func0<? extends U> initialCollector,
+            Func2<? super U, ? super T, ? extends U> merger,
+            Func1<? super U, ? extends U> replaceCollector) {
+        return OperationCollect.collect(o, initialCollector, merger, replaceCollector);
+    }
+    /**
+     * Return an Iterable that produces a sequence of consecutive (possibly empty) chunks of this Observable sequence.
+     * @return an Iterable that produces a sequence of consecutive (possibly empty) chunks of this Observable sequence.
+     */
+    public Iterable<List<T>> chunkify() {
+        return OperationCollect.chunkify(o);
     }
 }

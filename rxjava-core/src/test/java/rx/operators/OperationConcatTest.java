@@ -21,9 +21,11 @@ import static rx.operators.OperationConcat.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -32,8 +34,10 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
+import rx.util.functions.Func1;
 
 public class OperationConcatTest {
 
@@ -597,5 +601,253 @@ public class OperationConcatTest {
 
         verify(o1, never()).onError(any(Throwable.class));
         verify(o2, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testForIterable() {
+        List<Integer> keys = Arrays.asList(0, 1, 2);
+        final List<Observable<Integer>> values = Arrays.asList(
+                Observable.from(1, 2, 3),
+                Observable.from(4, 5, 6),
+                Observable.from(7, 8, 9)
+        );
+        Func1<Integer, Observable<Integer>> selector = new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return values.get(t1);
+            }
+        };
+        
+        Observable<Integer> result = Observable.forIterable(keys, selector);
+        
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        result.subscribe(o);
+        
+        for (int i = 1; i < 10; i++) {
+            inOrder.verify(o, times(1)).onNext(i);
+        }
+        inOrder.verify(o, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testForIterableLongSequence() {
+        int n = 250;
+        List<Integer> keys = new ArrayList<Integer>(n);
+        List<Integer> expected = new ArrayList<Integer>(3 * n);
+        for (int i = 1; i <= n; i++) {
+            keys.add(n);
+            for (int j = 1; j <= 3; j++) {
+                expected.add(j);
+            }
+        }
+        
+        Func1<Integer, Observable<Integer>> selector = new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return Observable.from(1, 2, 3).subscribeOn(Schedulers.currentThread());
+            }
+        };
+        
+        Observable<Integer> result = Observable.forIterable(keys, selector);
+        
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        result.subscribe(o);
+        
+        for (Integer i : expected) {
+            inOrder.verify(o, times(1)).onNext(i);
+        }
+        inOrder.verify(o, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onError(any(Throwable.class));
+
+    }
+    @Test
+    public void testForIterableEmpty() {
+        List<Integer> keys = Arrays.asList();
+        final AtomicBoolean selectorCalled = new AtomicBoolean();
+        Func1<Integer, Observable<Integer>> selector = new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                selectorCalled.set(true);
+                throw new IllegalStateException("Shouldn't get here!");
+            }
+        };
+        Observable<Integer> result = Observable.forIterable(keys, selector);
+        
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        result.subscribe(o);
+        
+        inOrder.verify(o, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onNext(any());
+        verify(o, never()).onError(any(Throwable.class));
+        
+        assertFalse(selectorCalled.get());
+    }
+    static final class CustomException extends RuntimeException {
+        public CustomException(String message) {
+            super(message);
+        }
+    }
+    @Test
+    public void testForIterableIteratorHasNextThrows() {
+        final AtomicBoolean nextCalled = new AtomicBoolean();
+        Iterable<Integer> keys = new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+
+                    @Override
+                    public boolean hasNext() {
+                        throw new CustomException("Forced failure");
+                    }
+
+                    @Override
+                    public Integer next() {
+                        nextCalled.set(true);
+                        throw new IllegalStateException("Shouldn't get here!");
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException("Read-only sequence");
+                    }
+                    
+                };
+            }
+            
+        };
+        
+        final AtomicBoolean selectorCalled = new AtomicBoolean();
+
+        Func1<Integer, Observable<Integer>> selector = new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                selectorCalled.set(true);
+                throw new IllegalStateException("Shouldn't get here!");
+            }
+        };
+        
+        Observable<Integer> result = Observable.forIterable(keys, selector);
+        Observer<Object> o = mock(Observer.class);
+
+        result.subscribe(o);
+        
+        verify(o, times(1)).onError(any(CustomException.class));
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+
+        assertFalse(selectorCalled.get());
+        assertFalse(nextCalled.get());
+    }
+    @Test
+    public void testForIterableIteratorNextThrows() {
+        Iterable<Integer> keys = new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        throw new CustomException("Forced failure");
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException("Read-only sequence");
+                    }
+                    
+                };
+            }
+            
+        };
+        
+        final AtomicBoolean selectorCalled = new AtomicBoolean();
+
+        Func1<Integer, Observable<Integer>> selector = new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                selectorCalled.set(true);
+                throw new IllegalStateException("Shouldn't get here!");
+            }
+        };
+        
+        Observable<Integer> result = Observable.forIterable(keys, selector);
+        Observer<Object> o = mock(Observer.class);
+
+        result.subscribe(o);
+        
+        verify(o, times(1)).onError(any(CustomException.class));
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+
+        assertFalse(selectorCalled.get());
+    }
+    
+    @Test
+    public void testForIterableSelectorThrows() {
+        List<Integer> keys = Arrays.asList(0);
+        
+
+        Func1<Integer, Observable<Integer>> selector = new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                throw new CustomException("Forced failure!");
+            }
+        };
+        
+        Observable<Integer> result = Observable.forIterable(keys, selector);
+        Observer<Object> o = mock(Observer.class);
+
+        result.subscribe(o);
+        
+        verify(o, times(1)).onError(any(CustomException.class));
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+    }
+    
+    @Test
+    public void testForIterableOneThrows() {
+        List<Integer> keys = Arrays.asList(0, 1, 2);
+        final List<Observable<Integer>> values = Arrays.asList(
+                Observable.from(1, 2, 3),
+                Observable.from(4, 5, 6),
+                Observable.<Integer>error(new CustomException("Forced failure"))
+        );
+        Func1<Integer, Observable<Integer>> selector = new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return values.get(t1);
+            }
+        };
+        
+        Observable<Integer> result = Observable.forIterable(keys, selector);
+        
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        result.subscribe(o);
+        
+        for (int i = 1; i < 7; i++) {
+            inOrder.verify(o, times(1)).onNext(i);
+        }
+        inOrder.verify(o, times(1)).onError(any(CustomException.class));
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onCompleted();
     }
 }
