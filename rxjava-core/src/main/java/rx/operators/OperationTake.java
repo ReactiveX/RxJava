@@ -173,7 +173,7 @@ public final class OperationTake {
      * @param <T> the result value type
      */
     public static final class TakeTimed<T> implements OnSubscribeFunc<T> {
-    final Observable<? extends T> source;
+        final Observable<? extends T> source;
         final long time;
         final TimeUnit unit;
         final Scheduler scheduler;
@@ -221,11 +221,13 @@ public final class OperationTake {
         private static final class SourceObserver<T> implements Observer<T>, Action0 {
             volatile Observer<? super T> observer;
             final Subscription cancel;
+            final AtomicBoolean done;
 
             public SourceObserver(Observer<? super T> observer, 
                     Subscription cancel) {
                 this.observer = observer;
                 this.cancel = cancel;
+                this.done = new AtomicBoolean();
             }
 
             @Override
@@ -235,30 +237,40 @@ public final class OperationTake {
 
             @Override
             public void onError(Throwable e) {
-                try {
-                    observer.onError(e);
-                } finally {
-                    cancel.unsubscribe();
+                if (done.compareAndSet(false, true)) {
+                    Observer<? super T> o = this.observer;
+                    this.observer = nopObserver;
+                    try {
+                        o.onError(e);
+                    } finally {
+                        cancel.unsubscribe();
+                    }
                 }
             }
 
             @Override
             public void onCompleted() {
-                try {
-                    observer.onCompleted();
-                } finally {
-                    cancel.unsubscribe();
+                if (done.compareAndSet(false, true)) {
+                    Observer<? super T> o = this.observer;
+                    this.observer = nopObserver;
+                    try {
+                        o.onCompleted();
+                    } finally {
+                        cancel.unsubscribe();
+                    }
                 }
             }
 
             @Override
             public void call() {
-                Observer<? super T> o = this.observer;
-                this.observer = nopObserver;
-                try {
-                    o.onCompleted();
-                } finally {
-                    cancel.unsubscribe();
+                if (done.compareAndSet(false, true)) {
+                    Observer<? super T> o = this.observer;
+                    this.observer = nopObserver;
+                    try {
+                        o.onCompleted();
+                    } finally {
+                        cancel.unsubscribe();
+                    }
                 }
             }
             
