@@ -115,6 +115,14 @@ public class SubjectPerformanceTests {
      * Run: 12 - 16,158,874 ops/sec
      * Run: 13 - 16,209,504 ops/sec
      * Run: 14 - 16,151,174 ops/sec
+     * 
+     * Map to Arrays and other enhancements from https://github.com/Netflix/RxJava/pull/652
+     * 
+     * Run: 10 - 54,231,405 ops/sec
+     * Run: 11 - 56,239,490 ops/sec
+     * Run: 12 - 55,424,384 ops/sec
+     * Run: 13 - 56,370,421 ops/sec
+     * Run: 14 - 56,617,767 ops/sec
      */
     public long unboundedReplaySubject() {
         ReplaySubject<Long> s = ReplaySubject.create();
