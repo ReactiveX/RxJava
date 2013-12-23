@@ -30,9 +30,11 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscription;
 import rx.schedulers.TestScheduler;
 import rx.util.functions.Func1;
 
@@ -192,5 +194,45 @@ public class OperationDelayTest {
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer2, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testDelaySubscription() {
+        TestScheduler scheduler = new TestScheduler();
+        
+        Observable<Integer> result = Observable.from(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
+        
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        result.subscribe(o);
+        
+        inOrder.verify(o, never()).onNext(any());
+        inOrder.verify(o, never()).onCompleted();
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        inOrder.verify(o, times(1)).onNext(1);
+        inOrder.verify(o, times(1)).onNext(2);
+        inOrder.verify(o, times(1)).onNext(3);
+        inOrder.verify(o, times(1)).onCompleted();
+        
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void testDelaySubscriptionCancelBeforeTime() {
+        TestScheduler scheduler = new TestScheduler();
+        
+        Observable<Integer> result = Observable.from(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
+        
+        Observer<Object> o = mock(Observer.class);
+        
+        Subscription s = result.subscribe(o);
+        s.unsubscribe();
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
     }
 }
