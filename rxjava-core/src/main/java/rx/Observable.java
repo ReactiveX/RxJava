@@ -1930,6 +1930,23 @@ public class Observable<T> {
     public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
         return create(OperationSwitch.switchDo(sequenceOfSequences));
     }
+    
+    /**
+     * Given an Observable that emits Observables, returns an Observable that
+     * emits the items emitted by the most recently emitted of those
+     * Observables.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchDo.png">
+     * 
+     * @param sequenceOfSequences the source Observable that emits Observables
+     * @return an Observable that emits only the items emitted by the Observable
+     *         most recently emitted by the source Observable
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#switchonnext">RxJava Wiki: switchOnNext()</a>
+     * @see {@link #switchOnNext(Observable)}
+     */
+    public static <T> Observable<T> switchLatest(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
+        return create(OperationSwitch.switchDo(sequenceOfSequences));
+    }
 
     /**
      * Return an Observable that subscribes to an observable sequence
