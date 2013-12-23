@@ -15,54 +15,66 @@
  */
 package rx.subscriptions;
 
+import static org.mockito.Mockito.*;
+import static rx.subscriptions.Subscriptions.*;
 import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+
 import rx.Subscription;
-import static rx.subscriptions.Subscriptions.create;
 import rx.util.functions.Action0;
 
 public class MultipleAssignmentSubscriptionTest {
+
     Action0 unsubscribe;
     Subscription s;
+
     @Before
     public void before() {
-         unsubscribe = mock(Action0.class);
-         s = create(unsubscribe);
+        unsubscribe = mock(Action0.class);
+        s = create(unsubscribe);
     }
+
     @Test
     public void testNoUnsubscribeWhenReplaced() {
         MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
-        
-        mas.setSubscription(s);
-        mas.setSubscription(null);
-        mas.unsubscribe();        
-        
+
+        mas.set(s);
+        mas.set(Subscriptions.empty());
+        mas.unsubscribe();
+
         verify(unsubscribe, never()).call();
-        
     }
+
     @Test
     public void testUnsubscribeWhenParentUnsubscribes() {
         MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
-        mas.setSubscription(s);
+        mas.set(s);
         mas.unsubscribe();
         mas.unsubscribe();
-        
+
         verify(unsubscribe, times(1)).call();
-        
+
         Assert.assertEquals(true, mas.isUnsubscribed());
     }
+
     @Test
-    public void testUnsubscribedDoesntLeakSentinel() {
+    public void subscribingWhenUnsubscribedCausesImmediateUnsubscription() {
+        MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
+        mas.unsubscribe();
+        Subscription underlying = mock(Subscription.class);
+        mas.set(underlying);
+        verify(underlying).unsubscribe();
+    }
+
+    @Test
+    public void testSubscriptionRemainsAfterUnsubscribe() {
         MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
 
-        mas.setSubscription(s);
+        mas.set(s);
         mas.unsubscribe();
-        
-        Assert.assertEquals(true, mas.getSubscription() == Subscriptions.empty());
+
+        Assert.assertEquals(true, mas.get() == s);
     }
 }

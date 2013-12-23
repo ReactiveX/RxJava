@@ -16,8 +16,8 @@
 package rx.subscriptions;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Subscription;
 
 /**
@@ -26,113 +26,109 @@ import rx.Subscription;
  * 
  * @see <a href='http://msdn.microsoft.com/en-us/library/system.reactive.disposables.refcountdisposable.aspx'>MSDN RefCountDisposable</a>
  */
-public class RefCountSubscription implements Subscription {
-    /** The state for the atomic operations. */
-    private enum State {
-        ACTIVE,
-        MUTATING,
-        UNSUBSCRIBED
+public final class RefCountSubscription implements Subscription {
+    private final Subscription actual;
+    private final AtomicReference<State> state = new AtomicReference<State>(new State(false, 0));
+
+    private static final class State {
+        final boolean isUnsubscribed;
+        final int children;
+
+        State(boolean u, int c) {
+            this.isUnsubscribed = u;
+            this.children = c;
+        }
+
+        State addChild() {
+            return new State(isUnsubscribed, children + 1);
+        }
+
+        State removeChild() {
+            return new State(isUnsubscribed, children - 1);
+        }
+
+        State unsubscribe() {
+            return new State(true, children);
+        }
+
     }
-    /** The reference to the actual subscription. */
-    private volatile Subscription main;
-    /** The current state. */
-    private final AtomicReference<State> state = new AtomicReference<State>();
-    /** Counts the number of sub-subscriptions. */
-    private final AtomicInteger count = new AtomicInteger();
-    /** Indicate the request to unsubscribe from the main. */
-    private final AtomicBoolean mainDone = new AtomicBoolean();
+
     /**
      * Create a RefCountSubscription by wrapping the given non-null Subscription.
-     * @param s 
+     * 
+     * @param s
      */
     public RefCountSubscription(Subscription s) {
         if (s == null) {
             throw new IllegalArgumentException("s");
         }
-        this.main = s;
+        this.actual = s;
     }
+
+    @Deprecated
+    public Subscription getSubscription() {
+        return get();
+    }
+
     /**
      * Returns a new sub-subscription.
      */
-    public Subscription getSubscription() {
+    public Subscription get() {
+        State oldState;
+        State newState;
         do {
-            State s = state.get();
-            if (s == State.UNSUBSCRIBED) {
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
                 return Subscriptions.empty();
+            } else {
+                newState = oldState.addChild();
             }
-            if (s == State.MUTATING) {
-                continue;
-            }
-            if (state.compareAndSet(s, State.MUTATING)) {
-                count.incrementAndGet();
-                state.set(State.ACTIVE);
-                return new InnerSubscription();
-            }
-        } while(true);
+        } while (!state.compareAndSet(oldState, newState));
+
+        return new InnerSubscription();
     }
+
     /**
      * Check if this subscription is already unsubscribed.
      */
     public boolean isUnsubscribed() {
-        return state.get() == State.UNSUBSCRIBED;
+        return state.get().isUnsubscribed;
     }
+
     @Override
     public void unsubscribe() {
+        State oldState;
+        State newState;
         do {
-            State s = state.get();
-            if (s == State.UNSUBSCRIBED) {
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
                 return;
             }
-            if (s == State.MUTATING) {
-                continue;
-            }
-            if (state.compareAndSet(s, State.MUTATING)) {
-                if (mainDone.compareAndSet(false, true) && count.get() == 0) {
-                    terminate();
-                    return;
-                }
-                state.set(State.ACTIVE);
-                break;
-            }
-        } while (true);
+            newState = oldState.unsubscribe();
+        } while (!state.compareAndSet(oldState, newState));
+        unsubscribeActualIfApplicable(newState);
     }
-    /** 
-     * Terminate this subscription by unsubscribing from main and setting the
-     * state to UNSUBSCRIBED.
-     */
-    private void terminate() {
-        state.set(State.UNSUBSCRIBED);
-        Subscription r = main;
-        main = null;
-        r.unsubscribe();
+
+    private void unsubscribeActualIfApplicable(State state) {
+        if (state.isUnsubscribed && state.children == 0) {
+            actual.unsubscribe();
+        }
     }
-    /** Remove an inner subscription. */
-    void innerDone() {
-        do {
-            State s = state.get();
-            if (s == State.UNSUBSCRIBED) {
-                return;
-            }
-            if (s == State.MUTATING) {
-                continue;
-            }
-            if (state.compareAndSet(s, State.MUTATING)) {
-                if (count.decrementAndGet() == 0 && mainDone.get()) {
-                    terminate();
-                    return;
-                }
-                state.set(State.ACTIVE);
-                break;
-            }
-        } while (true);
-    }
+
     /** The individual sub-subscriptions. */
-    class InnerSubscription implements Subscription {
+    private final class InnerSubscription implements Subscription {
         final AtomicBoolean innerDone = new AtomicBoolean();
+
         @Override
         public void unsubscribe() {
             if (innerDone.compareAndSet(false, true)) {
-                innerDone();
+                State oldState;
+                State newState;
+                do {
+                    oldState = state.get();
+                    newState = oldState.removeChild();
+                } while (!state.compareAndSet(oldState, newState));
+                unsubscribeActualIfApplicable(newState);
             }
         }
     };

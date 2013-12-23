@@ -24,7 +24,7 @@ import rx.util.functions.Action0;
 /**
  * Helper methods and utilities for creating and working with {@link Subscription} objects
  */
-public class Subscriptions {
+public final class Subscriptions {
     /**
      * A {@link Subscription} that does nothing.
      * 

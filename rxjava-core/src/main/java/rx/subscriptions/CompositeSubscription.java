@@ -1,28 +1,24 @@
- /**
-  * Copyright 2013 Netflix, Inc.
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *
-  * http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
+/**
+ * Copyright 2013 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.subscriptions;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableSet;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
@@ -31,106 +27,118 @@ import rx.util.CompositeException;
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed
  * together.
- *
- * @see <a
- *      href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net
- *      equivalent CompositeDisposable</a>
+ * 
+ * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net equivalent CompositeDisposable</a>
  */
-public class CompositeSubscription implements Subscription {
-    /** Sentinel to indicate a thread is modifying the subscription set. */
-    private static final Set<Subscription> MUTATE_SENTINEL = unmodifiableSet(Collections.<Subscription>emptySet());
-    /** Sentinel to indicate the entire CompositeSubscription has been unsubscribed.*/
-    private static final Set<Subscription> UNSUBSCRIBED_SENTINEL = unmodifiableSet(Collections.<Subscription>emptySet());
-    /** The reference to the set of subscriptions. */
-    private final AtomicReference<Set<Subscription>> reference = new AtomicReference<Set<Subscription>>();
-    
+public final class CompositeSubscription implements Subscription {
+
+    private final AtomicReference<State> state = new AtomicReference<State>();
+
+    private static final class State {
+        final boolean isUnsubscribed;
+        final List<Subscription> subscriptions;
+
+        State(boolean u, List<Subscription> s) {
+            this.isUnsubscribed = u;
+            this.subscriptions = s;
+        }
+
+        State unsubscribe() {
+            return new State(true, subscriptions);
+        }
+
+        State add(Subscription s) {
+            List<Subscription> newSubscriptions = new ArrayList<Subscription>();
+            newSubscriptions.addAll(subscriptions);
+            newSubscriptions.add(s);
+            return new State(isUnsubscribed, newSubscriptions);
+        }
+
+        State remove(Subscription s) {
+            List<Subscription> newSubscriptions = new ArrayList<Subscription>();
+            newSubscriptions.addAll(subscriptions);
+            newSubscriptions.remove(s); // only first occurrence
+            return new State(isUnsubscribed, newSubscriptions);
+        }
+
+        State clear() {
+            return new State(isUnsubscribed, new ArrayList<Subscription>());
+        }
+    }
+
     public CompositeSubscription(final Subscription... subscriptions) {
-        reference.set(new HashSet<Subscription>(asList(subscriptions)));
+        state.set(new State(false, Arrays.asList(subscriptions)));
     }
-    
+
     public boolean isUnsubscribed() {
-        return reference.get() == UNSUBSCRIBED_SENTINEL;
+        return state.get().isUnsubscribed;
     }
-    
+
     public void add(final Subscription s) {
+        State oldState;
+        State newState;
         do {
-            final Set<Subscription> existing = reference.get();
-            if (existing == UNSUBSCRIBED_SENTINEL) {
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
                 s.unsubscribe();
-                break;
+                return;
+            } else {
+                newState = oldState.add(s);
             }
-            
-            if (existing == MUTATE_SENTINEL) {
-                continue;
-            }
-            
-            if (reference.compareAndSet(existing, MUTATE_SENTINEL)) {
-                existing.add(s);
-                reference.set(existing);
-                break;
-            }
-        } while (true);
+        } while (!state.compareAndSet(oldState, newState));
     }
-    
+
     public void remove(final Subscription s) {
+        State oldState;
+        State newState;
         do {
-            final Set<Subscription> subscriptions = reference.get();
-            if (subscriptions == UNSUBSCRIBED_SENTINEL) {
-                s.unsubscribe();
-                break;
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
+                return;
+            } else {
+                newState = oldState.remove(s);
             }
-            
-            if (subscriptions == MUTATE_SENTINEL) {
-                continue;
-            }
-            
-            if (reference.compareAndSet(subscriptions, MUTATE_SENTINEL)) {
-                // also unsubscribe from it:
-                // http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable.remove(v=vs.103).aspx
-                subscriptions.remove(s);
-                reference.set(subscriptions);
-                s.unsubscribe();
-                break;
-            }
-        } while (true);
+        } while (!state.compareAndSet(oldState, newState));
+        // if we removed successfully we then need to call unsubscribe on it
+        s.unsubscribe();
     }
-    
+
     public void clear() {
+        State oldState;
+        State newState;
         do {
-            final Set<Subscription> subscriptions = reference.get();
-            if (subscriptions == UNSUBSCRIBED_SENTINEL) {
-                break;
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
+                return;
+            } else {
+                newState = oldState.clear();
             }
-            
-            if (subscriptions == MUTATE_SENTINEL) {
-                continue;
-            }
-            
-            if (reference.compareAndSet(subscriptions, MUTATE_SENTINEL)) {
-                final Set<Subscription> copy = new HashSet<Subscription>(
-                        subscriptions);
-                subscriptions.clear();
-                reference.set(subscriptions);
-                
-                unsubscribeAll(copy);
-                break;
-            }
-        } while (true);
+        } while (!state.compareAndSet(oldState, newState));
+        // if we cleared successfully we then need to call unsubscribe on all previous
+        unsubscribeFromAll(oldState.subscriptions);
     }
-    /**
-     * Unsubscribe from the collection of subscriptions.
-     * <p>
-     * Exceptions thrown by any of the {@code unsubscribe()} methods are
-     * collected into a {@link CompositeException} and thrown once
-     * all unsubscriptions have been attempted.
-     * @param subs the collection of subscriptions
-     */
-    private void unsubscribeAll(Collection<Subscription> subs) {
+
+    @Override
+    public void unsubscribe() {
+        State oldState;
+        State newState;
+        do {
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
+                return;
+            } else {
+                newState = oldState.unsubscribe();
+            }
+        } while (!state.compareAndSet(oldState, newState));
+        unsubscribeFromAll(oldState.subscriptions);
+    }
+
+    private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {
         final Collection<Throwable> es = new ArrayList<Throwable>();
-        for (final Subscription s : subs) {
+        for (Subscription s : subscriptions) {
             try {
                 s.unsubscribe();
-            } catch (final Throwable e) {
+            } catch (Throwable e) {
                 es.add(e);
             }
         }
@@ -138,23 +146,5 @@ public class CompositeSubscription implements Subscription {
             throw new CompositeException(
                     "Failed to unsubscribe to 1 or more subscriptions.", es);
         }
-    }
-    @Override
-    public void unsubscribe() {
-        do {
-            final Set<Subscription> subscriptions = reference.get();
-            if (subscriptions == UNSUBSCRIBED_SENTINEL) {
-                break;
-            }
-            
-            if (subscriptions == MUTATE_SENTINEL) {
-                continue;
-            }
-            
-            if (reference.compareAndSet(subscriptions, UNSUBSCRIBED_SENTINEL)) {
-                unsubscribeAll(subscriptions);
-                break;
-            }
-        } while (true);
     }
 }
