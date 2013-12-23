@@ -18,6 +18,7 @@ package rx.subjects;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable.OnSubscribeFunc;
@@ -98,6 +99,88 @@ import rx.util.functions.Action1;
                 }
 
                 return s;
+            }
+
+        };
+    }
+    /**
+     * 
+     * @param onSubscribe
+     *            Always runs at the beginning of 'subscribe' regardless of terminal state.
+     * @param onTerminated
+     *            Only runs if Subject is in terminal state and the Observer ends up not being registered.
+     * @return
+     */
+    public OnSubscribeFunc<T> getOnSubscribeFunc(
+            final Action1<SubjectObserver<? super T>> onSubscribe, 
+            final Action1<SubjectObserver<? super T>> onTerminated,
+            final AtomicBoolean mutating) {
+        return new OnSubscribeFunc<T>() {
+            @Override
+            public Subscription onSubscribe(Observer<? super T> actualObserver) {
+                do {
+                    // enter mutating state
+                } while (!mutating.compareAndSet(false, true));
+                
+                try {
+                    SubjectObserver<T> observer = new SubjectObserver<T>(actualObserver);
+                    // invoke onSubscribe logic 
+                    if (onSubscribe != null) {
+                        onSubscribe.call(observer);
+                    }
+
+                    State<T> current;
+                    State<T> newState = null;
+                    boolean addedObserver = false;
+                    Subscription s;
+                    do {
+                        current = state.get();
+                        if (current.terminated) {
+                            // we are terminated so don't need to do anything
+                            s = Subscriptions.empty();
+                            addedObserver = false;
+                            // break out and don't try to modify state
+                            newState = current;
+                            // wait for termination to complete if 
+                            try {
+                                current.terminationLatch.await();
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException("Interrupted waiting for termination.", e);
+                            }
+                            break;
+                        } else {
+                            final SafeObservableSubscription subscription = new SafeObservableSubscription();
+                            s = subscription;
+                            addedObserver = true;
+                            subscription.wrap(new Subscription() {
+                                @Override
+                                public void unsubscribe() {
+                                    State<T> current;
+                                    State<T> newState;
+                                    do {
+                                        current = state.get();
+                                        // on unsubscribe remove it from the map of outbound observers to notify
+                                        newState = current.removeObserver(subscription);
+                                    } while (!state.compareAndSet(current, newState));
+                                }
+                            });
+
+                            // on subscribe add it to the map of outbound observers to notify
+                            newState = current.addObserver(subscription, observer);
+                        }
+                    } while (!state.compareAndSet(current, newState));
+
+                    /**
+                     * Whatever happened above, if we are terminated we run `onTerminated`
+                     */
+                    if (newState.terminated && !addedObserver) {
+                        onTerminated.call(observer);
+                    }
+
+                    return s;
+                } finally {
+                    mutating.set(false);
+                }
             }
 
         };

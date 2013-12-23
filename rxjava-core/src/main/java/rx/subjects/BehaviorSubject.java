@@ -16,6 +16,7 @@
 package rx.subjects;
 
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
@@ -88,6 +89,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     public static <T> BehaviorSubject<T> create(T defaultValue) {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
         // set a default value so subscriptions will immediately receive this until a new notification is received
+        final AtomicBoolean mutating = new AtomicBoolean();
         final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>(new Notification<T>(defaultValue));
 
         OnSubscribeFunc<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
@@ -124,18 +126,23 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                          */
                         lastNotification.get().accept(o);
                     }
-                });
+                }, mutating);
 
-        return new BehaviorSubject<T>(onSubscribe, subscriptionManager, lastNotification);
+        return new BehaviorSubject<T>(onSubscribe, subscriptionManager, lastNotification, mutating);
     }
 
     private final SubjectSubscriptionManager<T> subscriptionManager;
     final AtomicReference<Notification<T>> lastNotification;
+    final AtomicBoolean mutating;
 
-    protected BehaviorSubject(OnSubscribeFunc<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
+    protected BehaviorSubject(OnSubscribeFunc<T> onSubscribe, 
+            SubjectSubscriptionManager<T> subscriptionManager, 
+            AtomicReference<Notification<T>> lastNotification,
+            AtomicBoolean mutating) {
         super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
+        this.mutating = mutating;
     }
 
     @Override
@@ -169,11 +176,25 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
     @Override
     public void onNext(T v) {
+        do {
+            // try to enter mutating state
+        } while (!mutating.compareAndSet(false, true));
         /**
          * Store the latest value but do not send it. It only gets sent when 'onCompleted' occurs.
          */
-        lastNotification.set(new Notification<T>(v));
-        for (Observer<? super T> o : subscriptionManager.rawSnapshot()) {
+        Observer<? super T>[] os;
+        try {
+            if (!lastNotification.get().isOnNext()) {
+                return;
+            }
+            lastNotification.set(new Notification<T>(v));
+
+            os = subscriptionManager.rawSnapshot();
+        } finally {        
+            mutating.set(false);
+        }
+        
+        for (Observer<? super T> o : os) {
             o.onNext(v);
         }
     }
