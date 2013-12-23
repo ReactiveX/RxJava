@@ -35,9 +35,11 @@ public class SerialSubscription implements Subscription {
         public void unsubscribe() {
         }
     };
+
     public boolean isUnsubscribed() {
         return reference.get() == UNSUBSCRIBED_SENTINEL;
     }
+
     @Override
     public void unsubscribe() {
         Subscription s = reference.getAndSet(UNSUBSCRIBED_SENTINEL);
@@ -59,7 +61,7 @@ public class SerialSubscription implements Subscription {
             }
         } while (true);
     }
-    
+
     public Subscription getSubscription() {
         final Subscription subscription = reference.get();
         return subscription == UNSUBSCRIBED_SENTINEL ? Subscriptions.empty() : subscription;

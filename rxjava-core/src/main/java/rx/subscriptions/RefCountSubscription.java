@@ -33,6 +33,7 @@ public class RefCountSubscription implements Subscription {
         MUTATING,
         UNSUBSCRIBED
     }
+
     /** The reference to the actual subscription. */
     private volatile Subscription main;
     /** The current state. */
@@ -41,9 +42,11 @@ public class RefCountSubscription implements Subscription {
     private final AtomicInteger count = new AtomicInteger();
     /** Indicate the request to unsubscribe from the main. */
     private final AtomicBoolean mainDone = new AtomicBoolean();
+
     /**
      * Create a RefCountSubscription by wrapping the given non-null Subscription.
-     * @param s 
+     * 
+     * @param s
      */
     public RefCountSubscription(Subscription s) {
         if (s == null) {
@@ -51,6 +54,7 @@ public class RefCountSubscription implements Subscription {
         }
         this.main = s;
     }
+
     /**
      * Returns a new sub-subscription.
      */
@@ -68,14 +72,16 @@ public class RefCountSubscription implements Subscription {
                 state.set(State.ACTIVE);
                 return new InnerSubscription();
             }
-        } while(true);
+        } while (true);
     }
+
     /**
      * Check if this subscription is already unsubscribed.
      */
     public boolean isUnsubscribed() {
         return state.get() == State.UNSUBSCRIBED;
     }
+
     @Override
     public void unsubscribe() {
         do {
@@ -96,7 +102,8 @@ public class RefCountSubscription implements Subscription {
             }
         } while (true);
     }
-    /** 
+
+    /**
      * Terminate this subscription by unsubscribing from main and setting the
      * state to UNSUBSCRIBED.
      */
@@ -106,6 +113,7 @@ public class RefCountSubscription implements Subscription {
         main = null;
         r.unsubscribe();
     }
+
     /** Remove an inner subscription. */
     void innerDone() {
         do {
@@ -126,9 +134,11 @@ public class RefCountSubscription implements Subscription {
             }
         } while (true);
     }
+
     /** The individual sub-subscriptions. */
     class InnerSubscription implements Subscription {
         final AtomicBoolean innerDone = new AtomicBoolean();
+
         @Override
         public void unsubscribe() {
             if (innerDone.compareAndSet(false, true)) {
