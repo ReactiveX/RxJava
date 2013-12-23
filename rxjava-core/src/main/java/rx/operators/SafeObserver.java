@@ -57,25 +57,10 @@ import rx.util.OnErrorNotImplementedException;
  */
 public class SafeObserver<T> implements Observer<T> {
 
-    private volatile Observer<? super T> actual;
+    private final Observer<? super T> actual;
     private final AtomicBoolean isFinished = new AtomicBoolean(false);
     private final SafeObservableSubscription subscription;
-    /** 
-     * If the observer completes, this is swapped in place of the actual
-     * should avoid the overhead of isFinished.get() on every onNext call. */
-    private static final Observer<Object> nopObserver = new Observer<Object>() {
-        @Override
-        public void onNext(Object args) {
-        }
-        @Override
-        public void onError(Throwable e) {
-        }
 
-        @Override
-        public void onCompleted() {
-        }
-        
-    };
     public SafeObserver(SafeObservableSubscription subscription, Observer<? super T> actual) {
         this.subscription = subscription;
         this.actual = actual;
@@ -84,10 +69,8 @@ public class SafeObserver<T> implements Observer<T> {
     @Override
     public void onCompleted() {
         if (isFinished.compareAndSet(false, true)) {
-            Observer<? super T> a = actual;
-            actual = nopObserver;
             try {
-                a.onCompleted();
+                actual.onCompleted();
             } catch (Throwable e) {
                 // handle errors if the onCompleted implementation fails, not just if the Observable fails
                 onError(e);
@@ -100,11 +83,8 @@ public class SafeObserver<T> implements Observer<T> {
     @Override
     public void onError(Throwable e) {
         if (isFinished.compareAndSet(false, true)) {
-            Observer<? super T> a = actual;
-            // will prevent onNext from sending a new value after completion
-            actual = nopObserver;
             try {
-                a.onError(e);
+                actual.onError(e);
             } catch (Throwable e2) {
                 if (e2 instanceof OnErrorNotImplementedException) {
                     /**
@@ -137,10 +117,12 @@ public class SafeObserver<T> implements Observer<T> {
     @Override
     public void onNext(T args) {
         try {
-            actual.onNext(args);
-        } catch (Throwable t) {
+            if (!isFinished.get()) {
+                actual.onNext(args);
+            }
+        } catch (Throwable e) {
             // handle errors if the onNext implementation fails, not just if the Observable fails
-            onError(t);
+            onError(e);
         }
     }
 
