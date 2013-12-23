@@ -41,6 +41,7 @@ import rx.operators.OperationCache;
 import rx.operators.OperationCast;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
+import rx.operators.OperationConditionals;
 import rx.operators.OperationDebounce;
 import rx.operators.OperationDefaultIfEmpty;
 import rx.operators.OperationDefer;
@@ -1930,6 +1931,128 @@ public class Observable<T> {
         return create(OperationSwitch.switchDo(sequenceOfSequences));
     }
 
+    /**
+     * Return an Observable that subscribes to an observable sequence
+     * chosen from a map of observables via a selector function or to an
+     * empty observable.
+     * @param <K> the case key type
+     * @param <R> the result value type
+     * @param caseSelector the function that produces a case key when an Observer subscribes
+     * @param mapOfCases a map that maps a case key to an observable sequence
+     * @return an Observable that subscribes to an observable sequence
+     *         chosen from a map of observables via a selector function or to an
+     *         empty observable
+     */
+    public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector, 
+            Map<? super K, ? extends Observable<? extends R>> mapOfCases) {
+        return switchCase(caseSelector, mapOfCases, Observable.<R>empty());
+    }
+    
+    /**
+     * Return an Observable that subscribes to an observable sequence
+     * chosen from a map of observables via a selector function or to an
+     * empty observable which runs on the given scheduler.
+     * @param <K> the case key type
+     * @param <R> the result value type
+     * @param caseSelector the function that produces a case key when an Observer subscribes
+     * @param mapOfCases a map that maps a case key to an observable sequence
+     * @param scheduler the scheduler where the empty observable is observed
+     * @return an Observable that subscribes to an observable sequence
+     *         chosen from a map of observables via a selector function or to an
+     *         empty observable which runs on the given scheduler
+     */
+    public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector, 
+            Map<? super K, ? extends Observable<? extends R>> mapOfCases, Scheduler scheduler) {
+        return switchCase(caseSelector, mapOfCases, Observable.<R>empty(scheduler));
+    }
+    /**
+     * Return an Observable that subscribes to an observable sequence
+     * chosen from a map of observables via a selector function or to the
+     * default observable.
+     * @param <K> the case key type
+     * @param <R> the result value type
+     * @param caseSelector the function that produces a case key when an Observer subscribes
+     * @param mapOfCases a map that maps a case key to an observable sequence
+     * @param defaultCase the default observable if the {@code mapOfCases} doesn't contain a value for
+     *                    the key returned by the {@case caseSelector}
+     * @return an Observable that subscribes to an observable sequence
+     *         chosen from a map of observables via a selector function or to an
+     *         empty observable
+     */
+    public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector, 
+            Map<? super K, ? extends Observable<? extends R>> mapOfCases, 
+            Observable<? extends R> defaultCase) {
+        return create(OperationConditionals.switchCase(caseSelector, mapOfCases, defaultCase));
+    }
+    
+    /**
+     * Return an Observable that subscribes to the this Observable,
+     * then resubscribes only if the postCondition evaluates to true.
+     * @param postCondition the post condition after the source completes
+     * @return an Observable that subscribes to the source Observable,
+     * then resubscribes only if the postCondition evaluates to true.
+     */
+    public Observable<T> doWhile(Func0<Boolean> postCondition) {
+        return create(OperationConditionals.doWhile(this, postCondition));
+    }
+    
+    /**
+     * Return an Observable that subscribes and resubscribes to this
+     * Observable if the preCondition evaluates to true.
+     * @param preCondition the condition to evaluate before subscribing to this, 
+     *                     and subscribe to source if it returns {@code true}
+     * @return an Observable that subscribes and resubscribes to the source
+     * Observable if the preCondition evaluates to true.
+     */
+    public Observable<T> whileDo(Func0<Boolean> preCondition) {
+        return create(OperationConditionals.whileDo(this, preCondition));
+    }
+    
+    /**
+     * Return an Observable that subscribes to the
+     * then Observables if the condition function evaluates to true, or to an empty
+     * Observable if false.
+     * @param <R> the result value type
+     * @param condition the condition to decide which Observables to subscribe to
+     * @param then the Observable sequence to subscribe to if {@code condition} is {@code true}
+     * @return an Observable that subscribes to the
+     *         then Observables if the condition function evaluates to true, or to an empty
+     *         Observable running on the given scheduler if false
+     */
+    public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then) {
+        return ifThen(condition, then, Observable.<R>empty());
+    }
+    
+    /**
+     * Return an Observable that subscribes to the
+     * then Observables if the condition function evaluates to true, or to an empty
+     * Observable running on the given scheduler if false.
+     * @param <R> the result value type
+     * @param condition the condition to decide which Observables to subscribe to
+     * @param then the Observable sequence to subscribe to if {@code condition} is {@code true}
+     * @param scheduler the scheduler where the empty Observable is observed in case the condition returns false
+     * @return an Observable that subscribes to the
+     *         then Observables if the condition function evaluates to true, or to an empty
+     *         Observable running on the given scheduler if false
+     */
+    public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then, Scheduler scheduler) {
+        return ifThen(condition, then, Observable.<R>empty(scheduler));
+    }
+    /**
+     * Return an Observable that subscribes to either the
+     * then or orElse Observables depending on a condition function.
+     * @param <R> the result value type
+     * @param condition the condition to decide which Observables to subscribe to
+     * @param then the Observable sequence to subscribe to if {@code condition} is {@code true}
+     * @param orElse the Observable sequence to subscribe to if {@code condition} is {@code false}
+     * @return an Observable that subscribes to either the
+     *         then or orElse Observables depending on a condition function
+     */
+    public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then,
+            Observable<? extends R> orElse) {
+        return create(OperationConditionals.ifThen(condition, then, orElse));
+    }
+    
     /**
      * Accepts an Observable and wraps it in another Observable that ensures
      * that the resulting Observable is chronologically well-behaved.
