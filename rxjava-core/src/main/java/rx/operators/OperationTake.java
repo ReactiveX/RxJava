@@ -201,77 +201,87 @@ public final class OperationTake {
             
             return csub;
         }
-        static final Observer<Object> nopObserver = new NopObserver();
-        /** Do-nothing observer. */
-        static final class NopObserver implements Observer<Object> {
-            @Override
-            public void onCompleted() {
-            }
-            @Override
-            public void onError(Throwable e) {
-            }
-            @Override
-            public void onNext(Object args) {
-            }
-        } 
         /**
          * Observes the source and relays its values until gate turns into false.
          * @param <T> the observed value type
          */
         private static final class SourceObserver<T> implements Observer<T>, Action0 {
-            volatile Observer<? super T> observer;
+            final Observer<? super T> observer;
             final Subscription cancel;
-            final AtomicBoolean done;
+            final AtomicInteger state = new AtomicInteger();
+            static final int ACTIVE = 0;
+            static final int NEXT = 1;
+            static final int DONE = 2;
 
             public SourceObserver(Observer<? super T> observer, 
                     Subscription cancel) {
                 this.observer = observer;
                 this.cancel = cancel;
-                this.done = new AtomicBoolean();
             }
 
             @Override
             public void onNext(T args) {
-                observer.onNext(args);
+                do {
+                    int s = state.get();
+                    if (s == DONE) {
+                        return;
+                    }
+                    if (state.compareAndSet(s, NEXT)) {
+                        try {
+                            observer.onNext(args);
+                        } finally {
+                            state.set(ACTIVE);
+                            return;
+                        }
+                    }
+                } while (true);
             }
 
             @Override
             public void onError(Throwable e) {
-                if (done.compareAndSet(false, true)) {
-                    Observer<? super T> o = this.observer;
-                    this.observer = nopObserver;
-                    try {
-                        o.onError(e);
-                    } finally {
-                        cancel.unsubscribe();
+                do {
+                    int s = state.get();
+                    if (s == DONE) {
+                        return;
+                    } else
+                    if (s == NEXT) {
+                        continue;
+                    } else
+                    if (state.compareAndSet(s, DONE)) {
+                        try {
+                            observer.onError(e);
+                        } finally {
+                            cancel.unsubscribe();
+                        }
+                        return;
                     }
-                }
+                } while (true);
             }
 
             @Override
             public void onCompleted() {
-                if (done.compareAndSet(false, true)) {
-                    Observer<? super T> o = this.observer;
-                    this.observer = nopObserver;
-                    try {
-                        o.onCompleted();
-                    } finally {
-                        cancel.unsubscribe();
+                do {
+                    int s = state.get();
+                    if (s == DONE) {
+                        return;
+                    } else
+                    if (s == NEXT) {
+                        continue;
+                    } else
+                    if (state.compareAndSet(s, DONE)) {
+                        try {
+                            observer.onCompleted();
+                        } finally {
+                            cancel.unsubscribe();
+                        }
+                        return;
                     }
-                }
+                } while (true);
             }
 
             @Override
             public void call() {
-                if (done.compareAndSet(false, true)) {
-                    Observer<? super T> o = this.observer;
-                    this.observer = nopObserver;
-                    try {
-                        o.onCompleted();
-                    } finally {
-                        cancel.unsubscribe();
-                    }
-                }
+                onCompleted();
             }
             
         }
