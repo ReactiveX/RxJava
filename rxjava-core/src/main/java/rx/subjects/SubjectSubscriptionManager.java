@@ -65,6 +65,7 @@ import rx.util.functions.Action1;
                         try {
                             current.terminationLatch.await();
                         } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
                             throw new RuntimeException("Interrupted waiting for termination.", e);
                         }
                         break;

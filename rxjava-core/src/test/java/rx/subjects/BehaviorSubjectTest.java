@@ -185,5 +185,55 @@ public class BehaviorSubjectTest {
         verify(aObserver, never()).onNext("two");
         verify(aObserver, never()).onCompleted();
     }
+    @Test
+    public void testCompletedAfterErrorIsNotSent2() {
+        BehaviorSubject<String> subject = BehaviorSubject.create("default");
 
+        @SuppressWarnings("unchecked")
+        Observer<String> aObserver = mock(Observer.class);
+        subject.subscribe(aObserver);
+
+        subject.onNext("one");
+        subject.onError(testException);
+        subject.onNext("two");
+        subject.onCompleted();
+
+        verify(aObserver, times(1)).onNext("default");
+        verify(aObserver, times(1)).onNext("one");
+        verify(aObserver, times(1)).onError(testException);
+        verify(aObserver, never()).onNext("two");
+        verify(aObserver, never()).onCompleted();
+
+        Observer<Object> o2 = mock(Observer.class);
+        subject.subscribe(o2);
+        verify(o2, times(1)).onError(testException);
+        verify(o2, never()).onNext(any());
+        verify(o2, never()).onCompleted();
+    }
+    
+    @Test
+    public void testCompletedAfterErrorIsNotSent3() {
+        BehaviorSubject<String> subject = BehaviorSubject.create("default");
+
+        @SuppressWarnings("unchecked")
+        Observer<String> aObserver = mock(Observer.class);
+        subject.subscribe(aObserver);
+
+        subject.onNext("one");
+        subject.onCompleted();
+        subject.onNext("two");
+        subject.onCompleted();
+
+        verify(aObserver, times(1)).onNext("default");
+        verify(aObserver, times(1)).onNext("one");
+        verify(aObserver, times(1)).onCompleted();
+        verify(aObserver, never()).onError(any(Throwable.class));
+        verify(aObserver, never()).onNext("two");
+
+        Observer<Object> o2 = mock(Observer.class);
+        subject.subscribe(o2);
+        verify(o2, times(1)).onCompleted();
+        verify(o2, never()).onNext(any());
+        verify(aObserver, never()).onError(any(Throwable.class));
+    }
 }
