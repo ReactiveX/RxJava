@@ -18,18 +18,23 @@ package rx.observables;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscription;
+import rx.operators.OperationForEachFuture;
 import rx.operators.OperationMostRecent;
 import rx.operators.OperationNext;
 import rx.operators.OperationToFuture;
 import rx.operators.OperationToIterator;
 import rx.operators.SafeObservableSubscription;
 import rx.operators.SafeObserver;
+import rx.util.functions.Action0;
 import rx.util.functions.Action1;
+import rx.util.functions.Actions;
 import rx.util.functions.Func1;
 
 /**
@@ -74,6 +79,108 @@ public class BlockingObservable<T> {
         return subscription.wrap(o.subscribe(new SafeObserver<T>(subscription, observer)));
     }
 
+    /**
+     * Subscribes to the given source and calls the callback for each emitted item,
+     * and surfaces the completion or error through a Future.
+     * <p>
+     * <em>Important note:</em> The returned task blocks indefinitely unless
+     * the run() method is called or the task is scheduled on an Executor.
+     * @param onNext the action to call with each emitted element
+     * @return the Future representing the entire for-each operation
+     * @see #forEachFuture(rx.util.functions.Action1, rx.Scheduler) 
+     */
+    public FutureTask<Void> forEachFuture(
+            Action1<? super T> onNext) {
+        return OperationForEachFuture.forEachFuture(o, onNext);
+    }
+    
+    /**
+     * Subscribes to the given source and calls the callback for each emitted item,
+     * and surfaces the completion or error through a Future.
+     * <p>
+     * <em>Important note:</em> The returned task blocks indefinitely unless
+     * the run() method is called or the task is scheduled on an Executor.
+     * @param onNext the action to call with each emitted element
+     * @param onError the action to call when an exception is emitted
+     * @return the Future representing the entire for-each operation
+     * @see #forEachFuture(rx.util.functions.Action1, rx.util.functions.Action1, rx.Scheduler) 
+     */
+    public FutureTask<Void> forEachFuture(
+            Action1<? super T> onNext,
+            Action1<? super Throwable> onError) {
+        return OperationForEachFuture.forEachFuture(o, onNext, onError);
+    }
+    
+    /**
+     * Subscribes to the given source and calls the callback for each emitted item,
+     * and surfaces the completion or error through a Future.
+     * <p>
+     * <em>Important note:</em> The returned task blocks indefinitely unless
+     * the run() method is called or the task is scheduled on an Executor.
+     * @param onNext the action to call with each emitted element
+     * @param onError the action to call when an exception is emitted
+     * @param onCompleted the action to call when the source completes
+     * @return the Future representing the entire for-each operation
+     * @see #forEachFuture(rx.util.functions.Action1, rx.util.functions.Action1, rx.util.functions.Action0, rx.Scheduler) 
+     */
+    public FutureTask<Void> forEachFuture(
+            Action1<? super T> onNext,
+            Action1<? super Throwable> onError,
+            Action0 onCompleted) {
+        return OperationForEachFuture.forEachFuture(o, onNext, onError, onCompleted);
+    }
+    
+    /**
+     * Subscribes to the given source and calls the callback for each emitted item,
+     * and surfaces the completion or error through a Future, scheduled on the given scheduler.
+     * @param onNext the action to call with each emitted element
+     * @param scheduler the scheduler where the task will await the termination of the for-each
+     * @return the Future representing the entire for-each operation
+     */
+    public FutureTask<Void> forEachFuture(
+            Action1<? super T> onNext, 
+            Scheduler scheduler) {
+        FutureTask<Void> task = OperationForEachFuture.forEachFuture(o, onNext);
+        scheduler.schedule(Actions.fromRunnable(task));
+        return task;
+    }
+    
+    /**
+     * Subscribes to the given source and calls the callback for each emitted item,
+     * and surfaces the completion or error through a Future, scheduled on the given scheduler.
+     * @param onNext the action to call with each emitted element
+     * @param onError the action to call when an exception is emitted
+     * @param scheduler the scheduler where the task will await the termination of the for-each
+     * @return the Future representing the entire for-each operation
+     */
+    public FutureTask<Void> forEachFuture(
+            Action1<? super T> onNext,
+            Action1<? super Throwable> onError, 
+            Scheduler scheduler) {
+        FutureTask<Void> task = OperationForEachFuture.forEachFuture(o, onNext, onError);
+        scheduler.schedule(Actions.fromRunnable(task));
+        return task;
+    }
+    
+    /**
+     * Subscribes to the given source and calls the callback for each emitted item,
+     * and surfaces the completion or error through a Future, scheduled on the given scheduler.
+     * @param onNext the action to call with each emitted element
+     * @param onError the action to call when an exception is emitted
+     * @param onCompleted the action to call when the source completes
+     * @param scheduler the scheduler where the task will await the termination of the for-each
+     * @return the Future representing the entire for-each operation
+     */
+    public FutureTask<Void> forEachFuture(
+            Action1<? super T> onNext,
+            Action1<? super Throwable> onError,
+            Action0 onCompleted,
+            Scheduler scheduler) {
+        FutureTask<Void> task = OperationForEachFuture.forEachFuture(o, onNext, onError, onCompleted);
+        scheduler.schedule(Actions.fromRunnable(task));
+        return task;
+    }
+    
     /**
      * Invoke a method on each item emitted by the {@link Observable}; block until the Observable
      * completes.
