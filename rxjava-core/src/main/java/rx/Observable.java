@@ -1054,7 +1054,7 @@ public class Observable<T> {
     public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9, T t10) {
         return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
     }
-
+    
     /**
      * Generates an Observable that emits a sequence of Integers within a
      * specified range.
@@ -6572,36 +6572,6 @@ public class Observable<T> {
     }
 
     /**
-     * Invokes an action for each item emitted by an Observable.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.png">
-     *
-     * @param onNext the action to invoke for each item emitted by the source
-     *               Observable
-     * @return the source Observable with the side-effecting behavior applied
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnEach()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
-     */
-    public Observable<T> doOnEach(final Action1<? super T> onNext) {
-        Observer<T> observer = new Observer<T>() {
-            @Override
-            public void onCompleted() {}
-
-            @Override
-            public void onError(Throwable e) {}
-
-            @Override
-            public void onNext(T args) {
-                onNext.call(args);
-            }
-
-        };
-
-
-        return create(OperationDoOnEach.doOnEach(this, observer));
-    }
-    
-    /**
      * Invokes an action if the source Observable calls <code>onError</code>.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnError.png">
@@ -6661,71 +6631,64 @@ public class Observable<T> {
 
         return create(OperationDoOnEach.doOnEach(this, observer));
     }
-
+    
+    
     /**
-     * Invokes an action for each item emitted by an Observable.
+     * Invokes an action when the source Observable calls
+     * <code>onNext</code>.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.e.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnCompleted.png">
      *
-     * @param onNext the action to invoke for each item emitted by the
-     *               Observable
-     * @param onError the action to invoke when the source Observable calls
-     *                <code>onError</code>
+     * @param onCompleted the action to invoke when the source Observable calls
+     *                    <code>onCompleted</code>
      * @return the source Observable with the side-effecting behavior applied
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnEach()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229539.aspx">MSDN: Observable.Do</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnNext()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<? super T> onNext, final Action1<Throwable> onError) {
+    public Observable<T> doOnNext(final Action1<T> onNext) {
         Observer<T> observer = new Observer<T>() {
             @Override
-            public void onCompleted() {}
+            public void onCompleted() { }
 
             @Override
-            public void onError(Throwable e) {
-                onError.call(e);
-            }
+            public void onError(Throwable e) { }
 
             @Override
-            public void onNext(T args) {
+            public void onNext(T args) { 
                 onNext.call(args);
             }
 
         };
 
-
         return create(OperationDoOnEach.doOnEach(this, observer));
     }
-
+    
     /**
-     * Invokes an action for each item emitted by an Observable.
+     * Invokes an action for each item emitted by the Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.ce.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.png">
      *
-     * @param onNext the action to invoke for each item emitted by the
-     *               Observable
-     * @param onError the action to invoke when the source Observable calls
-     *                <code>onError</code>
-     * @param onCompleted the action to invoke when the source Observable calls
-     *                    <code>onCompleted</code>
+     * @param observer the action to invoke for each item emitted by the source
+     *                 Observable
      * @return the source Observable with the side-effecting behavior applied
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnEach()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229830.aspx">MSDN: Observable.Do</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229307.aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onCompleted) {
+    public Observable<T> doOnEach(final Action1<Notification<T>> onNotification) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {
-                onCompleted.call();
+                onNotification.call(new Notification<T>());
             }
 
             @Override
             public void onError(Throwable e) {
-                onError.call(e);
+                onNotification.call(new Notification<T>(e));
             }
 
             @Override
-            public void onNext(T args) {
-                onNext.call(args);
+            public void onNext(T v) {
+                onNotification.call(new Notification<T>(v));
             }
 
         };
