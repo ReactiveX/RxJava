@@ -5247,6 +5247,29 @@ public class Observable<T> {
     }
 
     /**
+      * Create an Observable that skips values before the given time ellapses.
+      * @param time the length of the time window
+      * @param unit the time unit
+      * @return an Observable that skips values before the given time ellapses
+      */
+     public Observable<T> skip(long time, TimeUnit unit) {
+         return skip(time, unit, Schedulers.threadPoolForComputation());
+     }
+ 
+     /**
+      * Create an Observable that skips values before the given time
+      * elapses while waiting on the given scheduler.
+      * @param time the length of the time window
+      * @param unit the time unit
+      * @param scheduler the scheduler where the timed wait happens
+      * @return an Observable that skips values before the given time
+      * elapses while waiting on the given scheduler
+      */
+     public Observable<T> skip(long time, TimeUnit unit, Scheduler scheduler) {
+         return create(new OperationSkip.SkipTimed<T>(this, time, unit, scheduler));
+     }
+ 
+    /**
      * If the Observable completes after emitting a single item, return an
      * Observable containing that item. If it emits more than one item or no
      * item, throw an IllegalArgumentException.
@@ -5426,6 +5449,31 @@ public class Observable<T> {
         return create(OperationTake.take(this, num));
     }
 
+    /**
+      * Create an Observable that takes the emitted values of the source
+      * Observable before the time runs out.
+      * @param time the length of the time window
+      * @param unit the time unit
+      * @return an Observable that takes the emitted values of the source
+      *         Observable before the time runs out.
+      */
+     public Observable<T> take(long time, TimeUnit unit) {
+         return take(time, unit, Schedulers.threadPoolForComputation());
+     }
+     
+     /**
+      * Create an Observable that takes the emitted values of the source
+      * Observable before the time runs out, waiting on the given scheduler.
+      * @param time the length of the time window
+      * @param unit the time unit
+      * @param scheduler the scheduler used for time source
+      * @return an Observable that takes the emitted values of the source
+      *         Observable before the time runs out, waiting on the given scheduler.
+      */
+     public Observable<T> take(long time, TimeUnit unit, Scheduler scheduler) {
+         return create(new OperationTake.TakeTimed<T>(this, time, unit, scheduler));
+     }
+ 
     /**
      * Returns an Observable that emits items emitted by the source Observable
      * so long as a specified condition is true.
@@ -5734,6 +5782,31 @@ public class Observable<T> {
         return create(OperationSkipLast.skipLast(this, count));
     }
 
+    /**
+     * Create an observable which skips values emitted in a time window
+     * before the source completes.
+     * @param time the length of the time window
+     * @param unit the time unit
+     * @return an observable which skips values emitted in a time window
+     * before the source completes
+     */
+    public Observable<T> skipLast(long time, TimeUnit unit) {
+        return skipLast(time, unit, Schedulers.threadPoolForComputation());
+    }
+    
+    /**
+     * Create an observable which skips values emitted in a time window
+     * before the source completes by using the given scheduler as time source.
+     * @param time the length of the time window
+     * @param unit the time unit
+     * @param scheduler the scheduler used for time source
+     * @return an observable which skips values emitted in a time window
+     * before the source completes by using the given scheduler as time source
+     */
+    public Observable<T> skipLast(long time, TimeUnit unit, Scheduler scheduler) {
+        return create(new OperationSkipLast.SkipLastTimed<T>(this, time, unit, scheduler));
+    }
+ 
     /**
      * Returns an Observable that emits a single item, a list composed of all
      * the items emitted by the source Observable.
