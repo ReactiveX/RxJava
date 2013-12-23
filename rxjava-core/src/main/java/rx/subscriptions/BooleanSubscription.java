@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
 import rx.Subscription;
+import rx.util.functions.Action0;
 
 /**
  * Subscription that can be checked for status such as in a loop inside an {@link Observable} to exit the loop if unsubscribed.
@@ -28,14 +29,35 @@ import rx.Subscription;
 public class BooleanSubscription implements Subscription {
 
     private final AtomicBoolean unsubscribed = new AtomicBoolean(false);
+    private final Action0 action;
+
+    public BooleanSubscription() {
+        action = null;
+    }
+
+    private BooleanSubscription(Action0 action) {
+        this.action = action;
+    }
+
+    public static BooleanSubscription create() {
+        return new BooleanSubscription();
+    }
+
+    public static BooleanSubscription create(Action0 onUnsubscribe) {
+        return new BooleanSubscription(onUnsubscribe);
+    }
 
     public boolean isUnsubscribed() {
         return unsubscribed.get();
     }
 
     @Override
-    public void unsubscribe() {
-        unsubscribed.set(true);
+    public final void unsubscribe() {
+        if (unsubscribed.compareAndSet(false, true)) {
+            if (action != null) {
+                action.call();
+            }
+        }
     }
 
 }
