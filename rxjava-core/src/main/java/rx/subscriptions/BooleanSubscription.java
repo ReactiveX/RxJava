@@ -26,7 +26,7 @@ import rx.util.functions.Action0;
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.booleandisposable(v=vs.103).aspx">Rx.Net equivalent BooleanDisposable</a>
  */
-public class BooleanSubscription implements Subscription {
+public final class BooleanSubscription implements Subscription {
 
     private final AtomicBoolean unsubscribed = new AtomicBoolean(false);
     private final Action0 action;

@@ -49,28 +49,20 @@ public class SerialSubscriptionTests {
     }
 
     @Test
-    public void getSubscriptionShouldReturnEmptySubscriptionAfterUnsubscribe() {
+    public void getSubscriptionShouldReturnset() {
         final Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
-        serialSubscription.unsubscribe();
-        assertEquals(Subscriptions.empty(), serialSubscription.getSubscription());
-    }
-
-    @Test
-    public void getSubscriptionShouldReturnSetSubscription() {
-        final Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
-        assertSame(underlying, serialSubscription.getSubscription());
+        serialSubscription.set(underlying);
+        assertSame(underlying, serialSubscription.get());
 
         final Subscription another = mock(Subscription.class);
-        serialSubscription.setSubscription(another);
-        assertSame(another, serialSubscription.getSubscription());
+        serialSubscription.set(another);
+        assertSame(another, serialSubscription.get());
     }
 
     @Test
     public void unsubscribingTwiceDoesUnsubscribeOnce() {
         Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
+        serialSubscription.set(underlying);
 
         serialSubscription.unsubscribe();
         verify(underlying).unsubscribe();
@@ -82,16 +74,16 @@ public class SerialSubscriptionTests {
     @Test
     public void settingSameSubscriptionTwiceDoesUnsubscribeIt() {
         Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
+        serialSubscription.set(underlying);
         verifyZeroInteractions(underlying);
-        serialSubscription.setSubscription(underlying);
+        serialSubscription.set(underlying);
         verify(underlying).unsubscribe();
     }
 
     @Test
     public void unsubscribingWithSingleUnderlyingUnsubscribes() {
         Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
+        serialSubscription.set(underlying);
         underlying.unsubscribe();
         verify(underlying).unsubscribe();
     }
@@ -99,18 +91,18 @@ public class SerialSubscriptionTests {
     @Test
     public void replacingFirstUnderlyingCausesUnsubscription() {
         Subscription first = mock(Subscription.class);
-        serialSubscription.setSubscription(first);
+        serialSubscription.set(first);
         Subscription second = mock(Subscription.class);
-        serialSubscription.setSubscription(second);
+        serialSubscription.set(second);
         verify(first).unsubscribe();
     }
 
     @Test
     public void whenUnsubscribingSecondUnderlyingUnsubscribed() {
         Subscription first = mock(Subscription.class);
-        serialSubscription.setSubscription(first);
+        serialSubscription.set(first);
         Subscription second = mock(Subscription.class);
-        serialSubscription.setSubscription(second);
+        serialSubscription.set(second);
         serialSubscription.unsubscribe();
         verify(second).unsubscribe();
     }
@@ -119,7 +111,7 @@ public class SerialSubscriptionTests {
     public void settingUnderlyingWhenUnsubscribedCausesImmediateUnsubscription() {
         serialSubscription.unsubscribe();
         Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
+        serialSubscription.set(underlying);
         verify(underlying).unsubscribe();
     }
 
@@ -127,7 +119,7 @@ public class SerialSubscriptionTests {
     public void settingUnderlyingWhenUnsubscribedCausesImmediateUnsubscriptionConcurrently()
             throws InterruptedException {
         final Subscription firstSet = mock(Subscription.class);
-        serialSubscription.setSubscription(firstSet);
+        serialSubscription.set(firstSet);
 
         final CountDownLatch start = new CountDownLatch(1);
 
@@ -155,7 +147,7 @@ public class SerialSubscriptionTests {
 
         final Subscription underlying = mock(Subscription.class);
         start.countDown();
-        serialSubscription.setSubscription(underlying);
+        serialSubscription.set(underlying);
         end.await();
         verify(firstSet).unsubscribe();
         verify(underlying).unsubscribe();
@@ -184,7 +176,7 @@ public class SerialSubscriptionTests {
                 public void run() {
                     try {
                         start.await();
-                        serialSubscription.setSubscription(subscription);
+                        serialSubscription.set(subscription);
                     } catch (InterruptedException e) {
                         fail(e.getMessage());
                     } finally {

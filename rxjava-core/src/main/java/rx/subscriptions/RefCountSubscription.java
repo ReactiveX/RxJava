@@ -26,10 +26,8 @@ import rx.Subscription;
  * 
  * @see <a href='http://msdn.microsoft.com/en-us/library/system.reactive.disposables.refcountdisposable.aspx'>MSDN RefCountDisposable</a>
  */
-public class RefCountSubscription implements Subscription {
-    /** The reference to the actual subscription. */
+public final class RefCountSubscription implements Subscription {
     private final Subscription actual;
-    /** Counts the number of subscriptions (1 parent + multiple children) */
     private final AtomicReference<State> state = new AtomicReference<State>(new State(false, 0));
 
     private static final class State {
@@ -67,20 +65,25 @@ public class RefCountSubscription implements Subscription {
         this.actual = s;
     }
 
+    @Deprecated
+    public Subscription getSubscription() {
+        return get();
+    }
+
     /**
      * Returns a new sub-subscription.
      */
-    public Subscription getSubscription() {
-        State current;
+    public Subscription get() {
+        State oldState;
         State newState;
         do {
-            current = state.get();
-            if (current.isUnsubscribed) {
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
                 return Subscriptions.empty();
             } else {
-                newState = current.addChild();
+                newState = oldState.addChild();
             }
-        } while (!state.compareAndSet(current, newState));
+        } while (!state.compareAndSet(oldState, newState));
 
         return new InnerSubscription();
     }
@@ -94,15 +97,15 @@ public class RefCountSubscription implements Subscription {
 
     @Override
     public void unsubscribe() {
-        State current;
+        State oldState;
         State newState;
         do {
-            current = state.get();
-            if (current.isUnsubscribed) {
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
                 return;
             }
-            newState = current.unsubscribe();
-        } while (!state.compareAndSet(current, newState));
+            newState = oldState.unsubscribe();
+        } while (!state.compareAndSet(oldState, newState));
         unsubscribeActualIfApplicable(newState);
     }
 
@@ -113,18 +116,18 @@ public class RefCountSubscription implements Subscription {
     }
 
     /** The individual sub-subscriptions. */
-    class InnerSubscription implements Subscription {
+    private final class InnerSubscription implements Subscription {
         final AtomicBoolean innerDone = new AtomicBoolean();
 
         @Override
         public void unsubscribe() {
             if (innerDone.compareAndSet(false, true)) {
-                State current;
+                State oldState;
                 State newState;
                 do {
-                    current = state.get();
-                    newState = current.removeChild();
-                } while (!state.compareAndSet(current, newState));
+                    oldState = state.get();
+                    newState = oldState.removeChild();
+                } while (!state.compareAndSet(oldState, newState));
                 unsubscribeActualIfApplicable(newState);
             }
         }

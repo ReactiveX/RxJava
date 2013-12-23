@@ -30,7 +30,7 @@ import rx.util.CompositeException;
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net equivalent CompositeDisposable</a>
  */
-public class CompositeSubscription implements Subscription {
+public final class CompositeSubscription implements Subscription {
 
     private final AtomicReference<State> state = new AtomicReference<State>();
 
@@ -75,64 +75,62 @@ public class CompositeSubscription implements Subscription {
     }
 
     public void add(final Subscription s) {
-        State current;
+        State oldState;
         State newState;
         do {
-            current = state.get();
-            if (current.isUnsubscribed) {
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
                 s.unsubscribe();
                 return;
             } else {
-                newState = current.add(s);
+                newState = oldState.add(s);
             }
-        } while (!state.compareAndSet(current, newState));
+        } while (!state.compareAndSet(oldState, newState));
     }
 
     public void remove(final Subscription s) {
-        State current;
+        State oldState;
         State newState;
         do {
-            current = state.get();
-            if (current.isUnsubscribed) {
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
                 return;
             } else {
-                newState = current.remove(s);
+                newState = oldState.remove(s);
             }
-        } while (!state.compareAndSet(current, newState));
+        } while (!state.compareAndSet(oldState, newState));
         // if we removed successfully we then need to call unsubscribe on it
         s.unsubscribe();
     }
 
     public void clear() {
-        State current;
+        State oldState;
         State newState;
         do {
-            current = state.get();
-            if (current.isUnsubscribed) {
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
                 return;
             } else {
-                newState = current.clear();
+                newState = oldState.clear();
             }
-        } while (!state.compareAndSet(current, newState));
+        } while (!state.compareAndSet(oldState, newState));
         // if we cleared successfully we then need to call unsubscribe on all previous
-        // current is now "previous"
-        unsubscribeFromAll(current.subscriptions);
+        unsubscribeFromAll(oldState.subscriptions);
     }
 
     @Override
     public void unsubscribe() {
-        State current;
+        State oldState;
         State newState;
         do {
-            current = state.get();
-            if (current.isUnsubscribed) {
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
                 return;
             } else {
-                newState = current.unsubscribe();
+                newState = oldState.unsubscribe();
             }
-        } while (!state.compareAndSet(current, newState));
-        // current is now "previous"
-        unsubscribeFromAll(current.subscriptions);
+        } while (!state.compareAndSet(oldState, newState));
+        unsubscribeFromAll(oldState.subscriptions);
     }
 
     private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {

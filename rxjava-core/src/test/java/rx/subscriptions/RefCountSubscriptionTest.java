@@ -47,7 +47,7 @@ public class RefCountSubscriptionTest {
     public void testRCSUnsubscribeBeforeClient() {
         InOrder inOrder = inOrder(main);
         
-        Subscription s = rcs.getSubscription();
+        Subscription s = rcs.get();
         
         rcs.unsubscribe();
         
@@ -67,8 +67,8 @@ public class RefCountSubscriptionTest {
     public void testMultipleClientsUnsubscribeFirst() {
         InOrder inOrder = inOrder(main);
 
-        Subscription s1 = rcs.getSubscription();
-        Subscription s2 = rcs.getSubscription();
+        Subscription s1 = rcs.get();
+        Subscription s2 = rcs.get();
 
         s1.unsubscribe();
         inOrder.verify(main, never()).call();
@@ -88,8 +88,8 @@ public class RefCountSubscriptionTest {
     public void testMultipleClientsMainUnsubscribeFirst() {
         InOrder inOrder = inOrder(main);
 
-        Subscription s1 = rcs.getSubscription();
-        Subscription s2 = rcs.getSubscription();
+        Subscription s1 = rcs.get();
+        Subscription s2 = rcs.get();
 
         rcs.unsubscribe();
         inOrder.verify(main, never()).call();
