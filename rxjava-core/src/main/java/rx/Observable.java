@@ -32,6 +32,7 @@ import rx.joins.Plan0;
 import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
+import rx.operators.OperationAggregate;
 import rx.operators.OperationAll;
 import rx.operators.OperationAmb;
 import rx.operators.OperationAny;
@@ -4118,6 +4119,54 @@ public class Observable<T> {
         return OperationSum.sumDoubles(source);
     }
 
+        /**
+     * Create an Observable that extracts integer values from this Observable via
+     * the provided function and computes the integer sum of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an integer from this Observable
+     * @return an Observable that extracts integer values from this Observable via
+     * the provided function and computes the integer sum of the value sequence.
+     */
+    public Observable<Integer> sumInteger(Func1<? super T, Integer> valueExtractor) {
+        return create(new OperationSum.SumIntegerExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts long values from this Observable via
+     * the provided function and computes the long sum of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an long from this Observable
+     * @return an Observable that extracts long values from this Observable via
+     * the provided function and computes the long sum of the value sequence.
+     */
+    public Observable<Long> sumLong(Func1<? super T, Long> valueExtractor) {
+        return create(new OperationSum.SumLongExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts float values from this Observable via
+     * the provided function and computes the float sum of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an float from this Observable
+     * @return an Observable that extracts float values from this Observable via
+     * the provided function and computes the float sum of the value sequence.
+     */
+    public Observable<Float> sumFloat(Func1<? super T, Float> valueExtractor) {
+        return create(new OperationSum.SumFloatExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts double values from this Observable via
+     * the provided function and computes the double sum of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an double from this Observable
+     * @return an Observable that extracts double values from this Observable via
+     * the provided function and computes the double sum of the value sequence.
+     */
+    public Observable<Double> sumDouble(Func1<? super T, Double> valueExtractor) {
+        return create(new OperationSum.SumDoubleExtractor<T>(this, valueExtractor));
+    }
+    
     /**
      * Returns an Observable that computes the average of the Integers emitted
      * by the source Observable.
@@ -4181,6 +4230,54 @@ public class Observable<T> {
      */
     public static Observable<Double> averageDoubles(Observable<Double> source) {
         return OperationAverage.averageDoubles(source);
+    }
+
+    /**
+     * Create an Observable that extracts integer values from this Observable via
+     * the provided function and computes the integer average of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an integer from this Observable
+     * @return an Observable that extracts integer values from this Observable via
+     * the provided function and computes the integer average of the value sequence.
+     */
+    public Observable<Integer> averageInteger(Func1<? super T, Integer> valueExtractor) {
+        return create(new OperationAverage.AverageIntegerExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts long values from this Observable via
+     * the provided function and computes the long average of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an long from this Observable
+     * @return an Observable that extracts long values from this Observable via
+     * the provided function and computes the long average of the value sequence.
+     */
+    public Observable<Long> averageLong(Func1<? super T, Long> valueExtractor) {
+        return create(new OperationAverage.AverageLongExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts float values from this Observable via
+     * the provided function and computes the float average of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an float from this Observable
+     * @return an Observable that extracts float values from this Observable via
+     * the provided function and computes the float average of the value sequence.
+     */
+    public Observable<Float> averageFloat(Func1<? super T, Float> valueExtractor) {
+        return create(new OperationAverage.AverageFloatExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts double values from this Observable via
+     * the provided function and computes the double average of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an double from this Observable
+     * @return an Observable that extracts double values from this Observable via
+     * the provided function and computes the double average of the value sequence.
+     */
+    public Observable<Double> averageDouble(Func1<? super T, Double> valueExtractor) {
+        return create(new OperationAverage.AverageDoubleExtractor<T>(this, valueExtractor));
     }
 
     /**
@@ -4953,6 +5050,49 @@ public class Observable<T> {
      */
     public <R> Observable<R> aggregate(R initialValue, Func2<R, ? super T, R> accumulator) {
         return reduce(initialValue, accumulator);
+    }
+    
+    /**
+     * Create an Observable that aggregates the source values with the given accumulator
+     * function and projects the final result via the resultselector.
+     * <p>
+     * Works like the {@link #aggregate(java.lang.Object, rx.util.functions.Func2)} projected
+     * with {@link #map(rx.util.functions.Func1)} without the overhead of some helper
+     * operators.
+     * @param <U> the intermediate (accumulator) type
+     * @param <V> the result type
+     * @param seed the initial value of the accumulator
+     * @param accumulator the function that takes the current accumulator value,
+     *                    the current emitted value and returns a (new) accumulated value.
+     * @param resultSelector the selector to project the final value of the accumulator
+     * @return an Observable that aggregates the source values with the given accumulator
+     *         function and projects the final result via the resultselector
+     */
+    public <U, V> Observable<V> aggregate(
+            U seed, Func2<U, ? super T, U> accumulator, 
+            Func1<? super U, ? extends V> resultSelector) {
+        return create(new OperationAggregate.AggregateSelector<T, U, V>(this, seed, accumulator, resultSelector));
+    }
+    
+    /**
+     * Create an Observable that aggregates the source values with the given indexed accumulator
+     * function and projects the final result via the indexed resultselector.
+     * 
+     * @param <U> the intermediate (accumulator) type
+     * @param <V> the result type
+     * @param seed the initial value of the accumulator
+     * @param accumulator the function that takes the current accumulator value,
+     *                    the current emitted value and returns a (new) accumulated value.
+     * @param resultSelector the selector to project the final value of the accumulator, where
+     *                       the second argument is the total number of elements accumulated
+     * @return an Observable that aggregates the source values with the given indexed accumulator
+     * function and projects the final result via the indexed resultselector.
+     */
+    public <U, V> Observable<V> aggregateIndexed(
+            U seed, Func3<U, ? super T, ? super Integer, U> accumulator,
+        Func2<? super U, ? super Integer, ? extends V> resultSelector
+    ) {
+        return create(new OperationAggregate.AggregateIndexedSelector<T, U, V>(this, seed, accumulator, resultSelector));
     }
 
     /**
