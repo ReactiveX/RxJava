@@ -15,8 +15,8 @@
  */
 package rx.operators;
 
+import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import static rx.operators.OperationTake.*;
 
@@ -28,6 +28,9 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.operators.OperationSkipTest.CustomException;
+import rx.schedulers.TestScheduler;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
@@ -223,5 +226,100 @@ public class OperationTakeTest {
             System.out.println("done starting TestObservable thread");
             return s;
         }
+    }
+    
+    @Test
+    public void testTakeTimed() {
+        TestScheduler scheduler = new TestScheduler();
+        
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
+        
+        Observer<Object> o = mock(Observer.class);
+        
+        result.subscribe(o);
+        
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        source.onNext(4);
+        
+        InOrder inOrder = inOrder(o);
+        inOrder.verify(o).onNext(1);
+        inOrder.verify(o).onNext(2);
+        inOrder.verify(o).onNext(3);
+        inOrder.verify(o).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        
+        verify(o, never()).onNext(4);
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testTakeTimedErrorBeforeTime() {
+        TestScheduler scheduler = new TestScheduler();
+        
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
+        
+        Observer<Object> o = mock(Observer.class);
+        
+        result.subscribe(o);
+        
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+        source.onError(new CustomException());
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        source.onNext(4);
+        
+        InOrder inOrder = inOrder(o);
+        inOrder.verify(o).onNext(1);
+        inOrder.verify(o).onNext(2);
+        inOrder.verify(o).onNext(3);
+        inOrder.verify(o).onError(any(CustomException.class));
+        inOrder.verifyNoMoreInteractions();
+        
+        verify(o, never()).onCompleted();
+        verify(o, never()).onNext(4);
+    }
+    
+    @Test
+    public void testTakeTimedErrorAfterTime() {
+        TestScheduler scheduler = new TestScheduler();
+        
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
+        
+        Observer<Object> o = mock(Observer.class);
+        
+        result.subscribe(o);
+        
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        source.onNext(4);
+        source.onError(new CustomException());
+        
+        InOrder inOrder = inOrder(o);
+        inOrder.verify(o).onNext(1);
+        inOrder.verify(o).onNext(2);
+        inOrder.verify(o).onNext(3);
+        inOrder.verify(o).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        
+        verify(o, never()).onNext(4);
+        verify(o, never()).onError(any(CustomException.class));
     }
 }
