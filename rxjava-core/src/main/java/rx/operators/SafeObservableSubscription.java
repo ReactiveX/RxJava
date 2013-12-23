@@ -18,6 +18,7 @@ package rx.operators;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
+import rx.subscriptions.SingleAssignmentSubscription;
 
 /**
  * Thread-safe wrapper around Observable Subscription that ensures unsubscribe can be called only once.
@@ -30,21 +31,14 @@ import rx.Subscription;
  * </ul>
  */
 public final class SafeObservableSubscription implements Subscription {
-
-    private static final Subscription UNSUBSCRIBED = new Subscription()
-    {
-        @Override
-        public void unsubscribe()
-        {
-        }
-    };
-    private final AtomicReference<Subscription> actualSubscription = new AtomicReference<Subscription>();
+    private final SingleAssignmentSubscription sas;
 
     public SafeObservableSubscription() {
+        sas = new SingleAssignmentSubscription();
     }
 
     public SafeObservableSubscription(Subscription actualSubscription) {
-        this.actualSubscription.set(actualSubscription);
+        sas = new SingleAssignmentSubscription(actualSubscription);
     }
 
     /**
@@ -56,27 +50,16 @@ public final class SafeObservableSubscription implements Subscription {
      *             if trying to set more than once (or use this method after setting via constructor)
      */
     public SafeObservableSubscription wrap(Subscription actualSubscription) {
-        if (!this.actualSubscription.compareAndSet(null, actualSubscription)) {
-            if (this.actualSubscription.get() == UNSUBSCRIBED) {
-                actualSubscription.unsubscribe();
-                return this;
-            }
-            throw new IllegalStateException("Can not set subscription more than once.");
-        }
+        sas.setSubscription(actualSubscription);
         return this;
     }
 
     @Override
     public void unsubscribe() {
-        // get the real thing and set to null in an atomic operation so we will only ever call unsubscribe once
-        Subscription actual = actualSubscription.getAndSet(UNSUBSCRIBED);
-        // if it's not null we will unsubscribe
-        if (actual != null) {
-            actual.unsubscribe();
-        }
+        sas.unsubscribe();
     }
 
     public boolean isUnsubscribed() {
-        return actualSubscription.get() == UNSUBSCRIBED;
+        return sas.isUnsubscribed();
     }
 }

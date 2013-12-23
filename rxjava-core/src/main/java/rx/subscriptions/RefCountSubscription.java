@@ -15,10 +15,9 @@
  */
 package rx.subscriptions;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import rx.Subscription;
+import rx.util.functions.Action0;
+import rx.util.functions.Func0;
 
 /**
  * Keeps track of the sub-subscriptions and unsubscribes the underlying
@@ -26,21 +25,13 @@ import rx.Subscription;
  * 
  * @see <a href='http://msdn.microsoft.com/en-us/library/system.reactive.disposables.refcountdisposable.aspx'>MSDN RefCountDisposable</a>
  */
-public class RefCountSubscription implements Subscription {
-    /** The state for the atomic operations. */
-    private enum State {
-        ACTIVE,
-        MUTATING,
-        UNSUBSCRIBED
-    }
+public class RefCountSubscription extends AbstractAtomicSubscription {
     /** The reference to the actual subscription. */
     private volatile Subscription main;
-    /** The current state. */
-    private final AtomicReference<State> state = new AtomicReference<State>();
     /** Counts the number of sub-subscriptions. */
-    private final AtomicInteger count = new AtomicInteger();
+    private int count;
     /** Indicate the request to unsubscribe from the main. */
-    private final AtomicBoolean mainDone = new AtomicBoolean();
+    private boolean mainDone;
     /**
      * Create a RefCountSubscription by wrapping the given non-null Subscription.
      * @param s 
@@ -53,87 +44,88 @@ public class RefCountSubscription implements Subscription {
     }
     /**
      * Returns a new sub-subscription.
+     * @return a new sub-subscription.
      */
     public Subscription getSubscription() {
-        do {
-            State s = state.get();
-            if (s == State.UNSUBSCRIBED) {
-                return Subscriptions.empty();
-            }
-            if (s == State.MUTATING) {
-                continue;
-            }
-            if (state.compareAndSet(s, State.MUTATING)) {
-                count.incrementAndGet();
-                state.set(State.ACTIVE);
-                return new InnerSubscription();
-            }
-        } while(true);
+        PlusPlusCount ppc = new PlusPlusCount();
+        if (call(ppc)) {
+            return new InnerSubscription();
+        }
+        return Subscriptions.empty();
     }
-    /**
-     * Check if this subscription is already unsubscribed.
-     */
-    public boolean isUnsubscribed() {
-        return state.get() == State.UNSUBSCRIBED;
-    }
+    
     @Override
     public void unsubscribe() {
-        do {
-            State s = state.get();
-            if (s == State.UNSUBSCRIBED) {
-                return;
+        MainDone md = new MainDone();
+        if (call(md)) {
+            if (md.runTerminate) {
+                terminate();
             }
-            if (s == State.MUTATING) {
-                continue;
-            }
-            if (state.compareAndSet(s, State.MUTATING)) {
-                if (mainDone.compareAndSet(false, true) && count.get() == 0) {
-                    terminate();
-                    return;
-                }
-                state.set(State.ACTIVE);
-                break;
-            }
-        } while (true);
+        }
     }
     /** 
      * Terminate this subscription by unsubscribing from main and setting the
      * state to UNSUBSCRIBED.
      */
     private void terminate() {
-        state.set(State.UNSUBSCRIBED);
         Subscription r = main;
         main = null;
         r.unsubscribe();
     }
+    
     /** Remove an inner subscription. */
     void innerDone() {
-        do {
-            State s = state.get();
-            if (s == State.UNSUBSCRIBED) {
-                return;
-            }
-            if (s == State.MUTATING) {
-                continue;
-            }
-            if (state.compareAndSet(s, State.MUTATING)) {
-                if (count.decrementAndGet() == 0 && mainDone.get()) {
-                    terminate();
-                    return;
-                }
-                state.set(State.ACTIVE);
-                break;
-            }
-        } while (true);
-    }
-    /** The individual sub-subscriptions. */
-    class InnerSubscription implements Subscription {
-        final AtomicBoolean innerDone = new AtomicBoolean();
-        @Override
-        public void unsubscribe() {
-            if (innerDone.compareAndSet(false, true)) {
-                innerDone();
+        InnerDone id = new InnerDone();
+        if (call(id)) {
+            if (id.runTerminate) {
+                terminate();
             }
         }
+    }
+    /** The individual sub-subscriptions. */
+    private final class InnerSubscription extends BooleanSubscription {
+        @Override
+        protected void onUnsubscribe() {
+            innerDone();
+        }
     };
+    /**
+     * Execute a {@code ++count}.
+     */
+    private final class PlusPlusCount implements Action0 {
+        @Override
+        public void call() {
+            ++count;
+        }
+    }
+    /** Called from the main unsubscribe(). */
+    private final class MainDone implements Func0<SubscriptionState> {
+        boolean runTerminate;
+        @Override
+        public SubscriptionState call() {
+            if (!mainDone) {
+                mainDone = true;
+                if (count == 0) {
+                    runTerminate = true;
+                    return SubscriptionState.UNSUBSCRIBED;
+                }
+            }
+            return SubscriptionState.ACTIVE;
+        }
+    }
+    
+    /** Called from the main unsubscribe(). */
+    private final class InnerDone implements Func0<SubscriptionState> {
+        boolean runTerminate;
+        @Override
+        public SubscriptionState call() {
+            if (--count == 0 && mainDone) {
+                if (count == 0) {
+                    runTerminate = true;
+                    return SubscriptionState.UNSUBSCRIBED;
+                }
+            }
+            return SubscriptionState.ACTIVE;
+        }
+    }
 }

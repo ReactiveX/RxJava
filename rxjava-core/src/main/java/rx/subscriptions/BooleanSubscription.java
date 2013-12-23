@@ -19,23 +19,48 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
 import rx.Subscription;
+import rx.util.functions.Action0;
 
 /**
  * Subscription that can be checked for status such as in a loop inside an {@link Observable} to exit the loop if unsubscribed.
  * 
- * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.booleandisposable(v=vs.103).aspx">Rx.Net equivalent BooleanDisposable</a>
+ * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.booleandisposable.aspx">Rx.Net equivalent BooleanDisposable</a>
  */
 public class BooleanSubscription implements Subscription {
-
-    private final AtomicBoolean unsubscribed = new AtomicBoolean(false);
+    /** The subscription state. */
+    private final AtomicBoolean unsubscribed = new AtomicBoolean();
 
     public boolean isUnsubscribed() {
         return unsubscribed.get();
     }
-
+    /**
+     * Override this method to perform any action once if this BooleanSubscription
+     * is unsubscribed.
+     */
+    protected void onUnsubscribe() { }
+    
     @Override
     public void unsubscribe() {
-        unsubscribed.set(true);
+        if (unsubscribed.compareAndSet(false, true)) {
+            onUnsubscribe();
+        }
     }
-
+    /**
+     * Returns a BooleanSubscription which calls the given action once
+     * it is unsubscribed.
+     * @param action the action to call when unsubscribing
+     * @return the BooleanSubscription which calls the given action once
+     * it is unsubscribed
+     */
+    public static BooleanSubscription withAction(final Action0 action) {
+        if (action == null) {
+            throw new NullPointerException("action");
+        }
+        return new BooleanSubscription() {
+            @Override
+            protected void onUnsubscribe() {
+                action.call();
+            }
+        };
+    }
 }
