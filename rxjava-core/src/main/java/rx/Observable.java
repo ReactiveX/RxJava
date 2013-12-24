@@ -5139,6 +5139,7 @@ public class Observable<T> {
      *
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#reduce-or-aggregate">RxJava Wiki: aggregate()</a>
      * @see #reduce(Func2)
+     * @deprecated
      */
     public Observable<T> aggregate(Func2<T, T, T> accumulator) {
         return reduce(accumulator);
@@ -5181,6 +5182,7 @@ public class Observable<T> {
      * 
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#reduce-or-aggregate">RxJava Wiki: aggregate()</a>
      * @see #reduce(Object, Func2)
+     * @deprecated
      */
     public <R> Observable<R> aggregate(R initialValue, Func2<R, ? super T, R> accumulator) {
         return reduce(initialValue, accumulator);
