@@ -1861,6 +1861,38 @@ trait Observable[+T]
   }
 
   /**
+   * Invokes an action when the source Observable calls <code>onNext</code>.
+   *
+   * @param onNext the action to invoke when the source Observable calls <code>onNext</code>
+   * @return the source Observable with the side-effecting behavior applied
+   */
+  def doOnNext(onNext: T => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.doOnNext(onNext))
+  }
+
+  /**
+   * Invokes an action if the source Observable calls <code>onError</code>.
+   *
+   * @param onError the action to invoke if the source Observable calls
+   *                <code>onError</code>
+   * @return the source Observable with the side-effecting behavior applied
+   */
+  def doOnError(onError: Throwable => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.doOnError(onError))
+  }
+
+  /**
+   * Invokes an action when the source Observable calls <code>onCompleted</code>.
+   *
+   * @param onCompleted the action to invoke when the source Observable calls
+   *                    <code>onCompleted</code>
+   * @return the source Observable with the side-effecting behavior applied
+   */
+  def doOnCompleted(onCompleted: () => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.doOnCompleted(onCompleted))
+  }
+
+  /**
    * Returns an Observable that applies the given function to each item emitted by an
    * Observable.
    *
@@ -1869,9 +1901,7 @@ trait Observable[+T]
    * @return an Observable with the side-effecting behavior applied.
    */
   def doOnEach(onNext: T => Unit): Observable[T] = {
-    toScalaObservable[T](asJavaObservable.doOnEach(
-      onNext
-    ))
+    toScalaObservable[T](asJavaObservable.doOnNext(onNext))
   }
 
   /**
@@ -1884,10 +1914,7 @@ trait Observable[+T]
    * @return an Observable with the side-effecting behavior applied.
    */
   def doOnEach(onNext: T => Unit, onError: Throwable => Unit): Observable[T] = {
-    toScalaObservable[T](asJavaObservable.doOnEach(
-      onNext,
-      onError
-    ))
+    toScalaObservable[T](asJavaObservable.doOnEach(Observer(onNext, onError, ()=>{})))
   }
 
   /**
@@ -1901,11 +1928,7 @@ trait Observable[+T]
    * @return an Observable with the side-effecting behavior applied.
    */
   def doOnEach(onNext: T => Unit, onError: Throwable => Unit, onCompleted: () => Unit): Observable[T] = {
-    toScalaObservable[T](asJavaObservable.doOnEach(
-      onNext,
-      onError,
-      onCompleted
-    ))
+    toScalaObservable[T](asJavaObservable.doOnEach(Observer(onNext, onError,onCompleted)))
   }
 }
 

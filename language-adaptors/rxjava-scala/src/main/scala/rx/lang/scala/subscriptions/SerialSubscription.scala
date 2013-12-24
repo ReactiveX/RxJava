@@ -41,10 +41,10 @@ class SerialSubscription private[scala] (override val asJavaSubscription: rx.sub
   override def isUnsubscribed: Boolean = asJavaSubscription.isUnsubscribed
 
   def subscription_=(value: Subscription): this.type = {
-      asJavaSubscription.setSubscription(value.asJavaSubscription)
+      asJavaSubscription.set(value.asJavaSubscription)
       this
   }
-  def subscription: Subscription = Subscription(asJavaSubscription.getSubscription)
+  def subscription: Subscription = Subscription(asJavaSubscription.get)
 
 }
 

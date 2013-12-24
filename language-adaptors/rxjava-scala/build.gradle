@@ -23,7 +23,7 @@ sourceSets {
             srcDir 'src/main/scala'
             srcDir 'src/test/scala'
             srcDir 'src/examples/scala'
-            srcDir 'src/examples/java'
+            //srcDir 'src/examples/java'
         }
         java.srcDirs = []
     }
@@ -34,7 +34,7 @@ sourceSets {
         // the scala source set:
         scala { 
             srcDir 'src/examples/scala'
-            srcDir 'src/examples/java'
+            //srcDir 'src/examples/java'
         }
         java.srcDirs = []
     }

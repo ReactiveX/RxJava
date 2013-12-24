@@ -50,10 +50,10 @@ public class OperationWindowTest {
         final List<List<T>> lists = new ArrayList<List<T>>();
         Observable.concat(observables.map(new Func1<Observable<T>, Observable<List<T>>>() {
             @Override
-            public Observable<List<T>> call(Observable<T> xs) {
-                return xs.toList();
-            }
-        })).toBlockingObservable().forEach(new Action1<List<T>>() {
+            public Observable<List<T>> call(Observable<T> xs) { return xs.toList(); }
+        }))
+                .toBlockingObservable()
+                .forEach(new Action1<List<T>>() {
             @Override
             public void call(List<T> xs) {
                 lists.add(xs);
