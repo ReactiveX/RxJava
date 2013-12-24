@@ -25,7 +25,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.subscriptions.SingleAssignmentSubscription;
+import rx.subscriptions.BooleanSubscription;
 import rx.util.Timestamped;
 
 /**
@@ -156,9 +156,9 @@ public final class OperationTakeLast {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> t1) {
-            SingleAssignmentSubscription sas = new SingleAssignmentSubscription();
-            sas.set(source.subscribe(new TakeLastTimedObserver<T>(t1, sas, count, ageMillis, scheduler)));
-            return sas;
+            SafeObservableSubscription s = new SafeObservableSubscription();
+            source.subscribe(new TakeLastTimedObserver<T>(t1, s, count, ageMillis, scheduler));
+            return s;
         }
     }
     /** Observes source values and keeps the most recent items. */
