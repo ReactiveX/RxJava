@@ -98,7 +98,7 @@ public class OperationObserveOnTest {
         final CountDownLatch completedLatch = new CountDownLatch(1);
 
         // assert subscribe is on main thread
-        obs = obs.doOnEach(new Action1<String>() {
+        obs = obs.doOnNext(new Action1<String>() {
 
             @Override
             public void call(String s) {
@@ -110,7 +110,7 @@ public class OperationObserveOnTest {
         });
 
         // assert observe is on new thread
-        obs.observeOn(Schedulers.newThread()).doOnEach(new Action1<String>() {
+        obs.observeOn(Schedulers.newThread()).doOnNext(new Action1<String>() {
 
             @Override
             public void call(String t1) {
