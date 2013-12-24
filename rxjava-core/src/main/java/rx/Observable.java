@@ -1054,7 +1054,7 @@ public class Observable<T> {
     public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9, T t10) {
         return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
     }
-
+    
     /**
      * Generates an Observable that emits a sequence of Integers within a
      * specified range.
@@ -1928,6 +1928,23 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#switchonnext">RxJava Wiki: switchOnNext()</a>
      */
     public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
+        return create(OperationSwitch.switchDo(sequenceOfSequences));
+    }
+    
+    /**
+     * Given an Observable that emits Observables, returns an Observable that
+     * emits the items emitted by the most recently emitted of those
+     * Observables.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchDo.png">
+     * 
+     * @param sequenceOfSequences the source Observable that emits Observables
+     * @return an Observable that emits only the items emitted by the Observable
+     *         most recently emitted by the source Observable
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#switchonnext">RxJava Wiki: switchOnNext()</a>
+     * @see {@link #switchOnNext(Observable)}
+     */
+    public static <T> Observable<T> switchLatest(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
         return create(OperationSwitch.switchDo(sequenceOfSequences));
     }
 
@@ -3681,7 +3698,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava Wiki: zip()</a>
      */
     public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction) {
-        return ws.toList().mapMany(new Func1<List<? extends Observable<?>>, Observable<? extends R>>() {
+        return ws.toList().mergeMap(new Func1<List<? extends Observable<?>>, Observable<? extends R>>() {
             @Override
             public Observable<R> call(List<? extends Observable<?>> wsList) {
                 return create(OperationZip.zip(wsList, zipFunction));
@@ -3919,7 +3936,64 @@ public class Observable<T> {
      * @see #mapMany(Func1)
      */
     public <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
-        return mapMany(func);
+        return mergeMap(func);
+    }
+    
+    /**
+     * Creates a new Observable by applying a function that you supply to each
+     * item emitted by the source Observable, where that function returns an
+     * Observable, and then merging those resulting Observables and emitting the
+     * results of this merger.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/flatMap.png">
+     * <p>
+     * Note: {@code mapMany} and {@code flatMap} are equivalent.
+     * 
+     * @param func a function that, when applied to an item emitted by the
+     *             source Observable, returns an Observable
+     * @return an Observable that emits the result of applying the
+     *         transformation function to each item emitted by the source
+     *         Observable and merging the results of the Observables obtained
+     *         from this transformation.
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mapmany-or-flatmap-and-mapmanydelayerror">RxJava Wiki: flatMap()</a>
+     * @see #flatMap(Func1)
+     */
+    public <R> Observable<R> mergeMap(Func1<? super T, ? extends Observable<? extends R>> func) {
+        return merge(map(func));
+    }
+    
+    /**
+     * Creates a new Observable by applying a function that you supply to each
+     * item emitted by the source Observable, where that function returns an
+     * Observable, and then concatting those resulting Observables and emitting the
+     * results of this concat.
+     * <p>
+     * 
+     * @param func a function that, when applied to an item emitted by the
+     *             source Observable, returns an Observable
+     * @return an Observable that emits the result of applying the
+     *         transformation function to each item emitted by the source
+     *         Observable and concatting the results of the Observables obtained
+     *         from this transformation.
+     */
+    public <R> Observable<R> concatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
+        return concat(map(func));
+    }
+    
+    /**
+     * Creates a new Observable by applying a function that you supply to each
+     * item emitted by the source Observable resulting in an Observable of Observables.
+     * <p>
+     * Then a {@link #switchLatest(Observable)} / {@link #switchOnNext(Observable)} is applied.
+     * 
+     * @param func a function that, when applied to an item emitted by the
+     *             source Observable, returns an Observable
+     * @return an Observable that emits the result of applying the
+     *         transformation function to each item emitted by the source
+     *         Observable and then switch
+     */
+    public <R> Observable<R> switchMap(Func1<? super T, ? extends Observable<? extends R>> func) {
+        return switchOnNext(map(func));
     }
 
     /**
@@ -3970,6 +4044,7 @@ public class Observable<T> {
      *         transformed by the given function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mapwithindex">RxJava Wiki: mapWithIndex()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244311.aspx">MSDN: Observable.Select</a>
+     * @deprecate just use zip with {@link Observable#range(int)}
      */
     public <R> Observable<R> mapWithIndex(Func2<? super T, Integer, ? extends R> func) {
         return create(OperationMap.mapWithIndex(this, func));
@@ -3993,9 +4068,10 @@ public class Observable<T> {
      *         from this transformation.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mapmany-or-flatmap-and-mapmanydelayerror">RxJava Wiki: mapMany()</a>
      * @see #flatMap(Func1)
+     * @deprecated
      */
     public <R> Observable<R> mapMany(Func1<? super T, ? extends Observable<? extends R>> func) {
-        return create(OperationMap.mapMany(this, func));
+        return mergeMap(func);
     }
 
     /**
@@ -5108,6 +5184,7 @@ public class Observable<T> {
      *
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#reduce-or-aggregate">RxJava Wiki: aggregate()</a>
      * @see #reduce(Func2)
+     * @deprecated
      */
     public Observable<T> aggregate(Func2<T, T, T> accumulator) {
         return reduce(accumulator);
@@ -5150,6 +5227,7 @@ public class Observable<T> {
      * 
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#reduce-or-aggregate">RxJava Wiki: aggregate()</a>
      * @see #reduce(Object, Func2)
+     * @deprecated
      */
     public <R> Observable<R> aggregate(R initialValue, Func2<R, ? super T, R> accumulator) {
         return reduce(initialValue, accumulator);
@@ -6642,36 +6720,6 @@ public class Observable<T> {
     }
 
     /**
-     * Invokes an action for each item emitted by an Observable.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.png">
-     *
-     * @param onNext the action to invoke for each item emitted by the source
-     *               Observable
-     * @return the source Observable with the side-effecting behavior applied
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnEach()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
-     */
-    public Observable<T> doOnEach(final Action1<? super T> onNext) {
-        Observer<T> observer = new Observer<T>() {
-            @Override
-            public void onCompleted() {}
-
-            @Override
-            public void onError(Throwable e) {}
-
-            @Override
-            public void onNext(T args) {
-                onNext.call(args);
-            }
-
-        };
-
-
-        return create(OperationDoOnEach.doOnEach(this, observer));
-    }
-    
-    /**
      * Invokes an action if the source Observable calls <code>onError</code>.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnError.png">
@@ -6731,71 +6779,64 @@ public class Observable<T> {
 
         return create(OperationDoOnEach.doOnEach(this, observer));
     }
-
+    
+    
     /**
-     * Invokes an action for each item emitted by an Observable.
+     * Invokes an action when the source Observable calls
+     * <code>onNext</code>.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.e.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnCompleted.png">
      *
-     * @param onNext the action to invoke for each item emitted by the
-     *               Observable
-     * @param onError the action to invoke when the source Observable calls
-     *                <code>onError</code>
+     * @param onCompleted the action to invoke when the source Observable calls
+     *                    <code>onCompleted</code>
      * @return the source Observable with the side-effecting behavior applied
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnEach()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229539.aspx">MSDN: Observable.Do</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnNext()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<? super T> onNext, final Action1<Throwable> onError) {
+    public Observable<T> doOnNext(final Action1<T> onNext) {
         Observer<T> observer = new Observer<T>() {
             @Override
-            public void onCompleted() {}
+            public void onCompleted() { }
 
             @Override
-            public void onError(Throwable e) {
-                onError.call(e);
-            }
+            public void onError(Throwable e) { }
 
             @Override
-            public void onNext(T args) {
+            public void onNext(T args) { 
                 onNext.call(args);
             }
 
         };
 
-
         return create(OperationDoOnEach.doOnEach(this, observer));
     }
-
+    
     /**
-     * Invokes an action for each item emitted by an Observable.
+     * Invokes an action for each item emitted by the Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.ce.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.png">
      *
-     * @param onNext the action to invoke for each item emitted by the
-     *               Observable
-     * @param onError the action to invoke when the source Observable calls
-     *                <code>onError</code>
-     * @param onCompleted the action to invoke when the source Observable calls
-     *                    <code>onCompleted</code>
+     * @param observer the action to invoke for each item emitted by the source
+     *                 Observable
      * @return the source Observable with the side-effecting behavior applied
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnEach()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229830.aspx">MSDN: Observable.Do</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229307.aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onCompleted) {
+    public Observable<T> doOnEach(final Action1<Notification<T>> onNotification) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {
-                onCompleted.call();
+                onNotification.call(new Notification<T>());
             }
 
             @Override
             public void onError(Throwable e) {
-                onError.call(e);
+                onNotification.call(new Notification<T>(e));
             }
 
             @Override
-            public void onNext(T args) {
-                onNext.call(args);
+            public void onNext(T v) {
+                onNotification.call(new Notification<T>(v));
             }
 
         };
