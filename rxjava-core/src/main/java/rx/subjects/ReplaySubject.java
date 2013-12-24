@@ -29,7 +29,7 @@ import rx.util.functions.Action1;
 /**
  * Subject that retains all events and will replay them to an {@link Observer} that subscribes.
  * <p>
- * <img src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.ReplaySubject.png">
+ * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.ReplaySubject.png">
  * <p>
  * Example usage:
  * <p>

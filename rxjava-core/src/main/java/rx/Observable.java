@@ -1936,7 +1936,7 @@ public class Observable<T> {
      * emits the items emitted by the most recently emitted of those
      * Observables.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchDo.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchLatest.png">
      * 
      * @param sequenceOfSequences the source Observable that emits Observables
      * @return an Observable that emits only the items emitted by the Observable
@@ -1976,7 +1976,8 @@ public class Observable<T> {
      *
      * @param <K> the case key type
      * @param <R> the result value type
-     * @param caseSelector the function that produces a case key when an Observer subscribes
+     * @param caseSelector the function that produces a case key when an
+     *                     Observer subscribes
      * @param mapOfCases a map that maps a case key to an Observable
      * @param scheduler the scheduler where the empty observable is observed
      * @return a particular Observable chosen by key from the map of
@@ -3945,9 +3946,7 @@ public class Observable<T> {
      * Observable, and then merging those resulting Observables and emitting the
      * results of this merger.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/flatMap.png">
-     * <p>
-     * Note: {@code mapMany} and {@code flatMap} are equivalent.
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.png">
      * 
      * @param func a function that, when applied to an item emitted by the
      *             source Observable, returns an Observable
@@ -3965,9 +3964,10 @@ public class Observable<T> {
     /**
      * Creates a new Observable by applying a function that you supply to each
      * item emitted by the source Observable, where that function returns an
-     * Observable, and then concatting those resulting Observables and emitting the
-     * results of this concat.
+     * Observable, and then concatting those resulting Observables and emitting
+     * the results of this concat.
      * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concatMap.png">
      * 
      * @param func a function that, when applied to an item emitted by the
      *             source Observable, returns an Observable
@@ -3982,9 +3982,11 @@ public class Observable<T> {
     
     /**
      * Creates a new Observable by applying a function that you supply to each
-     * item emitted by the source Observable resulting in an Observable of Observables.
+     * item emitted by the source Observable resulting in an Observable of
+     * Observables. Then a {@link #switchLatest(Observable)} /
+     * {@link #switchOnNext(Observable)} is applied.
      * <p>
-     * Then a {@link #switchLatest(Observable)} / {@link #switchOnNext(Observable)} is applied.
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchMap.png">
      * 
      * @param func a function that, when applied to an item emitted by the
      *             source Observable, returns an Observable
@@ -4035,7 +4037,7 @@ public class Observable<T> {
      * emitted by an Observable and emits the results of these function
      * applications.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/map.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapWithIndex.png">
      * 
      * @param func a function to apply to each item emitted by the Observable
      *             that takes the index of the emitted item as additional
@@ -4044,7 +4046,7 @@ public class Observable<T> {
      *         transformed by the given function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mapwithindex">RxJava Wiki: mapWithIndex()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244311.aspx">MSDN: Observable.Select</a>
-     * @deprecate just use zip with {@link Observable#range(int)}
+     * @deprecated just use zip with {@link Observable#range(int)}
      */
     public <R> Observable<R> mapWithIndex(Func2<? super T, Integer, ? extends R> func) {
         return create(OperationMap.mapWithIndex(this, func));
@@ -4285,8 +4287,8 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
      * <p>
-     * This technique, which is called "reduce" or "aggregate" here, is
-     * sometimes called "fold," "accumulate," "compress," or "inject" in other
+     * This technique, which is called "reduce" here, is sometimes called
+     * "aggregate," "fold," "accumulate," "compress," or "inject" in other
      * programming contexts. Groovy, for instance, has an <code>inject</code>
      * method that does a similar operation on lists.
      * 
@@ -5184,7 +5186,7 @@ public class Observable<T> {
      *
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#reduce-or-aggregate">RxJava Wiki: aggregate()</a>
      * @see #reduce(Func2)
-     * @deprecated
+     * @deprecated use #reduce(Func2)
      */
     public Observable<T> aggregate(Func2<T, T, T> accumulator) {
         return reduce(accumulator);
@@ -5200,8 +5202,8 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduceSeed.png">
      * <p>
-     * This technique, which is called "reduce" or "aggregate" here, is
-     * sometimes called "fold," "accumulate," "compress," or "inject" in other
+     * This technique, which is called "reduce" here, is sometimec called
+     * "aggregate," "fold," "accumulate," "compress," or "inject" in other
      * programming contexts. Groovy, for instance, has an <code>inject</code>
      * method that does a similar operation on lists.
      * 
@@ -5227,7 +5229,7 @@ public class Observable<T> {
      * 
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#reduce-or-aggregate">RxJava Wiki: aggregate()</a>
      * @see #reduce(Object, Func2)
-     * @deprecated
+     * @deprecated use #reduce(Object, Func2)
      */
     public <R> Observable<R> aggregate(R initialValue, Func2<R, ? super T, R> accumulator) {
         return reduce(initialValue, accumulator);
@@ -6785,7 +6787,7 @@ public class Observable<T> {
      * Invokes an action when the source Observable calls
      * <code>onNext</code>.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnCompleted.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnNext.png">
      *
      * @param onCompleted the action to invoke when the source Observable calls
      *                    <code>onCompleted</code>
