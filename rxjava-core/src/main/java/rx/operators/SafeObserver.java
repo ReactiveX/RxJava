@@ -19,7 +19,9 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observer;
+import rx.Subscription;
 import rx.plugins.RxJavaPlugins;
+import rx.subscriptions.Subscriptions;
 import rx.util.CompositeException;
 import rx.util.OnErrorNotImplementedException;
 
@@ -59,7 +61,12 @@ public class SafeObserver<T> implements Observer<T> {
 
     private final Observer<? super T> actual;
     private final AtomicBoolean isFinished = new AtomicBoolean(false);
-    private final SafeObservableSubscription subscription;
+    private final Subscription subscription;
+
+    public SafeObserver(Observer<? super T> actual) {
+        this.subscription = Subscriptions.empty();
+        this.actual = actual;
+    }
 
     public SafeObserver(SafeObservableSubscription subscription, Observer<? super T> actual) {
         this.subscription = subscription;
@@ -73,44 +80,18 @@ public class SafeObserver<T> implements Observer<T> {
                 actual.onCompleted();
             } catch (Throwable e) {
                 // handle errors if the onCompleted implementation fails, not just if the Observable fails
-                onError(e);
+                _onError(e);
+            } finally {
+                // auto-unsubscribe
+                subscription.unsubscribe();
             }
-            // auto-unsubscribe
-            subscription.unsubscribe();
         }
     }
 
     @Override
     public void onError(Throwable e) {
         if (isFinished.compareAndSet(false, true)) {
-            try {
-                actual.onError(e);
-            } catch (Throwable e2) {
-                if (e2 instanceof OnErrorNotImplementedException) {
-                    /**
-                     * onError isn't implemented so throw
-                     * 
-                     * https://github.com/Netflix/RxJava/issues/198
-                     * 
-                     * Rx Design Guidelines 5.2
-                     * 
-                     * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
-                     * to rethrow the exception on the thread that the message comes out from the observable sequence.
-                     * The OnCompleted behavior in this case is to do nothing."
-                     */
-                    throw (OnErrorNotImplementedException) e2;
-                } else {
-                    // if the onError itself fails then pass to the plugin
-                    // see https://github.com/Netflix/RxJava/issues/216 for further discussion
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e2);
-                    // and throw exception despite that not being proper for Rx
-                    // https://github.com/Netflix/RxJava/issues/198
-                    throw new RuntimeException("Error occurred when trying to propagate error to Observer.onError", new CompositeException(Arrays.asList(e, e2)));
-                }
-            }
-            // auto-unsubscribe
-            subscription.unsubscribe();
+            _onError(e);
         }
     }
 
@@ -123,6 +104,43 @@ public class SafeObserver<T> implements Observer<T> {
         } catch (Throwable e) {
             // handle errors if the onNext implementation fails, not just if the Observable fails
             onError(e);
+        }
+    }
+
+    /*
+     * The logic for `onError` without the `isFinished` check so it can be called from within `onCompleted`.
+     * 
+     * See https://github.com/Netflix/RxJava/issues/630 for the report of this bug.
+     */
+    protected void _onError(Throwable e) {
+        try {
+            actual.onError(e);
+        } catch (Throwable e2) {
+            if (e2 instanceof OnErrorNotImplementedException) {
+                /**
+                 * onError isn't implemented so throw
+                 * 
+                 * https://github.com/Netflix/RxJava/issues/198
+                 * 
+                 * Rx Design Guidelines 5.2
+                 * 
+                 * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
+                 * to rethrow the exception on the thread that the message comes out from the observable sequence.
+                 * The OnCompleted behavior in this case is to do nothing."
+                 */
+                throw (OnErrorNotImplementedException) e2;
+            } else {
+                // if the onError itself fails then pass to the plugin
+                // see https://github.com/Netflix/RxJava/issues/216 for further discussion
+                RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                RxJavaPlugins.getInstance().getErrorHandler().handleError(e2);
+                // and throw exception despite that not being proper for Rx
+                // https://github.com/Netflix/RxJava/issues/198
+                throw new RuntimeException("Error occurred when trying to propagate error to Observer.onError", new CompositeException(Arrays.asList(e, e2)));
+            }
+        } finally {
+            // auto-unsubscribe
+            subscription.unsubscribe();
         }
     }
 
