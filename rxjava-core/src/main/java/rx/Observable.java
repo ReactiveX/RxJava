@@ -3999,6 +3999,7 @@ public class Observable<T> {
      *         transformed by the given function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mapwithindex">RxJava Wiki: mapWithIndex()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244311.aspx">MSDN: Observable.Select</a>
+     * @deprecate just use zip with {@link Observable#range(int)}
      */
     public <R> Observable<R> mapWithIndex(Func2<? super T, Integer, ? extends R> func) {
         return create(OperationMap.mapWithIndex(this, func));
