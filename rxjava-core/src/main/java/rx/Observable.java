@@ -6793,7 +6793,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnNext()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnNext(final Action1<T> onNext) {
+    public Observable<T> doOnNext(final Action1<? super T> onNext) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() { }
@@ -6822,7 +6822,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnEach()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229307.aspx">MSDN: Observable.Do</a>
      */
-    public Observable<T> doOnEach(final Action1<Notification<T>> onNotification) {
+    public Observable<T> doOnEach(final Action1<Notification<? super T>> onNotification) {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {

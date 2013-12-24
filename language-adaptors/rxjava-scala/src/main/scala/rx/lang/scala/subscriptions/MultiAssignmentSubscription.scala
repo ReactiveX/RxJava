@@ -47,7 +47,7 @@ class MultipleAssignmentSubscription private[scala] (override val asJavaSubscrip
   /**
    * Gets the underlying subscription.
    */
-  def subscription: Subscription = Subscription(asJavaSubscription.getSubscription)
+  def subscription: Subscription = Subscription(asJavaSubscription.get)
 
   /**
    * Gets the underlying subscription
@@ -55,7 +55,7 @@ class MultipleAssignmentSubscription private[scala] (override val asJavaSubscrip
    * @return the [[rx.lang.scala.subscriptions.MultipleAssignmentSubscription]] itself.
    */
   def subscription_=(that: Subscription): this.type = {
-    asJavaSubscription.setSubscription(that.asJavaSubscription)
+    asJavaSubscription.set(that.asJavaSubscription)
     this
   }
 
