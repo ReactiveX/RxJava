@@ -26,7 +26,7 @@ import rx.util.functions.Action1;
 /**
  * Subject that publishes the most recent and all subsequent events to each subscribed {@link Observer}.
  * <p>
- * <img src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.BehaviorSubject.png">
+ * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.BehaviorSubject.png">
  * <p>
  * Example usage:
  * <p>

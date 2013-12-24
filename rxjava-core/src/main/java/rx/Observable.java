@@ -1932,16 +1932,19 @@ public class Observable<T> {
     }
 
     /**
-     * Return an Observable that subscribes to an observable sequence
-     * chosen from a map of observables via a selector function or to an
-     * empty observable.
+     * Return a particular one of several possible Observables based on a case
+     * selector.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchCase.png">
+     *
      * @param <K> the case key type
      * @param <R> the result value type
-     * @param caseSelector the function that produces a case key when an Observer subscribes
-     * @param mapOfCases a map that maps a case key to an observable sequence
-     * @return an Observable that subscribes to an observable sequence
-     *         chosen from a map of observables via a selector function or to an
-     *         empty observable
+     * @param caseSelector the function that produces a case key when an
+     *                     Observer subscribes
+     * @param mapOfCases a map that maps a case key to an Observable
+     * @return a particular Observable chosen by key from the map of
+     *         Observables, or an empty Observable if no Observable matches the
+     *         key
      */
     public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector, 
             Map<? super K, ? extends Observable<? extends R>> mapOfCases) {
@@ -1949,35 +1952,41 @@ public class Observable<T> {
     }
     
     /**
-     * Return an Observable that subscribes to an observable sequence
-     * chosen from a map of observables via a selector function or to an
-     * empty observable which runs on the given scheduler.
+     * Return a particular one of several possible Observables based on a case
+     * selector and run it on the designated scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchCase.s.png">
+     *
      * @param <K> the case key type
      * @param <R> the result value type
      * @param caseSelector the function that produces a case key when an Observer subscribes
-     * @param mapOfCases a map that maps a case key to an observable sequence
+     * @param mapOfCases a map that maps a case key to an Observable
      * @param scheduler the scheduler where the empty observable is observed
-     * @return an Observable that subscribes to an observable sequence
-     *         chosen from a map of observables via a selector function or to an
-     *         empty observable which runs on the given scheduler
+     * @return a particular Observable chosen by key from the map of
+     *         Observables, or an empty Observable if no Observable matches the
+     *         key, but one that runs on the designated scheduler in either case
      */
     public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector, 
             Map<? super K, ? extends Observable<? extends R>> mapOfCases, Scheduler scheduler) {
         return switchCase(caseSelector, mapOfCases, Observable.<R>empty(scheduler));
     }
     /**
-     * Return an Observable that subscribes to an observable sequence
-     * chosen from a map of observables via a selector function or to the
-     * default observable.
+     * Return a particular one of several possible Observables based on a case
+     * selector, or a default Observable if the case selector does not map to
+     * a particular one.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchCase.png">
+     *
      * @param <K> the case key type
      * @param <R> the result value type
-     * @param caseSelector the function that produces a case key when an Observer subscribes
-     * @param mapOfCases a map that maps a case key to an observable sequence
-     * @param defaultCase the default observable if the {@code mapOfCases} doesn't contain a value for
-     *                    the key returned by the {@case caseSelector}
-     * @return an Observable that subscribes to an observable sequence
-     *         chosen from a map of observables via a selector function or to an
-     *         empty observable
+     * @param caseSelector the function that produces a case key when an
+     *                     Observer subscribes
+     * @param mapOfCases a map that maps a case key to an Observable
+     * @param defaultCase the default Observable if the {@code mapOfCases}
+     *                    doesn't contain a value for the key returned by the
+     *                    {@case caseSelector}
+     * @return a particular Observable chosen by key from the map of
+     *         Observables, or the default case if no Observable matches the key
      */
     public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector, 
             Map<? super K, ? extends Observable<? extends R>> mapOfCases, 
@@ -1986,67 +1995,94 @@ public class Observable<T> {
     }
     
     /**
-     * Return an Observable that subscribes to the this Observable,
-     * then resubscribes only if the postCondition evaluates to true.
-     * @param postCondition the post condition after the source completes
-     * @return an Observable that subscribes to the source Observable,
-     * then resubscribes only if the postCondition evaluates to true.
+     * Return an Observable that replays the emissions from the source
+     * Observable, and then continues to replay them so long as a condtion is
+     * true.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doWhile.png">
+     *
+     * @param postCondition the post condition to test after the source
+     *                      Observable completes
+     * @return an Observable that replays the emissions from the source
+     *         Observable, and then continues to replay them so long as the post
+     *         condition is true
      */
     public Observable<T> doWhile(Func0<Boolean> postCondition) {
         return create(OperationConditionals.doWhile(this, postCondition));
     }
     
     /**
-     * Return an Observable that subscribes and resubscribes to this
-     * Observable if the preCondition evaluates to true.
-     * @param preCondition the condition to evaluate before subscribing to this, 
-     *                     and subscribe to source if it returns {@code true}
-     * @return an Observable that subscribes and resubscribes to the source
-     * Observable if the preCondition evaluates to true.
+     * Return an Observable that replays the emissions from the source
+     * Observable so long as a condtion is true.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/whileDo.png">
+     *
+     * @param preCondition the condition to evaluate before subscribing to or
+     *                     replaying the source Observable
+     * @return an Observable that replays the emissions from the source
+     *         Observable so long as <code>preCondition</code> is true
      */
     public Observable<T> whileDo(Func0<Boolean> preCondition) {
         return create(OperationConditionals.whileDo(this, preCondition));
     }
     
     /**
-     * Return an Observable that subscribes to the
-     * then Observables if the condition function evaluates to true, or to an empty
-     * Observable if false.
+     * Return an Observable that emits the emissions from a specified Observable
+     * if a condition evaluates to true, otherwise return an empty Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/ifThen.png">
+     *
      * @param <R> the result value type
-     * @param condition the condition to decide which Observables to subscribe to
-     * @param then the Observable sequence to subscribe to if {@code condition} is {@code true}
-     * @return an Observable that subscribes to the
-     *         then Observables if the condition function evaluates to true, or to an empty
-     *         Observable running on the given scheduler if false
+     * @param condition the condition that decides whether to emit the emissions
+     *                  from the <code>then</code> Observable
+     * @param then the Observable sequence to emit to if {@code condition} is
+     *             {@code true}
+     * @return an Observable that mimics the {@code then} Observable if the
+     *         {@code condition} function evaluates to true, or an empty
+     *         Observable otherwise
      */
     public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then) {
         return ifThen(condition, then, Observable.<R>empty());
     }
     
     /**
-     * Return an Observable that subscribes to the
-     * then Observables if the condition function evaluates to true, or to an empty
-     * Observable running on the given scheduler if false.
+     * Return an Observable that emits the emissions from a specified Observable
+     * if a condition evaluates to true, otherwise return an empty Observable
+     * that runs on a specified Scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/ifThen.s.png">
+     *
      * @param <R> the result value type
-     * @param condition the condition to decide which Observables to subscribe to
-     * @param then the Observable sequence to subscribe to if {@code condition} is {@code true}
-     * @param scheduler the scheduler where the empty Observable is observed in case the condition returns false
-     * @return an Observable that subscribes to the
-     *         then Observables if the condition function evaluates to true, or to an empty
-     *         Observable running on the given scheduler if false
+     * @param condition the condition that decides whether to emit the emissions
+     *                  from the <code>then</code> Observable
+     * @param then the Observable sequence to emit to if {@code condition} is
+     *             {@code true}
+     * @param scheduler the Scheduler on which the empty Observable runs if the
+     *                  in case the condition returns false
+     * @return an Observable that mimics the {@code then} Observable if the
+     *         {@code condition} function evaluates to true, or an empty
+     *         Observable running on the specified Scheduler otherwise
      */
     public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then, Scheduler scheduler) {
         return ifThen(condition, then, Observable.<R>empty(scheduler));
     }
+
     /**
-     * Return an Observable that subscribes to either the
-     * then or orElse Observables depending on a condition function.
+     * Return an Observable that emits the emissions from one specified
+     * Observable if a condition evaluates to true, or from another specified
+     * Observable otherwise.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/ifThen.e.png">
+     *
      * @param <R> the result value type
-     * @param condition the condition to decide which Observables to subscribe to
-     * @param then the Observable sequence to subscribe to if {@code condition} is {@code true}
-     * @param orElse the Observable sequence to subscribe to if {@code condition} is {@code false}
-     * @return an Observable that subscribes to either the
-     *         then or orElse Observables depending on a condition function
+     * @param condition the condition that decides which Observable to emit the
+     *                  emissions from
+     * @param then the Observable sequence to emit to if {@code condition} is
+     *             {@code true}
+     * @param orElse the Observable sequence to emit to if {@code condition} is
+     *               {@code false}
+     * @return an Observable that mimics either the {@code then} or
+     *         {@code orElse} Observables depending on a condition function
      */
     public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then,
             Observable<? extends R> orElse) {
@@ -2254,25 +2290,34 @@ public class Observable<T> {
     }
 
     /**
-     * Return an Observable which delays the subscription to this Observable sequence
-     * by the given amount.
+     * Return an Observable that delays the subscription to the source
+     * Observable by a given amount of time.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delaySubscription.png">
+     *
      * @param delay the time to delay the subscription
      * @param unit the time unit
-     * @return an Observable which delays the subscription to this Observable sequence
-     *         by the given amount.
+     * @return an Observable that delays the subscription to the source
+     *         Observable by the given amount
      */
     public Observable<T> delaySubscription(long delay, TimeUnit unit) {
         return delaySubscription(delay, unit, Schedulers.threadPoolForComputation());
     }
     
     /**
-     * Return an Observable which delays the subscription to this Observable sequence
-     * by the given amount, waiting and subscribing on the given scheduler.
+     * Return an Observable that delays the subscription to the source
+     * Observable by a given amount of time, both waiting and subscribing on
+     * a given Scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delaySubscription.s.png">
+     *
      * @param delay the time to delay the subscription
      * @param unit the time unit
-     * @param scheduler the scheduler where the waiting and subscription will happen
-     * @return an Observable which delays the subscription to this Observable sequence
-     *         by the given amount, waiting and subscribing on the given scheduler
+     * @param scheduler the scheduler on which the waiting and subscription will
+     *                  happen
+     * @return an Observable that delays the subscription to the source
+     *         Observable by a given amount, waiting and subscribing on the
+     *         given Scheduler
      */
     public Observable<T> delaySubscription(long delay, TimeUnit unit, Scheduler scheduler) {
         return create(OperationDelay.delaySubscription(this, delay, unit, scheduler));
@@ -5247,14 +5292,16 @@ public class Observable<T> {
     }
 
     /**
-     * If the Observable completes after emitting a single item, return an
-     * Observable containing that item. If it emits more than one item or no
-     * item, throw an IllegalArgumentException.
+     * If the source Observable completes after emitting a single item, return
+     * an Observable that emits that item. If the source Observable emits more
+     * than one item or no items, throw an IllegalArgumentException.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.png">
      * 
-     * @return an Observable containing the single item emitted by the source
-     *         Observable that matches the predicate.
-     * @throws IllegalArgumentException
-     *             if the source emits more than one item or no item
+     * @return an Observable that emits the single item emitted by the source
+     *         Observable that matches the predicate
+     * @throws IllegalArgumentException if the source emits more than one item
+     *                                  or no items
      */
     public Observable<T> single() {
         return create(OperationSingle.<T> single(this));
@@ -5262,35 +5309,37 @@ public class Observable<T> {
 
     /**
      * If the Observable completes after emitting a single item that matches a
-     * predicate, return an Observable containing that item. If it emits more
-     * than one such item or no item, throw an IllegalArgumentException.
+     * predicate, return an Observable that emits that item. If the source
+     * Observable emits more than one such item or no such items, throw an
+     * IllegalArgumentException.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.p.png">
      * 
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the source
-     *            Observable
-     * @return an Observable containing the single item emitted by the source
-     *         Observable that matches the predicate.
-     * @throws IllegalArgumentException
-     *             if the source emits more than one item or no item matching
-     *             the predicate
+     * @param predicate a predicate function to evaluate items emitted by the
+     *                  source Observable
+     * @return an Observable that emits the single item emitted by the source
+     *         Observable that matches the predicate
+     * @throws IllegalArgumentException if the source Observable emits more than
+     *                                  one item or no items matching the
+     *                                  predicate
      */
     public Observable<T> single(Func1<? super T, Boolean> predicate) {
         return filter(predicate).single();
     }
 
     /**
-     * If the Observable completes after emitting a single item, return an
-     * Observable containing that item. If it's empty, return an Observable
-     * containing the defaultValue. If it emits more than one item, throw an
-     * IllegalArgumentException.
+     * If the source Observable completes after emitting a single item, return
+     * an Observable that emits that item. If the source Observable is empty,
+     * return an Observable that emits a default item. If the source Observable
+     * emits more than one item, throw an IllegalArgumentException.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/singleOrDefault.png">
      * 
-     * @param defaultValue
-     *            a default value to return if the Observable emits no item
-     * @return an Observable containing the single item emitted by the source
-     *         Observable, or an Observable containing the defaultValue if no
-     *         item.
-     * @throws IllegalArgumentException
-     *             if the source emits more than one item
+     * @param defaultValue a default value to emit if the source Observable
+     *                     emits no item
+     * @return an Observable that emits the single item emitted by the source
+     *         Observable, or default value if the source Observable is empty
+     * @throws IllegalArgumentException if the source emits more than one item
      */
     public Observable<T> singleOrDefault(T defaultValue) {
         return create(OperationSingle.<T> singleOrDefault(this, defaultValue));
@@ -5298,21 +5347,22 @@ public class Observable<T> {
 
     /**
      * If the Observable completes after emitting a single item that matches a
-     * predicate, return an Observable containing that item. If it emits no such
-     * item, return an Observable containing the defaultValue. If it emits more
-     * than one such item, throw an IllegalArgumentException.
+     * predicate, return an Observable that emits that item. If the source
+     * Observable emits no such item, return an Observable that emits a default
+     * item. If the source Observable emits more than one such item, throw an
+     * IllegalArgumentException.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/singleOrDefault.p.png">
      * 
-     * @param defaultValue
-     *            a default value to return if the {@link Observable} emits no
-     *            matching items
-     * @param predicate
-     *            a predicate function to evaluate items emitted by the
-     *            Observable
-     * @return an Observable containing the single item emitted by the source
-     *         Observable that matches the predicate, or an Observable
-     *         containing the defaultValue if no item matches the predicate
-     * @throws IllegalArgumentException
-     *             if the source emits more than one item matching the predicate
+     * @param defaultValue a default value to emit if the source Observable
+     *                     emits no matching items
+     * @param predicate a predicate function to evaluate items emitted by the
+     *                  source Observable
+     * @return an Observable that emits the single item emitted by the source
+     *         Observable that matches the predicate, or the default item if no
+     *         emitted item matches the predicate
+     * @throws IllegalArgumentException if the source emits more than one item
+     *                                  matching the predicate
      */
     public Observable<T> singleOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return filter(predicate).singleOrDefault(defaultValue);
@@ -5320,8 +5370,8 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits only the very first item emitted by the
-     * source Observable, or an <code>IllegalArgumentException</code> if the source
-     * {@link Observable} is empty.
+     * source Observable, or an <code>IllegalArgumentException</code> if the
+     * source {@link Observable} is empty.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
      * 
@@ -5335,8 +5385,8 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits only the very first item emitted by the
-     * source Observable that satisfies a given condition, or an <code>IllegalArgumentException</code>
-     * if no such items are emitted.
+     * source Observable that satisfies a given condition, or an
+     * <code>IllegalArgumentException</code> if no such items are emitted.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstN.png">
      * 
@@ -5467,11 +5517,11 @@ public class Observable<T> {
      * Returns an Observable that emits only the very first item emitted by the
      * source Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeFirst.png">
      * 
      * @return an Observable that emits only the very first item from the
-     *         source, or an empty Observable if the source Observable completes without
-     *         emitting a single item
+     *         source, or an empty Observable if the source Observable completes
+     *         without emitting a single item
      * @deprecated Use <code>take(1)</code> directly.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first">RxJava Wiki: first()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
@@ -5485,12 +5535,13 @@ public class Observable<T> {
      * Returns an Observable that emits only the very first item emitted by the
      * source Observable that satisfies a given condition.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstN.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeFirstN.png">
      * 
      * @param predicate the condition any source emitted item has to satisfy
      * @return an Observable that emits only the very first item satisfying the
-     *         given condition from the source, or an empty Observable if the source Observable
-     *         completes without emitting a single matching item
+     *         given condition from the source, or an empty Observable if the
+     *         source Observable completes without emitting a single matching
+     *         item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first">RxJava Wiki: first()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
      */
@@ -5502,7 +5553,7 @@ public class Observable<T> {
      * Returns an Observable that emits only the last <code>count</code> items
      * emitted by the source Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.n.png">
      * 
      * @param count the number of items to emit from the end of the sequence
      *              emitted by the source Observable
@@ -5515,66 +5566,78 @@ public class Observable<T> {
     }
 
     /**
-     * Return an Observable which contains the items from this observable which
-     * were emitted not before this completed minus a time window.
+     * Return an Observable which emits the items from the source Observable
+     * that were emitted not before it completed minus a time window.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.t.png">
      * 
-     * @param time the length of the time window, relative to the completion of this
-     *             observable.
+     * @param time the length of the time window, relative to the completion of
+     *             the source Observable
      * @param unit the time unit
-     * @return an Observable which contains the items from this observable which
-     *         were emitted not before this completed minus a time window.
+     * @return an Observable that emits the items from the source Observable
+     *         that were emitted not before it completed minus a time window
      */
     public Observable<T> takeLast(long time, TimeUnit unit) {
         return takeLast(time, unit, Schedulers.threadPoolForComputation());
     }
     
     /**
-     * Return an Observable which contains the items from this observable which
-     * were emitted not before this completed minus a time window, where the timing
-     * information is provided by the given scheduler.
+     * Return an Observable that emits the items from the source Observable that
+     * were emitted not before the source Observable completed minus a time
+     * window, where the timing information is provided by the given scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.ts.png">
      * 
-     * @param time the length of the time window, relative to the completion of this
-     *             observable.
+     * @param time the length of the time window, relative to the completion of
+     *             the source Observable
      * @param unit the time unit
-     * @param scheduler the scheduler which provides the timestamps for the observed
-     *                  elements
-     * @return an Observable which contains the items from this observable which
-     *         were emitted not before this completed minus a time window, where the timing
-     * information is provided by the given scheduler
+     * @param scheduler the Scheduler that provides the timestamps for the
+     *                  Observed items
+     * @return an Observable that emits the items from the source Observable
+     *         that were emitted not before it completed minus a time window,
+     *         where the timing information is provided by the given Scheduler
      */
     public Observable<T> takeLast(long time, TimeUnit unit, Scheduler scheduler) {
         return create(OperationTakeLast.takeLast(this, time, unit, scheduler));
     }
     
     /**
-     * Return an Observable which contains at most count items from this Observable
-     * which were emitted not before this completed minus a time window.
+     * Return an Observable that emits at most a specified number of items from
+     * the source Observable that were emitted not before it completed minus a
+     * time window.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.tn.png">
      * 
-     * @param count the maximum number of items to return
-     * @param time the length of the time window, relative to the completion of this
-     *             observable.
+     * @param count the maximum number of items to emit
+     * @param time the length of the time window, relative to the completion of
+     *             the source Observable
      * @param unit the time unit
-     * @return Return an Observable which contains at most count items from this Observable
-     *         which were emitted not before this completed minus a time window.
+     * @return an Observable that emits at most {@code count} items from the
+     *         source Observable which were emitted not before it completed
+     *         minus a time window
      */
     public Observable<T> takeLast(int count, long time, TimeUnit unit) {
         return takeLast(count, time, unit, Schedulers.threadPoolForComputation());
     }
 
     /**
-     * Return an Observable which contains at most count items from this Observable
-     * which were emitted not before this completed minus a time window, where the timing
-     * information is provided by the given scheduler.
+     * Return an Observable that emits at most a specified number of items from
+     * the source Observable that were emitted not before it completed minus a
+     * time window, where the timing information is provided by a given
+     * scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.tns.png">
      * 
-     * @param count the maximum number of items to return
-     * @param time the length of the time window, relative to the completion of this
-     *             observable.
+     * @param count the maximum number of items to emit
+     * @param time the length of the time window, relative to the completion of
+     *             the source Observable
      * @param unit the time unit
-     * @param scheduler the scheduler which provides the timestamps for the observed
-     *                  elements
-     * @return Return an Observable which contains at most count items from this Observable
-     *         which were emitted not before this completed minus a time window, where the timing
-     *         information is provided by the given scheduler
+     * @param scheduler the Scheduler that provides the timestamps for the
+     *                  observed items
+     * @return an Observable that emits at most {@code count} items from the
+     *         source Observable which were emitted not before it completed
+     *         minus a time window, where the timing information is provided by
+     *         the given {@code scheduler}
      */
     public Observable<T> takeLast(int count, long time, TimeUnit unit, Scheduler scheduler) {
         if (count < 0) {
@@ -5584,72 +5647,93 @@ public class Observable<T> {
     }
 
     /**
-     * Return an Observable which emits single List containing the last count 
-     * elements from this Observable.
+     * Return an Observable that emits single List containing the last
+     * {@code count} elements emitted by the source Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.png">
      * 
      * @param count the number of items to take last
-     * @return an Observable which emits single list containing  the last count 
-     *         elements from this Observable.
+     * @return an Observable that emits a single list containing the last
+     *         {@code count} elements emitted by the source Observable
      */
     public Observable<List<T>> takeLastBuffer(int count) {
         return takeLast(count).toList();
     }
     
     /**
-     * Return an Observable which emits single List containing items which
-     * were emitted not before this completed minus a time window.
-     * @param time the length of the time window, relative to the completion of this
-     *             observable.
+     * Return an Observable that emits single List containing items that were
+     * emitted by the source Observable not before it completed minus a time
+     * window.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.t.png">
+     *
+     * @param time the length of the time window, relative to the completion of
+     *             the source Observable
      * @param unit the time unit
-     * @return an Observable which emits single list containing items which
-     *         were emitted not before this completed minus a time window
+     * @return an Observable that emits single list containing items that were
+     *         were emitted by the source Observable not before it completed
+     *         minus a time window
      */
     public Observable<List<T>> takeLastBuffer(long time, TimeUnit unit) {
         return takeLast(time, unit).toList();
     }
 
     /**
-     * Return an Observable which emits single List containing items which 
-     * were emitted not before this completed minus a time window, where the timing
-     * information is provided by the given scheduler.
-     * @param time the length of the time window, relative to the completion of this
-     *             observable.
+     * Return an Observable that emits single List containing items that were
+     * emitted by the source Observable not before it completed minus a time
+     * window, where the timing information is provided by the given Scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.ts.png">
+     *
+     * @param time the length of the time window, relative to the completion of
+     *             the source Observable
      * @param unit the time unit
-     * @param scheduler the scheduler which provides the timestamps for the observed
-     *                  elements
-     * @return an Observable which emits single list containing items which 
-     *         were emitted not before this completed minus a time window, where the timing
-     *         information is provided by the given scheduler
+     * @param scheduler the Scheduler that provides the timestamps for the
+     *                  observed items
+     * @return an Observable that emits single list containing items that were
+     *         were emitted by the source Observable not before it completed
+     *         minus a time window, where the timing information is provided by
+     *         the given scheduler
      */
     public Observable<List<T>> takeLastBuffer(long time, TimeUnit unit, Scheduler scheduler) {
         return takeLast(time, unit, scheduler).toList();
     }
 
     /**
-     * Return an Observable which emits a single List containing at most count items 
-     * from this Observable which were emitted not before this completed minus a time window.
-     * @param count the number of items to take last
-     * @param time the length of the time window, relative to the completion of this
-     *             observable.
+     * Return an Observable that emits a single List containing at most
+     * {@code count} items from the source Observable that were emitted not
+     * before it completed minus a time window.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.tn.png">
+     *
+     * @param count the maximum number of items to emit
+     * @param time the length of the time window, relative to the completion of
+     *             the source Observable
      * @param unit the time unit
-     * @return an Observable which emits a single List containing at most count items 
-     *         from this Observable which were emitted not before this completed minus a time window.
+     * @return an Observable that emits a single List containing at most
+     *         {@code count} items emitted by the source Observable not before
+     *         it completed minus a time window
      */
     public Observable<List<T>> takeLastBuffer(int count, long time, TimeUnit unit) {
         return takeLast(count, time, unit).toList();
     }
 
     /**
-     * Return an Observable which emits a single List containing at most count items 
-     * from this Observable which were emitted not before this completed minus a time window.
-     * @param count the number of items to take last
-     * @param time the length of the time window, relative to the completion of this
-     *             observable.
+     * Return an Observable that emits a single List containing at most
+     * {@code count} items from the source Observable that were emitted not
+     * before it completed minus a time window.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.tns.png">
+     *
+     * @param count the maximum number of items to emit
+     * @param time the length of the time window, relative to the completion of
+     *             the source Observable
      * @param unit the time unit
-     * @param scheduler the scheduler which provides the timestamps for the observed
-     *                  elements
-     * @return an Observable which emits a single List containing at most count items 
-     *         from this Observable which were emitted not before this completed minus a time window.
+     * @param scheduler the scheduler that provides the timestamps for the
+     *                  observed items
+     * @return an Observable that emits a single List containing at most
+     *         {@code count} items emitted by the source Observable not before
+     *         it completed minus a time window
      */
     public Observable<List<T>> takeLastBuffer(int count, long time, TimeUnit unit, Scheduler scheduler) {
         return takeLast(count, time, unit, scheduler).toList();
@@ -6112,14 +6196,14 @@ public class Observable<T> {
      * Returns an Observable that emits only the last item emitted by the source
      * Observable that satisfies a given condition, or an
      * IllegalArgumentException if no such items are emitted.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.p.png">
      * 
-     * @param predicate
-     *            the condition any source emitted item has to satisfy
+     * @param predicate the condition any source emitted item has to satisfy
      * @return an Observable that emits only the last item satisfying the given
      *         condition from the source, or an IllegalArgumentException if no
-     *         such items are emitted.
-     * @throws IllegalArgumentException
-     *             if no such itmes are emmited
+     *         such items are emitted
+     * @throws IllegalArgumentException if no such itmes are emmited
      */
     public Observable<T> last(Func1<? super T, Boolean> predicate) {
         return filter(predicate).takeLast(1).single();
@@ -6128,9 +6212,11 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits only the last item emitted by the source
      * Observable, or a default item if the source is empty.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/lastOrDefault.png">
      * 
-     * @param defaultValue
-     *            the default item to emit if the source Observable is empty
+     * @param defaultValue the default item to emit if the source Observable is
+     *                     empty
      * @return an Observable that emits only the last item from the source, or a
      *         default item if the source is empty
      */
@@ -6141,12 +6227,13 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits only the last item emitted by the source
      * Observable that satisfies a given condition, or a default item otherwise.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/lastOrDefault.p.png">
      * 
-     * @param defaultValue
-     *            the default item to emit if the source Observable doesn't emit
-     *            anything that satisfies the given condition
-     * @param predicate
-     *            the condition any source emitted item has to satisfy
+     * @param defaultValue the default item to emit if the source Observable
+     *                     doesn't emit anything that satisfies the given
+     *                     condition
+     * @param predicate the condition any source emitted item has to satisfy
      * @return an Observable that emits only the last item from the source that
      *         satisfies the given condition, or a default item otherwise
      */
