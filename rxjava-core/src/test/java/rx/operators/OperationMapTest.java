@@ -118,7 +118,7 @@ public class OperationMapTest {
         Observable<Integer> ids = Observable.from(1, 2);
 
         /* now simulate the behavior to take those IDs and perform nested async calls based on them */
-        Observable<String> m = Observable.create(mapMany(ids, new Func1<Integer, Observable<String>>() {
+        Observable<String> m = ids.flatMap(new Func1<Integer, Observable<String>>() {
 
             @Override
             public Observable<String> call(Integer id) {
@@ -143,7 +143,7 @@ public class OperationMapTest {
                 }));
             }
 
-        }));
+        });
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -166,7 +166,7 @@ public class OperationMapTest {
 
         Observable<Observable<Map<String, String>>> observable = Observable.from(observable1, observable2);
 
-        Observable<String> m = Observable.create(mapMany(observable, new Func1<Observable<Map<String, String>>, Observable<String>>() {
+        Observable<String> m = observable.flatMap(new Func1<Observable<Map<String, String>>, Observable<String>>() {
 
             @Override
             public Observable<String> call(Observable<Map<String, String>> o) {
@@ -179,7 +179,7 @@ public class OperationMapTest {
                 }));
             }
 
-        }));
+        });
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));

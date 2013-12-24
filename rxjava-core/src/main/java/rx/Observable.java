@@ -3653,7 +3653,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava Wiki: zip()</a>
      */
     public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction) {
-        return ws.toList().mapMany(new Func1<List<? extends Observable<?>>, Observable<? extends R>>() {
+        return ws.toList().mergeMap(new Func1<List<? extends Observable<?>>, Observable<? extends R>>() {
             @Override
             public Observable<R> call(List<? extends Observable<?>> wsList) {
                 return create(OperationZip.zip(wsList, zipFunction));
@@ -3891,7 +3891,64 @@ public class Observable<T> {
      * @see #mapMany(Func1)
      */
     public <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
-        return mapMany(func);
+        return mergeMap(func);
+    }
+    
+    /**
+     * Creates a new Observable by applying a function that you supply to each
+     * item emitted by the source Observable, where that function returns an
+     * Observable, and then merging those resulting Observables and emitting the
+     * results of this merger.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/flatMap.png">
+     * <p>
+     * Note: {@code mapMany} and {@code flatMap} are equivalent.
+     * 
+     * @param func a function that, when applied to an item emitted by the
+     *             source Observable, returns an Observable
+     * @return an Observable that emits the result of applying the
+     *         transformation function to each item emitted by the source
+     *         Observable and merging the results of the Observables obtained
+     *         from this transformation.
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mapmany-or-flatmap-and-mapmanydelayerror">RxJava Wiki: flatMap()</a>
+     * @see #flatMap(Func1)
+     */
+    public <R> Observable<R> mergeMap(Func1<? super T, ? extends Observable<? extends R>> func) {
+        return merge(map(func));
+    }
+    
+    /**
+     * Creates a new Observable by applying a function that you supply to each
+     * item emitted by the source Observable, where that function returns an
+     * Observable, and then concatting those resulting Observables and emitting the
+     * results of this concat.
+     * <p>
+     * 
+     * @param func a function that, when applied to an item emitted by the
+     *             source Observable, returns an Observable
+     * @return an Observable that emits the result of applying the
+     *         transformation function to each item emitted by the source
+     *         Observable and concatting the results of the Observables obtained
+     *         from this transformation.
+     */
+    public <R> Observable<R> concatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
+        return concat(map(func));
+    }
+    
+    /**
+     * Creates a new Observable by applying a function that you supply to each
+     * item emitted by the source Observable resulting in an Observable of Observables.
+     * <p>
+     * Then a {@link #switchLatest(Observable)} / {@link #switchOnNext(Observable)} is applied.
+     * 
+     * @param func a function that, when applied to an item emitted by the
+     *             source Observable, returns an Observable
+     * @return an Observable that emits the result of applying the
+     *         transformation function to each item emitted by the source
+     *         Observable and then switch
+     */
+    public <R> Observable<R> switchMap(Func1<? super T, ? extends Observable<? extends R>> func) {
+        return switchOnNext(map(func));
     }
 
     /**
@@ -3965,9 +4022,10 @@ public class Observable<T> {
      *         from this transformation.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mapmany-or-flatmap-and-mapmanydelayerror">RxJava Wiki: mapMany()</a>
      * @see #flatMap(Func1)
+     * @deprecated
      */
     public <R> Observable<R> mapMany(Func1<? super T, ? extends Observable<? extends R>> func) {
-        return create(OperationMap.mapMany(this, func));
+        return mergeMap(func);
     }
 
     /**
