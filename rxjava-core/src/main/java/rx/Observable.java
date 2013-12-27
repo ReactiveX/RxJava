@@ -2280,6 +2280,21 @@ public class Observable<T> {
     public static Observable<Long> timer(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
         return create(new OperationTimer.TimerPeriodically(initialDelay, period, unit, scheduler));
     }
+    
+    /**
+     * Return an Observable which concatenates the observable sequences obtained by running the
+     * resultSelector for each element in the given Iterable source.
+     * @param <T> the Iterable sequence value type
+     * @param <R> the result type
+     * @param source the source iterable
+     * @param resultSelector the selector function that returns an Observable
+     *                       sequence for each value of the {@code source} iterable sequence
+     * @return an Observable which concatenates the observable sequences obtained by running the
+     * resultSelector for each element in the given Iterable source.
+     */
+    public static <T, R> Observable<R> forIterable(Iterable<? extends T> source, Func1<? super T, ? extends Observable<? extends R>> resultSelector) {
+        return create(OperationConcat.forIterable(source, resultSelector));
+    }
 
     /**
      * Returns an Observable that emits the items emitted by the source
