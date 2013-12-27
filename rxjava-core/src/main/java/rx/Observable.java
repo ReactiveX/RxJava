@@ -5327,7 +5327,7 @@ public class Observable<T> {
     public <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator) {
         return create(OperationScan.scan(this, initialValue, accumulator)).takeLast(1);
     }
-
+    
     /**
      * Synonymous with <code>reduce()</code>.
      * <p>
@@ -5341,49 +5341,6 @@ public class Observable<T> {
         return reduce(initialValue, accumulator);
     }
     
-    /**
-     * Create an Observable that aggregates the source values with the given accumulator
-     * function and projects the final result via the resultselector.
-     * <p>
-     * Works like the {@link #aggregate(java.lang.Object, rx.util.functions.Func2)} projected
-     * with {@link #map(rx.util.functions.Func1)} without the overhead of some helper
-     * operators.
-     * @param <U> the intermediate (accumulator) type
-     * @param <V> the result type
-     * @param seed the initial value of the accumulator
-     * @param accumulator the function that takes the current accumulator value,
-     *                    the current emitted value and returns a (new) accumulated value.
-     * @param resultSelector the selector to project the final value of the accumulator
-     * @return an Observable that aggregates the source values with the given accumulator
-     *         function and projects the final result via the resultselector
-     */
-    public <U, V> Observable<V> aggregate(
-            U seed, Func2<U, ? super T, U> accumulator, 
-            Func1<? super U, ? extends V> resultSelector) {
-        return create(new OperationAggregate.AggregateSelector<T, U, V>(this, seed, accumulator, resultSelector));
-    }
-    
-    /**
-     * Create an Observable that aggregates the source values with the given indexed accumulator
-     * function and projects the final result via the indexed resultselector.
-     * 
-     * @param <U> the intermediate (accumulator) type
-     * @param <V> the result type
-     * @param seed the initial value of the accumulator
-     * @param accumulator the function that takes the current accumulator value,
-     *                    the current emitted value and returns a (new) accumulated value.
-     * @param resultSelector the selector to project the final value of the accumulator, where
-     *                       the second argument is the total number of elements accumulated
-     * @return an Observable that aggregates the source values with the given indexed accumulator
-     * function and projects the final result via the indexed resultselector.
-     */
-    public <U, V> Observable<V> aggregateIndexed(
-            U seed, Func3<U, ? super T, ? super Integer, U> accumulator,
-        Func2<? super U, ? super Integer, ? extends V> resultSelector
-    ) {
-        return create(new OperationAggregate.AggregateIndexedSelector<T, U, V>(this, seed, accumulator, resultSelector));
-    }
-
     /**
      * Returns an Observable that applies a function of your choosing to the
      * first item emitted by a source Observable, then feeds the result of that

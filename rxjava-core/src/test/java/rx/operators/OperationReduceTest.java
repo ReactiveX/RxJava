@@ -45,41 +45,13 @@ public class OperationAggregateTest {
     @Test
     public void testAggregateAsIntSum() {
         
-        Observable<Integer> result = Observable.from(1, 2, 3, 4, 5).aggregate(0, sum, Functions.<Integer>identity());
+        Observable<Integer> result = Observable.from(1, 2, 3, 4, 5).reduce(0, sum).map(Functions.<Integer>identity());
         
         result.subscribe(observer);
         
         verify(observer).onNext(1 + 2 + 3 + 4 + 5);
         verify(observer).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
-        
-    }
-    
-    @Test
-    public void testAggregateIndexedAsAverage() {
-        Func3<Integer, Integer, Integer, Integer> sumIndex = new Func3<Integer, Integer, Integer, Integer>() {
-            @Override
-            public Integer call(Integer acc, Integer value, Integer index) {
-                return acc + (index + 1) + value;
-            }
-        };
-        Func2<Integer, Integer, Integer> selectIndex = new Func2<Integer, Integer, Integer>() {
-            @Override
-            public Integer call(Integer t1, Integer count) {
-                return t1 + count;
-            }
-            
-        };
-        
-        Observable<Integer> result = Observable.from(1, 2, 3, 4, 5)
-            .aggregateIndexed(0, sumIndex, selectIndex);
-        
-        result.subscribe(observer);
-        
-        verify(observer).onNext(2 + 4 + 6 + 8 + 10 + 5);
-        verify(observer).onCompleted();
-        verify(observer, never()).onError(any(Throwable.class));
-        
     }
     
     static class CustomException extends RuntimeException { }
@@ -88,7 +60,7 @@ public class OperationAggregateTest {
     public void testAggregateAsIntSumSourceThrows() {
         Observable<Integer> result = Observable.concat(Observable.from(1, 2, 3, 4, 5),
             Observable.<Integer>error(new CustomException()))
-            .aggregate(0, sum, Functions.<Integer>identity());
+            .reduce(0, sum).map(Functions.<Integer>identity());
         
         result.subscribe(observer);
         
@@ -107,7 +79,7 @@ public class OperationAggregateTest {
         };
         
         Observable<Integer> result = Observable.from(1, 2, 3, 4, 5)
-            .aggregate(0, sumErr, Functions.<Integer>identity());
+            .reduce(0, sumErr).map(Functions.<Integer>identity());
         
         result.subscribe(observer);
         
@@ -128,7 +100,7 @@ public class OperationAggregateTest {
         };
         
         Observable<Integer> result = Observable.from(1, 2, 3, 4, 5)
-            .aggregate(0, sum, error);
+            .reduce(0, sum).map(error);
         
         result.subscribe(observer);
         
