@@ -4405,6 +4405,54 @@ public class Observable<T> {
         return OperationSum.sumDoubles(source);
     }
 
+        /**
+     * Create an Observable that extracts integer values from this Observable via
+     * the provided function and computes the integer sum of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an integer from this Observable
+     * @return an Observable that extracts integer values from this Observable via
+     * the provided function and computes the integer sum of the value sequence.
+     */
+    public Observable<Integer> sumInteger(Func1<? super T, Integer> valueExtractor) {
+        return create(new OperationSum.SumIntegerExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts long values from this Observable via
+     * the provided function and computes the long sum of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an long from this Observable
+     * @return an Observable that extracts long values from this Observable via
+     * the provided function and computes the long sum of the value sequence.
+     */
+    public Observable<Long> sumLong(Func1<? super T, Long> valueExtractor) {
+        return create(new OperationSum.SumLongExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts float values from this Observable via
+     * the provided function and computes the float sum of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an float from this Observable
+     * @return an Observable that extracts float values from this Observable via
+     * the provided function and computes the float sum of the value sequence.
+     */
+    public Observable<Float> sumFloat(Func1<? super T, Float> valueExtractor) {
+        return create(new OperationSum.SumFloatExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts double values from this Observable via
+     * the provided function and computes the double sum of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an double from this Observable
+     * @return an Observable that extracts double values from this Observable via
+     * the provided function and computes the double sum of the value sequence.
+     */
+    public Observable<Double> sumDouble(Func1<? super T, Double> valueExtractor) {
+        return create(new OperationSum.SumDoubleExtractor<T>(this, valueExtractor));
+    }
+    
     /**
      * Returns an Observable that computes the average of the Integers emitted
      * by the source Observable.
@@ -4468,6 +4516,54 @@ public class Observable<T> {
      */
     public static Observable<Double> averageDoubles(Observable<Double> source) {
         return OperationAverage.averageDoubles(source);
+    }
+
+    /**
+     * Create an Observable that extracts integer values from this Observable via
+     * the provided function and computes the integer average of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an integer from this Observable
+     * @return an Observable that extracts integer values from this Observable via
+     * the provided function and computes the integer average of the value sequence.
+     */
+    public Observable<Integer> averageInteger(Func1<? super T, Integer> valueExtractor) {
+        return create(new OperationAverage.AverageIntegerExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts long values from this Observable via
+     * the provided function and computes the long average of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an long from this Observable
+     * @return an Observable that extracts long values from this Observable via
+     * the provided function and computes the long average of the value sequence.
+     */
+    public Observable<Long> averageLong(Func1<? super T, Long> valueExtractor) {
+        return create(new OperationAverage.AverageLongExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts float values from this Observable via
+     * the provided function and computes the float average of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an float from this Observable
+     * @return an Observable that extracts float values from this Observable via
+     * the provided function and computes the float average of the value sequence.
+     */
+    public Observable<Float> averageFloat(Func1<? super T, Float> valueExtractor) {
+        return create(new OperationAverage.AverageFloatExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts double values from this Observable via
+     * the provided function and computes the double average of the value sequence.
+     * 
+     * @param valueExtractor the function to extract an double from this Observable
+     * @return an Observable that extracts double values from this Observable via
+     * the provided function and computes the double average of the value sequence.
+     */
+    public Observable<Double> averageDouble(Func1<? super T, Double> valueExtractor) {
+        return create(new OperationAverage.AverageDoubleExtractor<T>(this, valueExtractor));
     }
 
     /**
@@ -5230,7 +5326,7 @@ public class Observable<T> {
     public <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator) {
         return create(OperationScan.scan(this, initialValue, accumulator)).takeLast(1);
     }
-
+    
     /**
      * Synonymous with <code>reduce()</code>.
      * <p>
@@ -5243,7 +5339,7 @@ public class Observable<T> {
     public <R> Observable<R> aggregate(R initialValue, Func2<R, ? super T, R> accumulator) {
         return reduce(initialValue, accumulator);
     }
-
+    
     /**
      * Returns an Observable that applies a function of your choosing to the
      * first item emitted by a source Observable, then feeds the result of that
