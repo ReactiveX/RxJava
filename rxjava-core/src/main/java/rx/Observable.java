@@ -73,6 +73,7 @@ import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallel;
 import rx.operators.OperationParallelMerge;
+import rx.operators.OperationRepeat;
 import rx.operators.OperationReplay;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
@@ -1095,6 +1096,28 @@ public class Observable<T> {
      */
     public static Observable<Integer> range(int start, int count, Scheduler scheduler) {
         return from(Range.createWithCount(start, count), scheduler);
+    }
+
+    /**
+     * Repeats the observable sequence indefinitely.
+     * <p>
+     *
+     * @return The observable sequence producing the elements of the given sequence repeatedly and sequentially.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428(v=vs.103).aspx">MSDN: Observable.Repeat</a>
+     */
+    public Observable<T> repeat() {
+        return this.repeat(Schedulers.currentThread());
+    }
+
+    /**
+     * Repeats the observable sequence indefinitely.
+     * <p>
+     * @param scheduler the scheduler to send the values on.
+     * @return The observable sequence producing the elements of the given sequence repeatedly and sequentially.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428(v=vs.103).aspx">MSDN: Observable.Repeat</a>
+     */
+    public Observable<T> repeat(Scheduler scheduler) {
+        return create(OperationRepeat.repeat(this, scheduler));
     }
 
     /**
