@@ -15,6 +15,7 @@
  */
 package rx;
 
+import static org.junit.Assert.*;
 import static rx.util.functions.Functions.*;
 
 import java.util.ArrayList;
@@ -123,6 +124,7 @@ import rx.util.TimeInterval;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
+import rx.util.functions.Action2;
 import rx.util.functions.Async;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
@@ -5348,6 +5350,29 @@ public class Observable<T> {
      */
     public <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator) {
         return create(OperationScan.scan(this, initialValue, accumulator)).takeLast(1);
+    }
+    
+    /**
+     * Collect values into a single mutable data structure.
+     * <p>
+     * A simplified version of `reduce` that does not need to return the state on each pass.
+     * <p>
+     * 
+     * @param state
+     * @param collector
+     * @return
+     */
+    public <R> Observable<R> collect(R state, final Action2<R, ? super T> collector) {
+        Func2<R, T, R> accumulator = new Func2<R, T, R>() {
+
+            @Override
+            public R call(R state, T value) {
+                collector.call(state, value);
+                return state;
+            }
+
+        };
+        return reduce(state, accumulator);
     }
     
     /**
