@@ -269,7 +269,7 @@ public class OperationSumTest {
         Func1<String, Integer> length = new Func1<String, Integer>() {
             @Override
             public Integer call(String t1) {
-                throw new OperationAggregateTest.CustomException();
+                throw new OperationReduceTest.CustomException();
             }
         };
         
@@ -277,7 +277,7 @@ public class OperationSumTest {
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
         
-        testThrows(o, OperationAggregateTest.CustomException.class);
+        testThrows(o, OperationReduceTest.CustomException.class);
     }
     @Test
     public void testLongSumSelectorThrows() {
@@ -285,7 +285,7 @@ public class OperationSumTest {
         Func1<String, Long> length = new Func1<String, Long>() {
             @Override
             public Long call(String t1) {
-                throw new OperationAggregateTest.CustomException();
+                throw new OperationReduceTest.CustomException();
             }
         };
         
@@ -293,7 +293,7 @@ public class OperationSumTest {
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
         
-        testThrows(o, OperationAggregateTest.CustomException.class);
+        testThrows(o, OperationReduceTest.CustomException.class);
     }
     @Test
     public void testFloatSumSelectorThrows() {
@@ -301,7 +301,7 @@ public class OperationSumTest {
         Func1<String, Float> length = new Func1<String, Float>() {
             @Override
             public Float call(String t1) {
-                throw new OperationAggregateTest.CustomException();
+                throw new OperationReduceTest.CustomException();
             }
         };
         
@@ -309,7 +309,7 @@ public class OperationSumTest {
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
         
-        testThrows(o, OperationAggregateTest.CustomException.class);
+        testThrows(o, OperationReduceTest.CustomException.class);
     }
     @Test
     public void testDoubleSumSelectorThrows() {
@@ -317,7 +317,7 @@ public class OperationSumTest {
         Func1<String, Double> length = new Func1<String, Double>() {
             @Override
             public Double call(String t1) {
-                throw new OperationAggregateTest.CustomException();
+                throw new OperationReduceTest.CustomException();
             }
         };
         
@@ -325,6 +325,6 @@ public class OperationSumTest {
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
         
-        testThrows(o, OperationAggregateTest.CustomException.class);
+        testThrows(o, OperationReduceTest.CustomException.class);
     }
 }

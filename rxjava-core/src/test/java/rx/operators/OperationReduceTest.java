@@ -16,19 +16,21 @@
 
 package rx.operators;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.*;
+
 import rx.Observable;
 import rx.Observer;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
-import rx.util.functions.Func3;
 import rx.util.functions.Functions;
 
-public class OperationAggregateTest {
+public class OperationReduceTest {
     @Mock
     Observer<Object> observer;
     @Before

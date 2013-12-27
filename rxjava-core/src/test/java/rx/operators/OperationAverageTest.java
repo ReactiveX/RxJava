@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.operators.OperationAggregateTest.CustomException;
+import rx.operators.OperationReduceTest.CustomException;
 import rx.util.functions.Func1;
 
 public class OperationAverageTest {
