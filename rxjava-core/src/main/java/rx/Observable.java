@@ -122,7 +122,6 @@ import rx.util.TimeInterval;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
-import rx.util.functions.Async;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -7385,47 +7384,6 @@ public class Observable<T> {
      */
     public <TKey, TValue, TDuration> Observable<GroupedObservable<TKey, TValue>> groupByUntil(Func1<? super T, ? extends TKey> keySelector, Func1<? super T, ? extends TValue> valueSelector, Func1<? super GroupedObservable<TKey, TValue>, ? extends Observable<TDuration>> durationSelector) {
         return create(new OperationGroupByUntil<T, TKey, TValue, TDuration>(this, keySelector, valueSelector, durationSelector));
-    }
-
-    /**
-     * Invokes the specified function asynchronously and returns an Observable
-     * that emits the result.
-     * <p>
-     * Note: The function is called immediately and once, not whenever an
-     * observer subscribes to the resulting Observable. Multiple subscriptions
-     * to this Observable observe the same return value.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/start.png">
-     * 
-     * @param func function to run asynchronously
-     * @return an Observable that emits the function's result value, or notifies
-     *         observers of an exception
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#start">RxJava Wiki: start()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229036.aspx">MSDN: Observable.Start</a>
-     */
-    public static <T> Observable<T> start(Func0<T> func) {
-        return Async.toAsync(func).call();
-    }
-
-    /**
-     * Invokes the specified function asynchronously on the specified scheduler
-     * and returns an Observable that emits the result.
-     * <p>
-     * Note: The function is called immediately and once, not whenever an
-     * observer subscribes to the resulting Observable. Multiple subscriptions
-     * to this Observable observe the same return value.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/start.s.png">
-     * 
-     * @param func function to run asynchronously
-     * @param scheduler scheduler to run the function on
-     * @return an Observable that emits the function's result value, or notifies
-     *         observers of an exception
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#start">RxJava Wiki: start()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211721.aspx">MSDN: Observable.Start</a>
-     */
-    public static <T> Observable<T> start(Func0<T> func, Scheduler scheduler) {
-        return Async.toAsync(func, scheduler).call();
     }
 
 }
