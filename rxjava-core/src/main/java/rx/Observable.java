@@ -648,7 +648,7 @@ public class Observable<T> {
      *         immediately invokes the {@link Observer}'s
      *         {@link Observer#onCompleted() onCompleted} method
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava Wiki: empty()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229670.aspx">MSDN: Observable.Empty Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229670.aspx">MSDN: Observable.Empty</a>
      */
     public static <T> Observable<T> empty() {
         return from(new ArrayList<T>());
@@ -688,7 +688,7 @@ public class Observable<T> {
      *         {@link Observer#onError onError} method when the Observer
      *         subscribes to it
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava Wiki: error()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244299.aspx">MSDN: Observable.Throw Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244299.aspx">MSDN: Observable.Throw</a>
      */
     public static <T> Observable<T> error(Throwable exception) {
         return new ThrowObservable<T>(exception);
@@ -708,7 +708,7 @@ public class Observable<T> {
      *         {@link Observer#onError onError} method with the specified
      *         scheduler
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava Wiki: error()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211711.aspx">MSDN: Observable.Throw Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211711.aspx">MSDN: Observable.Throw</a>
      */
     public static <T> Observable<T> error(Throwable exception, Scheduler scheduler) {
         return Observable.<T> error(exception).subscribeOn(scheduler);
@@ -1065,7 +1065,7 @@ public class Observable<T> {
      * @param count the number of sequential Integers to generate
      * @return an Observable that emits a range of sequential Integers
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#range">RxJava Wiki: range()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229460.aspx">Observable.Range Method (Int32, Int32)</a>
+     * @see MSDN: <a href="http://msdn.microsoft.com/en-us/library/hh229460.aspx">Observable.Range Method (Int32, Int32)</a>
      */
     public static Observable<Integer> range(int start, int count) {
         return from(Range.createWithCount(start, count));
@@ -1082,7 +1082,7 @@ public class Observable<T> {
      * @param scheduler the scheduler to run the generator loop on
      * @return an Observable that emits a range of sequential Integers
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#range">RxJava Wiki: range()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211896.aspx">Observable.Range Method (Int32, Int32, IScheduler)</a>
+     * @see MSDN: <a href="http://msdn.microsoft.com/en-us/library/hh211896.aspx">Observable.Range Method (Int32, Int32, IScheduler)</a>
      */
     public static Observable<Integer> range(int start, int count, Scheduler scheduler) {
         return from(Range.createWithCount(start, count), scheduler);
@@ -1168,7 +1168,7 @@ public class Observable<T> {
      *         the items emitted by the Observables emitted by the
      *         {@code source} Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava Wiki: merge()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
         return create(OperationMerge.merge(source));
@@ -1188,7 +1188,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava Wiki: merge()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1211,7 +1211,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava Wiki: merge()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1235,7 +1235,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava Wiki: merge()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1260,7 +1260,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava Wiki: merge()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1286,7 +1286,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava Wiki: merge()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1313,7 +1313,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava Wiki: merge()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1341,7 +1341,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava Wiki: merge()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1370,7 +1370,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava Wiki: merge()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1388,8 +1388,8 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of combining
      *         the items emitted by the {@code source} Observables, one after
      *         the other
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#concat">RxJava Wiki: concat()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat Method</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#concat">RxJava Wiki: concat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     public static <T> Observable<T> concat(Observable<? extends Observable<? extends T>> observables) {
         return create(OperationConcat.concat(observables));
@@ -1406,8 +1406,8 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of combining
      *         the items emitted by the {@code source} Observables, one after
      *         the other
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#concat">RxJava Wiki: concat()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat Method</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#concat">RxJava Wiki: concat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1427,8 +1427,8 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of combining
      *         the items emitted by the {@code source} Observables, one after
      *         the other
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#concat">RxJava Wiki: concat()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat Method</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#concat">RxJava Wiki: concat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1449,8 +1449,8 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of combining
      *         the items emitted by the {@code source} Observables, one after
      *         the other
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#concat">RxJava Wiki: concat()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat Method</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#concat">RxJava Wiki: concat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1472,8 +1472,8 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of combining
      *         the items emitted by the {@code source} Observables, one after
      *         the other
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#concat">RxJava Wiki: concat()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat Method</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#concat">RxJava Wiki: concat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1496,8 +1496,8 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of combining
      *         the items emitted by the {@code source} Observables, one after
      *         the other
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#concat">RxJava Wiki: concat()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat Method</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#concat">RxJava Wiki: concat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1521,8 +1521,8 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of combining
      *         the items emitted by the {@code source} Observables, one after
      *         the other
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#concat">RxJava Wiki: concat()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat Method</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#concat">RxJava Wiki: concat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1547,8 +1547,8 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of combining
      *         the items emitted by the {@code source} Observables, one after
      *         the other
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#concat">RxJava Wiki: concat()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat Method</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#concat">RxJava Wiki: concat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1574,8 +1574,8 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of combining
      *         the items emitted by the {@code source} Observables, one after
      *         the other
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#concat">RxJava Wiki: concat()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat Method</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#concat">RxJava Wiki: concat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1605,7 +1605,7 @@ public class Observable<T> {
      *         the items emitted by the Observables emitted by the
      *         {@code source} Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#mergedelayerror">RxJava Wiki: mergeDelayError()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source) {
         return create(OperationMergeDelayError.mergeDelayError(source));
@@ -1633,7 +1633,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#mergedelayerror">RxJava Wiki: mergeDelayError()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1664,7 +1664,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#mergedelayerror">RxJava Wiki: mergeDelayError()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1697,7 +1697,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#mergedelayerror">RxJava Wiki: mergeDelayError()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1730,7 +1730,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#mergedelayerror">RxJava Wiki: mergeDelayError()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1764,7 +1764,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#mergedelayerror">RxJava Wiki: mergeDelayError()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1799,7 +1799,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#mergedelayerror">RxJava Wiki: mergeDelayError()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1835,7 +1835,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#mergedelayerror">RxJava Wiki: mergeDelayError()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -1872,7 +1872,7 @@ public class Observable<T> {
      * @return an Observable that emits items that are the result of flattening
      *         the items emitted by the {@code source} Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#mergedelayerror">RxJava Wiki: mergeDelayError()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
@@ -3911,7 +3911,7 @@ public class Observable<T> {
      * @return an Observable that emits the same items as the source Observable,
      *         then invokes the {@link Action0}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#finallydo">RxJava Wiki: finallyDo()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133.aspx">MSDN: Observable.Finally Method</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133.aspx">MSDN: Observable.Finally</a>
      */
     public Observable<T> finallyDo(Action0 action) {
         return create(OperationFinally.finallyDo(this, action));
@@ -4298,7 +4298,7 @@ public class Observable<T> {
      * @return an Observable that emits a single item that is the result of
      *         accumulating the output from the source Observable
      * @throws IllegalArgumentException if the source Observable emits no items
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#reduce-or-aggregate">RxJava Wiki: reduce()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#reduce">RxJava Wiki: reduce()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154.aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
@@ -4319,7 +4319,7 @@ public class Observable<T> {
      * 
      * @return an Observable that emits the number of elements emitted by the
      *         source Observable as its single item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#count-and-longcount">RxJava Wiki: count()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#count-and-longcount">RxJava Wiki: count()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229470.aspx">MSDN: Observable.Count</a>
      * @see #longCount()
      */
@@ -4341,7 +4341,7 @@ public class Observable<T> {
      * @param source source Observable to compute the sum of
      * @return an Observable that emits the sum of all the Integers emitted by
      *         the source Observable as its single item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#sum">RxJava Wiki: sum()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sum()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public static Observable<Integer> sum(Observable<Integer> source) {
@@ -4357,7 +4357,7 @@ public class Observable<T> {
      * @param source source Observable to compute the sum of
      * @return an Observable that emits the sum of all the Longs emitted by the
      *         source Observable as its single item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#sum">RxJava Wiki: sumLongs()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumLongs()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public static Observable<Long> sumLongs(Observable<Long> source) {
@@ -4373,7 +4373,7 @@ public class Observable<T> {
      * @param source source Observable to compute the sum of
      * @return an Observable that emits the sum of all the Floats emitted by the
      *         source Observable as its single item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#sum">RxJava Wiki: sumFloats()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumFloats()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public static Observable<Float> sumFloats(Observable<Float> source) {
@@ -4389,7 +4389,7 @@ public class Observable<T> {
      * @param source source Observable to compute the sum of
      * @return an Observable that emits the sum of all the Doubles emitted by
      *         the source Observable as its single item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#sum">RxJava Wiki: sumDoubles()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumDoubles()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public static Observable<Double> sumDoubles(Observable<Double> source) {
@@ -4406,7 +4406,7 @@ public class Observable<T> {
      * @return an Observable that emits the average of all the Integers emitted
      *         by the source Observable as its single item
      * @throws IllegalArgumentException if the source Observable emits no items
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#average">RxJava Wiki: average()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: average()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public static Observable<Integer> average(Observable<Integer> source) {
@@ -4422,7 +4422,7 @@ public class Observable<T> {
      * @param source source Observable to compute the average of
      * @return an Observable that emits the average of all the Longs emitted by
      *         the source Observable as its single item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#average">RxJava Wiki: averageLongs()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageLongs()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public static Observable<Long> averageLongs(Observable<Long> source) {
@@ -4438,7 +4438,7 @@ public class Observable<T> {
      * @param source source Observable to compute the average of
      * @return an Observable that emits the average of all the Floats emitted by
      *         the source Observable as its single item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#average">RxJava Wiki: averageFloats()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageFloats()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public static Observable<Float> averageFloats(Observable<Float> source) {
@@ -4454,7 +4454,7 @@ public class Observable<T> {
      * @param source source Observable to compute the average of
      * @return an Observable that emits the average of all the Doubles emitted
      *         by the source Observable as its single item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#average">RxJava Wiki: averageDoubles()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageDoubles()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public static Observable<Double> averageDoubles(Observable<Double> source) {
@@ -4489,7 +4489,7 @@ public class Observable<T> {
      * @return an Observable that emits the minimum item according to the
      *         specified comparator
      * @throws IllegalArgumentException if the source is empty
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#min">RxJava Wiki: min()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#min">RxJava Wiki: min()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229095.aspx">MSDN: Observable.Min</a>
      */
     public Observable<T> min(Comparator<? super T> comparator) {
@@ -4506,7 +4506,7 @@ public class Observable<T> {
      * @param selector the key selector function
      * @return an Observable that emits a List of the items from the source
      *         Observable that had the minimum key value
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#minby">RxJava Wiki: minBy()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#minby">RxJava Wiki: minBy()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228970.aspx">MSDN: Observable.MinBy</a>
      */
     public <R extends Comparable<? super R>> Observable<List<T>> minBy(Func1<T, R> selector) {
@@ -4526,7 +4526,7 @@ public class Observable<T> {
      * @return an Observable that emits a List of the items emitted by the
      *         source Observable that had the minimum key value according to the
      *         specified comparator
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#minby">RxJava Wiki: minBy()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#minby">RxJava Wiki: minBy()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228970.aspx">MSDN: Observable.MinBy</a>
      */
     public <R> Observable<List<T>> minBy(Func1<T, R> selector, Comparator<? super R> comparator) {
@@ -4543,7 +4543,7 @@ public class Observable<T> {
      * @param source an Observable to scan for the maximum emitted item
      * @return an Observable that emits this maximum item from the source
      * @throws IllegalArgumentException if the source is empty
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#max">RxJava Wiki: max()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#max">RxJava Wiki: max()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211837.aspx">MSDN: Observable.Max</a>
      */
     public static <T extends Comparable<? super T>> Observable<T> max(Observable<T> source) {
@@ -4561,7 +4561,7 @@ public class Observable<T> {
      * @return an Observable that emits the maximum item emitted by the source
      *         Observable, according to the specified comparator
      * @throws IllegalArgumentException if the source is empty
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#max">RxJava Wiki: max()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#max">RxJava Wiki: max()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211635.aspx">MSDN: Observable.Max</a>
      */
     public Observable<T> max(Comparator<? super T> comparator) {
@@ -4578,7 +4578,7 @@ public class Observable<T> {
      * @param selector the key selector function
      * @return an Observable that emits a List of those items emitted by the
      *         source Observable that had the maximum key value
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#maxby">RxJava Wiki: maxBy()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#maxby">RxJava Wiki: maxBy()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229058.aspx">MSDN: Observable.MaxBy</a>
      */
     public <R extends Comparable<? super R>> Observable<List<T>> maxBy(Func1<T, R> selector) {
@@ -4598,7 +4598,7 @@ public class Observable<T> {
      * @return an Observable that emits a List of those items emitted by the
      *         source Observable that had the maximum key value according to the
      *         specified comparator
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#maxby">RxJava Wiki: maxBy()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#maxby">RxJava Wiki: maxBy()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244330.aspx">MSDN: Observable.MaxBy</a>
      */
     public <R> Observable<List<T>> maxBy(Func1<T, R> selector, Comparator<? super R> comparator) {
@@ -5184,7 +5184,7 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/aggregate.png">
      *
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#reduce-or-aggregate">RxJava Wiki: aggregate()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#reduce">RxJava Wiki: reduce()</a>
      * @see #reduce(Func2)
      * @deprecated use #reduce(Func2)
      */
@@ -5214,7 +5214,7 @@ public class Observable<T> {
      * @return an Observable that emits a single item that is the result of
      *         accumulating the output from the items emitted by the source
      *         Observable
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#reduce-or-aggregate">RxJava Wiki: reduce()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#reduce">RxJava Wiki: reduce()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229154.aspx">MSDN: Observable.Aggregate</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
@@ -5227,7 +5227,7 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/aggregateSeed.png">
      * 
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#reduce-or-aggregate">RxJava Wiki: aggregate()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#reduce">RxJava Wiki: reduce()</a>
      * @see #reduce(Object, Func2)
      * @deprecated use #reduce(Object, Func2)
      */
@@ -5382,6 +5382,8 @@ public class Observable<T> {
      *         Observable that matches the predicate
      * @throws IllegalArgumentException if the source emits more than one item
      *                                  or no items
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#single-and-singleordefault">RxJava Wiki: single()</a>
+     * @see MSDN: <code>Observable.singleAsync()</code>
      */
     public Observable<T> single() {
         return create(OperationSingle.<T> single(this));
@@ -5402,6 +5404,8 @@ public class Observable<T> {
      * @throws IllegalArgumentException if the source Observable emits more than
      *                                  one item or no items matching the
      *                                  predicate
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#single-and-singleordefault">RxJava Wiki: single()</a>
+     * @see MSDN: <code>Observable.singleAsync()</code>
      */
     public Observable<T> single(Func1<? super T, Boolean> predicate) {
         return filter(predicate).single();
@@ -5420,6 +5424,8 @@ public class Observable<T> {
      * @return an Observable that emits the single item emitted by the source
      *         Observable, or default value if the source Observable is empty
      * @throws IllegalArgumentException if the source emits more than one item
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#single-and-singleordefault">RxJava Wiki: single()</a>
+     * @see MSDN: <code>Observable.singleOrDefaultAsync()</code>
      */
     public Observable<T> singleOrDefault(T defaultValue) {
         return create(OperationSingle.<T> singleOrDefault(this, defaultValue));
@@ -5443,6 +5449,8 @@ public class Observable<T> {
      *         emitted item matches the predicate
      * @throws IllegalArgumentException if the source emits more than one item
      *                                  matching the predicate
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#single-and-singleordefault">RxJava Wiki: single()</a>
+     * @see MSDN: <code>Observable.singleOrDefaultAsync()</code>
      */
     public Observable<T> singleOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return filter(predicate).singleOrDefault(defaultValue);
@@ -5458,6 +5466,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item from the
      *         source, or an <code>IllegalArgumentException</code> if the source {@link Observable} is empty.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first">RxJava Wiki: first()</a>
+     * @see MSDN: <code>Observable.firstAsync()</code>
      */
     public Observable<T> first() {
         return take(1).single();
@@ -5474,6 +5483,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item satisfying the
      *         given condition from the source, or an <code>IllegalArgumentException</code> if no such items are emitted.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first">RxJava Wiki: first()</a>
+     * @see MSDN: <code>Observable.firstAsync()</code>
      */
     public Observable<T> first(Func1<? super T, Boolean> predicate) {
         return takeFirst(predicate).single();
@@ -5491,7 +5501,7 @@ public class Observable<T> {
      *         source, or a default item if the source Observable completes
      *         without emitting a single item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#firstordefault">RxJava Wiki: firstOrDefault()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229320.aspx">MSDN: Observable.FirstOrDefault</a>
+     * @see MSDN: <code>Observable.firstOrDefaultAsync()</code>
      */
     public Observable<T> firstOrDefault(T defaultValue) {
         return take(1).singleOrDefault(defaultValue);
@@ -5510,7 +5520,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item from the source
      *         that satisfies the given condition, or a default item otherwise
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#firstordefault">RxJava Wiki: firstOrDefault()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229759.aspx">MSDN: Observable.FirstOrDefault</a>
+     * @see MSDN: <code>Observable.firstOrDefaultAsync()</code>
      */
     public Observable<T> firstOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return takeFirst(predicate).singleOrDefault(defaultValue);
@@ -5604,7 +5614,7 @@ public class Observable<T> {
      *         without emitting a single item
      * @deprecated Use <code>take(1)</code> directly.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first">RxJava Wiki: first()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
+     * @see MSDN: <code>Observable.firstAsync()</code>
      */
     @Deprecated
     public Observable<T> takeFirst() {
@@ -5623,7 +5633,7 @@ public class Observable<T> {
      *         source Observable completes without emitting a single matching
      *         item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first">RxJava Wiki: first()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
+     * @see MSDN: <code>Observable.firstAsync()</code>
      */
     public Observable<T> takeFirst(Func1<? super T, Boolean> predicate) {
         return filter(predicate).take(1);
@@ -5918,7 +5928,7 @@ public class Observable<T> {
      * 
      * @return an Observable that emits a single item: a List containing all of
      *         the items emitted by the source Observable.
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#tolist">RxJava Wiki: toList()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tolist">RxJava Wiki: toList()</a>
      */
     public Observable<List<T>> toList() {
         return create(OperationToObservableList.toObservableList(this));
@@ -5937,7 +5947,7 @@ public class Observable<T> {
      *                            all other items emitted by the Observable
      * @return an Observable that emits the items from the source Observable in
      *         sorted order
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#tosortedlist">RxJava Wiki: toSortedList()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tosortedlist">RxJava Wiki: toSortedList()</a>
      */
     public Observable<List<T>> toSortedList() {
         return create(OperationToObservableSortedList.toSortedList(this));
@@ -5954,7 +5964,7 @@ public class Observable<T> {
      *                     indicates their sort order
      * @return an Observable that emits the items from the source Observable in
      *         sorted order
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#tosortedlist">RxJava Wiki: toSortedList()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tosortedlist">RxJava Wiki: toSortedList()</a>
      */
     public Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) {
         return create(OperationToObservableSortedList.toSortedList(this, sortFunction));
@@ -6267,6 +6277,7 @@ public class Observable<T> {
      * @return an Observable that emits the last item from the source Observable
      *         or notifies observers of an error
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observable-Operators#last">RxJava Wiki: last()</a>
+     * @see MSDN: <code>Observable.lastAsync()</code>
      */
     public Observable<T> last() {
         return takeLast(1).single();
@@ -6284,6 +6295,8 @@ public class Observable<T> {
      *         condition from the source, or an IllegalArgumentException if no
      *         such items are emitted
      * @throws IllegalArgumentException if no such itmes are emmited
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observable-Operators#last">RxJava Wiki: last()</a>
+     * @see MSDN: <code>Observable.lastAsync()</code>
      */
     public Observable<T> last(Func1<? super T, Boolean> predicate) {
         return filter(predicate).takeLast(1).single();
@@ -6299,6 +6312,8 @@ public class Observable<T> {
      *                     empty
      * @return an Observable that emits only the last item from the source, or a
      *         default item if the source is empty
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#lastOrDefault">RxJava Wiki: lastOrDefault()</a>
+     * @see MSDN: <code>Observable.lastOrDefaultAsync()</code>
      */
     public Observable<T> lastOrDefault(T defaultValue) {
         return takeLast(1).singleOrDefault(defaultValue);
@@ -6316,6 +6331,8 @@ public class Observable<T> {
      * @param predicate the condition any source emitted item has to satisfy
      * @return an Observable that emits only the last item from the source that
      *         satisfies the given condition, or a default item otherwise
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#lastOrDefault">RxJava Wiki: lastOrDefault()</a>
+     * @see MSDN: <code>Observable.lastOrDefaultAsync()</code>
      */
     public Observable<T> lastOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return filter(predicate).takeLast(1).singleOrDefault(defaultValue);
@@ -6329,7 +6346,7 @@ public class Observable<T> {
      * 
      * @return an Observable that emits the number of items emitted by the
      *         source Observable as its single, 64-bit long item 
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-Operators#count-and-longcount">RxJava Wiki: count()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#count-and-longcount">RxJava Wiki: count()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229120.aspx">MSDN: Observable.LongCount</a>
      * @see #count()
      */
@@ -7173,7 +7190,7 @@ public class Observable<T> {
      *                    items to be used as keys in the HashMap
      * @return an Observable that emits a single HashMap containing the mapped
      *         items from the source Observable
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#tomap-and-tomultimap">RxJava Wiki: toMap()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tomap-and-tomultimap">RxJava Wiki: toMap()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229137.aspx">MSDN: Observable.ToDictionary</a>
      */
     public <K> Observable<Map<K, T>> toMap(Func1<? super T, ? extends K> keySelector) {
@@ -7195,7 +7212,7 @@ public class Observable<T> {
      *                      items to be used as value in the HashMap
      * @return an Observable that emits a single HashMap containing the mapped
      *         items from the source Observable
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#tomap-and-tomultimap">RxJava Wiki: toMap()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tomap-and-tomultimap">RxJava Wiki: toMap()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212075.aspx">MSDN: Observable.ToDictionary</a>
      */
     public <K, V> Observable<Map<K, V>> toMap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector) {
@@ -7216,7 +7233,7 @@ public class Observable<T> {
      * @param mapFactory the function that returns an Map instance to be used
      * @return an Observable that emits a single Map containing the mapped
      *         items emitted by the source Observable
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#tomap-and-tomultimap">RxJava Wiki: toMap()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tomap-and-tomultimap">RxJava Wiki: toMap()</a>
      */
     public <K, V> Observable<Map<K, V>> toMap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, V>> mapFactory) {
         return create(OperationToMap.toMap(this, keySelector, valueSelector, mapFactory));
@@ -7233,7 +7250,7 @@ public class Observable<T> {
      *                    items to be used as key in the HashMap
      * @return an Observable that emits a single HashMap containing an ArrayList
      *         of items mapped from the source Observable
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#tomap-and-tomultimap">RxJava Wiki: toMultiMap()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tomap-and-tomultimap">RxJava Wiki: toMap()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212098.aspx">MSDN: Observable.ToLookup</a>
      */
     public <K> Observable<Map<K, Collection<T>>> toMultimap(Func1<? super T, ? extends K> keySelector) {
@@ -7254,7 +7271,7 @@ public class Observable<T> {
      *                      items to be used as value in the Map
      * @return an Observable that emits a single HashMap containing an ArrayList
      *         of items mapped from the source Observable
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#tomap-and-tomultimap">RxJava Wiki: toMultiMap()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tomap-and-tomultimap">RxJava Wiki: toMap()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229101.aspx">MSDN: Observable.ToLookup</a>
      */
     public <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector) {
@@ -7276,7 +7293,7 @@ public class Observable<T> {
      * @param mapFactory the function that returns an Map instance to be used
      * @return an Observable that emits a single Map containing the list of
      *         mapped items from the source Observable.
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#tomap-and-tomultimap">RxJava Wiki: toMultiMap()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tomap-and-tomultimap">RxJava Wiki: toMap()</a>
      */
     public <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, Collection<V>>> mapFactory) {
         return create(OperationToMultimap.toMultimap(this, keySelector, valueSelector, mapFactory));
@@ -7299,7 +7316,7 @@ public class Observable<T> {
      *                          for a particular key to be used in the Map
      * @return an Observable that emits a single Map containing the collection
      *         of mapped items from the source Observable.
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#tomap-and-tomultimap">RxJava Wiki: toMultiMap()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tomap-and-tomultimap">RxJava Wiki: toMap()</a>
      */
     public <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, Collection<V>>> mapFactory, Func1<? super K, ? extends Collection<V>> collectionFactory) {
         return create(OperationToMultimap.toMultimap(this, keySelector, valueSelector, mapFactory, collectionFactory));
