@@ -15,6 +15,7 @@
  */
 package rx.operators;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.util.functions.Func2;
 
@@ -24,7 +25,8 @@ import rx.util.functions.Func2;
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN: Observable.Sum</a>
  */
 public final class OperationSum {
-    public static Observable<Integer> sum(Observable<Integer> source) {
+    public static Observable<Integer> sum(IObservable<Integer> isource) {
+        final Observable<Integer> source = Observable.from(isource);
         return source.reduce(0, new Func2<Integer, Integer, Integer>() {
             @Override
             public Integer call(Integer accu, Integer next) {
@@ -33,7 +35,8 @@ public final class OperationSum {
         });
     }
 
-    public static Observable<Long> sumLongs(Observable<Long> source) {
+    public static Observable<Long> sumLongs(IObservable<Long> isource) {
+        final Observable<Long> source = Observable.from(isource);
         return source.reduce(0L, new Func2<Long, Long, Long>() {
             @Override
             public Long call(Long accu, Long next) {
@@ -42,7 +45,8 @@ public final class OperationSum {
         });
     }
 
-    public static Observable<Float> sumFloats(Observable<Float> source) {
+    public static Observable<Float> sumFloats(IObservable<Float> isource) {
+        final Observable<Float> source = Observable.from(isource);
         return source.reduce(0.0f, new Func2<Float, Float, Float>() {
             @Override
             public Float call(Float accu, Float next) {
@@ -51,7 +55,8 @@ public final class OperationSum {
         });
     }
 
-    public static Observable<Double> sumDoubles(Observable<Double> source) {
+    public static Observable<Double> sumDoubles(IObservable<Double> isource) {
+        final Observable<Double> source = Observable.from(isource);
         return source.reduce(0.0d, new Func2<Double, Double, Double>() {
             @Override
             public Double call(Double accu, Double next) {

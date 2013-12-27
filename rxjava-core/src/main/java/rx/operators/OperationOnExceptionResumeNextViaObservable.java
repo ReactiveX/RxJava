@@ -17,7 +17,7 @@ package rx.operators;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -26,7 +26,7 @@ import rx.Subscription;
  * Instruct an Observable to pass control to another Observable rather than invoking
  * <code>onError</code> if it encounters an error of type {@link java.lang.Exception}.
  * <p>
- * This differs from {@link Observable#onErrorResumeNext} in that this one does not handle {@link java.lang.Throwable} or {@link java.lang.Error} but lets those continue through.
+ * This differs from {@link rx.Observable#onErrorResumeNext} in that this one does not handle {@link java.lang.Throwable} or {@link java.lang.Error} but lets those continue through.
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/onErrorResumeNext.png">
  * <p>
@@ -45,20 +45,21 @@ import rx.Subscription;
  */
 public final class OperationOnExceptionResumeNextViaObservable<T> {
 
-    public static <T> OnSubscribeFunc<T> onExceptionResumeNextViaObservable(Observable<? extends T> originalSequence, Observable<? extends T> resumeSequence) {
+    public static <T> OnSubscribeFunc<T> onExceptionResumeNextViaObservable(IObservable<? extends T> originalSequence, IObservable<? extends T> resumeSequence) {
         return new OnExceptionResumeNextViaObservable<T>(originalSequence, resumeSequence);
     }
 
     private static class OnExceptionResumeNextViaObservable<T> implements OnSubscribeFunc<T> {
 
-        private final Observable<? extends T> resumeSequence;
-        private final Observable<? extends T> originalSequence;
+        private final IObservable<? extends T> resumeSequence;
+        private final IObservable<? extends T> originalSequence;
 
-        public OnExceptionResumeNextViaObservable(Observable<? extends T> originalSequence, Observable<? extends T> resumeSequence) {
+        public OnExceptionResumeNextViaObservable(IObservable<? extends T> originalSequence, IObservable<? extends T> resumeSequence) {
             this.resumeSequence = resumeSequence;
             this.originalSequence = originalSequence;
         }
 
+        @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
@@ -67,6 +68,7 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
 
             // subscribe to the original Observable and remember the subscription
             subscription.wrap(originalSequence.subscribe(new Observer<T>() {
+                @Override
                 public void onNext(T value) {
                     // forward the successful calls unless resumed
                     if (subscriptionRef.get() == subscription)
@@ -77,6 +79,7 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
                  * When we receive java.lang.Exception, instead of passing the onError forward, we intercept and "resume" with the resumeSequence.
                  * For Throwable and Error we pass thru.
                  */
+                @Override
                 public void onError(Throwable ex) {
                     if (ex instanceof Exception) {
                         /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
@@ -97,6 +100,7 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
                     }
                 }
 
+                @Override
                 public void onCompleted() {
                     // forward the successful calls unless resumed
                     if (subscriptionRef.get() == subscription)
@@ -105,6 +109,7 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
             }));
 
             return new Subscription() {
+                @Override
                 public void unsubscribe() {
                     // this will get either the original, or the resumeSequence one and unsubscribe on it
                     Subscription s = subscriptionRef.getAndSet(null);

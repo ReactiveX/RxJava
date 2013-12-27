@@ -18,6 +18,7 @@ package rx.operators;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -42,7 +43,7 @@ public final class OperationThrottleFirst {
      *            The unit of time for the specified timeout.
      * @return A {@link Func1} which performs the throttle operation.
      */
-    public static <T> OnSubscribeFunc<T> throttleFirst(Observable<T> items, long windowDuration, TimeUnit unit) {
+    public static <T> OnSubscribeFunc<T> throttleFirst(IObservable<T> items, long windowDuration, TimeUnit unit) {
         return throttleFirst(items, windowDuration, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -59,7 +60,7 @@ public final class OperationThrottleFirst {
      *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
      * @return A {@link Func1} which performs the throttle operation.
      */
-    public static <T> OnSubscribeFunc<T> throttleFirst(final Observable<T> items, final long windowDuration, final TimeUnit unit, final Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> throttleFirst(final IObservable<T> items, final long windowDuration, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<T>() {
             @Override
             public Subscription onSubscribe(Observer<? super T> observer) {
@@ -67,7 +68,7 @@ public final class OperationThrottleFirst {
                 final AtomicLong lastOnNext = new AtomicLong(0);
                 final long timeInMilliseconds = unit.toMillis(windowDuration);
 
-                return items.filter(new Func1<T, Boolean>() {
+                return Observable.from(items).filter(new Func1<T, Boolean>() {
 
                     @Override
                     public Boolean call(T value) {

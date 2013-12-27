@@ -18,6 +18,7 @@ package rx.operators;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import rx.IObservable;
 import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
@@ -39,19 +40,19 @@ import rx.util.functions.Func2;
  */
 public class OperationObserveOn {
 
-    public static <T> OnSubscribeFunc<T> observeOn(Observable<? extends T> source, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> observeOn(IObservable<? extends T> source, Scheduler scheduler) {
         return new ObserveOn<T>(source, scheduler);
     }
 
     private static class ObserveOn<T> implements OnSubscribeFunc<T> {
-        private final Observable<? extends T> source;
+        private final IObservable<? extends T> source;
         private final Scheduler scheduler;
         private volatile Scheduler recursiveScheduler;
 
         final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
         final AtomicInteger counter = new AtomicInteger(0);
 
-        public ObserveOn(Observable<? extends T> source, Scheduler scheduler) {
+        public ObserveOn(IObservable<? extends T> source, Scheduler scheduler) {
             this.source = source;
             this.scheduler = scheduler;
         }
@@ -72,7 +73,7 @@ public class OperationObserveOn {
         public Subscription observeOn(final Observer<? super T> observer, final Scheduler scheduler) {
             final CompositeSubscription s = new CompositeSubscription();
 
-            s.add(source.materialize().subscribe(new Action1<Notification<? extends T>>() {
+            s.add(Observable.from(source).materialize().subscribe(new Action1<Notification<? extends T>>() {
 
                 @Override
                 public void call(Notification<? extends T> e) {

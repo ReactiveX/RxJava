@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -46,7 +46,7 @@ public final class OperationToObservableSortedList<T> {
      *             if T objects do not implement Comparable
      * @return an observable containing the sorted list
      */
-    public static <T> OnSubscribeFunc<List<T>> toSortedList(Observable<? extends T> sequence) {
+    public static <T> OnSubscribeFunc<List<T>> toSortedList(IObservable<? extends T> sequence) {
         return new ToObservableSortedList<T>(sequence);
     }
 
@@ -57,38 +57,42 @@ public final class OperationToObservableSortedList<T> {
      * @param sortFunction
      * @return an observable containing the sorted list
      */
-    public static <T> OnSubscribeFunc<List<T>> toSortedList(Observable<? extends T> sequence, Func2<? super T, ? super T, Integer> sortFunction) {
+    public static <T> OnSubscribeFunc<List<T>> toSortedList(IObservable<? extends T> sequence, Func2<? super T, ? super T, Integer> sortFunction) {
         return new ToObservableSortedList<T>(sequence, sortFunction);
     }
 
     private static class ToObservableSortedList<T> implements OnSubscribeFunc<List<T>> {
 
-        private final Observable<? extends T> that;
+        private final IObservable<? extends T> that;
         private final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();
         private final Func2<? super T, ? super T, Integer> sortFunction;
 
         // unchecked as we're support Object for the default
         @SuppressWarnings("unchecked")
-        private ToObservableSortedList(Observable<? extends T> that) {
+        private ToObservableSortedList(IObservable<? extends T> that) {
             this(that, defaultSortFunction);
         }
 
-        private ToObservableSortedList(Observable<? extends T> that, Func2<? super T, ? super T, Integer> sortFunction) {
+        private ToObservableSortedList(IObservable<? extends T> that, Func2<? super T, ? super T, Integer> sortFunction) {
             this.that = that;
             this.sortFunction = sortFunction;
         }
 
+        @Override
         public Subscription onSubscribe(final Observer<? super List<T>> observer) {
             return that.subscribe(new Observer<T>() {
+                @Override
                 public void onNext(T value) {
                     // onNext can be concurrently executed so list must be thread-safe
                     list.add(value);
                 }
 
+                @Override
                 public void onError(Throwable ex) {
                     observer.onError(ex);
                 }
 
+                @Override
                 public void onCompleted() {
                     try {
                         // copy from LinkedQueue to List since ConcurrentLinkedQueue does not implement the List interface

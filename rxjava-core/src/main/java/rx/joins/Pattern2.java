@@ -15,6 +15,7 @@
  */
 package rx.joins;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.util.functions.Func2;
 
@@ -24,13 +25,24 @@ import rx.util.functions.Func2;
 public class Pattern2<T1, T2> implements Pattern {
     private final Observable<T1> first;
     private final Observable<T2> second;
-    public Pattern2(Observable<T1> first, Observable<T2> second) {
-        this.first = first;
-        this.second = second;
+
+    public Pattern2(IObservable<T1> first, IObservable<T2> second) {
+        this.first = Observable.from(first);
+        this.second = Observable.from(second);
     }
+
+    /* XXX: Would be better to return IObservable, and let the caller call
+     * Observable.from(IObservable) if they care, but keep Observable for
+     * the sake of backwards compatibility.
+     */
     public Observable<T1> first() {
         return first;
     }
+
+    /* XXX: Would be better to return IObservable, and let the caller call
+     * Observable.from(IObservable) if they care, but keep Observable for
+     * the sake of backwards compatibility.
+     */
     public Observable<T2> second() {
         return second;
     }
@@ -39,7 +51,7 @@ public class Pattern2<T1, T2> implements Pattern {
      * @param other Observable sequence to match with the two previous sequences.
      * @return Pattern object that matches when all observable sequences have an available element.
      */
-    public <T3> Pattern3<T1, T2, T3> and(Observable<T3> other) {
+    public <T3> Pattern3<T1, T2, T3> and(IObservable<T3> other) {
         if (other == null) {
             throw new NullPointerException();
         }

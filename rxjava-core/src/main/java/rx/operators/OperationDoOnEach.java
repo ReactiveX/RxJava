@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observer;
 import rx.Observable.OnSubscribeFunc;
 import rx.Subscription;
@@ -24,16 +24,16 @@ import rx.Subscription;
  * Converts the elements of an observable sequence to the specified type.
  */
 public class OperationDoOnEach {
-    public static <T> OnSubscribeFunc<T> doOnEach(Observable<? extends T> sequence, Observer<? super T> observer) {
+    public static <T> OnSubscribeFunc<T> doOnEach(IObservable<? extends T> sequence, Observer<? super T> observer) {
         return new DoOnEachObservable<T>(sequence, observer);
     }
 
     private static class DoOnEachObservable<T> implements OnSubscribeFunc<T> {
 
-        private final Observable<? extends T> sequence;
+        private final IObservable<? extends T> sequence;
         private final Observer<? super T> doOnEachObserver;
 
-        public DoOnEachObservable(Observable<? extends T> sequence, Observer<? super T> doOnEachObserver) {
+        public DoOnEachObservable(IObservable<? extends T> sequence, Observer<? super T> doOnEachObserver) {
             this.sequence = sequence;
             this.doOnEachObserver = doOnEachObserver;
         }

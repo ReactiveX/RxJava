@@ -19,6 +19,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -42,30 +43,31 @@ public final class OperationConcat {
      *            An observable sequence of elements to project.
      * @return An observable sequence whose elements are the result of combining the output from the list of Observables.
      */
-    public static <T> OnSubscribeFunc<T> concat(final Observable<? extends T>... sequences) {
+    public static <T> OnSubscribeFunc<T> concat(final IObservable<? extends T>... sequences) {
         return concat(Observable.from(sequences));
     }
 
-    public static <T> OnSubscribeFunc<T> concat(final Iterable<? extends Observable<? extends T>> sequences) {
+    public static <T> OnSubscribeFunc<T> concat(final Iterable<? extends IObservable<? extends T>> sequences) {
         return concat(Observable.from(sequences));
     }
 
-    public static <T> OnSubscribeFunc<T> concat(final Observable<? extends Observable<? extends T>> sequences) {
+    public static <T> OnSubscribeFunc<T> concat(final IObservable<? extends IObservable<? extends T>> sequences) {
         return new Concat<T>(sequences);
     }
 
     private static class Concat<T> implements OnSubscribeFunc<T> {
-        private Observable<? extends Observable<? extends T>> sequences;
+        private IObservable<? extends IObservable<? extends T>> sequences;
         private SafeObservableSubscription innerSubscription = null;
 
-        public Concat(Observable<? extends Observable<? extends T>> sequences) {
+        public Concat(IObservable<? extends IObservable<? extends T>> sequences) {
             this.sequences = sequences;
         }
 
+        @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
             final AtomicBoolean completedOrErred = new AtomicBoolean(false);
             final AtomicBoolean allSequencesReceived = new AtomicBoolean(false);
-            final Queue<Observable<? extends T>> nextSequences = new ConcurrentLinkedQueue<Observable<? extends T>>();
+            final Queue<IObservable<? extends T>> nextSequences = new ConcurrentLinkedQueue<IObservable<? extends T>>();
             final SafeObservableSubscription outerSubscription = new SafeObservableSubscription();
 
             final Observer<T> reusableObserver = new Observer<T>() {
@@ -103,9 +105,9 @@ public final class OperationConcat {
                 }
             };
 
-            outerSubscription.wrap(sequences.subscribe(new Observer<Observable<? extends T>>() {
+            outerSubscription.wrap(sequences.subscribe(new Observer<IObservable<? extends T>>() {
                 @Override
-                public void onNext(Observable<? extends T> nextSequence) {
+                public void onNext(IObservable<? extends T> nextSequence) {
                     synchronized (nextSequences) {
                         if (innerSubscription == null) {
                             // We are currently not subscribed to any sequence

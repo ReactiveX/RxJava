@@ -19,6 +19,7 @@ import static rx.util.functions.Functions.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -38,11 +39,11 @@ public final class OperationAny {
      *            The source {@link Observable} to check if not empty.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T> OnSubscribeFunc<Boolean> any(Observable<? extends T> source) {
+    public static <T> OnSubscribeFunc<Boolean> any(IObservable<? extends T> source) {
         return new Any<T>(source, alwaysTrue(), false);
     }
 
-    public static <T> OnSubscribeFunc<Boolean> isEmpty(Observable<? extends T> source) {
+    public static <T> OnSubscribeFunc<Boolean> isEmpty(IObservable<? extends T> source) {
         return new Any<T>(source, alwaysTrue(), true);
     }
 
@@ -58,21 +59,21 @@ public final class OperationAny {
      *            The condition to test every element.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T> OnSubscribeFunc<Boolean> any(Observable<? extends T> source, Func1<? super T, Boolean> predicate) {
+    public static <T> OnSubscribeFunc<Boolean> any(IObservable<? extends T> source, Func1<? super T, Boolean> predicate) {
         return new Any<T>(source, predicate, false);
     }
 
-    public static <T> OnSubscribeFunc<Boolean> exists(Observable<? extends T> source, Func1<? super T, Boolean> predicate) {
+    public static <T> OnSubscribeFunc<Boolean> exists(IObservable<? extends T> source, Func1<? super T, Boolean> predicate) {
         return any(source, predicate);
     }
 
     private static class Any<T> implements OnSubscribeFunc<Boolean> {
 
-        private final Observable<? extends T> source;
+        private final IObservable<? extends T> source;
         private final Func1<? super T, Boolean> predicate;
         private final boolean returnOnEmpty;
 
-        private Any(Observable<? extends T> source, Func1<? super T, Boolean> predicate, boolean returnOnEmpty) {
+        private Any(IObservable<? extends T> source, Func1<? super T, Boolean> predicate, boolean returnOnEmpty) {
             this.source = source;
             this.predicate = predicate;
             this.returnOnEmpty = returnOnEmpty;

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -40,30 +41,30 @@ import rx.util.functions.Func0;
  */
 public final class OperationTimeout {
 
-    public static <T> OnSubscribeFunc<T> timeout(Observable<? extends T> source, long timeout, TimeUnit timeUnit) {
+    public static <T> OnSubscribeFunc<T> timeout(IObservable<? extends T> source, long timeout, TimeUnit timeUnit) {
         return new Timeout<T>(source, timeout, timeUnit, null, Schedulers.threadPoolForComputation());
     }
 
-    public static <T> OnSubscribeFunc<T> timeout(Observable<? extends T> sequence, long timeout, TimeUnit timeUnit, Observable<? extends T> other) {
+    public static <T> OnSubscribeFunc<T> timeout(IObservable<? extends T> sequence, long timeout, TimeUnit timeUnit, IObservable<? extends T> other) {
         return new Timeout<T>(sequence, timeout, timeUnit, other, Schedulers.threadPoolForComputation());
     }
 
-    public static <T> OnSubscribeFunc<T> timeout(Observable<? extends T> source, long timeout, TimeUnit timeUnit, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> timeout(IObservable<? extends T> source, long timeout, TimeUnit timeUnit, Scheduler scheduler) {
         return new Timeout<T>(source, timeout, timeUnit, null, scheduler);
     }
 
-    public static <T> OnSubscribeFunc<T> timeout(Observable<? extends T> sequence, long timeout, TimeUnit timeUnit, Observable<? extends T> other, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> timeout(IObservable<? extends T> sequence, long timeout, TimeUnit timeUnit, IObservable<? extends T> other, Scheduler scheduler) {
         return new Timeout<T>(sequence, timeout, timeUnit, other, scheduler);
     }
 
     private static class Timeout<T> implements Observable.OnSubscribeFunc<T> {
-        private final Observable<? extends T> source;
+        private final IObservable<? extends T> source;
         private final long timeout;
         private final TimeUnit timeUnit;
         private final Scheduler scheduler;
-        private final Observable<? extends T> other;
+        private final IObservable<? extends T> other;
 
-        private Timeout(Observable<? extends T> source, long timeout, TimeUnit timeUnit, Observable<? extends T> other, Scheduler scheduler) {
+        private Timeout(IObservable<? extends T> source, long timeout, TimeUnit timeUnit, IObservable<? extends T> other, Scheduler scheduler) {
             this.source = source;
             this.timeout = timeout;
             this.timeUnit = timeUnit;

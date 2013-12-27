@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
@@ -30,15 +30,15 @@ import rx.util.functions.Func2;
  */
 public class OperationSubscribeOn {
 
-    public static <T> OnSubscribeFunc<T> subscribeOn(Observable<? extends T> source, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> subscribeOn(IObservable<? extends T> source, Scheduler scheduler) {
         return new SubscribeOn<T>(source, scheduler);
     }
 
     private static class SubscribeOn<T> implements OnSubscribeFunc<T> {
-        private final Observable<? extends T> source;
+        private final IObservable<? extends T> source;
         private final Scheduler scheduler;
 
-        public SubscribeOn(Observable<? extends T> source, Scheduler scheduler) {
+        public SubscribeOn(IObservable<? extends T> source, Scheduler scheduler) {
             this.source = source;
             this.scheduler = scheduler;
         }

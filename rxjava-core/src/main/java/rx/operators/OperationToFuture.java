@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 
@@ -45,7 +45,7 @@ public class OperationToFuture {
      *            the type of source.
      * @return the Future to retrieve a single elements from an Observable
      */
-    public static <T> Future<T> toFuture(Observable<? extends T> that) {
+    public static <T> Future<T> toFuture(IObservable<? extends T> that) {
 
         final CountDownLatch finished = new CountDownLatch(1);
         final AtomicReference<T> value = new AtomicReference<T>();

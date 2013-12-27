@@ -15,6 +15,7 @@
  */
 package rx.operators;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -35,7 +36,8 @@ public final class OperationAverage {
         }
     }
 
-    public static Observable<Integer> average(Observable<Integer> source) {
+    public static Observable<Integer> average(IObservable<Integer> isource) {
+        final Observable<Integer> source = Observable.from(isource);
         return source.reduce(new Tuple2<Integer>(0, 0), new Func2<Tuple2<Integer>, Integer, Tuple2<Integer>>() {
             @Override
             public Tuple2<Integer> call(Tuple2<Integer> accu, Integer next) {
@@ -52,7 +54,8 @@ public final class OperationAverage {
         });
     }
 
-    public static Observable<Long> averageLongs(Observable<Long> source) {
+    public static Observable<Long> averageLongs(IObservable<Long> isource) {
+        final Observable<Long> source = Observable.from(isource);
         return source.reduce(new Tuple2<Long>(0L, 0), new Func2<Tuple2<Long>, Long, Tuple2<Long>>() {
             @Override
             public Tuple2<Long> call(Tuple2<Long> accu, Long next) {
@@ -69,7 +72,8 @@ public final class OperationAverage {
         });
     }
 
-    public static Observable<Float> averageFloats(Observable<Float> source) {
+    public static Observable<Float> averageFloats(IObservable<Float> isource) {
+        final Observable<Float> source = Observable.from(isource);
         return source.reduce(new Tuple2<Float>(0.0f, 0), new Func2<Tuple2<Float>, Float, Tuple2<Float>>() {
             @Override
             public Tuple2<Float> call(Tuple2<Float> accu, Float next) {
@@ -86,7 +90,8 @@ public final class OperationAverage {
         });
     }
 
-    public static Observable<Double> averageDoubles(Observable<Double> source) {
+    public static Observable<Double> averageDoubles(IObservable<Double> isource) {
+        final Observable<Double> source = Observable.from(isource);
         return source.reduce(new Tuple2<Double>(0.0d, 0), new Func2<Tuple2<Double>, Double, Tuple2<Double>>() {
             @Override
             public Tuple2<Double> call(Tuple2<Double> accu, Double next) {

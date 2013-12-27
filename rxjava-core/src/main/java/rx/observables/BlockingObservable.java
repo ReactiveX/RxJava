@@ -20,6 +20,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -35,7 +36,7 @@ import rx.util.functions.Func1;
 /**
  * An extension of {@link Observable} that provides blocking operators.
  * <p>
- * You construct a BlockingObservable from an Observable with {@link #from(Observable)} or {@link Observable#toBlockingObservable()} <p>
+ * You construct a BlockingObservable from an Observable with {@link #from(IObservable)} or {@link Observable#toBlockingObservable()} <p>
  * The documentation for this interface makes use of a form of marble diagram that has been
  * modified to illustrate blocking operators. The following legend explains these marble diagrams:
  * <p>
@@ -58,8 +59,16 @@ public class BlockingObservable<T> {
     /**
      * Convert an Observable into a BlockingObservable.
      */
-    public static <T> BlockingObservable<T> from(final Observable<? extends T> o) {
+    private static <T> BlockingObservable<T> from(final Observable<? extends T> o) {
         return new BlockingObservable<T>(o);
+    }
+
+    /**
+     * Convert any {@link IObservable} into a BlockingObservable.
+     */
+    public static <T> BlockingObservable<T> from(final IObservable<? extends T> io) {
+        final Observable<? extends T> o = Observable.from(io);
+        return from(o);
     }
 
     private static <T> T _singleOrDefault(BlockingObservable<? extends T> source, boolean hasDefault, T defaultValue) {

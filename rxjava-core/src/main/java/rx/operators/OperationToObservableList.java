@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -40,32 +40,36 @@ import rx.Subscription;
  */
 public final class OperationToObservableList<T> {
 
-    public static <T> OnSubscribeFunc<List<T>> toObservableList(Observable<? extends T> that) {
+    public static <T> OnSubscribeFunc<List<T>> toObservableList(IObservable<? extends T> that) {
         return new ToObservableList<T>(that);
     }
 
     private static class ToObservableList<T> implements OnSubscribeFunc<List<T>> {
 
-        private final Observable<? extends T> that;
+        private final IObservable<? extends T> that;
 
-        public ToObservableList(Observable<? extends T> that) {
+        public ToObservableList(IObservable<? extends T> that) {
             this.that = that;
         }
 
+        @Override
         public Subscription onSubscribe(final Observer<? super List<T>> observer) {
 
             return that.subscribe(new Observer<T>() {
                 final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();
 
+                @Override
                 public void onNext(T value) {
                     // onNext can be concurrently executed so list must be thread-safe
                     list.add(value);
                 }
 
+                @Override
                 public void onError(Throwable ex) {
                     observer.onError(ex);
                 }
 
+                @Override
                 public void onCompleted() {
                     try {
                         // copy from LinkedQueue to List since ConcurrentLinkedQueue does not implement the List interface

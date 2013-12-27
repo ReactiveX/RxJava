@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -59,51 +59,43 @@ import rx.util.functions.Functions;
  */
 public final class OperationZip {
     
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, final Func2<? super T1, ? super T2, ? extends R> zipFunction) {
+    public static <T1, T2, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, final Func2<? super T1, ? super T2, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2), Functions.fromFunc(zipFunction));
     }
     
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, final Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
+    public static <T1, T2, T3, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, final Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3), Functions.fromFunc(zipFunction));
     }
     
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, T4, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, final Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
+    public static <T1, T2, T3, T4, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, final Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4), Functions.fromFunc(zipFunction));
     }
     
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, T4, T5, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, final Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
+    public static <T1, T2, T3, T4, T5, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, final Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5), Functions.fromFunc(zipFunction));
     }
     
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, T4, T5, T6, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6,
+    public static <T1, T2, T3, T4, T5, T6, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6,
             final Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5, o6), Functions.fromFunc(zipFunction));
     }
     
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, T4, T5, T6, T7, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7,
+    public static <T1, T2, T3, T4, T5, T6, T7, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7,
             final Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5, o6, o7), Functions.fromFunc(zipFunction));
     }
     
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7, IObservable<? extends T8> o8,
             final Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5, o6, o7, o8), Functions.fromFunc(zipFunction));
     }
     
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> OnSubscribeFunc<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
-            Observable<? extends T9> o9, final Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipFunction) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7, IObservable<? extends T8> o8,
+            IObservable<? extends T9> o9, final Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5, o6, o7, o8, o9), Functions.fromFunc(zipFunction));
     }
     
-    public static <R> OnSubscribeFunc<R> zip(Iterable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction) {
+    public static <R> OnSubscribeFunc<R> zip(Iterable<? extends IObservable<?>> ws, final FuncN<? extends R> zipFunction) {
         ManyObservables<?, R> a = new ManyObservables<Object, R>(ws, zipFunction);
         return a;
     }
@@ -112,12 +104,12 @@ public final class OperationZip {
     * ThreadSafe
     */
     /* package accessible for unit tests */static class ZipObserver<R, T> implements Observer<T> {
-        final Observable<? extends T> w;
+        final IObservable<? extends T> w;
         final Aggregator<R> a;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
         private final AtomicBoolean subscribed = new AtomicBoolean(false);
         
-        public ZipObserver(Aggregator<R> a, Observable<? extends T> w) {
+        public ZipObserver(Aggregator<R> a, IObservable<? extends T> w) {
             this.a = a;
             this.w = w;
         }
@@ -326,7 +318,7 @@ public final class OperationZip {
      */
     public static class ManyObservables<T, U> implements OnSubscribeFunc<U> {
         /** */
-        protected final Iterable<? extends Observable<? extends T>> sources;
+        protected final Iterable<? extends IObservable<? extends T>> sources;
         /** */
         protected final FuncN<? extends U> selector;
         /**
@@ -335,7 +327,7 @@ public final class OperationZip {
          * @param selector the result selector
          */
         public ManyObservables(
-                Iterable<? extends Observable<? extends T>> sources,
+                Iterable<? extends IObservable<? extends T>> sources,
                 FuncN<? extends U> selector) {
             this.sources = sources;
             this.selector = selector;
@@ -365,7 +357,7 @@ public final class OperationZip {
                 }
             };
             
-            for (Observable<? extends T> o : sources) {
+            for (IObservable<? extends T> o : sources) {
                 
                 ItemObserver<T> io = new ItemObserver<T>(
                         rwLock, all, o, o2, composite);
@@ -400,7 +392,7 @@ public final class OperationZip {
             /** Indicate completion of this stream. */
             protected boolean done;
             /** The source. */
-            protected final Observable<? extends T> source;
+            protected final IObservable<? extends T> source;
             /** The observer. */
             protected final Observer<? super List<T>> observer;
             /**
@@ -414,7 +406,7 @@ public final class OperationZip {
             public ItemObserver(
                     ReadWriteLock rwLock,
                     List<ItemObserver<T>> all,
-                    Observable<? extends T> source,
+                    IObservable<? extends T> source,
                     Observer<? super List<T>> observer,
                     Subscription cancel) {
                 this.rwLock = rwLock;

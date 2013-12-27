@@ -15,6 +15,7 @@
  */
 package rx.operators;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -42,7 +43,7 @@ public class OperationTakeUntil {
      *            the other type.
      * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
      */
-    public static <T, E> Observable<T> takeUntil(final Observable<? extends T> source, final Observable<? extends E> other) {
+    public static <T, E> Observable<T> takeUntil(final IObservable<? extends T> source, final IObservable<? extends E> other) {
         Observable<Notification<T>> s = Observable.create(new SourceObservable<T>(source));
         Observable<Notification<T>> o = Observable.create(new OtherObservable<T, E>(other));
 
@@ -81,9 +82,9 @@ public class OperationTakeUntil {
     }
 
     private static class SourceObservable<T> implements OnSubscribeFunc<Notification<T>> {
-        private final Observable<? extends T> sequence;
+        private final IObservable<? extends T> sequence;
 
-        private SourceObservable(Observable<? extends T> sequence) {
+        private SourceObservable(IObservable<? extends T> sequence) {
             this.sequence = sequence;
         }
 
@@ -109,9 +110,9 @@ public class OperationTakeUntil {
     }
 
     private static class OtherObservable<T, E> implements OnSubscribeFunc<Notification<T>> {
-        private final Observable<? extends E> sequence;
+        private final IObservable<? extends E> sequence;
 
-        private OtherObservable(Observable<? extends E> sequence) {
+        private OtherObservable(IObservable<? extends E> sequence) {
             this.sequence = sequence;
         }
 

@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -29,11 +31,9 @@ import rx.joins.JoinObserver;
 import rx.joins.Pattern1;
 import rx.joins.Pattern2;
 import rx.joins.Plan0;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
-import rx.util.functions.Func2;
 
 /**
  * Join patterns: And, Then, When.
@@ -42,7 +42,7 @@ public class OperationJoinPatterns {
     /**
      * Creates a pattern that matches when both observable sequences have an available element.
      */
-    public static <T1, T2> Pattern2<T1, T2> and(/* this */Observable<T1> left, Observable<T2> right) {
+    public static <T1, T2> Pattern2<T1, T2> and(/* this */IObservable<T1> left, IObservable<T2> right) {
         if (left == null) {
             throw new NullPointerException("left");
         }
@@ -54,7 +54,7 @@ public class OperationJoinPatterns {
     /**
      * Matches when the observable sequence has an available element and projects the element by invoking the selector function.
      */
-    public static <T1, R> Plan0<R> then(/* this */Observable<T1> source, Func1<T1, R> selector) {
+    public static <T1, R> Plan0<R> then(/* this */IObservable<T1> source, Func1<T1, R> selector) {
         if (source == null) {
             throw new NullPointerException("source");
         }

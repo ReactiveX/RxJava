@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -46,26 +46,28 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnErrorResumeNextViaFunction<T> {
 
-    public static <T> OnSubscribeFunc<T> onErrorResumeNextViaFunction(Observable<? extends T> originalSequence, Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) {
+    public static <T> OnSubscribeFunc<T> onErrorResumeNextViaFunction(IObservable<? extends T> originalSequence, Func1<Throwable, ? extends IObservable<? extends T>> resumeFunction) {
         return new OnErrorResumeNextViaFunction<T>(originalSequence, resumeFunction);
     }
 
     private static class OnErrorResumeNextViaFunction<T> implements OnSubscribeFunc<T> {
 
-        private final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction;
-        private final Observable<? extends T> originalSequence;
+        private final Func1<Throwable, ? extends IObservable<? extends T>> resumeFunction;
+        private final IObservable<? extends T> originalSequence;
 
-        public OnErrorResumeNextViaFunction(Observable<? extends T> originalSequence, Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) {
+        public OnErrorResumeNextViaFunction(IObservable<? extends T> originalSequence, Func1<Throwable, ? extends IObservable<? extends T>> resumeFunction) {
             this.resumeFunction = resumeFunction;
             this.originalSequence = originalSequence;
         }
 
+        @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
             final AtomicReference<SafeObservableSubscription> subscriptionRef = new AtomicReference<SafeObservableSubscription>(new SafeObservableSubscription());
 
             // subscribe to the original Observable and remember the subscription
             subscriptionRef.get().wrap(new SafeObservableSubscription(originalSequence.subscribe(new Observer<T>() {
+                @Override
                 public void onNext(T value) {
                     // forward the successful calls
                     observer.onNext(value);
@@ -74,13 +76,14 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
                 /**
                  * Instead of passing the onError forward, we intercept and "resume" with the resumeSequence.
                  */
+                @Override
                 public void onError(Throwable ex) {
                     /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
                     SafeObservableSubscription currentSubscription = subscriptionRef.get();
                     // check that we have not been unsubscribed before we can process the error
                     if (currentSubscription != null) {
                         try {
-                            Observable<? extends T> resumeSequence = resumeFunction.call(ex);
+                            IObservable<? extends T> resumeSequence = resumeFunction.call(ex);
                             /* error occurred, so switch subscription to the 'resumeSequence' */
                             SafeObservableSubscription innerSubscription = new SafeObservableSubscription(resumeSequence.subscribe(observer));
                             /* we changed the sequence, so also change the subscription to the one of the 'resumeSequence' instead */
@@ -97,6 +100,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
                     }
                 }
 
+                @Override
                 public void onCompleted() {
                     // forward the successful calls
                     observer.onCompleted();
@@ -104,6 +108,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
             })));
 
             return new Subscription() {
+                @Override
                 public void unsubscribe() {
                     // this will get either the original, or the resumeSequence one and unsubscribe on it
                     Subscription s = subscriptionRef.getAndSet(null);

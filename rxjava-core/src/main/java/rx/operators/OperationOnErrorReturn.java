@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -44,19 +44,20 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnErrorReturn<T> {
 
-    public static <T> OnSubscribeFunc<T> onErrorReturn(Observable<? extends T> originalSequence, Func1<Throwable, ? extends T> resumeFunction) {
+    public static <T> OnSubscribeFunc<T> onErrorReturn(IObservable<? extends T> originalSequence, Func1<Throwable, ? extends T> resumeFunction) {
         return new OnErrorReturn<T>(originalSequence, resumeFunction);
     }
 
     private static class OnErrorReturn<T> implements OnSubscribeFunc<T> {
         private final Func1<Throwable, ? extends T> resumeFunction;
-        private final Observable<? extends T> originalSequence;
+        private final IObservable<? extends T> originalSequence;
 
-        public OnErrorReturn(Observable<? extends T> originalSequence, Func1<Throwable, ? extends T> resumeFunction) {
+        public OnErrorReturn(IObservable<? extends T> originalSequence, Func1<Throwable, ? extends T> resumeFunction) {
             this.resumeFunction = resumeFunction;
             this.originalSequence = originalSequence;
         }
 
+        @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
@@ -65,6 +66,7 @@ public final class OperationOnErrorReturn<T> {
 
             // subscribe to the original Observable and remember the subscription
             subscription.wrap(originalSequence.subscribe(new Observer<T>() {
+                @Override
                 public void onNext(T value) {
                     // forward the successful calls
                     observer.onNext(value);
@@ -73,6 +75,7 @@ public final class OperationOnErrorReturn<T> {
                 /**
                  * Instead of passing the onError forward, we intercept and "resume" with the resumeSequence.
                  */
+                @Override
                 public void onError(Throwable ex) {
                     /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
                     SafeObservableSubscription currentSubscription = subscriptionRef.get();
@@ -101,6 +104,7 @@ public final class OperationOnErrorReturn<T> {
                     }
                 }
 
+                @Override
                 public void onCompleted() {
                     // forward the successful calls
                     observer.onCompleted();
@@ -108,6 +112,7 @@ public final class OperationOnErrorReturn<T> {
             }));
 
             return new Subscription() {
+                @Override
                 public void unsubscribe() {
                     // this will get either the original, or the resumeSequence one and unsubscribe on it
                     Subscription s = subscriptionRef.getAndSet(null);

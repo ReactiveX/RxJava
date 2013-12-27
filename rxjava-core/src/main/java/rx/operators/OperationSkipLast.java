@@ -19,7 +19,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -50,19 +50,20 @@ public class OperationSkipLast {
      *             count is less than zero.
      */
     public static <T> OnSubscribeFunc<T> skipLast(
-            Observable<? extends T> source, int count) {
+            IObservable<? extends T> source, int count) {
         return new SkipLast<T>(source, count);
     }
 
     private static class SkipLast<T> implements OnSubscribeFunc<T> {
         private final int count;
-        private final Observable<? extends T> source;
+        private final IObservable<? extends T> source;
 
-        private SkipLast(Observable<? extends T> source, int count) {
+        private SkipLast(IObservable<? extends T> source, int count) {
             this.count = count;
             this.source = source;
         }
 
+        @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
             if (count < 0) {
                 throw new IndexOutOfBoundsException(

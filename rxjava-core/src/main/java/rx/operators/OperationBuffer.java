@@ -18,6 +18,7 @@ package rx.operators;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -60,7 +61,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final Func0<? extends Observable<? extends Closing>> bufferClosingSelector) {
+    public static <T> OnSubscribeFunc<List<T>> buffer(final IObservable<T> source, final Func0<? extends IObservable<? extends Closing>> bufferClosingSelector) {
         return new OnSubscribeFunc<List<T>>() {
 
             @Override
@@ -97,7 +98,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final Observable<? extends Opening> bufferOpenings, final Func1<Opening, ? extends Observable<? extends Closing>> bufferClosingSelector) {
+    public static <T> OnSubscribeFunc<List<T>> buffer(final IObservable<T> source, final IObservable<? extends Opening> bufferOpenings, final Func1<Opening, ? extends IObservable<? extends Closing>> bufferClosingSelector) {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
@@ -125,7 +126,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(Observable<T> source, int count) {
+    public static <T> OnSubscribeFunc<List<T>> buffer(IObservable<T> source, int count) {
         return buffer(source, count, count);
     }
 
@@ -145,14 +146,14 @@ public final class OperationBuffer extends ChunkedOperation {
      *            The number of elements a buffer should have before being emitted.
      * @param skip
      *            The interval with which chunks have to be created. Note that when "skip" == "count"
-     *            that this is the same as calling {@link OperationBuffer#buffer(Observable, int)}.
+     *            that this is the same as calling {@link OperationBuffer#buffer(IObservable, int)}.
      *            If "skip" < "count", this buffer operation will produce overlapping chunks and if "skip"
      *            > "count" non-overlapping chunks will be created and some values will not be pushed
      *            into a buffer at all!
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final int count, final int skip) {
+    public static <T> OnSubscribeFunc<List<T>> buffer(final IObservable<T> source, final int count, final int skip) {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
@@ -182,7 +183,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(Observable<T> source, long timespan, TimeUnit unit) {
+    public static <T> OnSubscribeFunc<List<T>> buffer(IObservable<T> source, long timespan, TimeUnit unit) {
         return buffer(source, timespan, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -207,7 +208,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final long timespan, final TimeUnit unit, final Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<List<T>> buffer(final IObservable<T> source, final long timespan, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
@@ -240,7 +241,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(Observable<T> source, long timespan, TimeUnit unit, int count) {
+    public static <T> OnSubscribeFunc<List<T>> buffer(IObservable<T> source, long timespan, TimeUnit unit, int count) {
         return buffer(source, timespan, unit, count, Schedulers.threadPoolForComputation());
     }
 
@@ -268,7 +269,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final long timespan, final TimeUnit unit, final int count, final Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<List<T>> buffer(final IObservable<T> source, final long timespan, final TimeUnit unit, final int count, final Scheduler scheduler) {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
@@ -301,7 +302,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(Observable<T> source, long timespan, long timeshift, TimeUnit unit) {
+    public static <T> OnSubscribeFunc<List<T>> buffer(IObservable<T> source, long timespan, long timeshift, TimeUnit unit) {
         return buffer(source, timespan, timeshift, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -329,7 +330,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final long timespan, final long timeshift, final TimeUnit unit, final Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<List<T>> buffer(final IObservable<T> source, final long timespan, final long timeshift, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {

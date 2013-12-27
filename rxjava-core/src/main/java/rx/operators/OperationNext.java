@@ -21,6 +21,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import rx.IObservable;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
@@ -33,12 +34,12 @@ import rx.util.Exceptions;
  */
 public final class OperationNext {
 
-    public static <T> Iterable<T> next(final Observable<? extends T> items) {
+    public static <T> Iterable<T> next(final IObservable<? extends T> items) {
 
         NextObserver<T> nextObserver = new NextObserver<T>();
         final NextIterator<T> nextIterator = new NextIterator<T>(nextObserver);
 
-        items.materialize().subscribe(nextObserver);
+        Observable.from(items).materialize().subscribe(nextObserver);
 
         return new Iterable<T>() {
             @Override

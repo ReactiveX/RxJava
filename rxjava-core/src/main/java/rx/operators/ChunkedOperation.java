@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
@@ -452,10 +453,10 @@ public class ChunkedOperation {
     protected static class ObservableBasedSingleChunkCreator<T, C> implements ChunkCreator {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
-        private final Func0<? extends Observable<? extends Closing>> chunkClosingSelector;
+        private final Func0<? extends IObservable<? extends Closing>> chunkClosingSelector;
         private final NonOverlappingChunks<T, C> chunks;
 
-        public ObservableBasedSingleChunkCreator(NonOverlappingChunks<T, C> chunks, Func0<? extends Observable<? extends Closing>> chunkClosingSelector) {
+        public ObservableBasedSingleChunkCreator(NonOverlappingChunks<T, C> chunks, Func0<? extends IObservable<? extends Closing>> chunkClosingSelector) {
             this.chunks = chunks;
             this.chunkClosingSelector = chunkClosingSelector;
 
@@ -464,7 +465,8 @@ public class ChunkedOperation {
         }
 
         private void listenForChunkEnd() {
-            Observable<? extends Closing> closingObservable = chunkClosingSelector.call();
+            final IObservable<? extends Closing> closingIObservable = chunkClosingSelector.call();
+            final Observable<? extends Closing> closingObservable = Observable.from(closingIObservable);
             closingObservable.subscribe(new Action1<Closing>() {
                 @Override
                 public void call(Closing closing) {
@@ -499,12 +501,14 @@ public class ChunkedOperation {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        public ObservableBasedMultiChunkCreator(final OverlappingChunks<T, C> chunks, Observable<? extends Opening> openings, final Func1<Opening, ? extends Observable<? extends Closing>> chunkClosingSelector) {
-            subscription.wrap(openings.subscribe(new Action1<Opening>() {
+        public ObservableBasedMultiChunkCreator(final OverlappingChunks<T, C> chunks, IObservable<? extends Opening> openings, final Func1<Opening, ? extends IObservable<? extends Closing>> chunkClosingSelector) {
+            final Observable<? extends Opening> concreteOpenings = Observable.from(openings);
+            subscription.wrap(concreteOpenings.subscribe(new Action1<Opening>() {
                 @Override
                 public void call(Opening opening) {
                     final Chunk<T, C> chunk = chunks.createChunk();
-                    Observable<? extends Closing> closingObservable = chunkClosingSelector.call(opening);
+                    final IObservable<? extends Closing> closingIObservable = chunkClosingSelector.call(opening);
+                    final Observable<? extends Closing> closingObservable = Observable.from(closingIObservable);
 
                     closingObservable.subscribe(new Action1<Closing>() {
                         @Override

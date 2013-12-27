@@ -19,7 +19,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -32,7 +32,7 @@ import rx.Subscription;
  */
 public final class OperationTakeLast {
 
-    public static <T> OnSubscribeFunc<T> takeLast(final Observable<? extends T> items, final int count) {
+    public static <T> OnSubscribeFunc<T> takeLast(final IObservable<? extends T> items, final int count) {
         return new OnSubscribeFunc<T>() {
 
             @Override
@@ -45,14 +45,15 @@ public final class OperationTakeLast {
 
     private static class TakeLast<T> implements OnSubscribeFunc<T> {
         private final int count;
-        private final Observable<? extends T> items;
+        private final IObservable<? extends T> items;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        TakeLast(final Observable<? extends T> items, final int count) {
+        TakeLast(final IObservable<? extends T> items, final int count) {
             this.count = count;
             this.items = items;
         }
 
+        @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
             if (count < 0) {
                 throw new IndexOutOfBoundsException(

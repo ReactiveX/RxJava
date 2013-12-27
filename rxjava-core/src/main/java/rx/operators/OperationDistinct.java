@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -45,7 +45,7 @@ public final class OperationDistinct {
      *            The source Observable to emit the distinct items for.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T, U> OnSubscribeFunc<T> distinct(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector) {
+    public static <T, U> OnSubscribeFunc<T> distinct(IObservable<? extends T> source, Func1<? super T, ? extends U> keySelector) {
         return new Distinct<T, U>(source, keySelector);
     }
 
@@ -58,7 +58,7 @@ public final class OperationDistinct {
      *            The comparator to use for deciding whether to consider two items as equal or not.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T> OnSubscribeFunc<T> distinct(Observable<? extends T> source, Comparator<T> equalityComparator) {
+    public static <T> OnSubscribeFunc<T> distinct(IObservable<? extends T> source, Comparator<T> equalityComparator) {
         return new DistinctWithComparator<T, T>(source, Functions.<T> identity(), equalityComparator);
     }
 
@@ -71,7 +71,7 @@ public final class OperationDistinct {
      *            The comparator to use for deciding whether to consider the two item keys as equal or not.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T, U> OnSubscribeFunc<T> distinct(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
+    public static <T, U> OnSubscribeFunc<T> distinct(IObservable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
         return new DistinctWithComparator<T, U>(source, keySelector, equalityComparator);
     }
 
@@ -82,15 +82,15 @@ public final class OperationDistinct {
      *            The source Observable to emit the distinct items for.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T> OnSubscribeFunc<T> distinct(Observable<? extends T> source) {
+    public static <T> OnSubscribeFunc<T> distinct(IObservable<? extends T> source) {
         return new Distinct<T, T>(source, Functions.<T> identity());
     }
 
     private static class Distinct<T, U> implements OnSubscribeFunc<T> {
-        private final Observable<? extends T> source;
+        private final IObservable<? extends T> source;
         private final Func1<? super T, ? extends U> keySelector;
 
-        private Distinct(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector) {
+        private Distinct(IObservable<? extends T> source, Func1<? super T, ? extends U> keySelector) {
             this.source = source;
             this.keySelector = keySelector;
         }
@@ -130,11 +130,11 @@ public final class OperationDistinct {
     }
 
     private static class DistinctWithComparator<T, U> implements OnSubscribeFunc<T> {
-        private final Observable<? extends T> source;
+        private final IObservable<? extends T> source;
         private final Func1<? super T, ? extends U> keySelector;
         private final Comparator<U> equalityComparator;
 
-        private DistinctWithComparator(Observable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
+        private DistinctWithComparator(IObservable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
             this.source = source;
             this.keySelector = keySelector;
             this.equalityComparator = equalityComparator;

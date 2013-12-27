@@ -15,6 +15,7 @@
  */
 package rx.joins;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.util.functions.Func1;
 
@@ -23,9 +24,15 @@ import rx.util.functions.Func1;
  */
 public class Pattern1<T1> implements Pattern {
     private final Observable<T1> first;
-    public Pattern1(Observable<T1> first) {
-        this.first = first;
+
+    public Pattern1(IObservable<T1> first) {
+        this.first = Observable.from(first);
     }
+
+    /* XXX: Would be better to return IObservable, and let the caller call
+     * Observable.from(IObservable) if they care, but keep Observable for
+     * the sake of backwards compatibility.
+     */
     public Observable<T1> first() {
         return first;
     }

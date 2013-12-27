@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -39,7 +39,7 @@ public class OperationLast {
      *            the type of the sequence.
      * @return a sequence containing the last emitted item or that has onError invoked on it if no items
      */
-    public static <T> OnSubscribeFunc<T> last(final Observable<? extends T> sequence) {
+    public static <T> OnSubscribeFunc<T> last(final IObservable<? extends T> sequence) {
         return new OnSubscribeFunc<T>() {
             final AtomicReference<T> last = new AtomicReference<T>();
             final AtomicBoolean hasLast = new AtomicBoolean(false);

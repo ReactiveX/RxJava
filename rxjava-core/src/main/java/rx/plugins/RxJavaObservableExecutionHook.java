@@ -15,6 +15,7 @@
  */
 package rx.plugins;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -38,7 +39,7 @@ import rx.util.functions.Func1;
 public abstract class RxJavaObservableExecutionHook {
 
     /**
-     * Invoked before {@link Observable#subscribe(rx.Observer)} is about to be executed.
+     * Invoked before {@link IObservable#subscribe(rx.Observer)} is about to be executed.
      * <p>
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra logging, metrics and other such things and pass-thru the function.
      * 
@@ -48,13 +49,13 @@ public abstract class RxJavaObservableExecutionHook {
      *            original {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}> to be executed
      * @return {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}> function that can be modified, decorated, replaced or just returned as a pass-thru.
      */
-    public <T> OnSubscribeFunc<T> onSubscribeStart(Observable<? extends T> observableInstance, OnSubscribeFunc<T> onSubscribe) {
+    public <T> OnSubscribeFunc<T> onSubscribeStart(IObservable<? extends T> observableInstance, OnSubscribeFunc<T> onSubscribe) {
         // pass-thru by default
         return onSubscribe;
     }
 
     /**
-     * Invoked after successful execution of {@link Observable#subscribe(rx.Observer)} with returned {@link Subscription}.
+     * Invoked after successful execution of {@link IObservable#subscribe(rx.Observer)} with returned {@link Subscription}.
      * <p>
      * This can be used to decorate or replace the {@link Subscription} instance or just perform extra logging, metrics and other such things and pass-thru the subscription.
      * 
@@ -64,13 +65,13 @@ public abstract class RxJavaObservableExecutionHook {
      *            original {@link Subscription}
      * @return {@link Subscription} subscription that can be modified, decorated, replaced or just returned as a pass-thru.
      */
-    public <T> Subscription onSubscribeReturn(Observable<? extends T> observableInstance, Subscription subscription) {
+    public <T> Subscription onSubscribeReturn(IObservable<? extends T> observableInstance, Subscription subscription) {
         // pass-thru by default
         return subscription;
     }
 
     /**
-     * Invoked after failed execution of {@link Observable#subscribe(Observer)} with thrown Throwable.
+     * Invoked after failed execution of {@link IObservable#subscribe(Observer)} with thrown Throwable.
      * <p>
      * This is NOT errors emitted via {@link Observer#onError(Throwable)} but exceptions thrown when attempting
      * to subscribe to a {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}>.
@@ -78,10 +79,10 @@ public abstract class RxJavaObservableExecutionHook {
      * @param observableInstance
      *            The executing {@link Observable} instance.
      * @param e
-     *            Throwable thrown by {@link Observable#subscribe(Observer)}
+     *            Throwable thrown by {@link IObservable#subscribe(Observer)}
      * @return Throwable that can be decorated, replaced or just returned as a pass-thru.
      */
-    public <T> Throwable onSubscribeError(Observable<? extends T> observableInstance, Throwable e) {
+    public <T> Throwable onSubscribeError(IObservable<? extends T> observableInstance, Throwable e) {
         // pass-thru by default
         return e;
     }

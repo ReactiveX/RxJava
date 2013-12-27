@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+
+import rx.IObservable;
 import rx.Notification;
 import rx.Observable;
 import rx.subscriptions.SingleAssignmentSubscription;
@@ -29,14 +31,14 @@ import rx.util.functions.Action1;
  */
 public final class JoinObserver1<T> extends ObserverBase<Notification<T>> implements JoinObserver {
     private Object gate;
-    private final Observable<T> source;
+    private final IObservable<T> source;
     private final Action1<Throwable> onError;
     private final List<ActivePlan0> activePlans;
     private final Queue<Notification<T>> queue;
     private final SingleAssignmentSubscription subscription;
     private volatile boolean done;
     
-    public JoinObserver1(Observable<T> source, Action1<Throwable> onError) {
+    public JoinObserver1(IObservable<T> source, Action1<Throwable> onError) {
         this.source = source;
         this.onError = onError;
         queue = new LinkedList<Notification<T>>();
@@ -52,7 +54,7 @@ public final class JoinObserver1<T> extends ObserverBase<Notification<T>> implem
     @Override
     public void subscribe(Object gate) {
         this.gate = gate;
-        subscription.set(source.materialize().subscribe(this));
+        subscription.set(Observable.from(source).materialize().subscribe(this));
     }
 
     @Override

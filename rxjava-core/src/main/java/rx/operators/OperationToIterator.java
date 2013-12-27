@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import rx.IObservable;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
@@ -41,10 +42,10 @@ public class OperationToIterator {
      *            the type of source.
      * @return the iterator that could be used to iterate over the elements of the observable.
      */
-    public static <T> Iterator<T> toIterator(Observable<? extends T> source) {
+    public static <T> Iterator<T> toIterator(IObservable<? extends T> source) {
         final BlockingQueue<Notification<? extends T>> notifications = new LinkedBlockingQueue<Notification<? extends T>>();
 
-        source.materialize().subscribe(new Observer<Notification<? extends T>>() {
+        Observable.from(source).materialize().subscribe(new Observer<Notification<? extends T>>() {
             @Override
             public void onCompleted() {
                 // ignore

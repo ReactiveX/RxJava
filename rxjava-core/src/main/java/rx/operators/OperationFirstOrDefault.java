@@ -19,7 +19,7 @@ import static rx.util.functions.Functions.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -46,7 +46,7 @@ public final class OperationFirstOrDefault {
      *            The default value to use whenever the source Observable doesn't emit anything.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T> OnSubscribeFunc<T> firstOrDefault(Observable<? extends T> source, Func1<? super T, Boolean> predicate, T defaultValue) {
+    public static <T> OnSubscribeFunc<T> firstOrDefault(IObservable<? extends T> source, Func1<? super T, Boolean> predicate, T defaultValue) {
         return new FirstOrElse<T>(source, predicate, defaultValue);
     }
 
@@ -60,16 +60,16 @@ public final class OperationFirstOrDefault {
      *            The default value to use whenever the source Observable doesn't emit anything.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T> OnSubscribeFunc<T> firstOrDefault(Observable<? extends T> source, T defaultValue) {
+    public static <T> OnSubscribeFunc<T> firstOrDefault(IObservable<? extends T> source, T defaultValue) {
         return new FirstOrElse<T>(source, alwaysTrue(), defaultValue);
     }
 
     private static class FirstOrElse<T> implements OnSubscribeFunc<T> {
-        private final Observable<? extends T> source;
+        private final IObservable<? extends T> source;
         private final Func1<? super T, Boolean> predicate;
         private final T defaultValue;
 
-        private FirstOrElse(Observable<? extends T> source, Func1<? super T, Boolean> predicate, T defaultValue) {
+        private FirstOrElse(IObservable<? extends T> source, Func1<? super T, Boolean> predicate, T defaultValue) {
             this.source = source;
             this.defaultValue = defaultValue;
             this.predicate = predicate;

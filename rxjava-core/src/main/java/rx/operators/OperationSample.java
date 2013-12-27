@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -39,19 +40,19 @@ public final class OperationSample {
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> OnSubscribeFunc<T> sample(final Observable<? extends T> source, long period, TimeUnit unit) {
+    public static <T> OnSubscribeFunc<T> sample(final IObservable<? extends T> source, long period, TimeUnit unit) {
         return new Sample<T>(source, period, unit, Schedulers.threadPoolForComputation());
     }
 
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> OnSubscribeFunc<T> sample(final Observable<? extends T> source, long period, TimeUnit unit, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> sample(final IObservable<? extends T> source, long period, TimeUnit unit, Scheduler scheduler) {
         return new Sample<T>(source, period, unit, scheduler);
     }
 
     private static class Sample<T> implements OnSubscribeFunc<T> {
-        private final Observable<? extends T> source;
+        private final IObservable<? extends T> source;
         private final long period;
         private final TimeUnit unit;
         private final Scheduler scheduler;
@@ -59,7 +60,7 @@ public final class OperationSample {
         private final AtomicBoolean hasValue = new AtomicBoolean();
         private final AtomicReference<T> latestValue = new AtomicReference<T>();
 
-        private Sample(Observable<? extends T> source, long interval, TimeUnit unit, Scheduler scheduler) {
+        private Sample(IObservable<? extends T> source, long interval, TimeUnit unit, Scheduler scheduler) {
             this.source = source;
             this.period = interval;
             this.unit = unit;
