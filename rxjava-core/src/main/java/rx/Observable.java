@@ -130,10 +130,14 @@ import rx.util.functions.FuncN;
 import rx.util.functions.Function;
 
 /**
- * The Observable interface that implements the Reactive Pattern.
+ * An implementation of the {@link IObservable} interface that provides
+ * overloaded methods for subscribing as well as delegate methods to the
+ * various operators in a fluent style.
  * <p>
- * This interface provides overloaded methods for subscribing as well as
- * delegate methods to the various operators.
+ * It is expected that most applications will lean heavily upon this
+ * particular IObservable implementation. To simplify the documentation,
+ * instances of the IObservable interface generally, whether or not of this
+ * class in particular, will be referred to simply as "Observables".
  * <p>
  * The documentation for this interface makes use of marble diagrams. The
  * following legend explains these diagrams:
@@ -145,7 +149,7 @@ import rx.util.functions.Function;
  * 
  * @param <T> the type of the item emitted by the Observable
  */
-public class Observable<T> {
+public class Observable<T> implements IObservable<T> {
 
     private final static ConcurrentHashMap<Class, Boolean> internalClassMap = new ConcurrentHashMap<Class, Boolean>();
 
@@ -213,6 +217,7 @@ public class Observable<T> {
      *                                  argument to {@code subscribe()} is
      *                                  {@code null}
      */
+    @Override
     public Subscription subscribe(Observer<? super T> observer) {
         // allow the hook to intercept and/or decorate
         OnSubscribeFunc<T> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
@@ -2199,6 +2204,30 @@ public class Observable<T> {
      */
     public Observable<Timestamped<T>> timestamp() {
         return create(OperationTimestamp.timestamp(this));
+    }
+
+    /**
+     * If the given {@link IObservable} is an {@link Observable} already,
+     * simply return it, cast to its concrete type. If not, wrap it in a new
+     * Observable that will delegate its own {@link #subscribe(Observer)} to
+     * the given Observable.
+     *
+     * @return  the given Observable if it is of the correct type, or a new
+     *          one that delegates to it if not.
+     */
+    public static <T> Observable<T> from(final IObservable<T> observable) {
+        if (null == observable) {
+            throw new NullPointerException("IObservable argument");
+        } else if (observable instanceof Observable<?>) {
+            return (Observable<T>) observable;
+        } else {
+            return create(new OnSubscribeFunc<T>() {
+                @Override
+                public Subscription onSubscribe(Observer<? super T> observer) {
+                    return observable.subscribe(observer);
+                }
+            });
+        }
     }
 
     /**
