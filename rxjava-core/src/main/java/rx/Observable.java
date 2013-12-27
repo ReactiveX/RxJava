@@ -4378,6 +4378,11 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sum()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
+    public static Observable<Integer> sumInteger(Observable<Integer> source) {
+        return OperationSum.sum(source);
+    }
+    
+    @Deprecated
     public static Observable<Integer> sum(Observable<Integer> source) {
         return OperationSum.sum(source);
     }
@@ -4394,7 +4399,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumLongs()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
-    public static Observable<Long> sumLongs(Observable<Long> source) {
+    public static Observable<Long> sumLong(Observable<Long> source) {
         return OperationSum.sumLongs(source);
     }
 
@@ -4410,7 +4415,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumFloats()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
-    public static Observable<Float> sumFloats(Observable<Float> source) {
+    public static Observable<Float> sumFloat(Observable<Float> source) {
         return OperationSum.sumFloats(source);
     }
 
@@ -4426,7 +4431,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumDoubles()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
-    public static Observable<Double> sumDoubles(Observable<Double> source) {
+    public static Observable<Double> sumDouble(Observable<Double> source) {
         return OperationSum.sumDoubles(source);
     }
 
@@ -4491,6 +4496,11 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: average()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
+    public static Observable<Integer> averageInteger(Observable<Integer> source) {
+        return OperationAverage.average(source);
+    }
+    
+    @Deprecated
     public static Observable<Integer> average(Observable<Integer> source) {
         return OperationAverage.average(source);
     }
@@ -4507,7 +4517,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageLongs()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
-    public static Observable<Long> averageLongs(Observable<Long> source) {
+    public static Observable<Long> averageLong(Observable<Long> source) {
         return OperationAverage.averageLongs(source);
     }
 
@@ -4523,7 +4533,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageFloats()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
-    public static Observable<Float> averageFloats(Observable<Float> source) {
+    public static Observable<Float> averageFloat(Observable<Float> source) {
         return OperationAverage.averageFloats(source);
     }
 
@@ -4539,7 +4549,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageDoubles()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
-    public static Observable<Double> averageDoubles(Observable<Double> source) {
+    public static Observable<Double> averageDouble(Observable<Double> source) {
         return OperationAverage.averageDoubles(source);
     }
 
