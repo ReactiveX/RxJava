@@ -37,11 +37,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import rx.Observable.OnSubscribeFunc;
-import rx.schedulers.TestScheduler;
 import rx.observables.ConnectableObservable;
+import rx.schedulers.Schedulers;
+import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
