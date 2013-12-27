@@ -156,9 +156,9 @@ public final class OperationTakeLast {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> t1) {
-            SafeObservableSubscription s = new SafeObservableSubscription();
-            source.subscribe(new TakeLastTimedObserver<T>(t1, s, count, ageMillis, scheduler));
-            return s;
+            SafeObservableSubscription sas = new SafeObservableSubscription();
+            sas.wrap(source.subscribe(new TakeLastTimedObserver<T>(t1, sas, count, ageMillis, scheduler)));
+            return sas;
         }
     }
     /** Observes source values and keeps the most recent items. */

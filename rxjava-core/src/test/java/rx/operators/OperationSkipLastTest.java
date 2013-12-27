@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
+import java.util.concurrent.TimeUnit;
 import static org.mockito.Mockito.*;
 import static rx.operators.OperationSkipLast.*;
 
@@ -24,6 +24,9 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.concurrency.TestScheduler;
+import rx.operators.OperationSkipTest.CustomException;
+import rx.subjects.PublishSubject;
 
 public class OperationSkipLastTest {
 
@@ -110,5 +113,97 @@ public class OperationSkipLastTest {
         verify(aObserver, times(1)).onError(
                 any(IndexOutOfBoundsException.class));
         verify(aObserver, never()).onCompleted();
+    }
+    
+    @Test
+    public void testSkipLastTimed() {
+        TestScheduler scheduler = new TestScheduler();
+        
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler);
+        
+        Observer<Object> o = mock(Observer.class);
+        
+        result.subscribe(o);
+        
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+        
+        scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+        
+        source.onNext(4);
+        source.onNext(5);
+        source.onNext(6);
+
+        scheduler.advanceTimeBy(950, TimeUnit.MILLISECONDS);
+        source.onCompleted();
+                
+        InOrder inOrder = inOrder(o);
+        inOrder.verify(o).onNext(1);
+        inOrder.verify(o).onNext(2);
+        inOrder.verify(o).onNext(3);
+        inOrder.verify(o, never()).onNext(4);
+        inOrder.verify(o, never()).onNext(5);
+        inOrder.verify(o, never()).onNext(6);
+        inOrder.verify(o).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testSkipLastTimedErrorBeforeTime() {
+        TestScheduler scheduler = new TestScheduler();
+        
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler);
+        
+        Observer<Object> o = mock(Observer.class);
+        
+        result.subscribe(o);
+        
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+        source.onError(new OperationSkipTest.CustomException());
+        
+        scheduler.advanceTimeBy(1050, TimeUnit.MILLISECONDS);
+
+        verify(o).onError(any(CustomException.class));
+     
+        verify(o, never()).onCompleted();
+        verify(o, never()).onNext(any());
+    }
+    
+    @Test
+    public void testSkipLastTimedCompleteBeforeTime() {
+        TestScheduler scheduler = new TestScheduler();
+        
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler);
+        
+        Observer<Object> o = mock(Observer.class);
+        
+        result.subscribe(o);
+        
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+
+        scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+        
+        source.onCompleted();
+        
+        
+        InOrder inOrder = inOrder(o);
+        inOrder.verify(o).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        
+        verify(o, never()).onNext(any());
+        verify(o, never()).onError(any(Throwable.class));
     }
 }
