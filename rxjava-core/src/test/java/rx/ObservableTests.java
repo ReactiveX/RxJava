@@ -43,6 +43,7 @@ import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
+import rx.util.functions.Action2;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -1090,6 +1091,38 @@ public class ObservableTests {
         inOrder.verifyNoMoreInteractions();
 
         verify(func, times(1)).call();
+    }
+    
+    @Test
+    public void testCollectToList() {
+        List<Integer> list = Observable.from(1, 2, 3).collect(new ArrayList<Integer>(), new Action2<List<Integer>, Integer>() {
+
+            @Override
+            public void call(List<Integer> list, Integer v) {
+                list.add(v);
+            }
+        }).toBlockingObservable().last();
+
+        assertEquals(3, list.size());
+        assertEquals(1, list.get(0).intValue());
+        assertEquals(2, list.get(1).intValue());
+        assertEquals(3, list.get(2).intValue());
+    }
+
+    @Test
+    public void testCollectToString() {
+        String value = Observable.from(1, 2, 3).collect(new StringBuilder(), new Action2<StringBuilder, Integer>() {
+
+            @Override
+            public void call(StringBuilder sb, Integer v) {
+                if (sb.length() > 0) {
+                    sb.append("-");
+                }
+                sb.append(v);
+            }
+        }).toBlockingObservable().last().toString();
+
+        assertEquals("1-2-3", value);
     }
 
 }
