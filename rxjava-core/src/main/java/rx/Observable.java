@@ -35,6 +35,7 @@ import rx.observables.GroupedObservable;
 import rx.operators.OperationAll;
 import rx.operators.OperationAmb;
 import rx.operators.OperationAny;
+import rx.operators.OperationAsObservable;
 import rx.operators.OperationAverage;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCache;
@@ -511,6 +512,14 @@ public class Observable<T> {
         return subscribeOn(scheduler).subscribe(onNext, onError, onComplete);
     }
 
+    /**
+      * Hides the identity of this observable.
+      * @return an Observable hiding the identity of this Observable.
+      */
+     public Observable<T> asObservable() {
+         return create(new OperationAsObservable<T>(this));
+     }
+    
     /**
      * Returns a {@link ConnectableObservable} that upon connection causes the
      * source Observable to push results into the specified subject.
