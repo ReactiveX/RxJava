@@ -4412,49 +4412,77 @@ public class Observable<T> {
         return OperationSum.sumDoubles(source);
     }
 
-        /**
-     * Create an Observable that extracts integer values from this Observable via
-     * the provided function and computes the integer sum of the value sequence.
+    /**
+     * Create an Observable that extracts an integer from each of the items
+     * emitted by the source Observable via a function you specify, and then
+     * emits the sum of these integers.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png">
      * 
-     * @param valueExtractor the function to extract an integer from this Observable
-     * @return an Observable that extracts integer values from this Observable via
-     * the provided function and computes the integer sum of the value sequence.
+     * @param valueExtractor the function to extract an integer from each item
+     *                       emitted by the source Observable
+     * @return an Observable that emits the integer sum of the integer values
+     *         corresponding to the items emitted by the source Observable
+     *         transformed by the provided function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumInteger()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public Observable<Integer> sumInteger(Func1<? super T, Integer> valueExtractor) {
         return create(new OperationSum.SumIntegerExtractor<T>(this, valueExtractor));
     }
 
     /**
-     * Create an Observable that extracts long values from this Observable via
-     * the provided function and computes the long sum of the value sequence.
+     * Create an Observable that extracts a long from each of the items emitted
+     * by the source Observable via a function you specify, and then emits the
+     * sum of these longs.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png">
      * 
-     * @param valueExtractor the function to extract an long from this Observable
-     * @return an Observable that extracts long values from this Observable via
-     * the provided function and computes the long sum of the value sequence.
+     * @param valueExtractor the function to extract a long from each item
+     *                       emitted by the source Observable
+     * @return an Observable that emits the long sum of the integer values
+     *         corresponding to the items emitted by the source Observable
+     *         transformed by the provided function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumLong()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public Observable<Long> sumLong(Func1<? super T, Long> valueExtractor) {
         return create(new OperationSum.SumLongExtractor<T>(this, valueExtractor));
     }
 
     /**
-     * Create an Observable that extracts float values from this Observable via
-     * the provided function and computes the float sum of the value sequence.
+     * Create an Observable that extracts a float from each of the items emitted
+     * by the source Observable via a function you specify, and then emits the
+     * sum of these floats.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png">
      * 
-     * @param valueExtractor the function to extract an float from this Observable
-     * @return an Observable that extracts float values from this Observable via
-     * the provided function and computes the float sum of the value sequence.
+     * @param valueExtractor the function to extract a float from each item
+     *                       emitted by the source Observable
+     * @return an Observable that emits the float sum of the integer values
+     *         corresponding to the items emitted by the source Observable
+     *         transformed by the provided function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumFloat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public Observable<Float> sumFloat(Func1<? super T, Float> valueExtractor) {
         return create(new OperationSum.SumFloatExtractor<T>(this, valueExtractor));
     }
 
     /**
-     * Create an Observable that extracts double values from this Observable via
-     * the provided function and computes the double sum of the value sequence.
+     * Create an Observable that extracts a double from each of the items
+     * emitted by the source Observable via a function you specify, and then
+     * emits the sum of these doubles.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png">
      * 
-     * @param valueExtractor the function to extract an double from this Observable
-     * @return an Observable that extracts double values from this Observable via
-     * the provided function and computes the double sum of the value sequence.
+     * @param valueExtractor the function to extract a double from each item
+     *                       emitted by the source Observable
+     * @return an Observable that emits the double sum of the integer values
+     *         corresponding to the items emitted by the source Observable
+     *         transformed by the provided function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumDouble()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public Observable<Double> sumDouble(Func1<? super T, Double> valueExtractor) {
         return create(new OperationSum.SumDoubleExtractor<T>(this, valueExtractor));
@@ -4526,48 +4554,76 @@ public class Observable<T> {
     }
 
     /**
-     * Create an Observable that extracts integer values from this Observable via
-     * the provided function and computes the integer average of the value sequence.
+     * Create an Observable that transforms items emitted by the source
+     * Observable into integers by using a function you provide and then emits
+     * the integer average of the complete sequence of transformed values.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png">
      * 
-     * @param valueExtractor the function to extract an integer from this Observable
-     * @return an Observable that extracts integer values from this Observable via
-     * the provided function and computes the integer average of the value sequence.
+     * @param valueExtractor the function to transform an item emitted by the
+     *                       source Observable into an integer
+     * @return an Observable that emits the integer average of the complete
+     *         sequence of items emitted by the source Observable when
+     *         transformed into integers by the specified function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageInteger()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public Observable<Integer> averageInteger(Func1<? super T, Integer> valueExtractor) {
         return create(new OperationAverage.AverageIntegerExtractor<T>(this, valueExtractor));
     }
 
     /**
-     * Create an Observable that extracts long values from this Observable via
-     * the provided function and computes the long average of the value sequence.
+     * Create an Observable that transforms items emitted by the source
+     * Observable into longs by using a function you provide and then emits
+     * the long average of the complete sequence of transformed values.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png">
      * 
-     * @param valueExtractor the function to extract an long from this Observable
-     * @return an Observable that extracts long values from this Observable via
-     * the provided function and computes the long average of the value sequence.
+     * @param valueExtractor the function to transform an item emitted by the
+     *                       source Observable into a long
+     * @return an Observable that emits the long average of the complete
+     *         sequence of items emitted by the source Observable when
+     *         transformed into longs by the specified function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageLong()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public Observable<Long> averageLong(Func1<? super T, Long> valueExtractor) {
         return create(new OperationAverage.AverageLongExtractor<T>(this, valueExtractor));
     }
 
     /**
-     * Create an Observable that extracts float values from this Observable via
-     * the provided function and computes the float average of the value sequence.
+     * Create an Observable that transforms items emitted by the source
+     * Observable into floats by using a function you provide and then emits
+     * the float average of the complete sequence of transformed values.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png">
      * 
-     * @param valueExtractor the function to extract an float from this Observable
-     * @return an Observable that extracts float values from this Observable via
-     * the provided function and computes the float average of the value sequence.
+     * @param valueExtractor the function to transform an item emitted by the
+     *                       source Observable into a float
+     * @return an Observable that emits the float average of the complete
+     *         sequence of items emitted by the source Observable when
+     *         transformed into floats by the specified function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageFloat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public Observable<Float> averageFloat(Func1<? super T, Float> valueExtractor) {
         return create(new OperationAverage.AverageFloatExtractor<T>(this, valueExtractor));
     }
 
     /**
-     * Create an Observable that extracts double values from this Observable via
-     * the provided function and computes the double average of the value sequence.
+     * Create an Observable that transforms items emitted by the source
+     * Observable into doubles by using a function you provide and then emits
+     * the double average of the complete sequence of transformed values.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png">
      * 
-     * @param valueExtractor the function to extract an double from this Observable
-     * @return an Observable that extracts double values from this Observable via
-     * the provided function and computes the double average of the value sequence.
+     * @param valueExtractor the function to transform an item emitted by the
+     *                       source Observable into a double
+     * @return an Observable that emits the double average of the complete
+     *         sequence of items emitted by the source Observable when
+     *         transformed into doubles by the specified function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageDouble()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public Observable<Double> averageDouble(Func1<? super T, Double> valueExtractor) {
         return create(new OperationAverage.AverageDoubleExtractor<T>(this, valueExtractor));
