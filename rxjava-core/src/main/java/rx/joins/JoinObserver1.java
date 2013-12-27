@@ -23,28 +23,31 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Notification;
 import rx.Observable;
+import rx.Observer;
 import rx.operators.SafeObservableSubscription;
+import rx.operators.SafeObserver;
 import rx.util.functions.Action1;
 
 /**
  * Default implementation of a join observer.
  */
-public final class JoinObserver1<T> extends ObserverBase<Notification<T>> implements JoinObserver {
+public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinObserver {
     private Object gate;
     private final Observable<T> source;
     private final Action1<Throwable> onError;
     private final List<ActivePlan0> activePlans;
     private final Queue<Notification<T>> queue;
-    private final SafeObservableSubscription subscription;
+    private final SafeObservableSubscription subscription = new SafeObservableSubscription();
     private volatile boolean done;
     private final AtomicBoolean subscribed = new AtomicBoolean(false);
+    private final SafeObserver<Notification<T>> safeObserver;
     
     public JoinObserver1(Observable<T> source, Action1<Throwable> onError) {
         this.source = source;
         this.onError = onError;
         queue = new LinkedList<Notification<T>>();
-        subscription = new SafeObservableSubscription();
         activePlans = new ArrayList<ActivePlan0>();
+        safeObserver = new SafeObserver<Notification<T>>(subscription, new InnerObserver());
     }
     public Queue<Notification<T>> queue() {
         return queue;
@@ -67,34 +70,51 @@ public final class JoinObserver1<T> extends ObserverBase<Notification<T>> implem
         queue.remove();
     }
 
-    @Override
-    protected void onNextCore(Notification<T> args) {
-        synchronized (gate) {
-            if (!done) {
-                if (args.isOnError()) {
-                    onError.call(args.getThrowable());
-                    return;
-                }
-                queue.add(args);
-                
-                // remark: activePlans might change while iterating
-                for (ActivePlan0 a : new ArrayList<ActivePlan0>(activePlans)) {
-                    a.match();
+    private final class InnerObserver implements Observer<Notification<T>> {
+
+        @Override
+        public void onNext(Notification<T> args) {
+            synchronized (gate) {
+                if (!done) {
+                    if (args.isOnError()) {
+                        onError.call(args.getThrowable());
+                        return;
+                    }
+                    queue.add(args);
+
+                    // remark: activePlans might change while iterating
+                    for (ActivePlan0 a : new ArrayList<ActivePlan0>(activePlans)) {
+                        a.match();
+                    }
                 }
             }
         }
-    }
 
-    @Override
-    protected void onErrorCore(Throwable e) {
-        // not expected
-    }
+        @Override
+        public void onError(Throwable e) {
+            // not expected
+        }
 
-    @Override
-    protected void onCompletedCore() {
-        // not expected or ignored
+        @Override
+        public void onCompleted() {
+            // not expected or ignored
+        }
     }
     
+    @Override
+    public void onNext(Notification<T> args) {
+        safeObserver.onNext(args);
+    }
+
+    @Override
+    public void onError(Throwable e) {
+        safeObserver.onError(e);
+    }
+
+    @Override
+    public void onCompleted() {
+        safeObserver.onCompleted();
+    }
     
     void removeActivePlan(ActivePlan0 activePlan) {
         activePlans.remove(activePlan);
