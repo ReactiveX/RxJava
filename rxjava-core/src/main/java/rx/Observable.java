@@ -77,6 +77,7 @@ import rx.operators.OperationScan;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipWhile;
+import rx.operators.OperationSubscribe;
 import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSum;
 import rx.operators.OperationSwitch;
@@ -100,7 +101,6 @@ import rx.operators.OperationWindow;
 import rx.operators.OperationZip;
 import rx.operators.SafeObservableSubscription;
 import rx.operators.SafeObserver;
-import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
 import rx.subjects.AsyncSubject;
@@ -305,42 +305,12 @@ public class Observable<T> implements IObservable<T> {
     }
 
     /**
-     * Protects against errors being thrown from Observer implementations and
-     * ensures onNext/onError/onCompleted contract compliance.
-     * <p>
-     * See https://github.com/Netflix/RxJava/issues/216 for a discussion on
-     * "Guideline 6.4: Protect calls to user code from within an operator"
-     */
-    private Subscription protectivelyWrapAndSubscribe(Observer<? super T> o) {
-        SafeObservableSubscription subscription = new SafeObservableSubscription();
-        return subscription.wrap(subscribe(new SafeObserver<T>(subscription, o)));
-    }
-
-    /**
      * Subscribe and ignore all events.
      *  
      * @return 
      */
     public Subscription subscribe() {
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
-
-            @Override
-            public void onCompleted() {
-                // do nothing
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                handleError(e);
-                throw new OnErrorNotImplementedException(e);
-            }
-
-            @Override
-            public void onNext(T args) {
-                // do nothing
-            }
-
-        });
+        return OperationSubscribe.subscribe(this);
     }
     
     /**
@@ -351,34 +321,7 @@ public class Observable<T> implements IObservable<T> {
      * @return 
      */
     public Subscription subscribe(final Action1<? super T> onNext) {
-        if (onNext == null) {
-            throw new IllegalArgumentException("onNext can not be null");
-        }
-
-        /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
-         */
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
-
-            @Override
-            public void onCompleted() {
-                // do nothing
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                handleError(e);
-                throw new OnErrorNotImplementedException(e);
-            }
-
-            @Override
-            public void onNext(T args) {
-                onNext.call(args);
-            }
-
-        });
+        return OperationSubscribe.subscribe(this, onNext);
     }
 
     /**
@@ -402,37 +345,7 @@ public class Observable<T> implements IObservable<T> {
      * @return
      */
     public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError) {
-        if (onNext == null) {
-            throw new IllegalArgumentException("onNext can not be null");
-        }
-        if (onError == null) {
-            throw new IllegalArgumentException("onError can not be null");
-        }
-
-        /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
-         */
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
-
-            @Override
-            public void onCompleted() {
-                // do nothing
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                handleError(e);
-                onError.call(e);
-            }
-
-            @Override
-            public void onNext(T args) {
-                onNext.call(args);
-            }
-
-        });
+        return OperationSubscribe.subscribe(this, onNext, onError);
     }
 
     /**
@@ -458,40 +371,7 @@ public class Observable<T> implements IObservable<T> {
      * @return
      */
     public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
-        if (onNext == null) {
-            throw new IllegalArgumentException("onNext can not be null");
-        }
-        if (onError == null) {
-            throw new IllegalArgumentException("onError can not be null");
-        }
-        if (onComplete == null) {
-            throw new IllegalArgumentException("onComplete can not be null");
-        }
-
-        /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
-         */
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
-
-            @Override
-            public void onCompleted() {
-                onComplete.call();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                handleError(e);
-                onError.call(e);
-            }
-
-            @Override
-            public void onNext(T args) {
-                onNext.call(args);
-            }
-
-        });
+        return OperationSubscribe.subscribe(this, onNext, onError, onComplete);
     }
 
     /**
@@ -522,17 +402,6 @@ public class Observable<T> implements IObservable<T> {
      */
     public <R> ConnectableObservable<R> multicast(Subject<? super T, ? extends R> subject) {
         return OperationMulticast.multicast(this, subject);
-    }
-
-    /**
-     * Allow the {@link RxJavaErrorHandler} to receive the exception from
-     * onError.
-     * 
-     * @param e
-     */
-    private void handleError(Throwable e) {
-        // onError should be rare so we'll only fetch when needed
-        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
     }
 
     /**
