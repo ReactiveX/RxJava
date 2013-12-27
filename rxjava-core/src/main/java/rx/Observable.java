@@ -1108,20 +1108,27 @@ public class Observable<T> {
     /**
      * Repeats the observable sequence indefinitely.
      * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.png">
      *
-     * @return The observable sequence producing the elements of the given sequence repeatedly and sequentially.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428(v=vs.103).aspx">MSDN: Observable.Repeat</a>
+     * @return an Observable that emits the items emitted by the source
+     *         Observable repeatedly and in sequence
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#repeat">RxJava Wiki: repeat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public Observable<T> repeat() {
         return this.repeat(Schedulers.currentThread());
     }
 
     /**
-     * Repeats the observable sequence indefinitely.
+     * Repeats the observable sequence indefinitely, on a particular scheduler.
      * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.s.png">
+     * 
      * @param scheduler the scheduler to send the values on.
-     * @return The observable sequence producing the elements of the given sequence repeatedly and sequentially.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428(v=vs.103).aspx">MSDN: Observable.Repeat</a>
+     * @return an Observable that emits the items emitted by the source
+     *         Observable repeatedly and in sequence
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#repeat">RxJava Wiki: repeat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public Observable<T> repeat(Scheduler scheduler) {
         return create(OperationRepeat.repeat(this, scheduler));
