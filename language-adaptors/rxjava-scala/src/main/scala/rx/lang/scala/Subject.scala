@@ -15,8 +15,6 @@
  */
 package rx.lang.scala
 
-import rx.joins.ObserverBase
-
 /**
 * A Subject is an Observable and an Observer at the same time.
 */

@@ -15,6 +15,7 @@
  */
 package rx;
 
+import static org.junit.Assert.*;
 import static rx.util.functions.Functions.*;
 
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallel;
 import rx.operators.OperationParallelMerge;
+import rx.operators.OperationRepeat;
 import rx.operators.OperationReplay;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
@@ -122,6 +124,8 @@ import rx.util.TimeInterval;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
+import rx.util.functions.Action2;
+import rx.util.functions.Async;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -351,6 +355,7 @@ public class Observable<T> {
      * 
      * @param onNext
      * @return 
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      */
     public Subscription subscribe(final Action1<? super T> onNext) {
         if (onNext == null) {
@@ -390,6 +395,7 @@ public class Observable<T> {
      * @param onNext
      * @param scheduler
      * @return
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      */
     public Subscription subscribe(final Action1<? super T> onNext, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext);
@@ -402,6 +408,7 @@ public class Observable<T> {
      * @param onNext
      * @param onError
      * @return
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      */
     public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError) {
         if (onNext == null) {
@@ -446,6 +453,7 @@ public class Observable<T> {
      * @param onError
      * @param scheduler
      * @return
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      */
     public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError);
@@ -459,6 +467,7 @@ public class Observable<T> {
      * @param onError
      * @param onComplete
      * @return
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      */
     public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
         if (onNext == null) {
@@ -506,6 +515,7 @@ public class Observable<T> {
      * @param onComplete
      * @param scheduler
      * @return
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      */
     public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(onNext, onError, onComplete);
@@ -518,7 +528,7 @@ public class Observable<T> {
      public Observable<T> asObservable() {
          return create(new OperationAsObservable<T>(this));
      }
-    
+
     /**
      * Returns a {@link ConnectableObservable} that upon connection causes the
      * source Observable to push results into the specified subject.
@@ -640,6 +650,7 @@ public class Observable<T> {
      * @return an Observable that, when an {@link Observer} subscribes to it,
      *         will execute the given function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create">RxJava Wiki: create()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.create.aspx">MSDN: Observable.Create</a>
      */
     public static <T> Observable<T> create(OnSubscribeFunc<T> func) {
         return new Observable<T>(func);
@@ -1073,7 +1084,7 @@ public class Observable<T> {
      * @param count the number of sequential Integers to generate
      * @return an Observable that emits a range of sequential Integers
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#range">RxJava Wiki: range()</a>
-     * @see MSDN: <a href="http://msdn.microsoft.com/en-us/library/hh229460.aspx">Observable.Range Method (Int32, Int32)</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229460.aspx">MSDN: Observable.Range</a>
      */
     public static Observable<Integer> range(int start, int count) {
         return from(Range.createWithCount(start, count));
@@ -1090,10 +1101,39 @@ public class Observable<T> {
      * @param scheduler the scheduler to run the generator loop on
      * @return an Observable that emits a range of sequential Integers
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#range">RxJava Wiki: range()</a>
-     * @see MSDN: <a href="http://msdn.microsoft.com/en-us/library/hh211896.aspx">Observable.Range Method (Int32, Int32, IScheduler)</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211896.aspx">MSDN: Observable.Range</a>
      */
     public static Observable<Integer> range(int start, int count, Scheduler scheduler) {
         return from(Range.createWithCount(start, count), scheduler);
+    }
+
+    /**
+     * Repeats the observable sequence indefinitely.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.png">
+     *
+     * @return an Observable that emits the items emitted by the source
+     *         Observable repeatedly and in sequence
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#repeat">RxJava Wiki: repeat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+     */
+    public Observable<T> repeat() {
+        return this.repeat(Schedulers.currentThread());
+    }
+
+    /**
+     * Repeats the observable sequence indefinitely, on a particular scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.s.png">
+     * 
+     * @param scheduler the scheduler to send the values on.
+     * @return an Observable that emits the items emitted by the source
+     *         Observable repeatedly and in sequence
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#repeat">RxJava Wiki: repeat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+     */
+    public Observable<T> repeat(Scheduler scheduler) {
+        return create(OperationRepeat.repeat(this, scheduler));
     }
 
     /**
@@ -4352,6 +4392,11 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sum()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
+    public static Observable<Integer> sumInteger(Observable<Integer> source) {
+        return OperationSum.sum(source);
+    }
+    
+    @Deprecated
     public static Observable<Integer> sum(Observable<Integer> source) {
         return OperationSum.sum(source);
     }
@@ -4368,7 +4413,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumLongs()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
-    public static Observable<Long> sumLongs(Observable<Long> source) {
+    public static Observable<Long> sumLong(Observable<Long> source) {
         return OperationSum.sumLongs(source);
     }
 
@@ -4384,7 +4429,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumFloats()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
-    public static Observable<Float> sumFloats(Observable<Float> source) {
+    public static Observable<Float> sumFloat(Observable<Float> source) {
         return OperationSum.sumFloats(source);
     }
 
@@ -4400,10 +4445,86 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumDoubles()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
-    public static Observable<Double> sumDoubles(Observable<Double> source) {
+    public static Observable<Double> sumDouble(Observable<Double> source) {
         return OperationSum.sumDoubles(source);
     }
 
+    /**
+     * Create an Observable that extracts an integer from each of the items
+     * emitted by the source Observable via a function you specify, and then
+     * emits the sum of these integers.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png">
+     * 
+     * @param valueExtractor the function to extract an integer from each item
+     *                       emitted by the source Observable
+     * @return an Observable that emits the integer sum of the integer values
+     *         corresponding to the items emitted by the source Observable
+     *         transformed by the provided function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumInteger()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     */
+    public Observable<Integer> sumInteger(Func1<? super T, Integer> valueExtractor) {
+        return create(new OperationSum.SumIntegerExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts a long from each of the items emitted
+     * by the source Observable via a function you specify, and then emits the
+     * sum of these longs.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png">
+     * 
+     * @param valueExtractor the function to extract a long from each item
+     *                       emitted by the source Observable
+     * @return an Observable that emits the long sum of the integer values
+     *         corresponding to the items emitted by the source Observable
+     *         transformed by the provided function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumLong()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     */
+    public Observable<Long> sumLong(Func1<? super T, Long> valueExtractor) {
+        return create(new OperationSum.SumLongExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts a float from each of the items emitted
+     * by the source Observable via a function you specify, and then emits the
+     * sum of these floats.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png">
+     * 
+     * @param valueExtractor the function to extract a float from each item
+     *                       emitted by the source Observable
+     * @return an Observable that emits the float sum of the integer values
+     *         corresponding to the items emitted by the source Observable
+     *         transformed by the provided function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumFloat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     */
+    public Observable<Float> sumFloat(Func1<? super T, Float> valueExtractor) {
+        return create(new OperationSum.SumFloatExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that extracts a double from each of the items
+     * emitted by the source Observable via a function you specify, and then
+     * emits the sum of these doubles.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png">
+     * 
+     * @param valueExtractor the function to extract a double from each item
+     *                       emitted by the source Observable
+     * @return an Observable that emits the double sum of the integer values
+     *         corresponding to the items emitted by the source Observable
+     *         transformed by the provided function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sum">RxJava Wiki: sumDouble()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     */
+    public Observable<Double> sumDouble(Func1<? super T, Double> valueExtractor) {
+        return create(new OperationSum.SumDoubleExtractor<T>(this, valueExtractor));
+    }
+    
     /**
      * Returns an Observable that computes the average of the Integers emitted
      * by the source Observable.
@@ -4417,6 +4538,11 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: average()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
+    public static Observable<Integer> averageInteger(Observable<Integer> source) {
+        return OperationAverage.average(source);
+    }
+    
+    @Deprecated
     public static Observable<Integer> average(Observable<Integer> source) {
         return OperationAverage.average(source);
     }
@@ -4433,7 +4559,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageLongs()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
-    public static Observable<Long> averageLongs(Observable<Long> source) {
+    public static Observable<Long> averageLong(Observable<Long> source) {
         return OperationAverage.averageLongs(source);
     }
 
@@ -4449,7 +4575,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageFloats()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
-    public static Observable<Float> averageFloats(Observable<Float> source) {
+    public static Observable<Float> averageFloat(Observable<Float> source) {
         return OperationAverage.averageFloats(source);
     }
 
@@ -4465,8 +4591,84 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageDoubles()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
-    public static Observable<Double> averageDoubles(Observable<Double> source) {
+    public static Observable<Double> averageDouble(Observable<Double> source) {
         return OperationAverage.averageDoubles(source);
+    }
+
+    /**
+     * Create an Observable that transforms items emitted by the source
+     * Observable into integers by using a function you provide and then emits
+     * the integer average of the complete sequence of transformed values.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png">
+     * 
+     * @param valueExtractor the function to transform an item emitted by the
+     *                       source Observable into an integer
+     * @return an Observable that emits the integer average of the complete
+     *         sequence of items emitted by the source Observable when
+     *         transformed into integers by the specified function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageInteger()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     */
+    public Observable<Integer> averageInteger(Func1<? super T, Integer> valueExtractor) {
+        return create(new OperationAverage.AverageIntegerExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that transforms items emitted by the source
+     * Observable into longs by using a function you provide and then emits
+     * the long average of the complete sequence of transformed values.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png">
+     * 
+     * @param valueExtractor the function to transform an item emitted by the
+     *                       source Observable into a long
+     * @return an Observable that emits the long average of the complete
+     *         sequence of items emitted by the source Observable when
+     *         transformed into longs by the specified function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageLong()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     */
+    public Observable<Long> averageLong(Func1<? super T, Long> valueExtractor) {
+        return create(new OperationAverage.AverageLongExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that transforms items emitted by the source
+     * Observable into floats by using a function you provide and then emits
+     * the float average of the complete sequence of transformed values.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png">
+     * 
+     * @param valueExtractor the function to transform an item emitted by the
+     *                       source Observable into a float
+     * @return an Observable that emits the float average of the complete
+     *         sequence of items emitted by the source Observable when
+     *         transformed into floats by the specified function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageFloat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     */
+    public Observable<Float> averageFloat(Func1<? super T, Float> valueExtractor) {
+        return create(new OperationAverage.AverageFloatExtractor<T>(this, valueExtractor));
+    }
+
+    /**
+     * Create an Observable that transforms items emitted by the source
+     * Observable into doubles by using a function you provide and then emits
+     * the double average of the complete sequence of transformed values.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png">
+     * 
+     * @param valueExtractor the function to transform an item emitted by the
+     *                       source Observable into a double
+     * @return an Observable that emits the double average of the complete
+     *         sequence of items emitted by the source Observable when
+     *         transformed into doubles by the specified function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#average">RxJava Wiki: averageDouble()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     */
+    public Observable<Double> averageDouble(Func1<? super T, Double> valueExtractor) {
+        return create(new OperationAverage.AverageDoubleExtractor<T>(this, valueExtractor));
     }
 
     /**
@@ -5229,7 +5431,30 @@ public class Observable<T> {
     public <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator) {
         return create(OperationScan.scan(this, initialValue, accumulator)).takeLast(1);
     }
+    
+    /**
+     * Collect values into a single mutable data structure.
+     * <p>
+     * A simplified version of `reduce` that does not need to return the state on each pass.
+     * <p>
+     * 
+     * @param state
+     * @param collector
+     * @return
+     */
+    public <R> Observable<R> collect(R state, final Action2<R, ? super T> collector) {
+        Func2<R, T, R> accumulator = new Func2<R, T, R>() {
 
+            @Override
+            public R call(R state, T value) {
+                collector.call(state, value);
+                return state;
+            }
+
+        };
+        return reduce(state, accumulator);
+    }
+    
     /**
      * Synonymous with <code>reduce()</code>.
      * <p>
@@ -5242,7 +5467,7 @@ public class Observable<T> {
     public <R> Observable<R> aggregate(R initialValue, Func2<R, ? super T, R> accumulator) {
         return reduce(initialValue, accumulator);
     }
-
+    
     /**
      * Returns an Observable that applies a function of your choosing to the
      * first item emitted by a source Observable, then feeds the result of that
@@ -5380,9 +5605,40 @@ public class Observable<T> {
     }
 
     /**
-     * If the source Observable completes after emitting a single item, return
-     * an Observable that emits that item. If the source Observable emits more
-     * than one item or no items, throw an IllegalArgumentException.
+     * Create an Observable that skips values before the given time ellapses.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.t.png">
+     * 
+     * @param time the length of the time window
+     * @param unit the time unit
+     * @return an Observable that skips values before the given time ellapses
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skip">RxJava Wiki: skip()</a>
+     */
+    public Observable<T> skip(long time, TimeUnit unit) {
+        return skip(time, unit, Schedulers.threadPoolForComputation());
+    }
+ 
+    /**
+     * Create an Observable that skips values before the given time elapses
+     * while waiting on the given scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.ts.png">
+     * 
+     * @param time the length of the time window
+     * @param unit the time unit
+     * @param scheduler the scheduler where the timed wait happens
+     * @return an Observable that skips values before the given time elapses
+     *         while waiting on the given scheduler
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skip">RxJava Wiki: skip()</a>
+     */
+    public Observable<T> skip(long time, TimeUnit unit, Scheduler scheduler) {
+        return create(new OperationSkip.SkipTimed<T>(this, time, unit, scheduler));
+    }
+ 
+    /**
+     * If the Observable completes after emitting a single item, return an
+     * Observable containing that item. If it emits more than one item or no
+     * item, throw an IllegalArgumentException.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.png">
      * 
@@ -5574,6 +5830,40 @@ public class Observable<T> {
         return create(OperationTake.take(this, num));
     }
 
+    /**
+     * Create an Observable that emits the emitted items from the source
+     * Observable before the time runs out.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.t.png">
+     * 
+     * @param time the length of the time window
+     * @param unit the time unit
+     * @return an Observable that emits the emitted items from the source
+     *         Observable before the time runs out
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#take">RxJava Wiki: take()</a>
+     */
+    public Observable<T> take(long time, TimeUnit unit) {
+        return take(time, unit, Schedulers.threadPoolForComputation());
+    }
+     
+    /**
+     * Create an Observable that emits the emitted items from the source
+     * Observable before the time runs out, waiting on the given scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.ts.png">
+     * 
+     * @param time the length of the time window
+     * @param unit the time unit
+     * @param scheduler the scheduler used for time source
+     * @return an Observable that emits the emitted items from the source
+     *         Observable before the time runs out, waiting on the given
+     *         scheduler
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#take">RxJava Wiki: take()</a>
+     */
+    public Observable<T> take(long time, TimeUnit unit, Scheduler scheduler) {
+        return create(new OperationTake.TakeTimed<T>(this, time, unit, scheduler));
+    }
+ 
     /**
      * Returns an Observable that emits items emitted by the source Observable
      * so long as a specified condition is true.
@@ -5916,6 +6206,41 @@ public class Observable<T> {
         return create(OperationSkipLast.skipLast(this, count));
     }
 
+    /**
+     * Create an Observable that skips values emitted in a time window before
+     * the source completes.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.t.png">
+     *
+     * @param time the length of the time window
+     * @param unit the time unit
+     * @return an Observable that skips values emitted in a time window before
+     *         the source completes
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skiplast">RxJava Wiki: skipLast()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211750.aspx">MSDN: Observable.SkipLast</a>
+     */
+    public Observable<T> skipLast(long time, TimeUnit unit) {
+        return skipLast(time, unit, Schedulers.threadPoolForComputation());
+    }
+    
+    /**
+     * Create an Observable that skips values emitted in a time window before
+     * the source completes by using the given scheduler as time source.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.ts.png">
+     *
+     * @param time the length of the time window
+     * @param unit the time unit
+     * @param scheduler the scheduler used for time source
+     * @return an Observable that skips values emitted in a time window before
+     *         the source completes by using the given scheduler as time source
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skiplast">RxJava Wiki: skipLast()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211750.aspx">MSDN: Observable.SkipLast</a>
+     */
+    public Observable<T> skipLast(long time, TimeUnit unit, Scheduler scheduler) {
+        return create(new OperationSkipLast.SkipLastTimed<T>(this, time, unit, scheduler));
+    }
+ 
     /**
      * Returns an Observable that emits a single item, a list composed of all
      * the items emitted by the source Observable.
@@ -6814,8 +7139,8 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnNext.png">
      *
-     * @param onCompleted the action to invoke when the source Observable calls
-     *                    <code>onCompleted</code>
+     * @param onNext the action to invoke when the source Observable calls
+     *               <code>onNext</code>
      * @return the source Observable with the side-effecting behavior applied
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach">RxJava Wiki: doOnNext()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
@@ -6878,7 +7203,7 @@ public class Observable<T> {
      * For why this is being used see
      * https://github.com/Netflix/RxJava/issues/216 for discussion on
      * "Guideline 6.4: Protect calls to user code from within an operator"
-     * 
+     * <p>
      * Note: If strong reasons for not depending on package names comes up then
      * the implementation of this method can change to looking for a marker
      * interface.
