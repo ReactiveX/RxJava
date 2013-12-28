@@ -15,7 +15,6 @@
  */
 package rx;
 
-import static org.junit.Assert.*;
 import static rx.util.functions.Functions.*;
 
 import java.util.ArrayList;
@@ -125,7 +124,6 @@ import rx.util.Timestamped;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Action2;
-import rx.util.functions.Async;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
