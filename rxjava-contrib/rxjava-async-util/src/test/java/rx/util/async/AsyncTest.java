@@ -14,20 +14,29 @@
  * limitations under the License.
  */
 
-package rx.util.functions;
+package rx.util.async;
 
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Matchers.any;
+import org.mockito.InOrder;
 import org.mockito.Mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import rx.Observable;
 import rx.Observer;
 import rx.schedulers.Schedulers;
+import rx.schedulers.TestScheduler;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Action2;
@@ -54,10 +63,12 @@ import rx.util.functions.FuncN;
 public class AsyncTest {
     @Mock
     Observer<Object> observer;
+
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
     }
+
     @Test
     public void testAction0() {
         final AtomicInteger value = new AtomicInteger();
@@ -67,17 +78,18 @@ public class AsyncTest {
                 value.incrementAndGet();
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call()
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
         verify(observer, times(1)).onCompleted();
-        
+
         Assert.assertEquals(1, value.get());
     }
+
     @Test
     public void testAction0Error() {
         Action0 action = new Action0() {
@@ -86,15 +98,16 @@ public class AsyncTest {
                 throw new RuntimeException("Forced failure");
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call()
                 .subscribe(observer);
-        
+
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
         verify(observer, never()).onCompleted();
     }
+
     @Test
     public void testAction1() {
         final AtomicInteger value = new AtomicInteger();
@@ -104,17 +117,18 @@ public class AsyncTest {
                 value.set(t1);
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
         verify(observer, times(1)).onCompleted();
-        
+
         Assert.assertEquals(1, value.get());
     }
+
     @Test
     public void testAction1Error() {
         Action1<Integer> action = new Action1<Integer>() {
@@ -123,15 +137,16 @@ public class AsyncTest {
                 throw new RuntimeException("Forced failure");
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1)
                 .subscribe(observer);
-        
+
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
         verify(observer, never()).onCompleted();
     }
+
     @Test
     public void testAction2() {
         final AtomicInteger value = new AtomicInteger();
@@ -141,17 +156,18 @@ public class AsyncTest {
                 value.set(t1 | t2);
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
         verify(observer, times(1)).onCompleted();
-        
+
         Assert.assertEquals(3, value.get());
     }
+
     @Test
     public void testAction2Error() {
         Action2<Integer, Integer> action = new Action2<Integer, Integer>() {
@@ -160,15 +176,16 @@ public class AsyncTest {
                 throw new RuntimeException("Forced failure");
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2)
                 .subscribe(observer);
-        
+
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
         verify(observer, never()).onCompleted();
     }
+
     @Test
     public void testAction3() {
         final AtomicInteger value = new AtomicInteger();
@@ -178,17 +195,18 @@ public class AsyncTest {
                 value.set(t1 | t2 | t3);
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
         verify(observer, times(1)).onCompleted();
-        
+
         Assert.assertEquals(7, value.get());
     }
+
     @Test
     public void testAction3Error() {
         Action3<Integer, Integer, Integer> action = new Action3<Integer, Integer, Integer>() {
@@ -197,15 +215,16 @@ public class AsyncTest {
                 throw new RuntimeException("Forced failure");
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4)
                 .subscribe(observer);
-        
+
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
         verify(observer, never()).onCompleted();
     }
+
     @Test
     public void testAction4() {
         final AtomicInteger value = new AtomicInteger();
@@ -215,17 +234,18 @@ public class AsyncTest {
                 value.set(t1 | t2 | t3 | t4);
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
         verify(observer, times(1)).onCompleted();
-        
+
         Assert.assertEquals(15, value.get());
     }
+
     @Test
     public void testAction4Error() {
         Action4<Integer, Integer, Integer, Integer> action = new Action4<Integer, Integer, Integer, Integer>() {
@@ -234,15 +254,16 @@ public class AsyncTest {
                 throw new RuntimeException("Forced failure");
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8)
                 .subscribe(observer);
-        
+
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
         verify(observer, never()).onCompleted();
     }
+
     @Test
     public void testAction5() {
         final AtomicInteger value = new AtomicInteger();
@@ -252,17 +273,18 @@ public class AsyncTest {
                 value.set(t1 | t2 | t3 | t4 | t5);
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
         verify(observer, times(1)).onCompleted();
-        
+
         Assert.assertEquals(31, value.get());
     }
+
     @Test
     public void testAction5Error() {
         Action5<Integer, Integer, Integer, Integer, Integer> action = new Action5<Integer, Integer, Integer, Integer, Integer>() {
@@ -271,15 +293,16 @@ public class AsyncTest {
                 throw new RuntimeException("Forced failure");
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16)
                 .subscribe(observer);
-        
+
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
         verify(observer, never()).onCompleted();
     }
+
     @Test
     public void testAction6() {
         final AtomicInteger value = new AtomicInteger();
@@ -289,17 +312,18 @@ public class AsyncTest {
                 value.set(t1 | t2 | t3 | t4 | t5 | t6);
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
         verify(observer, times(1)).onCompleted();
-        
+
         Assert.assertEquals(63, value.get());
     }
+
     @Test
     public void testAction6Error() {
         Action6<Integer, Integer, Integer, Integer, Integer, Integer> action = new Action6<Integer, Integer, Integer, Integer, Integer, Integer>() {
@@ -308,15 +332,16 @@ public class AsyncTest {
                 throw new RuntimeException("Forced failure");
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32)
                 .subscribe(observer);
-        
+
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
         verify(observer, never()).onCompleted();
     }
+
     @Test
     public void testAction7() {
         final AtomicInteger value = new AtomicInteger();
@@ -326,17 +351,18 @@ public class AsyncTest {
                 value.set(t1 | t2 | t3 | t4 | t5 | t6 | t7);
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
         verify(observer, times(1)).onCompleted();
-        
+
         Assert.assertEquals(127, value.get());
     }
+
     @Test
     public void testAction7Error() {
         Action7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> action = new Action7<Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
@@ -345,15 +371,16 @@ public class AsyncTest {
                 throw new RuntimeException("Forced failure");
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64)
                 .subscribe(observer);
-        
+
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
         verify(observer, never()).onCompleted();
     }
+
     @Test
     public void testAction8() {
         final AtomicInteger value = new AtomicInteger();
@@ -363,17 +390,18 @@ public class AsyncTest {
                 value.set(t1 | t2 | t3 | t4 | t5 | t6 | t7 | t8);
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
         verify(observer, times(1)).onCompleted();
-        
+
         Assert.assertEquals(255, value.get());
     }
+
     @Test
     public void testAction8Error() {
         Action8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> action = new Action8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
@@ -382,15 +410,16 @@ public class AsyncTest {
                 throw new RuntimeException("Forced failure");
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128)
                 .subscribe(observer);
-        
+
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
         verify(observer, never()).onCompleted();
     }
+
     @Test
     public void testAction9() {
         final AtomicInteger value = new AtomicInteger();
@@ -400,17 +429,18 @@ public class AsyncTest {
                 value.set(t1 | t2 | t3 | t4 | t5 | t6 | t7 | t8 | t9);
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128, 256)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
         verify(observer, times(1)).onCompleted();
-        
+
         Assert.assertEquals(511, value.get());
     }
+
     @Test
     public void testAction9Error() {
         Action9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> action = new Action9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
@@ -419,15 +449,16 @@ public class AsyncTest {
                 throw new RuntimeException("Forced failure");
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128, 256)
                 .subscribe(observer);
-        
+
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
         verify(observer, never()).onCompleted();
     }
+
     @Test
     public void testActionN() {
         final AtomicInteger value = new AtomicInteger();
@@ -436,22 +467,23 @@ public class AsyncTest {
             public void call(Object... args) {
                 int i = 0;
                 for (Object o : args) {
-                    i = i | (Integer)o;
+                    i = i | (Integer) o;
                 }
                 value.set(i);
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128, 256, 512)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
         verify(observer, times(1)).onCompleted();
-        
+
         Assert.assertEquals(1023, value.get());
     }
+
     @Test
     public void testActionNError() {
         ActionN action = new ActionN() {
@@ -460,15 +492,16 @@ public class AsyncTest {
                 throw new RuntimeException("Forced failure");
             }
         };
-        
+
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128, 256, 512)
                 .subscribe(observer);
-        
+
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
         verify(observer, never()).onCompleted();
     }
+
     @Test
     public void testFunc0() {
         Func0<Integer> func = new Func0<Integer>() {
@@ -480,12 +513,13 @@ public class AsyncTest {
         Async.toAsync(func, Schedulers.immediate())
                 .call()
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(0);
         verify(observer, times(1)).onCompleted();
-        
+
     }
+
     @Test
     public void testFunc1() {
         Func1<Integer, Integer> func = new Func1<Integer, Integer>() {
@@ -497,11 +531,12 @@ public class AsyncTest {
         Async.toAsync(func, Schedulers.immediate())
                 .call(1)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onCompleted();
     }
+
     @Test
     public void testFunc2() {
         Func2<Integer, Integer, Integer> func = new Func2<Integer, Integer, Integer>() {
@@ -513,11 +548,12 @@ public class AsyncTest {
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(3);
         verify(observer, times(1)).onCompleted();
     }
+
     @Test
     public void testFunc3() {
         Func3<Integer, Integer, Integer, Integer> func = new Func3<Integer, Integer, Integer, Integer>() {
@@ -529,11 +565,12 @@ public class AsyncTest {
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(7);
         verify(observer, times(1)).onCompleted();
     }
+
     @Test
     public void testFunc4() {
         Func4<Integer, Integer, Integer, Integer, Integer> func = new Func4<Integer, Integer, Integer, Integer, Integer>() {
@@ -545,11 +582,12 @@ public class AsyncTest {
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(15);
         verify(observer, times(1)).onCompleted();
     }
+
     @Test
     public void testFunc5() {
         Func5<Integer, Integer, Integer, Integer, Integer, Integer> func = new Func5<Integer, Integer, Integer, Integer, Integer, Integer>() {
@@ -561,11 +599,12 @@ public class AsyncTest {
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(31);
         verify(observer, times(1)).onCompleted();
     }
+
     @Test
     public void testFunc6() {
         Func6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> func = new Func6<Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
@@ -577,11 +616,12 @@ public class AsyncTest {
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(63);
         verify(observer, times(1)).onCompleted();
     }
+
     @Test
     public void testFunc7() {
         Func7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> func = new Func7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
@@ -593,11 +633,12 @@ public class AsyncTest {
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(127);
         verify(observer, times(1)).onCompleted();
     }
+
     @Test
     public void testFunc8() {
         Func8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> func = new Func8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
@@ -609,11 +650,12 @@ public class AsyncTest {
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(255);
         verify(observer, times(1)).onCompleted();
     }
+
     @Test
     public void testFunc9() {
         Func9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> func = new Func9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
@@ -625,11 +667,12 @@ public class AsyncTest {
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128, 256)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(511);
         verify(observer, times(1)).onCompleted();
     }
+
     @Test
     public void testFuncN() {
         FuncN<Integer> func = new FuncN<Integer>() {
@@ -637,7 +680,7 @@ public class AsyncTest {
             public Integer call(Object... args) {
                 int i = 0;
                 for (Object o : args) {
-                    i = i | (Integer)o;
+                    i = i | (Integer) o;
                 }
                 return i;
             }
@@ -645,9 +688,133 @@ public class AsyncTest {
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128, 256, 512)
                 .subscribe(observer);
-        
+
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(1023);
         verify(observer, times(1)).onCompleted();
     }
+
+    @Test
+    public void testStartWithFunc() {
+        Func0<String> func = new Func0<String>() {
+            @Override
+            public String call() {
+                return "one";
+            }
+        };
+        assertEquals("one", Async.start(func).toBlockingObservable().single());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testStartWithFuncError() {
+        Func0<String> func = new Func0<String>() {
+            @Override
+            public String call() {
+                throw new RuntimeException("Some error");
+            }
+        };
+        Async.start(func).toBlockingObservable().single();
+    }
+
+    @Test
+    public void testStartWhenSubscribeRunBeforeFunc() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Func0<String> func = new Func0<String>() {
+            @Override
+            public String call() {
+                return "one";
+            }
+        };
+
+        Observable<String> observable = Async.start(func, scheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verifyNoMoreInteractions();
+
+        // Run func
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testStartWhenSubscribeRunAfterFunc() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Func0<String> func = new Func0<String>() {
+            @Override
+            public String call() {
+                return "one";
+            }
+        };
+
+        Observable<String> observable = Async.start(func, scheduler);
+
+        // Run func
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testStartWithFuncAndMultipleObservers() {
+        TestScheduler scheduler = new TestScheduler();
+
+        @SuppressWarnings("unchecked")
+        Func0<String> func = (Func0<String>) mock(Func0.class);
+        doAnswer(new Answer<String>() {
+            @Override
+            public String answer(InvocationOnMock invocation) throws Throwable {
+                return "one";
+            }
+        }).when(func).call();
+
+        Observable<String> observable = Async.start(func, scheduler);
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer1 = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<String> observer2 = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<String> observer3 = mock(Observer.class);
+
+        observable.subscribe(observer1);
+        observable.subscribe(observer2);
+        observable.subscribe(observer3);
+
+        InOrder inOrder;
+        inOrder = inOrder(observer1);
+        inOrder.verify(observer1, times(1)).onNext("one");
+        inOrder.verify(observer1, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+        inOrder = inOrder(observer2);
+        inOrder.verify(observer2, times(1)).onNext("one");
+        inOrder.verify(observer2, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+        inOrder = inOrder(observer3);
+        inOrder.verify(observer3, times(1)).onNext("one");
+        inOrder.verify(observer3, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+        verify(func, times(1)).call();
+    }
+
 }
