@@ -27,7 +27,6 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.SingleAssignmentSubscription;
 import rx.util.functions.Func2;
 import rx.util.functions.Func3;
 import rx.util.functions.Func4;
@@ -61,6 +60,7 @@ public class OperationCombineLatest {
      *            The aggregation function used to combine the source observable values.
      * @return A function from an observer to a subscription. This can be used to create an observable from.
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<T1> w1, Func2<? super T0, ? super T1, ? extends R> combineLatestFunction) {
         return new CombineLatest<Object, R>(Arrays.asList(w0, w1), Functions.fromFunc(combineLatestFunction));
     }
@@ -68,30 +68,34 @@ public class OperationCombineLatest {
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2,
             Func3<? super T0, ? super T1, ? super T2, ? extends R> combineLatestFunction) {
-        return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2), Functions.fromFunc(combineLatestFunction));    
+        return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2), Functions.fromFunc(combineLatestFunction));
     }
 
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2, Observable<? extends T3> w3,
             Func4<? super T0, ? super T1, ? super T2, ? super T3, ? extends R> combineLatestFunction) {
-                return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3), Functions.fromFunc(combineLatestFunction));
+        return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3), Functions.fromFunc(combineLatestFunction));
     }
 
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, T4, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2, Observable<? extends T3> w3, Observable<? extends T4> w4,
             Func5<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combineLatestFunction) {
-                return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4), Functions.fromFunc(combineLatestFunction));
+        return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4), Functions.fromFunc(combineLatestFunction));
     }
 
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, T4, T5, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2, Observable<? extends T3> w3, Observable<? extends T4> w4, Observable<? extends T5> w5,
             Func6<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> combineLatestFunction) {
         return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4, w5), Functions.fromFunc(combineLatestFunction));
@@ -100,6 +104,7 @@ public class OperationCombineLatest {
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, T4, T5, T6, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2, Observable<? extends T3> w3, Observable<? extends T4> w4, Observable<? extends T5> w5, Observable<? extends T6> w6,
             Func7<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> combineLatestFunction) {
         return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4, w5, w6), Functions.fromFunc(combineLatestFunction));
@@ -108,6 +113,7 @@ public class OperationCombineLatest {
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, T4, T5, T6, T7, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2, Observable<? extends T3> w3, Observable<? extends T4> w4, Observable<? extends T5> w5, Observable<? extends T6> w6, Observable<? extends T7> w7,
             Func8<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combineLatestFunction) {
         return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4, w5, w6, w7), Functions.fromFunc(combineLatestFunction));
@@ -116,6 +122,7 @@ public class OperationCombineLatest {
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2, Observable<? extends T3> w3, Observable<? extends T4> w4, Observable<? extends T5> w5, Observable<? extends T6> w6, Observable<? extends T7> w7,
             Observable<? extends T8> w8,
             Func9<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> combineLatestFunction) {
@@ -125,6 +132,7 @@ public class OperationCombineLatest {
     static final class CombineLatest<T, R> implements OnSubscribeFunc<R> {
         final List<Observable<? extends T>> sources;
         final FuncN<? extends R> combiner;
+
         public CombineLatest(Iterable<? extends Observable<? extends T>> sources, FuncN<? extends R> combiner) {
             this.sources = new ArrayList<Observable<? extends T>>();
             this.combiner = combiner;
@@ -136,27 +144,28 @@ public class OperationCombineLatest {
         @Override
         public Subscription onSubscribe(Observer<? super R> t1) {
             CompositeSubscription csub = new CompositeSubscription();
-            
+
             Collector collector = new Collector(t1, csub, sources.size());
-            
+
             int index = 0;
             List<SourceObserver> observers = new ArrayList<SourceObserver>(sources.size() + 1);
             for (Observable<? extends T> source : sources) {
-                SingleAssignmentSubscription sas = new SingleAssignmentSubscription();
+                SafeObservableSubscription sas = new SafeObservableSubscription();
                 csub.add(sas);
                 observers.add(new SourceObserver(collector, sas, index, source));
                 index++;
             }
-            
+
             for (SourceObserver so : observers) {
                 // if we run to completion, don't bother any further
                 if (!csub.isUnsubscribed()) {
                     so.connect();
                 }
             }
-            
+
             return csub;
         }
+
         /**
          * The collector that combines the latest values from many sources.
          */
@@ -173,6 +182,7 @@ public class OperationCombineLatest {
             int hasCount;
             /** Number of completed source observers. */
             int completedCount;
+
             public Collector(Observer<? super R> observer, Subscription cancel, int count) {
                 this.observer = observer;
                 this.cancel = cancel;
@@ -181,6 +191,7 @@ public class OperationCombineLatest {
                 this.completed = new BitSet(count);
                 this.lock = new ReentrantLock();
             }
+
             public void next(int index, T value) {
                 Throwable err = null;
                 lock.lock();
@@ -210,6 +221,7 @@ public class OperationCombineLatest {
                     cancel.unsubscribe();
                 }
             }
+
             public void error(int index, Throwable e) {
                 boolean unsub = false;
                 lock.lock();
@@ -226,13 +238,16 @@ public class OperationCombineLatest {
                     cancel.unsubscribe();
                 }
             }
+
             boolean isTerminated() {
                 return completedCount == values.length + 1;
             }
+
             void terminate() {
                 completedCount = values.length + 1;
                 Arrays.fill(values, null);
             }
+
             public void completed(int index) {
                 boolean unsub = false;
                 lock.lock();
@@ -256,22 +271,25 @@ public class OperationCombineLatest {
                 }
             }
         }
+
         /**
          * Observes a specific source and communicates with the collector.
          */
-        final class SourceObserver implements Observer<T>  {
-            final SingleAssignmentSubscription self;
+        final class SourceObserver implements Observer<T> {
+            final SafeObservableSubscription self;
             final Collector collector;
             final int index;
             Observable<? extends T> source;
-            public SourceObserver(Collector collector, 
-                    SingleAssignmentSubscription self, int index,
+
+            public SourceObserver(Collector collector,
+                    SafeObservableSubscription self, int index,
                     Observable<? extends T> source) {
                 this.self = self;
                 this.collector = collector;
                 this.index = index;
                 this.source = source;
             }
+
             @Override
             public void onNext(T args) {
                 collector.next(index, args);
@@ -287,9 +305,10 @@ public class OperationCombineLatest {
                 collector.completed(index);
                 self.unsubscribe();
             }
+
             /** Connect to the source. */
             void connect() {
-                self.set(source.subscribe(this));
+                self.wrap(source.subscribe(this));
                 source = null;
             }
         }
