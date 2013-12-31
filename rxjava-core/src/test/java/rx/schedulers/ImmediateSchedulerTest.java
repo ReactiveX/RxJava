@@ -15,9 +15,14 @@
  */
 package rx.schedulers;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
+import rx.Observable;
 import rx.Scheduler;
+import rx.util.functions.Action1;
+import rx.util.functions.Func1;
 
 public class ImmediateSchedulerTest extends AbstractSchedulerTests {
 
@@ -47,4 +52,53 @@ public class ImmediateSchedulerTest extends AbstractSchedulerTests {
         // because there is no reordering or concurrency with ImmediateScheduler
     }
 
+    @Test
+    public final void testMergeWithoutScheduler() {
+
+        final String currentThreadName = Thread.currentThread().getName();
+
+        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
+        Observable<String> o = Observable.<Integer> merge(o1, o2).map(new Func1<Integer, String>() {
+
+            @Override
+            public String call(Integer t) {
+                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
+                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+            }
+        });
+
+        o.toBlockingObservable().forEach(new Action1<String>() {
+
+            @Override
+            public void call(String t) {
+                System.out.println("t: " + t);
+            }
+        });
+    }
+
+    @Test
+    public final void testMergeWithImmediateScheduler1() {
+
+        final String currentThreadName = Thread.currentThread().getName();
+
+        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
+        Observable<String> o = Observable.<Integer> merge(o1, o2).subscribeOn(Schedulers.immediate()).map(new Func1<Integer, String>() {
+
+            @Override
+            public String call(Integer t) {
+                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
+                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+            }
+        });
+
+        o.toBlockingObservable().forEach(new Action1<String>() {
+
+            @Override
+            public void call(String t) {
+                System.out.println("t: " + t);
+            }
+        });
+    }
 }

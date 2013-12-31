@@ -4,15 +4,18 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
+import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -190,6 +193,137 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         });
 
         latch.await();
+    }
+
+    @Test
+    public void testRecursiveScheduler2() throws InterruptedException {
+        // use latches instead of Thread.sleep
+        final CountDownLatch latch = new CountDownLatch(10);
+        final CountDownLatch completionLatch = new CountDownLatch(1);
+
+        Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
+            @Override
+            public Subscription onSubscribe(final Observer<? super Integer> observer) {
+
+                return getScheduler().schedule(null, new Func2<Scheduler, Void, Subscription>() {
+                    @Override
+                    public Subscription call(Scheduler scheduler, Void v) {
+                        observer.onNext(42);
+                        latch.countDown();
+
+                        // this will recursively schedule this task for execution again
+                        scheduler.schedule(null, this);
+
+                        return Subscriptions.create(new Action0() {
+
+                            @Override
+                            public void call() {
+                                observer.onCompleted();
+                                completionLatch.countDown();
+                            }
+
+                        });
+                    }
+                });
+            }
+        });
+
+        final AtomicInteger count = new AtomicInteger();
+        final AtomicBoolean completed = new AtomicBoolean(false);
+        Subscription subscribe = obs.subscribe(new Observer<Integer>() {
+            @Override
+            public void onCompleted() {
+                System.out.println("Completed");
+                completed.set(true);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                System.out.println("Error");
+            }
+
+            @Override
+            public void onNext(Integer args) {
+                count.incrementAndGet();
+                System.out.println(args);
+            }
+        });
+
+        if (!latch.await(5000, TimeUnit.MILLISECONDS)) {
+            fail("Timed out waiting on onNext latch");
+        }
+
+        // now unsubscribe and ensure it stops the recursive loop
+        subscribe.unsubscribe();
+        System.out.println("unsubscribe");
+
+        if (!completionLatch.await(5000, TimeUnit.MILLISECONDS)) {
+            fail("Timed out waiting on completion latch");
+        }
+
+        // the count can be 10 or higher due to thread scheduling of the unsubscribe vs the scheduler looping to emit the count
+        assertTrue(count.get() >= 10);
+        assertTrue(completed.get());
+    }
+
+    @Test
+    public final void testSubscribeWithScheduler() throws InterruptedException {
+        final Scheduler scheduler = getScheduler();
+
+        final AtomicInteger count = new AtomicInteger();
+
+        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+
+        o1.subscribe(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t) {
+                System.out.println("Thread: " + Thread.currentThread().getName());
+                System.out.println("t: " + t);
+                count.incrementAndGet();
+            }
+        });
+
+        // the above should be blocking so we should see a count of 5
+        assertEquals(5, count.get());
+
+        count.set(0);
+
+        // now we'll subscribe with a scheduler and it should be async
+
+        final String currentThreadName = Thread.currentThread().getName();
+
+        // latches for deterministically controlling the test below across threads
+        final CountDownLatch latch = new CountDownLatch(5);
+        final CountDownLatch first = new CountDownLatch(1);
+
+        o1.subscribe(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t) {
+                try {
+                    // we block the first one so we can assert this executes asynchronously with a count
+                    first.await(1000, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException("The latch should have released if we are async.", e);
+                }
+
+                assertFalse(Thread.currentThread().getName().equals(currentThreadName));
+                System.out.println("Thread: " + Thread.currentThread().getName());
+                System.out.println("t: " + t);
+                count.incrementAndGet();
+                latch.countDown();
+            }
+        }, scheduler);
+
+        // assert we are async
+        assertEquals(0, count.get());
+        // release the latch so it can go forward
+        first.countDown();
+
+        // wait for all 5 responses
+        latch.await();
+        assertEquals(5, count.get());
     }
 
 }

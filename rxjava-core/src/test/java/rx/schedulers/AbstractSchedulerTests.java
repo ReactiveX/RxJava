@@ -1,14 +1,35 @@
+/**
+ * Copyright 2013 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.schedulers;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
@@ -19,6 +40,7 @@ import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
+import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 /**
@@ -141,7 +163,7 @@ public abstract class AbstractSchedulerTests {
         InOrder inOrder = inOrder(firstStepStart, firstStepEnd, secondStepStart, secondStepEnd, thirdStepStart, thirdStepEnd);
 
         scheduler.schedule(thirdAction);
-        
+
         latch.await();
 
         inOrder.verify(thirdStepStart, times(1)).call();
@@ -153,6 +175,37 @@ public abstract class AbstractSchedulerTests {
     }
 
     @Test
+    public final void testNestedScheduling() {
+
+        Observable<Integer> ids = Observable.from(Arrays.asList(1, 2), getScheduler());
+
+        Observable<String> m = ids.flatMap(new Func1<Integer, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(Integer id) {
+                return Observable.from(Arrays.asList("a-" + id, "b-" + id), getScheduler())
+                        .map(new Func1<String, String>() {
+
+                            @Override
+                            public String call(String s) {
+                                return "names=>" + s;
+                            }
+                        });
+            }
+
+        });
+
+        List<String> strings = m.toList().toBlockingObservable().last();
+
+        assertEquals(4, strings.size());
+        assertEquals("names=>a-1", strings.get(0));
+        assertEquals("names=>b-1", strings.get(1));
+        assertEquals("names=>a-2", strings.get(2));
+        assertEquals("names=>b-2", strings.get(3));
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
     public final void testSequenceOfActions() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
 
@@ -160,15 +213,21 @@ public abstract class AbstractSchedulerTests {
         final Action0 first = mock(Action0.class);
         final Action0 second = mock(Action0.class);
 
-        scheduler.schedule(first);
-        scheduler.schedule(second);
-        scheduler.schedule(new Action0() {
+        // make it wait until after the second is called
+        doAnswer(new Answer() {
 
             @Override
-            public void call() {
-                latch.countDown();
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                try {
+                    return invocation.getMock();
+                } finally {
+                    latch.countDown();
+                }
             }
-        });
+        }).when(second).call();
+
+        scheduler.schedule(first);
+        scheduler.schedule(second);
 
         latch.await();
 
@@ -313,6 +372,214 @@ public abstract class AbstractSchedulerTests {
 
         latch.await();
         assertEquals(100, i.get());
+    }
+
+    @Test
+    public final void testRecursiveSchedulerSimple() {
+        final Scheduler scheduler = getScheduler();
+
+        Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
+            @Override
+            public Subscription onSubscribe(final Observer<? super Integer> observer) {
+                return scheduler.schedule(0, new Func2<Scheduler, Integer, Subscription>() {
+                    @Override
+                    public Subscription call(Scheduler scheduler, Integer i) {
+                        if (i > 42) {
+                            observer.onCompleted();
+                            return Subscriptions.empty();
+                        }
+
+                        observer.onNext(i);
+
+                        return scheduler.schedule(i + 1, this);
+                    }
+                });
+            }
+        });
+
+        final AtomicInteger lastValue = new AtomicInteger();
+        obs.toBlockingObservable().forEach(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer v) {
+                System.out.println("Value: " + v);
+                lastValue.set(v);
+            }
+        });
+
+        assertEquals(42, lastValue.get());
+    }
+
+    @Test
+    public final void testSchedulingWithDueTime() throws InterruptedException {
+        final Scheduler scheduler = getScheduler();
+
+        final CountDownLatch latch = new CountDownLatch(5);
+        final AtomicInteger counter = new AtomicInteger();
+
+        long start = System.currentTimeMillis();
+
+        scheduler.schedule(null, new Func2<Scheduler, String, Subscription>() {
+
+            @Override
+            public Subscription call(Scheduler scheduler, String state) {
+                System.out.println("doing work");
+                counter.incrementAndGet();
+                latch.countDown();
+                if (latch.getCount() == 0) {
+                    return Subscriptions.empty();
+                } else {
+                    return scheduler.schedule(state, this, new Date(scheduler.now() + 50));
+                }
+            }
+        }, new Date(scheduler.now() + 100));
+
+        if (!latch.await(3000, TimeUnit.MILLISECONDS)) {
+            fail("didn't execute ... timed out");
+        }
+
+        long end = System.currentTimeMillis();
+
+        assertEquals(5, counter.get());
+        System.out.println("Time taken: " + (end - start));
+        if ((end - start) < 250) {
+            fail("it should have taken over 250ms since each step was scheduled 50ms in the future");
+        }
+    }
+
+    @Test
+    public final void testConcurrentOnNextFailsValidation() throws InterruptedException {
+        final int count = 10;
+        final CountDownLatch latch = new CountDownLatch(count);
+        Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
+
+            @Override
+            public Subscription onSubscribe(final Observer<? super String> observer) {
+                for (int i = 0; i < count; i++) {
+                    final int v = i;
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            observer.onNext("v: " + v);
+
+                            latch.countDown();
+                        }
+                    }).start();
+                }
+                return Subscriptions.empty();
+            }
+        });
+
+        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
+        // this should call onNext concurrently
+        o.subscribe(observer);
+
+        if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
+            fail("timed out");
+        }
+
+        if (observer.error.get() == null) {
+            fail("We expected error messages due to concurrency");
+        }
+    }
+
+    @Test
+    public final void testObserveOn() throws InterruptedException {
+        final Scheduler scheduler = getScheduler();
+
+        Observable<String> o = Observable.from("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten");
+
+        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
+
+        o.observeOn(scheduler).subscribe(observer);
+
+        if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
+            fail("timed out");
+        }
+
+        if (observer.error.get() != null) {
+            observer.error.get().printStackTrace();
+            fail("Error: " + observer.error.get().getMessage());
+        }
+    }
+
+    @Test
+    public final void testSubscribeOnNestedConcurrency() throws InterruptedException {
+        final Scheduler scheduler = getScheduler();
+
+        Observable<String> o = Observable.from("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
+                .mergeMap(new Func1<String, Observable<String>>() {
+
+                    @Override
+                    public Observable<String> call(final String v) {
+                        return Observable.create(new OnSubscribeFunc<String>() {
+
+                            @Override
+                            public Subscription onSubscribe(final Observer<? super String> observer) {
+                                observer.onNext("value_after_map-" + v);
+                                observer.onCompleted();
+                                return Subscriptions.empty();
+                            }
+                        }).subscribeOn(scheduler);
+                    }
+                });
+
+        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
+
+        o.subscribe(observer);
+
+        if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
+            fail("timed out");
+        }
+
+        if (observer.error.get() != null) {
+            observer.error.get().printStackTrace();
+            fail("Error: " + observer.error.get().getMessage());
+        }
+    }
+
+    /**
+     * Used to determine if onNext is being invoked concurrently.
+     * 
+     * @param <T>
+     */
+    private static class ConcurrentObserverValidator<T> implements Observer<T> {
+
+        final AtomicInteger concurrentCounter = new AtomicInteger();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final CountDownLatch completed = new CountDownLatch(1);
+
+        @Override
+        public void onCompleted() {
+            completed.countDown();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            completed.countDown();
+            error.set(e);
+        }
+
+        @Override
+        public void onNext(T args) {
+            int count = concurrentCounter.incrementAndGet();
+            System.out.println("ConcurrentObserverValidator.onNext: " + args);
+            if (count > 1) {
+                onError(new RuntimeException("we should not have concurrent execution of onNext"));
+            }
+            try {
+                try {
+                    // take some time so other onNext calls could pile up (I haven't yet thought of a way to do this without sleeping)
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    // ignore
+                }
+            } finally {
+                concurrentCounter.decrementAndGet();
+            }
+        }
+
     }
 
 }

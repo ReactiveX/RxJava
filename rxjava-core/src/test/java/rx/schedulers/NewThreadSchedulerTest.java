@@ -24,5 +24,5 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
     protected Scheduler getScheduler() {
         return NewThreadScheduler.getInstance();
     }
-    
+
 }
