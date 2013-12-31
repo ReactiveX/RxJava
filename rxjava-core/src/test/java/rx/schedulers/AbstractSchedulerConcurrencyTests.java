@@ -3,17 +3,14 @@ package rx.schedulers;
 import static org.junit.Assert.*;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
-import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -34,12 +31,11 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
         final AtomicInteger counter = new AtomicInteger();
-        Subscription s = getScheduler().schedule(0L, new Func2<Scheduler, Long, Subscription>() {
+        Subscription s = getScheduler().schedule(1L, new Func2<Scheduler, Long, Subscription>() {
 
             @Override
             public Subscription call(Scheduler innerScheduler, Long i) {
-                i++;
-                //                System.out.println("i: " + i);
+                System.out.println("Run: " + i);
                 if (i == 10) {
                     latch.countDown();
                     try {
@@ -54,7 +50,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                 }
 
                 counter.incrementAndGet();
-                return innerScheduler.schedule(i, this);
+                return innerScheduler.schedule(i + 1, this);
             }
         });
 
@@ -66,62 +62,51 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     }
 
     @Test
-    public void scheduleMultipleTasksOnOuterForSequentialExecution() throws InterruptedException {
-        final AtomicInteger countExecutions = new AtomicInteger();
+    public void testUnsubscribeRecursiveScheduleWithStateAndFunc2AndDelay() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final SafeObservableSubscription outerSubscription = new SafeObservableSubscription();
-        final Func2<Scheduler, Long, Subscription> fInner = new Func2<Scheduler, Long, Subscription>() {
+        final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
+        final AtomicInteger counter = new AtomicInteger();
+        Subscription s = getScheduler().schedule(1L, new Func2<Scheduler, Long, Subscription>() {
 
             @Override
             public Subscription call(Scheduler innerScheduler, Long i) {
-                countExecutions.incrementAndGet();
-                i++;
-                System.out.println("i: " + i);
-                if (i == 1000) {
-                    outerSubscription.unsubscribe();
+                if (i == 10) {
                     latch.countDown();
+                    try {
+                        // wait for unsubscribe to finish so we are not racing it
+                        unsubscribeLatch.await();
+                    } catch (InterruptedException e) {
+                        // we expect the countDown if unsubscribe is not working
+                        // or to be interrupted if unsubscribe is successful since 
+                        // the unsubscribe will interrupt it as it is calling Future.cancel(true)
+                        // so we will ignore the stacktrace
+                    }
                 }
-                if (i < 10000) {
-                    return innerScheduler.schedule(i, this);
-                } else {
-                    latch.countDown();
-                    return Subscriptions.empty();
-                }
+
+                counter.incrementAndGet();
+                return innerScheduler.schedule(i + 1, this, 10, TimeUnit.MILLISECONDS);
             }
-        };
+        }, 10, TimeUnit.MILLISECONDS);
 
-        Func2<Scheduler, Long, Subscription> fOuter = new Func2<Scheduler, Long, Subscription>() {
-
-            @Override
-            public Subscription call(Scheduler innerScheduler, Long i) {
-                CompositeSubscription s = new CompositeSubscription();
-                s.add(innerScheduler.schedule(i, fInner));
-                s.add(innerScheduler.schedule(i, fInner));
-                return s;
-            }
-        };
-
-        outerSubscription.wrap(getScheduler().schedule(0L, fOuter));
         latch.await();
+        s.unsubscribe();
+        unsubscribeLatch.countDown();
         Thread.sleep(200); // let time pass to see if the scheduler is still doing work
-        System.out.println("Count: " + countExecutions.get());
-        // we unsubscribe on first to 1000 so we hit 1999 instead of 2000
-        assertEquals(1999, countExecutions.get());
+        assertEquals(10, counter.get());
     }
 
     @Test(timeout = 8000)
     public void recursionUsingFunc2() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        getScheduler().schedule(0L, new Func2<Scheduler, Long, Subscription>() {
+        getScheduler().schedule(1L, new Func2<Scheduler, Long, Subscription>() {
 
             @Override
             public Subscription call(Scheduler innerScheduler, Long i) {
-                i++;
                 if (i % 100000 == 0) {
                     System.out.println(i + "  Total Memory: " + Runtime.getRuntime().totalMemory() + "  Free: " + Runtime.getRuntime().freeMemory());
                 }
-                if (i < 5000000L) {
-                    return innerScheduler.schedule(i, this);
+                if (i < 1000000L) {
+                    return innerScheduler.schedule(i + 1, this);
                 } else {
                     latch.countDown();
                     return Subscriptions.empty();
@@ -145,7 +130,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                 if (i % 100000 == 0) {
                     System.out.println(i + "  Total Memory: " + Runtime.getRuntime().totalMemory() + "  Free: " + Runtime.getRuntime().freeMemory());
                 }
-                if (i < 5000000L) {
+                if (i < 1000000L) {
                     self.call();
                 } else {
                     latch.countDown();

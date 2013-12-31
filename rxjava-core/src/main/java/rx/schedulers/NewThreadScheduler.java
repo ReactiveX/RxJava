@@ -64,6 +64,10 @@ public class NewThreadScheduler extends Scheduler {
 
         @Override
         public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
+            if (childSubscription.isUnsubscribed()) {
+                return childSubscription;
+            }
+
             CompositeSubscription s = new CompositeSubscription();
             final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
             s.add(discardableAction);
@@ -92,6 +96,10 @@ public class NewThreadScheduler extends Scheduler {
 
         @Override
         public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, final long delayTime, final TimeUnit unit) {
+            if (childSubscription.isUnsubscribed()) {
+                return childSubscription;
+            }
+
             // we will use the system scheduler since it doesn't make sense to launch a new Thread and then sleep
             // we will instead schedule the event then launch the thread after the delay has passed
             final Scheduler _scheduler = this;

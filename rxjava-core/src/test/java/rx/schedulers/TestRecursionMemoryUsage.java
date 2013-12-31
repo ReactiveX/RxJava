@@ -19,12 +19,12 @@ public class TestRecursionMemoryUsage {
     public static void main(String args[]) {
         usingFunc2(Schedulers.newThread());
         usingAction0(Schedulers.newThread());
-//
+
 //        usingFunc2(Schedulers.currentThread());
 //        usingAction0(Schedulers.currentThread());
 
-//        usingFunc2(Schedulers.threadPoolForComputation());
-//        usingAction0(Schedulers.threadPoolForComputation());
+        usingFunc2(Schedulers.threadPoolForComputation());
+        usingAction0(Schedulers.threadPoolForComputation());
     }
 
     protected static void usingFunc2(final Scheduler scheduler) {
