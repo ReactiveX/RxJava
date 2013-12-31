@@ -28,7 +28,7 @@ import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func2;
 
-public class ExecutorSchedulerTests extends AbstractSchedulerTests {
+public class ExecutorSchedulerTests extends AbstractSchedulerConcurrencyTests {
 
     @Override
     protected Scheduler getScheduler() {

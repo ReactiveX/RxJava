@@ -18,7 +18,7 @@ package rx.schedulers;
 
 import rx.Scheduler;
 
-public class NewThreadSchedulerTest extends AbstractSchedulerTests {
+public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Override
     protected Scheduler getScheduler() {
