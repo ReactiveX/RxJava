@@ -55,18 +55,18 @@ public class CurrentThreadScheduler extends Scheduler {
     public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
         // immediately move to the InnerCurrentThreadScheduler
         InnerCurrentThreadScheduler innerScheduler = new InnerCurrentThreadScheduler();
-        innerScheduler.enqueue(new DiscardableAction<T>(state, action), now());
+        innerScheduler.schedule(state, action);
         enqueueFromOuter(innerScheduler, now());
         return innerScheduler;
     }
 
     @Override
-    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long dueTime, TimeUnit unit) {
-        long execTime = now() + unit.toMillis(dueTime);
+    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
+        long execTime = now() + unit.toMillis(delayTime);
 
         // create an inner scheduler and queue it for execution
         InnerCurrentThreadScheduler innerScheduler = new InnerCurrentThreadScheduler();
-        innerScheduler.enqueue(new DiscardableAction<T>(state, new SleepingAction<T>(action, this, execTime)), execTime);
+        innerScheduler.schedule(state, action, delayTime, unit);
         enqueueFromOuter(innerScheduler, execTime);
         return innerScheduler;
     }
@@ -113,7 +113,7 @@ public class CurrentThreadScheduler extends Scheduler {
         public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
             long execTime = now() + unit.toMillis(delayTime);
 
-            DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
+            DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, new SleepingAction<T>(action, this, execTime));
             childSubscription.set(discardableAction);
             enqueue(discardableAction, execTime);
             return childSubscription;
