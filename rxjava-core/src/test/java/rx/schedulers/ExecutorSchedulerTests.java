@@ -28,7 +28,13 @@ import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func2;
 
-public class ExecutorSchedulerTests {
+public class ExecutorSchedulerTests extends AbstractSchedulerTests {
+
+    @Override
+    protected Scheduler getScheduler() {
+        // this is an implementation of ExecutorScheduler
+        return Schedulers.threadPoolForComputation();
+    }
 
     @Test
     public void testThreadSafetyWhenSchedulerIsHoppingBetweenThreads() {
