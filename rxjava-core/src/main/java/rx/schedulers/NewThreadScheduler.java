@@ -25,7 +25,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import rx.util.functions.Func2;
 
 /**
@@ -46,6 +48,7 @@ public class NewThreadScheduler extends Scheduler {
 
     private static class EventLoopScheduler extends Scheduler {
         private final ExecutorService executor;
+        private final MultipleAssignmentSubscription childSubscription = new MultipleAssignmentSubscription();
 
         private EventLoopScheduler() {
             executor = Executors.newFixedThreadPool(1, new ThreadFactory() {
@@ -61,21 +64,30 @@ public class NewThreadScheduler extends Scheduler {
 
         @Override
         public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
+            CompositeSubscription s = new CompositeSubscription();
             final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
-            // all subscriptions that may need to be unsubscribed
-            final CompositeSubscription subscription = new CompositeSubscription(discardableAction);
-            
+            s.add(discardableAction);
+
             final Scheduler _scheduler = this;
-            subscription.add(Subscriptions.from(executor.submit(new Runnable() {
+            s.add(Subscriptions.from(executor.submit(new Runnable() {
 
                 @Override
                 public void run() {
-                    Subscription s = discardableAction.call(_scheduler);
-                    subscription.add(s);
+                    discardableAction.call(_scheduler);
                 }
             })));
-            
-            return subscription;
+
+            // replace the EventLoopScheduler child subscription with this one
+            childSubscription.set(s);
+            /*
+             * If `schedule` is run concurrently instead of recursively then we'd lose subscriptions as the `childSubscription`
+             * only remembers the last one scheduled. However, the parent subscription will shutdown the entire EventLoopScheduler
+             * and the ExecutorService which will terminate all outstanding tasks so this childSubscription is actually somewhat
+             * superfluous for stopping and cleanup ... though childSubscription does ensure exactness as can be seen by
+             * the `testUnSubscribeForScheduler()` unit test which fails if the `childSubscription` does not exist.
+             */
+
+            return childSubscription;
         }
 
         @Override
@@ -103,12 +115,26 @@ public class NewThreadScheduler extends Scheduler {
             return subscription;
         }
 
+        private void shutdownNow() {
+            executor.shutdownNow();
+        }
+
     }
 
     @Override
     public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
-        EventLoopScheduler s = new EventLoopScheduler();
-        return s.schedule(state, action);
+        final EventLoopScheduler s = new EventLoopScheduler();
+        CompositeSubscription cs = new CompositeSubscription();
+        cs.add(s.schedule(state, action));
+        cs.add(Subscriptions.create(new Action0() {
+
+            @Override
+            public void call() {
+                // shutdown the executor, all tasks queued to run and clean up resources
+                s.shutdownNow();
+            }
+        }));
+        return cs;
     }
 
     @Override
