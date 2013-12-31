@@ -255,4 +255,52 @@ public abstract class Scheduler {
     public int degreeOfParallelism() {
         return Runtime.getRuntime().availableProcessors();
     }
+    /**
+     * Schedule a task to be run immediately.
+     * @param r the task to run immediately
+     * @return the subscription to cancel the schedule
+     */
+    public Subscription scheduleRunnable(final Runnable r) {
+        return schedule(new Action0() {
+            @Override
+            public void call() {
+                r.run();
+            }
+        });
+    }
+    
+    /**
+     * Schedule a task to be run after the delay time.
+     * @param r the task to schedule
+     * @param delayTime the time to delay the execution
+     * @param unit the time unit
+     * @return the subscription to cancel the schedule
+     */
+    public Subscription scheduleRunnable(final Runnable r, long delayTime, TimeUnit unit) {
+        return schedule(new Action0() {
+            @Override
+            public void call() {
+                r.run();
+            }
+        }, delayTime, unit);
+    }
+    
+    /**
+     * Schedule a task to be run after the delay time and after
+     * each period.
+     * @param r the task to schedule
+     * @param initialDelay the initial delay of the schedule
+     * @param period the between period of the schedule
+     * @param unit the time unit
+     * @return the subscription to cancel the schedule
+     */
+    public Subscription scheduleRunnable(final Runnable r, long initialDelay, long period, TimeUnit unit) {
+        return schedulePeriodically(new Action0() {
+            @Override
+            public void call() {
+                r.run();
+            }
+        }, initialDelay, period, unit);
+
+    }
 }
