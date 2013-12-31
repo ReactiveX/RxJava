@@ -17,6 +17,7 @@ package rx.operators;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Notification;
 import rx.Observable;
@@ -71,7 +72,7 @@ public class OperationObserveOn {
             final CompositeSubscription compositeSubscription = new CompositeSubscription();
             final MultipleAssignmentSubscription recursiveSubscription = new MultipleAssignmentSubscription();
             final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
-            final AtomicInteger counter = new AtomicInteger(0);
+            final AtomicLong counter = new AtomicLong(0);
             private volatile Scheduler recursiveScheduler;
 
             public Observation(Observer<? super T> observer) {
@@ -108,7 +109,7 @@ public class OperationObserveOn {
                 }
 
                 void processQueue() {
-                    recursiveSubscription.setSubscription(recursiveScheduler.schedule(new Action1<Action0>() {
+                    recursiveSubscription.set(recursiveScheduler.schedule(new Action1<Action0>() {
                         @Override
                         public void call(Action0 self) {
                             Notification<? extends T> not = queue.poll();
