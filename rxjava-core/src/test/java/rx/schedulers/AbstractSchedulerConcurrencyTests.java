@@ -8,13 +8,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import rx.Observable;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
-import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
+import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 /**
@@ -25,6 +27,55 @@ import rx.util.functions.Func2;
  * The Current/Immediate schedulers will not work with these tests.
  */
 public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedulerTests {
+
+    /**
+     * Bug report: https://github.com/Netflix/RxJava/issues/431
+     */
+    @Test
+    public final void testUnSubscribeForScheduler() throws InterruptedException {
+        final AtomicInteger countReceived = new AtomicInteger();
+        final AtomicInteger countGenerated = new AtomicInteger();
+        final SafeObservableSubscription s = new SafeObservableSubscription();
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        s.wrap(Observable.interval(50, TimeUnit.MILLISECONDS)
+                .map(new Func1<Long, Long>() {
+                    @Override
+                    public Long call(Long aLong) {
+                        countGenerated.incrementAndGet();
+                        return aLong;
+                    }
+                })
+                .subscribeOn(getScheduler())
+                .observeOn(getScheduler())
+                .subscribe(new Observer<Long>() {
+                    @Override
+                    public void onCompleted() {
+                        System.out.println("--- completed");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println("--- onError");
+                    }
+
+                    @Override
+                    public void onNext(Long args) {
+                        if (countReceived.incrementAndGet() == 2) {
+                            s.unsubscribe();
+                            latch.countDown();
+                        }
+                        System.out.println("==> Received " + args);
+                    }
+                }));
+
+        latch.await(1000, TimeUnit.MILLISECONDS);
+
+        System.out.println("----------- it thinks it is finished ------------------ ");
+        Thread.sleep(100);
+
+        assertEquals(2, countGenerated.get());
+    }
 
     @Test
     public void testUnsubscribeRecursiveScheduleWithStateAndFunc2() throws InterruptedException {

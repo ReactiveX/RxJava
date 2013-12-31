@@ -15,6 +15,8 @@
  */
 package rx.schedulers;
 
+import org.junit.Test;
+
 import rx.Scheduler;
 
 public class ImmediateSchedulerTest extends AbstractSchedulerTests {
@@ -22,6 +24,27 @@ public class ImmediateSchedulerTest extends AbstractSchedulerTests {
     @Override
     protected Scheduler getScheduler() {
         return ImmediateScheduler.getInstance();
+    }
+
+    @Override
+    @Test
+    public final void testNestedActions() {
+        // ordering of nested actions will not match other schedulers
+        // because there is no reordering or concurrency with ImmediateScheduler
+    }
+
+    @Override
+    @Test
+    public final void testSequenceOfDelayedActions() {
+        // ordering of nested actions will not match other schedulers
+        // because there is no reordering or concurrency with ImmediateScheduler
+    }
+
+    @Override
+    @Test
+    public final void testMixOfDelayedAndNonDelayedActions() {
+        // ordering of nested actions will not match other schedulers
+        // because there is no reordering or concurrency with ImmediateScheduler
     }
 
 }

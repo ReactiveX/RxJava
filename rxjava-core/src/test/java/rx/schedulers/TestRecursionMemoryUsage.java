@@ -20,8 +20,8 @@ public class TestRecursionMemoryUsage {
         usingFunc2(Schedulers.newThread());
         usingAction0(Schedulers.newThread());
 
-//        usingFunc2(Schedulers.currentThread());
-//        usingAction0(Schedulers.currentThread());
+        usingFunc2(Schedulers.currentThread());
+        usingAction0(Schedulers.currentThread());
 
         usingFunc2(Schedulers.threadPoolForComputation());
         usingAction0(Schedulers.threadPoolForComputation());

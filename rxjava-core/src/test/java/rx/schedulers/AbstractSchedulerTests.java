@@ -15,11 +15,11 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.operators.SafeObservableSubscription;
 import rx.subscriptions.BooleanSubscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
-import rx.util.functions.Func1;
+import rx.util.functions.Func2;
 
 /**
  * Base tests for all schedulers including Immediate/Current.
@@ -98,59 +98,10 @@ public abstract class AbstractSchedulerTests {
         assertEquals(10, countTaken.get());
     }
 
-    /**
-     * Bug report: https://github.com/Netflix/RxJava/issues/431
-     */
     @Test
-    public final void testUnSubscribeForScheduler() throws InterruptedException {
-
-        final AtomicInteger countReceived = new AtomicInteger();
-        final AtomicInteger countGenerated = new AtomicInteger();
-        final SafeObservableSubscription s = new SafeObservableSubscription();
+    public void testNestedActions() throws InterruptedException {
+        final Scheduler scheduler = getScheduler();
         final CountDownLatch latch = new CountDownLatch(1);
-
-        s.wrap(Observable.interval(50, TimeUnit.MILLISECONDS)
-                .map(new Func1<Long, Long>() {
-                    @Override
-                    public Long call(Long aLong) {
-                        countGenerated.incrementAndGet();
-                        return aLong;
-                    }
-                })
-                .subscribeOn(getScheduler())
-                .observeOn(getScheduler())
-                .subscribe(new Observer<Long>() {
-                    @Override
-                    public void onCompleted() {
-                        System.out.println("--- completed");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        System.out.println("--- onError");
-                    }
-
-                    @Override
-                    public void onNext(Long args) {
-                        if (countReceived.incrementAndGet() == 2) {
-                            s.unsubscribe();
-                            latch.countDown();
-                        }
-                        System.out.println("==> Received " + args);
-                    }
-                }));
-
-        latch.await(1000, TimeUnit.MILLISECONDS);
-
-        System.out.println("----------- it thinks it is finished ------------------ ");
-        Thread.sleep(100);
-
-        assertEquals(2, countGenerated.get());
-    }
-
-    @Test
-    public final void testNestedActions() {
-        final CurrentThreadScheduler scheduler = new CurrentThreadScheduler();
 
         final Action0 firstStepStart = mock(Action0.class);
         final Action0 firstStepEnd = mock(Action0.class);
@@ -166,6 +117,7 @@ public abstract class AbstractSchedulerTests {
             public void call() {
                 firstStepStart.call();
                 firstStepEnd.call();
+                latch.countDown();
             }
         };
         final Action0 secondAction = new Action0() {
@@ -189,6 +141,8 @@ public abstract class AbstractSchedulerTests {
         InOrder inOrder = inOrder(firstStepStart, firstStepEnd, secondStepStart, secondStepEnd, thirdStepStart, thirdStepEnd);
 
         scheduler.schedule(thirdAction);
+        
+        latch.await();
 
         inOrder.verify(thirdStepStart, times(1)).call();
         inOrder.verify(thirdStepEnd, times(1)).call();
@@ -199,14 +153,24 @@ public abstract class AbstractSchedulerTests {
     }
 
     @Test
-    public final void testSequenceOfActions() {
-        final CurrentThreadScheduler scheduler = new CurrentThreadScheduler();
+    public final void testSequenceOfActions() throws InterruptedException {
+        final Scheduler scheduler = getScheduler();
 
+        final CountDownLatch latch = new CountDownLatch(1);
         final Action0 first = mock(Action0.class);
         final Action0 second = mock(Action0.class);
 
         scheduler.schedule(first);
         scheduler.schedule(second);
+        scheduler.schedule(new Action0() {
+
+            @Override
+            public void call() {
+                latch.countDown();
+            }
+        });
+
+        latch.await();
 
         verify(first, times(1)).call();
         verify(second, times(1)).call();
@@ -214,9 +178,10 @@ public abstract class AbstractSchedulerTests {
     }
 
     @Test
-    public final void testSequenceOfDelayedActions() {
-        final CurrentThreadScheduler scheduler = new CurrentThreadScheduler();
+    public void testSequenceOfDelayedActions() throws InterruptedException {
+        final Scheduler scheduler = getScheduler();
 
+        final CountDownLatch latch = new CountDownLatch(1);
         final Action0 first = mock(Action0.class);
         final Action0 second = mock(Action0.class);
 
@@ -225,9 +190,17 @@ public abstract class AbstractSchedulerTests {
             public void call() {
                 scheduler.schedule(first, 30, TimeUnit.MILLISECONDS);
                 scheduler.schedule(second, 10, TimeUnit.MILLISECONDS);
+                scheduler.schedule(new Action0() {
+
+                    @Override
+                    public void call() {
+                        latch.countDown();
+                    }
+                }, 40, TimeUnit.MILLISECONDS);
             }
         });
 
+        latch.await();
         InOrder inOrder = inOrder(first, second);
 
         inOrder.verify(second, times(1)).call();
@@ -236,9 +209,10 @@ public abstract class AbstractSchedulerTests {
     }
 
     @Test
-    public final void testMixOfDelayedAndNonDelayedActions() {
-        final CurrentThreadScheduler scheduler = new CurrentThreadScheduler();
+    public void testMixOfDelayedAndNonDelayedActions() throws InterruptedException {
+        final Scheduler scheduler = getScheduler();
 
+        final CountDownLatch latch = new CountDownLatch(1);
         final Action0 first = mock(Action0.class);
         final Action0 second = mock(Action0.class);
         final Action0 third = mock(Action0.class);
@@ -251,16 +225,94 @@ public abstract class AbstractSchedulerTests {
                 scheduler.schedule(second, 300, TimeUnit.MILLISECONDS);
                 scheduler.schedule(third, 100, TimeUnit.MILLISECONDS);
                 scheduler.schedule(fourth);
+                scheduler.schedule(new Action0() {
+
+                    @Override
+                    public void call() {
+                        latch.countDown();
+                    }
+                }, 400, TimeUnit.MILLISECONDS);
             }
         });
 
+        latch.await();
         InOrder inOrder = inOrder(first, second, third, fourth);
 
         inOrder.verify(first, times(1)).call();
         inOrder.verify(fourth, times(1)).call();
         inOrder.verify(third, times(1)).call();
         inOrder.verify(second, times(1)).call();
+    }
 
+    @Test
+    public final void testRecursiveExecutionWithAction0() throws InterruptedException {
+        final Scheduler scheduler = getScheduler();
+        final AtomicInteger i = new AtomicInteger();
+        final CountDownLatch latch = new CountDownLatch(1);
+        scheduler.schedule(new Action1<Action0>() {
+
+            @Override
+            public void call(Action0 self) {
+                if (i.incrementAndGet() < 100) {
+                    self.call();
+                } else {
+                    latch.countDown();
+                }
+            }
+        });
+
+        latch.await();
+        assertEquals(100, i.get());
+    }
+
+    @Test
+    public final void testRecursiveExecutionWithFunc2() throws InterruptedException {
+        final Scheduler scheduler = getScheduler();
+        final AtomicInteger i = new AtomicInteger();
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        scheduler.schedule(0, new Func2<Scheduler, Integer, Subscription>() {
+
+            @Override
+            public Subscription call(Scheduler innerScheduler, Integer state) {
+                i.set(state);
+                if (state < 100) {
+                    return innerScheduler.schedule(state + 1, this);
+                } else {
+                    latch.countDown();
+                    return Subscriptions.empty();
+                }
+            }
+
+        });
+
+        latch.await();
+        assertEquals(100, i.get());
+    }
+
+    @Test
+    public final void testRecursiveExecutionWithFunc2AndDelayTime() throws InterruptedException {
+        final Scheduler scheduler = getScheduler();
+        final AtomicInteger i = new AtomicInteger();
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        scheduler.schedule(0, new Func2<Scheduler, Integer, Subscription>() {
+
+            @Override
+            public Subscription call(Scheduler innerScheduler, Integer state) {
+                i.set(state);
+                if (state < 100) {
+                    return innerScheduler.schedule(state + 1, this, 5, TimeUnit.MILLISECONDS);
+                } else {
+                    latch.countDown();
+                    return Subscriptions.empty();
+                }
+            }
+
+        }, 50, TimeUnit.MILLISECONDS);
+
+        latch.await();
+        assertEquals(100, i.get());
     }
 
 }
