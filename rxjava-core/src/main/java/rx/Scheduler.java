@@ -165,7 +165,7 @@ public abstract class Scheduler {
                     @Override
                     public void call() {
                         if (!parentSubscription.isUnsubscribed()) {
-                            childSubscription.setSubscription(scheduler.schedule(parentAction, parentAction));
+                            childSubscription.set(scheduler.schedule(parentAction, parentAction));
                         }
                     }
 

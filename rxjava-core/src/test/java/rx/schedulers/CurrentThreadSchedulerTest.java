@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,129 +15,44 @@
  */
 package rx.schedulers;
 
-import static org.mockito.Mockito.*;
-
-import java.util.concurrent.TimeUnit;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.mockito.InOrder;
 
-import rx.util.functions.Action0;
+import rx.Observable;
+import rx.Scheduler;
+import rx.util.functions.Action1;
+import rx.util.functions.Func1;
 
-public class CurrentThreadSchedulerTest {
+public class CurrentThreadSchedulerTest extends AbstractSchedulerTests {
 
-    @Test
-    public void testNestedActions() {
-        final CurrentThreadScheduler scheduler = new CurrentThreadScheduler();
-
-        final Action0 firstStepStart = mock(Action0.class);
-        final Action0 firstStepEnd = mock(Action0.class);
-
-        final Action0 secondStepStart = mock(Action0.class);
-        final Action0 secondStepEnd = mock(Action0.class);
-
-        final Action0 thirdStepStart = mock(Action0.class);
-        final Action0 thirdStepEnd = mock(Action0.class);
-
-        final Action0 firstAction = new Action0() {
-            @Override
-            public void call() {
-                firstStepStart.call();
-                firstStepEnd.call();
-            }
-        };
-        final Action0 secondAction = new Action0() {
-            @Override
-            public void call() {
-                secondStepStart.call();
-                scheduler.schedule(firstAction);
-                secondStepEnd.call();
-
-            }
-        };
-        final Action0 thirdAction = new Action0() {
-            @Override
-            public void call() {
-                thirdStepStart.call();
-                scheduler.schedule(secondAction);
-                thirdStepEnd.call();
-            }
-        };
-
-        InOrder inOrder = inOrder(firstStepStart, firstStepEnd, secondStepStart, secondStepEnd, thirdStepStart, thirdStepEnd);
-
-        scheduler.schedule(thirdAction);
-
-        inOrder.verify(thirdStepStart, times(1)).call();
-        inOrder.verify(thirdStepEnd, times(1)).call();
-        inOrder.verify(secondStepStart, times(1)).call();
-        inOrder.verify(secondStepEnd, times(1)).call();
-        inOrder.verify(firstStepStart, times(1)).call();
-        inOrder.verify(firstStepEnd, times(1)).call();
+    @Override
+    protected Scheduler getScheduler() {
+        return CurrentThreadScheduler.getInstance();
     }
 
     @Test
-    public void testSequenceOfActions() {
-        final CurrentThreadScheduler scheduler = new CurrentThreadScheduler();
+    public final void testMergeWithCurrentThreadScheduler1() {
 
-        final Action0 first = mock(Action0.class);
-        final Action0 second = mock(Action0.class);
+        final String currentThreadName = Thread.currentThread().getName();
 
-        scheduler.schedule(first);
-        scheduler.schedule(second);
+        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
+        Observable<String> o = Observable.<Integer> merge(o1, o2).subscribeOn(Schedulers.currentThread()).map(new Func1<Integer, String>() {
 
-        verify(first, times(1)).call();
-        verify(second, times(1)).call();
-
-    }
-
-    @Test
-    public void testSequenceOfDelayedActions() {
-        final CurrentThreadScheduler scheduler = new CurrentThreadScheduler();
-
-        final Action0 first = mock(Action0.class);
-        final Action0 second = mock(Action0.class);
-
-        scheduler.schedule(new Action0() {
             @Override
-            public void call() {
-                scheduler.schedule(first, 30, TimeUnit.MILLISECONDS);
-                scheduler.schedule(second, 10, TimeUnit.MILLISECONDS);
+            public String call(Integer t) {
+                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
+                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
             }
         });
 
-        InOrder inOrder = inOrder(first, second);
+        o.toBlockingObservable().forEach(new Action1<String>() {
 
-        inOrder.verify(second, times(1)).call();
-        inOrder.verify(first, times(1)).call();
-
-    }
-
-    @Test
-    public void testMixOfDelayedAndNonDelayedActions() {
-        final CurrentThreadScheduler scheduler = new CurrentThreadScheduler();
-
-        final Action0 first = mock(Action0.class);
-        final Action0 second = mock(Action0.class);
-        final Action0 third = mock(Action0.class);
-        final Action0 fourth = mock(Action0.class);
-
-        scheduler.schedule(new Action0() {
             @Override
-            public void call() {
-                scheduler.schedule(first);
-                scheduler.schedule(second, 300, TimeUnit.MILLISECONDS);
-                scheduler.schedule(third, 100, TimeUnit.MILLISECONDS);
-                scheduler.schedule(fourth);
+            public void call(String t) {
+                System.out.println("t: " + t);
             }
         });
-
-        InOrder inOrder = inOrder(first, second, third, fourth);
-
-        inOrder.verify(first, times(1)).call();
-        inOrder.verify(fourth, times(1)).call();
-        inOrder.verify(third, times(1)).call();
-        inOrder.verify(second, times(1)).call();
-
     }
 }

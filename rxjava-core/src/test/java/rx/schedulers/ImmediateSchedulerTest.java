@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,61 +15,90 @@
  */
 package rx.schedulers;
 
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.mockito.InOrder;
 
-import rx.util.functions.Action0;
+import rx.Observable;
+import rx.Scheduler;
+import rx.util.functions.Action1;
+import rx.util.functions.Func1;
 
-public class ImmediateSchedulerTest {
+public class ImmediateSchedulerTest extends AbstractSchedulerTests {
+
+    @Override
+    protected Scheduler getScheduler() {
+        return ImmediateScheduler.getInstance();
+    }
+
+    @Override
     @Test
-    public void testNestedActions() {
-        final ImmediateScheduler scheduler = new ImmediateScheduler();
+    public final void testNestedActions() {
+        // ordering of nested actions will not match other schedulers
+        // because there is no reordering or concurrency with ImmediateScheduler
+    }
 
-        final Action0 firstStepStart = mock(Action0.class);
-        final Action0 firstStepEnd = mock(Action0.class);
+    @Override
+    @Test
+    public final void testSequenceOfDelayedActions() {
+        // ordering of nested actions will not match other schedulers
+        // because there is no reordering or concurrency with ImmediateScheduler
+    }
 
-        final Action0 secondStepStart = mock(Action0.class);
-        final Action0 secondStepEnd = mock(Action0.class);
+    @Override
+    @Test
+    public final void testMixOfDelayedAndNonDelayedActions() {
+        // ordering of nested actions will not match other schedulers
+        // because there is no reordering or concurrency with ImmediateScheduler
+    }
 
-        final Action0 thirdStepStart = mock(Action0.class);
-        final Action0 thirdStepEnd = mock(Action0.class);
+    @Test
+    public final void testMergeWithoutScheduler() {
 
-        final Action0 firstAction = new Action0() {
+        final String currentThreadName = Thread.currentThread().getName();
+
+        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
+        Observable<String> o = Observable.<Integer> merge(o1, o2).map(new Func1<Integer, String>() {
+
             @Override
-            public void call() {
-                firstStepStart.call();
-                firstStepEnd.call();
+            public String call(Integer t) {
+                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
+                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
             }
-        };
-        final Action0 secondAction = new Action0() {
+        });
+
+        o.toBlockingObservable().forEach(new Action1<String>() {
+
             @Override
-            public void call() {
-                secondStepStart.call();
-                scheduler.schedule(firstAction);
-                secondStepEnd.call();
-
+            public void call(String t) {
+                System.out.println("t: " + t);
             }
-        };
-        final Action0 thirdAction = new Action0() {
+        });
+    }
+
+    @Test
+    public final void testMergeWithImmediateScheduler1() {
+
+        final String currentThreadName = Thread.currentThread().getName();
+
+        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
+        Observable<String> o = Observable.<Integer> merge(o1, o2).subscribeOn(Schedulers.immediate()).map(new Func1<Integer, String>() {
+
             @Override
-            public void call() {
-                thirdStepStart.call();
-                scheduler.schedule(secondAction);
-                thirdStepEnd.call();
+            public String call(Integer t) {
+                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
+                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
             }
-        };
+        });
 
-        InOrder inOrder = inOrder(firstStepStart, firstStepEnd, secondStepStart, secondStepEnd, thirdStepStart, thirdStepEnd);
+        o.toBlockingObservable().forEach(new Action1<String>() {
 
-        scheduler.schedule(thirdAction);
-
-        inOrder.verify(thirdStepStart, times(1)).call();
-        inOrder.verify(secondStepStart, times(1)).call();
-        inOrder.verify(firstStepStart, times(1)).call();
-        inOrder.verify(firstStepEnd, times(1)).call();
-        inOrder.verify(secondStepEnd, times(1)).call();
-        inOrder.verify(thirdStepEnd, times(1)).call();
+            @Override
+            public void call(String t) {
+                System.out.println("t: " + t);
+            }
+        });
     }
 }

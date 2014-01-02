@@ -17,10 +17,12 @@ package rx.schedulers;
 
 import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
+import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 /**
@@ -28,60 +30,122 @@ import rx.util.functions.Func2;
  */
 public class CurrentThreadScheduler extends Scheduler {
     private static final CurrentThreadScheduler INSTANCE = new CurrentThreadScheduler();
+    private static final AtomicLong counter = new AtomicLong(0);
 
     public static CurrentThreadScheduler getInstance() {
         return INSTANCE;
     }
 
-    private static final ThreadLocal<PriorityQueue<TimedAction>> QUEUE = new ThreadLocal<PriorityQueue<TimedAction>>();
+    private static final ThreadLocal<PriorityQueue<TimedAction>> QUEUE = new ThreadLocal<PriorityQueue<TimedAction>>() {
+        protected java.util.PriorityQueue<TimedAction> initialValue() {
+            return new PriorityQueue<TimedAction>();
+        };
+    };
+
+    private static final ThreadLocal<Boolean> PROCESSING = new ThreadLocal<Boolean>() {
+        protected Boolean initialValue() {
+            return Boolean.FALSE;
+        };
+    };
 
     /* package accessible for unit tests */CurrentThreadScheduler() {
     }
 
-    private final AtomicInteger counter = new AtomicInteger(0);
-
     @Override
     public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
-        DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
-        enqueue(discardableAction, now());
-        return discardableAction;
+        // immediately move to the InnerCurrentThreadScheduler
+        InnerCurrentThreadScheduler innerScheduler = new InnerCurrentThreadScheduler();
+        innerScheduler.schedule(state, action);
+        enqueueFromOuter(innerScheduler, now());
+        return innerScheduler;
     }
 
     @Override
-    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long dueTime, TimeUnit unit) {
-        long execTime = now() + unit.toMillis(dueTime);
+    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
+        long execTime = now() + unit.toMillis(delayTime);
 
-        DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, new SleepingAction<T>(action, this, execTime));
-        enqueue(discardableAction, execTime);
-        return discardableAction;
+        // create an inner scheduler and queue it for execution
+        InnerCurrentThreadScheduler innerScheduler = new InnerCurrentThreadScheduler();
+        innerScheduler.schedule(state, action, delayTime, unit);
+        enqueueFromOuter(innerScheduler, execTime);
+        return innerScheduler;
     }
 
-    private void enqueue(DiscardableAction<?> action, long execTime) {
+    /*
+     * This will accept InnerCurrentThreadScheduler instances and execute them in order they are received
+     * and on each of them will loop internally until each is complete.
+     */
+    private void enqueueFromOuter(final InnerCurrentThreadScheduler innerScheduler, long execTime) {
+        // Note that everything here is single-threaded so we won't have race conditions
         PriorityQueue<TimedAction> queue = QUEUE.get();
-        boolean exec = queue == null;
+        queue.add(new TimedAction(new Func1<Scheduler, Subscription>() {
 
-        if (exec) {
-            queue = new PriorityQueue<TimedAction>();
-            QUEUE.set(queue);
-        }
-
-        queue.add(new TimedAction(action, execTime, counter.incrementAndGet()));
-
-        if (exec) {
-            while (!queue.isEmpty()) {
-                queue.poll().action.call(this);
+            @Override
+            public Subscription call(Scheduler _) {
+                // when the InnerCurrentThreadScheduler gets scheduled we want to process its tasks
+                return innerScheduler.startProcessing();
             }
+        }, execTime, counter.incrementAndGet()));
 
-            QUEUE.set(null);
+        // first time through starts the loop
+        if (!PROCESSING.get()) {
+            PROCESSING.set(Boolean.TRUE);
+            while (!queue.isEmpty()) {
+                queue.poll().action.call(innerScheduler);
+            }
+            PROCESSING.set(Boolean.FALSE);
         }
     }
 
-    private static class TimedAction implements Comparable<TimedAction> {
-        final DiscardableAction<?> action;
-        final Long execTime;
-        final Integer count; // In case if time between enqueueing took less than 1ms
+    private static class InnerCurrentThreadScheduler extends Scheduler implements Subscription {
+        private final MultipleAssignmentSubscription childSubscription = new MultipleAssignmentSubscription();
+        private final PriorityQueue<TimedAction> innerQueue = new PriorityQueue<TimedAction>();
 
-        private TimedAction(DiscardableAction<?> action, Long execTime, Integer count) {
+        @Override
+        public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
+            DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
+            childSubscription.set(discardableAction);
+            enqueue(discardableAction, now());
+            return childSubscription;
+        }
+
+        @Override
+        public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
+            long execTime = now() + unit.toMillis(delayTime);
+
+            DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, new SleepingAction<T>(action, this, execTime));
+            childSubscription.set(discardableAction);
+            enqueue(discardableAction, execTime);
+            return childSubscription;
+        }
+
+        private void enqueue(Func1<Scheduler, Subscription> action, long execTime) {
+            innerQueue.add(new TimedAction(action, execTime, counter.incrementAndGet()));
+        }
+
+        private Subscription startProcessing() {
+            while (!innerQueue.isEmpty()) {
+                innerQueue.poll().action.call(this);
+            }
+            return this;
+        }
+
+        @Override
+        public void unsubscribe() {
+            childSubscription.unsubscribe();
+        }
+
+    }
+
+    /**
+     * Use time to sort items so delayed actions are sorted to their appropriate position in the queue.
+     */
+    private static class TimedAction implements Comparable<TimedAction> {
+        final Func1<Scheduler, Subscription> action;
+        final Long execTime;
+        final Long count; // In case if time between enqueueing took less than 1ms
+
+        private TimedAction(Func1<Scheduler, Subscription> action, Long execTime, Long count) {
             this.action = action;
             this.execTime = execTime;
             this.count = count;
