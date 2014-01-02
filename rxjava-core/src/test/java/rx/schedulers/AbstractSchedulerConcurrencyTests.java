@@ -163,7 +163,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         assertEquals(10, counter.get());
     }
 
-    @Test(timeout = 20000)
+    @Test
     public void recursionUsingFunc2() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         getScheduler().schedule(1L, new Func2<Scheduler, Long, Subscription>() {
@@ -185,7 +185,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         latch.await();
     }
 
-    @Test(timeout = 20000)
+    @Test
     public void recursionUsingAction0() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         getScheduler().schedule(new Action1<Action0>() {
