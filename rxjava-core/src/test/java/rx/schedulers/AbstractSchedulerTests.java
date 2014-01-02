@@ -198,10 +198,11 @@ public abstract class AbstractSchedulerTests {
         List<String> strings = m.toList().toBlockingObservable().last();
 
         assertEquals(4, strings.size());
-        assertEquals("names=>a-1", strings.get(0));
-        assertEquals("names=>b-1", strings.get(1));
-        assertEquals("names=>a-2", strings.get(2));
-        assertEquals("names=>b-2", strings.get(3));
+        // because flatMap does a merge there is no guarantee of order
+        assertTrue(strings.contains("names=>a-1"));
+        assertTrue(strings.contains("names=>a-2"));
+        assertTrue(strings.contains("names=>b-1"));
+        assertTrue(strings.contains("names=>b-2"));
     }
 
     @SuppressWarnings("rawtypes")
