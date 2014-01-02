@@ -27,7 +27,9 @@
 
 (defn hello
   [& args]
-  (-> (Observable/from args)
+  (->
+    ; type hint required due to `Observable/from` overloading
+    (Observable/from ^java.lang.Iterable args)
     (.subscribe (rx/action [v] (println (str "Hello " v "!"))))))
 
 ; To see output
