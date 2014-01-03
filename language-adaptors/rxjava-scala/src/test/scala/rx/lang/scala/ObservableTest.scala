@@ -57,6 +57,14 @@ class ObservableTests extends JUnitSuite {
     assertEquals(demat.toBlockingObservable.toIterable.toList, List(1, 2, 3))
 }
 
+  @Test def TestScan() {
+     val xs = Observable.items(0,1,2,3)
+     val ys = xs.scan(0)(_+_)
+     assertEquals(List(0,0,1,3,6), ys.toBlockingObservable.toList)
+     val zs = xs.scan((x: Int, y:Int) => x*y)
+     assertEquals(List(0, 0, 0, 0), zs.toBlockingObservable.toList)
+  }
+
   // Test that Java's firstOrDefault propagates errors.
   // If this changes (i.e. it suppresses errors and returns default) then Scala's firstOrElse
   // should be changed accordingly.

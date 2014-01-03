@@ -18,7 +18,7 @@ package rx.lang.scala
 
 import rx.util.functions.FuncN
 import rx.Observable.OnSubscribeFunc
-
+import rx.lang.scala.observables.ConnectableObservable
 
 
 /**
@@ -1052,12 +1052,10 @@ trait Observable[+T]
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/publishConnect.png">
    *
-   * @return a pair of a start function and an [[rx.lang.scala.Observable]] such that when the start function
-   *         is called, the Observable starts to emit items to its [[rx.lang.scala.Observer]]s
+   * @return an [[rx.lang.scala.observables.ConnectableObservable]].
    */
-  def publish: (() => Subscription, Observable[T]) = {
-    val javaCO = asJavaObservable.publish()
-    (() => javaCO.connect(), toScalaObservable[T](javaCO))
+  def publish: ConnectableObservable[T] = {
+    new ConnectableObservable[T](asJavaObservable.publish())
   }
 
   // TODO add Scala-like aggregate function
@@ -1136,13 +1134,38 @@ trait Observable[+T]
    *            the initial (seed) accumulator value
    * @param accumulator
    *            an accumulator function to be invoked on each item emitted by the source
-   *            Observable, whose result will be emitted to [[rx.lang.scala.Observer]]s via [[rx.lang.scala.Observer.onNext onNext]] and used in the next accumulator call.
+   *            Observable, whose result will be emitted to [[rx.lang.scala.Observer]]s via
+   *            [[rx.lang.scala.Observer.onNext onNext]] and used in the next accumulator call.
    * @return an Observable that emits the results of each call to the accumulator function
    */
   def scan[R](initialValue: R)(accumulator: (R, T) => R): Observable[R] = {
     toScalaObservable[R](asJavaObservable.scan(initialValue, new Func2[R,T,R]{
       def call(t1: R, t2: T): R = accumulator(t1,t2)
     }))
+  }
+
+  /**
+   * Returns an Observable that applies a function of your choosing to the
+   * first item emitted by a source Observable, then feeds the result of that
+   * function along with the second item emitted by an Observable into the
+   * same function, and so on until all items have been emitted by the source
+   * Observable, emitting the result of each of these iterations.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
+   * <p>
+   *
+   * @param accumulator
+   *            an accumulator function to be invoked on each item emitted by the source
+   *            Observable, whose result will be emitted to [[rx.lang.scala.Observer]]s via
+   *            [[rx.lang.scala.Observer.onNext onNext]] and used in the next accumulator call.
+   * @return
+   *         an Observable that emits the results of each call to the
+   *         accumulator function
+   */
+  def scan[U >: T](accumulator: (U, U) => U): Observable[U] = {
+    val func: Func2[_ >: U, _ >: U, _ <: U] = accumulator
+    val func2 = func.asInstanceOf[Func2[T, T, T]]
+    toScalaObservable[U](asJavaObservable.asInstanceOf[rx.Observable[T]].scan(func2))
   }
 
   /**
