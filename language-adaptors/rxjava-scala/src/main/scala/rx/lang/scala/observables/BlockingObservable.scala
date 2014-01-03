@@ -18,6 +18,7 @@ package rx.lang.scala.observables
 import scala.collection.JavaConverters._
 import rx.lang.scala.ImplicitFunctionConversions._
 
+
 /**
  * An Observable that provides blocking operators.
  * 

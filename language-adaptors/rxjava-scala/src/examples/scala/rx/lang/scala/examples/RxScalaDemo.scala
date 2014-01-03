@@ -243,9 +243,9 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def olympicsExample() {
-    val (go, medals) = Olympics.mountainBikeMedals.publish
+    val medals = Olympics.mountainBikeMedals.publish
     medals.subscribe(println(_))
-    go()
+    medals.connect
     //waitFor(medals)
   }
 
@@ -257,10 +257,10 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def exampleWithPublish() {
     val unshared = List(1 to 4).toObservable
-    val (startFunc, shared) = unshared.publish
+    val shared = unshared.publish
     shared.subscribe(n => println(s"subscriber 1 gets $n"))
     shared.subscribe(n => println(s"subscriber 2 gets $n"))
-    startFunc()
+    shared.connect
   }
 
   def doLater(waitTime: Duration, action: () => Unit): Unit = {
@@ -269,9 +269,9 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def exampleWithoutReplay() {
     val numbers = Observable.interval(1000 millis).take(6)
-    val (startFunc, sharedNumbers) = numbers.publish
+    val sharedNumbers = numbers.publish
     sharedNumbers.subscribe(n => println(s"subscriber 1 gets $n"))
-    startFunc()
+    sharedNumbers.connect
     // subscriber 2 misses 0, 1, 2!
     doLater(3500 millis, () => { sharedNumbers.subscribe(n => println(s"subscriber 2 gets $n")) })
     waitFor(sharedNumbers)
