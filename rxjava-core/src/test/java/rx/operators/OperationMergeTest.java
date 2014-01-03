@@ -74,7 +74,7 @@ public class OperationMergeTest {
             }
 
         });
-        Observable<String> m = Observable.create(merge(observableOfObservables));
+        Observable<String> m = Observable.merge(observableOfObservables);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -87,8 +87,7 @@ public class OperationMergeTest {
         final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
 
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(o1, o2));
+        Observable<String> m = Observable.merge(o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -104,7 +103,7 @@ public class OperationMergeTest {
         listOfObservables.add(o1);
         listOfObservables.add(o2);
 
-        Observable<String> m = Observable.create(merge(listOfObservables));
+        Observable<String> m = Observable.merge(listOfObservables);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -117,8 +116,7 @@ public class OperationMergeTest {
         TestObservable tA = new TestObservable();
         TestObservable tB = new TestObservable();
 
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(Observable.create(tA), Observable.create(tB)));
+        Observable<String> m = Observable.merge(Observable.create(tA), Observable.create(tB));
         Subscription s = m.subscribe(stringObserver);
 
         tA.sendOnNext("Aone");
@@ -210,8 +208,7 @@ public class OperationMergeTest {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(Observable.create(o1), Observable.create(o2)));
+        Observable<String> m = Observable.merge(Observable.create(o1), Observable.create(o2));
         m.subscribe(stringObserver);
 
         try {
@@ -237,8 +234,7 @@ public class OperationMergeTest {
         final AtomicInteger concurrentCounter = new AtomicInteger();
         final AtomicInteger totalCounter = new AtomicInteger();
 
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(Observable.create(o1), Observable.create(o2)));
+        Observable<String> m = Observable.merge(Observable.create(o1), Observable.create(o2));
         m.subscribe(new Observer<String>() {
 
             @Override
@@ -308,8 +304,7 @@ public class OperationMergeTest {
         final Observable<String> o1 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six"
         final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", "three")); // we expect to lose all of these since o1 is done first and fails
 
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(o1, o2));
+        Observable<String> m = Observable.merge(o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -333,8 +328,7 @@ public class OperationMergeTest {
         final Observable<String> o3 = Observable.create(new TestErrorObservable("seven", "eight", null));// we expect to lose all of these since o2 is done first and fails
         final Observable<String> o4 = Observable.create(new TestErrorObservable("nine"));// we expect to lose all of these since o2 is done first and fails
 
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(o1, o2, o3, o4));
+        Observable<String> m = Observable.merge(o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
