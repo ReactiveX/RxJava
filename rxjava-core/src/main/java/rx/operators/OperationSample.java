@@ -122,9 +122,10 @@ public final class OperationSample {
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229742.aspx'>MSDN: Observable.Sample</a>
      */
     public static class SampleWithObservable<T, U> implements OnSubscribeFunc<T> {
-        final Observable<T> source;
-        final Observable<U> sampler;
-        public SampleWithObservable(Observable<T> source, Observable<U> sampler) {
+        final IObservable<T> source;
+        final IObservable<U> sampler;
+
+        public SampleWithObservable(IObservable<T> source, IObservable<U> sampler) {
             this.source = source;
             this.sampler = sampler;
         }

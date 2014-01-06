@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
+
+import rx.IObservable;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
@@ -33,12 +35,12 @@ public final class OperationLatest {
     /** Utility class. */
     private OperationLatest() { throw new IllegalStateException("No instances!"); }  
     
-    public static <T> Iterable<T> latest(final Observable<? extends T> source) {
+    public static <T> Iterable<T> latest(final IObservable<? extends T> source) {
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
                 LatestObserverIterator<T> lio = new LatestObserverIterator<T>();
-                source.materialize().subscribe(lio);
+                Observable.from(source).materialize().subscribe(lio);
                 return lio;
             }
         };

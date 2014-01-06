@@ -427,7 +427,7 @@ public class Observable<T> implements IObservable<T> {
      */
     public <TIntermediate, TResult> Observable<TResult> multicast(
             final Func0<? extends Subject<? super T, ? extends TIntermediate>> subjectFactory, 
-            final Func1<? super Observable<TIntermediate>, ? extends Observable<TResult>> selector) {
+            final Func1<? super Observable<TIntermediate>, ? extends IObservable<TResult>> selector) {
         return OperationMulticast.multicast(this, subjectFactory, selector);
     }
 
@@ -1818,7 +1818,7 @@ public class Observable<T> implements IObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#switchonnext">RxJava Wiki: switchOnNext()</a>
      * @see {@link #switchOnNext(Observable)}
      */
-    public static <T> Observable<T> switchLatest(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
+    public static <T> Observable<T> switchLatest(IObservable<? extends IObservable<? extends T>> sequenceOfSequences) {
         return create(OperationSwitch.switchDo(sequenceOfSequences));
     }
 
@@ -1838,7 +1838,7 @@ public class Observable<T> implements IObservable<T> {
      *         key
      */
     public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector, 
-            Map<? super K, ? extends Observable<? extends R>> mapOfCases) {
+            Map<? super K, ? extends IObservable<? extends R>> mapOfCases) {
         return switchCase(caseSelector, mapOfCases, Observable.<R>empty());
     }
     
@@ -1859,7 +1859,8 @@ public class Observable<T> implements IObservable<T> {
      *         key, but one that runs on the designated scheduler in either case
      */
     public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector, 
-            Map<? super K, ? extends Observable<? extends R>> mapOfCases, Scheduler scheduler) {
+            Map<? super K, ? extends IObservable<? extends R>> mapOfCases,
+            Scheduler scheduler) {
         return switchCase(caseSelector, mapOfCases, Observable.<R>empty(scheduler));
     }
     /**
@@ -1881,8 +1882,8 @@ public class Observable<T> implements IObservable<T> {
      *         Observables, or the default case if no Observable matches the key
      */
     public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector, 
-            Map<? super K, ? extends Observable<? extends R>> mapOfCases, 
-            Observable<? extends R> defaultCase) {
+            Map<? super K, ? extends IObservable<? extends R>> mapOfCases,
+            IObservable<? extends R> defaultCase) {
         return create(OperationConditionals.switchCase(caseSelector, mapOfCases, defaultCase));
     }
     
@@ -1933,7 +1934,7 @@ public class Observable<T> implements IObservable<T> {
      *         {@code condition} function evaluates to true, or an empty
      *         Observable otherwise
      */
-    public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then) {
+    public static <R> Observable<R> ifThen(Func0<Boolean> condition, IObservable<? extends R> then) {
         return ifThen(condition, then, Observable.<R>empty());
     }
     
@@ -1955,7 +1956,7 @@ public class Observable<T> implements IObservable<T> {
      *         {@code condition} function evaluates to true, or an empty
      *         Observable running on the specified Scheduler otherwise
      */
-    public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then, Scheduler scheduler) {
+    public static <R> Observable<R> ifThen(Func0<Boolean> condition, IObservable<? extends R> then, Scheduler scheduler) {
         return ifThen(condition, then, Observable.<R>empty(scheduler));
     }
 
@@ -1976,8 +1977,10 @@ public class Observable<T> implements IObservable<T> {
      * @return an Observable that mimics either the {@code then} or
      *         {@code orElse} Observables depending on a condition function
      */
-    public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then,
-            Observable<? extends R> orElse) {
+    public static <R> Observable<R> ifThen(
+            Func0<Boolean> condition,
+            IObservable<? extends R> then,
+            IObservable<? extends R> orElse) {
         return create(OperationConditionals.ifThen(condition, then, orElse));
     }
     
@@ -4685,7 +4688,7 @@ public class Observable<T> implements IObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229653.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector) {
+    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends IObservable<R>> selector) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
@@ -4711,7 +4714,9 @@ public class Observable<T> implements IObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211644.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final Scheduler scheduler) {
+    public <R> Observable<R> replay(
+            final Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            final Scheduler scheduler) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
@@ -4738,7 +4743,9 @@ public class Observable<T> implements IObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211675.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize) {
+    public <R> Observable<R> replay(
+            final Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            final int bufferSize) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
@@ -4766,7 +4773,10 @@ public class Observable<T> implements IObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229928.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize, final Scheduler scheduler) {
+    public <R> Observable<R> replay(
+            final Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            final int bufferSize,
+            final Scheduler scheduler) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
@@ -4794,7 +4804,10 @@ public class Observable<T> implements IObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229526.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, long time, TimeUnit unit) {
+    public <R> Observable<R> replay(
+            Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            long time,
+            TimeUnit unit) {
         return replay(selector, time, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -4819,7 +4832,11 @@ public class Observable<T> implements IObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244327.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final long time, final TimeUnit unit, final Scheduler scheduler) {
+    public <R> Observable<R> replay(
+            final Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            final long time,
+            final TimeUnit unit,
+            final Scheduler scheduler) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
@@ -4848,7 +4865,11 @@ public class Observable<T> implements IObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228952.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, int bufferSize, long time, TimeUnit unit) {
+    public <R> Observable<R> replay(
+            Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            int bufferSize,
+            long time,
+            TimeUnit unit) {
         return replay(selector, bufferSize, time, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -4875,7 +4896,12 @@ public class Observable<T> implements IObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229404.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
+    public <R> Observable<R> replay(
+            final Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            final int bufferSize,
+            final long time,
+            final TimeUnit unit,
+            final Scheduler scheduler) {
         if (bufferSize < 0) {
             throw new IllegalArgumentException("bufferSize < 0");
         }
@@ -5217,7 +5243,7 @@ public class Observable<T> implements IObservable<T> {
      *         Observable emits an item or completes
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast">RxJava Wiki: sample()</a>
      */
-    public <U> Observable<T> sample(Observable<U> sampler) {
+    public <U> Observable<T> sample(IObservable<U> sampler) {
         return create(new OperationSample.SampleWithObservable<T, U>(this, sampler));
     }
     
@@ -6145,8 +6171,10 @@ public class Observable<T> implements IObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#join-and-groupjoin">RxJava Wiiki: groupJoin</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244235.aspx">MSDN: Observable.GroupJoin</a>
      */
-    public <T2, D1, D2, R> Observable<R> groupJoin(Observable<T2> right, Func1<? super T, ? extends Observable<D1>> leftDuration, 
-            Func1<? super T2, ? extends Observable<D2>> rightDuration,
+    public <T2, D1, D2, R> Observable<R> groupJoin(
+            IObservable<T2> right,
+            Func1<? super T, ? extends IObservable<D1>> leftDuration,
+            Func1<? super T2, ? extends IObservable<D2>> rightDuration,
             Func2<? super T, ? super Observable<T2>, ? extends R> resultSelector) {
         return create(new OperationGroupJoin<T, T2, D1, D2, R>(this, right, leftDuration, rightDuration, resultSelector));
     }
@@ -7230,7 +7258,7 @@ public class Observable<T> implements IObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skipuntil">RxJava Wiki: skipUntil()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229358.aspx">MSDN: Observable.SkipUntil</a>
      */
-    public <U> Observable<T> skipUntil(Observable<U> other) {
+    public <U> Observable<T> skipUntil(IObservable<U> other) {
         return create(new OperationSkipUntil<T, U>(this, other));
     }
 

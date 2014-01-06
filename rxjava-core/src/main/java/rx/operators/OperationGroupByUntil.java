@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -39,14 +39,16 @@ import rx.util.functions.Func1;
  * @see <a href='http://msdn.microsoft.com/en-us/library/hh229433.aspx'>MSDN: Observable.GroupByUntil</a>
  */
 public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements OnSubscribeFunc<GroupedObservable<TKey, TResult>> {
-    final Observable<TSource> source;
+    final IObservable<TSource> source;
     final Func1<? super TSource, ? extends TKey> keySelector;
     final Func1<? super TSource, ? extends TResult> valueSelector;
-    final Func1<? super GroupedObservable<TKey, TResult>, ? extends Observable<TDuration>> durationSelector;
-    public OperationGroupByUntil(Observable<TSource> source,
+    final Func1<? super GroupedObservable<TKey, TResult>, ? extends IObservable<TDuration>> durationSelector;
+
+    public OperationGroupByUntil(
+            IObservable<TSource> source,
             Func1<? super TSource, ? extends TKey> keySelector,
             Func1<? super TSource, ? extends TResult> valueSelector,
-            Func1<? super GroupedObservable<TKey, TResult>, ? extends Observable<TDuration>> durationSelector) {
+            Func1<? super GroupedObservable<TKey, TResult>, ? extends IObservable<TDuration>> durationSelector) {
         this.source = source;
         this.keySelector = keySelector;
         this.valueSelector = valueSelector;
@@ -107,7 +109,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             }
             
             if (newGroup) {
-                Observable<TDuration> duration;
+                IObservable<TDuration> duration;
                 try {
                     duration = durationSelector.call(g);
                 } catch (Throwable t) {

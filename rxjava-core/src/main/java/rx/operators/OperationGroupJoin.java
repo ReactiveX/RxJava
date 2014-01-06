@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -33,21 +34,28 @@ import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 /**
- * Corrrelates two sequences when they overlap and groups the results.
+ * Correlates two sequences when they overlap and groups the results.
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/hh244235.aspx">MSDN: Observable.GroupJoin</a>
  */
 public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R> {
-    protected final Observable<T1> left;
-    protected final Observable<T2> right;
-    protected final Func1<? super T1, ? extends Observable<D1>> leftDuration;
-    protected final Func1<? super T2, ? extends Observable<D2>> rightDuration;
+    protected final IObservable<T1> left;
+    protected final IObservable<T2> right;
+    protected final Func1<? super T1, ? extends IObservable<D1>> leftDuration;
+    protected final Func1<? super T2, ? extends IObservable<D2>> rightDuration;
+    /* XXX: This field shouldn't depend on the concrete Observable class,
+     * but we can't change it easily without breaking backwards compatibility.
+     */
     protected final Func2<? super T1, ? super Observable<T2>, ? extends R> resultSelector;
+
+    /* XXX: This constructor shouldn't depend on the concrete Observable class,
+     * but we can't change it easily without breaking backwards compatibility.
+     */
     public OperationGroupJoin(
-        Observable<T1> left,
-        Observable<T2> right,
-        Func1<? super T1, ? extends Observable<D1>> leftDuration,
-        Func1<? super T2, ? extends Observable<D2>> rightDuration,
+        IObservable<T1> left,
+        IObservable<T2> right,
+        Func1<? super T1, ? extends IObservable<D1>> leftDuration,
+        Func1<? super T2, ? extends IObservable<D2>> rightDuration,
         Func2<? super T1, ? super Observable<T2>, ? extends R> resultSelector
     ) {
         this.left = left;
@@ -120,8 +128,8 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
                     }
                     
                     Observable<T2> window = Observable.create(new WindowObservableFunc<T2>(subj, cancel));
-                    
-                    Observable<D1> duration = leftDuration.call(args);
+
+                    IObservable<D1> duration = leftDuration.call(args);
 
                     SerialSubscription sduration = new SerialSubscription();
                     group.add(sduration);
@@ -180,7 +188,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
                         id = rightIds++;
                         rightMap.put(id, args);
                     }
-                    Observable<D2> duration = rightDuration.call(args);
+                    IObservable<D2> duration = rightDuration.call(args);
 
                     SerialSubscription sduration = new SerialSubscription();
                     group.add(sduration);
@@ -293,8 +301,9 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
      */
     static class WindowObservableFunc<T> implements OnSubscribeFunc<T> {
         final RefCountSubscription refCount;
-        final Observable<T> underlying;
-        public WindowObservableFunc(Observable<T> underlying, RefCountSubscription refCount) {
+        final IObservable<T> underlying;
+
+        public WindowObservableFunc(IObservable<T> underlying, RefCountSubscription refCount) {
             this.refCount = refCount;
             this.underlying = underlying;
         }

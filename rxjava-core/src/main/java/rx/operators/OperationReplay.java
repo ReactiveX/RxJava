@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -128,7 +130,7 @@ public final class OperationReplay {
     /**
      * Return an OnSubscribeFunc which delegates the subscription to the given observable.
      */
-    public static <T> OnSubscribeFunc<T> subscriberOf(final Observable<T> target) {
+    public static <T> OnSubscribeFunc<T> subscriberOf(final IObservable<T> target) {
         return new OnSubscribeFunc<T>() {
             @Override
             public Subscription onSubscribe(Observer<? super T> t1) {
