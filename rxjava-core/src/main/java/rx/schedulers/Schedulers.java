@@ -89,11 +89,26 @@ public class Schedulers {
      * <p>
      * This can be used for event-loops, processing callbacks and other computational work.
      * <p>
-     * Do not perform IO-bound work on this scheduler. Use {@link #threadPoolForComputation()} instead.
+     * Do not perform IO-bound work on this scheduler. Use {@link #io()} instead.
      * 
      * @return {@link ExecutorScheduler} for computation-bound work.
+     * @Deprecated Use {@link #computation()}
      */
+    @Deprecated
     public static Scheduler threadPoolForComputation() {
+        return executor(COMPUTATION_EXECUTOR);
+    }
+    
+    /**
+     * {@link Scheduler} intended for computational work.
+     * <p>
+     * This can be used for event-loops, processing callbacks and other computational work.
+     * <p>
+     * Do not perform IO-bound work on this scheduler. Use {@link #io()} instead.
+     * 
+     * @return {@link Scheduler} for computation-bound work.
+     */
+    public static Scheduler computation() {
         return executor(COMPUTATION_EXECUTOR);
     }
 
@@ -104,11 +119,28 @@ public class Schedulers {
      * <p>
      * This can be used for asynchronously performing blocking IO.
      * <p>
-     * Do not perform computational work on this scheduler. Use {@link #threadPoolForComputation()} instead.
+     * Do not perform computational work on this scheduler. Use {@link #computation()} instead.
+     * 
+     * @return {@link ExecutorScheduler} for IO-bound work.
+     * @deprecated Use {@link #io()} instead.
+     */
+    @Deprecated
+    public static Scheduler threadPoolForIO() {
+        return executor(IO_EXECUTOR);
+    }
+    
+    /**
+     * {@link Scheduler} intended for IO-bound work.
+     * <p>
+     * The implementation is backed by an {@link Executor} thread-pool that will grow as needed.
+     * <p>
+     * This can be used for asynchronously performing blocking IO.
+     * <p>
+     * Do not perform computational work on this scheduler. Use {@link #computation()} instead.
      * 
      * @return {@link ExecutorScheduler} for IO-bound work.
      */
-    public static Scheduler threadPoolForIO() {
+    public static Scheduler io() {
         return executor(IO_EXECUTOR);
     }
 
