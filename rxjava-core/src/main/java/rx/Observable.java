@@ -849,7 +849,9 @@ public class Observable<T> {
      *            resulting Observable
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
+     * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public static <T> Observable<T> from(T t1, T t2) {
@@ -873,7 +875,9 @@ public class Observable<T> {
      *            resulting Observable
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
+     * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public static <T> Observable<T> from(T t1, T t2, T t3) {
@@ -898,7 +902,9 @@ public class Observable<T> {
      *            resulting Observable
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
+     * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public static <T> Observable<T> from(T t1, T t2, T t3, T t4) {
@@ -924,7 +930,9 @@ public class Observable<T> {
      *            resulting Observable
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
+     * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5) {
@@ -951,7 +959,9 @@ public class Observable<T> {
      *            resulting Observable
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
+     * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6) {
@@ -979,7 +989,9 @@ public class Observable<T> {
      *            resulting Observable
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
+     * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7) {
@@ -1008,7 +1020,9 @@ public class Observable<T> {
      *            resulting Observable
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
+     * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8) {
@@ -1038,7 +1052,9 @@ public class Observable<T> {
      *            resulting Observable
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
+     * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
@@ -1064,7 +1080,9 @@ public class Observable<T> {
      *            resulting Observable
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
+     * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9, T t10) {
@@ -1175,7 +1193,9 @@ public class Observable<T> {
      * @param <T> the type of that item
      * @return an Observable that emits a single item and then completes
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava Wiki: just()</a>
+     * @deprecated Use {@link #from(T)}
      */
+    @Deprecated
     public static <T> Observable<T> just(T value) {
         return from(Arrays.asList((value)));
     }
@@ -1194,7 +1214,9 @@ public class Observable<T> {
      * @return an Observable that emits a single item and then completes, on a
      *         specified scheduler
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava Wiki: just()</a>
+     * @deprecated Use {@link #from(T)}
      */
+    @Deprecated
     public static <T> Observable<T> just(T value, Scheduler scheduler) {
         return from(Arrays.asList((value)), scheduler);
     }
@@ -3898,6 +3920,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#filter-or-where">RxJava Wiki: where()</a>
      * @see #filter(Func1)
      */
+    @Deprecated
     public Observable<T> where(Func1<? super T, Boolean> predicate) {
         return filter(predicate);
     }
@@ -3935,6 +3958,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244311.aspx">MSDN: Observable.Select</a>
      * @deprecated just use zip with {@link Observable#range(int)}
      */
+    @Deprecated
     public <R> Observable<R> mapWithIndex(Func2<? super T, Integer, ? extends R> func) {
         return create(OperationMap.mapWithIndex(this, func));
     }
@@ -3959,6 +3983,7 @@ public class Observable<T> {
      * @see #flatMap(Func1)
      * @deprecated
      */
+    @Deprecated
     public <R> Observable<R> mapMany(Func1<? super T, ? extends Observable<? extends R>> func) {
         return mergeMap(func);
     }
@@ -5237,6 +5262,7 @@ public class Observable<T> {
      * @see #reduce(Func2)
      * @deprecated use #reduce(Func2)
      */
+    @Deprecated
     public Observable<T> aggregate(Func2<T, T, T> accumulator) {
         return reduce(accumulator);
     }
@@ -5303,6 +5329,7 @@ public class Observable<T> {
      * @see #reduce(Object, Func2)
      * @deprecated use #reduce(Object, Func2)
      */
+    @Deprecated
     public <R> Observable<R> aggregate(R initialValue, Func2<R, ? super T, R> accumulator) {
         return reduce(initialValue, accumulator);
     }
