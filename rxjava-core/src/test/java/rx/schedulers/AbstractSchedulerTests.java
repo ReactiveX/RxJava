@@ -205,16 +205,31 @@ public abstract class AbstractSchedulerTests {
         assertTrue(strings.contains("names=>b-2"));
     }
 
+    /**
+     * The order of execution is nondeterministic.
+     * @throws InterruptedException
+     */
     @SuppressWarnings("rawtypes")
     @Test
     public final void testSequenceOfActions() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
 
-        final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch latch = new CountDownLatch(2);
         final Action0 first = mock(Action0.class);
         final Action0 second = mock(Action0.class);
 
-        // make it wait until after the second is called
+        // make it wait until both the first and second are called
+        doAnswer(new Answer() {
+
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                try {
+                    return invocation.getMock();
+                } finally {
+                    latch.countDown();
+                }
+            }
+        }).when(first).call();
         doAnswer(new Answer() {
 
             @Override
