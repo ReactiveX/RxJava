@@ -35,7 +35,7 @@ public class ObserveOnTests {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        Observable.range(1, 100000).map(new Func1<Integer, Integer>() {
+        Observable.range(1, 1000).map(new Func1<Integer, Integer>() {
 
             @Override
             public Integer call(Integer t1) {
@@ -62,7 +62,7 @@ public class ObserveOnTests {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        Observable.range(1, 100000).map(new Func1<Integer, Integer>() {
+        Observable.range(1, 1000).map(new Func1<Integer, Integer>() {
 
             @Override
             public Integer call(Integer t1) {
@@ -95,7 +95,7 @@ public class ObserveOnTests {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        Observable.range(1, 10000).map(new Func1<Integer, Integer>() {
+        Observable.range(1, 1000).map(new Func1<Integer, Integer>() {
 
             @Override
             public Integer call(Integer t1) {
