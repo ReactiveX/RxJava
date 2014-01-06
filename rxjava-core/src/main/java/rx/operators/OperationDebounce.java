@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.IObservable;
-import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
@@ -41,7 +40,7 @@ public final class OperationDebounce {
      * the last received event is published.
      * 
      * @param items
-     *            The {@link Observable} which is publishing events.
+     *            The {@link IObservable} which is publishing events.
      * @param timeout
      *            How long each event has to be the 'last event' before it gets published.
      * @param unit
@@ -58,7 +57,7 @@ public final class OperationDebounce {
      * the last received event is published.
      * 
      * @param items
-     *            The {@link Observable} which is publishing events.
+     *            The {@link IObservable} which is publishing events.
      * @param timeout
      *            How long each event has to be the 'last event' before it gets published.
      * @param unit

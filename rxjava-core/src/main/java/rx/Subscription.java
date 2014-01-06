@@ -18,7 +18,7 @@ package rx;
 import rx.subscriptions.Subscriptions;
 
 /**
- * Subscription returns from {@link Observable#subscribe(Observer)} to allow unsubscribing.
+ * Subscription returns from {@link IObservable#subscribe(Observer)} to allow unsubscribing.
  * <p>
  * See utilities in {@link Subscriptions} and implementations in the {@code rx.subscriptions} package.
  * <p>

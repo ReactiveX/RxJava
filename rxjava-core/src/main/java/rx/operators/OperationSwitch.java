@@ -16,7 +16,6 @@
 package rx.operators;
 
 import rx.IObservable;
-import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -34,11 +33,12 @@ import rx.util.functions.Func1;
 public final class OperationSwitch {
 
     /**
-     * This function transforms an {@link Observable} sequence of {@link Observable} sequences into a single {@link Observable} sequence
-     * which produces values from the most recently published {@link Observable} .
+     * This function transforms an {@link IObservable} sequence of {@link IObservable}
+     * sequences into a single Observable sequence,
+     * which produces values from the most recently published {@link IObservable}.
      * 
      * @param sequences
-     *            The {@link Observable} sequence consisting of {@link Observable} sequences.
+     *            The {@link IObservable} sequence consisting of {@link IObservable} sequences.
      * @return A {@link Func1} which does this transformation.
      */
     public static <T> OnSubscribeFunc<T> switchDo(final IObservable<? extends IObservable<? extends T>> sequences) {

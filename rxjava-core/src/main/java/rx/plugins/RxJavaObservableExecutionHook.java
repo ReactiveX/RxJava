@@ -16,14 +16,13 @@
 package rx.plugins;
 
 import rx.IObservable;
-import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
 /**
- * Abstract ExecutionHook with invocations at different lifecycle points of {@link Observable} execution with a default no-op implementation.
+ * Abstract ExecutionHook with invocations at different lifecycle points of {@link IObservable} execution with a default no-op implementation.
  * <p>
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins: <a
  * href="https://github.com/Netflix/RxJava/wiki/Plugins">https://github.com/Netflix/RxJava/wiki/Plugins</a>.
@@ -44,7 +43,7 @@ public abstract class RxJavaObservableExecutionHook {
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra logging, metrics and other such things and pass-thru the function.
      * 
      * @param observableInstance
-     *            The executing {@link Observable} instance.
+     *            The executing {@link IObservable} instance.
      * @param onSubscribe
      *            original {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}> to be executed
      * @return {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}> function that can be modified, decorated, replaced or just returned as a pass-thru.
@@ -60,7 +59,7 @@ public abstract class RxJavaObservableExecutionHook {
      * This can be used to decorate or replace the {@link Subscription} instance or just perform extra logging, metrics and other such things and pass-thru the subscription.
      * 
      * @param observableInstance
-     *            The executing {@link Observable} instance.
+     *            The executing {@link IObservable} instance.
      * @param subscription
      *            original {@link Subscription}
      * @return {@link Subscription} subscription that can be modified, decorated, replaced or just returned as a pass-thru.
@@ -77,7 +76,7 @@ public abstract class RxJavaObservableExecutionHook {
      * to subscribe to a {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}>.
      * 
      * @param observableInstance
-     *            The executing {@link Observable} instance.
+     *            The executing {@link IObservable} instance.
      * @param e
      *            Throwable thrown by {@link IObservable#subscribe(Observer)}
      * @return Throwable that can be decorated, replaced or just returned as a pass-thru.

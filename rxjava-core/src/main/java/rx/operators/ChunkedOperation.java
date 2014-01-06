@@ -454,7 +454,7 @@ public class ChunkedOperation {
 
     /**
      * This {@link rx.operators.ChunkedOperation.ChunkCreator} creates a new {@link rx.operators.ChunkedOperation.Chunk} whenever it receives an
-     * object from the provided {@link rx.Observable} created with the
+     * object from the provided {@link rx.IObservable} created with the
      * chunkClosingSelector {@link rx.util.functions.Func0}.
      * 
      * @param <T>
@@ -499,8 +499,8 @@ public class ChunkedOperation {
 
     /**
      * This {@link rx.operators.ChunkedOperation.ChunkCreator} creates a new {@link rx.operators.ChunkedOperation.Chunk} whenever it receives
-     * an object from the provided chunkOpenings {@link rx.Observable}, and closes the corresponding {@link rx.operators.ChunkedOperation.Chunk} object when it receives an object from the provided
-     * {@link rx.Observable} created
+     * an object from the provided chunkOpenings {@link rx.IObservable}, and closes the corresponding {@link rx.operators.ChunkedOperation.Chunk}
+     * object when it receives an object from the provided {@link rx.IObservable} created
      * with the chunkClosingSelector {@link rx.util.functions.Func1}.
      * 
      * @param <T>

@@ -36,7 +36,7 @@ public final class OperationThrottleFirst {
      * Throttles to first value in each window.
      * 
      * @param items
-     *            The {@link Observable} which is publishing events.
+     *            The {@link IObservable} that is publishing events.
      * @param windowDuration
      *            Duration of windows within with the first value will be chosen.
      * @param unit
@@ -51,7 +51,7 @@ public final class OperationThrottleFirst {
      * Throttles to first value in each window.
      * 
      * @param items
-     *            The {@link Observable} which is publishing events.
+     *            The {@link IObservable} that is publishing events.
      * @param windowDuration
      *            Duration of windows within with the first value will be chosen.
      * @param unit

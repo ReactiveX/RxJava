@@ -36,8 +36,10 @@
  * </ul>
  * </p>
  * <p>Services which intend on exposing data asynchronously and wish
- * to allow reactive processing and composition can implement the {@link rx.Observable} interface which then allows Observers to subscribe to them
- * and receive events.</p>
+ * to allow reactive processing and composition can implement the
+ * {@link rx.IObservable} interface or extend the {@link rx.Observable} class,
+ * which then allows Observers to subscribe to them and receive events.
+ * </p>
  * <p>Usage examples can be found on the {@link rx.Observable} and {@link rx.Observer} classes.</p>
  */
 package rx;
