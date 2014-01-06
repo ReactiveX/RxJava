@@ -748,7 +748,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
      */
     public static <T> Observable<T> from(Iterable<? extends T> iterable) {
-        return from(iterable, Schedulers.currentThread());
+        return from(iterable, Schedulers.immediate());
     }
 
     /**

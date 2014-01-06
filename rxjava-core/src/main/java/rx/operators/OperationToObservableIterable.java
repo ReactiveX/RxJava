@@ -41,7 +41,7 @@ public final class OperationToObservableIterable<T> {
     }
 
     public static <T> OnSubscribeFunc<T> toObservableIterable(Iterable<? extends T> list) {
-        return toObservableIterable(list, Schedulers.currentThread());
+        return toObservableIterable(list, Schedulers.immediate());
     }
 
     private static class ToObservableIterable<T> implements OnSubscribeFunc<T> {
