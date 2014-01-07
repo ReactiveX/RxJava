@@ -26,12 +26,27 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
+import rx.schedulers.Schedulers;
 
 public class OperationToObservableIterableTest {
 
     @Test
     public void testIterable() {
         Observable<String> observable = Observable.create(toObservableIterable(Arrays.<String> asList("one", "two", "three")));
+
+        @SuppressWarnings("unchecked")
+        Observer<String> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, times(1)).onNext("one");
+        verify(aObserver, times(1)).onNext("two");
+        verify(aObserver, times(1)).onNext("three");
+        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+    
+    @Test
+    public void testIterableScheduled() {
+        Observable<String> observable = Observable.create(toObservableIterable(Arrays.<String> asList("one", "two", "three"), Schedulers.currentThread()));
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
