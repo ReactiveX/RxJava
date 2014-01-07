@@ -35,12 +35,12 @@ public class SchedulerPerformanceTests {
 
                 @Override
                 public void call() {
-                    //                    spt.singleResponse(Schedulers.immediate());
+                    spt.singleResponse(Schedulers.immediate());
                     //                    spt.singleResponse(Schedulers.currentThread());
                     //                    spt.singleResponse(Schedulers.threadPoolForComputation());
 
-                    spt.arrayResponse(Schedulers.immediate());
-                    //                    spt.arrayResponse(Schedulers.currentThread());
+                    //                    spt.arrayResponse(Schedulers.immediate());
+                    //                                        spt.arrayResponse(Schedulers.currentThread());
                     //                    spt.arrayResponse(Schedulers.threadPoolForComputation());
                 }
             });
@@ -92,11 +92,11 @@ public class SchedulerPerformanceTests {
      * 
      * --- Schedulers.immediate() ---
      * 
-     * Run: 10 - 4,113,672 ops/sec
-     * Run: 11 - 4,068,351 ops/sec
-     * Run: 12 - 4,070,318 ops/sec
-     * Run: 13 - 4,161,793 ops/sec
-     * Run: 14 - 4,156,725 ops/sec
+     * Run: 10 - 14,973,870 ops/sec
+     * Run: 11 - 15,345,142 ops/sec
+     * Run: 12 - 14,962,533 ops/sec
+     * Run: 13 - 14,793,030 ops/sec
+     * Run: 14 - 15,177,685 ops/sec
      * 
      * --- Schedulers.currentThread() ---
      * 
@@ -127,11 +127,11 @@ public class SchedulerPerformanceTests {
      * 
      * --- Schedulers.immediate() ---
      * 
-     * Run: 0 - 1,849,947 ops/sec
-     * Run: 1 - 2,076,067 ops/sec
-     * Run: 2 - 2,114,688 ops/sec
-     * Run: 3 - 2,114,301 ops/sec
-     * Run: 4 - 2,102,543 ops/sec
+     * Run: 10 - 9,805,017 ops/sec
+     * Run: 11 - 9,880,427 ops/sec
+     * Run: 12 - 9,615,809 ops/sec
+     * Run: 13 - 10,920,297 ops/sec
+     * Run: 14 - 10,822,721 ops/sec
      * 
      * --- Schedulers.currentThread() ---
      * 
