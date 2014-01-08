@@ -1,7 +1,8 @@
 rx
-rx.concurrency
+rx.joins
 rx.observables
 rx.plugins
+rx.schedulers
 rx.subjects
 rx.subscriptions
 rx.util
