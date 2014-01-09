@@ -32,12 +32,17 @@ public class RxJavaPlugins {
     private final AtomicReference<RxJavaErrorHandler> errorHandler = new AtomicReference<RxJavaErrorHandler>();
     private final AtomicReference<RxJavaObservableExecutionHook> observableExecutionHook = new AtomicReference<RxJavaObservableExecutionHook>();
 
+    public static RxJavaPlugins getInstance() {
+        return INSTANCE;
+    }
+
     /* package accessible for unit tests */RxJavaPlugins() {
 
     }
-
-    public static RxJavaPlugins getInstance() {
-        return INSTANCE;
+    
+    /* package accessible for ujnit tests */ void reset() {
+        INSTANCE.errorHandler.set(null);
+        INSTANCE.observableExecutionHook.set(null);
     }
 
     /**
@@ -74,7 +79,7 @@ public class RxJavaPlugins {
      */
     public void registerErrorHandler(RxJavaErrorHandler impl) {
         if (!errorHandler.compareAndSet(null, impl)) {
-            throw new IllegalStateException("Another strategy was already registered.");
+            throw new IllegalStateException("Another strategy was already registered: " + errorHandler.get());
         }
     }
 
@@ -112,7 +117,7 @@ public class RxJavaPlugins {
      */
     public void registerObservableExecutionHook(RxJavaObservableExecutionHook impl) {
         if (!observableExecutionHook.compareAndSet(null, impl)) {
-            throw new IllegalStateException("Another strategy was already registered.");
+            throw new IllegalStateException("Another strategy was already registered: " + observableExecutionHook.get());
         }
     }
 

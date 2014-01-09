@@ -334,7 +334,6 @@ public class Observable<T> {
 
             @Override
             public void onError(Throwable e) {
-                handleError(e);
                 throw new OnErrorNotImplementedException(e);
             }
 
@@ -373,7 +372,6 @@ public class Observable<T> {
 
             @Override
             public void onError(Throwable e) {
-                handleError(e);
                 throw new OnErrorNotImplementedException(e);
             }
 
@@ -430,7 +428,6 @@ public class Observable<T> {
 
             @Override
             public void onError(Throwable e) {
-                handleError(e);
                 onError.call(e);
             }
 
@@ -491,7 +488,6 @@ public class Observable<T> {
 
             @Override
             public void onError(Throwable e) {
-                handleError(e);
                 onError.call(e);
             }
 
@@ -560,16 +556,6 @@ public class Observable<T> {
             final Func0<? extends Subject<? super T, ? extends TIntermediate>> subjectFactory, 
             final Func1<? super Observable<TIntermediate>, ? extends Observable<TResult>> selector) {
         return OperationMulticast.multicast(this, subjectFactory, selector);
-    }
-    /**
-     * Allow the {@link RxJavaErrorHandler} to receive the exception from
-     * onError.
-     * 
-     * @param e
-     */
-    private void handleError(Throwable e) {
-        // onError should be rare so we'll only fetch when needed
-        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
     }
 
     /**
