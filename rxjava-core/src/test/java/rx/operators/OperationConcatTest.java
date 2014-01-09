@@ -156,6 +156,7 @@ public class OperationConcatTest {
         final CountDownLatch allowThird = new CountDownLatch(1);
 
         final AtomicReference<Thread> parent = new AtomicReference<Thread>();
+        final CountDownLatch parentHasStarted = new CountDownLatch(1);
         Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
 
             @Override
@@ -197,6 +198,7 @@ public class OperationConcatTest {
                     }
                 }));
                 parent.get().start();
+                parentHasStarted.countDown();
                 return s;
             }
         });
@@ -204,22 +206,14 @@ public class OperationConcatTest {
         Observable.create(concat(observableOfObservables)).subscribe(observer);
 
         // wait for parent to start
-        while (parent.get() == null) {
-            Thread.sleep(1);
-        }
+        parentHasStarted.await();
 
         try {
             // wait for first 2 async observables to complete
-            while (o1.t == null) {
-                Thread.sleep(1);
-            }
-            System.out.println("Thread1 started ... waiting for it to complete ...");
-            o1.t.join();
-            while (o2.t == null) {
-                Thread.sleep(1);
-            }
-            System.out.println("Thread2 started ... waiting for it to complete ...");
-            o2.t.join();
+            System.out.println("Thread1 is starting ... waiting for it to complete ...");
+            o1.waitForThreadDone();
+            System.out.println("Thread2 is starting ... waiting for it to complete ...");
+            o2.waitForThreadDone();
         } catch (Throwable e) {
             throw new RuntimeException("failed waiting on threads", e);
         }
@@ -243,11 +237,8 @@ public class OperationConcatTest {
         allowThird.countDown();
 
         try {
-            while (o3.t == null) {
-                Thread.sleep(1);
-            }
             // wait for 3rd to complete
-            o3.t.join();
+            o3.waitForThreadDone();
         } catch (Throwable e) {
             throw new RuntimeException("failed waiting on threads", e);
         }
@@ -320,9 +311,8 @@ public class OperationConcatTest {
 
         //Wait for the thread to start up.
         try {
-            Thread.sleep(25);
-            w1.t.join();
-            w2.t.join();
+            w1.waitForThreadDone();
+            w2.waitForThreadDone();
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -500,6 +490,7 @@ public class OperationConcatTest {
         private boolean subscribed = true;
         private final CountDownLatch once;
         private final CountDownLatch okToContinue;
+        private final CountDownLatch threadHasStarted = new CountDownLatch(1);
         private final T seed;
         private final int size;
 
@@ -553,7 +544,13 @@ public class OperationConcatTest {
 
             });
             t.start();
+            threadHasStarted.countDown();
             return s;
+        }
+
+        void waitForThreadDone() throws InterruptedException {
+            threadHasStarted.await();
+            t.join();
         }
     }
     @Test
