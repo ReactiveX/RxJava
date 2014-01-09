@@ -35,19 +35,18 @@ import rx.util.Exceptions;
 public final class OperationNext {
 
     public static <T> Iterable<T> next(final IObservable<? extends T> items) {
-
-        NextObserver<T> nextObserver = new NextObserver<T>();
-        final NextIterator<T> nextIterator = new NextIterator<T>(nextObserver);
-
-        Observable.from(items).materialize().subscribe(nextObserver);
-
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
+                NextObserver<T> nextObserver = new NextObserver<T>();
+                final NextIterator<T> nextIterator = new NextIterator<T>(nextObserver);
+
+                Observable.from(items).materialize().subscribe(nextObserver);
+
                 return nextIterator;
             }
         };
-
+        
     }
 
     private static class NextIterator<T> implements Iterator<T> {

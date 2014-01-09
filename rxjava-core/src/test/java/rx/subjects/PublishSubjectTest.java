@@ -210,33 +210,6 @@ public class PublishSubjectTest {
     }
 
     @Test
-    public void testUnsubscribe() {
-        UnsubscribeTester.test(
-                new Func0<PublishSubject<Object>>() {
-                    @Override
-                    public PublishSubject<Object> call() {
-                        return PublishSubject.create();
-                    }
-                }, new Action1<PublishSubject<Object>>() {
-                    @Override
-                    public void call(PublishSubject<Object> DefaultSubject) {
-                        DefaultSubject.onCompleted();
-                    }
-                }, new Action1<PublishSubject<Object>>() {
-                    @Override
-                    public void call(PublishSubject<Object> DefaultSubject) {
-                        DefaultSubject.onError(new Throwable());
-                    }
-                }, new Action1<PublishSubject<Object>>() {
-                    @Override
-                    public void call(PublishSubject<Object> DefaultSubject) {
-                        DefaultSubject.onNext("one");
-                    }
-                }
-                );
-    }
-
-    @Test
     public void testNestedSubscribe() {
         final PublishSubject<Integer> s = PublishSubject.create();
 

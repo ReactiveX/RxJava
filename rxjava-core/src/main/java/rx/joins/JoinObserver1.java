@@ -19,11 +19,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.IObservable;
 import rx.Notification;
 import rx.Observable;
-import rx.subscriptions.SingleAssignmentSubscription;
+import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action1;
 
 /**
@@ -35,14 +36,15 @@ public final class JoinObserver1<T> extends ObserverBase<Notification<T>> implem
     private final Action1<Throwable> onError;
     private final List<ActivePlan0> activePlans;
     private final Queue<Notification<T>> queue;
-    private final SingleAssignmentSubscription subscription;
+    private final SafeObservableSubscription subscription;
     private volatile boolean done;
+    private final AtomicBoolean subscribed = new AtomicBoolean(false);
     
     public JoinObserver1(IObservable<T> source, Action1<Throwable> onError) {
         this.source = source;
         this.onError = onError;
         queue = new LinkedList<Notification<T>>();
-        subscription = new SingleAssignmentSubscription();
+        subscription = new SafeObservableSubscription();
         activePlans = new ArrayList<ActivePlan0>();
     }
     public Queue<Notification<T>> queue() {
@@ -53,8 +55,12 @@ public final class JoinObserver1<T> extends ObserverBase<Notification<T>> implem
     }
     @Override
     public void subscribe(Object gate) {
-        this.gate = gate;
-        subscription.set(Observable.from(source).materialize().subscribe(this));
+        if (subscribed.compareAndSet(false, true)) {
+            this.gate = gate;
+            subscription.wrap(Observable.from(source).materialize().subscribe(this));
+        } else {
+            throw new IllegalStateException("Can only be subscribed to once.");
+        }
     }
 
     @Override

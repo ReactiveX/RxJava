@@ -23,4 +23,4 @@ object AsyncSubject {
   }
 }
 
-class AsyncSubject[T] private[scala] (val asJavaSubject: rx.subjects.AsyncSubject[T]) extends Subject[T,T] {}
+class AsyncSubject[T] private[scala] (val asJavaSubject: rx.subjects.AsyncSubject[T]) extends Subject[T] {}

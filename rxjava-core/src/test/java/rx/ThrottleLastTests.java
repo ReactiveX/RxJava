@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.concurrency.TestScheduler;
+import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
 public class ThrottleLastTests {

@@ -33,14 +33,17 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import rx.Observable.OnSubscribeFunc;
-import rx.concurrency.TestScheduler;
+import rx.schedulers.TestScheduler;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
+import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -161,9 +164,9 @@ public class ObservableTests {
         verify(w, times(1)).onError(any(RuntimeException.class));
     }
 
-    public void testFirstWithPredicateOfSome() {
+    public void testTakeFirstWithPredicateOfSome() {
         Observable<Integer> observable = Observable.from(1, 3, 5, 4, 6, 3);
-        observable.first(IS_EVEN).subscribe(w);
+        observable.takeFirst(IS_EVEN).subscribe(w);
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(4);
         verify(w, times(1)).onCompleted();
@@ -171,20 +174,29 @@ public class ObservableTests {
     }
 
     @Test
-    public void testFirstWithPredicateOfNoneMatchingThePredicate() {
+    public void testTakeFirstWithPredicateOfNoneMatchingThePredicate() {
         Observable<Integer> observable = Observable.from(1, 3, 5, 7, 9, 7, 5, 3, 1);
-        observable.first(IS_EVEN).subscribe(w);
+        observable.takeFirst(IS_EVEN).subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, times(1)).onCompleted();
         verify(w, never()).onError(any(Throwable.class));
     }
 
     @Test
-    public void testFirstOfSome() {
+    public void testTakeFirstOfSome() {
         Observable<Integer> observable = Observable.from(1, 2, 3);
-        observable.first().subscribe(w);
+        observable.takeFirst().subscribe(w);
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(1);
+        verify(w, times(1)).onCompleted();
+        verify(w, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testTakeFirstOfNone() {
+        Observable<Integer> observable = Observable.empty();
+        observable.takeFirst().subscribe(w);
+        verify(w, never()).onNext(anyInt());
         verify(w, times(1)).onCompleted();
         verify(w, never()).onError(any(Throwable.class));
     }
@@ -194,8 +206,17 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.empty();
         observable.first().subscribe(w);
         verify(w, never()).onNext(anyInt());
-        verify(w, times(1)).onCompleted();
-        verify(w, never()).onError(any(Throwable.class));
+        verify(w, never()).onCompleted();
+        verify(w, times(1)).onError(isA(IllegalArgumentException.class));
+    }
+
+    @Test
+    public void testFirstWithPredicateOfNoneMatchingThePredicate() {
+        Observable<Integer> observable = Observable.from(1, 3, 5, 7, 9, 7, 5, 3, 1);
+        observable.first(IS_EVEN).subscribe(w);
+        verify(w, never()).onNext(anyInt());
+        verify(w, never()).onCompleted();
+        verify(w, times(1)).onError(isA(IllegalArgumentException.class));
     }
 
     @Test
@@ -273,17 +294,6 @@ public class ObservableTests {
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(60);
-    }
-
-    @Test
-    public void testSequenceEqual() {
-        Observable<Integer> first = Observable.from(1, 2, 3);
-        Observable<Integer> second = Observable.from(1, 2, 4);
-        @SuppressWarnings("unchecked")
-        Observer<Boolean> result = mock(Observer.class);
-        Observable.sequenceEqual(first, second).subscribe(result);
-        verify(result, times(2)).onNext(true);
-        verify(result, times(1)).onNext(false);
     }
 
     @Test
@@ -958,4 +968,128 @@ public class ObservableTests {
         inOrder.verify(aObserver, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
+
+    @Test
+    public void testStartWithFunc() {
+        Func0<String> func = new Func0<String>() {
+            @Override
+            public String call() {
+                return "one";
+            }
+        };
+        assertEquals("one", Observable.start(func).toBlockingObservable().single());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testStartWithFuncError() {
+        Func0<String> func = new Func0<String>() {
+            @Override
+            public String call() {
+                throw new RuntimeException("Some error");
+            }
+        };
+        Observable.start(func).toBlockingObservable().single();
+    }
+
+    @Test
+    public void testStartWhenSubscribeRunBeforeFunc() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Func0<String> func = new Func0<String>() {
+            @Override
+            public String call() {
+                return "one";
+            }
+        };
+
+        Observable<String> observable = Observable.start(func, scheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verifyNoMoreInteractions();
+
+        // Run func
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testStartWhenSubscribeRunAfterFunc() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Func0<String> func = new Func0<String>() {
+            @Override
+            public String call() {
+                return "one";
+            }
+        };
+
+        Observable<String> observable = Observable.start(func, scheduler);
+
+        // Run func
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testStartWithFuncAndMultipleObservers() {
+        TestScheduler scheduler = new TestScheduler();
+
+        @SuppressWarnings("unchecked")
+        Func0<String> func = (Func0<String>) mock(Func0.class);
+        doAnswer(new Answer<String>() {
+            @Override
+            public String answer(InvocationOnMock invocation) throws Throwable {
+                return "one";
+            }
+        }).when(func).call();
+
+        Observable<String> observable = Observable.start(func, scheduler);
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer1 = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<String> observer2 = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<String> observer3 = mock(Observer.class);
+
+        observable.subscribe(observer1);
+        observable.subscribe(observer2);
+        observable.subscribe(observer3);
+
+        InOrder inOrder;
+        inOrder = inOrder(observer1);
+        inOrder.verify(observer1, times(1)).onNext("one");
+        inOrder.verify(observer1, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+        inOrder = inOrder(observer2);
+        inOrder.verify(observer2, times(1)).onNext("one");
+        inOrder.verify(observer2, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+        inOrder = inOrder(observer3);
+        inOrder.verify(observer3, times(1)).onNext("one");
+        inOrder.verify(observer3, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+        verify(func, times(1)).call();
+    }
+
 }

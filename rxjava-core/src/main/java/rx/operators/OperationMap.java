@@ -16,7 +16,6 @@
 package rx.operators;
 
 import rx.IObservable;
-import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -76,26 +75,6 @@ public final class OperationMap {
                 return new MapObservable<T, R>(sequence, func).onSubscribe(observer);
             }
         };
-    }
-
-    /**
-     * Accepts a sequence of observable sequences and a transformation function. Returns a flattened sequence that is the result of
-     * applying the transformation function to each item in the sequence of each observable sequence.
-     * <p>
-     * The closure should return an Observable which will then be merged.
-     * 
-     * @param sequence
-     *            the input sequence.
-     * @param func
-     *            a function to apply to each item in the sequence.
-     * @param <T>
-     *            the type of the input sequence.
-     * @param <R>
-     *            the type of the output sequence.
-     * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
-     */
-    public static <T, R> OnSubscribeFunc<R> mapMany(IObservable<? extends T> sequence, Func1<? super T, ? extends IObservable<? extends R>> func) {
-        return OperationMerge.merge(Observable.create(map(sequence, func)));
     }
 
     /**

@@ -25,10 +25,10 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.concurrency.CurrentThreadScheduler;
-import rx.concurrency.ImmediateScheduler;
+import rx.schedulers.CurrentThreadScheduler;
+import rx.schedulers.ImmediateScheduler;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
+import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func2;
@@ -47,10 +47,6 @@ public class OperationObserveOn {
     private static class ObserveOn<T> implements OnSubscribeFunc<T> {
         private final IObservable<? extends T> source;
         private final Scheduler scheduler;
-        private volatile Scheduler recursiveScheduler;
-
-        final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
-        final AtomicInteger counter = new AtomicInteger(0);
 
         public ObserveOn(IObservable<? extends T> source, Scheduler scheduler) {
             this.source = source;
@@ -66,70 +62,70 @@ public class OperationObserveOn {
                 // do nothing if we request CurrentThreadScheduler so we don't invoke overhead
                 return source.subscribe(observer);
             } else {
-                return observeOn(observer, scheduler);
+                return new Observation(observer).init();
             }
         }
 
-        public Subscription observeOn(final Observer<? super T> observer, final Scheduler scheduler) {
-            final CompositeSubscription s = new CompositeSubscription();
+        /** Observe through individual queue per observer. */
+        private class Observation {
+            final Observer<? super T> observer;
+            final CompositeSubscription compositeSubscription = new CompositeSubscription();
+            final MultipleAssignmentSubscription recursiveSubscription = new MultipleAssignmentSubscription();
+            final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
+            final AtomicInteger counter = new AtomicInteger(0);
+            private volatile Scheduler recursiveScheduler;
 
-            s.add(Observable.from(source).materialize().subscribe(new Action1<Notification<? extends T>>() {
+            public Observation(Observer<? super T> observer) {
+                this.observer = observer;
+            }
+
+            public Subscription init() {
+                compositeSubscription.add(Observable.from(source).materialize().subscribe(new SourceObserver()));
+                return compositeSubscription;
+            }
+
+            private class SourceObserver implements Action1<Notification<? extends T>> {
 
                 @Override
                 public void call(Notification<? extends T> e) {
-                    // this must happen before 'counter' is used to provide synchronization between threads
                     queue.offer(e);
-
-                    // we now use counter to atomically determine if we need to start processing or not
-                    // it will be 0 if it's the first notification or the scheduler has finished processing work
-                    // and we need to start doing it again
                     if (counter.getAndIncrement() == 0) {
                         if (recursiveScheduler == null) {
-                            s.add(scheduler.schedule(null, new Func2<Scheduler, T, Subscription>() {
-
+                            // compositeSubscription for the outer scheduler, recursive for inner
+                            compositeSubscription.add(scheduler.schedule(null, new Func2<Scheduler, T, Subscription>() {
                                 @Override
                                 public Subscription call(Scheduler innerScheduler, T state) {
                                     // record innerScheduler so 'processQueue' can use it for all subsequent executions
                                     recursiveScheduler = innerScheduler;
-
-                                    processQueue(s, observer);
-
-                                    return Subscriptions.empty();
+                                    // once we have the innerScheduler we can start doing real work
+                                    processQueue();
+                                    return recursiveSubscription;
                                 }
                             }));
                         } else {
-                            processQueue(s, observer);
+                            processQueue();
                         }
                     }
-
                 }
-            }));
 
-            return s;
-        }
+                void processQueue() {
+                    recursiveSubscription.setSubscription(recursiveScheduler.schedule(new Action1<Action0>() {
+                        @Override
+                        public void call(Action0 self) {
+                            Notification<? extends T> not = queue.poll();
+                            if (not != null) {
+                                not.accept(observer);
+                            }
 
-        /**
-         * This uses 'recursiveScheduler' NOT 'scheduler' as it should reuse the same scheduler each time it processes.
-         * This means it must first get the recursiveScheduler when it first executes.
-         */
-        private void processQueue(final CompositeSubscription s, final Observer<? super T> observer) {
-
-            s.add(recursiveScheduler.schedule(new Action1<Action0>() {
-                @Override
-                public void call(Action0 self) {
-                    Notification<? extends T> not = queue.poll();
-                    if (not != null) {
-                        not.accept(observer);
-                    }
-
-                    // decrement count and if we still have work to do
-                    // recursively schedule ourselves to process again
-                    if (counter.decrementAndGet() > 0) {
-                        self.call();
-                    }
-
+                            // decrement count and if we still have work to do
+                            // recursively schedule ourselves to process again
+                            if (counter.decrementAndGet() > 0) {
+                                self.call();
+                            }
+                        }
+                    }));
                 }
-            }));
+            }
         }
     }
 

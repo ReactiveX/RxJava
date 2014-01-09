@@ -255,7 +255,7 @@ public class BasicKotlinTests {
         assertEquals("default", Observable.from("one", "two")!!.toBlockingObservable()!!.lastOrDefault("default") { x -> x!!.length > 3 })
     }
 
-    [Test(expected = javaClass<IllegalStateException>())]
+    [Test(expected = javaClass<IllegalArgumentException>())]
     public fun testSingle() {
         assertEquals("one", Observable.from("one")!!.toBlockingObservable()!!.single { x -> x!!.length == 3 })
         Observable.from("one", "two")!!.toBlockingObservable()!!.single { x -> x!!.length == 3 }

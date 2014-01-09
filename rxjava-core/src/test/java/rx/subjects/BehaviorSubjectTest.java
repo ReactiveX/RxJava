@@ -24,16 +24,14 @@ import org.mockito.Mockito;
 
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Action1;
-import rx.util.functions.Func0;
 
 public class BehaviorSubjectTest {
 
     private final Throwable testException = new Throwable();
 
     @Test
-    public void testThatObserverReceivesDefaultValueIfNothingWasPublished() {
-        BehaviorSubject<String> subject = BehaviorSubject.createWithDefaultValue("default");
+    public void testThatObserverReceivesDefaultValueAndSubsequentEvents() {
+        BehaviorSubject<String> subject = BehaviorSubject.create("default");
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -52,7 +50,7 @@ public class BehaviorSubjectTest {
     }
 
     @Test
-    public void testThatObserverDoesNotReceiveDefaultValueIfSomethingWasPublished() {
+    public void testThatObserverReceivesLatestAndThenSubsequentEvents() {
         BehaviorSubject<String> subject = BehaviorSubject.create("default");
 
         subject.onNext("one");
@@ -73,7 +71,7 @@ public class BehaviorSubjectTest {
     }
 
     @Test
-    public void testCompleted() {
+    public void testSubscribeThenOnComplete() {
         BehaviorSubject<String> subject = BehaviorSubject.create("default");
 
         @SuppressWarnings("unchecked")
@@ -87,6 +85,39 @@ public class BehaviorSubjectTest {
         verify(aObserver, times(1)).onNext("one");
         verify(aObserver, Mockito.never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testSubscribeToCompletedOnlyEmitsOnComplete() {
+        BehaviorSubject<String> subject = BehaviorSubject.create("default");
+        subject.onNext("one");
+        subject.onCompleted();
+
+        @SuppressWarnings("unchecked")
+        Observer<String> aObserver = mock(Observer.class);
+        subject.subscribe(aObserver);
+
+        verify(aObserver, never()).onNext("default");
+        verify(aObserver, never()).onNext("one");
+        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testSubscribeToErrorOnlyEmitsOnError() {
+        BehaviorSubject<String> subject = BehaviorSubject.create("default");
+        subject.onNext("one");
+        RuntimeException re = new RuntimeException("test error");
+        subject.onError(re);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> aObserver = mock(Observer.class);
+        subject.subscribe(aObserver);
+
+        verify(aObserver, never()).onNext("default");
+        verify(aObserver, never()).onNext("one");
+        verify(aObserver, times(1)).onError(re);
+        verify(aObserver, never()).onCompleted();
     }
 
     @Test
@@ -136,7 +167,7 @@ public class BehaviorSubjectTest {
     }
 
     @Test
-    public void testCompletedAfterError() {
+    public void testCompletedAfterErrorIsNotSent() {
         BehaviorSubject<String> subject = BehaviorSubject.create("default");
 
         @SuppressWarnings("unchecked")
@@ -151,32 +182,58 @@ public class BehaviorSubjectTest {
         verify(aObserver, times(1)).onNext("default");
         verify(aObserver, times(1)).onNext("one");
         verify(aObserver, times(1)).onError(testException);
+        verify(aObserver, never()).onNext("two");
+        verify(aObserver, never()).onCompleted();
     }
-
     @Test
-    public void testUnsubscribe() {
-        UnsubscribeTester.test(
-                new Func0<BehaviorSubject<String>>() {
-                    @Override
-                    public BehaviorSubject<String> call() {
-                        return BehaviorSubject.create("default");
-                    }
-                }, new Action1<BehaviorSubject<String>>() {
-                    @Override
-                    public void call(BehaviorSubject<String> DefaultSubject) {
-                        DefaultSubject.onCompleted();
-                    }
-                }, new Action1<BehaviorSubject<String>>() {
-                    @Override
-                    public void call(BehaviorSubject<String> DefaultSubject) {
-                        DefaultSubject.onError(new Throwable());
-                    }
-                }, new Action1<BehaviorSubject<String>>() {
-                    @Override
-                    public void call(BehaviorSubject<String> DefaultSubject) {
-                        DefaultSubject.onNext("one");
-                    }
-                }
-                );
+    public void testCompletedAfterErrorIsNotSent2() {
+        BehaviorSubject<String> subject = BehaviorSubject.create("default");
+
+        @SuppressWarnings("unchecked")
+        Observer<String> aObserver = mock(Observer.class);
+        subject.subscribe(aObserver);
+
+        subject.onNext("one");
+        subject.onError(testException);
+        subject.onNext("two");
+        subject.onCompleted();
+
+        verify(aObserver, times(1)).onNext("default");
+        verify(aObserver, times(1)).onNext("one");
+        verify(aObserver, times(1)).onError(testException);
+        verify(aObserver, never()).onNext("two");
+        verify(aObserver, never()).onCompleted();
+
+        Observer<Object> o2 = mock(Observer.class);
+        subject.subscribe(o2);
+        verify(o2, times(1)).onError(testException);
+        verify(o2, never()).onNext(any());
+        verify(o2, never()).onCompleted();
+    }
+    
+    @Test
+    public void testCompletedAfterErrorIsNotSent3() {
+        BehaviorSubject<String> subject = BehaviorSubject.create("default");
+
+        @SuppressWarnings("unchecked")
+        Observer<String> aObserver = mock(Observer.class);
+        subject.subscribe(aObserver);
+
+        subject.onNext("one");
+        subject.onCompleted();
+        subject.onNext("two");
+        subject.onCompleted();
+
+        verify(aObserver, times(1)).onNext("default");
+        verify(aObserver, times(1)).onNext("one");
+        verify(aObserver, times(1)).onCompleted();
+        verify(aObserver, never()).onError(any(Throwable.class));
+        verify(aObserver, never()).onNext("two");
+
+        Observer<Object> o2 = mock(Observer.class);
+        subject.subscribe(o2);
+        verify(o2, times(1)).onCompleted();
+        verify(o2, never()).onNext(any());
+        verify(aObserver, never()).onError(any(Throwable.class));
     }
 }

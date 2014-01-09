@@ -33,7 +33,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
-import rx.concurrency.Schedulers;
+import rx.schedulers.Schedulers;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 import rx.util.functions.Action1;
@@ -108,7 +108,7 @@ public class OperationDoOnEachTest {
     @Test
     public void testDoOnEachWithErrorInCallback() {
         Observable<String> base     = Observable.from("one", "two", "fail", "three");
-        Observable<String> doOnEach = base.doOnEach(new Action1<String>() {
+        Observable<String> doOnEach = base.doOnNext(new Action1<String>() {
             @Override
             public void call(String s) {
                 if ("fail".equals(s)) {

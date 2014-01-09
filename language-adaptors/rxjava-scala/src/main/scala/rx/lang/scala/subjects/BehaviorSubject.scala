@@ -19,11 +19,11 @@ import rx.lang.scala.Subject
 
 object BehaviorSubject {
   def apply[T](value: T): BehaviorSubject[T] = {
-    new BehaviorSubject[T](rx.subjects.BehaviorSubject.createWithDefaultValue(value))
+    new BehaviorSubject[T](rx.subjects.BehaviorSubject.create(value))
   }
 }
 
-class BehaviorSubject[T] private[scala] (val asJavaSubject: rx.subjects.BehaviorSubject[T]) extends Subject[T,T]  {}
+class BehaviorSubject[T] private[scala] (val asJavaSubject: rx.subjects.BehaviorSubject[T]) extends Subject[T]  {}
 
 
 

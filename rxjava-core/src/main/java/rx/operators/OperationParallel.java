@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.IObservable;
 import rx.Observable;
 import rx.Scheduler;
-import rx.concurrency.Schedulers;
 import rx.observables.GroupedObservable;
+import rx.schedulers.Schedulers;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 

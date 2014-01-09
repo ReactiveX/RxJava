@@ -24,17 +24,18 @@ import ImplicitFunctionConversions.scalaFunction1ToRxFunc1
 private[scala] class WithFilter[+T] (p: T => Boolean, asJava: rx.Observable[_ <: T]) {
 
   import ImplicitFunctionConversions._
+  import JavaConversions._
 
   def map[B](f: T => B): Observable[B] = {
-    Observable[B](asJava.filter(p).map[B](f))
+    toScalaObservable[B](asJava.filter(p).map[B](f))
   }
 
   def flatMap[B](f: T => Observable[B]): Observable[B] = {
-    Observable[B](asJava.filter(p).flatMap[B]((x: T) => f(x).asJavaObservable))
+    toScalaObservable[B](asJava.filter(p).flatMap[B]((x: T) => f(x).asJavaObservable))
   }
 
   def withFilter(q: T => Boolean): Observable[T] = {
-    Observable[T](asJava.filter((x: T) => p(x) && q(x)))
+    toScalaObservable[T](asJava.filter((x: T) => p(x) && q(x)))
   }
 
   // there is no foreach here, that's only available on BlockingObservable

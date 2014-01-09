@@ -437,8 +437,9 @@ public final class OperationZip {
                                     if (io.done) {
                                         observer.onCompleted();
                                         cancel.unsubscribe();
+                                        return;
                                     }
-                                    return;
+                                    continue;
                                 }
                                 Object v = io.queue.peek();
                                 if (v == NULL_SENTINEL) {
@@ -451,6 +452,8 @@ public final class OperationZip {
                                     io.queue.poll();
                                 }
                                 observer.onNext(values);
+                            } else {
+                            	break;
                             }
                         }
                     } finally {

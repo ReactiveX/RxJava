@@ -30,7 +30,9 @@ import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observer;
-import rx.concurrency.Schedulers;
+import rx.schedulers.Schedulers;
+import rx.schedulers.TestScheduler;
+import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
 public class OperationObserveOnTest {
@@ -87,49 +89,127 @@ public class OperationObserveOnTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testThreadName() throws InterruptedException {
+        System.out.println("Main Thread: " + Thread.currentThread().getName());
         Observable<String> obs = Observable.from("one", null, "two", "three", "four");
 
         Observer<String> observer = mock(Observer.class);
-
-        InOrder inOrder = inOrder(observer);
+        final String parentThreadName = Thread.currentThread().getName();
 
         final CountDownLatch completedLatch = new CountDownLatch(1);
-        doAnswer(new Answer<Void>() {
+
+        // assert subscribe is on main thread
+        obs = obs.doOnNext(new Action1<String>() {
 
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                completedLatch.countDown();
-
-                return null;
+            public void call(String s) {
+                String threadName = Thread.currentThread().getName();
+                System.out.println("Source ThreadName: " + threadName + "  Expected => " + parentThreadName);
+                assertEquals(parentThreadName, threadName);
             }
-        }).when(observer).onCompleted();
 
-        doAnswer(new Answer<Void>() {
+        });
 
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                completedLatch.countDown();
-
-                return null;
-            }
-        }).when(observer).onError(any(Exception.class));
-
-        obs.observeOn(Schedulers.newThread()).doOnEach(new Action1<String>() {
+        // assert observe is on new thread
+        obs.observeOn(Schedulers.newThread()).doOnNext(new Action1<String>() {
 
             @Override
             public void call(String t1) {
                 String threadName = Thread.currentThread().getName();
                 boolean correctThreadName = threadName.startsWith("RxNewThreadScheduler");
-                System.out.println("ThreadName: " + threadName + "  Correct => " + correctThreadName);
+                System.out.println("ObserveOn ThreadName: " + threadName + "  Correct => " + correctThreadName);
                 assertTrue(correctThreadName);
             }
 
+        }).finallyDo(new Action0() {
+
+            @Override
+            public void call() {
+                completedLatch.countDown();
+
+            }
         }).subscribe(observer);
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
         }
 
-        inOrder.verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(5)).onNext(any(String.class));
+        verify(observer, times(1)).onCompleted();
+    }
+
+    @Test
+    public void observeOnTheSameSchedulerTwice() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Observable<Integer> o = Observable.from(1, 2, 3);
+        Observable<Integer> o2 = o.observeOn(scheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> observer1 = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<Object> observer2 = mock(Observer.class);
+
+        InOrder inOrder1 = inOrder(observer1);
+        InOrder inOrder2 = inOrder(observer2);
+
+        o2.subscribe(observer1);
+        o2.subscribe(observer2);
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        inOrder1.verify(observer1, times(1)).onNext(1);
+        inOrder1.verify(observer1, times(1)).onNext(2);
+        inOrder1.verify(observer1, times(1)).onNext(3);
+        inOrder1.verify(observer1, times(1)).onCompleted();
+        verify(observer1, never()).onError(any(Throwable.class));
+        inOrder1.verifyNoMoreInteractions();
+
+        inOrder2.verify(observer2, times(1)).onNext(1);
+        inOrder2.verify(observer2, times(1)).onNext(2);
+        inOrder2.verify(observer2, times(1)).onNext(3);
+        inOrder2.verify(observer2, times(1)).onCompleted();
+        verify(observer2, never()).onError(any(Throwable.class));
+        inOrder2.verifyNoMoreInteractions();
+
+    }
+
+    @Test
+    public void observeSameOnMultipleSchedulers() {
+        TestScheduler scheduler1 = new TestScheduler();
+        TestScheduler scheduler2 = new TestScheduler();
+
+        Observable<Integer> o = Observable.from(1, 2, 3);
+        Observable<Integer> o1 = o.observeOn(scheduler1);
+        Observable<Integer> o2 = o.observeOn(scheduler2);
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> observer1 = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<Object> observer2 = mock(Observer.class);
+
+        InOrder inOrder1 = inOrder(observer1);
+        InOrder inOrder2 = inOrder(observer2);
+
+        o1.subscribe(observer1);
+        o2.subscribe(observer2);
+
+        scheduler1.advanceTimeBy(1, TimeUnit.SECONDS);
+        scheduler2.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        inOrder1.verify(observer1, times(1)).onNext(1);
+        inOrder1.verify(observer1, times(1)).onNext(2);
+        inOrder1.verify(observer1, times(1)).onNext(3);
+        inOrder1.verify(observer1, times(1)).onCompleted();
+        verify(observer1, never()).onError(any(Throwable.class));
+        inOrder1.verifyNoMoreInteractions();
+
+        inOrder2.verify(observer2, times(1)).onNext(1);
+        inOrder2.verify(observer2, times(1)).onNext(2);
+        inOrder2.verify(observer2, times(1)).onNext(3);
+        inOrder2.verify(observer2, times(1)).onCompleted();
+        verify(observer2, never()).onError(any(Throwable.class));
+        inOrder2.verifyNoMoreInteractions();
+
     }
 }

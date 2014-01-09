@@ -66,4 +66,17 @@ public class OperationToObservableListTest {
         verify(o2, Mockito.never()).onError(any(Throwable.class));
         verify(o2, times(1)).onCompleted();
     }
+
+    @Test
+    public void testListWithNullValue() {
+        Observable<String> w = Observable.from("one", null, "three");
+        Observable<List<String>> observable = Observable.create(toObservableList(w));
+
+        @SuppressWarnings("unchecked")
+        Observer<List<String>> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, times(1)).onNext(Arrays.asList("one", null, "three"));
+        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
 }

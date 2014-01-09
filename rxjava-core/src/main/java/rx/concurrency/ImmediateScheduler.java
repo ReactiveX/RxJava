@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,28 +22,33 @@ import rx.Subscription;
 import rx.util.functions.Func2;
 
 /**
- * Executes work immediately on the current thread.
+ * Deprecated. Package changed from rx.concurrency to rx.schedulers.
+ * 
+ * @deprecated Use {@link rx.schedulers.ImmediateScheduler} instead. This will be removed before 1.0 release.
  */
-public final class ImmediateScheduler extends Scheduler {
-    private static final ImmediateScheduler INSTANCE = new ImmediateScheduler();
+@Deprecated
+public class ImmediateScheduler extends Scheduler {
+
+    private final static ImmediateScheduler INSTANCE = new ImmediateScheduler();
 
     public static ImmediateScheduler getInstance() {
         return INSTANCE;
     }
 
-    /* package accessible for unit tests */ImmediateScheduler() {
+    private final rx.schedulers.ImmediateScheduler actual;
+
+    private ImmediateScheduler() {
+        actual = rx.schedulers.ImmediateScheduler.getInstance();
     }
 
     @Override
     public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
-        return action.call(this, state);
+        return actual.schedule(state, action);
     }
 
     @Override
-    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long dueTime, TimeUnit unit) {
-        // since we are executing immediately on this thread we must cause this thread to sleep
-        long execTime = now() + unit.toMillis(dueTime);
-
-        return schedule(state, new SleepingAction<T>(action, this, execTime));
+    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
+        return actual.schedule(state, action, delayTime, unit);
     }
+
 }

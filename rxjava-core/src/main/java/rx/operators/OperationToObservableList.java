@@ -56,11 +56,10 @@ public final class OperationToObservableList<T> {
         public Subscription onSubscribe(final Observer<? super List<T>> observer) {
 
             return that.subscribe(new Observer<T>() {
-                final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();
+                final List<T> list = new ArrayList<T>();
 
                 @Override
                 public void onNext(T value) {
-                    // onNext can be concurrently executed so list must be thread-safe
                     list.add(value);
                 }
 
@@ -72,16 +71,10 @@ public final class OperationToObservableList<T> {
                 @Override
                 public void onCompleted() {
                     try {
-                        // copy from LinkedQueue to List since ConcurrentLinkedQueue does not implement the List interface
-                        ArrayList<T> l = new ArrayList<T>(list.size());
-                        for (T t : list) {
-                            l.add(t);
-                        }
-
                         // benjchristensen => I want to make this list immutable but some clients are sorting this
                         // instead of using toSortedList() and this change breaks them until we migrate their code.
                         // observer.onNext(Collections.unmodifiableList(l));
-                        observer.onNext(l);
+                        observer.onNext(new ArrayList<T>(list));
                         observer.onCompleted();
                     } catch (Throwable e) {
                         onError(e);

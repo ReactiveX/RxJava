@@ -30,7 +30,7 @@ public class ObservableDoOnTest {
     @Test
     public void testDoOnEach() {
         final AtomicReference<String> r = new AtomicReference<String>();
-        String output = Observable.from("one").doOnEach(new Action1<String>() {
+        String output = Observable.from("one").doOnNext(new Action1<String>() {
 
             @Override
             public void call(String v) {

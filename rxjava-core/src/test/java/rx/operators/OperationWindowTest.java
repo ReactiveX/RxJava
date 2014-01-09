@@ -28,12 +28,9 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.concurrency.TestScheduler;
+import rx.schedulers.Schedulers;
+import rx.schedulers.TestScheduler;
 import rx.subscriptions.Subscriptions;
-import rx.util.Closing;
-import rx.util.Closings;
-import rx.util.Opening;
-import rx.util.Openings;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
@@ -48,21 +45,18 @@ public class OperationWindowTest {
         scheduler = new TestScheduler();
     }
 
-    private static <T> List<List<T>> toLists(Observable<Observable<T>> observable) {
-        final List<T> list = new ArrayList<T>();
-        final List<List<T>> lists = new ArrayList<List<T>>();
+    private static <T> List<List<T>> toLists(Observable<Observable<T>> observables) {
 
-        observable.subscribe(new Action1<Observable<T>>() {
+        final List<List<T>> lists = new ArrayList<List<T>>();
+        Observable.concat(observables.map(new Func1<Observable<T>, Observable<List<T>>>() {
             @Override
-            public void call(Observable<T> tObservable) {
-                tObservable.subscribe(new Action1<T>() {
-                    @Override
-                    public void call(T t) {
-                        list.add(t);
-                    }
-                });
-                lists.add(new ArrayList<T>(list));
-                list.clear();
+            public Observable<List<T>> call(Observable<T> xs) { return xs.toList(); }
+        }))
+                .toBlockingObservable()
+                .forEach(new Action1<List<T>>() {
+            @Override
+            public void call(List<T> xs) {
+                lists.add(xs);
             }
         });
         return lists;
@@ -94,7 +88,7 @@ public class OperationWindowTest {
 
     @Test
     public void testOverlappingWindows() {
-        Observable<String> subject = Observable.from("zero", "one", "two", "three", "four", "five");
+        Observable<String> subject = Observable.from(new String[]{"zero", "one", "two", "three", "four", "five"}, Schedulers.currentThread());
         Observable<Observable<String>> windowed = Observable.create(window(subject, 3, 1));
 
         List<List<String>> windows = toLists(windowed);
@@ -202,23 +196,23 @@ public class OperationWindowTest {
             }
         });
 
-        Observable<Opening> openings = Observable.create(new Observable.OnSubscribeFunc<Opening>() {
+        Observable<Object> openings = Observable.create(new Observable.OnSubscribeFunc<Object>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Opening> observer) {
-                push(observer, Openings.create(), 50);
-                push(observer, Openings.create(), 200);
+            public Subscription onSubscribe(Observer<? super Object> observer) {
+                push(observer, new Object(), 50);
+                push(observer, new Object(), 200);
                 complete(observer, 250);
                 return Subscriptions.empty();
             }
         });
 
-        Func1<Opening, Observable<Closing>> closer = new Func1<Opening, Observable<Closing>>() {
+        Func1<Object, Observable<Object>> closer = new Func1<Object, Observable<Object>>() {
             @Override
-            public Observable<Closing> call(Opening opening) {
-                return Observable.create(new Observable.OnSubscribeFunc<Closing>() {
+            public Observable<Object> call(Object opening) {
+                return Observable.create(new Observable.OnSubscribeFunc<Object>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super Closing> observer) {
-                        push(observer, Closings.create(), 100);
+                    public Subscription onSubscribe(Observer<? super Object> observer) {
+                        push(observer, new Object(), 100);
                         complete(observer, 101);
                         return Subscriptions.empty();
                     }
@@ -253,13 +247,13 @@ public class OperationWindowTest {
             }
         });
 
-        Func0<Observable<Closing>> closer = new Func0<Observable<Closing>>() {
+        Func0<Observable<Object>> closer = new Func0<Observable<Object>>() {
             @Override
-            public Observable<Closing> call() {
-                return Observable.create(new Observable.OnSubscribeFunc<Closing>() {
+            public Observable<Object> call() {
+                return Observable.create(new Observable.OnSubscribeFunc<Object>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super Closing> observer) {
-                        push(observer, Closings.create(), 100);
+                    public Subscription onSubscribe(Observer<? super Object> observer) {
+                        push(observer, new Object(), 100);
                         complete(observer, 101);
                         return Subscriptions.empty();
                     }

@@ -15,6 +15,8 @@
  */
 package rx.subscriptions;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Subscription;
 
 /**
@@ -23,48 +25,78 @@ import rx.Subscription;
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.serialdisposable(v=vs.103).aspx">Rx.Net equivalent SerialDisposable</a>
  */
-public class SerialSubscription implements Subscription {
-    private boolean unsubscribed;
-    private Subscription subscription;
-    private final Object gate = new Object();
+public final class SerialSubscription implements Subscription {
+
+    private final AtomicReference<State> state = new AtomicReference<State>(new State(false, Subscriptions.empty()));
+
+    private static final class State {
+        final boolean isUnsubscribed;
+        final Subscription subscription;
+
+        State(boolean u, Subscription s) {
+            this.isUnsubscribed = u;
+            this.subscription = s;
+        }
+
+        State unsubscribe() {
+            return new State(true, subscription);
+        }
+
+        State set(Subscription s) {
+            return new State(isUnsubscribed, s);
+        }
+
+    }
+
+    public boolean isUnsubscribed() {
+        return state.get().isUnsubscribed;
+    }
 
     @Override
     public void unsubscribe() {
-        Subscription toUnsubscribe = null;
-        synchronized (gate) {
-            if (!unsubscribed) {
-                if (subscription != null) {
-                    toUnsubscribe = subscription;
-                    subscription = null;
-                }
-                unsubscribed = true;
-            }
-        }
-        if (toUnsubscribe != null) {
-            toUnsubscribe.unsubscribe();
-        }
-    }
-
-    public Subscription getSubscription() {
-        synchronized (gate) {
-            return subscription;
-        }
-    }
-
-    public void setSubscription(Subscription subscription) {
-        Subscription toUnsubscribe = null;
-        synchronized (gate) {
-            if (!unsubscribed) {
-                if (this.subscription != null) {
-                    toUnsubscribe = this.subscription;
-                }
-                this.subscription = subscription;
+        State oldState;
+        State newState;
+        do {
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
+                return;
             } else {
-                toUnsubscribe = subscription;
+                newState = oldState.unsubscribe();
             }
-        }
-        if (toUnsubscribe != null) {
-            toUnsubscribe.unsubscribe();
-        }
+        } while (!state.compareAndSet(oldState, newState));
+        oldState.subscription.unsubscribe();
     }
+
+    @Deprecated
+    public void setSubscription(Subscription s) {
+        set(s);
+    }
+
+    public void set(Subscription s) {
+        if (s == null) {
+            throw new IllegalArgumentException("Subscription can not be null");
+        }
+        State oldState;
+        State newState;
+        do {
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
+                s.unsubscribe();
+                return;
+            } else {
+                newState = oldState.set(s);
+            }
+        } while (!state.compareAndSet(oldState, newState));
+        oldState.subscription.unsubscribe();
+    }
+
+    @Deprecated
+    public Subscription getSubscription() {
+        return get();
+    }
+
+    public Subscription get() {
+        return state.get().subscription;
+    }
+
 }

@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import static rx.operators.OperationBuffer.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -27,16 +28,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.concurrency.TestScheduler;
+import rx.schedulers.TestScheduler;
 import rx.subscriptions.Subscriptions;
-import rx.util.Closing;
-import rx.util.Closings;
-import rx.util.Opening;
-import rx.util.Openings;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func0;
@@ -226,23 +225,23 @@ public class OperationBufferTest {
             }
         });
 
-        Observable<Opening> openings = Observable.create(new Observable.OnSubscribeFunc<Opening>() {
+        Observable<Object> openings = Observable.create(new Observable.OnSubscribeFunc<Object>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Opening> observer) {
-                push(observer, Openings.create(), 50);
-                push(observer, Openings.create(), 200);
+            public Subscription onSubscribe(Observer<Object> observer) {
+                push(observer, new Object(), 50);
+                push(observer, new Object(), 200);
                 complete(observer, 250);
                 return Subscriptions.empty();
             }
         });
 
-        Func1<Opening, Observable<Closing>> closer = new Func1<Opening, Observable<Closing>>() {
+        Func1<Object, Observable<Object>> closer = new Func1<Object, Observable<Object>>() {
             @Override
-            public Observable<Closing> call(Opening opening) {
-                return Observable.create(new Observable.OnSubscribeFunc<Closing>() {
+            public Observable<Object> call(Object opening) {
+                return Observable.create(new Observable.OnSubscribeFunc<Object>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super Closing> observer) {
-                        push(observer, Closings.create(), 100);
+                    public Subscription onSubscribe(Observer<? super Object> observer) {
+                        push(observer, new Object(), 100);
                         complete(observer, 101);
                         return Subscriptions.empty();
                     }
@@ -277,13 +276,13 @@ public class OperationBufferTest {
             }
         });
 
-        Func0<Observable<Closing>> closer = new Func0<Observable<Closing>>() {
+        Func0<Observable<Object>> closer = new Func0<Observable<Object>>() {
             @Override
-            public Observable<Closing> call() {
-                return Observable.create(new Observable.OnSubscribeFunc<Closing>() {
+            public Observable<Object> call() {
+                return Observable.create(new Observable.OnSubscribeFunc<Object>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super Closing> observer) {
-                        push(observer, Closings.create(), 100);
+                    public Subscription onSubscribe(Observer<? super Object> observer) {
+                        push(observer, new Object(), 100);
                         complete(observer, 101);
                         return Subscriptions.empty();
                     }
@@ -362,5 +361,26 @@ public class OperationBufferTest {
                 observer.onCompleted();
             }
         }, delay, TimeUnit.MILLISECONDS);
+    }
+    
+    @Test
+    public void testBufferStopsWhenUnsubscribed1() {
+        Observable<Integer> source = Observable.never();
+        
+        Observer<List<Integer>> o = mock(Observer.class);
+        
+        Subscription s = source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler).subscribe(o);
+        
+        InOrder inOrder = Mockito.inOrder(o);
+        
+        scheduler.advanceTimeBy(1001, TimeUnit.MILLISECONDS);
+        
+        inOrder.verify(o, times(5)).onNext(Arrays.<Integer>asList());
+        
+        s.unsubscribe();
+
+        scheduler.advanceTimeBy(999, TimeUnit.MILLISECONDS);
+        
+        inOrder.verifyNoMoreInteractions();
     }
 }

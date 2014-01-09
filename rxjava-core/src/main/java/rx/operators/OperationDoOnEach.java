@@ -16,8 +16,8 @@
 package rx.operators;
 
 import rx.IObservable;
-import rx.Observer;
 import rx.Observable.OnSubscribeFunc;
+import rx.Observer;
 import rx.Subscription;
 
 /**
