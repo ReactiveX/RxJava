@@ -3374,6 +3374,21 @@ public class Observable<T> {
     }
     
     /**
+     * Create an Observable which emits non-overlapping windows of items it collects from the
+     * source observable where the boundary of each window is determined by the items
+     * emitted from the boundary observable.
+     * @param <U> the window element type (ignored)
+     * @param boundary the Observable sequence whose emitted item is used for closing
+     *                 and opening windows
+     * @return an Observable which emits non-overlapping windows of items it collects from the
+     * source observable where the boundary of each window is determined by the items
+     * emitted from the boundary observable
+     */
+    public <U> Observable<Observable<T>> window(Observable<U> boundary) {
+        return create(OperationWindow.window(this, boundary));
+    }
+    
+    /**
      * Creates an Observable that emits windows of items it collects from the
      * source Observable. The resulting Observable emits connected,
      * non-overlapping windows, each containing <code>count</code> items. When
