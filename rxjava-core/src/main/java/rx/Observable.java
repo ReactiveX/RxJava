@@ -1849,7 +1849,7 @@ public class Observable<T> implements IObservable<T> {
      * @return an Observable that emits only the items emitted by the Observable
      *         most recently emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#switchonnext">RxJava Wiki: switchOnNext()</a>
-     * @deprecated use {@link #switchOnNext}
+     * @deprecated Use {@link #switchOnNext(IObservable)}
      */
     @Deprecated
     public static <T> Observable<T> switchDo(IObservable<? extends IObservable<? extends T>> sequenceOfSequences) {
@@ -1883,7 +1883,7 @@ public class Observable<T> implements IObservable<T> {
      * @return an Observable that emits only the items emitted by the Observable
      *         most recently emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#switchonnext">RxJava Wiki: switchOnNext()</a>
-     * @see {@link #switchOnNext(Observable)}
+     * @see #switchOnNext(IObservable)
      */
     public static <T> Observable<T> switchLatest(IObservable<? extends IObservable<? extends T>> sequenceOfSequences) {
         return create(OperationSwitch.switchDo(sequenceOfSequences));
@@ -3790,8 +3790,8 @@ public class Observable<T> implements IObservable<T> {
     /**
      * Creates a new Observable by applying a function that you supply to each
      * item emitted by the source Observable resulting in an Observable of
-     * Observables. Then a {@link #switchLatest(Observable)} /
-     * {@link #switchOnNext(Observable)} is applied.
+     * Observables. Then a {@link #switchLatest(IObservable)} /
+     * {@link #switchOnNext(IObservable)} is applied.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchMap.png">
      * 
