@@ -21,6 +21,7 @@ import org.junit.Test;
 import static org.mockito.Mockito.*;
 import rx.Observable;
 import rx.Observer;
+import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -141,5 +142,154 @@ public class OperationFlatMapTest {
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any());
         verify(o).onError(any(OperationReduceTest.CustomException.class));
+    }
+    <T, R> Func1<T, R> just(final R value) {
+        return new Func1<T, R>() {
+
+            @Override
+            public R call(T t1) {
+                return value;
+            }
+        };
+    }
+    <R> Func0<R> just0(final R value) {
+        return new Func0<R>() {
+
+            @Override
+            public R call() {
+                return value;
+            }
+        };
+    }
+    @Test
+    public void testFlatMapTransformsNormal() {
+        Observable<Integer> onNext = Observable.from(Arrays.asList(1, 2, 3));
+        Observable<Integer> onCompleted = Observable.from(Arrays.asList(4));
+        Observable<Integer> onError = Observable.from(Arrays.asList(5));
+        
+        Observable<Integer> source = Observable.from(Arrays.asList(10, 20, 30));
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        
+        source.mergeMap(just(onNext), just(onError), just0(onCompleted)).subscribe(o);
+        
+        verify(o, times(3)).onNext(1);
+        verify(o, times(3)).onNext(2);
+        verify(o, times(3)).onNext(3);
+        verify(o).onNext(4);
+        verify(o).onCompleted();
+        
+        verify(o, never()).onNext(5);
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void testFlatMapTransformsException() {
+        Observable<Integer> onNext = Observable.from(Arrays.asList(1, 2, 3));
+        Observable<Integer> onCompleted = Observable.from(Arrays.asList(4));
+        Observable<Integer> onError = Observable.from(Arrays.asList(5));
+        
+        Observable<Integer> source = Observable.concat(
+                Observable.from(Arrays.asList(10, 20, 30))
+                , Observable.<Integer>error(new RuntimeException("Forced failure!"))
+                );
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        
+        source.mergeMap(just(onNext), just(onError), just0(onCompleted)).subscribe(o);
+        
+        verify(o, times(3)).onNext(1);
+        verify(o, times(3)).onNext(2);
+        verify(o, times(3)).onNext(3);
+        verify(o).onNext(5);
+        verify(o).onCompleted();
+        verify(o, never()).onNext(4);
+        
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    <R> Func0<R> funcThrow0(R r) {
+        return new Func0<R>() {
+            @Override
+            public R call() {
+                throw new OperationReduceTest.CustomException();
+            }
+        };
+    }
+    <T, R> Func1<T, R> funcThrow(T t, R r) {
+        return new Func1<T, R>() {
+            @Override
+            public R call(T t) {
+                throw new OperationReduceTest.CustomException();
+            }
+        };
+    }
+    @Test
+    public void testFlatMapTransformsOnNextFuncThrows() {
+        Observable<Integer> onCompleted = Observable.from(Arrays.asList(4));
+        Observable<Integer> onError = Observable.from(Arrays.asList(5));
+        
+        Observable<Integer> source = Observable.from(Arrays.asList(10, 20, 30));
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        
+        source.mergeMap(funcThrow(1, onError), just(onError), just0(onCompleted)).subscribe(o);
+        
+        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+    }
+    @Test
+    public void testFlatMapTransformsOnErrorFuncThrows() {
+        Observable<Integer> onNext = Observable.from(Arrays.asList(1, 2, 3));
+        Observable<Integer> onCompleted = Observable.from(Arrays.asList(4));
+        Observable<Integer> onError = Observable.from(Arrays.asList(5));
+        
+        Observable<Integer> source = Observable.error(new OperationReduceTest.CustomException());
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        
+        source.mergeMap(just(onNext), funcThrow((Throwable)null, onError), just0(onCompleted)).subscribe(o);
+        
+        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+    }
+    
+    @Test
+    public void testFlatMapTransformsOnCompletedFuncThrows() {
+        Observable<Integer> onNext = Observable.from(Arrays.asList(1, 2, 3));
+        Observable<Integer> onCompleted = Observable.from(Arrays.asList(4));
+        Observable<Integer> onError = Observable.from(Arrays.asList(5));
+        
+        Observable<Integer> source = Observable.from(Arrays.<Integer>asList());
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        
+        source.mergeMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(o);
+        
+        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+    }
+    @Test 
+    public void testFlatMapTransformsMergeException() {
+        Observable<Integer> onNext = Observable.error(new OperationReduceTest.CustomException());
+        Observable<Integer> onCompleted = Observable.from(Arrays.asList(4));
+        Observable<Integer> onError = Observable.from(Arrays.asList(5));
+        
+        Observable<Integer> source = Observable.from(Arrays.asList(10, 20, 30));
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        
+        source.mergeMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(o);
+        
+        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
     }
 }

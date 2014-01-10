@@ -22,6 +22,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
+import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -204,5 +205,166 @@ public final class OperationFlatMap {
                 so.complete(cancel);
             }
         };
+    }
+    
+    /**
+     * Projects the notification of an observable sequence to an observable
+     * sequence and merges the results into one.
+     */
+    public static <T, R> OnSubscribeFunc<R> flatMap(Observable<? extends T> source, 
+            Func1<? super T, ? extends Observable<? extends R>> onNext, 
+            Func1<? super Throwable, ? extends Observable<? extends R>> onError, 
+            Func0<? extends Observable<? extends R>> onCompleted) {
+        return new FlatMapTransform<T, R>(source, onNext, onError, onCompleted);
+    }
+    
+    /**
+     * Projects the notification of an observable sequence to an observable
+     * sequence and merges the results into one.
+     * @param <T> the source value type
+     * @param <R> the result value type
+     */
+    private static final class FlatMapTransform<T, R> implements OnSubscribeFunc<R> {
+        final Observable<? extends T> source;
+        final Func1<? super T, ? extends Observable<? extends R>> onNext;
+        final Func1<? super Throwable, ? extends Observable<? extends R>> onError;
+        final Func0<? extends Observable<? extends R>> onCompleted;
+
+        public FlatMapTransform(Observable<? extends T> source, Func1<? super T, ? extends Observable<? extends R>> onNext, Func1<? super Throwable, ? extends Observable<? extends R>> onError, Func0<? extends Observable<? extends R>> onCompleted) {
+            this.source = source;
+            this.onNext = onNext;
+            this.onError = onError;
+            this.onCompleted = onCompleted;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super R> t1) {
+            CompositeSubscription csub = new CompositeSubscription();
+            
+            csub.add(source.subscribe(new SourceObserver<T, R>(t1, onNext, onError, onCompleted, csub)));
+            
+            return csub;
+        }
+        /**
+         * Observe the source and merge the values.
+         * @param <T> the source value type
+         * @param <R> the result value type
+         */
+        private static final class SourceObserver<T, R> implements Observer<T> {
+            final Observer<? super R> observer;
+            final Func1<? super T, ? extends Observable<? extends R>> onNext;
+            final Func1<? super Throwable, ? extends Observable<? extends R>> onError;
+            final Func0<? extends Observable<? extends R>> onCompleted;
+            final CompositeSubscription csub;
+            final AtomicInteger wip;
+            volatile boolean done;
+            final Object guard;
+
+            public SourceObserver(Observer<? super R> observer, Func1<? super T, ? extends Observable<? extends R>> onNext, Func1<? super Throwable, ? extends Observable<? extends R>> onError, Func0<? extends Observable<? extends R>> onCompleted, CompositeSubscription csub) {
+                this.observer = observer;
+                this.onNext = onNext;
+                this.onError = onError;
+                this.onCompleted = onCompleted;
+                this.csub = csub;
+                this.guard = new Object();
+                this.wip = new AtomicInteger(1);
+            }
+
+            @Override
+            public void onNext(T args) {
+                Observable<? extends R> o;
+                try {
+                    o = onNext.call(args);
+                } catch (Throwable t) {
+                    synchronized (guard) {
+                        observer.onError(t);
+                    }
+                    csub.unsubscribe();
+                    return;
+                }
+                subscribeInner(o);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Observable<? extends R> o;
+                try {
+                    o = onError.call(e);
+                } catch (Throwable t) {
+                    synchronized (guard) {
+                        observer.onError(t);
+                    }
+                    csub.unsubscribe();
+                    return;
+                }
+                subscribeInner(o);
+                done = true;
+                finish();
+            }
+
+            @Override
+            public void onCompleted() {
+                Observable<? extends R> o;
+                try {
+                    o = onCompleted.call();
+                } catch (Throwable t) {
+                    synchronized (guard) {
+                        observer.onError(t);
+                    }
+                    csub.unsubscribe();
+                    return;
+                }
+                subscribeInner(o);
+                done = true;
+                finish();
+            }
+            
+            void subscribeInner(Observable<? extends R> o) {
+                SerialSubscription ssub = new SerialSubscription();
+                wip.incrementAndGet();
+                csub.add(ssub);
+                
+                ssub.set(o.subscribe(new CollectionObserver<T, R>(this, ssub)));
+            }
+            void finish() {
+                if (wip.decrementAndGet() == 0) {
+                    synchronized (guard) {
+                        observer.onCompleted();
+                    }
+                    csub.unsubscribe();
+                }
+            }
+        }
+        /** Observes the collections. */
+        private static final class CollectionObserver<T, R> implements Observer<R> {
+            final SourceObserver<T, R> parent;
+            final Subscription cancel;
+
+            public CollectionObserver(SourceObserver<T, R> parent, Subscription cancel) {
+                this.parent = parent;
+                this.cancel = cancel;
+            }
+
+            @Override
+            public void onNext(R args) {
+                synchronized (parent.guard) {
+                    parent.observer.onNext(args);
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                synchronized (parent.guard) {
+                    parent.observer.onError(e);
+                }
+                parent.csub.unsubscribe();
+            }
+
+            @Override
+            public void onCompleted() {
+                parent.csub.remove(cancel);
+                parent.finish();
+            }
+        }
     }
 }

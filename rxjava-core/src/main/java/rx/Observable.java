@@ -3902,6 +3902,23 @@ public class Observable<T> {
     }
     
     /**
+     * Create an Observable that projects the notification of an observable sequence to an observable
+     * sequence and merges the results into one.
+     * @param <R> the result type
+     * @param onNext function returning a collection to merge for each onNext event of the source
+     * @param onError function returning a collection to merge for an onError event
+     * @param onCompleted function returning a collection to merge for an onCompleted event
+     * @return an Observable that projects the notification of an observable sequence to an observable
+     * sequence and merges the results into one.
+     */
+    public <R> Observable<R> mergeMap(
+            Func1<? super T, ? extends Observable<? extends R>> onNext, 
+            Func1<? super Throwable, ? extends Observable<? extends R>> onError, 
+            Func0<? extends Observable<? extends R>> onCompleted) {
+        return create(OperationFlatMap.flatMap(this, onNext, onError, onCompleted));
+    }
+    
+    /**
      * Creates a new Observable by applying a function that you supply to each
      * item emitted by the source Observable, where that function returns an
      * Observable, and then concatting those resulting Observables and emitting
