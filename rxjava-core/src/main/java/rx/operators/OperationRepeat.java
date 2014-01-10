@@ -16,6 +16,7 @@
 
 package rx.operators;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
@@ -27,14 +28,14 @@ import rx.util.functions.Action1;
 
 public class OperationRepeat<T> implements Observable.OnSubscribeFunc<T> {
 
-    private final Observable<T> source;
+    private final IObservable<T> source;
     private final Scheduler scheduler;
 
-    public static <T> Observable.OnSubscribeFunc<T> repeat(Observable<T> source, Scheduler scheduler) {
+    public static <T> Observable.OnSubscribeFunc<T> repeat(IObservable<T> source, Scheduler scheduler) {
         return new OperationRepeat<T>(source, scheduler);
     }
 
-    private OperationRepeat(Observable<T> source, Scheduler scheduler) {
+    private OperationRepeat(IObservable<T> source, Scheduler scheduler) {
         this.source = source;
         this.scheduler = scheduler;
     }

@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -25,9 +25,9 @@ import rx.Subscription;
  * @param <T> the return value type of the wrapped observable.
  */
 public final class OperationAsObservable<T> implements OnSubscribeFunc<T> {
-    private final Observable<? extends T> source;
+    private final IObservable<? extends T> source;
 
-    public OperationAsObservable(Observable<? extends T> source) {
+    public OperationAsObservable(IObservable<? extends T> source) {
         this.source = source;
     }
     @Override

@@ -30,7 +30,7 @@ public class Statement {
      *         key
      */
     public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector,
-            Map<? super K, ? extends Observable<? extends R>> mapOfCases) {
+            Map<? super K, ? extends IObservable<? extends R>> mapOfCases) {
         return switchCase(caseSelector, mapOfCases, Observable.<R> empty());
     }
 
@@ -56,7 +56,7 @@ public class Statement {
      *         key, but one that runs on the designated scheduler in either case
      */
     public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector,
-            Map<? super K, ? extends Observable<? extends R>> mapOfCases, Scheduler scheduler) {
+            Map<? super K, ? extends IObservable<? extends R>> mapOfCases, Scheduler scheduler) {
         return switchCase(caseSelector, mapOfCases, Observable.<R> empty(scheduler));
     }
 
@@ -82,8 +82,8 @@ public class Statement {
      *         Observables, or the default case if no Observable matches the key
      */
     public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector,
-            Map<? super K, ? extends Observable<? extends R>> mapOfCases,
-            Observable<? extends R> defaultCase) {
+            Map<? super K, ? extends IObservable<? extends R>> mapOfCases,
+            IObservable<? extends R> defaultCase) {
         return Observable.create(OperationConditionals.switchCase(caseSelector, mapOfCases, defaultCase));
     }
 
@@ -101,7 +101,7 @@ public class Statement {
      *         Observable, and then continues to replay them so long as the post
      *         condition is true
      */
-    public static <T> Observable<T> doWhile(Observable<T> source, Func0<Boolean> postCondition) {
+    public static <T> Observable<T> doWhile(IObservable<T> source, Func0<Boolean> postCondition) {
         return Observable.create(OperationConditionals.doWhile(source, postCondition));
     }
 
@@ -117,7 +117,7 @@ public class Statement {
      * @return an Observable that replays the emissions from the source
      *         Observable so long as <code>preCondition</code> is true
      */
-    public static <T> Observable<T> whileDo(Observable<T> source, Func0<Boolean> preCondition) {
+    public static <T> Observable<T> whileDo(IObservable<T> source, Func0<Boolean> preCondition) {
         return Observable.create(OperationConditionals.whileDo(source, preCondition));
     }
 
@@ -137,7 +137,7 @@ public class Statement {
      * @return an Observable that mimics the {@code then} Observable if the {@code condition} function evaluates to true, or an empty
      *         Observable otherwise
      */
-    public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then) {
+    public static <R> Observable<R> ifThen(Func0<Boolean> condition, IObservable<? extends R> then) {
         return ifThen(condition, then, Observable.<R> empty());
     }
 
@@ -161,7 +161,7 @@ public class Statement {
      * @return an Observable that mimics the {@code then} Observable if the {@code condition} function evaluates to true, or an empty
      *         Observable running on the specified Scheduler otherwise
      */
-    public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then, Scheduler scheduler) {
+    public static <R> Observable<R> ifThen(Func0<Boolean> condition, IObservable<? extends R> then, Scheduler scheduler) {
         return ifThen(condition, then, Observable.<R> empty(scheduler));
     }
 
@@ -183,8 +183,8 @@ public class Statement {
      *            the Observable sequence to emit to if {@code condition} is {@code false}
      * @return an Observable that mimics either the {@code then} or {@code orElse} Observables depending on a condition function
      */
-    public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then,
-            Observable<? extends R> orElse) {
+    public static <R> Observable<R> ifThen(Func0<Boolean> condition, IObservable<? extends R> then,
+            IObservable<? extends R> orElse) {
         return Observable.create(OperationConditionals.ifThen(condition, then, orElse));
     }
 

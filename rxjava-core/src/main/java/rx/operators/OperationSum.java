@@ -17,7 +17,6 @@ package rx.operators;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -75,10 +74,10 @@ public final class OperationSum {
      * @param <T> the source value type
      */
     public static final class SumIntegerExtractor<T> implements Observable.OnSubscribeFunc<Integer> {
-        final Observable<? extends T> source;
+        final IObservable<? extends T> source;
         final Func1<? super T, Integer> valueExtractor;
 
-        public SumIntegerExtractor(Observable<? extends T> source, Func1<? super T, Integer> valueExtractor) {
+        public SumIntegerExtractor(IObservable<? extends T> source, Func1<? super T, Integer> valueExtractor) {
             this.source = source;
             this.valueExtractor = valueExtractor;
         }
@@ -131,10 +130,10 @@ public final class OperationSum {
      * @param <T> the source value type
      */
     public static final class SumLongExtractor<T> implements Observable.OnSubscribeFunc<Long> {
-        final Observable<? extends T> source;
+        final IObservable<? extends T> source;
         final Func1<? super T, Long> valueExtractor;
 
-        public SumLongExtractor(Observable<? extends T> source, Func1<? super T, Long> valueExtractor) {
+        public SumLongExtractor(IObservable<? extends T> source, Func1<? super T, Long> valueExtractor) {
             this.source = source;
             this.valueExtractor = valueExtractor;
         }
@@ -187,10 +186,10 @@ public final class OperationSum {
      * @param <T> the source value type
      */
     public static final class SumFloatExtractor<T> implements Observable.OnSubscribeFunc<Float> {
-        final Observable<? extends T> source;
+        final IObservable<? extends T> source;
         final Func1<? super T, Float> valueExtractor;
 
-        public SumFloatExtractor(Observable<? extends T> source, Func1<? super T, Float> valueExtractor) {
+        public SumFloatExtractor(IObservable<? extends T> source, Func1<? super T, Float> valueExtractor) {
             this.source = source;
             this.valueExtractor = valueExtractor;
         }
@@ -243,10 +242,10 @@ public final class OperationSum {
      * @param <T> the source value type
      */
     public static final class SumDoubleExtractor<T> implements Observable.OnSubscribeFunc<Double> {
-        final Observable<? extends T> source;
+        final IObservable<? extends T> source;
         final Func1<? super T, Double> valueExtractor;
 
-        public SumDoubleExtractor(Observable<? extends T> source, Func1<? super T, Double> valueExtractor) {
+        public SumDoubleExtractor(IObservable<? extends T> source, Func1<? super T, Double> valueExtractor) {
             this.source = source;
             this.valueExtractor = valueExtractor;
         }

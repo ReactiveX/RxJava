@@ -117,10 +117,10 @@ public final class OperationAverage {
      * @param <T> the source value type
      */
     public static final class AverageIntegerExtractor<T> implements OnSubscribeFunc<Integer> {
-        final Observable<? extends T> source;
+        final IObservable<? extends T> source;
         final Func1<? super T, Integer> valueExtractor;
 
-        public AverageIntegerExtractor(Observable<? extends T> source, Func1<? super T, Integer> valueExtractor) {
+        public AverageIntegerExtractor(IObservable<? extends T> source, Func1<? super T, Integer> valueExtractor) {
             this.source = source;
             this.valueExtractor = valueExtractor;
         }
@@ -173,10 +173,10 @@ public final class OperationAverage {
      * @param <T> the source value type
      */
     public static final class AverageLongExtractor<T> implements OnSubscribeFunc<Long> {
-        final Observable<? extends T> source;
+        final IObservable<? extends T> source;
         final Func1<? super T, Long> valueExtractor;
 
-        public AverageLongExtractor(Observable<? extends T> source, Func1<? super T, Long> valueExtractor) {
+        public AverageLongExtractor(IObservable<? extends T> source, Func1<? super T, Long> valueExtractor) {
             this.source = source;
             this.valueExtractor = valueExtractor;
         }
@@ -229,10 +229,10 @@ public final class OperationAverage {
      * @param <T> the source value type
      */
     public static final class AverageFloatExtractor<T> implements OnSubscribeFunc<Float> {
-        final Observable<? extends T> source;
+        final IObservable<? extends T> source;
         final Func1<? super T, Float> valueExtractor;
 
-        public AverageFloatExtractor(Observable<? extends T> source, Func1<? super T, Float> valueExtractor) {
+        public AverageFloatExtractor(IObservable<? extends T> source, Func1<? super T, Float> valueExtractor) {
             this.source = source;
             this.valueExtractor = valueExtractor;
         }
@@ -285,10 +285,10 @@ public final class OperationAverage {
      * @param <T> the source value type
      */
     public static final class AverageDoubleExtractor<T> implements OnSubscribeFunc<Double> {
-        final Observable<? extends T> source;
+        final IObservable<? extends T> source;
         final Func1<? super T, Double> valueExtractor;
 
-        public AverageDoubleExtractor(Observable<? extends T> source, Func1<? super T, Double> valueExtractor) {
+        public AverageDoubleExtractor(IObservable<? extends T> source, Func1<? super T, Double> valueExtractor) {
             this.source = source;
             this.valueExtractor = valueExtractor;
         }
