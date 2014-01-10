@@ -75,13 +75,13 @@ public final class OperationParallel<T> {
                         return i.incrementAndGet() % s.degreeOfParallelism();
                     }
 
-                }).flatMap(new Func1<GroupedObservable<Integer, T>, IObservable<R>>() {
+                }).mergeMap(new Func1<GroupedObservable<Integer, T>, IObservable<R>>() {
 
                     @Override
                     public IObservable<R> call(GroupedObservable<Integer, T> group) {
                         return f.call(group.observeOn(s));
                     }
-                }).synchronize();
+                });
             }
         });
     }

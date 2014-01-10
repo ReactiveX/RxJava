@@ -18,8 +18,6 @@ package rx.operators;
 import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
-import rx.plugins.RxJavaErrorHandler;
-import rx.plugins.RxJavaPlugins;
 import rx.util.OnErrorNotImplementedException;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -40,7 +38,6 @@ public final class OperationSubscribe {
 
             @Override
             public void onError(Throwable e) {
-                handleError(e);
                 throw new OnErrorNotImplementedException(e);
             }
 
@@ -76,7 +73,6 @@ public final class OperationSubscribe {
 
             @Override
             public void onError(Throwable e) {
-                handleError(e);
                 throw new OnErrorNotImplementedException(e);
             }
 
@@ -116,7 +112,6 @@ public final class OperationSubscribe {
 
             @Override
             public void onError(Throwable e) {
-                handleError(e);
                 onError.call(e);
             }
 
@@ -160,7 +155,6 @@ public final class OperationSubscribe {
 
             @Override
             public void onError(Throwable e) {
-                handleError(e);
                 onError.call(e);
             }
 
@@ -192,15 +186,6 @@ public final class OperationSubscribe {
         SafeObservableSubscription subscription = new SafeObservableSubscription();
         final SafeObserver<T> safeObserver = new SafeObserver<T>(subscription, observer);
         return subscription.wrap(observable.subscribe(safeObserver));
-    }
-
-    /**
-     * Allow the {@link RxJavaErrorHandler} to receive the exception from
-     * onError.
-     */
-    private static void handleError(Throwable e) {
-        // onError should be rare so we'll only fetch when needed
-        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
     }
 
 }

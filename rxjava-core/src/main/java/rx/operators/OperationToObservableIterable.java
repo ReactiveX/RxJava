@@ -19,6 +19,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
+import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -37,16 +38,20 @@ import java.util.Iterator;
 public final class OperationToObservableIterable<T> {
 
     public static <T> OnSubscribeFunc<T> toObservableIterable(Iterable<? extends T> list, Scheduler scheduler) {
-        return new ToObservableIterable<T>(list, scheduler);
+        if (scheduler instanceof ImmediateScheduler) {
+            return new ToObservableIterable<T>(list);
+        } else {
+            return new ToObservableIterableScheduled<T>(list, scheduler);
+        }
     }
 
     public static <T> OnSubscribeFunc<T> toObservableIterable(Iterable<? extends T> list) {
-        return toObservableIterable(list, Schedulers.currentThread());
+        return new ToObservableIterable<T>(list);
     }
 
-    private static class ToObservableIterable<T> implements OnSubscribeFunc<T> {
+    private static class ToObservableIterableScheduled<T> implements OnSubscribeFunc<T> {
 
-        public ToObservableIterable(Iterable<? extends T> list, Scheduler scheduler) {
+        public ToObservableIterableScheduled(Iterable<? extends T> list, Scheduler scheduler) {
             this.iterable = list;
             this.scheduler = scheduler;
         }
@@ -72,6 +77,27 @@ public final class OperationToObservableIterable<T> {
                     }
                 }
             });
+        }
+    }
+
+    private static class ToObservableIterable<T> implements OnSubscribeFunc<T> {
+
+        public ToObservableIterable(Iterable<? extends T> list) {
+            this.iterable = list;
+        }
+
+        final Iterable<? extends T> iterable;
+
+        public Subscription onSubscribe(final Observer<? super T> observer) {
+            try {
+                for (T t : iterable) {
+                    observer.onNext(t);
+                }
+                observer.onCompleted();
+            } catch (Exception e) {
+                observer.onError(e);
+            }
+            return Subscriptions.empty();
         }
     }
 }

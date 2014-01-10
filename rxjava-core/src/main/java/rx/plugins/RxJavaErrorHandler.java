@@ -30,6 +30,8 @@ public abstract class RxJavaErrorHandler {
 
     /**
      * Receives all Exceptions from an {@link rx.IObservable} passed to {@link Observer#onError(Throwable)}.
+     * <p>
+     * This should NEVER throw an Exception. Make sure to try/catch(Throwable) all code inside this method implementation.
      * 
      * @param e
      *            Exception

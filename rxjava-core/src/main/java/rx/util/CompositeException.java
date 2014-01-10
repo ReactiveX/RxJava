@@ -25,29 +25,26 @@ import java.util.List;
  * <p>
  * The <code>getMessage()</code> will return a concatenation of the composite exceptions.
  */
-public class CompositeException extends RuntimeException {
+public final class CompositeException extends RuntimeException {
 
     private static final long serialVersionUID = 3026362227162912146L;
 
     private final List<Throwable> exceptions;
     private final String message;
+    private final Throwable cause;
 
     public CompositeException(String messagePrefix, Collection<Throwable> errors) {
-        StringBuilder _message = new StringBuilder();
-        if (messagePrefix != null) {
-            _message.append(messagePrefix).append(" => ");
-        }
-
         List<Throwable> _exceptions = new ArrayList<Throwable>();
+        CompositeExceptionCausalChain _cause = new CompositeExceptionCausalChain();
+        int count = 0;
         for (Throwable e : errors) {
+            count++;
+            attachCallingThreadStack(_cause, e);
             _exceptions.add(e);
-            if (_message.length() > 0) {
-                _message.append(", ");
-            }
-            _message.append(e.getClass().getSimpleName()).append(":").append(e.getMessage());
         }
         this.exceptions = Collections.unmodifiableList(_exceptions);
-        this.message = _message.toString();
+        this.message = count + " exceptions occurred. See them in causal chain below.";
+        this.cause = _cause;
     }
 
     public CompositeException(Collection<Throwable> errors) {
@@ -62,4 +59,51 @@ public class CompositeException extends RuntimeException {
     public String getMessage() {
         return message;
     }
+
+    @Override
+    public synchronized Throwable getCause() {
+        return cause;
+    }
+
+    @SuppressWarnings("unused") // useful when debugging but don't want to make part of publicly supported API
+    private static String getStackTraceAsString(StackTraceElement[] stack) {
+        StringBuilder s = new StringBuilder();
+        boolean firstLine = true;
+        for (StackTraceElement e : stack) {
+            if (e.toString().startsWith("java.lang.Thread.getStackTrace")) {
+                // we'll ignore this one
+                continue;
+            }
+            if (!firstLine) {
+                s.append("\n\t");
+            }
+            s.append(e.toString());
+            firstLine = false;
+        }
+        return s.toString();
+    }
+
+    private static void attachCallingThreadStack(Throwable e, Throwable cause) {
+        while (e.getCause() != null) {
+            e = e.getCause();
+        }
+        // we now have 'e' as the last in the chain
+        try {
+            e.initCause(cause);
+        } catch (Throwable t) {
+            // ignore
+            // the javadocs say that some Throwables (depending on how they're made) will never
+            // let me call initCause without blowing up even if it returns null
+        }
+    }
+
+    private final static class CompositeExceptionCausalChain extends RuntimeException {
+        private static final long serialVersionUID = 3875212506787802066L;
+
+        @Override
+        public String getMessage() {
+            return "Chain of Causes for CompositeException In Order Received =>";
+        }
+    }
+
 }

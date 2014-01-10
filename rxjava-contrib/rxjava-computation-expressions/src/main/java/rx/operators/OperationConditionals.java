@@ -30,32 +30,47 @@ import rx.util.functions.Func0;
  */
 public final class OperationConditionals {
     /** Utility class. */
-    private OperationConditionals() { throw new IllegalStateException("No instances!"); }
+    private OperationConditionals() {
+        throw new IllegalStateException("No instances!");
+    }
+
     /**
      * Return a subscription function that subscribes to an observable sequence
      * chosen from a map of observables via a selector function or to the
      * default observable.
-     * @param <K> the case key type
-     * @param <R> the result value type
-     * @param caseSelector the function that produces a case key when an Observer subscribes
-     * @param mapOfCases a map that maps a case key to an observable sequence
-     * @param defaultCase the default observable if the {@code mapOfCases} doesn't contain a value for
-     *                    the key returned by the {@case caseSelector}
+     * 
+     * @param <K>
+     *            the case key type
+     * @param <R>
+     *            the result value type
+     * @param caseSelector
+     *            the function that produces a case key when an Observer subscribes
+     * @param mapOfCases
+     *            a map that maps a case key to an observable sequence
+     * @param defaultCase
+     *            the default observable if the {@code mapOfCases} doesn't contain a value for
+     *            the key returned by the {@case caseSelector}
      * @return a subscription function
      */
     public static <K, R> OnSubscribeFunc<R> switchCase(
-            Func0<? extends K> caseSelector, 
-            Map<? super K, ? extends IObservable<? extends R>> mapOfCases, 
+            Func0<? extends K> caseSelector,
+            Map<? super K, ? extends IObservable<? extends R>> mapOfCases,
             IObservable<? extends R> defaultCase) {
         return new SwitchCase<K, R>(caseSelector, mapOfCases, defaultCase);
     }
+
     /**
      * Return a subscription function that subscribes to either the
      * then or orElse Observables depending on a condition function.
-     * @param <R> the result value type
-     * @param condition the condition to decide which Observables to subscribe to
-     * @param then the Observable sequence to subscribe to if {@code condition} is {@code true}
-     * @param orElse the Observable sequence to subscribe to if {@code condition} is {@code false}
+     * 
+     * @param <R>
+     *            the result value type
+     * @param condition
+     *            the condition to decide which Observables to subscribe to
+     * @param then
+     *            the Observable sequence to subscribe to if {@code condition} is {@code true}
+     * @param orElse
+     *            the Observable sequence to subscribe to if {@code condition} is {@code false}
      * @return a subscription function
      */
     public static <R> OnSubscribeFunc<R> ifThen(
@@ -64,41 +79,55 @@ public final class OperationConditionals {
             IObservable<? extends R> orElse) {
         return new IfThen<R>(condition, then, orElse);
     }
+
     /**
      * Return a subscription function that subscribes to the source Observable,
      * then resubscribes only if the postCondition evaluates to true.
-     * @param <T> the result value type
-     * @param source the source Observable
-     * @param postCondition the post condition after the source completes
+     * 
+     * @param <T>
+     *            the result value type
+     * @param source
+     *            the source Observable
+     * @param postCondition
+     *            the post condition after the source completes
      * @return a subscription function.
      */
     public static <T> OnSubscribeFunc<T> doWhile(IObservable<? extends T> source, Func0<Boolean> postCondition) {
         return new WhileDoWhile<T>(source, TRUE, postCondition);
     }
+
     /**
      * Return a subscription function that subscribes and resubscribes to the source
      * Observable if the preCondition evaluates to true.
-     * @param <T> the result value type
-     * @param source the source Observable
-     * @param preCondition the condition to evaluate before subscribing to source, 
-     *                     and subscribe to source if it returns {@code true}
+     * 
+     * @param <T>
+     *            the result value type
+     * @param source
+     *            the source Observable
+     * @param preCondition
+     *            the condition to evaluate before subscribing to source,
+     *            and subscribe to source if it returns {@code true}
      * @return a subscription function.
      */
     public static <T> OnSubscribeFunc<T> whileDo(IObservable<? extends T> source, Func0<Boolean> preCondition) {
         return new WhileDoWhile<T>(source, preCondition, preCondition);
     }
+
     /**
      * Select an observable from a map based on a case key returned by a selector
      * function when an observer subscribes.
-     * @param <K> the case key type
-     * @param <R> the result value type
+     * 
+     * @param <K>
+     *            the case key type
+     * @param <R>
+     *            the result value type
      */
     private static final class SwitchCase<K, R> implements OnSubscribeFunc<R> {
         final Func0<? extends K> caseSelector;
         final Map<? super K, ? extends IObservable<? extends R>> mapOfCases;
         final IObservable<? extends R> defaultCase;
 
-        public SwitchCase(Func0<? extends K> caseSelector, 
+        public SwitchCase(Func0<? extends K> caseSelector,
                 Map<? super K, ? extends IObservable<? extends R>> mapOfCases,
                 IObservable<? extends R> defaultCase) {
             this.caseSelector = caseSelector;
@@ -123,6 +152,7 @@ public final class OperationConditionals {
             return target.subscribe(t1);
         }
     }
+
     /** Returns always true. */
     private static final class Func0True implements Func0<Boolean> {
         @Override
@@ -130,12 +160,16 @@ public final class OperationConditionals {
             return true;
         }
     }
+
     /** Returns always true function. */
     private static final Func0True TRUE = new Func0True();
+
     /**
      * Given a condition, subscribe to one of the observables when an Observer
      * subscribes.
-     * @param <R> the result value type
+     * 
+     * @param <R>
+     *            the result value type
      */
     private static final class IfThen<R> implements OnSubscribeFunc<R> {
         final Func0<Boolean> condition;
@@ -147,6 +181,7 @@ public final class OperationConditionals {
             this.then = then;
             this.orElse = orElse;
         }
+
         @Override
         public Subscription onSubscribe(Observer<? super R> t1) {
             IObservable<? extends R> target;
@@ -163,13 +198,16 @@ public final class OperationConditionals {
             return target.subscribe(t1);
         }
     }
+
     /**
      * Repeatedly subscribes to the source observable if the pre- or
      * postcondition is true.
      * <p>
      * This combines the While and DoWhile into a single operation through
      * the conditions.
-     * @param <T> the result value type
+     * 
+     * @param <T>
+     *            the result value type
      */
     private static final class WhileDoWhile<T> implements OnSubscribeFunc<T> {
         final Func0<Boolean> preCondition;
@@ -178,8 +216,7 @@ public final class OperationConditionals {
 
         public WhileDoWhile(
                 IObservable<? extends T> source,
-                Func0<Boolean> preCondition, Func0<Boolean> postCondition
-                ) {
+                Func0<Boolean> preCondition, Func0<Boolean> postCondition) {
             this.source = source;
             this.preCondition = preCondition;
             this.postCondition = postCondition;
@@ -196,19 +233,21 @@ public final class OperationConditionals {
             }
             if (first) {
                 SerialSubscription ssub = new SerialSubscription();
-                
-                ssub.setSubscription(source.subscribe(new SourceObserver(t1, ssub)));
-                
+
+                ssub.set(source.subscribe(new SourceObserver(t1, ssub)));
+
                 return ssub;
             } else {
                 t1.onCompleted();
             }
             return Subscriptions.empty();
         }
+
         /** Observe the source. */
         final class SourceObserver implements Observer<T> {
             final SerialSubscription cancel;
             final Observer<? super T> observer;
+
             public SourceObserver(Observer<? super T> observer, SerialSubscription cancel) {
                 this.observer = observer;
                 this.cancel = cancel;
@@ -241,7 +280,7 @@ public final class OperationConditionals {
                     cancel.unsubscribe();
                 }
             }
-            
+
         }
     }
 }

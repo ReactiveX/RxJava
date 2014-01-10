@@ -67,6 +67,7 @@ public final class OperationMap {
      * @param <R>
      *            the type of the output sequence.
      * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
+     * @deprecated
      */
     public static <T, R> OnSubscribeFunc<R> mapWithIndex(final IObservable<? extends T> sequence, final Func2<? super T, Integer, ? extends R> func) {
         return new OnSubscribeFunc<R>() {
