@@ -53,6 +53,7 @@ import rx.operators.OperationDoOnEach;
 import rx.operators.OperationElementAt;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
+import rx.operators.OperationFlatMap;
 import rx.operators.OperationGroupBy;
 import rx.operators.OperationGroupByUntil;
 import rx.operators.OperationGroupJoin;
@@ -3854,6 +3855,50 @@ public class Observable<T> {
      */
     public <R> Observable<R> mergeMap(Func1<? super T, ? extends Observable<? extends R>> func) {
         return merge(map(func));
+    }
+    
+    /**
+     * Create an Observable that applies a function to the pair of values from the source
+     * Observable and the collection Observable.
+     * @param <U> the element type of the collection Observable
+     * @param <R> the result type
+     * @param collectionSelector function that returns an Observable sequence for each value in the source Observable
+     * @param resultSelector function that combines the values of the source and collection Observable
+     * @return an Observable that applies a function to the pair of values from the source
+     * Observable and the collection Observable.
+     */
+    public <U, R> Observable<R> mergeMap(Func1<? super T, ? extends Observable<? extends U>> collectionSelector,
+            Func2<? super T, ? super U, ? extends R> resultSelector) {
+        return create(OperationFlatMap.flatMap(this, collectionSelector, resultSelector));
+    }
+    
+    /**
+     * Create an Observable that merges the values of the iterables returned by the
+     * collectionSelector for each source value.
+     * @param <R> the result value type
+     * @param collectionSelector function that returns an Iterable sequence of values for
+     * each source value.
+     * @return an Observable that merges the values of the iterables returned by the
+     * collectionSelector for each source value.
+     */
+    public <R> Observable<R> mergeMapIterable(Func1<? super T, ? extends Iterable<? extends R>> collectionSelector) {
+        return merge(map(OperationFlatMap.flatMapIterableFunc(collectionSelector)));
+    }
+    
+    /**
+     * Create an Observable that applies a function to the pair of values from the source
+     * Observable and the collection Iterable sequence.
+     * @param <U> the collection element type
+     * @param <R> the result type
+     * @param collectionSelector function that returns an Iterable sequence of values for
+     * each source value.
+     * @param resultSelector function that combines the values of the source and collection Iterable
+     * @return n Observable that applies a function to the pair of values from the source
+     * Observable and the collection Iterable sequence.
+     */
+    public <U, R> Observable<R> mergeMapIterable(Func1<? super T, ? extends Iterable<? extends U>> collectionSelector,
+            Func2<? super T, ? super U, ? extends R> resultSelector) {
+        return mergeMap(OperationFlatMap.flatMapIterableFunc(collectionSelector), resultSelector);
     }
     
     /**
