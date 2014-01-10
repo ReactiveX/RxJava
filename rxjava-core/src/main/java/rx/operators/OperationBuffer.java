@@ -15,6 +15,7 @@
  */
 package rx.operators;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -394,6 +395,141 @@ public final class OperationBuffer extends ChunkedOperation {
                 ChunkCreator cc0 = cc;
                 cc = null;
                 cc0.stop();
+            }
+        }
+    }
+    
+    /**
+     * Create a buffer operator with the given observable sequence as the buffer boundary.
+     */
+    public static <T, B> OnSubscribeFunc<List<T>> bufferWithBoundaryObservable(Observable<? extends T> source, Observable<B> boundary) {
+        return new BufferWithObservableBoundary<T, B>(source, boundary, 16);
+    }
+    /**
+     * Create a buffer operator with the given observable sequence as the buffer boundary and
+     * with the given initial capacity for buffers.
+     */
+    public static <T, B> OnSubscribeFunc<List<T>> bufferWithBoundaryObservable(Observable<? extends T> source, Observable<B> boundary, int initialCapacity) {
+        if (initialCapacity <= 0) {
+            throw new IllegalArgumentException("initialCapacity > 0 required");
+        }
+        return new BufferWithObservableBoundary<T, B>(source, boundary, initialCapacity);
+    }
+    
+    /**
+     * Buffer until an element is emitted from a helper observable.
+     * @param <T> the buffered value type
+     */
+    private static final class BufferWithObservableBoundary<T, B> implements OnSubscribeFunc<List<T>> {
+        final Observable<? extends T> source;
+        final Observable<B> boundary;
+        final int initialCapacity;
+
+        public BufferWithObservableBoundary(Observable<? extends T> source, Observable<B> boundary, int initialCapacity) {
+            this.source = source;
+            this.boundary = boundary;
+            this.initialCapacity = initialCapacity;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super List<T>> t1) {
+            CompositeSubscription csub = new CompositeSubscription();
+            
+            SourceObserver<T> so = new SourceObserver<T>(t1, initialCapacity, csub);
+            csub.add(source.subscribe(so));
+            csub.add(boundary.subscribe(new BoundaryObserver<B>(so)));
+            
+            return csub;
+        }
+        /**
+         * Observes the source.
+         */
+        private static final class SourceObserver<T> implements Observer<T> {
+            final Observer<? super List<T>> observer;
+            /** The buffer, if null, that indicates a terminal state. */
+            List<T> buffer;
+            final int initialCapacity;
+            final Object guard;
+            final Subscription cancel;
+            public SourceObserver(Observer<? super List<T>> observer, int initialCapacity, Subscription cancel) {
+                this.observer = observer;
+                this.initialCapacity = initialCapacity;
+                this.guard = new Object();
+                this.cancel = cancel;
+                buffer = new ArrayList<T>(initialCapacity);
+            }
+
+            @Override
+            public void onNext(T args) {
+                synchronized (guard) {
+                    buffer.add(args);
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                synchronized (guard) {
+                    if (buffer == null) {
+                        return;
+                    }
+                    buffer = null;
+                }
+                observer.onError(e);
+                cancel.unsubscribe();
+            }
+
+            @Override
+            public void onCompleted() {
+                emitAndComplete();
+                cancel.unsubscribe();
+            }
+            void emitAndReplace() {
+                List<T> buf;
+                synchronized (guard) {
+                    if (buffer == null) {
+                        return;
+                    }
+                    buf = buffer;
+                    buffer = new ArrayList<T>(initialCapacity);
+                }
+                observer.onNext(buf);
+            }
+            void emitAndComplete() {
+                List<T> buf;
+                synchronized (guard) {
+                    if (buffer == null) {
+                        return;
+                    }
+                    buf = buffer;
+                    buffer = null;
+                }
+                observer.onNext(buf);
+                observer.onCompleted();
+            }
+        }
+        /**
+         * Observes the boundary.
+         */
+        private static final class BoundaryObserver<T> implements Observer<T> {
+            final SourceObserver so;
+
+            public BoundaryObserver(SourceObserver so) {
+                this.so = so;
+            }
+
+            @Override
+            public void onNext(T args) {
+                so.emitAndReplace();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                so.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                so.onCompleted();
             }
         }
     }

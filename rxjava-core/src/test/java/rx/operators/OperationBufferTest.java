@@ -28,13 +28,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.TestScheduler;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -382,5 +382,134 @@ public class OperationBufferTest {
         scheduler.advanceTimeBy(999, TimeUnit.MILLISECONDS);
         
         inOrder.verifyNoMoreInteractions();
+    }
+    
+    @Test
+    public void bufferWithBONormal1() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> boundary = PublishSubject.create();
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = Mockito.inOrder(o);
+        
+        source.buffer(boundary).subscribe(o);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+        
+        boundary.onNext(1);
+
+        inOrder.verify(o, times(1)).onNext(Arrays.asList(1, 2, 3));
+
+        source.onNext(4);
+        source.onNext(5);
+        
+        boundary.onNext(2);
+        
+        inOrder.verify(o, times(1)).onNext(Arrays.asList(4, 5));
+
+        source.onNext(6);
+        boundary.onCompleted();
+        
+        inOrder.verify(o, times(1)).onNext(Arrays.asList(6));
+        
+        inOrder.verify(o).onCompleted();
+        
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void bufferWithBOEmptyLastViaBoundary() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> boundary = PublishSubject.create();
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = Mockito.inOrder(o);
+        
+        source.buffer(boundary).subscribe(o);
+        
+        boundary.onCompleted();
+        
+        inOrder.verify(o, times(1)).onNext(Arrays.asList());
+        
+        inOrder.verify(o).onCompleted();
+        
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void bufferWithBOEmptyLastViaSource() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> boundary = PublishSubject.create();
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = Mockito.inOrder(o);
+        
+        source.buffer(boundary).subscribe(o);
+        
+        source.onCompleted();
+        
+        inOrder.verify(o, times(1)).onNext(Arrays.asList());
+        
+        inOrder.verify(o).onCompleted();
+        
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void bufferWithBOEmptyLastViaBoth() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> boundary = PublishSubject.create();
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = Mockito.inOrder(o);
+        
+        source.buffer(boundary).subscribe(o);
+        
+        source.onCompleted();
+        boundary.onCompleted();
+        
+        inOrder.verify(o, times(1)).onNext(Arrays.asList());
+        
+        inOrder.verify(o).onCompleted();
+        
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void bufferWithBOSourceThrows() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> boundary = PublishSubject.create();
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+
+        source.buffer(boundary).subscribe(o);
+        source.onNext(1);
+        source.onError(new OperationReduceTest.CustomException());
+        
+        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o, never()).onCompleted();
+        verify(o, never()).onNext(any());
+    }
+    
+    @Test
+    public void bufferWithBOBoundaryThrows() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> boundary = PublishSubject.create();
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+
+        source.buffer(boundary).subscribe(o);
+        
+        source.onNext(1);
+        boundary.onError(new OperationReduceTest.CustomException());
+        
+        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o, never()).onCompleted();
+        verify(o, never()).onNext(any());
     }
 }
