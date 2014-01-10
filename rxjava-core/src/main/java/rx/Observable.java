@@ -2168,6 +2168,50 @@ public class Observable<T> {
     }
 
     /**
+     * Create an Observable which delays the events via another Observable on a per item-basis.
+     * <p>
+     * Note: onError or onCompleted events are immediately propagated.
+     * <p>
+     * Note: if the Observable returned by the {@code itemDelay} just completes, that
+     * particular source item is not emitted.
+     * 
+     * @param <U> the item delay value type (ignored)
+     * @param itemDelay function that returns an Observable for each source item which is
+     *                  then used for delaying that particular item until the Observable
+     *                  fires its first onNext event.
+     * @return an Observable which delays the events via another Observable on a per item-basis.
+     */
+    public <U> Observable<T> delay(Func1<? super T, ? extends Observable<U>> itemDelay) {
+        return create(OperationDelay.delay(this, itemDelay));
+    }
+    /**
+     * Create an Observable which delays the subscription and events via another Observables on a per item-basis.
+     * <p>
+     * Note: onError or onCompleted events are immediately propagated.
+     * <p>
+     * Note: if the Observable returned by the {@code itemDelay} just completes, that
+     * particular source item is not emitted.
+     * <p>
+     * Note: if the {@code subscriptionDelay}'s Observable just completes, the created
+     * observable will just complete as well.
+     * 
+     * @param <U> the subscription delay value type (ignored)
+     * @param <V> the item delay value type (ignored)
+     * @param subscriptionDelay function that returns an Observable which will trigger
+     *                          the subscription to the source observable once it fires an
+     *                          onNext event.
+     * @param itemDelay function that returns an Observable for each source item which is
+     *                  then used for delaying that particular item until the Observable
+     *                  fires its first onNext event.
+     * @return an Observable which delays the events via another Observable on a per item-basis.
+     */
+    public <U, V> Observable<T> delay(
+            Func0<? extends Observable<U>> subscriptionDelay,
+            Func1<? super T, ? extends Observable<V>> itemDelay) {
+        return create(OperationDelay.delay(this, subscriptionDelay, itemDelay));
+    }
+    
+    /**
      * Returns an Observable that emits the items emitted by the source
      * Observable shifted forward in time by a specified delay. Error
      * notifications from the source Observable are not delayed.
