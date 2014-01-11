@@ -2627,6 +2627,40 @@ public class Observable<T> {
     }
 
     /**
+     * Return an Observable that pairs up values from this Observable and the other
+     * Observable and applies a function.
+     * @param <T2> the other value type
+     * @param <R> the result type
+     * @param other the other Observable sequence
+     * @param zipFunction the function that combines the pairs of items from both
+     * observables and returns a new value
+     * @return an Observable that pairs up values from this Observable and the other
+     * Observable and applies a function.
+     */
+    public <T2, R> Observable<R> zip(Observable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
+        return zip(this, other, zipFunction);
+    }
+
+    /**
+     * Return an Observable that pairs up values from this Observable and an
+     * Iterable sequence and applies a function.
+     * <p>
+     * Note that the other Iterable is evaluated as items appear from this
+     * Observable and is not pre-consumed, allowing zipping infinite streams
+     * on either side.
+     * @param <T2> the other value type
+     * @param <R> the result type
+     * @param other the other Iterable sequence
+     * @param zipFunction the function that combines the pairs of items of
+     * this Observable and the Iterable
+     * @return an Observable that pairs up values from this Observable and an
+     * Iterable sequence and applies a function.
+     */
+    public <T2, R> Observable<R> zip(Iterable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
+        return create(OperationZip.zipIterable(this, other, zipFunction));
+    }
+
+    /**
      * Returns an Observable that emits the results of a function of your
      * choosing applied to combinations of three items emitted, in sequence, by
      * three other Observables.

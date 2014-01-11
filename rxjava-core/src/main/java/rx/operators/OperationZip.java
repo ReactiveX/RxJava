@@ -17,12 +17,10 @@ package rx.operators;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -32,6 +30,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func2;
 import rx.util.functions.Func3;
 import rx.util.functions.Func4;
@@ -108,211 +107,6 @@ public final class OperationZip {
         return a;
     }
     
-    /*
-    * ThreadSafe
-    */
-    /* package accessible for unit tests */static class ZipObserver<R, T> implements Observer<T> {
-        final Observable<? extends T> w;
-        final Aggregator<R> a;
-        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
-        private final AtomicBoolean subscribed = new AtomicBoolean(false);
-        
-        public ZipObserver(Aggregator<R> a, Observable<? extends T> w) {
-            this.a = a;
-            this.w = w;
-        }
-        
-        public void startWatching() {
-            if (subscribed.compareAndSet(false, true)) {
-                // only subscribe once even if called more than once
-                subscription.wrap(w.subscribe(this));
-            }
-        }
-        
-        @Override
-        public void onCompleted() {
-            a.complete(this);
-        }
-        
-        @Override
-        public void onError(Throwable e) {
-            a.error(this, e);
-        }
-        
-        @Override
-        public void onNext(T args) {
-            try {
-                a.next(this, args);
-            } catch (Throwable e) {
-                onError(e);
-            }
-        }
-    }
-    
-    /**
-     * Receive notifications from each of the Observables we are reducing and execute the zipFunction whenever we have received events from all Observables.
-     *
-     * This class is thread-safe.
-     *
-     * @param <T>
-     */
-    /* package accessible for unit tests */static class Aggregator<T> implements OnSubscribeFunc<T> {
-        
-        private volatile SynchronizedObserver<T> observer;
-        private final FuncN<? extends T> zipFunction;
-        private final AtomicBoolean started = new AtomicBoolean(false);
-        private final AtomicBoolean running = new AtomicBoolean(true);
-        private final ConcurrentHashMap<ZipObserver<T, ?>, Boolean> completed = new ConcurrentHashMap<ZipObserver<T, ?>, Boolean>();
-        
-        /* we use ConcurrentHashMap despite synchronization of methods because stop() does NOT use synchronization and this map is used by it and can be called by other threads */
-        private ConcurrentHashMap<ZipObserver<T, ?>, ConcurrentLinkedQueue<Object>> receivedValuesPerObserver = new ConcurrentHashMap<ZipObserver<T, ?>, ConcurrentLinkedQueue<Object>>();
-        /* we use a ConcurrentLinkedQueue to retain ordering (I'd like to just use a ConcurrentLinkedHashMap for 'receivedValuesPerObserver' but that doesn't exist in standard java */
-        private ConcurrentLinkedQueue<ZipObserver<T, ?>> observers = new ConcurrentLinkedQueue<ZipObserver<T, ?>>();
-        
-        public Aggregator(FuncN<? extends T> zipFunction) {
-            this.zipFunction = zipFunction;
-        }
-        
-        /**
-         * Receive notification of a Observer starting (meaning we should require it for aggregation)
-         *
-         * Thread Safety => Invoke ONLY from the static factory methods at top of this class which are always an atomic execution by a single thread.
-         *
-         * @param w
-         */
-        void addObserver(ZipObserver<T, ?> w) {
-            // initialize this ZipObserver
-            observers.add(w);
-            receivedValuesPerObserver.put(w, new ConcurrentLinkedQueue<Object>());
-        }
-        
-        /**
-         * Receive notification of a Observer completing its iterations.
-         *
-         * @param w
-         */
-        void complete(ZipObserver<T, ?> w) {
-            // store that this ZipObserver is completed
-            completed.put(w, Boolean.TRUE);
-            // if all ZipObservers are completed, we mark the whole thing as completed
-            if (completed.size() == observers.size()) {
-                if (running.compareAndSet(true, false)) {
-                    // this thread succeeded in setting running=false so let's propagate the completion
-                    // mark ourselves as done
-                    observer.onCompleted();
-                }
-            }
-        }
-        
-        /**
-         * Receive error for a Observer. Throw the error up the chain and stop processing.
-         *
-         * @param w
-         */
-        void error(ZipObserver<T, ?> w, Throwable e) {
-            if (running.compareAndSet(true, false)) {
-                // this thread succeeded in setting running=false so let's propagate the error
-                observer.onError(e);
-                /* since we receive an error we want to tell everyone to stop */
-                stop();
-            }
-        }
-        
-        /**
-         * Receive the next value from a Observer.
-         * <p>
-         * If we have received values from all Observers, trigger the zip function, otherwise store the value and keep waiting.
-         *
-         * @param w
-         * @param arg
-         */
-        void next(ZipObserver<T, ?> w, Object arg) {
-            if (observer == null) {
-                throw new RuntimeException("This shouldn't be running if a Observer isn't registered");
-            }
-            
-            /* if we've been 'unsubscribed' don't process anything further even if the things we're watching keep sending (likely because they are not responding to the unsubscribe call) */
-            if (!running.get()) {
-                return;
-            }
-            
-            // store the value we received and below we'll decide if we are to send it to the Observer
-            receivedValuesPerObserver.get(w).add(arg);
-            
-            // define here so the variable is out of the synchronized scope
-            Object[] argsToZip = new Object[observers.size()];
-            
-            /* we have to synchronize here despite using concurrent data structures because the compound logic here must all be done atomically */
-            synchronized (this) {
-                // if all ZipObservers in 'receivedValues' map have a value, invoke the zipFunction
-                for (ZipObserver<T, ?> rw : receivedValuesPerObserver.keySet()) {
-                    if (receivedValuesPerObserver.get(rw).peek() == null) {
-                        // we have a null meaning the queues aren't all populated so won't do anything
-                        return;
-                    }
-                }
-                // if we get to here this means all the queues have data
-                int i = 0;
-                for (ZipObserver<T, ?> rw : observers) {
-                    argsToZip[i++] = receivedValuesPerObserver.get(rw).remove();
-                }
-            }
-            // if we did not return above from the synchronized block we can now invoke the zipFunction with all of the args
-            // we do this outside the synchronized block as it is now safe to call this concurrently and don't need to block other threads from calling
-            // this 'next' method while another thread finishes calling this zipFunction
-            observer.onNext(zipFunction.call(argsToZip));
-        }
-        
-        @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
-            if (started.compareAndSet(false, true)) {
-                SafeObservableSubscription subscription = new SafeObservableSubscription();
-                this.observer = new SynchronizedObserver<T>(observer, subscription);
-                /* start the Observers */
-                for (ZipObserver<T, ?> rw : observers) {
-                    rw.startWatching();
-                }
-                
-                return subscription.wrap(new Subscription() {
-                    
-                    @Override
-                    public void unsubscribe() {
-                        stop();
-                    }
-                    
-                });
-            } else {
-                /* a Observer already has subscribed so blow up */
-                throw new IllegalStateException("Only one Observer can subscribe to this Observable.");
-            }
-        }
-        
-        /*
-        * Do NOT synchronize this because it gets called via unsubscribe which can occur on other threads
-        * and result in deadlocks. (http://jira/browse/API-4060)
-        *
-        * AtomicObservableSubscription uses compareAndSet instead of locking to avoid deadlocks but ensure single-execution.
-        *
-        * We do the same in the implementation of this method.
-        *
-        * ThreadSafety of this method is provided by:
-        * - AtomicBoolean[running].compareAndSet
-        * - ConcurrentLinkedQueue[Observers]
-        * - ZipObserver.subscription being an AtomicObservableSubscription
-        */
-        private void stop() {
-            /* tell ourselves to stop processing onNext events by setting running=false */
-            if (running.compareAndSet(true, false)) {
-                /* propogate to all Observers to unsubscribe if this thread succeeded in setting running=false */
-                for (ZipObserver<T, ?> o : observers) {
-                    if (o.subscription != null) {
-                        o.subscription.unsubscribe();
-                    }
-                }
-            }
-        }
-        
-    }
     /**
      * Merges the values across multiple sources and applies the selector
      * function.
@@ -324,7 +118,7 @@ public final class OperationZip {
      * @param <T> the common element type
      * @param <U> the result element type
      */
-    public static class ManyObservables<T, U> implements OnSubscribeFunc<U> {
+    private static final class ManyObservables<T, U> implements OnSubscribeFunc<U> {
         /** */
         protected final Iterable<? extends Observable<? extends T>> sources;
         /** */
@@ -384,7 +178,7 @@ public final class OperationZip {
          * @author akarnokd, 2013.01.14.
          * @param <T> the element type
          */
-        public static class ItemObserver<T> implements Observer<T>, Subscription {
+        private static final class ItemObserver<T> implements Observer<T>, Subscription {
             /** Reader-writer lock. */
             protected  final ReadWriteLock rwLock;
             /** The queue. */
@@ -524,6 +318,111 @@ public final class OperationZip {
             @Override
             public void unsubscribe() {
                 toSource.unsubscribe();
+            }
+            
+        }
+    }
+    
+    /**
+     * Zips an Observable and an iterable sequence and applies
+     * a function to the pair of values.
+     */
+    public static <T, U, R> OnSubscribeFunc<R> zipIterable(Observable<? extends T> source, Iterable<? extends U> other, Func2<? super T, ? super U, ? extends R> zipFunction) {
+        return new ZipIterable<T, U, R>(source, other, zipFunction);
+    }
+    
+    /**
+     * Zips an Observable and an iterable sequence and applies
+     * a function to the pair of values.
+     */
+    private static final class ZipIterable<T, U, R> implements OnSubscribeFunc<R> {
+        final Observable<? extends T> source;
+        final Iterable<? extends U> other;
+        final Func2<? super T, ? super U, ? extends R> zipFunction;
+
+        public ZipIterable(Observable<? extends T> source, Iterable<? extends U> other, Func2<? super T, ? super U, ? extends R> zipFunction) {
+            this.source = source;
+            this.other = other;
+            this.zipFunction = zipFunction;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super R> t1) {
+            
+            Iterator<? extends U> it;
+            boolean first;
+            try {
+                it = other.iterator();
+                first = it.hasNext();
+            } catch (Throwable t) {
+                t1.onError(t);
+                return Subscriptions.empty();
+            }
+
+            
+            if (!first) {
+                t1.onCompleted();
+                return Subscriptions.empty();
+            }
+            
+            SerialSubscription ssub = new SerialSubscription();
+            
+            ssub.set(source.subscribe(new SourceObserver<T, U, R>(t1, it, zipFunction, ssub)));
+            
+            return ssub;
+        }
+        /** Observe the source. */
+        private static final class SourceObserver<T, U, R> implements Observer<T> {
+            final Observer<? super R> observer;
+            final Iterator<? extends U> other; 
+            final Func2<? super T, ? super U, ? extends R> zipFunction;
+            final Subscription cancel;
+
+            public SourceObserver(Observer<? super R> observer, Iterator<? extends U> other,
+                    Func2<? super T, ? super U, ? extends R> zipFunction, Subscription cancel) {
+                this.observer = observer;
+                this.other = other;
+                this.zipFunction = zipFunction;
+                this.cancel = cancel;
+            }
+
+            @Override
+            public void onNext(T args) {
+                U u = other.next();
+                
+                R r;
+                try {
+                    r = zipFunction.call(args, u);
+                } catch (Throwable t) {
+                    onError(t);
+                    return;
+                }
+                
+                observer.onNext(r);
+                
+                boolean has;
+                try {
+                    has = other.hasNext();
+                } catch (Throwable t) {
+                    onError(t);
+                    return;
+                }
+                
+                if (!has) {
+                    onCompleted();
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                observer.onError(e);
+                cancel.unsubscribe();
+            }
+
+            @Override
+            public void onCompleted() {
+                observer.onCompleted();
+                cancel.unsubscribe();
             }
             
         }
