@@ -2267,6 +2267,20 @@ public class Observable<T> {
     }
 
     /**
+     * Create an Observable that ignores elements from this observable
+     * sequence which are followed by another value within a computed
+     * debounce duration.
+     * @param <U> the debounce value type (ignored)
+     * @param debounceSelector function to retrieve a sequence indicating the throttle duration for each given element.
+     * @return an Observable that ignores elements from this observable
+     * sequence which are followed by another value within a computed
+     * debounce duration
+     */
+    public <U> Observable<T> debounce(Func1<? super T, ? extends Observable<U>> debounceSelector) {
+        return create(OperationDebounce.debounceSelector(this, debounceSelector));
+    }
+    
+    /**
      * Drops items emitted by an Observable that are followed by newer items
      * before a timeout value expires. The timer resets on each emission.
      * <p>
