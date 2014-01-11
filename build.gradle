@@ -15,6 +15,8 @@ buildscript {
 }
 
 allprojects {
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
     repositories { 
         mavenLocal()
         mavenCentral() // maven { url: 'http://jcenter.bintray.com' }
@@ -23,9 +25,6 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'eclipse'
-    apply plugin: 'idea'
-
     group = "com.netflix.rxjava"
 
     // make 'examples' use the same classpath
