@@ -5250,7 +5250,7 @@ public class Observable<T> {
      * selector on a connectable observable sequence that shares a single
      * subscription to the underlying sequence.
      */
-    public <R> Observable<R> publish(Func1<Observable<T>, Observable<R>> selector) {
+    public <R> Observable<R> publish(Func1<? super Observable<T>, ? extends Observable<R>> selector) {
         return multicast(new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
@@ -5270,7 +5270,7 @@ public class Observable<T> {
      * @param initialValue the initial value of the underlying BehaviorSubject
      * @return an observable sequence that is the result of invoking the selector on a connectable observable sequence that shares a single subscription to the underlying sequence and starts with initialValue
      */
-    public <R> Observable<R> publish(Func1<Observable<T>, Observable<R>> selector, final T initialValue) {
+    public <R> Observable<R> publish(Func1<? super Observable<T>, ? extends Observable<R>> selector, final T initialValue) {
         return multicast(new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
@@ -5307,7 +5307,7 @@ public class Observable<T> {
      * subscription to the underlying sequence containing only the last
      * notification.
      */
-    public <R> Observable<R> publishLast(Func1<Observable<T>, Observable<R>> selector) {
+    public <R> Observable<R> publishLast(Func1<? super Observable<T>, ? extends Observable<R>> selector) {
         return multicast(new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
