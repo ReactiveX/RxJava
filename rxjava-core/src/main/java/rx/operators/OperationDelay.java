@@ -120,8 +120,11 @@ public final class OperationDelay {
         public Subscription onSubscribe(Observer<? super T> t1) {
             CompositeSubscription csub = new CompositeSubscription();
             
+            SerialSubscription sosub = new SerialSubscription();
+            csub.add(sosub);
+            SourceObserver<T, V> so = new SourceObserver<T, V>(t1, itemDelay, csub, sosub);
             if (subscriptionDelay == null) {
-                csub.add(source.subscribe(new SourceObserver<T, V>(t1, itemDelay, csub)));
+                sosub.set(source.subscribe(so));
             } else {
                 Observable<U> subscriptionSource;
                 try {
@@ -132,50 +135,48 @@ public final class OperationDelay {
                 }
                 SerialSubscription ssub = new SerialSubscription();
                 csub.add(ssub);
-                ssub.set(subscriptionSource.subscribe(new SubscribeDelay<T, U, V>(source, t1, itemDelay, csub, ssub)));
+                ssub.set(subscriptionSource.subscribe(new SubscribeDelay<T, U, V>(source, so, csub, ssub)));
             }
             
             return csub;
         }
+        /** Subscribe delay observer. */
         private static final class SubscribeDelay<T, U, V> implements Observer<U> {
             final Observable<? extends T> source;
-            final Observer<? super T> observer;
-            final Func1<? super T, ? extends Observable<V>> itemDelay;
+            final SourceObserver<T, V> so;
             final CompositeSubscription csub;
             final Subscription self;
-            /** Prevent any onError and onCompleted once the first item was delivered. */
+            /** Prevent any onError once the first item was delivered. */
             boolean subscribed;
 
-            public SubscribeDelay(Observable<? extends T> source, Observer<? super T> observer, Func1<? super T, ? extends Observable<V>> itemDelay, 
+            public SubscribeDelay(
+                    Observable<? extends T> source,
+                    SourceObserver<T, V> so, 
                     CompositeSubscription csub, Subscription self) {
                 this.source = source;
-                this.observer = observer;
-                this.itemDelay = itemDelay;
+                this.so = so;
                 this.csub = csub;
                 this.self = self;
             }
 
             @Override
             public void onNext(U args) {
-                subscribed = true;
-                csub.remove(self);
-                csub.add(source.subscribe(new SourceObserver<T, V>(observer, itemDelay, csub)));
+                onCompleted();
             }
 
             @Override
             public void onError(Throwable e) {
                 if (!subscribed) {
-                    observer.onError(e);
+                    so.observer.onError(e);
                     csub.unsubscribe();
                 }
             }
 
             @Override
             public void onCompleted() {
-                if (!subscribed) {
-                    observer.onCompleted();
-                    csub.unsubscribe();
-                }
+                subscribed = true;
+                csub.remove(self);
+                so.self.set(source.subscribe(so));
             }
         }
         /** The source observer. */
@@ -183,15 +184,21 @@ public final class OperationDelay {
             final Observer<? super T> observer;
             final Func1<? super T, ? extends Observable<U>> itemDelay;
             final CompositeSubscription csub;
+            final SerialSubscription self;
             /** Guard to avoid overlapping events from the various sources. */
             final Object guard;
             boolean done;
+            int wip;
 
-            public SourceObserver(Observer<? super T> observer, Func1<? super T, ? extends Observable<U>> itemDelay, CompositeSubscription csub) {
+            public SourceObserver(Observer<? super T> observer, 
+                    Func1<? super T, ? extends Observable<U>> itemDelay, 
+                    CompositeSubscription csub,
+                    SerialSubscription self) {
                 this.observer = observer;
                 this.itemDelay = itemDelay;
                 this.csub = csub;
                 this.guard = new Object();
+                this.self = self;
             }
 
             @Override
@@ -203,19 +210,19 @@ public final class OperationDelay {
                     onError(t);
                     return;
                 }
+                
+                synchronized (guard) {
+                    wip++;
+                }
+                
                 SerialSubscription ssub = new SerialSubscription();
                 csub.add(ssub);
-                
                 ssub.set(delayer.subscribe(new DelayObserver<T, U>(args, this, ssub)));
             }
 
             @Override
             public void onError(Throwable e) {
                 synchronized (guard) {
-                    if (done) {
-                        return;
-                    }
-                    done = true;
                     observer.onError(e);
                 }
                 csub.unsubscribe();
@@ -223,27 +230,37 @@ public final class OperationDelay {
 
             @Override
             public void onCompleted() {
+                boolean b;
                 synchronized (guard) {
-                    if (done) {
-                        return;
-                    }
                     done = true;
-                    observer.onCompleted();
+                    b = checkDone();
                 }
-                csub.unsubscribe();
+                if (b) {
+                    csub.unsubscribe();
+                } else {
+                    self.unsubscribe();
+                }
             }
             
-            public void emit(T value, Subscription token) {
+            void emit(T value, Subscription token) {
+                boolean b;
                 synchronized (guard) {
-                    if (done) {
-                        return;
-                    }
                     observer.onNext(value);
+                    wip--;
+                    b = checkDone();
                 }
-                remove(token);
+                if (b) {
+                    csub.unsubscribe();
+                } else {
+                    csub.remove(token);
+                }
             }
-            public void remove(Subscription token) {
-                csub.remove(token);
+            boolean checkDone() {
+                if (done && wip == 0) {
+                    observer.onCompleted();
+                    return true;
+                }
+                return false;
             }
         }
         /**
@@ -272,7 +289,7 @@ public final class OperationDelay {
 
             @Override
             public void onCompleted() {
-                parent.remove(token);
+                parent.emit(value, token);
             }
             
         }

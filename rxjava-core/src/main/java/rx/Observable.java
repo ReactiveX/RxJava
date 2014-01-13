@@ -2170,10 +2170,7 @@ public class Observable<T> {
     /**
      * Create an Observable which delays the events via another Observable on a per item-basis.
      * <p>
-     * Note: onError or onCompleted events are immediately propagated.
-     * <p>
-     * Note: if the Observable returned by the {@code itemDelay} just completes, that
-     * particular source item is not emitted.
+     * Note: onError event is immediately propagated.
      * 
      * @param <U> the item delay value type (ignored)
      * @param itemDelay function that returns an Observable for each source item which is
@@ -2187,13 +2184,7 @@ public class Observable<T> {
     /**
      * Create an Observable which delays the subscription and events via another Observables on a per item-basis.
      * <p>
-     * Note: onError or onCompleted events are immediately propagated.
-     * <p>
-     * Note: if the Observable returned by the {@code itemDelay} just completes, that
-     * particular source item is not emitted.
-     * <p>
-     * Note: if the {@code subscriptionDelay}'s Observable just completes, the created
-     * observable will just complete as well.
+     * Note: onError event is immediately propagated.
      * 
      * @param <U> the subscription delay value type (ignored)
      * @param <V> the item delay value type (ignored)
