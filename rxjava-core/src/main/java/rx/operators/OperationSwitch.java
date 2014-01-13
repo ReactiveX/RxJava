@@ -20,7 +20,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.MultipleAssignmentSubscription;
+import rx.subscriptions.SerialSubscription;
 import rx.util.functions.Func1;
 
 /**
@@ -62,8 +62,7 @@ public final class OperationSwitch {
             SafeObservableSubscription parent;
             parent = new SafeObservableSubscription();
 
-            MultipleAssignmentSubscription child;
-            child = new MultipleAssignmentSubscription();
+            SerialSubscription child = new SerialSubscription();
 
             parent.wrap(sequences.subscribe(new SwitchObserver<T>(observer, parent, child)));
 
@@ -76,13 +75,13 @@ public final class OperationSwitch {
         private final Object gate;
         private final Observer<? super T> observer;
         private final SafeObservableSubscription parent;
-        private final MultipleAssignmentSubscription child;
+        private final SerialSubscription child;
         private long latest;
         private boolean stopped;
         private boolean hasLatest;
 
         public SwitchObserver(Observer<? super T> observer, SafeObservableSubscription parent,
-                MultipleAssignmentSubscription child) {
+                SerialSubscription child) {
             this.observer = observer;
             this.parent = parent;
             this.child = child;
