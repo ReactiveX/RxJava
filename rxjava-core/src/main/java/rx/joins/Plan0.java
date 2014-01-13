@@ -16,6 +16,8 @@
 package rx.joins;
 
 import java.util.Map;
+
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.util.functions.Action1;
@@ -30,7 +32,7 @@ public abstract class Plan0<R> {
     @SuppressWarnings("unchecked")
     public static <T> JoinObserver1<T> createObserver(
             Map<Object, JoinObserver> externalSubscriptions,
-            Observable<T> observable,
+            IObservable<T> observable,
             Action1<Throwable> onError
     ) {
         JoinObserver1<T> observer;

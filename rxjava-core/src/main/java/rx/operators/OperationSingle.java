@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -28,17 +28,17 @@ import rx.Subscription;
 public class OperationSingle {
 
     public static <T> OnSubscribeFunc<T> single(
-            final Observable<? extends T> source) {
+            final IObservable<? extends T> source) {
         return single(source, false, null);
     }
 
     public static <T> OnSubscribeFunc<T> singleOrDefault(
-            final Observable<? extends T> source, final T defaultValue) {
+            final IObservable<? extends T> source, final T defaultValue) {
         return single(source, true, defaultValue);
     }
 
     private static <T> OnSubscribeFunc<T> single(
-            final Observable<? extends T> source,
+            final IObservable<? extends T> source,
             final boolean hasDefaultValue, final T defaultValue) {
         return new OnSubscribeFunc<T>() {
 

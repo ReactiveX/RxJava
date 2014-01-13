@@ -17,7 +17,7 @@ package rx.operators;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -31,9 +31,10 @@ import rx.subscriptions.SerialSubscription;
  * @see <a href='http://msdn.microsoft.com/en-us/library/hh229358.aspx'>MSDN: Observable.SkipUntil</a>
  */
 public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
-    protected final Observable<T> source;
-    protected final Observable<U> other;
-    public OperationSkipUntil(Observable<T> source, Observable<U> other) {
+    protected final IObservable<T> source;
+    protected final IObservable<U> other;
+
+    public OperationSkipUntil(IObservable<T> source, IObservable<U> other) {
         this.source = source;
         this.other = other;
     }

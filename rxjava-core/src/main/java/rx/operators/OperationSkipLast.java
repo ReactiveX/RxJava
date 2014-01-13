@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
@@ -56,19 +56,20 @@ public class OperationSkipLast {
      *             count is less than zero.
      */
     public static <T> OnSubscribeFunc<T> skipLast(
-            Observable<? extends T> source, int count) {
+            IObservable<? extends T> source, int count) {
         return new SkipLast<T>(source, count);
     }
 
     private static class SkipLast<T> implements OnSubscribeFunc<T> {
         private final int count;
-        private final Observable<? extends T> source;
+        private final IObservable<? extends T> source;
 
-        private SkipLast(Observable<? extends T> source, int count) {
+        private SkipLast(IObservable<? extends T> source, int count) {
             this.count = count;
             this.source = source;
         }
 
+        @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
             if (count < 0) {
                 throw new IndexOutOfBoundsException(
@@ -135,11 +136,11 @@ public class OperationSkipLast {
      * @param <T> the result value type
      */
     public static final class SkipLastTimed<T> implements OnSubscribeFunc<T> {
-        final Observable<? extends T> source;
+        final IObservable<? extends T> source;
         final long timeInMillis;
         final Scheduler scheduler;
 
-        public SkipLastTimed(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+        public SkipLastTimed(IObservable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
             this.source = source;
             this.timeInMillis = unit.toMillis(time);
             this.scheduler = scheduler;

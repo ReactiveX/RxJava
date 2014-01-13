@@ -15,7 +15,7 @@
  */
 package rx;
 
-import static rx.util.functions.Functions.*;
+import static rx.util.functions.Functions.alwaysFalse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,6 +83,7 @@ import rx.operators.OperationSkip;
 import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipUntil;
 import rx.operators.OperationSkipWhile;
+import rx.operators.OperationSubscribe;
 import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSum;
 import rx.operators.OperationSwitch;
@@ -107,7 +108,6 @@ import rx.operators.OperationWindow;
 import rx.operators.OperationZip;
 import rx.operators.SafeObservableSubscription;
 import rx.operators.SafeObserver;
-import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
 import rx.schedulers.Schedulers;
@@ -138,10 +138,14 @@ import rx.util.functions.Function;
 import rx.util.functions.Functions;
 
 /**
- * The Observable interface that implements the Reactive Pattern.
+ * An implementation of the {@link IObservable} interface that provides
+ * overloaded methods for subscribing as well as delegate methods to the
+ * various operators in a fluent style.
  * <p>
- * This interface provides overloaded methods for subscribing as well as
- * delegate methods to the various operators.
+ * It is expected that most applications will lean heavily upon this
+ * particular IObservable implementation. To simplify the documentation,
+ * instances of the IObservable interface generally, whether or not of this
+ * class in particular, will be referred to simply as "Observables".
  * <p>
  * The documentation for this interface makes use of marble diagrams. The
  * following legend explains these diagrams:
@@ -153,7 +157,7 @@ import rx.util.functions.Functions;
  * 
  * @param <T> the type of the item emitted by the Observable
  */
-public class Observable<T> {
+public class Observable<T> implements IObservable<T> {
 
     private final static ConcurrentHashMap<Class, Boolean> internalClassMap = new ConcurrentHashMap<Class, Boolean>();
 
@@ -221,6 +225,7 @@ public class Observable<T> {
      *                                  argument to {@code subscribe()} is
      *                                  {@code null}
      */
+    @Override
     public Subscription subscribe(Observer<? super T> observer) {
         // allow the hook to intercept and/or decorate
         OnSubscribeFunc<T> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
@@ -308,41 +313,12 @@ public class Observable<T> {
     }
 
     /**
-     * Protects against errors being thrown from Observer implementations and
-     * ensures onNext/onError/onCompleted contract compliance.
-     * <p>
-     * See https://github.com/Netflix/RxJava/issues/216 for a discussion on
-     * "Guideline 6.4: Protect calls to user code from within an operator"
-     */
-    private Subscription protectivelyWrapAndSubscribe(Observer<? super T> o) {
-        SafeObservableSubscription subscription = new SafeObservableSubscription();
-        return subscription.wrap(subscribe(new SafeObserver<T>(subscription, o)));
-    }
-
-    /**
      * Subscribe and ignore all events.
      *  
      * @return 
      */
     public Subscription subscribe() {
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
-
-            @Override
-            public void onCompleted() {
-                // do nothing
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                throw new OnErrorNotImplementedException(e);
-            }
-
-            @Override
-            public void onNext(T args) {
-                // do nothing
-            }
-
-        });
+        return OperationSubscribe.subscribe(this);
     }
     
     /**
@@ -354,33 +330,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      */
     public Subscription subscribe(final Action1<? super T> onNext) {
-        if (onNext == null) {
-            throw new IllegalArgumentException("onNext can not be null");
-        }
-
-        /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
-         */
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
-
-            @Override
-            public void onCompleted() {
-                // do nothing
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                throw new OnErrorNotImplementedException(e);
-            }
-
-            @Override
-            public void onNext(T args) {
-                onNext.call(args);
-            }
-
-        });
+        return OperationSubscribe.subscribe(this, onNext);
     }
 
     /**
@@ -406,37 +356,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      */
     public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError) {
-        if (onNext == null) {
-            throw new IllegalArgumentException("onNext can not be null");
-        }
-        if (onError == null) {
-            throw new IllegalArgumentException("onError can not be null");
-        }
-
-        /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on
-         * "Guideline 6.4: Protect calls to user code from within an operator"
-         */
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
-
-            @Override
-            public void onCompleted() {
-                // do nothing
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                onError.call(e);
-            }
-
-            @Override
-            public void onNext(T args) {
-                onNext.call(args);
-            }
-
-        });
+        return OperationSubscribe.subscribe(this, onNext, onError);
     }
 
     /**
@@ -464,39 +384,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      */
     public Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
-        if (onNext == null) {
-            throw new IllegalArgumentException("onNext can not be null");
-        }
-        if (onError == null) {
-            throw new IllegalArgumentException("onError can not be null");
-        }
-        if (onComplete == null) {
-            throw new IllegalArgumentException("onComplete can not be null");
-        }
-
-        /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
-         */
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
-
-            @Override
-            public void onCompleted() {
-                onComplete.call();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                onError.call(e);
-            }
-
-            @Override
-            public void onNext(T args) {
-                onNext.call(args);
-            }
-
-        });
+        return OperationSubscribe.subscribe(this, onNext, onError, onComplete);
     }
 
     /**
@@ -554,7 +442,7 @@ public class Observable<T> {
      */
     public <TIntermediate, TResult> Observable<TResult> multicast(
             final Func0<? extends Subject<? super T, ? extends TIntermediate>> subjectFactory, 
-            final Func1<? super Observable<TIntermediate>, ? extends Observable<TResult>> selector) {
+            final Func1<? super Observable<TIntermediate>, ? extends IObservable<TResult>> selector) {
         return OperationMulticast.multicast(this, subjectFactory, selector);
     }
 
@@ -1157,7 +1045,7 @@ public class Observable<T> {
      *         the given Observable factory function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#defer">RxJava Wiki: defer()</a>
      */
-    public static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) {
+    public static <T> Observable<T> defer(Func0<? extends IObservable<? extends T>> observableFactory) {
         return create(OperationDefer.defer(observableFactory));
     }
 
@@ -1223,7 +1111,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava Wiki: merge()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
-    public static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
+    public static <T> Observable<T> merge(IObservable<? extends IObservable<? extends T>> source) {
         return create(OperationMerge.merge(source));
     }
 
@@ -1245,7 +1133,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2) {
+    public static <T> Observable<T> merge(IObservable<? extends T> t1, IObservable<? extends T> t2) {
         return create(OperationMerge.merge(t1, t2));
     }
 
@@ -1268,7 +1156,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
+    public static <T> Observable<T> merge(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3) {
         return create(OperationMerge.merge(t1, t2, t3));
     }
 
@@ -1292,7 +1180,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
+    public static <T> Observable<T> merge(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4) {
         return create(OperationMerge.merge(t1, t2, t3, t4));
     }
 
@@ -1317,7 +1205,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
+    public static <T> Observable<T> merge(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5) {
         return create(OperationMerge.merge(t1, t2, t3, t4, t5));
     }
 
@@ -1343,7 +1231,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
+    public static <T> Observable<T> merge(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5, IObservable<? extends T> t6) {
         return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6));
     }
 
@@ -1370,7 +1258,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
+    public static <T> Observable<T> merge(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5, IObservable<? extends T> t6, IObservable<? extends T> t7) {
         return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6, t7));
     }
 
@@ -1398,7 +1286,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
+    public static <T> Observable<T> merge(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5, IObservable<? extends T> t6, IObservable<? extends T> t7, IObservable<? extends T> t8) {
         return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6, t7, t8));
     }
 
@@ -1427,7 +1315,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
+    public static <T> Observable<T> merge(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5, IObservable<? extends T> t6, IObservable<? extends T> t7, IObservable<? extends T> t8, IObservable<? extends T> t9) {
         return create(OperationMerge.merge(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
@@ -1444,7 +1332,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#concat">RxJava Wiki: concat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
-    public static <T> Observable<T> concat(Observable<? extends Observable<? extends T>> observables) {
+    public static <T> Observable<T> concat(IObservable<? extends IObservable<? extends T>> observables) {
         return create(OperationConcat.concat(observables));
     }
 
@@ -1464,7 +1352,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2) {
+    public static <T> Observable<T> concat(IObservable<? extends T> t1, IObservable<? extends T> t2) {
         return create(OperationConcat.concat(t1, t2));
     }
 
@@ -1485,7 +1373,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
+    public static <T> Observable<T> concat(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3) {
         return create(OperationConcat.concat(t1, t2, t3));
     }
 
@@ -1507,7 +1395,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
+    public static <T> Observable<T> concat(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4) {
         return create(OperationConcat.concat(t1, t2, t3, t4));
     }
 
@@ -1530,7 +1418,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
+    public static <T> Observable<T> concat(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5) {
         return create(OperationConcat.concat(t1, t2, t3, t4, t5));
     }
 
@@ -1554,7 +1442,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
+    public static <T> Observable<T> concat(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5, IObservable<? extends T> t6) {
         return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6));
     }
 
@@ -1579,7 +1467,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
+    public static <T> Observable<T> concat(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5, IObservable<? extends T> t6, IObservable<? extends T> t7) {
         return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6, t7));
     }
 
@@ -1605,7 +1493,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
+    public static <T> Observable<T> concat(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5, IObservable<? extends T> t6, IObservable<? extends T> t7, IObservable<? extends T> t8) {
         return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6, t7, t8));
     }
 
@@ -1632,12 +1520,12 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
+    public static <T> Observable<T> concat(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5, IObservable<? extends T> t6, IObservable<? extends T> t7, IObservable<? extends T> t8, IObservable<? extends T> t9) {
         return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
     /**
-     * This behaves like {@link #merge(Observable)} except that if any of the
+     * This behaves like {@link #merge(IObservable)} except that if any of the
      * merged Observables notify of an error via
      * {@link Observer#onError onError}, {@code mergeDelayError} will refrain
      * from propagating that error notification until all of the merged
@@ -1660,12 +1548,12 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#mergedelayerror">RxJava Wiki: mergeDelayError()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
-    public static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source) {
+    public static <T> Observable<T> mergeDelayError(IObservable<? extends IObservable<? extends T>> source) {
         return create(OperationMergeDelayError.mergeDelayError(source));
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable)} except that if
+     * This behaves like {@link #merge(IObservable, IObservable)} except that if
      * any of the merged Observables notify of an error via
      * {@link Observer#onError onError}, {@code mergeDelayError} will refrain
      * from propagating that error notification until all of the merged
@@ -1690,12 +1578,12 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2) {
+    public static <T> Observable<T> mergeDelayError(IObservable<? extends T> t1, IObservable<? extends T> t2) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2));
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable)}
+     * This behaves like {@link #merge(IObservable, IObservable, IObservable)}
      * except that if any of the merged Observables notify of an error via
      * {@link Observer#onError onError}, {@code mergeDelayError} will refrain
      * from propagating that error notification until all of the merged
@@ -1721,13 +1609,13 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
+    public static <T> Observable<T> mergeDelayError(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3));
     }
 
     /**
      * This behaves like
-     * {@link #merge(Observable, Observable, Observable, Observable)} except
+     * {@link #merge(IObservable, IObservable, IObservable, IObservable)} except
      * that if any of the merged Observables notify of an error via
      * {@link Observer#onError onError}, {@code mergeDelayError} will refrain
      * from propagating that error notification until all of the merged
@@ -1754,12 +1642,12 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
+    public static <T> Observable<T> mergeDelayError(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4));
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable)}
+     * This behaves like {@link #merge(IObservable, IObservable, IObservable, IObservable, IObservable)}
      * except that if any of the merged Observables notify of an error via
      * {@link Observer#onError onError}, {@code mergeDelayError} will refrain
      * from propagating that error notification until all of the merged
@@ -1787,12 +1675,12 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
+    public static <T> Observable<T> mergeDelayError(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5));
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable)}
+     * This behaves like {@link #merge(IObservable, IObservable, IObservable, IObservable, IObservable, IObservable)}
      * except that if any of the merged Observables notify of an error via
      * {@link Observer#onError onError}, {@code mergeDelayError} will refrain
      * from propagating that error notification until all of the merged
@@ -1821,12 +1709,12 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
+    public static <T> Observable<T> mergeDelayError(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5, IObservable<? extends T> t6) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6));
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable)}
+     * This behaves like {@link #merge(IObservable, IObservable, IObservable, IObservable, IObservable, IObservable, IObservable)}
      * except that if any of the merged Observables notify of an error via
      * {@link Observer#onError onError}, {@code mergeDelayError} will refrain
      * from propagating that error notification until all of the merged
@@ -1856,12 +1744,12 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
+    public static <T> Observable<T> mergeDelayError(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5, IObservable<? extends T> t6, IObservable<? extends T> t7) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7));
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)}
+     * This behaves like {@link #merge(IObservable, IObservable, IObservable, IObservable, IObservable, IObservable, IObservable, IObservable)}
      * except that if any of the merged Observables notify of an error via
      * {@link Observer#onError onError}, {@code mergeDelayError} will refrain
      * from propagating that error notification until all of the merged
@@ -1892,12 +1780,12 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
+    public static <T> Observable<T> mergeDelayError(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5, IObservable<? extends T> t6, IObservable<? extends T> t7, IObservable<? extends T> t8) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7, t8));
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)}
+     * This behaves like {@link #merge(IObservable, IObservable, IObservable, IObservable, IObservable, IObservable, IObservable, IObservable, IObservable)}
      * except that if any of the merged Observables notify of an error via
      * {@link Observer#onError onError}, {@code mergeDelayError} will refrain
      * from propagating that error notification until all of the merged
@@ -1929,7 +1817,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
-    public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
+    public static <T> Observable<T> mergeDelayError(IObservable<? extends T> t1, IObservable<? extends T> t2, IObservable<? extends T> t3, IObservable<? extends T> t4, IObservable<? extends T> t5, IObservable<? extends T> t6, IObservable<? extends T> t7, IObservable<? extends T> t8, IObservable<? extends T> t9) {
         return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
@@ -1961,10 +1849,10 @@ public class Observable<T> {
      * @return an Observable that emits only the items emitted by the Observable
      *         most recently emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#switchonnext">RxJava Wiki: switchOnNext()</a>
-     * @deprecated use {@link #switchOnNext}
+     * @deprecated Use {@link #switchOnNext(IObservable)}
      */
     @Deprecated
-    public static <T> Observable<T> switchDo(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
+    public static <T> Observable<T> switchDo(IObservable<? extends IObservable<? extends T>> sequenceOfSequences) {
         return create(OperationSwitch.switchDo(sequenceOfSequences));
     }
 
@@ -1980,7 +1868,7 @@ public class Observable<T> {
      *         most recently emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#switchonnext">RxJava Wiki: switchOnNext()</a>
      */
-    public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
+    public static <T> Observable<T> switchOnNext(IObservable<? extends IObservable<? extends T>> sequenceOfSequences) {
         return create(OperationSwitch.switchDo(sequenceOfSequences));
     }
     
@@ -1995,13 +1883,12 @@ public class Observable<T> {
      * @return an Observable that emits only the items emitted by the Observable
      *         most recently emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#switchonnext">RxJava Wiki: switchOnNext()</a>
-     * @see {@link #switchOnNext(Observable)}
+     * @see #switchOnNext(IObservable)
      */
-    public static <T> Observable<T> switchLatest(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
+    public static <T> Observable<T> switchLatest(IObservable<? extends IObservable<? extends T>> sequenceOfSequences) {
         return create(OperationSwitch.switchDo(sequenceOfSequences));
     }
 
-    
     /**
      * Accepts an Observable and wraps it in another Observable that ensures
      * that the resulting Observable is chronologically well-behaved.
@@ -2057,7 +1944,7 @@ public class Observable<T> {
      * @deprecated use {@link #synchronize()} or {@link #synchronize(Object)}
      */
     @Deprecated
-    public static <T> Observable<T> synchronize(Observable<T> source) {
+    public static <T> Observable<T> synchronize(IObservable<T> source) {
         return create(OperationSynchronize.synchronize(source));
     }
 
@@ -2461,6 +2348,30 @@ public class Observable<T> {
     }
 
     /**
+     * If the given {@link IObservable} is an {@link Observable} already,
+     * simply return it, cast to its concrete type. If not, wrap it in a new
+     * Observable that will delegate its own {@link #subscribe(Observer)} to
+     * the given Observable.
+     *
+     * @return  the given Observable if it is of the correct type, or a new
+     *          one that delegates to it if not.
+     */
+    public static <T> Observable<T> from(final IObservable<T> observable) {
+        if (null == observable) {
+            throw new NullPointerException("IObservable argument");
+        } else if (observable instanceof Observable<?>) {
+            return (Observable<T>) observable;
+        } else {
+            return create(new OnSubscribeFunc<T>() {
+                @Override
+                public Subscription onSubscribe(Observer<? super T> observer) {
+                    return observable.subscribe(observer);
+                }
+            });
+        }
+    }
+
+    /**
      * Wraps each item emitted by a source Observable in a {@link Timestamped}
      * object with timestamps provided by the given Scheduler.
      * <p>
@@ -2562,7 +2473,7 @@ public class Observable<T> {
      *         two sequences are equal by comparing the elements pairwise
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#sequenceequal">RxJava Wiki: sequenceEqual()</a>
      */
-    public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second) {
+    public static <T> Observable<Boolean> sequenceEqual(IObservable<? extends T> first, IObservable<? extends T> second) {
         return sequenceEqual(first, second, new Func2<T, T, Boolean>() {
             @Override
             public Boolean call(T first, T second) {
@@ -2591,7 +2502,7 @@ public class Observable<T> {
      *         two sequences are equal by comparing the elements pairwise
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#sequenceequal">RxJava Wiki: sequenceEqual()</a>
      */
-    public static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality) {
+    public static <T> Observable<Boolean> sequenceEqual(IObservable<? extends T> first, IObservable<? extends T> second, Func2<? super T, ? super T, Boolean> equality) {
         return OperationSequenceEqual.sequenceEqual(first, second, equality);
     }
 
@@ -2622,7 +2533,7 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava Wiki: zip()</a>
      */
-    public static <T1, T2, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> zipFunction) {
+    public static <T1, T2, R> Observable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> zipFunction) {
         return create(OperationZip.zip(o1, o2, zipFunction));
     }
 
@@ -2655,7 +2566,7 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava Wiki: zip()</a>
      */
-    public static <T1, T2, T3, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
+    public static <T1, T2, T3, R> Observable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
         return create(OperationZip.zip(o1, o2, o3, zipFunction));
     }
 
@@ -2689,7 +2600,7 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava Wiki: zip()</a>
      */
-    public static <T1, T2, T3, T4, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
+    public static <T1, T2, T3, T4, R> Observable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
         return create(OperationZip.zip(o1, o2, o3, o4, zipFunction));
     }
 
@@ -2724,7 +2635,7 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava Wiki: zip()</a>
      */
-    public static <T1, T2, T3, T4, T5, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
+    public static <T1, T2, T3, T4, T5, R> Observable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
         return create(OperationZip.zip(o1, o2, o3, o4, o5, zipFunction));
     }
 
@@ -2758,7 +2669,7 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava Wiki: zip()</a>
      */
-    public static <T1, T2, T3, T4, T5, T6, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6,
+    public static <T1, T2, T3, T4, T5, T6, R> Observable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6,
             Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipFunction) {
         return create(OperationZip.zip(o1, o2, o3, o4, o5, o6, zipFunction));
     }
@@ -2794,7 +2705,7 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava Wiki: zip()</a>
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7,
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7,
             Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipFunction) {
         return create(OperationZip.zip(o1, o2, o3, o4, o5, o6, o7, zipFunction));
     }
@@ -2831,7 +2742,7 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava Wiki: zip()</a>
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7, IObservable<? extends T8> o8,
             Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipFunction) {
         return create(OperationZip.zip(o1, o2, o3, o4, o5, o6, o7, o8, zipFunction));
     }
@@ -2869,8 +2780,8 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava Wiki: zip()</a>
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> zip(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
-            Observable<? extends T9> o9, Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipFunction) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7, IObservable<? extends T8> o8,
+            IObservable<? extends T9> o9, Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipFunction) {
         return create(OperationZip.zip(o1, o2, o3, o4, o5, o6, o7, o8, o9, zipFunction));
     }
 
@@ -2891,7 +2802,7 @@ public class Observable<T> {
      *         function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public static <T1, T2, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> combineFunction) {
+    public static <T1, T2, R> Observable<R> combineLatest(IObservable<? extends T1> o1, IObservable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, combineFunction));
     }
 
@@ -2913,7 +2824,7 @@ public class Observable<T> {
      *         function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public static <T1, T2, T3, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> combineFunction) {
+    public static <T1, T2, T3, R> Observable<R> combineLatest(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, combineFunction));
     }
 
@@ -2936,7 +2847,7 @@ public class Observable<T> {
      *         function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public static <T1, T2, T3, T4, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4,
+    public static <T1, T2, T3, T4, R> Observable<R> combineLatest(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4,
             Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, combineFunction));
     }
@@ -2961,7 +2872,7 @@ public class Observable<T> {
      *         function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public static <T1, T2, T3, T4, T5, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5,
+    public static <T1, T2, T3, T4, T5, R> Observable<R> combineLatest(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5,
             Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, combineFunction));
     }
@@ -2987,7 +2898,7 @@ public class Observable<T> {
      *         function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public static <T1, T2, T3, T4, T5, T6, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6,
+    public static <T1, T2, T3, T4, T5, T6, R> Observable<R> combineLatest(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6,
             Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, combineFunction));
     }
@@ -3014,7 +2925,7 @@ public class Observable<T> {
      *         function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7,
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> combineLatest(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7,
             Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, combineFunction));
     }
@@ -3042,7 +2953,7 @@ public class Observable<T> {
      *         function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> combineLatest(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7, IObservable<? extends T8> o8,
             Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, o8, combineFunction));
     }
@@ -3071,7 +2982,7 @@ public class Observable<T> {
      *         function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8, Observable<? extends T9> o9,
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> combineLatest(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7, IObservable<? extends T8> o8, IObservable<? extends T9> o9,
             Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> combineFunction) {
         return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, o8, o9, combineFunction));
     }
@@ -3098,7 +3009,7 @@ public class Observable<T> {
      *         {@code bufferClosingSelector} argument emits an item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer">RxJava Wiki: buffer()</a>
      */
-    public <TClosing> Observable<List<T>> buffer(Func0<? extends Observable<? extends TClosing>> bufferClosingSelector) {
+    public <TClosing> Observable<List<T>> buffer(Func0<? extends IObservable<? extends TClosing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferClosingSelector));
     }
 
@@ -3121,7 +3032,7 @@ public class Observable<T> {
      *         closed when the specified {@link Observable}s emit items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer">RxJava Wiki: buffer()</a>
      */
-    public <TOpening, TClosing> Observable<List<T>> buffer(Observable<? extends TOpening> bufferOpenings, Func1<? super TOpening, ? extends Observable<? extends TClosing>> bufferClosingSelector) {
+    public <TOpening, TClosing> Observable<List<T>> buffer(IObservable<? extends TOpening> bufferOpenings, Func1<? super TOpening, ? extends IObservable<? extends TClosing>> bufferClosingSelector) {
         return create(OperationBuffer.buffer(this, bufferOpenings, bufferClosingSelector));
     }
 
@@ -3345,7 +3256,7 @@ public class Observable<T> {
      *         <code>closingSelector</code> argument emits an item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window">RxJava Wiki: window()</a>
      */
-    public <TClosing> Observable<Observable<T>> window(Func0<? extends Observable<? extends TClosing>> closingSelector) {
+    public <TClosing> Observable<Observable<T>> window(Func0<? extends IObservable<? extends TClosing>> closingSelector) {
         return create(OperationWindow.window(this, closingSelector));
     }
 
@@ -3369,7 +3280,7 @@ public class Observable<T> {
      *         {@link Observable}s emitting items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window">RxJava Wiki: window()</a>
      */
-    public <TOpening, TClosing> Observable<Observable<T>> window(Observable<? extends TOpening> windowOpenings, Func1<? super TOpening, ? extends Observable<? extends TClosing>> closingSelector) {
+    public <TOpening, TClosing> Observable<Observable<T>> window(IObservable<? extends TOpening> windowOpenings, Func1<? super TOpening, ? extends IObservable<? extends TClosing>> closingSelector) {
         return create(OperationWindow.window(this, windowOpenings, closingSelector));
     }
     
@@ -3593,10 +3504,10 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava Wiki: zip()</a>
      */
-    public static <R> Observable<R> zip(Observable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction) {
-        return ws.toList().mergeMap(new Func1<List<? extends Observable<?>>, Observable<? extends R>>() {
+    public static <R> Observable<R> zip(IObservable<? extends IObservable<?>> ws, final FuncN<? extends R> zipFunction) {
+        return from(ws).toList().mergeMap(new Func1<List<? extends IObservable<?>>, Observable<? extends R>>() {
             @Override
-            public Observable<R> call(List<? extends Observable<?>> wsList) {
+            public Observable<R> call(List<? extends IObservable<?>> wsList) {
                 return create(OperationZip.zip(wsList, zipFunction));
             }
         });
@@ -3627,7 +3538,7 @@ public class Observable<T> {
      * @return an Observable that emits the zipped results
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava Wiki: zip()</a>
      */
-    public static <R> Observable<R> zip(Iterable<? extends Observable<?>> ws, FuncN<? extends R> zipFunction) {
+    public static <R> Observable<R> zip(Iterable<? extends IObservable<?>> ws, FuncN<? extends R> zipFunction) {
         return create(OperationZip.zip(ws, zipFunction));
     }
 
@@ -3788,6 +3699,7 @@ public class Observable<T> {
      */
     public Observable<Boolean> contains(final T element) {
         return exists(new Func1<T, Boolean>() {
+            @Override
             public Boolean call(T t1) {
                 return element == null ? t1 == null : element.equals(t1);
             }
@@ -3831,7 +3743,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mapmany-or-flatmap-and-mapmanydelayerror">RxJava Wiki: flatMap()</a>
      * @see #mapMany(Func1)
      */
-    public <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
+    public <R> Observable<R> flatMap(Func1<? super T, ? extends IObservable<? extends R>> func) {
         return mergeMap(func);
     }
     
@@ -3852,7 +3764,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mapmany-or-flatmap-and-mapmanydelayerror">RxJava Wiki: flatMap()</a>
      * @see #flatMap(Func1)
      */
-    public <R> Observable<R> mergeMap(Func1<? super T, ? extends Observable<? extends R>> func) {
+    public <R> Observable<R> mergeMap(Func1<? super T, ? extends IObservable<? extends R>> func) {
         return merge(map(func));
     }
     
@@ -3871,15 +3783,15 @@ public class Observable<T> {
      *         Observable and concatting the results of the Observables obtained
      *         from this transformation.
      */
-    public <R> Observable<R> concatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
+    public <R> Observable<R> concatMap(Func1<? super T, ? extends IObservable<? extends R>> func) {
         return concat(map(func));
     }
     
     /**
      * Creates a new Observable by applying a function that you supply to each
      * item emitted by the source Observable resulting in an Observable of
-     * Observables. Then a {@link #switchLatest(Observable)} /
-     * {@link #switchOnNext(Observable)} is applied.
+     * Observables. Then a {@link #switchLatest(IObservable)} /
+     * {@link #switchOnNext(IObservable)} is applied.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchMap.png">
      * 
@@ -3889,7 +3801,7 @@ public class Observable<T> {
      *         transformation function to each item emitted by the source
      *         Observable and then switch
      */
-    public <R> Observable<R> switchMap(Func1<? super T, ? extends Observable<? extends R>> func) {
+    public <R> Observable<R> switchMap(Func1<? super T, ? extends IObservable<? extends R>> func) {
         return switchOnNext(map(func));
     }
 
@@ -3970,7 +3882,7 @@ public class Observable<T> {
      * @deprecated
      */
     @Deprecated
-    public <R> Observable<R> mapMany(Func1<? super T, ? extends Observable<? extends R>> func) {
+    public <R> Observable<R> mapMany(Func1<? super T, ? extends IObservable<? extends R>> func) {
         return mergeMap(func);
     }
 
@@ -4070,7 +3982,7 @@ public class Observable<T> {
      * @return the original Observable, with appropriately modified behavior
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onerrorresumenext">RxJava Wiki: onErrorResumeNext()</a>
      */
-    public Observable<T> onErrorResumeNext(final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) {
+    public Observable<T> onErrorResumeNext(final Func1<Throwable, ? extends IObservable<? extends T>> resumeFunction) {
         return create(OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(this, resumeFunction));
     }
 
@@ -4103,7 +4015,7 @@ public class Observable<T> {
      * @return the original Observable, with appropriately modified behavior
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onerrorresumenext">RxJava Wiki: onErrorResumeNext()</a>
      */
-    public Observable<T> onErrorResumeNext(final Observable<? extends T> resumeSequence) {
+    public Observable<T> onErrorResumeNext(final IObservable<? extends T> resumeSequence) {
         return create(OperationOnErrorResumeNextViaObservable.onErrorResumeNextViaObservable(this, resumeSequence));
     }
 
@@ -4141,7 +4053,7 @@ public class Observable<T> {
      * @return the original Observable, with appropriately modified behavior
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onexceptionresumenextviaobservable">RxJava Wiki: onExceptionResumeNextViaObservable()</a>
      */
-    public Observable<T> onExceptionResumeNext(final Observable<? extends T> resumeSequence) {
+    public Observable<T> onExceptionResumeNext(final IObservable<? extends T> resumeSequence) {
         return create(OperationOnExceptionResumeNextViaObservable.onExceptionResumeNextViaObservable(this, resumeSequence));
     }
 
@@ -4242,12 +4154,12 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumInteger()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
-    public static Observable<Integer> sumInteger(Observable<Integer> source) {
+    public static Observable<Integer> sumInteger(IObservable<Integer> source) {
         return OperationSum.sum(source);
     }
     
     @Deprecated
-    public static Observable<Integer> sum(Observable<Integer> source) {
+    public static Observable<Integer> sum(IObservable<Integer> source) {
         return OperationSum.sum(source);
     }
 
@@ -4263,7 +4175,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumLong()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
-    public static Observable<Long> sumLong(Observable<Long> source) {
+    public static Observable<Long> sumLong(IObservable<Long> source) {
         return OperationSum.sumLongs(source);
     }
 
@@ -4279,7 +4191,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumFloat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
-    public static Observable<Float> sumFloat(Observable<Float> source) {
+    public static Observable<Float> sumFloat(IObservable<Float> source) {
         return OperationSum.sumFloats(source);
     }
 
@@ -4295,7 +4207,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumDouble()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
-    public static Observable<Double> sumDouble(Observable<Double> source) {
+    public static Observable<Double> sumDouble(IObservable<Double> source) {
         return OperationSum.sumDoubles(source);
     }
 
@@ -4388,12 +4300,12 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageInteger()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
-    public static Observable<Integer> averageInteger(Observable<Integer> source) {
+    public static Observable<Integer> averageInteger(IObservable<Integer> source) {
         return OperationAverage.average(source);
     }
     
     @Deprecated
-    public static Observable<Integer> average(Observable<Integer> source) {
+    public static Observable<Integer> average(IObservable<Integer> source) {
         return OperationAverage.average(source);
     }
 
@@ -4409,7 +4321,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageLong()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
-    public static Observable<Long> averageLong(Observable<Long> source) {
+    public static Observable<Long> averageLong(IObservable<Long> source) {
         return OperationAverage.averageLongs(source);
     }
 
@@ -4425,7 +4337,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageFloat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
-    public static Observable<Float> averageFloat(Observable<Float> source) {
+    public static Observable<Float> averageFloat(IObservable<Float> source) {
         return OperationAverage.averageFloats(source);
     }
 
@@ -4441,7 +4353,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageDouble()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
-    public static Observable<Double> averageDouble(Observable<Double> source) {
+    public static Observable<Double> averageDouble(IObservable<Double> source) {
         return OperationAverage.averageDoubles(source);
     }
 
@@ -4534,7 +4446,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException if the source is empty
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229715.aspx">MSDN: Observable.Min</a>
      */
-    public static <T extends Comparable<? super T>> Observable<T> min(Observable<T> source) {
+    public static <T extends Comparable<? super T>> IObservable<T> min(IObservable<T> source) {
         return OperationMinMax.min(source);
     }
 
@@ -4606,7 +4518,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#max">RxJava Wiki: max()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211837.aspx">MSDN: Observable.Max</a>
      */
-    public static <T extends Comparable<? super T>> Observable<T> max(Observable<T> source) {
+    public static <T extends Comparable<? super T>> Observable<T> max(IObservable<T> source) {
         return OperationMinMax.max(source);
     }
 
@@ -4844,7 +4756,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229653.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector) {
+    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends IObservable<R>> selector) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
@@ -4870,7 +4782,9 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211644.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final Scheduler scheduler) {
+    public <R> Observable<R> replay(
+            final Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            final Scheduler scheduler) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
@@ -4897,7 +4811,9 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211675.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize) {
+    public <R> Observable<R> replay(
+            final Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            final int bufferSize) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
@@ -4925,7 +4841,10 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229928.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize, final Scheduler scheduler) {
+    public <R> Observable<R> replay(
+            final Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            final int bufferSize,
+            final Scheduler scheduler) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
@@ -4953,7 +4872,10 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229526.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, long time, TimeUnit unit) {
+    public <R> Observable<R> replay(
+            Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            long time,
+            TimeUnit unit) {
         return replay(selector, time, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -4978,7 +4900,11 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244327.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final long time, final TimeUnit unit, final Scheduler scheduler) {
+    public <R> Observable<R> replay(
+            final Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            final long time,
+            final TimeUnit unit,
+            final Scheduler scheduler) {
         return OperationMulticast.multicast(this, new Func0<Subject<T, T>>() {
             @Override
             public Subject<T, T> call() {
@@ -5007,7 +4933,11 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228952.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, int bufferSize, long time, TimeUnit unit) {
+    public <R> Observable<R> replay(
+            Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            int bufferSize,
+            long time,
+            TimeUnit unit) {
         return replay(selector, bufferSize, time, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -5034,7 +4964,12 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229404.aspx">MSDN: Observable.Replay</a>
      */
-    public <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
+    public <R> Observable<R> replay(
+            final Func1<? super Observable<T>, ? extends IObservable<R>> selector,
+            final int bufferSize,
+            final long time,
+            final TimeUnit unit,
+            final Scheduler scheduler) {
         if (bufferSize < 0) {
             throw new IllegalArgumentException("bufferSize < 0");
         }
@@ -5136,7 +5071,11 @@ public class Observable<T> {
      *         {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#parallel">RxJava Wiki: parallel()</a>
      */
-    public <R> Observable<R> parallel(Func1<Observable<T>, Observable<R>> f) {
+    public <R> Observable<R> parallel(Func1<? super Observable<T>, ? extends IObservable<R>> f) {
+        /* Call "parallel" instead of "par" to avoid an unnecessary call to
+         * Observable.from(IObservable), since we know "this" is of type
+         * Observable (as opposed to any old IObservable).
+         */
         return OperationParallel.parallel(this, f);
     }
 
@@ -5154,7 +5093,11 @@ public class Observable<T> {
      *         {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#parallel">RxJava Wiki: parallel()</a>
      */
-    public <R> Observable<R> parallel(final Func1<Observable<T>, Observable<R>> f, final Scheduler s) {
+    public <R> Observable<R> parallel(final Func1<? super Observable<T>, ? extends IObservable<R>> f, final Scheduler s) {
+        /* Call "parallel" instead of "par" to avoid an unnecessary call to
+         * Observable.from(IObservable), since we know "this" is of type
+         * Observable (as opposed to any old IObservable).
+         */
         return OperationParallel.parallel(this, f, s);
     }
 
@@ -5179,7 +5122,7 @@ public class Observable<T> {
      *         <code>parallelObservables</code>
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#parallelmerge">RxJava Wiki: parallelMerge()</a>
      */
-    public static <T> Observable<Observable<T>> parallelMerge(Observable<Observable<T>> source, int parallelObservables) {
+    public static <T> Observable<Observable<T>> parallelMerge(IObservable<? extends IObservable<T>> source, int parallelObservables) {
         return OperationParallelMerge.parallelMerge(source, parallelObservables);
     }
     
@@ -5206,7 +5149,7 @@ public class Observable<T> {
      *         <code>parallelObservables</code>
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#parallelmerge">RxJava Wiki: parallelMerge()</a>
      */
-    public static <T> Observable<Observable<T>> parallelMerge(Observable<Observable<T>> source, int parallelObservables, Scheduler scheduler) {
+    public static <T> Observable<Observable<T>> parallelMerge(IObservable<? extends IObservable<T>> source, int parallelObservables, Scheduler scheduler) {
         return OperationParallelMerge.parallelMerge(source, parallelObservables, scheduler);
     }
     
@@ -5391,7 +5334,7 @@ public class Observable<T> {
      *         Observable emits an item or completes
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast">RxJava Wiki: sample()</a>
      */
-    public <U> Observable<T> sample(Observable<U> sampler) {
+    public <U> Observable<T> sample(IObservable<U> sampler) {
         return create(new OperationSample.SampleWithObservable<T, U>(this, sampler));
     }
     
@@ -5994,7 +5937,7 @@ public class Observable<T> {
      *         such time as <code>other</code> emits its first item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#takeuntil">RxJava Wiki: takeUntil()</a>
      */
-    public <E> Observable<T> takeUntil(Observable<? extends E> other) {
+    public <E> Observable<T> takeUntil(IObservable<? extends E> other) {
         return OperationTakeUntil.takeUntil(this, other);
     }
 
@@ -6429,8 +6372,10 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#join-and-groupjoin">RxJava Wiiki: groupJoin</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244235.aspx">MSDN: Observable.GroupJoin</a>
      */
-    public <T2, D1, D2, R> Observable<R> groupJoin(Observable<T2> right, Func1<? super T, ? extends Observable<D1>> leftDuration, 
-            Func1<? super T2, ? extends Observable<D2>> rightDuration,
+    public <T2, D1, D2, R> Observable<R> groupJoin(
+            IObservable<T2> right,
+            Func1<? super T, ? extends IObservable<D1>> leftDuration,
+            Func1<? super T2, ? extends IObservable<D2>> rightDuration,
             Func2<? super T, ? super Observable<T2>, ? extends R> resultSelector) {
         return create(new OperationGroupJoin<T, T2, D1, D2, R>(this, right, leftDuration, rightDuration, resultSelector));
     }
@@ -6584,6 +6529,7 @@ public class Observable<T> {
      */
     public <R> Observable<R> ofType(final Class<R> klass) {
         return filter(new Func1<T, Boolean>() {
+            @Override
             public Boolean call(T t) {
                 return klass.isInstance(t);
             }
@@ -6643,7 +6589,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#timeout">RxJava Wiki: timeout()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229512.aspx">MSDN: Observable.Timeout</a>
      */
-    public Observable<T> timeout(long timeout, TimeUnit timeUnit, Observable<? extends T> other) {
+    public Observable<T> timeout(long timeout, TimeUnit timeUnit, IObservable<? extends T> other) {
         return create(OperationTimeout.timeout(this, timeout, timeUnit, other));
     }
 
@@ -6687,7 +6633,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#timeout">RxJava Wiki: timeout()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211676.aspx">MSDN: Observable.Timeout</a>
      */
-    public Observable<T> timeout(long timeout, TimeUnit timeUnit, Observable<? extends T> other, Scheduler scheduler) {
+    public Observable<T> timeout(long timeout, TimeUnit timeUnit, IObservable<? extends T> other, Scheduler scheduler) {
         return create(OperationTimeout.timeout(this, timeout, timeUnit, other, scheduler));
     }
 
@@ -6733,7 +6679,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#using">RxJava Wiki: using()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229585.aspx">MSDN: Observable.Using</a>
      */
-    public static <T, RESOURCE extends Subscription> Observable<T> using(Func0<RESOURCE> resourceFactory, Func1<RESOURCE, Observable<T>> observableFactory) {
+    public static <T, RESOURCE extends Subscription> Observable<T> using(Func0<RESOURCE> resourceFactory, Func1<RESOURCE, IObservable<T>> observableFactory) {
         return create(OperationUsing.using(resourceFactory, observableFactory));
     }
 
@@ -6749,7 +6695,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
-    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2) {
+    public static <T> Observable<T> amb(IObservable<? extends T> o1, IObservable<? extends T> o2) {
         return create(OperationAmb.amb(o1, o2));
     }
 
@@ -6766,7 +6712,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
-    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3) {
+    public static <T> Observable<T> amb(IObservable<? extends T> o1, IObservable<? extends T> o2, IObservable<? extends T> o3) {
         return create(OperationAmb.amb(o1, o2, o3));
     }
 
@@ -6784,7 +6730,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
-    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4) {
+    public static <T> Observable<T> amb(IObservable<? extends T> o1, IObservable<? extends T> o2, IObservable<? extends T> o3, IObservable<? extends T> o4) {
         return create(OperationAmb.amb(o1, o2, o3, o4));
     }
 
@@ -6803,7 +6749,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
-    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5) {
+    public static <T> Observable<T> amb(IObservable<? extends T> o1, IObservable<? extends T> o2, IObservable<? extends T> o3, IObservable<? extends T> o4, IObservable<? extends T> o5) {
         return create(OperationAmb.amb(o1, o2, o3, o4, o5));
     }
 
@@ -6823,7 +6769,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
-    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6) {
+    public static <T> Observable<T> amb(IObservable<? extends T> o1, IObservable<? extends T> o2, IObservable<? extends T> o3, IObservable<? extends T> o4, IObservable<? extends T> o5, IObservable<? extends T> o6) {
         return create(OperationAmb.amb(o1, o2, o3, o4, o5, o6));
     }
 
@@ -6844,7 +6790,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
-    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7) {
+    public static <T> Observable<T> amb(IObservable<? extends T> o1, IObservable<? extends T> o2, IObservable<? extends T> o3, IObservable<? extends T> o4, IObservable<? extends T> o5, IObservable<? extends T> o6, IObservable<? extends T> o7) {
         return create(OperationAmb.amb(o1, o2, o3, o4, o5, o6, o7));
     }
 
@@ -6866,7 +6812,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
-    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8) {
+    public static <T> Observable<T> amb(IObservable<? extends T> o1, IObservable<? extends T> o2, IObservable<? extends T> o3, IObservable<? extends T> o4, IObservable<? extends T> o5, IObservable<? extends T> o6, IObservable<? extends T> o7, IObservable<? extends T> o8) {
         return create(OperationAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8));
     }
 
@@ -6889,7 +6835,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
-    public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8, Observable<? extends T> o9) {
+    public static <T> Observable<T> amb(IObservable<? extends T> o1, IObservable<? extends T> o2, IObservable<? extends T> o3, IObservable<? extends T> o4, IObservable<? extends T> o5, IObservable<? extends T> o6, IObservable<? extends T> o7, IObservable<? extends T> o8, IObservable<? extends T> o9) {
         return create(OperationAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8, o9));
     }
 
@@ -6904,7 +6850,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229115.aspx">MSDN: Observable.Amb</a>
      */
-    public static <T> Observable<T> amb(Iterable<? extends Observable<? extends T>> sources) {
+    public static <T> Observable<T> amb(Iterable<? extends IObservable<? extends T>> sources) {
         return create(OperationAmb.amb(sources));
     }
 
@@ -7097,7 +7043,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when">RxJava Wiki: and()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229153.aspx">MSDN: Observable.And</a>
      */
-    public <T2> Pattern2<T, T2> and(Observable<T2> right) {
+    public <T2> Pattern2<T, T2> and(IObservable<T2> right) {
         return OperationJoinPatterns.and(this, right);
     }
 
@@ -7355,8 +7301,8 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#join">RxJava Wiki: join()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229750.aspx">MSDN: Observable.Join</a>
      */
-    public <TRight, TLeftDuration, TRightDuration, R> Observable<R> join(Observable<TRight> right, Func1<T, Observable<TLeftDuration>> leftDurationSelector,
-            Func1<TRight, Observable<TRightDuration>> rightDurationSelector,
+    public <TRight, TLeftDuration, TRightDuration, R> Observable<R> join(IObservable<TRight> right, Func1<T, ? extends IObservable<TLeftDuration>> leftDurationSelector,
+            Func1<TRight, ? extends IObservable<TRightDuration>> rightDurationSelector,
             Func2<T, TRight, R> resultSelector) {
         return create(new OperationJoin<T, TRight, TLeftDuration, TRightDuration, R>(this, right, leftDurationSelector, rightDurationSelector, resultSelector));
     }    
@@ -7520,7 +7466,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skipuntil">RxJava Wiki: skipUntil()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229358.aspx">MSDN: Observable.SkipUntil</a>
      */
-    public <U> Observable<T> skipUntil(Observable<U> other) {
+    public <U> Observable<T> skipUntil(IObservable<U> other) {
         return create(new OperationSkipUntil<T, U>(this, other));
     }
 

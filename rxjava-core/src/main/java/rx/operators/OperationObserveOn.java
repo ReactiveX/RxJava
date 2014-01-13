@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import rx.IObservable;
 import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
@@ -40,15 +41,15 @@ import rx.util.functions.Func2;
  */
 public class OperationObserveOn {
 
-    public static <T> OnSubscribeFunc<T> observeOn(Observable<? extends T> source, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> observeOn(IObservable<? extends T> source, Scheduler scheduler) {
         return new ObserveOn<T>(source, scheduler);
     }
 
     private static class ObserveOn<T> implements OnSubscribeFunc<T> {
-        private final Observable<? extends T> source;
+        private final IObservable<? extends T> source;
         private final Scheduler scheduler;
 
-        public ObserveOn(Observable<? extends T> source, Scheduler scheduler) {
+        public ObserveOn(IObservable<? extends T> source, Scheduler scheduler) {
             this.source = source;
             this.scheduler = scheduler;
         }
@@ -80,7 +81,7 @@ public class OperationObserveOn {
             }
 
             public Subscription init() {
-                compositeSubscription.add(source.materialize().subscribe(new SourceObserver()));
+                compositeSubscription.add(Observable.from(source).materialize().subscribe(new SourceObserver()));
                 return compositeSubscription;
             }
 

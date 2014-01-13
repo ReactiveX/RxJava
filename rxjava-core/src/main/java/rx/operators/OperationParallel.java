@@ -17,6 +17,7 @@ package rx.operators;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Scheduler;
 import rx.observables.GroupedObservable;
@@ -29,11 +30,39 @@ import rx.util.functions.Func1;
  */
 public final class OperationParallel<T> {
 
-    public static <T, R> Observable<R> parallel(Observable<T> source, Func1<Observable<T>, Observable<R>> f) {
+    // "par" method name borrowed from Scala.
+    public static <T, R> Observable<R> par(
+            final IObservable<T> source,
+            final Func1<? super IObservable<T>, ? extends IObservable<R>> f) {
+        return parallel(Observable.from(source), f);
+    }
+
+    // "par" method name borrowed from Scala.
+    public static <T, R> Observable<R> par(
+            final IObservable<T> source,
+            final Func1<? super IObservable<T>, ? extends IObservable<R>> f,
+            final Scheduler s) {
+        return parallel(Observable.from(source), f, s);
+    }
+
+    /**
+     * Legacy alternative to {@link #par(IObservable, Func1)} for {@link Func1}
+     * implementations that depend on {@link Observable}, as opposed to those
+     * flexible enough to deal with any {@link IObservable} instances. Callers
+     * are encouraged to use {@link #par(IObservable, Func1)} instead.
+     */
+    public static <T, R> Observable<R> parallel(Observable<T> source, Func1<? super Observable<T>, ? extends IObservable<R>> f) {
         return parallel(source, f, Schedulers.threadPoolForComputation());
     }
 
-    public static <T, R> Observable<R> parallel(final Observable<T> source, final Func1<Observable<T>, Observable<R>> f, final Scheduler s) {
+    /**
+     * Legacy alternative to {@link #par(IObservable, Func1, Scheduler)} for
+     * {@link Func1} implementations that depend on {@link Observable}, as
+     * opposed to those flexible enough to deal with any {@link IObservable}
+     * instances. Callers are encouraged to use
+     * {@link #par(IObservable, Func1, Scheduler)} instead.
+     */
+    public static <T, R> Observable<R> parallel(final Observable<T> source, final Func1<? super Observable<T>, ? extends IObservable<R>> f, final Scheduler s) {
         return Observable.defer(new Func0<Observable<R>>() {
 
             @Override
@@ -46,10 +75,10 @@ public final class OperationParallel<T> {
                         return i.incrementAndGet() % s.degreeOfParallelism();
                     }
 
-                }).mergeMap(new Func1<GroupedObservable<Integer, T>, Observable<R>>() {
+                }).mergeMap(new Func1<GroupedObservable<Integer, T>, IObservable<R>>() {
 
                     @Override
-                    public Observable<R> call(GroupedObservable<Integer, T> group) {
+                    public IObservable<R> call(GroupedObservable<Integer, T> group) {
                         return f.call(group.observeOn(s));
                     }
                 });

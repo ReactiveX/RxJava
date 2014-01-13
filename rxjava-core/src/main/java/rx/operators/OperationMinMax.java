@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -29,47 +30,48 @@ import rx.util.functions.Func2;
 public class OperationMinMax {
 
     public static <T extends Comparable<? super T>> Observable<T> min(
-            Observable<T> source) {
+            IObservable<T> source) {
         return minMax(source, -1L);
     }
 
-    public static <T> Observable<T> min(Observable<T> source,
+    public static <T> Observable<T> min(IObservable<T> source,
             final Comparator<? super T> comparator) {
         return minMax(source, comparator, -1L);
     }
 
     public static <T, R extends Comparable<? super R>> Observable<List<T>> minBy(
-            Observable<T> source, final Func1<T, R> selector) {
+            IObservable<T> source, final Func1<T, R> selector) {
         return minMaxBy(source, selector, -1L);
     }
 
-    public static <T, R> Observable<List<T>> minBy(Observable<T> source,
+    public static <T, R> Observable<List<T>> minBy(IObservable<T> source,
             final Func1<T, R> selector, final Comparator<? super R> comparator) {
         return minMaxBy(source, selector, comparator, -1L);
     }
 
     public static <T extends Comparable<? super T>> Observable<T> max(
-            Observable<T> source) {
+            IObservable<T> source) {
         return minMax(source, 1L);
     }
 
-    public static <T> Observable<T> max(Observable<T> source,
+    public static <T> Observable<T> max(IObservable<T> source,
             final Comparator<? super T> comparator) {
         return minMax(source, comparator, 1L);
     }
 
     public static <T, R extends Comparable<? super R>> Observable<List<T>> maxBy(
-            Observable<T> source, final Func1<T, R> selector) {
+            IObservable<T> source, final Func1<T, R> selector) {
         return minMaxBy(source, selector, 1L);
     }
 
-    public static <T, R> Observable<List<T>> maxBy(Observable<T> source,
+    public static <T, R> Observable<List<T>> maxBy(IObservable<T> source,
             final Func1<T, R> selector, final Comparator<? super R> comparator) {
         return minMaxBy(source, selector, comparator, 1L);
     }
 
     private static <T extends Comparable<? super T>> Observable<T> minMax(
-            Observable<T> source, final long flag) {
+            IObservable<T> isource, final long flag) {
+        final Observable<T> source = Observable.from(isource);
         return source.reduce(new Func2<T, T, T>() {
             @Override
             public T call(T acc, T value) {
@@ -81,8 +83,9 @@ public class OperationMinMax {
         });
     }
 
-    private static <T> Observable<T> minMax(Observable<T> source,
+    private static <T> Observable<T> minMax(IObservable<T> isource,
             final Comparator<? super T> comparator, final long flag) {
+        final Observable<T> source = Observable.from(isource);
         return source.reduce(new Func2<T, T, T>() {
             @Override
             public T call(T acc, T value) {
@@ -95,7 +98,8 @@ public class OperationMinMax {
     }
 
     private static <T, R extends Comparable<? super R>> Observable<List<T>> minMaxBy(
-            Observable<T> source, final Func1<T, R> selector, final long flag) {
+            IObservable<T> isource, final Func1<T, R> selector, final long flag) {
+        final Observable<T> source = Observable.from(isource);
         return source.reduce(new ArrayList<T>(),
                 new Func2<List<T>, T, List<T>>() {
 
@@ -118,9 +122,10 @@ public class OperationMinMax {
                 });
     }
 
-    private static <T, R> Observable<List<T>> minMaxBy(Observable<T> source,
+    private static <T, R> Observable<List<T>> minMaxBy(IObservable<T> isource,
             final Func1<T, R> selector, final Comparator<? super R> comparator,
             final long flag) {
+        final Observable<T> source = Observable.from(isource);
         return source.reduce(new ArrayList<T>(),
                 new Func2<List<T>, T, List<T>>() {
 

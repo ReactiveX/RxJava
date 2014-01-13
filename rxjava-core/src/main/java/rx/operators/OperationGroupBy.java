@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -36,9 +37,9 @@ import rx.util.functions.Functions;
  */
 public final class OperationGroupBy {
 
-    public static <K, T, R> OnSubscribeFunc<GroupedObservable<K, R>> groupBy(Observable<? extends T> source, final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) {
-
-        final Observable<KeyValue<K, R>> keyval = source.map(new Func1<T, KeyValue<K, R>>() {
+    public static <K, T, R> OnSubscribeFunc<GroupedObservable<K, R>> groupBy(IObservable<? extends T> isource, final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) {
+        final Observable<? extends T> source = Observable.from(isource);
+        final IObservable<KeyValue<K, R>> keyval = source.map(new Func1<T, KeyValue<K, R>>() {
             @Override
             public KeyValue<K, R> call(T t) {
                 K key = keySelector.call(t);
@@ -51,19 +52,19 @@ public final class OperationGroupBy {
         return new GroupBy<K, R>(keyval);
     }
 
-    public static <K, T> OnSubscribeFunc<GroupedObservable<K, T>> groupBy(Observable<? extends T> source, final Func1<? super T, ? extends K> keySelector) {
+    public static <K, T> OnSubscribeFunc<GroupedObservable<K, T>> groupBy(IObservable<? extends T> source, final Func1<? super T, ? extends K> keySelector) {
         return groupBy(source, keySelector, Functions.<T> identity());
     }
 
     private static class GroupBy<K, V> implements OnSubscribeFunc<GroupedObservable<K, V>> {
 
-        private final Observable<KeyValue<K, V>> source;
+        private final IObservable<KeyValue<K, V>> source;
         private final ConcurrentHashMap<K, GroupedSubject<K, V>> groupedObservables = new ConcurrentHashMap<K, GroupedSubject<K, V>>();
         private final SafeObservableSubscription actualParentSubscription = new SafeObservableSubscription();
         private final AtomicInteger numGroupSubscriptions = new AtomicInteger();
         private final AtomicBoolean unsubscribeRequested = new AtomicBoolean(false);
 
-        private GroupBy(Observable<KeyValue<K, V>> source) {
+        private GroupBy(IObservable<KeyValue<K, V>> source) {
             this.source = source;
         }
 

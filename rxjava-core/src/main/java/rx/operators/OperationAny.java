@@ -15,10 +15,11 @@
  */
 package rx.operators;
 
-import static rx.util.functions.Functions.*;
+import static rx.util.functions.Functions.alwaysTrue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -32,47 +33,47 @@ import rx.util.functions.Func1;
 public final class OperationAny {
 
     /**
-     * Returns an {@link Observable} that emits <code>true</code> if the source {@link Observable} is not empty, otherwise <code>false</code>.
+     * Returns an {@link Observable} that emits <code>true</code> if the source {@link IObservable} is not empty, otherwise <code>false</code>.
      * 
      * @param source
-     *            The source {@link Observable} to check if not empty.
+     *            The source {@link IObservable} to check if not empty.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T> OnSubscribeFunc<Boolean> any(Observable<? extends T> source) {
+    public static <T> OnSubscribeFunc<Boolean> any(IObservable<? extends T> source) {
         return new Any<T>(source, alwaysTrue(), false);
     }
 
-    public static <T> OnSubscribeFunc<Boolean> isEmpty(Observable<? extends T> source) {
+    public static <T> OnSubscribeFunc<Boolean> isEmpty(IObservable<? extends T> source) {
         return new Any<T>(source, alwaysTrue(), true);
     }
 
     /**
      * Returns an {@link Observable} that emits <code>true</code> if any element
-     * of the source {@link Observable} satisfies the given condition, otherwise
-     * <code>false</code>. Note: always emit <code>false</code> if the source {@link Observable} is empty.
+     * of the source {@link IObservable} satisfies the given condition, otherwise
+     * <code>false</code>. Note: always emit <code>false</code> if the source {@link IObservable} is empty.
      * 
      * @param source
-     *            The source {@link Observable} to check if any element
+     *            The source {@link IObservable} to check if any element
      *            satisfies the given condition.
      * @param predicate
      *            The condition to test every element.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T> OnSubscribeFunc<Boolean> any(Observable<? extends T> source, Func1<? super T, Boolean> predicate) {
+    public static <T> OnSubscribeFunc<Boolean> any(IObservable<? extends T> source, Func1<? super T, Boolean> predicate) {
         return new Any<T>(source, predicate, false);
     }
 
-    public static <T> OnSubscribeFunc<Boolean> exists(Observable<? extends T> source, Func1<? super T, Boolean> predicate) {
+    public static <T> OnSubscribeFunc<Boolean> exists(IObservable<? extends T> source, Func1<? super T, Boolean> predicate) {
         return any(source, predicate);
     }
 
     private static class Any<T> implements OnSubscribeFunc<Boolean> {
 
-        private final Observable<? extends T> source;
+        private final IObservable<? extends T> source;
         private final Func1<? super T, Boolean> predicate;
         private final boolean returnOnEmpty;
 
-        private Any(Observable<? extends T> source, Func1<? super T, Boolean> predicate, boolean returnOnEmpty) {
+        private Any(IObservable<? extends T> source, Func1<? super T, Boolean> predicate, boolean returnOnEmpty) {
             this.source = source;
             this.predicate = predicate;
             this.returnOnEmpty = returnOnEmpty;

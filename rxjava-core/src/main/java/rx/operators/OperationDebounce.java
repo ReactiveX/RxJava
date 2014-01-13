@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
@@ -40,14 +40,14 @@ public final class OperationDebounce {
      * the last received event is published.
      * 
      * @param items
-     *            The {@link Observable} which is publishing events.
+     *            The {@link IObservable} which is publishing events.
      * @param timeout
      *            How long each event has to be the 'last event' before it gets published.
      * @param unit
      *            The unit of time for the specified timeout.
      * @return A {@link Func1} which performs the throttle operation.
      */
-    public static <T> OnSubscribeFunc<T> debounce(Observable<T> items, long timeout, TimeUnit unit) {
+    public static <T> OnSubscribeFunc<T> debounce(IObservable<T> items, long timeout, TimeUnit unit) {
         return debounce(items, timeout, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -57,7 +57,7 @@ public final class OperationDebounce {
      * the last received event is published.
      * 
      * @param items
-     *            The {@link Observable} which is publishing events.
+     *            The {@link IObservable} which is publishing events.
      * @param timeout
      *            How long each event has to be the 'last event' before it gets published.
      * @param unit
@@ -66,7 +66,7 @@ public final class OperationDebounce {
      *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
      * @return A {@link Func1} which performs the throttle operation.
      */
-    public static <T> OnSubscribeFunc<T> debounce(final Observable<T> items, final long timeout, final TimeUnit unit, final Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> debounce(final IObservable<T> items, final long timeout, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<T>() {
             @Override
             public Subscription onSubscribe(Observer<? super T> observer) {
@@ -77,12 +77,12 @@ public final class OperationDebounce {
 
     private static class Debounce<T> implements OnSubscribeFunc<T> {
 
-        private final Observable<T> items;
+        private final IObservable<T> items;
         private final long timeout;
         private final TimeUnit unit;
         private final Scheduler scheduler;
 
-        public Debounce(Observable<T> items, long timeout, TimeUnit unit, Scheduler scheduler) {
+        public Debounce(IObservable<T> items, long timeout, TimeUnit unit, Scheduler scheduler) {
             this.items = items;
             this.timeout = timeout;
             this.unit = unit;

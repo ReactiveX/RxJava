@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observer;
 import rx.util.Exceptions;
 
@@ -31,8 +31,7 @@ import rx.util.Exceptions;
  */
 public final class OperationMostRecent {
 
-    public static <T> Iterable<T> mostRecent(final Observable<? extends T> source, final T initialValue) {
-
+    public static <T> Iterable<T> mostRecent(final IObservable<? extends T> source, final T initialValue) {
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {

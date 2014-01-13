@@ -18,7 +18,7 @@ package rx.operators;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
@@ -32,22 +32,22 @@ public class OperationRetry {
 
     private static final int INFINITE_RETRY = -1;
 
-    public static <T> OnSubscribeFunc<T> retry(final Observable<T> observable, final int retryCount) {
+    public static <T> OnSubscribeFunc<T> retry(final IObservable<T> observable, final int retryCount) {
         return new Retry<T>(observable, retryCount);
     }
 
-    public static <T> OnSubscribeFunc<T> retry(final Observable<T> observable) {
+    public static <T> OnSubscribeFunc<T> retry(final IObservable<T> observable) {
         return new Retry<T>(observable, INFINITE_RETRY);
     }
 
     private static class Retry<T> implements OnSubscribeFunc<T> {
 
-        private final Observable<T> source;
+        private final IObservable<T> source;
         private final int retryCount;
         private final AtomicInteger attempts = new AtomicInteger(0);
         private final CompositeSubscription subscription = new CompositeSubscription();
 
-        public Retry(Observable<T> source, int retryCount) {
+        public Retry(IObservable<T> source, int retryCount) {
             this.source = source;
             this.retryCount = retryCount;
         }

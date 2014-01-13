@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
@@ -47,7 +47,7 @@ public final class OperationSkip {
      * 
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229847(v=vs.103).aspx">Observable.Skip(TSource) Method</a>
      */
-    public static <T> OnSubscribeFunc<T> skip(final Observable<? extends T> items, final int num) {
+    public static <T> OnSubscribeFunc<T> skip(final IObservable<? extends T> items, final int num) {
         // wrap in a Observable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
         return new OnSubscribeFunc<T>() {
 
@@ -68,13 +68,14 @@ public final class OperationSkip {
      */
     private static class Skip<T> implements OnSubscribeFunc<T> {
         private final int num;
-        private final Observable<? extends T> items;
+        private final IObservable<? extends T> items;
 
-        Skip(final Observable<? extends T> items, final int num) {
+        Skip(final IObservable<? extends T> items, final int num) {
             this.num = num;
             this.items = items;
         }
 
+        @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
             return items.subscribe(new ItemObserver(observer));
         }
@@ -118,12 +119,12 @@ public final class OperationSkip {
      * @param <T> the value type
      */
     public static final class SkipTimed<T> implements OnSubscribeFunc<T> {
-        final Observable<? extends T> source;
+        final IObservable<? extends T> source;
         final long time;
         final TimeUnit unit;
         final Scheduler scheduler;
 
-        public SkipTimed(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+        public SkipTimed(IObservable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
             this.source = source;
             this.time = time;
             this.unit = unit;

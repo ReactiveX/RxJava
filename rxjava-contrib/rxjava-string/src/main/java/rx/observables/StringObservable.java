@@ -26,10 +26,11 @@ import java.nio.charset.CodingErrorAction;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import rx.IObservable;
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.Observable.OnSubscribeFunc;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -41,7 +42,7 @@ public class StringObservable {
      * @param charsetName
      * @return
      */
-    public static Observable<String> decode(Observable<byte[]> src, String charsetName) {
+    public static Observable<String> decode(IObservable<byte[]> src, String charsetName) {
         return decode(src, Charset.forName(charsetName));
     }
 
@@ -52,7 +53,7 @@ public class StringObservable {
      * @param charset
      * @return
      */
-    public static Observable<String> decode(Observable<byte[]> src, Charset charset) {
+    public static Observable<String> decode(IObservable<byte[]> src, Charset charset) {
         return decode(src, charset.newDecoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE));
     }
 
@@ -64,7 +65,7 @@ public class StringObservable {
      * @param charsetDecoder
      * @return
      */
-    public static Observable<String> decode(final Observable<byte[]> src, final CharsetDecoder charsetDecoder) {
+    public static Observable<String> decode(final IObservable<byte[]> src, final CharsetDecoder charsetDecoder) {
         return Observable.create(new OnSubscribeFunc<String>() {
             @Override
             public Subscription onSubscribe(final Observer<? super String> observer) {
@@ -150,7 +151,7 @@ public class StringObservable {
      * @param charsetName
      * @return
      */
-    public static Observable<byte[]> encode(Observable<String> src, String charsetName) {
+    public static Observable<byte[]> encode(IObservable<String> src, String charsetName) {
         return encode(src, Charset.forName(charsetName));
     }
 
@@ -161,7 +162,7 @@ public class StringObservable {
      * @param charset
      * @return
      */
-    public static Observable<byte[]> encode(Observable<String> src, Charset charset) {
+    public static Observable<byte[]> encode(IObservable<String> src, Charset charset) {
         return encode(src, charset.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE));
     }
 
@@ -173,8 +174,8 @@ public class StringObservable {
      * @param charsetEncoder
      * @return
      */
-    public static Observable<byte[]> encode(Observable<String> src, final CharsetEncoder charsetEncoder) {
-        return src.map(new Func1<String, byte[]>() {
+    public static Observable<byte[]> encode(IObservable<String> src, final CharsetEncoder charsetEncoder) {
+        return Observable.from(src).map(new Func1<String, byte[]>() {
             @Override
             public byte[] call(String str) {
                 CharBuffer cb = CharBuffer.wrap(str);
@@ -195,8 +196,8 @@ public class StringObservable {
      * @param src
      * @return
      */
-    public static Observable<String> stringConcat(Observable<String> src) {
-        return src.aggregate(new Func2<String, String, String>() {
+    public static Observable<String> stringConcat(IObservable<String> src) {
+        return Observable.from(src).aggregate(new Func2<String, String, String>() {
             @Override
             public String call(String a, String b) {
                 return a + b;
@@ -216,7 +217,7 @@ public class StringObservable {
      * @param regex
      * @return
      */
-    public static Observable<String> split(final Observable<String> src, String regex) {
+    public static Observable<String> split(final IObservable<String> src, String regex) {
         final Pattern pattern = Pattern.compile(regex);
         return Observable.create(new OnSubscribeFunc<String>() {
             @Override
@@ -288,7 +289,7 @@ public class StringObservable {
      * @return an Observable which emits a single String value having the concatenated
      *         values of the source observable with the separator between elements
      */
-    public static <T> Observable<String> join(final Observable<T> source, final CharSequence separator) {
+    public static <T> Observable<String> join(final IObservable<T> source, final CharSequence separator) {
         return Observable.create(new OnSubscribeFunc<String>() {
 
             @Override

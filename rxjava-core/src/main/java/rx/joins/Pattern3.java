@@ -15,6 +15,7 @@
  */
 package rx.joins;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.util.functions.Func3;
 
@@ -25,22 +26,38 @@ public class Pattern3<T1, T2, T3> implements Pattern {
     private final Observable<T1> first;
     private final Observable<T2> second;
     private final Observable<T3> third;
-    public Pattern3(Observable<T1> first, Observable<T2> second,
-            Observable<T3> third) {
-        this.first = first;
-        this.second = second;
-        this.third = third;
+
+    public Pattern3(IObservable<T1> first, IObservable<T2> second,
+            IObservable<T3> third) {
+        this.first = Observable.from(first);
+        this.second = Observable.from(second);
+        this.third = Observable.from(third);
     }
+
+    /* XXX: Would be better to return IObservable, and let the caller call
+     * Observable.from(IObservable) if they care, but keep Observable for
+     * the sake of backwards compatibility.
+     */
     public Observable<T1> first() {
         return first;
     }
+
+    /* XXX: Would be better to return IObservable, and let the caller call
+     * Observable.from(IObservable) if they care, but keep Observable for
+     * the sake of backwards compatibility.
+     */
     public Observable<T2> second() {
         return second;
     }
+
+    /* XXX: Would be better to return IObservable, and let the caller call
+     * Observable.from(IObservable) if they care, but keep Observable for
+     * the sake of backwards compatibility.
+     */
     public Observable<T3> third() {
         return third;
     }
-//    public <T4> Pattern4<T1, T2, T3, T4> and(Observable<T4> other) {
+//    public <T4> Pattern4<T1, T2, T3, T4> and(IObservable<T4> other) {
 //        if (other == null) {
 //            throw new NullPointerException();
 //        }

@@ -15,7 +15,10 @@
  */
 package rx.operators;
 
-import static rx.Observable.*;
+import static rx.Observable.concat;
+import static rx.Observable.from;
+import static rx.Observable.zip;
+import rx.IObservable;
 import rx.Notification;
 import rx.Observable;
 import rx.util.functions.Func1;
@@ -29,10 +32,11 @@ import rx.util.functions.Functions;
 public class OperationSequenceEqual {
 
     public static <T> Observable<Boolean> sequenceEqual(
-            Observable<? extends T> first, Observable<? extends T> second,
+            IObservable<? extends T> first,
+            IObservable<? extends T> second,
             final Func2<? super T, ? super T, Boolean> equality) {
         Observable<Notification<T>> firstObservable = concat(
-                first.map(new Func1<T, Notification<T>>() {
+                Observable.from(first).map(new Func1<T, Notification<T>>() {
 
                     @Override
                     public Notification<T> call(T t1) {
@@ -42,7 +46,7 @@ public class OperationSequenceEqual {
                 }), from(new Notification<T>()));
 
         Observable<Notification<T>> secondObservable = concat(
-                second.map(new Func1<T, Notification<T>>() {
+                Observable.from(second).map(new Func1<T, Notification<T>>() {
 
                     @Override
                     public Notification<T> call(T t1) {

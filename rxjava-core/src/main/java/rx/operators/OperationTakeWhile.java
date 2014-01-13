@@ -17,7 +17,7 @@ package rx.operators;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -40,7 +40,7 @@ public final class OperationTakeWhile {
      *            a function to test each source element for a condition
      * @return sequence of observable values from the start as long as the predicate is true
      */
-    public static <T> OnSubscribeFunc<T> takeWhile(final Observable<? extends T> items, final Func1<? super T, Boolean> predicate) {
+    public static <T> OnSubscribeFunc<T> takeWhile(final IObservable<? extends T> items, final Func1<? super T, Boolean> predicate) {
         return takeWhileWithIndex(items, OperationTakeWhile.<T> skipIndex(predicate));
     }
 
@@ -52,7 +52,7 @@ public final class OperationTakeWhile {
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
      * @return sequence of observable values from the start as long as the predicate is true
      */
-    public static <T> OnSubscribeFunc<T> takeWhileWithIndex(final Observable<? extends T> items, final Func2<? super T, ? super Integer, Boolean> predicate) {
+    public static <T> OnSubscribeFunc<T> takeWhileWithIndex(final IObservable<? extends T> items, final Func2<? super T, ? super Integer, Boolean> predicate) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
         return new OnSubscribeFunc<T>() {
 
@@ -85,11 +85,11 @@ public final class OperationTakeWhile {
      * @param <T>
      */
     private static class TakeWhile<T> implements OnSubscribeFunc<T> {
-        private final Observable<? extends T> items;
+        private final IObservable<? extends T> items;
         private final Func2<? super T, ? super Integer, Boolean> predicate;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        private TakeWhile(Observable<? extends T> items, Func2<? super T, ? super Integer, Boolean> predicate) {
+        private TakeWhile(IObservable<? extends T> items, Func2<? super T, ? super Integer, Boolean> predicate) {
             this.items = items;
             this.predicate = predicate;
         }

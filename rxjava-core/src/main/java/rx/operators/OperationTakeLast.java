@@ -20,12 +20,11 @@ import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.subscriptions.BooleanSubscription;
 import rx.util.Timestamped;
 
 /**
@@ -36,7 +35,7 @@ import rx.util.Timestamped;
  */
 public final class OperationTakeLast {
 
-    public static <T> OnSubscribeFunc<T> takeLast(final Observable<? extends T> items, final int count) {
+    public static <T> OnSubscribeFunc<T> takeLast(final IObservable<? extends T> items, final int count) {
         return new OnSubscribeFunc<T>() {
 
             @Override
@@ -49,14 +48,15 @@ public final class OperationTakeLast {
 
     private static class TakeLast<T> implements OnSubscribeFunc<T> {
         private final int count;
-        private final Observable<? extends T> items;
+        private final IObservable<? extends T> items;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        TakeLast(final Observable<? extends T> items, final int count) {
+        TakeLast(final IObservable<? extends T> items, final int count) {
             this.count = count;
             this.items = items;
         }
 
+        @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
             if (count < 0) {
                 throw new IndexOutOfBoundsException(
@@ -123,12 +123,12 @@ public final class OperationTakeLast {
         }
 
     }
-    
+
     /**
      * Returns the items emitted by source whose arrived in the time window
      * before the source completed.
      */
-    public static <T> OnSubscribeFunc<T> takeLast(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> takeLast(IObservable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
         return new TakeLastTimed<T>(source, -1, time, unit, scheduler);
     }
     
@@ -136,18 +136,18 @@ public final class OperationTakeLast {
      * Returns the items emitted by source whose arrived in the time window
      * before the source completed and at most count values.
      */
-    public static <T> OnSubscribeFunc<T> takeLast(Observable<? extends T> source, int count, long time, TimeUnit unit, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> takeLast(IObservable<? extends T> source, int count, long time, TimeUnit unit, Scheduler scheduler) {
         return new TakeLastTimed<T>(source, count, time, unit, scheduler);
     }
     
     /** Take only the values which appeared some time before the completion. */
     static final class TakeLastTimed<T> implements OnSubscribeFunc<T> {
-        final Observable<? extends T> source;
+        final IObservable<? extends T> source;
         final long ageMillis;
         final Scheduler scheduler;
         final int count;
 
-        public TakeLastTimed(Observable<? extends T> source, int count, long time, TimeUnit unit, Scheduler scheduler) {
+        public TakeLastTimed(IObservable<? extends T> source, int count, long time, TimeUnit unit, Scheduler scheduler) {
             this.source = source;
             this.ageMillis = unit.toMillis(time);
             this.scheduler = scheduler;

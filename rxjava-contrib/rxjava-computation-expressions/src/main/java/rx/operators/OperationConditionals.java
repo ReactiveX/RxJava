@@ -17,7 +17,7 @@ package rx.operators;
 
 import java.util.Map;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -54,8 +54,8 @@ public final class OperationConditionals {
      */
     public static <K, R> OnSubscribeFunc<R> switchCase(
             Func0<? extends K> caseSelector,
-            Map<? super K, ? extends Observable<? extends R>> mapOfCases,
-            Observable<? extends R> defaultCase) {
+            Map<? super K, ? extends IObservable<? extends R>> mapOfCases,
+            IObservable<? extends R> defaultCase) {
         return new SwitchCase<K, R>(caseSelector, mapOfCases, defaultCase);
     }
 
@@ -75,8 +75,8 @@ public final class OperationConditionals {
      */
     public static <R> OnSubscribeFunc<R> ifThen(
             Func0<Boolean> condition,
-            Observable<? extends R> then,
-            Observable<? extends R> orElse) {
+            IObservable<? extends R> then,
+            IObservable<? extends R> orElse) {
         return new IfThen<R>(condition, then, orElse);
     }
 
@@ -92,7 +92,7 @@ public final class OperationConditionals {
      *            the post condition after the source completes
      * @return a subscription function.
      */
-    public static <T> OnSubscribeFunc<T> doWhile(Observable<? extends T> source, Func0<Boolean> postCondition) {
+    public static <T> OnSubscribeFunc<T> doWhile(IObservable<? extends T> source, Func0<Boolean> postCondition) {
         return new WhileDoWhile<T>(source, TRUE, postCondition);
     }
 
@@ -109,7 +109,7 @@ public final class OperationConditionals {
      *            and subscribe to source if it returns {@code true}
      * @return a subscription function.
      */
-    public static <T> OnSubscribeFunc<T> whileDo(Observable<? extends T> source, Func0<Boolean> preCondition) {
+    public static <T> OnSubscribeFunc<T> whileDo(IObservable<? extends T> source, Func0<Boolean> preCondition) {
         return new WhileDoWhile<T>(source, preCondition, preCondition);
     }
 
@@ -124,12 +124,12 @@ public final class OperationConditionals {
      */
     private static final class SwitchCase<K, R> implements OnSubscribeFunc<R> {
         final Func0<? extends K> caseSelector;
-        final Map<? super K, ? extends Observable<? extends R>> mapOfCases;
-        final Observable<? extends R> defaultCase;
+        final Map<? super K, ? extends IObservable<? extends R>> mapOfCases;
+        final IObservable<? extends R> defaultCase;
 
         public SwitchCase(Func0<? extends K> caseSelector,
-                Map<? super K, ? extends Observable<? extends R>> mapOfCases,
-                Observable<? extends R> defaultCase) {
+                Map<? super K, ? extends IObservable<? extends R>> mapOfCases,
+                IObservable<? extends R> defaultCase) {
             this.caseSelector = caseSelector;
             this.mapOfCases = mapOfCases;
             this.defaultCase = defaultCase;
@@ -137,7 +137,7 @@ public final class OperationConditionals {
 
         @Override
         public Subscription onSubscribe(Observer<? super R> t1) {
-            Observable<? extends R> target;
+            IObservable<? extends R> target;
             try {
                 K caseKey = caseSelector.call();
                 if (mapOfCases.containsKey(caseKey)) {
@@ -173,10 +173,10 @@ public final class OperationConditionals {
      */
     private static final class IfThen<R> implements OnSubscribeFunc<R> {
         final Func0<Boolean> condition;
-        final Observable<? extends R> then;
-        final Observable<? extends R> orElse;
+        final IObservable<? extends R> then;
+        final IObservable<? extends R> orElse;
 
-        public IfThen(Func0<Boolean> condition, Observable<? extends R> then, Observable<? extends R> orElse) {
+        public IfThen(Func0<Boolean> condition, IObservable<? extends R> then, IObservable<? extends R> orElse) {
             this.condition = condition;
             this.then = then;
             this.orElse = orElse;
@@ -184,7 +184,7 @@ public final class OperationConditionals {
 
         @Override
         public Subscription onSubscribe(Observer<? super R> t1) {
-            Observable<? extends R> target;
+            IObservable<? extends R> target;
             try {
                 if (condition.call()) {
                     target = then;
@@ -212,9 +212,10 @@ public final class OperationConditionals {
     private static final class WhileDoWhile<T> implements OnSubscribeFunc<T> {
         final Func0<Boolean> preCondition;
         final Func0<Boolean> postCondition;
-        final Observable<? extends T> source;
+        final IObservable<? extends T> source;
 
-        public WhileDoWhile(Observable<? extends T> source,
+        public WhileDoWhile(
+                IObservable<? extends T> source,
                 Func0<Boolean> preCondition, Func0<Boolean> postCondition) {
             this.source = source;
             this.preCondition = preCondition;

@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -454,7 +454,7 @@ public class ChunkedOperation {
 
     /**
      * This {@link rx.operators.ChunkedOperation.ChunkCreator} creates a new {@link rx.operators.ChunkedOperation.Chunk} whenever it receives an
-     * object from the provided {@link rx.Observable} created with the
+     * object from the provided {@link rx.IObservable} created with the
      * chunkClosingSelector {@link rx.util.functions.Func0}.
      * 
      * @param <T>
@@ -464,10 +464,10 @@ public class ChunkedOperation {
     protected static class ObservableBasedSingleChunkCreator<T, C, TClosing> implements ChunkCreator {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
-        private final Func0<? extends Observable<? extends TClosing>> chunkClosingSelector;
+        private final Func0<? extends IObservable<? extends TClosing>> chunkClosingSelector;
         private final NonOverlappingChunks<T, C> chunks;
 
-        public ObservableBasedSingleChunkCreator(NonOverlappingChunks<T, C> chunks, Func0<? extends Observable<? extends TClosing>> chunkClosingSelector) {
+        public ObservableBasedSingleChunkCreator(NonOverlappingChunks<T, C> chunks, Func0<? extends IObservable<? extends TClosing>> chunkClosingSelector) {
             this.chunks = chunks;
             this.chunkClosingSelector = chunkClosingSelector;
 
@@ -476,8 +476,8 @@ public class ChunkedOperation {
         }
 
         private void listenForChunkEnd() {
-            Observable<? extends TClosing> closingObservable = chunkClosingSelector.call();
-            closingObservable.subscribe(new Action1<TClosing>() {
+            IObservable<? extends TClosing> closingObservable = chunkClosingSelector.call();
+            OperationSubscribe.subscribe(closingObservable, new Action1<TClosing>() {
                 @Override
                 public void call(TClosing closing) {
                     chunks.emitAndReplaceChunk();
@@ -499,8 +499,8 @@ public class ChunkedOperation {
 
     /**
      * This {@link rx.operators.ChunkedOperation.ChunkCreator} creates a new {@link rx.operators.ChunkedOperation.Chunk} whenever it receives
-     * an object from the provided chunkOpenings {@link rx.Observable}, and closes the corresponding {@link rx.operators.ChunkedOperation.Chunk} object when it receives an object from the provided
-     * {@link rx.Observable} created
+     * an object from the provided chunkOpenings {@link rx.IObservable}, and closes the corresponding {@link rx.operators.ChunkedOperation.Chunk}
+     * object when it receives an object from the provided {@link rx.IObservable} created
      * with the chunkClosingSelector {@link rx.util.functions.Func1}.
      * 
      * @param <T>
@@ -511,14 +511,14 @@ public class ChunkedOperation {
 
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
-        public ObservableBasedMultiChunkCreator(final OverlappingChunks<T, C> chunks, Observable<? extends TOpening> openings, final Func1<? super TOpening, ? extends Observable<? extends TClosing>> chunkClosingSelector) {
-            subscription.wrap(openings.subscribe(new Action1<TOpening>() {
+        public ObservableBasedMultiChunkCreator(final OverlappingChunks<T, C> chunks, IObservable<? extends TOpening> openings, final Func1<? super TOpening, ? extends IObservable<? extends TClosing>> chunkClosingSelector) {
+            subscription.wrap(OperationSubscribe.subscribe(openings, new Action1<TOpening>() {
                 @Override
                 public void call(TOpening opening) {
                     final Chunk<T, C> chunk = chunks.createChunk();
-                    Observable<? extends TClosing> closingObservable = chunkClosingSelector.call(opening);
+                    final IObservable<? extends TClosing> closingObservable = chunkClosingSelector.call(opening);
 
-                    closingObservable.subscribe(new Action1<TClosing>() {
+                    OperationSubscribe.subscribe(closingObservable, new Action1<TClosing>() {
                         @Override
                         public void call(TClosing closing) {
                             chunks.emitChunk(chunk);

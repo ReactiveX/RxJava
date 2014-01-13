@@ -17,6 +17,7 @@ package rx.operators;
 
 import java.util.concurrent.TimeUnit;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -39,10 +40,10 @@ public final class OperationWindow extends ChunkedOperation {
 
     /**
      * <p>This method creates a {@link rx.util.functions.Func1} object which represents the window operation. This operation takes
-     * values from the specified {@link rx.Observable} source and stores them in a window until the {@link rx.Observable} constructed using the {@link rx.util.functions.Func0} argument, produces a
+     * values from the specified {@link rx.IObservable} source and stores them in a window until the {@link rx.IObservable} constructed using the {@link rx.util.functions.Func0} argument, produces a
      * value. The window is then
-     * emitted, and a new window is created to replace it. A new {@link rx.Observable} will be constructed using the
-     * provided {@link rx.util.functions.Func0} object, which will determine when this new window is emitted. When the source {@link rx.Observable} completes or produces an error, the current window
+     * emitted, and a new window is created to replace it. A new {@link rx.IObservable} will be constructed using the
+     * provided {@link rx.util.functions.Func0} object, which will determine when this new window is emitted. When the source {@link rx.IObservable} completes or produces an error, the current window
      * is emitted, and the event is propagated
      * to all subscribed {@link rx.Observer}s.</p>
      * 
@@ -50,14 +51,14 @@ public final class OperationWindow extends ChunkedOperation {
      * exactly one window actively storing values.</p>
      * 
      * @param source
-     *            The {@link rx.Observable} which produces values.
+     *            The {@link rx.IObservable} which produces values.
      * @param windowClosingSelector
-     *            A {@link rx.util.functions.Func0} object which produces {@link rx.Observable}s. These {@link rx.Observable}s determine when a window is emitted and replaced by simply
+     *            A {@link rx.util.functions.Func0} object which produces {@link rx.IObservable}s. These {@link rx.IObservable}s determine when a window is emitted and replaced by simply
      *            producing an object.
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T, TClosing> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final Func0<? extends Observable<? extends TClosing>> windowClosingSelector) {
+    public static <T, TClosing> OnSubscribeFunc<Observable<T>> window(final IObservable<? extends T> source, final Func0<? extends IObservable<? extends TClosing>> windowClosingSelector) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
@@ -71,30 +72,30 @@ public final class OperationWindow extends ChunkedOperation {
 
     /**
      * <p>This method creates a {@link rx.util.functions.Func1} object which represents the window operation. This operation takes
-     * values from the specified {@link rx.Observable} source and stores them in the currently active window. Initially
+     * values from the specified {@link rx.IObservable} source and stores them in the currently active window. Initially
      * there are no windows active.</p>
      * 
-     * <p>Windows can be created by pushing a {@link rx.util.Opening} value to the "windowOpenings" {@link rx.Observable}.
-     * This creates a new window which will then start recording values which are produced by the "source" {@link rx.Observable}. Additionally the "windowClosingSelector" will be used to construct an
-     * {@link rx.Observable} which can produce values. When it does so it will close this (and only this) newly created
-     * window. When the source {@link rx.Observable} completes or produces an error, all windows are emitted, and the
+     * <p>Windows can be created by pushing a {@link rx.util.Opening} value to the "windowOpenings" {@link rx.IObservable}.
+     * This creates a new window which will then start recording values which are produced by the "source" {@link rx.IObservable}. Additionally the "windowClosingSelector" will be used to construct an
+     * {@link rx.IObservable} which can produce values. When it does so it will close this (and only this) newly created
+     * window. When the source {@link rx.IObservable} completes or produces an error, all windows are emitted, and the
      * event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that when using this operation <strong>multiple overlapping windows</strong>
      * could be active at any one point.</p>
      * 
      * @param source
-     *            The {@link rx.Observable} which produces values.
+     *            The {@link rx.IObservable} which produces values.
      * @param windowOpenings
-     *            An {@link rx.Observable} which when it produces a {@link rx.util.Opening} value will
-     *            create a new window which instantly starts recording the "source" {@link rx.Observable}.
+     *            An {@link rx.IObservable} which when it produces a {@link rx.util.Opening} value will
+     *            create a new window which instantly starts recording the "source" {@link rx.IObservable}.
      * @param windowClosingSelector
-     *            A {@link rx.util.functions.Func0} object which produces {@link rx.Observable}s. These {@link rx.Observable}s determine when a window is emitted and replaced by simply
+     *            A {@link rx.util.functions.Func0} object which produces {@link rx.IObservable}s. These {@link rx.IObservable}s determine when a window is emitted and replaced by simply
      *            producing an object.
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T, TOpening, TClosing> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final Observable<? extends TOpening> windowOpenings, final Func1<? super TOpening, ? extends Observable<? extends TClosing>> windowClosingSelector) {
+    public static <T, TOpening, TClosing> OnSubscribeFunc<Observable<T>> window(final IObservable<? extends T> source, final IObservable<? extends TOpening> windowOpenings, final Func1<? super TOpening, ? extends IObservable<? extends TClosing>> windowClosingSelector) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
@@ -107,49 +108,49 @@ public final class OperationWindow extends ChunkedOperation {
 
     /**
      * <p>This method creates a {@link rx.util.functions.Func1} object which represents the window operation. This operation takes
-     * values from the specified {@link rx.Observable} source and stores them in a window until the window contains
+     * values from the specified {@link rx.IObservable} source and stores them in a window until the window contains
      * a specified number of elements. The window is then emitted, and a new window is created to replace it.
-     * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
+     * When the source {@link rx.IObservable} completes or produces an error, the current window is emitted, and
      * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping windows</strong>. At all times there is
      * exactly one window actively storing values.</p>
      * 
      * @param source
-     *            The {@link rx.Observable} which produces values.
+     *            The {@link rx.IObservable} which produces values.
      * @param count
      *            The number of elements a window should have before being emitted and replaced.
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(Observable<? extends T> source, int count) {
+    public static <T> OnSubscribeFunc<Observable<T>> window(IObservable<? extends T> source, int count) {
         return window(source, count, count);
     }
 
     /**
      * <p>This method creates a {@link rx.util.functions.Func1} object which represents the window operation. This operation takes
-     * values from the specified {@link rx.Observable} source and stores them in all active windows until the window
+     * values from the specified {@link rx.IObservable} source and stores them in all active windows until the window
      * contains a specified number of elements. The window is then emitted. windows are created after a certain
-     * amount of values have been received. When the source {@link rx.Observable} completes or produces an error, the
+     * amount of values have been received. When the source {@link rx.IObservable} completes or produces an error, the
      * currently active windows are emitted, and the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation can produce <strong>non-connected, connected non-overlapping, or overlapping
      * windows</strong> depending on the input parameters.</p>
      * 
      * @param source
-     *            The {@link rx.Observable} which produces values.
+     *            The {@link rx.IObservable} which produces values.
      * @param count
      *            The number of elements a window should have before being emitted.
      * @param skip
      *            The interval with which windows have to be created. Note that when "skip" == "count"
-     *            that this is the same as calling {@link rx.operators.OperationWindow#window(rx.Observable, int)}.
+     *            that this is the same as calling {@link rx.operators.OperationWindow#window(rx.IObservable, int)}.
      *            If "skip" < "count", this window operation will produce overlapping windows and if "skip"
      *            > "count" non-overlapping windows will be created and some values will not be pushed
      *            into a window at all!
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final int count, final int skip) {
+    public static <T> OnSubscribeFunc<Observable<T>> window(final IObservable<? extends T> source, final int count, final int skip) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
@@ -162,16 +163,16 @@ public final class OperationWindow extends ChunkedOperation {
 
     /**
      * <p>This method creates a {@link rx.util.functions.Func1} object which represents the window operation. This operation takes
-     * values from the specified {@link rx.Observable} source and stores them in a window. Periodically the window
+     * values from the specified {@link rx.IObservable} source and stores them in a window. Periodically the window
      * is emitted and replaced with a new window. How often this is done depends on the specified timespan.
-     * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
+     * When the source {@link rx.IObservable} completes or produces an error, the current window is emitted, and
      * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping windows</strong>. At all times there is
      * exactly one window actively storing values.</p>
      * 
      * @param source
-     *            The {@link rx.Observable} which produces values.
+     *            The {@link rx.IObservable} which produces values.
      * @param timespan
      *            The amount of time all windows must be actively collect values before being emitted.
      * @param unit
@@ -179,22 +180,22 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit) {
+    public static <T> OnSubscribeFunc<Observable<T>> window(IObservable<? extends T> source, long timespan, TimeUnit unit) {
         return window(source, timespan, unit, Schedulers.threadPoolForComputation());
     }
 
     /**
      * <p>This method creates a {@link rx.util.functions.Func1} object which represents the window operation. This operation takes
-     * values from the specified {@link rx.Observable} source and stores them in a window. Periodically the window
+     * values from the specified {@link rx.IObservable} source and stores them in a window. Periodically the window
      * is emitted and replaced with a new window. How often this is done depends on the specified timespan.
-     * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
+     * When the source {@link rx.IObservable} completes or produces an error, the current window is emitted, and
      * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping windows</strong>. At all times there is
      * exactly one window actively storing values.</p>
      * 
      * @param source
-     *            The {@link rx.Observable} which produces values.
+     *            The {@link rx.IObservable} which produces values.
      * @param timespan
      *            The amount of time all windows must be actively collect values before being emitted.
      * @param unit
@@ -204,7 +205,7 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final long timespan, final TimeUnit unit, final Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<Observable<T>> window(final IObservable<? extends T> source, final long timespan, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
@@ -217,17 +218,17 @@ public final class OperationWindow extends ChunkedOperation {
 
     /**
      * <p>This method creates a {@link rx.util.functions.Func1} object which represents the window operation. This operation takes
-     * values from the specified {@link rx.Observable} source and stores them in a window. Periodically the window
+     * values from the specified {@link rx.IObservable} source and stores them in a window. Periodically the window
      * is emitted and replaced with a new window. How often this is done depends on the specified timespan.
      * Additionally the window is automatically emitted once it reaches a specified number of elements.
-     * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
+     * When the source {@link rx.IObservable} completes or produces an error, the current window is emitted, and
      * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping windows</strong>. At all times there is
      * exactly one window actively storing values.</p>
      * 
      * @param source
-     *            The {@link rx.Observable} which produces values.
+     *            The {@link rx.IObservable} which produces values.
      * @param timespan
      *            The amount of time all windows must be actively collect values before being emitted.
      * @param unit
@@ -237,23 +238,23 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit, int count) {
+    public static <T> OnSubscribeFunc<Observable<T>> window(IObservable<? extends T> source, long timespan, TimeUnit unit, int count) {
         return window(source, timespan, unit, count, Schedulers.threadPoolForComputation());
     }
 
     /**
      * <p>This method creates a {@link rx.util.functions.Func1} object which represents the window operation. This operation takes
-     * values from the specified {@link rx.Observable} source and stores them in a window. Periodically the window
+     * values from the specified {@link rx.IObservable} source and stores them in a window. Periodically the window
      * is emitted and replaced with a new window. How often this is done depends on the specified timespan.
      * Additionally the window is automatically emitted once it reaches a specified number of elements.
-     * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
+     * When the source {@link rx.IObservable} completes or produces an error, the current window is emitted, and
      * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping windows</strong>. At all times there is
      * exactly one window actively storing values.</p>
      * 
      * @param source
-     *            The {@link rx.Observable} which produces values.
+     *            The {@link rx.IObservable} which produces values.
      * @param timespan
      *            The amount of time all windows must be actively collect values before being emitted.
      * @param unit
@@ -265,7 +266,7 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final long timespan, final TimeUnit unit, final int count, final Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<Observable<T>> window(final IObservable<? extends T> source, final long timespan, final TimeUnit unit, final int count, final Scheduler scheduler) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
@@ -278,17 +279,17 @@ public final class OperationWindow extends ChunkedOperation {
 
     /**
      * <p>This method creates a {@link rx.util.functions.Func1} object which represents the window operation. This operation takes
-     * values from the specified {@link rx.Observable} source and stores them in a window. Periodically the window
+     * values from the specified {@link rx.IObservable} source and stores them in a window. Periodically the window
      * is emitted and replaced with a new window. How often this is done depends on the specified timespan.
      * The creation of windows is also periodical. How often this is done depends on the specified timeshift.
-     * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
+     * When the source {@link rx.IObservable} completes or produces an error, the current window is emitted, and
      * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation can produce <strong>non-connected, or overlapping windows</strong> depending
      * on the input parameters.</p>
      * 
      * @param source
-     *            The {@link rx.Observable} which produces values.
+     *            The {@link rx.IObservable} which produces values.
      * @param timespan
      *            The amount of time all windows must be actively collect values before being emitted.
      * @param timeshift
@@ -298,23 +299,23 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(Observable<? extends T> source, long timespan, long timeshift, TimeUnit unit) {
+    public static <T> OnSubscribeFunc<Observable<T>> window(IObservable<? extends T> source, long timespan, long timeshift, TimeUnit unit) {
         return window(source, timespan, timeshift, unit, Schedulers.threadPoolForComputation());
     }
 
     /**
      * <p>This method creates a {@link rx.util.functions.Func1} object which represents the window operation. This operation takes
-     * values from the specified {@link rx.Observable} source and stores them in a window. Periodically the window
+     * values from the specified {@link rx.IObservable} source and stores them in a window. Periodically the window
      * is emitted and replaced with a new window. How often this is done depends on the specified timespan.
      * The creation of windows is also periodical. How often this is done depends on the specified timeshift.
-     * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
+     * When the source {@link rx.IObservable} completes or produces an error, the current window is emitted, and
      * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation can produce <strong>non-connected, or overlapping windows</strong> depending
      * on the input parameters.</p>
      * 
      * @param source
-     *            The {@link rx.Observable} which produces values.
+     *            The {@link rx.IObservable} which produces values.
      * @param timespan
      *            The amount of time all windows must be actively collect values before being emitted.
      * @param timeshift
@@ -326,7 +327,7 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final long timespan, final long timeshift, final TimeUnit unit, final Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<Observable<T>> window(final IObservable<? extends T> source, final long timespan, final long timeshift, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {

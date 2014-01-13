@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.HashMap;
 import java.util.Map;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -31,16 +31,16 @@ import rx.util.functions.Func2;
  * Correlates the elements of two sequences based on overlapping durations.
  */
 public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> implements OnSubscribeFunc<R> {
-    final Observable<TLeft> left;
-    final Observable<TRight> right;
-    final Func1<TLeft, Observable<TLeftDuration>> leftDurationSelector;
-    final Func1<TRight, Observable<TRightDuration>> rightDurationSelector;
+    final IObservable<TLeft> left;
+    final IObservable<TRight> right;
+    final Func1<TLeft, ? extends IObservable<TLeftDuration>> leftDurationSelector;
+    final Func1<TRight, ? extends IObservable<TRightDuration>> rightDurationSelector;
     final Func2<TLeft, TRight, R> resultSelector;
     public OperationJoin(
-            Observable<TLeft> left, 
-            Observable<TRight> right,
-            Func1<TLeft, Observable<TLeftDuration>> leftDurationSelector,
-            Func1<TRight, Observable<TRightDuration>> rightDurationSelector,
+            IObservable<TLeft> left, 
+            IObservable<TRight> right,
+            Func1<TLeft, ? extends IObservable<TLeftDuration>> leftDurationSelector,
+            Func1<TRight, ? extends IObservable<TRightDuration>> rightDurationSelector,
             Func2<TLeft, TRight, R> resultSelector) {
         this.left = left;
         this.right = right;
@@ -109,7 +109,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                 SerialSubscription md = new SerialSubscription();
                 group.add(md);
                 
-                Observable<TLeftDuration> duration;
+                IObservable<TLeftDuration> duration;
                 try {
                     duration = leftDurationSelector.call(args);
                 } catch (Throwable t) {
@@ -204,7 +204,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                 SerialSubscription md = new SerialSubscription();
                 group.add(md);
                 
-                Observable<TRightDuration> duration;
+                IObservable<TRightDuration> duration;
                 try {
                     duration = rightDurationSelector.call(args);
                 } catch (Throwable t) {

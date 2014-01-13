@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -44,7 +44,7 @@ public final class OperationMap {
      *            the type of the output sequence.
      * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
      */
-    public static <T, R> OnSubscribeFunc<R> map(final Observable<? extends T> sequence, final Func1<? super T, ? extends R> func) {
+    public static <T, R> OnSubscribeFunc<R> map(final IObservable<? extends T> sequence, final Func1<? super T, ? extends R> func) {
         return mapWithIndex(sequence, new Func2<T, Integer, R>() {
             @Override
             public R call(T value, @SuppressWarnings("unused") Integer unused) {
@@ -69,7 +69,7 @@ public final class OperationMap {
      * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
      * @deprecated
      */
-    public static <T, R> OnSubscribeFunc<R> mapWithIndex(final Observable<? extends T> sequence, final Func2<? super T, Integer, ? extends R> func) {
+    public static <T, R> OnSubscribeFunc<R> mapWithIndex(final IObservable<? extends T> sequence, final Func2<? super T, Integer, ? extends R> func) {
         return new OnSubscribeFunc<R>() {
             @Override
             public Subscription onSubscribe(Observer<? super R> observer) {
@@ -87,12 +87,12 @@ public final class OperationMap {
      *            the type of the output sequence.
      */
     private static class MapObservable<T, R> implements OnSubscribeFunc<R> {
-        public MapObservable(Observable<? extends T> sequence, Func2<? super T, Integer, ? extends R> func) {
+        public MapObservable(IObservable<? extends T> sequence, Func2<? super T, Integer, ? extends R> func) {
             this.sequence = sequence;
             this.func = func;
         }
 
-        private final Observable<? extends T> sequence;
+        private final IObservable<? extends T> sequence;
         private final Func2<? super T, Integer, ? extends R> func;
         private int index;
 

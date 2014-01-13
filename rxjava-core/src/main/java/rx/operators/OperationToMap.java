@@ -19,7 +19,7 @@ package rx.operators;
 import java.util.HashMap;
 import java.util.Map;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -38,7 +38,7 @@ public class OperationToMap {
     /**
      * ToMap with key selector, identity value selector and default HashMap factory.
      */
-    public static <T, K> OnSubscribeFunc<Map<K, T>> toMap(Observable<T> source,
+    public static <T, K> OnSubscribeFunc<Map<K, T>> toMap(IObservable<T> source,
             Func1<? super T, ? extends K> keySelector) {
         return new ToMap<T, K, T>(source, keySelector,
         Functions.<T>identity(), new DefaultToMapFactory<K, T>());
@@ -47,7 +47,7 @@ public class OperationToMap {
     /**
      * ToMap with key selector, value selector and default HashMap factory.
      */
-    public static <T, K, V> OnSubscribeFunc<Map<K, V>> toMap(Observable<T> source,
+    public static <T, K, V> OnSubscribeFunc<Map<K, V>> toMap(IObservable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector) {
         return new ToMap<T, K, V>(source, keySelector,
@@ -57,7 +57,7 @@ public class OperationToMap {
     /**
      * ToMap with key selector, value selector and custom Map factory.
      */
-    public static <T, K, V> OnSubscribeFunc<Map<K, V>> toMap(Observable<T> source,
+    public static <T, K, V> OnSubscribeFunc<Map<K, V>> toMap(IObservable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector,
             Func0<? extends Map<K, V>> mapFactory) {
@@ -82,7 +82,7 @@ public class OperationToMap {
      */
     public static class ToMap<T, K, V> implements OnSubscribeFunc<Map<K, V>> {
         /** The source. */
-        private final Observable<T> source;
+        private final IObservable<T> source;
         /** Key extractor. */
         private final Func1<? super T, ? extends K> keySelector;
         /** Value extractor. */
@@ -90,7 +90,7 @@ public class OperationToMap {
         /** Map factory. */
         private final Func0<? extends Map<K, V>> mapFactory;
         public ToMap(
-                Observable<T> source,
+                IObservable<T> source,
                 Func1<? super T, ? extends K> keySelector,
                 Func1<? super T, ? extends V> valueSelector,
                 Func0<? extends Map<K, V>> mapFactory

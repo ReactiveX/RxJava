@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -43,7 +43,7 @@ public class OperationToMultimap {
      * default HashMap factory and default ArrayList collection factory.
      */
     public static <T, K> OnSubscribeFunc<Map<K, Collection<T>>> toMultimap(
-            Observable<T> source,
+            IObservable<T> source,
             Func1<? super T, ? extends K> keySelector
     ) {
         return new ToMultimap<T, K, T>(
@@ -58,7 +58,7 @@ public class OperationToMultimap {
      * default HashMap factory and default ArrayList collection factory.
      */
     public static <T, K, V> OnSubscribeFunc<Map<K, Collection<V>>> toMultimap(
-            Observable<T> source,
+            IObservable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector
     ) {
@@ -73,7 +73,7 @@ public class OperationToMultimap {
      * custom Map factory and default ArrayList collection factory.
      */
     public static <T, K, V> OnSubscribeFunc<Map<K, Collection<V>>> toMultimap(
-            Observable<T> source,
+            IObservable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector,
             Func0<? extends Map<K, Collection<V>>> mapFactory
@@ -89,7 +89,7 @@ public class OperationToMultimap {
      * custom Map factory and custom collection factory.
      */
     public static <T, K, V> OnSubscribeFunc<Map<K, Collection<V>>> toMultimap(
-            Observable<T> source,
+            IObservable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector,
             Func0<? extends Map<K, Collection<V>>> mapFactory,
@@ -126,13 +126,13 @@ public class OperationToMultimap {
      * by various selectors and factories.
      */
     public static class ToMultimap<T, K, V> implements OnSubscribeFunc<Map<K, Collection<V>>> {
-        private final Observable<T> source;
+        private final IObservable<T> source;
         private final Func1<? super T, ? extends K> keySelector;
         private final Func1<? super T, ? extends V> valueSelector;
         private final Func0<? extends Map<K, Collection<V>>> mapFactory;
         private final Func1<? super K, ? extends Collection<V>> collectionFactory;
         public ToMultimap(
-                Observable<T> source,
+                IObservable<T> source,
                 Func1<? super T, ? extends K> keySelector,
                 Func1<? super T, ? extends V> valueSelector,
                 Func0<? extends Map<K, Collection<V>>> mapFactory,

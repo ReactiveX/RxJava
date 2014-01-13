@@ -15,6 +15,7 @@
  */
 package rx.operators;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -31,7 +32,7 @@ public class OperationUsing {
 
     public static <T, RESOURCE extends Subscription> OnSubscribeFunc<T> using(
             final Func0<RESOURCE> resourceFactory,
-            final Func1<RESOURCE, Observable<T>> observableFactory) {
+            final Func1<RESOURCE, ? extends IObservable<T>> observableFactory) {
         return new OnSubscribeFunc<T>() {
             @Override
             public Subscription onSubscribe(Observer<? super T> observer) {
@@ -41,7 +42,7 @@ public class OperationUsing {
                     if (resource != null) {
                         resourceSubscription = resource;
                     }
-                    Observable<T> observable = observableFactory.call(resource);
+                    IObservable<T> observable = observableFactory.call(resource);
                     SafeObservableSubscription subscription = new SafeObservableSubscription();
                     // Use SafeObserver to guarantee resourceSubscription will
                     // be unsubscribed.

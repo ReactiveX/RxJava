@@ -17,11 +17,10 @@ package rx.subscriptions;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable;
 import rx.Subscription;
 
 /**
- * Subscription that can be checked for status such as in a loop inside an {@link Observable} to exit the loop if unsubscribed.
+ * Subscription that can be checked for status such as in a loop inside an {@link rx.IObservable} to exit the loop if unsubscribed.
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.multipleassignmentdisposable">Rx.Net equivalent MultipleAssignmentDisposable</a>
  */

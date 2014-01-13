@@ -17,6 +17,7 @@ package rx.operators;
 
 import java.util.concurrent.TimeUnit;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -29,9 +30,10 @@ import rx.util.functions.Func1;
 
 public final class OperationDelay {
 
-    public static <T> Observable<T> delay(Observable<T> observable, final long delay, final TimeUnit unit, final Scheduler scheduler) {
+    public static <T> Observable<T> delay(IObservable<T> observable, final long delay, final TimeUnit unit, final Scheduler scheduler) {
         // observable.map(x => Observable.timer(t).map(_ => x).startItAlreadyNow()).concat()
-        Observable<Observable<T>> seqs = observable.map(new Func1<T, Observable<T>>() {
+        Observable<Observable<T>> seqs = Observable.from(observable).map(new Func1<T, Observable<T>>() {
+            @Override
             public Observable<T> call(final T x) {
                 ConnectableObservable<T> co = Observable.timer(delay, unit, scheduler).map(new Func1<Long, T>() {
                     @Override
@@ -49,18 +51,18 @@ public final class OperationDelay {
     /**
      * Delays the subscription to the source by the given amount, running on the given scheduler.
      */
-    public static <T> OnSubscribeFunc<T> delaySubscription(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+    public static <T> OnSubscribeFunc<T> delaySubscription(IObservable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
         return new DelaySubscribeFunc<T>(source, time, unit, scheduler);
     }
     
     /** Subscribe function which schedules the actual subscription to source on a scheduler at a later time. */
     private static final class DelaySubscribeFunc<T> implements OnSubscribeFunc<T> {
-        final Observable<? extends T> source;
+        final IObservable<? extends T> source;
         final Scheduler scheduler;
         final long time;
         final TimeUnit unit;
 
-        public DelaySubscribeFunc(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+        public DelaySubscribeFunc(IObservable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
             this.source = source;
             this.scheduler = scheduler;
             this.time = time;

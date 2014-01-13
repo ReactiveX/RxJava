@@ -17,14 +17,14 @@ package rx.operators;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subjects.ReplaySubject;
 
 /**
- * This method has similar behavior to {@link Observable#replay()} except that this auto-subscribes
+ * This method has similar behavior to {@link rx.Observable#replay()} except that this auto-subscribes
  * to the source Observable rather than returning a connectable Observable.
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/cache.png">
@@ -38,7 +38,7 @@ import rx.subjects.ReplaySubject;
  */
 public class OperationCache {
 
-    public static <T> OnSubscribeFunc<T> cache(final Observable<? extends T> source) {
+    public static <T> OnSubscribeFunc<T> cache(final IObservable<? extends T> source) {
         return new OnSubscribeFunc<T>() {
 
             final AtomicBoolean subscribed = new AtomicBoolean(false);

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import rx.IObservable;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
@@ -33,7 +34,7 @@ import rx.util.functions.Action1;
  */
 public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinObserver {
     private Object gate;
-    private final Observable<T> source;
+    private final IObservable<T> source;
     private final Action1<Throwable> onError;
     private final List<ActivePlan0> activePlans;
     private final Queue<Notification<T>> queue;
@@ -42,7 +43,7 @@ public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinOb
     private final AtomicBoolean subscribed = new AtomicBoolean(false);
     private final SafeObserver<Notification<T>> safeObserver;
     
-    public JoinObserver1(Observable<T> source, Action1<Throwable> onError) {
+    public JoinObserver1(IObservable<T> source, Action1<Throwable> onError) {
         this.source = source;
         this.onError = onError;
         queue = new LinkedList<Notification<T>>();
@@ -59,7 +60,7 @@ public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinOb
     public void subscribe(Object gate) {
         if (subscribed.compareAndSet(false, true)) {
             this.gate = gate;
-            subscription.wrap(source.materialize().subscribe(this));
+            subscription.wrap(Observable.from(source).materialize().subscribe(this));
         } else {
             throw new IllegalStateException("Can only be subscribed to once.");
         }

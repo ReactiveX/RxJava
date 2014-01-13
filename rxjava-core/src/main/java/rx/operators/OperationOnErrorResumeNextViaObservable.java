@@ -17,7 +17,7 @@ package rx.operators;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -43,20 +43,21 @@ import rx.Subscription;
  */
 public final class OperationOnErrorResumeNextViaObservable<T> {
 
-    public static <T> OnSubscribeFunc<T> onErrorResumeNextViaObservable(Observable<? extends T> originalSequence, Observable<? extends T> resumeSequence) {
+    public static <T> OnSubscribeFunc<T> onErrorResumeNextViaObservable(IObservable<? extends T> originalSequence, IObservable<? extends T> resumeSequence) {
         return new OnErrorResumeNextViaObservable<T>(originalSequence, resumeSequence);
     }
 
     private static class OnErrorResumeNextViaObservable<T> implements OnSubscribeFunc<T> {
 
-        private final Observable<? extends T> resumeSequence;
-        private final Observable<? extends T> originalSequence;
+        private final IObservable<? extends T> resumeSequence;
+        private final IObservable<? extends T> originalSequence;
 
-        public OnErrorResumeNextViaObservable(Observable<? extends T> originalSequence, Observable<? extends T> resumeSequence) {
+        public OnErrorResumeNextViaObservable(IObservable<? extends T> originalSequence, IObservable<? extends T> resumeSequence) {
             this.resumeSequence = resumeSequence;
             this.originalSequence = originalSequence;
         }
 
+        @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
@@ -65,6 +66,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
 
             // subscribe to the original Observable and remember the subscription
             subscription.wrap(originalSequence.subscribe(new Observer<T>() {
+                @Override
                 public void onNext(T value) {
                     // forward the successful calls unless resumed
                     if (subscriptionRef.get() == subscription)
@@ -74,6 +76,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                 /**
                  * Instead of passing the onError forward, we intercept and "resume" with the resumeSequence.
                  */
+                @Override
                 public void onError(Throwable ex) {
                     /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
                     SafeObservableSubscription currentSubscription = subscriptionRef.get();
@@ -90,6 +93,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                     }
                 }
 
+                @Override
                 public void onCompleted() {
                     // forward the successful calls unless resumed
                     if (subscriptionRef.get() == subscription)
@@ -98,6 +102,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             }));
 
             return new Subscription() {
+                @Override
                 public void unsubscribe() {
                     // this will get either the original, or the resumeSequence one and unsubscribe on it
                     Subscription s = subscriptionRef.getAndSet(null);
