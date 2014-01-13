@@ -380,4 +380,51 @@ public class OperationSwitchTest {
     @SuppressWarnings("serial")
     private class TestException extends Throwable {
     }
+
+    @Test
+    public void testSwitchIssue737() {
+        // https://github.com/Netflix/RxJava/issues/737
+        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+            @Override
+            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+                publishNext(observer, 0, Observable.create(new Observable.OnSubscribeFunc<String>() {
+                    @Override
+                    public Subscription onSubscribe(Observer<? super String> observer) {
+                        publishNext(observer, 10, "1-one");
+                        publishNext(observer, 20, "1-two");
+                        // The following events will be ignored
+                        publishNext(observer, 30, "1-three");
+                        publishCompleted(observer, 40);
+                        return Subscriptions.empty();
+                    }
+                }));
+                publishNext(observer, 25, Observable.create(new Observable.OnSubscribeFunc<String>() {
+                    @Override
+                    public Subscription onSubscribe(Observer<? super String> observer) {
+                        publishNext(observer, 10, "2-one");
+                        publishNext(observer, 20, "2-two");
+                        publishNext(observer, 30, "2-three");
+                        publishCompleted(observer, 40);
+                        return Subscriptions.empty();
+                    }
+                }));
+                publishCompleted(observer, 30);
+                return Subscriptions.empty();
+            }
+        });
+
+        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        sampled.subscribe(observer);
+
+        scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("1-one");
+        inOrder.verify(observer, times(1)).onNext("1-two");
+        inOrder.verify(observer, times(1)).onNext("2-one");
+        inOrder.verify(observer, times(1)).onNext("2-two");
+        inOrder.verify(observer, times(1)).onNext("2-three");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
 }

@@ -126,13 +126,12 @@ public final class OperationSwitch {
                         sub.unsubscribe();
                         if (latest == id) {
                             SwitchObserver.this.hasLatest = false;
-                        }
 
-                        if (stopped) {
-                            SwitchObserver.this.observer.onCompleted();
-                            SwitchObserver.this.parent.unsubscribe();
+                            if (stopped) {
+                                SwitchObserver.this.observer.onCompleted();
+                                SwitchObserver.this.parent.unsubscribe();
+                            }
                         }
-
                     }
                 }
 
