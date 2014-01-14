@@ -1326,6 +1326,30 @@ trait Observable[+T]
   }
 
   /**
+   * Groups the items emitted by this Observable according to a specified discriminator function and terminates these groups
+   * according to a function.
+   *
+   * @param f
+   *            a function that extracts the key from an item
+   * @param closings
+   *            the function that accepts the key of a given group and an observable representing that group, and returns
+   *            an observable that emits a single Closing when the group should be closed.
+   * @tparam K 
+   *            the type of the keys returned by the discriminator function.
+   * @tparam Closing
+   *            the type of the element emitted from the closings observable.
+   * @return an Observable that emits `(key, observable)` pairs, where `observable`
+   *         contains all items for which `f` returned `key` before `closings` emits a value.
+   */
+  def groupByUntil[K, Closing](f: T => K, closings: (K, Observable[T])=>Observable[Closing]): Observable[(K, Observable[T])] = {
+    val fclosing: Func1[_ >: rx.observables.GroupedObservable[K, _ <: T], _ <: rx.Observable[_ <: Closing]] =
+      (jGrObs: rx.observables.GroupedObservable[K, _ <: T]) => closings(jGrObs.getKey, toScalaObservable[T](jGrObs)).asJavaObservable
+    val o1 = asJavaObservable.groupByUntil[K, Closing](f, fclosing) : rx.Observable[_ <: rx.observables.GroupedObservable[K, _ <: T]]
+    val func = (o: rx.observables.GroupedObservable[K, _ <: T]) => (o.getKey, toScalaObservable[T](o))
+    toScalaObservable[(K, Observable[T])](o1.map[(K, Observable[T])](func))
+  }
+
+  /**
    * Given an Observable that emits Observables, creates a single Observable that
    * emits the items emitted by the most recently published of those Observables.
    *

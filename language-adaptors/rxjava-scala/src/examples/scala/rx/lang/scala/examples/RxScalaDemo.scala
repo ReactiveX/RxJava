@@ -242,6 +242,17 @@ class RxScalaDemo extends JUnitSuite {
     waitFor(firstMedalOfEachCountry)
   }
 
+  @Test def groupByUntilExample() {
+    val numbers = Observable.interval(250 millis) take 14
+    val grouped = numbers.groupByUntil[Long, Long](
+      {case x => x % 2},
+      {case (key, obs) => obs filter {case x => x == 7}}
+    )
+    val sequenced = (grouped map {case (key, obs) => obs.toSeq}).flatten
+    sequenced subscribe {x => println(s"Emitted group: $x")}
+  }
+
+
   @Test def olympicsExample() {
     val medals = Olympics.mountainBikeMedals.publish
     medals.subscribe(println(_))

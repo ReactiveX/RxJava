@@ -42,11 +42,11 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
     final Observable<TSource> source;
     final Func1<? super TSource, ? extends TKey> keySelector;
     final Func1<? super TSource, ? extends TResult> valueSelector;
-    final Func1<? super GroupedObservable<TKey, TResult>, ? extends Observable<TDuration>> durationSelector;
+    final Func1<? super GroupedObservable<TKey, TResult>, ? extends Observable<? extends TDuration>> durationSelector;
     public OperationGroupByUntil(Observable<TSource> source,
             Func1<? super TSource, ? extends TKey> keySelector,
             Func1<? super TSource, ? extends TResult> valueSelector,
-            Func1<? super GroupedObservable<TKey, TResult>, ? extends Observable<TDuration>> durationSelector) {
+            Func1<? super GroupedObservable<TKey, TResult>, ? extends Observable<? extends TDuration>> durationSelector) {
         this.source = source;
         this.keySelector = keySelector;
         this.valueSelector = valueSelector;
@@ -107,7 +107,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             }
             
             if (newGroup) {
-                Observable<TDuration> duration;
+                Observable<? extends TDuration> duration;
                 try {
                     duration = durationSelector.call(g);
                 } catch (Throwable t) {
