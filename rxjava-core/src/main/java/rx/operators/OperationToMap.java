@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class OperationToMap {
     public static <T, K> OnSubscribeFunc<Map<K, T>> toMap(Observable<T> source,
             Func1<? super T, ? extends K> keySelector) {
         return new ToMap<T, K, T>(source, keySelector,
-        Functions.<T>identity(), new DefaultToMapFactory<K, T>());
+                Functions.<T> identity(), new DefaultToMapFactory<K, T>());
     }
 
     /**
@@ -51,7 +51,7 @@ public class OperationToMap {
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector) {
         return new ToMap<T, K, V>(source, keySelector,
-        valueSelector, new DefaultToMapFactory<K, V>());
+                valueSelector, new DefaultToMapFactory<K, V>());
     }
 
     /**
@@ -62,7 +62,7 @@ public class OperationToMap {
             Func1<? super T, ? extends V> valueSelector,
             Func0<? extends Map<K, V>> mapFactory) {
         return new ToMap<T, K, V>(source, keySelector,
-        valueSelector, mapFactory);
+                valueSelector, mapFactory);
     }
 
     /** The default map factory. */
@@ -72,13 +72,18 @@ public class OperationToMap {
             return new HashMap<K, V>();
         }
     }
+
     /**
      * Maps the elements of the source observable into a java.util.Map instance
      * returned by the mapFactory function by using the keySelector and
      * valueSelector.
-     * @param <T> the source's value type
-     * @param <K> the key type
-     * @param <V> the value type
+     * 
+     * @param <T>
+     *            the source's value type
+     * @param <K>
+     *            the key type
+     * @param <V>
+     *            the value type
      */
     public static class ToMap<T, K, V> implements OnSubscribeFunc<Map<K, V>> {
         /** The source. */
@@ -89,18 +94,19 @@ public class OperationToMap {
         private final Func1<? super T, ? extends V> valueSelector;
         /** Map factory. */
         private final Func0<? extends Map<K, V>> mapFactory;
+
         public ToMap(
                 Observable<T> source,
                 Func1<? super T, ? extends K> keySelector,
                 Func1<? super T, ? extends V> valueSelector,
-                Func0<? extends Map<K, V>> mapFactory
-                ) {
+                Func0<? extends Map<K, V>> mapFactory) {
             this.source = source;
             this.keySelector = keySelector;
             this.valueSelector = valueSelector;
             this.mapFactory = mapFactory;
-            
+
         }
+
         @Override
         public Subscription onSubscribe(Observer<? super Map<K, V>> t1) {
             Map<K, V> map;
@@ -113,6 +119,7 @@ public class OperationToMap {
             return source.subscribe(new ToMapObserver<K, V, T>(
                     t1, keySelector, valueSelector, map));
         }
+
         /**
          * Observer that collects the source values of T into
          * a map.
@@ -126,9 +133,9 @@ public class OperationToMap {
             private final Func1<? super T, ? extends V> valueSelector;
             /** The observer who is receiving the completed map. */
             private final Observer<? super Map<K, V>> t1;
-            
+
             public ToMapObserver(
-                    Observer<? super Map<K, V>> t1, 
+                    Observer<? super Map<K, V>> t1,
                     Func1<? super T, ? extends K> keySelector,
                     Func1<? super T, ? extends V> valueSelector,
                     Map<K, V> map) {
@@ -137,17 +144,20 @@ public class OperationToMap {
                 this.keySelector = keySelector;
                 this.valueSelector = valueSelector;
             }
+
             @Override
             public void onNext(T args) {
                 K key = keySelector.call(args);
                 V value = valueSelector.call(args);
                 map.put(key, value);
             }
+
             @Override
             public void onError(Throwable e) {
                 map = null;
                 t1.onError(e);
             }
+
             @Override
             public void onCompleted() {
                 Map<K, V> map0 = map;

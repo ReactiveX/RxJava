@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ public class RxJavaPlugins {
     /* package accessible for unit tests */RxJavaPlugins() {
 
     }
-    
-    /* package accessible for ujnit tests */ void reset() {
+
+    /* package accessible for ujnit tests */void reset() {
         INSTANCE.errorHandler.set(null);
         INSTANCE.observableExecutionHook.set(null);
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -185,6 +185,7 @@ public class BehaviorSubjectTest {
         verify(aObserver, never()).onNext("two");
         verify(aObserver, never()).onCompleted();
     }
+
     @Test
     public void testCompletedAfterErrorIsNotSent2() {
         BehaviorSubject<String> subject = BehaviorSubject.create("default");
@@ -210,7 +211,7 @@ public class BehaviorSubjectTest {
         verify(o2, never()).onNext(any());
         verify(o2, never()).onCompleted();
     }
-    
+
     @Test
     public void testCompletedAfterErrorIsNotSent3() {
         BehaviorSubject<String> subject = BehaviorSubject.create("default");

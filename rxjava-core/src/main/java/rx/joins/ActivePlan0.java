@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,13 @@ import java.util.Map;
  */
 public abstract class ActivePlan0 {
     protected final Map<JoinObserver, JoinObserver> joinObservers = new HashMap<JoinObserver, JoinObserver>();
-    
+
     public abstract void match();
-    
+
     protected void addJoinObserver(JoinObserver joinObserver) {
         joinObservers.put(joinObserver, joinObserver);
     }
+
     protected void dequeue() {
         for (JoinObserver jo : joinObservers.values()) {
             jo.dequeue();

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import rx.util.functions.Func1;
 import rx.util.functions.Functions;
 
 /**
- * Maps the elements of the source observable into a multimap 
+ * Maps the elements of the source observable into a multimap
  * (Map&lt;K, Collection&lt;V>>) where each
  * key entry has a collection of the source's values.
  * 
@@ -45,12 +45,11 @@ public class OperationToMultimap {
     public static <T, K> OnSubscribeFunc<Map<K, Collection<T>>> toMultimap(
             Observable<T> source,
             Func1<? super T, ? extends K> keySelector
-    ) {
+            ) {
         return new ToMultimap<T, K, T>(
-                source, keySelector, Functions.<T>identity(),
+                source, keySelector, Functions.<T> identity(),
                 new DefaultToMultimapFactory<K, T>(),
-                new DefaultMultimapCollectionFactory<K, T>()
-        );
+                new DefaultMultimapCollectionFactory<K, T>());
     }
 
     /**
@@ -61,13 +60,13 @@ public class OperationToMultimap {
             Observable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector
-    ) {
+            ) {
         return new ToMultimap<T, K, V>(
                 source, keySelector, valueSelector,
                 new DefaultToMultimapFactory<K, V>(),
-                new DefaultMultimapCollectionFactory<K, V>()
-        );
+                new DefaultMultimapCollectionFactory<K, V>());
     }
+
     /**
      * ToMultimap with key selector, custom value selector,
      * custom Map factory and default ArrayList collection factory.
@@ -77,13 +76,13 @@ public class OperationToMultimap {
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector,
             Func0<? extends Map<K, Collection<V>>> mapFactory
-    ) {
+            ) {
         return new ToMultimap<T, K, V>(
                 source, keySelector, valueSelector,
                 mapFactory,
-                new DefaultMultimapCollectionFactory<K, V>()
-        );
+                new DefaultMultimapCollectionFactory<K, V>());
     }
+
     /**
      * ToMultimap with key selector, custom value selector,
      * custom Map factory and custom collection factory.
@@ -94,13 +93,13 @@ public class OperationToMultimap {
             Func1<? super T, ? extends V> valueSelector,
             Func0<? extends Map<K, Collection<V>>> mapFactory,
             Func1<? super K, ? extends Collection<V>> collectionFactory
-    ) {
+            ) {
         return new ToMultimap<T, K, V>(
                 source, keySelector, valueSelector,
                 mapFactory,
-                collectionFactory
-        );
+                collectionFactory);
     }
+
     /**
      * The default multimap factory returning a HashMap.
      */
@@ -110,17 +109,19 @@ public class OperationToMultimap {
             return new HashMap<K, Collection<V>>();
         }
     }
+
     /**
      * The default collection factory for a key in the multimap returning
      * an ArrayList independent of the key.
      */
     public static class DefaultMultimapCollectionFactory<K, V>
-    implements Func1<K, Collection<V>> {
+            implements Func1<K, Collection<V>> {
         @Override
         public Collection<V> call(K t1) {
             return new ArrayList<V>();
         }
     }
+
     /**
      * Maps the elements of the source observable int a multimap customized
      * by various selectors and factories.
@@ -131,19 +132,20 @@ public class OperationToMultimap {
         private final Func1<? super T, ? extends V> valueSelector;
         private final Func0<? extends Map<K, Collection<V>>> mapFactory;
         private final Func1<? super K, ? extends Collection<V>> collectionFactory;
+
         public ToMultimap(
                 Observable<T> source,
                 Func1<? super T, ? extends K> keySelector,
                 Func1<? super T, ? extends V> valueSelector,
                 Func0<? extends Map<K, Collection<V>>> mapFactory,
-                Func1<? super K, ? extends Collection<V>> collectionFactory
-        ) {
+                Func1<? super K, ? extends Collection<V>> collectionFactory) {
             this.source = source;
             this.keySelector = keySelector;
             this.valueSelector = valueSelector;
             this.mapFactory = mapFactory;
             this.collectionFactory = collectionFactory;
         }
+
         @Override
         public Subscription onSubscribe(Observer<? super Map<K, Collection<V>>> t1) {
             Map<K, Collection<V>> map;
@@ -155,8 +157,9 @@ public class OperationToMultimap {
             }
             return source.subscribe(new ToMultimapObserver<T, K, V>(
                     t1, keySelector, valueSelector, map, collectionFactory
-            ));
+                    ));
         }
+
         /**
          * Observer that collects the source values of Ts into a multimap.
          */
@@ -166,19 +169,20 @@ public class OperationToMultimap {
             private final Func1<? super K, ? extends Collection<V>> collectionFactory;
             private Map<K, Collection<V>> map;
             private Observer<? super Map<K, Collection<V>>> t1;
+
             public ToMultimapObserver(
-                Observer<? super Map<K, Collection<V>>> t1,
-                Func1<? super T, ? extends K> keySelector,
-                Func1<? super T, ? extends V> valueSelector,
-                Map<K, Collection<V>> map,
-                Func1<? super K, ? extends Collection<V>> collectionFactory
-            ) {
+                    Observer<? super Map<K, Collection<V>>> t1,
+                    Func1<? super T, ? extends K> keySelector,
+                    Func1<? super T, ? extends V> valueSelector,
+                    Map<K, Collection<V>> map,
+                    Func1<? super K, ? extends Collection<V>> collectionFactory) {
                 this.t1 = t1;
                 this.keySelector = keySelector;
                 this.valueSelector = valueSelector;
                 this.collectionFactory = collectionFactory;
                 this.map = map;
             }
+
             @Override
             public void onNext(T args) {
                 K key = keySelector.call(args);
@@ -190,11 +194,13 @@ public class OperationToMultimap {
                 }
                 collection.add(value);
             }
+
             @Override
             public void onError(Throwable e) {
                 map = null;
                 t1.onError(e);
             }
+
             @Override
             public void onCompleted() {
                 Map<K, Collection<V>> map0 = map;

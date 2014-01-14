@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -175,7 +175,6 @@ public class OperationCombineLatestTest {
         inOrder.verify(w, times(1)).onCompleted();
     }
 
-    
     @SuppressWarnings("unchecked")
     /* mock calls don't do generics */
     @Test
@@ -330,144 +329,145 @@ public class OperationCombineLatestTest {
     public void combineSimple() {
         PublishSubject<Integer> a = PublishSubject.create();
         PublishSubject<Integer> b = PublishSubject.create();
-        
+
         Observable<Integer> source = Observable.combineLatest(a, b, or);
-        
+
         Observer<Object> observer = mock(Observer.class);
-        
+
         source.subscribe(observer);
-        
+
         InOrder inOrder = inOrder(observer);
-        
+
         a.onNext(1);
-        
+
         inOrder.verify(observer, never()).onNext(any());
-        
+
         a.onNext(2);
-        
+
         inOrder.verify(observer, never()).onNext(any());
-        
+
         b.onNext(0x10);
-        
+
         inOrder.verify(observer, times(1)).onNext(0x12);
-        
+
         b.onNext(0x20);
         inOrder.verify(observer, times(1)).onNext(0x22);
-        
+
         b.onCompleted();
-        
+
         inOrder.verify(observer, never()).onCompleted();
-        
+
         a.onCompleted();
 
         inOrder.verify(observer, times(1)).onCompleted();
-        
+
         a.onNext(3);
         b.onNext(0x30);
         a.onCompleted();
         b.onCompleted();
-        
+
         inOrder.verifyNoMoreInteractions();
         verify(observer, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void combineMultipleObservers() {
         PublishSubject<Integer> a = PublishSubject.create();
         PublishSubject<Integer> b = PublishSubject.create();
-        
+
         Observable<Integer> source = Observable.combineLatest(a, b, or);
-        
+
         Observer<Object> observer1 = mock(Observer.class);
         Observer<Object> observer2 = mock(Observer.class);
-        
+
         source.subscribe(observer1);
         source.subscribe(observer2);
-        
+
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);
-        
+
         a.onNext(1);
-        
+
         inOrder1.verify(observer1, never()).onNext(any());
         inOrder2.verify(observer2, never()).onNext(any());
-        
+
         a.onNext(2);
-        
+
         inOrder1.verify(observer1, never()).onNext(any());
         inOrder2.verify(observer2, never()).onNext(any());
-        
+
         b.onNext(0x10);
-        
+
         inOrder1.verify(observer1, times(1)).onNext(0x12);
         inOrder2.verify(observer2, times(1)).onNext(0x12);
-        
+
         b.onNext(0x20);
         inOrder1.verify(observer1, times(1)).onNext(0x22);
         inOrder2.verify(observer2, times(1)).onNext(0x22);
-        
+
         b.onCompleted();
-        
+
         inOrder1.verify(observer1, never()).onCompleted();
         inOrder2.verify(observer2, never()).onCompleted();
-        
+
         a.onCompleted();
 
         inOrder1.verify(observer1, times(1)).onCompleted();
         inOrder2.verify(observer2, times(1)).onCompleted();
-        
+
         a.onNext(3);
         b.onNext(0x30);
         a.onCompleted();
         b.onCompleted();
-        
+
         inOrder1.verifyNoMoreInteractions();
         inOrder2.verifyNoMoreInteractions();
         verify(observer1, never()).onError(any(Throwable.class));
         verify(observer2, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testFirstNeverProduces() {
         PublishSubject<Integer> a = PublishSubject.create();
         PublishSubject<Integer> b = PublishSubject.create();
-        
+
         Observable<Integer> source = Observable.combineLatest(a, b, or);
-        
+
         Observer<Object> observer = mock(Observer.class);
-        
+
         source.subscribe(observer);
-        
+
         InOrder inOrder = inOrder(observer);
-        
+
         b.onNext(0x10);
         b.onNext(0x20);
-        
+
         a.onCompleted();
-        
+
         inOrder.verify(observer, times(1)).onCompleted();
         verify(observer, never()).onNext(any());
         verify(observer, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testSecondNeverProduces() {
         PublishSubject<Integer> a = PublishSubject.create();
         PublishSubject<Integer> b = PublishSubject.create();
-        
+
         Observable<Integer> source = Observable.combineLatest(a, b, or);
-        
+
         Observer<Object> observer = mock(Observer.class);
-        
+
         source.subscribe(observer);
-        
+
         InOrder inOrder = inOrder(observer);
-        
+
         a.onNext(0x1);
         a.onNext(0x2);
-        
+
         b.onCompleted();
         a.onCompleted();
-        
+
         inOrder.verify(observer, times(1)).onCompleted();
         verify(observer, never()).onNext(any());
         verify(observer, never()).onError(any(Throwable.class));

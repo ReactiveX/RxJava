@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     public static <T> ReplaySubject<T> create() {
         return create(16);
     }
+
     public static <T> ReplaySubject<T> create(int initialCapacity) {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
         final ReplayState<T> state = new ReplayState<T>(initialCapacity);
@@ -96,6 +97,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         final History<T> history;
         // each Observer is tracked here for what events they have received
         final ConcurrentHashMap<Observer<? super T>, Integer> replayState;
+
         public ReplayState(int initialCapacity) {
             history = new History<T>(initialCapacity);
             replayState = new ConcurrentHashMap<Observer<? super T>, Integer>();
@@ -206,11 +208,13 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         private final AtomicInteger index;
         private final ArrayList<T> list;
         private final AtomicReference<Notification<T>> terminalValue;
+
         public History(int initialCapacity) {
-             index = new AtomicInteger(0);
-             list = new ArrayList<T>(initialCapacity);
-             terminalValue = new AtomicReference<Notification<T>>();
+            index = new AtomicInteger(0);
+            list = new ArrayList<T>(initialCapacity);
+            terminalValue = new AtomicReference<Notification<T>>();
         }
+
         public boolean next(T n) {
             if (terminalValue.get() == null) {
                 list.add(n);

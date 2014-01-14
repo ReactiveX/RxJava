@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -313,12 +313,12 @@ public class ReplaySubjectTest {
         Subscription s2 = subject.observeOn(Schedulers.newThread()).subscribe(observer2);
 
         System.out.println("before waiting for one");
-        
+
         // wait until observer2 starts having replay occur
         oneReceived.await();
-        
+
         System.out.println("after waiting for one");
-        
+
         subject.onNext("three");
         // if subscription blocked existing subscribers then 'makeSlow' would cause this to not be there yet 
         assertEquals("three", lastValueForObserver1.get());

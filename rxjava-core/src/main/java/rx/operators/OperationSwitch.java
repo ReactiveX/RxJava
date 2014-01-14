@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,7 +117,7 @@ public final class OperationSwitch {
                             s = SwitchObserver.this.parent;
                         }
                     }
-                    if(s != null) {
+                    if (s != null) {
                         s.unsubscribe();
                     }
                 }
@@ -136,7 +136,7 @@ public final class OperationSwitch {
                             }
                         }
                     }
-                    if(s != null) {
+                    if (s != null) {
                         s.unsubscribe();
                     }
                 }
@@ -165,7 +165,7 @@ public final class OperationSwitch {
                     s = this.parent;
                 }
             }
-            if(s != null) {
+            if (s != null) {
                 s.unsubscribe();
             }
         }

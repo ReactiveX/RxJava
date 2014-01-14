@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -213,7 +213,7 @@ public class OperationObserveOnTest {
         verify(observer2, never()).onError(any(Throwable.class));
         inOrder2.verifyNoMoreInteractions();
     }
-    
+
     /**
      * Confirm that running on a NewThreadScheduler uses the same thread for the entire stream
      */

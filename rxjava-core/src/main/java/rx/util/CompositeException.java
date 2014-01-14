@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,8 @@ public final class CompositeException extends RuntimeException {
         return cause;
     }
 
-    @SuppressWarnings("unused") // useful when debugging but don't want to make part of publicly supported API
+    @SuppressWarnings("unused")
+    // useful when debugging but don't want to make part of publicly supported API
     private static String getStackTraceAsString(StackTraceElement[] stack) {
         StringBuilder s = new StringBuilder();
         boolean firstLine = true;
