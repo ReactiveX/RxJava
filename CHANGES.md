@@ -17,6 +17,7 @@
 * [Pull 745](https://github.com/Netflix/RxJava/pull/745) Fixed `switch` bug
 * [Pull 741](https://github.com/Netflix/RxJava/pull/741) Zip with iterable, removed old aggregator version and updated tests
 * [Pull 749](https://github.com/Netflix/RxJava/pull/749) Separated Android test code from source
+* [Pull 732](https://github.com/Netflix/RxJava/pull/732) Ported groupByUntil function to scala-adapter
 
 
 ### Version 0.16.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.16.0%22)) ###
