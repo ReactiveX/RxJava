@@ -157,8 +157,6 @@ import rx.util.functions.Functions;
  */
 public class Observable<T> {
 
-    private final static ConcurrentHashMap<Class, Boolean> internalClassMap = new ConcurrentHashMap<Class, Boolean>();
-
     /**
      * Executed when 'subscribe' is invoked.
      */
@@ -8207,44 +8205,6 @@ public class Observable<T> {
     }
 
     /**
-     * Whether a given {@link Function} is an internal implementation inside
-     * rx.* packages or not.
-     * <p>
-     * For why this is being used see
-     * https://github.com/Netflix/RxJava/issues/216 for discussion on
-     * "Guideline 6.4: Protect calls to user code from within an operator"
-     * <p>
-     * Note: If strong reasons for not depending on package names comes up then
-     * the implementation of this method can change to looking for a marker
-     * interface.
-     * 
-     * @param o
-     * @return {@code true} if the given function is an internal implementation,
-     *         and {@code false} otherwise.
-     */
-    private boolean isInternalImplementation(Object o) {
-        if (o == null) {
-            return true;
-        }
-        // prevent double-wrapping (yeah it happens)
-        if (o instanceof SafeObserver) {
-            return true;
-        }
-
-        Class<?> clazz = o.getClass();
-        if (internalClassMap.containsKey(clazz)) {
-            //don't need to do reflection
-            return internalClassMap.get(clazz);
-        } else {
-            // we treat the following package as "internal" and don't wrap it
-            Package p = o.getClass().getPackage(); // it can be null
-            Boolean isInternal = (p != null && p.getName().startsWith("rx.operators"));
-            internalClassMap.put(clazz, isInternal);
-            return isInternal;
-        }
-    }
-
-    /**
      * Creates a pattern that matches when both Observables emit an item.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
@@ -8795,6 +8755,46 @@ public class Observable<T> {
      */
     public <TKey, TValue, TDuration> Observable<GroupedObservable<TKey, TValue>> groupByUntil(Func1<? super T, ? extends TKey> keySelector, Func1<? super T, ? extends TValue> valueSelector, Func1<? super GroupedObservable<TKey, TValue>, ? extends Observable<TDuration>> durationSelector) {
         return create(new OperationGroupByUntil<T, TKey, TValue, TDuration>(this, keySelector, valueSelector, durationSelector));
+    }
+
+    private final static ConcurrentHashMap<Class, Boolean> internalClassMap = new ConcurrentHashMap<Class, Boolean>();
+
+    /**
+     * Whether a given {@link Function} is an internal implementation inside
+     * rx.* packages or not.
+     * <p>
+     * For why this is being used see
+     * https://github.com/Netflix/RxJava/issues/216 for discussion on
+     * "Guideline 6.4: Protect calls to user code from within an operator"
+     * <p>
+     * Note: If strong reasons for not depending on package names comes up then
+     * the implementation of this method can change to looking for a marker
+     * interface.
+     * 
+     * @param o
+     * @return {@code true} if the given function is an internal implementation,
+     *         and {@code false} otherwise.
+     */
+    private boolean isInternalImplementation(Object o) {
+        if (o == null) {
+            return true;
+        }
+        // prevent double-wrapping (yeah it happens)
+        if (o instanceof SafeObserver) {
+            return true;
+        }
+
+        Class<?> clazz = o.getClass();
+        if (internalClassMap.containsKey(clazz)) {
+            //don't need to do reflection
+            return internalClassMap.get(clazz);
+        } else {
+            // we treat the following package as "internal" and don't wrap it
+            Package p = o.getClass().getPackage(); // it can be null
+            Boolean isInternal = (p != null && p.getName().startsWith("rx.operators"));
+            internalClassMap.put(clazz, isInternal);
+            return isInternal;
+        }
     }
 
 }
