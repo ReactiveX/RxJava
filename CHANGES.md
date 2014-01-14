@@ -1,5 +1,24 @@
 # RxJava Releases #
 
+### Version 0.16.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.16.1%22)) ###
+
+* [Pull 730](https://github.com/Netflix/RxJava/pull/730) Improve Error Handling and Stacktraces When Unsubscribe Fails
+* [Pull 720](https://github.com/Netflix/RxJava/pull/720) Added `Observable.timeout` wrappers to scala adapter
+* [Pull 731](https://github.com/Netflix/RxJava/pull/731) Fix non-deterministic unit test
+* [Pull 742](https://github.com/Netflix/RxJava/pull/742) Build with Gradle 1.10
+* [Pull 718](https://github.com/Netflix/RxJava/pull/718) Merge overloads
+* [Pull 733](https://github.com/Netflix/RxJava/pull/733) Buffer with Observable boundary
+* [Pull 734](https://github.com/Netflix/RxJava/pull/734) Delay with subscription and item delaying observables
+* [Pull 735](https://github.com/Netflix/RxJava/pull/735) Window with Observable boundary
+* [Pull 736](https://github.com/Netflix/RxJava/pull/736) MergeMap with Iterable and resultSelector overloads
+* [Pull 738](https://github.com/Netflix/RxJava/pull/738) Publish and PublishLast overloads
+* [Pull 739](https://github.com/Netflix/RxJava/pull/739) Debounce with selector
+* [Pull 740](https://github.com/Netflix/RxJava/pull/740) Timeout with selector overloads
+* [Pull 745](https://github.com/Netflix/RxJava/pull/745) Fixed `switch` bug
+* [Pull 741](https://github.com/Netflix/RxJava/pull/741) Zip with iterable, removed old aggregator version and updated tests
+* [Pull 749](https://github.com/Netflix/RxJava/pull/749) Separated Android test code from source
+
+
 ### Version 0.16.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.16.0%22)) ###
 
 
