@@ -26,6 +26,8 @@ import static rx.operators.OperationZip.zip;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,8 +36,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.operators.OperationZip.Aggregator;
-import rx.operators.OperationZip.ZipObserver;
+import rx.operators.OperationReduceTest.CustomException;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func2;
@@ -118,10 +119,10 @@ public class OperationZipTest {
         w3.observer.onCompleted();
 
         /* we should have been called 1 time on the Observer */
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w).onNext("1a2a3a");
+        InOrder io = inOrder(w);
+        io.verify(w).onNext("1a2a3a");
 
-        inOrder.verify(w, times(1)).onCompleted();
+        io.verify(w, times(1)).onCompleted();
     }
 
     @Test
@@ -152,13 +153,30 @@ public class OperationZipTest {
         w3.observer.onCompleted();
 
         /* we should have been called 1 time on the Observer */
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w).onNext("1a2a3a");
+        InOrder io = inOrder(w);
+        io.verify(w).onNext("1a2a3a");
 
-        inOrder.verify(w, times(1)).onCompleted();
+        io.verify(w, times(1)).onCompleted();
 
     }
 
+    
+    Func2<Object, Object, String> zipr2 = new Func2<Object, Object, String>() {
+
+        @Override
+        public String call(Object t1, Object t2) {
+            return "" + t1 + t2;
+        }
+
+    };
+    Func3<Object, Object, Object, String> zipr3 = new Func3<Object, Object, Object, String>() {
+
+        @Override
+        public String call(Object t1, Object t2, Object t3) {
+            return "" + t1 + t2 + t3;
+        }
+
+    };
     /**
      * Testing internal private logic due to the complexity so I want to use TDD to test as a I build it rather than relying purely on the overall functionality expected by the public methods.
      */
@@ -166,25 +184,16 @@ public class OperationZipTest {
     /* mock calls don't do generics */
     @Test
     public void testAggregatorSimple() {
-        FuncN<String> zipr = getConcatZipr();
-        /* create the aggregator which will execute the zip function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(zipr);
-
+        PublishSubject<String> r1 = PublishSubject.create();
+        PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        a.onSubscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        ZipObserver<String, String> r1 = mock(ZipObserver.class);
-        ZipObserver<String, String> r2 = mock(ZipObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
+        
+        Observable.zip(r1, r2, zipr2).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "hello");
-        a.next(r2, "world");
+        r1.onNext("hello");
+        r2.onNext("world");
 
         InOrder inOrder = inOrder(aObserver);
 
@@ -192,15 +201,15 @@ public class OperationZipTest {
         verify(aObserver, never()).onCompleted();
         inOrder.verify(aObserver, times(1)).onNext("helloworld");
 
-        a.next(r1, "hello ");
-        a.next(r2, "again");
+        r1.onNext("hello ");
+        r2.onNext("again");
 
         verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, never()).onCompleted();
         inOrder.verify(aObserver, times(1)).onNext("hello again");
 
-        a.complete(r1);
-        a.complete(r2);
+        r1.onCompleted();
+        r2.onCompleted();
 
         inOrder.verify(aObserver, never()).onNext(anyString());
         verify(aObserver, times(1)).onCompleted();
@@ -210,38 +219,31 @@ public class OperationZipTest {
     /* mock calls don't do generics */
     @Test
     public void testAggregatorDifferentSizedResultsWithOnComplete() {
-        FuncN<String> zipr = getConcatZipr();
         /* create the aggregator which will execute the zip function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(zipr);
-
+        /* define a Observer to receive aggregated events */
+        PublishSubject<String> r1 = PublishSubject.create();
+        PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        a.onSubscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        ZipObserver<String, String> r1 = mock(ZipObserver.class);
-        ZipObserver<String, String> r2 = mock(ZipObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
+        
+        Observable.zip(r1, r2, zipr2).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "hello");
-        a.next(r2, "world");
-        a.complete(r2);
+        r1.onNext("hello");
+        r2.onNext("world");
+        r2.onCompleted();
 
         InOrder inOrder = inOrder(aObserver);
 
         inOrder.verify(aObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(aObserver, never()).onCompleted();
         inOrder.verify(aObserver, times(1)).onNext("helloworld");
+        inOrder.verify(aObserver, times(1)).onCompleted();
 
-        a.next(r1, "hi");
-        a.complete(r1);
+        r1.onNext("hi");
+        r1.onCompleted();
 
         inOrder.verify(aObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(aObserver, times(1)).onCompleted();
+        inOrder.verify(aObserver, never()).onCompleted();
         inOrder.verify(aObserver, never()).onNext(anyString());
     }
 
@@ -249,38 +251,29 @@ public class OperationZipTest {
     /* mock calls don't do generics */
     @Test
     public void testAggregateMultipleTypes() {
-        FuncN<String> zipr = getConcatZipr();
-        /* create the aggregator which will execute the zip function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(zipr);
-
+        PublishSubject<String> r1 = PublishSubject.create();
+        PublishSubject<Integer> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        a.onSubscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        ZipObserver<String, String> r1 = mock(ZipObserver.class);
-        ZipObserver<String, Integer> r2 = mock(ZipObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
+        
+        Observable.zip(r1, r2, zipr2).subscribe(aObserver);        
 
         /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "hello");
-        a.next(r2, "world");
-        a.complete(r2);
+        r1.onNext("hello");
+        r2.onNext(1);
+        r2.onCompleted();
 
         InOrder inOrder = inOrder(aObserver);
 
         inOrder.verify(aObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(aObserver, never()).onCompleted();
-        inOrder.verify(aObserver, times(1)).onNext("helloworld");
+        inOrder.verify(aObserver, times(1)).onNext("hello1");
+        inOrder.verify(aObserver, times(1)).onCompleted();
 
-        a.next(r1, "hi");
-        a.complete(r1);
+        r1.onNext("hi");
+        r1.onCompleted();
 
         inOrder.verify(aObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(aObserver, times(1)).onCompleted();
+        inOrder.verify(aObserver, never()).onCompleted();
         inOrder.verify(aObserver, never()).onNext(anyString());
     }
 
@@ -288,28 +281,18 @@ public class OperationZipTest {
     /* mock calls don't do generics */
     @Test
     public void testAggregate3Types() {
-        FuncN<String> zipr = getConcatZipr();
-        /* create the aggregator which will execute the zip function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(zipr);
-
+        PublishSubject<String> r1 = PublishSubject.create();
+        PublishSubject<Integer> r2 = PublishSubject.create();
+        PublishSubject<List<Integer>> r3 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        a.onSubscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        ZipObserver<String, String> r1 = mock(ZipObserver.class);
-        ZipObserver<String, Integer> r2 = mock(ZipObserver.class);
-        ZipObserver<String, int[]> r3 = mock(ZipObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
-        a.addObserver(r3);
+        
+        Observable.zip(r1, r2, r3, zipr3).subscribe(aObserver);        
 
         /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "hello");
-        a.next(r2, 2);
-        a.next(r3, new int[] { 5, 6, 7 });
+        r1.onNext("hello");
+        r2.onNext(2);
+        r3.onNext(Arrays.asList( 5, 6, 7 ));
 
         verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, never()).onCompleted();
@@ -320,43 +303,34 @@ public class OperationZipTest {
     /* mock calls don't do generics */
     @Test
     public void testAggregatorsWithDifferentSizesAndTiming() {
-        FuncN<String> zipr = getConcatZipr();
-        /* create the aggregator which will execute the zip function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(zipr);
-
+        PublishSubject<String> r1 = PublishSubject.create();
+        PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        a.onSubscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        ZipObserver<String, String> r1 = mock(ZipObserver.class);
-        ZipObserver<String, String> r2 = mock(ZipObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
+        
+        Observable.zip(r1, r2, zipr2).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "one");
-        a.next(r1, "two");
-        a.next(r1, "three");
-        a.next(r2, "A");
+        r1.onNext("one");
+        r1.onNext("two");
+        r1.onNext("three");
+        r2.onNext("A");
 
         verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, never()).onCompleted();
         verify(aObserver, times(1)).onNext("oneA");
 
-        a.next(r1, "four");
-        a.complete(r1);
-        a.next(r2, "B");
+        r1.onNext("four");
+        r1.onCompleted();
+        r2.onNext("B");
         verify(aObserver, times(1)).onNext("twoB");
-        a.next(r2, "C");
+        r2.onNext("C");
         verify(aObserver, times(1)).onNext("threeC");
-        a.next(r2, "D");
+        r2.onNext("D");
         verify(aObserver, times(1)).onNext("fourD");
-        a.next(r2, "E");
+        r2.onNext("E");
         verify(aObserver, never()).onNext("E");
-        a.complete(r2);
+        r2.onCompleted();
 
         verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
@@ -366,33 +340,24 @@ public class OperationZipTest {
     /* mock calls don't do generics */
     @Test
     public void testAggregatorError() {
-        FuncN<String> zipr = getConcatZipr();
-        /* create the aggregator which will execute the zip function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(zipr);
-
+        PublishSubject<String> r1 = PublishSubject.create();
+        PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        a.onSubscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        ZipObserver<String, String> r1 = mock(ZipObserver.class);
-        ZipObserver<String, String> r2 = mock(ZipObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
+        
+        Observable.zip(r1, r2, zipr2).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "hello");
-        a.next(r2, "world");
+        r1.onNext("hello");
+        r2.onNext("world");
 
         verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, never()).onCompleted();
         verify(aObserver, times(1)).onNext("helloworld");
 
-        a.error(r1, new RuntimeException(""));
-        a.next(r1, "hello");
-        a.next(r2, "again");
+        r1.onError(new RuntimeException(""));
+        r1.onNext("hello");
+        r2.onNext("again");
 
         verify(aObserver, times(1)).onError(any(Throwable.class));
         verify(aObserver, never()).onCompleted();
@@ -404,33 +369,24 @@ public class OperationZipTest {
     /* mock calls don't do generics */
     @Test
     public void testAggregatorUnsubscribe() {
-        FuncN<String> zipr = getConcatZipr();
-        /* create the aggregator which will execute the zip function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(zipr);
-
+        PublishSubject<String> r1 = PublishSubject.create();
+        PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        Subscription subscription = a.onSubscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        ZipObserver<String, String> r1 = mock(ZipObserver.class);
-        ZipObserver<String, String> r2 = mock(ZipObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
+        
+        Subscription subscription = Observable.zip(r1, r2, zipr2).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "hello");
-        a.next(r2, "world");
+        r1.onNext("hello");
+        r2.onNext("world");
 
         verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, never()).onCompleted();
         verify(aObserver, times(1)).onNext("helloworld");
 
         subscription.unsubscribe();
-        a.next(r1, "hello");
-        a.next(r2, "again");
+        r1.onNext("hello");
+        r2.onNext("again");
 
         verify(aObserver, times(0)).onError(any(Throwable.class));
         verify(aObserver, never()).onCompleted();
@@ -442,27 +398,18 @@ public class OperationZipTest {
     /* mock calls don't do generics */
     @Test
     public void testAggregatorEarlyCompletion() {
-        FuncN<String> zipr = getConcatZipr();
-        /* create the aggregator which will execute the zip function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(zipr);
-
+        PublishSubject<String> r1 = PublishSubject.create();
+        PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        a.onSubscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        ZipObserver<String, String> r1 = mock(ZipObserver.class);
-        ZipObserver<String, String> r2 = mock(ZipObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
+        
+        Observable.zip(r1, r2, zipr2).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "one");
-        a.next(r1, "two");
-        a.complete(r1);
-        a.next(r2, "A");
+        r1.onNext("one");
+        r1.onNext("two");
+        r1.onCompleted();
+        r2.onNext("A");
 
         InOrder inOrder = inOrder(aObserver);
 
@@ -470,7 +417,7 @@ public class OperationZipTest {
         inOrder.verify(aObserver, never()).onCompleted();
         inOrder.verify(aObserver, times(1)).onNext("oneA");
 
-        a.complete(r2);
+        r2.onCompleted();
 
         inOrder.verify(aObserver, never()).onError(any(Throwable.class));
         inOrder.verify(aObserver, times(1)).onCompleted();
@@ -533,21 +480,21 @@ public class OperationZipTest {
         PublishSubject<String> oB = PublishSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Observer<String> obs = mock(Observer.class);
 
         Observable<String> o = Observable.create(zip(oA, oB, getConcat2Strings()));
-        o.subscribe(observer);
+        o.subscribe(obs);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder io = inOrder(obs);
 
         oA.onNext("a1");
-        inOrder.verify(observer, never()).onNext(anyString());
+        io.verify(obs, never()).onNext(anyString());
         oB.onNext("b1");
-        inOrder.verify(observer, times(1)).onNext("a1-b1");
+        io.verify(obs, times(1)).onNext("a1-b1");
         oB.onNext("b2");
-        inOrder.verify(observer, never()).onNext(anyString());
+        io.verify(obs, never()).onNext(anyString());
         oA.onNext("a2");
-        inOrder.verify(observer, times(1)).onNext("a2-b2");
+        io.verify(obs, times(1)).onNext("a2-b2");
 
         oA.onNext("a3");
         oA.onNext("a4");
@@ -561,12 +508,12 @@ public class OperationZipTest {
         oB.onNext("b4");
         oB.onNext("b5");
 
-        inOrder.verify(observer, times(1)).onNext("a3-b3");
-        inOrder.verify(observer, times(1)).onNext("a4-b4");
-        inOrder.verify(observer, times(1)).onNext("a5-b5");
+        io.verify(obs, times(1)).onNext("a3-b3");
+        io.verify(obs, times(1)).onNext("a4-b4");
+        io.verify(obs, times(1)).onNext("a5-b5");
 
         // WE RECEIVE THE ONCOMPLETE HERE
-        inOrder.verify(observer, times(1)).onCompleted();
+        io.verify(obs, times(1)).onCompleted();
 
         oB.onNext("b6");
         oB.onNext("b7");
@@ -575,7 +522,7 @@ public class OperationZipTest {
         // never completes (infinite stream for example)
 
         // we should receive nothing else despite oB continuing after oA completed
-        inOrder.verifyNoMoreInteractions();
+        io.verifyNoMoreInteractions();
     }
     
     @Test
@@ -584,21 +531,21 @@ public class OperationZipTest {
         PublishSubject<String> oB = PublishSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Observer<String> obs = mock(Observer.class);
 
         Observable<String> o = Observable.create(zip(oA, oB, getConcat2Strings()));
-        o.subscribe(observer);
+        o.subscribe(obs);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder io = inOrder(obs);
 
         oA.onNext("a1");
-        inOrder.verify(observer, never()).onNext(anyString());
+        io.verify(obs, never()).onNext(anyString());
         oB.onNext("b1");
-        inOrder.verify(observer, times(1)).onNext("a1-b1");
+        io.verify(obs, times(1)).onNext("a1-b1");
         oB.onNext("b2");
-        inOrder.verify(observer, never()).onNext(anyString());
+        io.verify(obs, never()).onNext(anyString());
         oA.onNext("a2");
-        inOrder.verify(observer, times(1)).onNext("a2-b2");
+        io.verify(obs, times(1)).onNext("a2-b2");
 
         oA.onNext("a3");
         oA.onNext("a4");
@@ -606,7 +553,7 @@ public class OperationZipTest {
         oA.onError(new RuntimeException("forced failure"));
 
         // it should emit failure immediately
-        inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
+        io.verify(obs, times(1)).onError(any(RuntimeException.class));
 
         oB.onNext("b3");
         oB.onNext("b4");
@@ -618,7 +565,7 @@ public class OperationZipTest {
         // never completes (infinite stream for example)
 
         // we should receive nothing else despite oB continuing after oA completed
-        inOrder.verifyNoMoreInteractions();
+        io.verifyNoMoreInteractions();
     }
 
     private Func2<String, String, String> getConcat2Strings() {
@@ -815,4 +762,255 @@ public class OperationZipTest {
 		inOrder.verify(observer, never()).onNext(any(String.class));
 		inOrder.verifyNoMoreInteractions();
 	}
+    
+    @Test
+    public void testZipIterableSameSize() {
+        PublishSubject<String> r1 = PublishSubject.create();
+        /* define a Observer to receive aggregated events */
+        Observer<String> o = mock(Observer.class);
+        InOrder io = inOrder(o);
+
+        Iterable<String> r2 = Arrays.asList("1", "2", "3");
+        
+        r1.zip(r2, zipr2).subscribe(o);
+        
+        r1.onNext("one-");
+        r1.onNext("two-");
+        r1.onNext("three-");
+        r1.onCompleted();
+        
+        io.verify(o).onNext("one-1");
+        io.verify(o).onNext("two-2");
+        io.verify(o).onNext("three-3");
+        io.verify(o).onCompleted();
+        
+        verify(o, never()).onError(any(Throwable.class));
+        
+    }
+    @Test
+    public void testZipIterableEmptyFirstSize() {
+        PublishSubject<String> r1 = PublishSubject.create();
+        /* define a Observer to receive aggregated events */
+        Observer<String> o = mock(Observer.class);
+        InOrder io = inOrder(o);
+
+        Iterable<String> r2 = Arrays.asList("1", "2", "3");
+        
+        r1.zip(r2, zipr2).subscribe(o);
+
+        r1.onCompleted();
+        
+        io.verify(o).onCompleted();
+
+        verify(o, never()).onNext(any(String.class));
+        verify(o, never()).onError(any(Throwable.class));
+        
+    }
+    @Test
+    public void testZipIterableEmptySecond() {
+        PublishSubject<String> r1 = PublishSubject.create();
+        /* define a Observer to receive aggregated events */
+        Observer<String> o = mock(Observer.class);
+        InOrder io = inOrder(o);
+
+        Iterable<String> r2 = Arrays.asList();
+        
+        r1.zip(r2, zipr2).subscribe(o);
+        
+        r1.onNext("one-");
+        r1.onNext("two-");
+        r1.onNext("three-");
+        r1.onCompleted();
+        
+        io.verify(o).onCompleted();
+        
+        verify(o, never()).onNext(any(String.class));
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void testZipIterableFirstShorter() {
+        PublishSubject<String> r1 = PublishSubject.create();
+        /* define a Observer to receive aggregated events */
+        Observer<String> o = mock(Observer.class);
+        InOrder io = inOrder(o);
+
+        Iterable<String> r2 = Arrays.asList("1", "2", "3");
+        
+        r1.zip(r2, zipr2).subscribe(o);
+        
+        r1.onNext("one-");
+        r1.onNext("two-");
+        r1.onCompleted();
+        
+        io.verify(o).onNext("one-1");
+        io.verify(o).onNext("two-2");
+        io.verify(o).onCompleted();
+        
+        verify(o, never()).onError(any(Throwable.class));
+        
+    }
+    
+    @Test
+    public void testZipIterableSecondShorter() {
+        PublishSubject<String> r1 = PublishSubject.create();
+        /* define a Observer to receive aggregated events */
+        Observer<String> o = mock(Observer.class);
+        InOrder io = inOrder(o);
+
+        Iterable<String> r2 = Arrays.asList("1", "2");
+        
+        r1.zip(r2, zipr2).subscribe(o);
+        
+        r1.onNext("one-");
+        r1.onNext("two-");
+        r1.onNext("three-");
+        r1.onCompleted();
+        
+        io.verify(o).onNext("one-1");
+        io.verify(o).onNext("two-2");
+        io.verify(o).onCompleted();
+        
+        verify(o, never()).onError(any(Throwable.class));
+        
+    }
+    @Test
+    public void testZipIterableFirstThrows() {
+        PublishSubject<String> r1 = PublishSubject.create();
+        /* define a Observer to receive aggregated events */
+        Observer<String> o = mock(Observer.class);
+        InOrder io = inOrder(o);
+
+        Iterable<String> r2 = Arrays.asList("1", "2", "3");
+        
+        r1.zip(r2, zipr2).subscribe(o);
+        
+        r1.onNext("one-");
+        r1.onNext("two-");
+        r1.onError(new OperationReduceTest.CustomException());
+        
+        io.verify(o).onNext("one-1");
+        io.verify(o).onNext("two-2");
+        io.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        
+        verify(o, never()).onCompleted();
+        
+    }
+    
+    @Test
+    public void testZipIterableIteratorThrows() {
+        PublishSubject<String> r1 = PublishSubject.create();
+        /* define a Observer to receive aggregated events */
+        Observer<String> o = mock(Observer.class);
+        InOrder io = inOrder(o);
+
+        Iterable<String> r2 = new Iterable<String>() {
+            @Override
+            public Iterator<String> iterator() {
+                throw new OperationReduceTest.CustomException();
+            }
+        };
+        
+        r1.zip(r2, zipr2).subscribe(o);
+        
+        r1.onNext("one-");
+        r1.onNext("two-");
+        r1.onError(new OperationReduceTest.CustomException());
+        
+        io.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        
+        verify(o, never()).onCompleted();
+        verify(o, never()).onNext(any(String.class));
+        
+    }
+    @Test
+    public void testZipIterableHasNextThrows() {
+        PublishSubject<String> r1 = PublishSubject.create();
+        /* define a Observer to receive aggregated events */
+        Observer<String> o = mock(Observer.class);
+        InOrder io = inOrder(o);
+
+        Iterable<String> r2 = new Iterable<String>() {
+
+            @Override
+            public Iterator<String> iterator() {
+                return new Iterator<String>() {
+                    int count;
+                    @Override
+                    public boolean hasNext() {
+                        if (count == 0) {
+                            return true;
+                        }
+                        throw new CustomException();
+                    }
+
+                    @Override
+                    public String next() {
+                        count++;
+                        return "1";
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException("Not supported yet.");
+                    }
+                    
+                };
+            }
+            
+        };
+        
+        r1.zip(r2, zipr2).subscribe(o);
+        
+        r1.onNext("one-");
+        r1.onError(new OperationReduceTest.CustomException());
+        
+        io.verify(o).onNext("one-1");
+        io.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        
+        verify(o, never()).onCompleted();
+        
+    }
+    @Test
+    public void testZipIterableNextThrows() {
+        PublishSubject<String> r1 = PublishSubject.create();
+        /* define a Observer to receive aggregated events */
+        Observer<String> o = mock(Observer.class);
+        InOrder io = inOrder(o);
+
+        Iterable<String> r2 = new Iterable<String>() {
+
+            @Override
+            public Iterator<String> iterator() {
+                return new Iterator<String>() {
+                    int count;
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+
+                    @Override
+                    public String next() {
+                        throw new CustomException();
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException("Not supported yet.");
+                    }
+                    
+                };
+            }
+            
+        };
+        
+        r1.zip(r2, zipr2).subscribe(o);
+        
+        r1.onError(new OperationReduceTest.CustomException());
+        
+        io.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        
+        verify(o, never()).onNext(any(String.class));
+        verify(o, never()).onCompleted();
+        
+    }
 }
