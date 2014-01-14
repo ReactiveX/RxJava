@@ -29,7 +29,6 @@ import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
-import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
 /**
@@ -207,27 +206,19 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
         }
     }
 
-    protected static <T> OnSubscribeFunc<T> neverSubscribe() {
-        return new OnSubscribeFunc<T>() {
-            @Override
-            public Subscription onSubscribe(Observer<? super T> t1) {
-                return Subscriptions.empty();
-            }
-        };
-    }
-
     /** A grouped observable with subject-like behavior. */
     public static class GroupSubject<K, V> extends GroupedObservable<K, V> implements Observer<V> {
         protected final Subject<V, V> publish;
 
-        public GroupSubject(K key, Subject<V, V> publish) {
-            super(key, OperationGroupByUntil.<V> neverSubscribe());
-            this.publish = publish;
-        }
+        public GroupSubject(K key, final Subject<V, V> publish) {
+            super(key, new OnSubscribeFunc<V>() {
 
-        @Override
-        public Subscription subscribe(Observer<? super V> observer) {
-            return publish.subscribe(observer);
+                @Override
+                public Subscription onSubscribe(Observer<? super V> o) {
+                    return publish.subscribe(o);
+                }
+            });
+            this.publish = publish;
         }
 
         @Override
