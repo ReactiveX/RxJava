@@ -15,9 +15,7 @@
  */
 package rx.operators;
 
-import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.LinkedList;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
@@ -44,49 +42,20 @@ public final class OperationMerge {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">Observable.Merge(TSource) Method (IObservable(TSource)[])</a>
      */
     public static <T> OnSubscribeFunc<T> merge(final Observable<? extends Observable<? extends T>> o) {
-        // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
+        return merge(o, Integer.MAX_VALUE);
+    }
+
+    public static <T> OnSubscribeFunc<T> merge(final Observable<? extends Observable<? extends T>> o, final int maxConcurrent) {
+        if (maxConcurrent <= 0) {
+            throw new IllegalArgumentException("maxConcurrent must be positive");
+        }
         return new OnSubscribeFunc<T>() {
 
             @Override
             public Subscription onSubscribe(Observer<? super T> observer) {
-                return new MergeObservable<T>(o).onSubscribe(observer);
+                return new MergeObservable<T>(o, maxConcurrent).onSubscribe(observer);
             }
         };
-    }
-
-    public static <T> OnSubscribeFunc<T> merge(final Observable<? extends T>... sequences) {
-        return merge(Arrays.asList(sequences));
-    }
-
-    public static <T> OnSubscribeFunc<T> merge(final Iterable<? extends Observable<? extends T>> sequences) {
-        return merge(Observable.create(new OnSubscribeFunc<Observable<? extends T>>() {
-
-            private volatile boolean unsubscribed = false;
-
-            @Override
-            public Subscription onSubscribe(Observer<? super Observable<? extends T>> observer) {
-                for (Observable<? extends T> o : sequences) {
-                    if (!unsubscribed) {
-                        observer.onNext(o);
-                    } else {
-                        // break out of the loop if we are unsubscribed
-                        break;
-                    }
-                }
-                if (!unsubscribed) {
-                    observer.onCompleted();
-                }
-
-                return new Subscription() {
-
-                    @Override
-                    public void unsubscribe() {
-                        unsubscribed = true;
-                    }
-
-                };
-            }
-        }));
     }
 
     /**
@@ -102,18 +71,22 @@ public final class OperationMerge {
      */
     private static final class MergeObservable<T> implements OnSubscribeFunc<T> {
         private final Observable<? extends Observable<? extends T>> sequences;
-        private final MergeSubscription ourSubscription = new MergeSubscription();
-        private AtomicBoolean stopped = new AtomicBoolean(false);
+        private final CompositeSubscription ourSubscription = new CompositeSubscription();
         private volatile boolean parentCompleted = false;
-        private final ConcurrentHashMap<ChildObserver, ChildObserver> childObservers = new ConcurrentHashMap<ChildObserver, ChildObserver>();
-        private final ConcurrentHashMap<ChildObserver, Subscription> childSubscriptions = new ConcurrentHashMap<ChildObserver, Subscription>();
+        private final LinkedList<Observable<? extends T>> pendingObservables = new LinkedList<Observable<? extends T>>();
+        private volatile int activeObservableCount = 0;
+        private final int maxConcurrent;
+        /**
+         * Protect both pendingObservables and activeObservableCount from concurrent accesses.
+         */
+        private final Object gate = new Object();
 
-        private MergeObservable(Observable<? extends Observable<? extends T>> sequences) {
+        private MergeObservable(Observable<? extends Observable<? extends T>> sequences, int maxConcurrent) {
             this.sequences = sequences;
+            this.maxConcurrent = maxConcurrent;
         }
 
         public Subscription onSubscribe(Observer<? super T> actualObserver) {
-            CompositeSubscription completeSubscription = new CompositeSubscription();
 
             /**
              * We must synchronize a merge because we subscribe to multiple sequences in parallel that will each be emitting.
@@ -123,44 +96,16 @@ public final class OperationMerge {
              * Bug report: https://github.com/Netflix/RxJava/issues/200
              */
             SafeObservableSubscription subscription = new SafeObservableSubscription(ourSubscription);
-            completeSubscription.add(subscription);
-            SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(actualObserver, subscription);
+            SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(
+                    new SafeObserver<T>(subscription, actualObserver), // Create a SafeObserver as SynchronizedObserver does not automatically unsubscribe
+                    subscription);
 
             /**
              * Subscribe to the parent Observable to get to the children Observables
              */
-            completeSubscription.add(sequences.subscribe(new ParentObserver(synchronizedObserver)));
+            ourSubscription.add(sequences.subscribe(new ParentObserver(synchronizedObserver)));
 
-            /* return our subscription to allow unsubscribing */
-            return completeSubscription;
-        }
-
-        /**
-         * Manage the internal subscription with a thread-safe means of stopping/unsubscribing so we don't unsubscribe twice.
-         * <p>
-         * Also has the stop() method returning a boolean so callers know if their thread "won" and should perform further actions.
-         */
-        private class MergeSubscription implements Subscription {
-
-            @Override
-            public void unsubscribe() {
-                stop();
-            }
-
-            public boolean stop() {
-                // try setting to false unless another thread beat us
-                boolean didSet = stopped.compareAndSet(false, true);
-                if (didSet) {
-                    // this thread won the race to stop, so unsubscribe from the actualSubscription
-                    for (Subscription _s : childSubscriptions.values()) {
-                        _s.unsubscribe();
-                    }
-                    return true;
-                } else {
-                    // another thread beat us
-                    return false;
-                }
-            }
+            return subscription;
         }
 
         /**
@@ -169,36 +114,34 @@ public final class OperationMerge {
          * @param <T>
          */
         private class ParentObserver implements Observer<Observable<? extends T>> {
-            private final Observer<T> actualObserver;
+            private final SynchronizedObserver<T> synchronizedObserver;
 
-            public ParentObserver(Observer<T> actualObserver) {
-                this.actualObserver = actualObserver;
+            public ParentObserver(SynchronizedObserver<T> synchronizedObserver) {
+                this.synchronizedObserver = synchronizedObserver;
             }
 
             @Override
             public void onCompleted() {
                 parentCompleted = true;
+                if (ourSubscription.isUnsubscribed()) {
+                    return;
+                }
                 // this *can* occur before the children are done, so if it does we won't send onCompleted
                 // but will let the child worry about it
                 // if however this completes and there are no children processing, then we will send onCompleted
-
-                if (childObservers.size() == 0) {
-                    if (!stopped.get()) {
-                        if (ourSubscription.stop()) {
-                            actualObserver.onCompleted();
-                        }
-                    }
+                if (isStopped()) {
+                    synchronizedObserver.onCompleted();
                 }
             }
 
             @Override
             public void onError(Throwable e) {
-                actualObserver.onError(e);
+                synchronizedObserver.onError(e);
             }
 
             @Override
             public void onNext(Observable<? extends T> childObservable) {
-                if (stopped.get()) {
+                if (ourSubscription.isUnsubscribed()) {
                     // we won't act on any further items
                     return;
                 }
@@ -207,17 +150,20 @@ public final class OperationMerge {
                     throw new IllegalArgumentException("Observable<T> can not be null.");
                 }
 
-                /**
-                 * For each child Observable we receive we'll subscribe with a separate Observer
-                 * that will each then forward their sequences to the actualObserver.
-                 * <p>
-                 * We use separate child Observers for each sequence to simplify the onComplete/onError handling so each sequence has its own lifecycle.
-                 */
-                ChildObserver _w = new ChildObserver(actualObserver);
-                childObservers.put(_w, _w);
-                Subscription _subscription = childObservable.subscribe(_w);
-                // remember this Observer and the subscription from it
-                childSubscriptions.put(_w, _subscription);
+                Observable<? extends T> observable = null;
+                synchronized(gate) {
+                    if(activeObservableCount >= maxConcurrent) {
+                        pendingObservables.add(childObservable);
+                    }
+                    else {
+                        observable = childObservable;
+                        activeObservableCount++;
+                    }
+                }
+                if (observable != null) {
+                    ourSubscription.add(observable.subscribe(new ChildObserver(
+                            synchronizedObserver)));
+                }
             }
         }
 
@@ -227,47 +173,58 @@ public final class OperationMerge {
          */
         private class ChildObserver implements Observer<T> {
 
-            private final Observer<T> actualObserver;
+            private final SynchronizedObserver<T> synchronizedObserver;
 
-            public ChildObserver(Observer<T> actualObserver) {
-                this.actualObserver = actualObserver;
+            public ChildObserver(SynchronizedObserver<T> synchronizedObserver) {
+                this.synchronizedObserver = synchronizedObserver;
             }
 
             @Override
             public void onCompleted() {
-                // remove self from map of Observers
-                childObservers.remove(this);
-                // if there are now 0 Observers left, so if the parent is also completed we send the onComplete to the actualObserver
-                // if the parent is not complete that means there is another sequence (and child Observer) to come
-                if (!stopped.get()) {
-                    if (childObservers.size() == 0 && parentCompleted) {
-                        if (ourSubscription.stop()) {
-                            // this thread 'won' the race to unsubscribe/stop so let's send onCompleted
-                            actualObserver.onCompleted();
-                        }
+                if (ourSubscription.isUnsubscribed()) {
+                    return;
+                }
+
+                Observable<? extends T> childObservable = null;
+                // Try to fetch a pending observable
+                synchronized (gate) {
+                    childObservable = pendingObservables.poll();
+                    if(childObservable == null) {
+                        // There is no pending observable, decrease activeObservableCount.
+                        activeObservableCount--;
+                    }
+                    else {
+                        // Fetch an observable successfully.
+                        // We will subscribe(this) at once. So don't change activeObservableCount.
+                    }
+                }
+                if (childObservable != null) {
+                    ourSubscription.add(childObservable.subscribe(this));
+                } else {
+                    // No pending observable. Need to check if it's necessary to emit an onCompleted
+                    if (isStopped()) {
+                        synchronizedObserver.onCompleted();
                     }
                 }
             }
 
             @Override
             public void onError(Throwable e) {
-                if (!stopped.get()) {
-                    if (ourSubscription.stop()) {
-                        // this thread 'won' the race to unsubscribe/stop so let's send the error
-                        actualObserver.onError(e);
-                    }
-                }
+                synchronizedObserver.onError(e);
             }
 
             @Override
             public void onNext(T args) {
-                // in case the Observable is poorly behaved and doesn't listen to the unsubscribe request
-                // we'll ignore anything that comes in after we've unsubscribed
-                if (!stopped.get()) {
-                    actualObserver.onNext(args);
-                }
+                synchronizedObserver.onNext(args);
             }
 
+        }
+
+        private boolean isStopped() {
+            synchronized (gate) {
+                return parentCompleted && activeObservableCount == 0
+                        && pendingObservables.size() == 0;
+            }
         }
     }
 }

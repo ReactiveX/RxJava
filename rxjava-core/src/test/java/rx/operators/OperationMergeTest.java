@@ -21,6 +21,8 @@ import static org.mockito.Mockito.*;
 import static rx.operators.OperationMerge.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +37,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -74,7 +77,7 @@ public class OperationMergeTest {
             }
 
         });
-        Observable<String> m = Observable.create(merge(observableOfObservables));
+        Observable<String> m = Observable.merge(observableOfObservables);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -87,8 +90,7 @@ public class OperationMergeTest {
         final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
 
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(o1, o2));
+        Observable<String> m = Observable.merge(o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -104,7 +106,7 @@ public class OperationMergeTest {
         listOfObservables.add(o1);
         listOfObservables.add(o2);
 
-        Observable<String> m = Observable.create(merge(listOfObservables));
+        Observable<String> m = Observable.merge(listOfObservables);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -117,8 +119,7 @@ public class OperationMergeTest {
         TestObservable tA = new TestObservable();
         TestObservable tB = new TestObservable();
 
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(Observable.create(tA), Observable.create(tB)));
+        Observable<String> m = Observable.merge(Observable.create(tA), Observable.create(tB));
         Subscription s = m.subscribe(stringObserver);
 
         tA.sendOnNext("Aone");
@@ -210,8 +211,7 @@ public class OperationMergeTest {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(Observable.create(o1), Observable.create(o2)));
+        Observable<String> m = Observable.merge(Observable.create(o1), Observable.create(o2));
         m.subscribe(stringObserver);
 
         try {
@@ -237,8 +237,7 @@ public class OperationMergeTest {
         final AtomicInteger concurrentCounter = new AtomicInteger();
         final AtomicInteger totalCounter = new AtomicInteger();
 
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(Observable.create(o1), Observable.create(o2)));
+        Observable<String> m = Observable.merge(Observable.create(o1), Observable.create(o2));
         m.subscribe(new Observer<String>() {
 
             @Override
@@ -308,8 +307,7 @@ public class OperationMergeTest {
         final Observable<String> o1 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six"
         final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", "three")); // we expect to lose all of these since o1 is done first and fails
 
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(o1, o2));
+        Observable<String> m = Observable.merge(o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -333,8 +331,7 @@ public class OperationMergeTest {
         final Observable<String> o3 = Observable.create(new TestErrorObservable("seven", "eight", null));// we expect to lose all of these since o2 is done first and fails
         final Observable<String> o4 = Observable.create(new TestErrorObservable("nine"));// we expect to lose all of these since o2 is done first and fails
 
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(o1, o2, o3, o4));
+        Observable<String> m = Observable.merge(o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -470,5 +467,86 @@ public class OperationMergeTest {
 
             };
         }
+    }
+
+    @Test
+    public void testWhenMaxConcurrentIsOne() {
+        for (int i = 0; i < 100; i++) {
+            List<Observable<String>> os = new ArrayList<Observable<String>>();
+            os.add(Observable.from("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
+            os.add(Observable.from("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
+            os.add(Observable.from("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
+
+            List<String> expected = Arrays.asList("one", "two", "three", "four", "five", "one", "two", "three", "four", "five", "one", "two", "three", "four", "five");
+            Iterator<String> iter = Observable.merge(os, 1).toBlockingObservable().toIterable().iterator();
+            List<String> actual = new ArrayList<String>();
+            while(iter.hasNext()) {
+                actual.add(iter.next());
+            }
+            assertEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void testMaxConcurrent() {
+        for (int times = 0; times < 100; times++) {
+            int observableCount = 100;
+            // Test maxConcurrent from 2 to 12
+            int maxConcurrent = 2 + (times % 10);
+            AtomicInteger subscriptionCount = new AtomicInteger(0);
+
+            List<Observable<String>> os = new ArrayList<Observable<String>>();
+            List<SubscriptionCheckObservable> scos = new ArrayList<SubscriptionCheckObservable>();
+            for (int i = 0; i < observableCount; i++) {
+                SubscriptionCheckObservable sco = new SubscriptionCheckObservable(
+                        subscriptionCount, maxConcurrent);
+                scos.add(sco);
+                os.add(Observable.create(sco).subscribeOn(
+                        Schedulers.threadPoolForComputation()));
+            }
+
+            Iterator<String> iter = Observable.merge(os, maxConcurrent)
+                    .toBlockingObservable().toIterable().iterator();
+            List<String> actual = new ArrayList<String>();
+            while (iter.hasNext()) {
+                actual.add(iter.next());
+            }
+            assertEquals(5 * observableCount, actual.size());
+            for (SubscriptionCheckObservable sco : scos) {
+                assertFalse(sco.failed);
+            }
+        }
+    }
+
+    private static class SubscriptionCheckObservable implements
+            Observable.OnSubscribeFunc<String> {
+
+        private final AtomicInteger subscriptionCount;
+        private final int maxConcurrent;
+        volatile boolean failed = false;
+
+        SubscriptionCheckObservable(AtomicInteger subscriptionCount,
+                int maxConcurrent) {
+            this.subscriptionCount = subscriptionCount;
+            this.maxConcurrent = maxConcurrent;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super String> t1) {
+            if (subscriptionCount.incrementAndGet() > maxConcurrent) {
+                failed = true;
+            }
+            t1.onNext("one");
+            t1.onNext("two");
+            t1.onNext("three");
+            t1.onNext("four");
+            t1.onNext("five");
+            // We could not decrement subscriptionCount in the unsubscribe method
+            // as "unsubscribe" is not guaranteed to be called before the next "subscribe".
+            subscriptionCount.decrementAndGet();
+            t1.onCompleted();
+            return Subscriptions.empty();
+        }
+
     }
 }
