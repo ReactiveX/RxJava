@@ -7048,6 +7048,86 @@ public class Observable<T> {
     }
 
     /**
+     * Create an observable which completes if a source item doesn't arrive after the 
+     * previous one in the time window specified by the per-item observable.
+     * <p>
+     * The arrival of the first source item is not timed out.
+     * @param <U> the timeout value type (ignored)
+     * @param timeoutSelector function that returns an observable for each source item
+     * which determines the timeout window for the subsequent source item
+     * @return an observable which completes if a source item doesn't arrive after the 
+     * previous one in the time window specified by the per-item observable.
+     */
+    public <U> Observable<T> timeout(Func1<? super T, ? extends Observable<U>> timeoutSelector) {
+        return timeout(timeoutSelector, Observable.<T>empty());
+    }
+
+    /**
+     * Create an observable which switches to the other Observable if a source 
+     * item doesn't arrive after the 
+     * previous one in the time window specified by the per-item observable.
+     * <p>
+     * The arrival of the first source item is not timed out.
+     * @param <U> the timeout value type (ignored)
+     * @param timeoutSelector function that returns an observable for each source item
+     * which determines the timeout window for the subsequent source item
+     * @param other the other observable to switch to if the source times out
+     * @return an observable which switches to the other Observable if a source 
+     * item doesn't arrive after the 
+     * previous one in the time window specified by the per-item observable
+     */
+    public <U> Observable<T> timeout(Func1<? super T, ? extends Observable<U>> timeoutSelector, Observable<? extends T> other) {
+        if (other == null) {
+            throw new NullPointerException("other");
+        }
+        return create(OperationTimeout.timeoutSelector(this, null, timeoutSelector, other));
+    }
+
+    /**
+     * Create an Observable which completes if either the first item or any subsequent item
+     * doesn't arrive within the time window specified by the timeout selectors' Observable.
+     * @param <U> the first timeout value type (ignored)
+     * @param <V> the subsequent timeout value type (ignored)
+     * @param firstTimeoutSelector function that returns an observable which determines
+     * the timeout window for the first source item
+     * @param timeoutSelector function that returns an observable for each source item
+     * which determines the timeout window for the subsequent source item
+     * @return an Observable which completes if either the first item or any subsequent item
+     * doesn't arrive within the time window specified by the timeout selectors' Observable.
+     */
+    public <U, V> Observable<T> timeout(Func0<? extends Observable<U>> firstTimeoutSelector, Func1<? super T, ? extends Observable<U>> timeoutSelector) {
+        if (firstTimeoutSelector == null) {
+            throw new NullPointerException("firstTimeoutSelector");
+        }
+        return timeout(firstTimeoutSelector, timeoutSelector, Observable.<T>empty());
+    }
+
+    /**
+     * Create an Observable which switches to another Observable
+     * if either the first item or any subsequent item
+     * doesn't arrive within the time window specified by the timeout selectors' Observable.
+     * @param <U> the first timeout value type (ignored)
+     * @param <V> the subsequent timeout value type (ignored)
+     * @param firstTimeoutSelector function that returns an observable which determines
+     * the timeout window for the first source item
+     * @param timeoutSelector function that returns an observable for each source item
+     * which determines the timeout window for the subsequent source item
+     * @param other the other observable to switch to if the source times out
+     * @return an Observable which switches to another Observable
+     * if either the first item or any subsequent item
+     * doesn't arrive within the time window specified by the timeout selectors' Observable
+     */
+    public <U, V> Observable<T> timeout(Func0<? extends Observable<U>> firstTimeoutSelector, Func1<? super T, ? extends Observable<U>> timeoutSelector, Observable<? extends T> other) {
+        if (firstTimeoutSelector == null) {
+            throw new NullPointerException("firstTimeoutSelector");
+        }
+        if (other == null) {
+            throw new NullPointerException("other");
+        }
+        return create(OperationTimeout.timeoutSelector(this, firstTimeoutSelector, timeoutSelector, other));
+    }
+
+    /**
      * Records the time interval between consecutive items emitted by an
      * Observable.
      * <p>
