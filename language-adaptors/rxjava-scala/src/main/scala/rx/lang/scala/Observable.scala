@@ -282,6 +282,21 @@ trait Observable[+T]
   }
 
   /**
+   * Wraps each item emitted by a source Observable in a timestamped tuple
+   * with timestamps provided by the given Scheduler.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timestamp.s.png">
+   * 
+   * @param scheduler [[rx.lang.scala.Scheduler]] to use as a time source.
+   * @return an Observable that emits timestamped items from the source
+   *         Observable with timestamps provided by the given Scheduler
+   */
+  def timestamp(scheduler: Scheduler): Observable[(Long, T)] = {
+    toScalaObservable[rx.util.Timestamped[_ <: T]](asJavaObservable.timestamp(scheduler))
+      .map((t: rx.util.Timestamped[_ <: T]) => (t.getTimestampMillis, t.getValue))
+  }
+
+  /**
    * Returns an Observable formed from this Observable and another Observable by combining 
    * corresponding elements in pairs. 
    * The number of `onNext` invocations of the resulting `Observable[(T, U)]`
