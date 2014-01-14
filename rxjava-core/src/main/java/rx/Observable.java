@@ -3201,6 +3201,35 @@ public class Observable<T> {
     }
 
     /**
+     * Create an Observable that emits non-overlapping buffered items once the boundary observable emits an item.
+     * <p>
+     * Completion of either this or the boundary observable causes the returned observable
+     * to emit the latest buffer and complete.
+     * @param <B> the boundary value type (ignored)
+     * @param boundary the boundary observable
+     * @return an Observable that emits buffered items once the boundary observable emits an item.
+     * @see #buffer(rx.Observable, int) 
+     */
+    public <B> Observable<List<T>> buffer(Observable<B> boundary) {
+        return create(OperationBuffer.bufferWithBoundaryObservable(this, boundary));
+    }
+    
+    /**
+     * Create an Observable that emits non-overlapping buffered items once the boundary observable emits an item.
+     * <p>
+     * Completion of either this or the boundary observable causes the returned observable
+     * to emit the latest buffer and complete.
+     * @param <B> the boundary value type (ignored)
+     * @param boundary the boundary observable
+     * @param initialCapacity the initial capacity of each buffer chunk
+     * @return an Observable that emits buffered items once the boundary observable emits an item.
+     * @see #buffer(rx.Observable, int) 
+     */
+    public <B> Observable<List<T>> buffer(Observable<B> boundary, int initialCapacity) {
+        return create(OperationBuffer.bufferWithBoundaryObservable(this, boundary, initialCapacity));
+    }
+    
+    /**
      * Creates an Observable that emits buffers of items it collects from the
      * source Observable. The resulting Observable emits connected,
      * non-overlapping buffers. It emits the current buffer and replaces it with
