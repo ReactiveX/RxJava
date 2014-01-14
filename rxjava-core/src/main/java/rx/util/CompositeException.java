@@ -65,7 +65,8 @@ public final class CompositeException extends RuntimeException {
         return cause;
     }
 
-    @SuppressWarnings("unused") // useful when debugging but don't want to make part of publicly supported API
+    @SuppressWarnings("unused")
+    // useful when debugging but don't want to make part of publicly supported API
     private static String getStackTraceAsString(StackTraceElement[] stack) {
         StringBuilder s = new StringBuilder();
         boolean firstLine = true;

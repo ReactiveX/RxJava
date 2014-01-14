@@ -159,10 +159,10 @@ public class ExecutorScheduler extends Scheduler {
 
         @Override
         public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
-            if(childSubscription.isUnsubscribed()) {
+            if (childSubscription.isUnsubscribed()) {
                 return childSubscription;
             }
-            
+
             CompositeSubscription s = new CompositeSubscription();
             final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
             s.add(discardableAction);
@@ -194,10 +194,10 @@ public class ExecutorScheduler extends Scheduler {
 
         @Override
         public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
-            if(childSubscription.isUnsubscribed()) {
+            if (childSubscription.isUnsubscribed()) {
                 return childSubscription;
             }
-            
+
             CompositeSubscription s = new CompositeSubscription();
             final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
             s.add(discardableAction);

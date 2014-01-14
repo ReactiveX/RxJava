@@ -86,56 +86,60 @@ public class OperationMulticast {
         }
 
     }
+
     /**
-     * Returns an observable sequence that contains the elements of a sequence 
+     * Returns an observable sequence that contains the elements of a sequence
      * produced by multicasting the source sequence within a selector function.
      * 
      * @param source
      * @param subjectFactory
      * @param selector
-     * @return 
+     * @return
      * 
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229708(v=vs.103).aspx'>MSDN: Observable.Multicast</a>
      */
     public static <TInput, TIntermediate, TResult> Observable<TResult> multicast(
             final Observable<? extends TInput> source,
-            final Func0<? extends Subject<? super TInput, ? extends TIntermediate>> subjectFactory, 
+            final Func0<? extends Subject<? super TInput, ? extends TIntermediate>> subjectFactory,
             final Func1<? super Observable<TIntermediate>, ? extends Observable<TResult>> selector) {
         return Observable.create(new MulticastSubscribeFunc<TInput, TIntermediate, TResult>(source, subjectFactory, selector));
     }
+
     /** The multicast subscription function. */
     private static final class MulticastSubscribeFunc<TInput, TIntermediate, TResult> implements OnSubscribeFunc<TResult> {
         final Observable<? extends TInput> source;
         final Func0<? extends Subject<? super TInput, ? extends TIntermediate>> subjectFactory;
         final Func1<? super Observable<TIntermediate>, ? extends Observable<TResult>> resultSelector;
+
         public MulticastSubscribeFunc(Observable<? extends TInput> source,
-                Func0<? extends Subject<? super TInput, ? extends TIntermediate>> subjectFactory, 
+                Func0<? extends Subject<? super TInput, ? extends TIntermediate>> subjectFactory,
                 Func1<? super Observable<TIntermediate>, ? extends Observable<TResult>> resultSelector) {
             this.source = source;
             this.subjectFactory = subjectFactory;
             this.resultSelector = resultSelector;
         }
+
         @Override
         public Subscription onSubscribe(Observer<? super TResult> t1) {
             Observable<TResult> observable;
             ConnectableObservable<TIntermediate> connectable;
             try {
                 Subject<? super TInput, ? extends TIntermediate> subject = subjectFactory.call();
-                
+
                 connectable = new MulticastConnectableObservable<TInput, TIntermediate>(source, subject);
-                
+
                 observable = resultSelector.call(connectable);
             } catch (Throwable t) {
                 t1.onError(t);
                 return Subscriptions.empty();
             }
-            
+
             CompositeSubscription csub = new CompositeSubscription();
-            
+
             csub.add(observable.subscribe(new SafeObserver<TResult>(
                     new SafeObservableSubscription(csub), t1)));
             csub.add(connectable.connect());
-            
+
             return csub;
         }
     }

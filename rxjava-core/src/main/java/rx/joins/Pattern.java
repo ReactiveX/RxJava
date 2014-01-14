@@ -18,8 +18,9 @@ package rx.joins;
 
 /**
  * Base interface for join patterns.
+ * 
  * @see <a href='http://msdn.microsoft.com/en-us/library/system.reactive.joins.pattern(v=vs.103).aspx'>MSDN: Pattern</a>
  */
 public interface Pattern {
-    
+
 }

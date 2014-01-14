@@ -33,18 +33,14 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import rx.Observable.OnSubscribeFunc;
 import rx.observables.ConnectableObservable;
-import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
 import rx.util.functions.Action2;
-import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -236,7 +232,6 @@ public class ObservableTests {
         verify(w).onNext(10);
     }
 
-    
     /**
      * A reduce should fail with an IllegalArgumentException if done on an empty Observable.
      */
@@ -260,7 +255,7 @@ public class ObservableTests {
 
         fail("Expected an exception to be thrown");
     }
-    
+
     /**
      * A reduce on an empty Observable and a seed should just pass the seed through.
      * 
@@ -280,7 +275,7 @@ public class ObservableTests {
 
         assertEquals(1, value);
     }
-    
+
     @Test
     public void testReduceWithInitialValue() {
         Observable<Integer> observable = Observable.from(1, 2, 3, 4);
@@ -969,7 +964,7 @@ public class ObservableTests {
         inOrder.verify(aObserver, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
-    
+
     @Test
     public void testCollectToList() {
         List<Integer> list = Observable.from(1, 2, 3).collect(new ArrayList<Integer>(), new Action2<List<Integer>, Integer>() {

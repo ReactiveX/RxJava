@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,7 @@
  */
 package rx.operators;
 
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
@@ -159,7 +160,7 @@ public class OperationDebounceTest {
     @SuppressWarnings("serial")
     private class TestException extends Exception {
     }
-    
+
     @Test
     public void debounceSelectorNormal1() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -171,33 +172,33 @@ public class OperationDebounceTest {
                 return debouncer;
             }
         };
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.debounce(debounceSel).subscribe(o);
-        
+
         source.onNext(1);
         debouncer.onNext(1);
-        
+
         source.onNext(2);
         source.onNext(3);
         source.onNext(4);
 
         debouncer.onNext(2);
-        
+
         source.onNext(5);
         source.onCompleted();
-        
+
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onNext(4);
         inOrder.verify(o).onNext(5);
         inOrder.verify(o).onCompleted();
-        
+
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void debounceSelectorFuncThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -208,19 +209,19 @@ public class OperationDebounceTest {
                 throw new OperationReduceTest.CustomException();
             }
         };
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         source.debounce(debounceSel).subscribe(o);
-        
+
         source.onNext(1);
-        
+
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
         verify(o).onError(any(OperationReduceTest.CustomException.class));
     }
-    
+
     @Test
     public void debounceSelectorObservableThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -231,14 +232,14 @@ public class OperationDebounceTest {
                 return Observable.error(new OperationReduceTest.CustomException());
             }
         };
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         source.debounce(debounceSel).subscribe(o);
-        
+
         source.onNext(1);
-        
+
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
         verify(o).onError(any(OperationReduceTest.CustomException.class));

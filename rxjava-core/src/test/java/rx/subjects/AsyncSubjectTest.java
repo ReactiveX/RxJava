@@ -29,7 +29,6 @@ import org.mockito.Mockito;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Action1;
-import rx.util.functions.Func0;
 
 public class AsyncSubjectTest {
 
@@ -192,13 +191,13 @@ public class AsyncSubjectTest {
     /**
      * Can receive timeout if subscribe never receives an onError/onCompleted ... which reveals a race condition.
      */
-    @Test(timeout=10000)
+    @Test(timeout = 10000)
     public void testSubscribeCompletionRaceCondition() {
         /*
          * With non-threadsafe code this fails most of the time on my dev laptop and is non-deterministic enough
          * to act as a unit test to the race conditions.
          * 
-         * With the synchronization code in place I can not get this to fail on my laptop. 
+         * With the synchronization code in place I can not get this to fail on my laptop.
          */
         for (int i = 0; i < 50; i++) {
             final AsyncSubject<String> subject = AsyncSubject.create();

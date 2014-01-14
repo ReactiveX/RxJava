@@ -207,6 +207,7 @@ public abstract class AbstractSchedulerTests {
 
     /**
      * The order of execution is nondeterministic.
+     * 
      * @throws InterruptedException
      */
     @SuppressWarnings("rawtypes")

@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -21,12 +21,17 @@ import rx.Observer;
  * Utility class for the Action interfaces.
  */
 public final class Actions {
-    private Actions() { throw new IllegalStateException("No instances!"); }
+    private Actions() {
+        throw new IllegalStateException("No instances!");
+    }
+
     /**
      * Extracts a method reference to the observer's onNext method
      * in the form of an Action1.
      * <p>Java 8: observer::onNext</p>
-     * @param observer the observer to use
+     * 
+     * @param observer
+     *            the observer to use
      * @return an action which calls the observer's onNext method.
      */
     public static <T> Action1<T> onNextFrom(final Observer<T> observer) {
@@ -37,11 +42,14 @@ public final class Actions {
             }
         };
     }
+
     /**
      * Extracts a method reference to the observer's onError method
      * in the form of an Action1.
      * <p>Java 8: observer::onError</p>
-     * @param observer the observer to use
+     * 
+     * @param observer
+     *            the observer to use
      * @return an action which calls the observer's onError method.
      */
     public static <T> Action1<Throwable> onErrorFrom(final Observer<T> observer) {
@@ -52,11 +60,14 @@ public final class Actions {
             }
         };
     }
+
     /**
      * Extracts a method reference to the observer's onCompleted method
      * in the form of an Action0.
      * <p>Java 8: observer::onCompleted</p>
-     * @param observer the observer to use
+     * 
+     * @param observer
+     *            the observer to use
      * @return an action which calls the observer's onCompleted method.
      */
     public static <T> Action0 onCompletedFrom(final Observer<T> observer) {
@@ -67,114 +78,138 @@ public final class Actions {
             }
         };
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @return {@link Func0}
      */
     public static Func0<Void> toFunc(final Action0 action) {
-        return toFunc(action, (Void)null);
+        return toFunc(action, (Void) null);
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @return {@link Func0}
      */
     public static <T1> Func1<T1, Void> toFunc(final Action1<T1> action) {
-        return toFunc(action, (Void)null);
+        return toFunc(action, (Void) null);
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @return {@link Func0}
      */
     public static <T1, T2> Func2<T1, T2, Void> toFunc(final Action2<T1, T2> action) {
-        return toFunc(action, (Void)null);
+        return toFunc(action, (Void) null);
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @return {@link Func0}
      */
     public static <T1, T2, T3> Func3<T1, T2, T3, Void> toFunc(final Action3<T1, T2, T3> action) {
-        return toFunc(action, (Void)null);
+        return toFunc(action, (Void) null);
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @return {@link Func0}
      */
     public static <T1, T2, T3, T4> Func4<T1, T2, T3, T4, Void> toFunc(final Action4<T1, T2, T3, T4> action) {
-        return toFunc(action, (Void)null);
+        return toFunc(action, (Void) null);
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @return {@link Func0}
      */
     public static <T1, T2, T3, T4, T5> Func5<T1, T2, T3, T4, T5, Void> toFunc(
             final Action5<T1, T2, T3, T4, T5> action) {
-        return toFunc(action, (Void)null);
+        return toFunc(action, (Void) null);
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @return {@link Func0}
      */
     public static <T1, T2, T3, T4, T5, T6> Func6<T1, T2, T3, T4, T5, T6, Void> toFunc(
             final Action6<T1, T2, T3, T4, T5, T6> action) {
-        return toFunc(action, (Void)null);
+        return toFunc(action, (Void) null);
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @return {@link Func0}
      */
     public static <T1, T2, T3, T4, T5, T6, T7> Func7<T1, T2, T3, T4, T5, T6, T7, Void> toFunc(
             final Action7<T1, T2, T3, T4, T5, T6, T7> action) {
-        return toFunc(action, (Void)null);
+        return toFunc(action, (Void) null);
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @return {@link Func0}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8> Func8<T1, T2, T3, T4, T5, T6, T7, T8, Void> toFunc(
             final Action8<T1, T2, T3, T4, T5, T6, T7, T8> action) {
-        return toFunc(action, (Void)null);
+        return toFunc(action, (Void) null);
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @return {@link Func0}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9> Func9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Void> toFunc(
             final Action9<T1, T2, T3, T4, T5, T6, T7, T8, T9> action) {
-        return toFunc(action, (Void)null);
+        return toFunc(action, (Void) null);
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @return {@link Func0}
      */
     public static FuncN<Void> toFunc(
             final ActionN action) {
-        return toFunc(action, (Void)null);
+        return toFunc(action, (Void) null);
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns the given result.
+     * 
      * @param action
      * @param result
      * @return {@link Func0}
@@ -188,9 +223,11 @@ public final class Actions {
             }
         };
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @param result
      * @return {@link Func0}
@@ -204,9 +241,11 @@ public final class Actions {
             }
         };
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @param result
      * @return {@link Func0}
@@ -220,9 +259,11 @@ public final class Actions {
             }
         };
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @param result
      * @return {@link Func0}
@@ -236,9 +277,11 @@ public final class Actions {
             }
         };
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @param result
      * @return {@link Func0}
@@ -252,9 +295,11 @@ public final class Actions {
             }
         };
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @param result
      * @return {@link Func0}
@@ -269,9 +314,11 @@ public final class Actions {
             }
         };
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @param result
      * @return {@link Func0}
@@ -286,9 +333,11 @@ public final class Actions {
             }
         };
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @param result
      * @return {@link Func0}
@@ -303,9 +352,11 @@ public final class Actions {
             }
         };
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @param result
      * @return {@link Func0}
@@ -320,9 +371,11 @@ public final class Actions {
             }
         };
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @param result
      * @return {@link Func0}
@@ -337,9 +390,11 @@ public final class Actions {
             }
         };
     }
+
     /**
      * Convert an action to a function which calls
      * the action returns Void (null).
+     * 
      * @param action
      * @param result
      * @return {@link Func0}

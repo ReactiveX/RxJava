@@ -207,6 +207,7 @@ public class ChunkedOperation {
                 }
             }
         }
+
         @Override
         public void unsubscribe() {
             for (Subscription s : subscriptions.values()) {
@@ -263,7 +264,7 @@ public class ChunkedOperation {
                 s.unsubscribe();
             }
         }
-        
+
     }
 
     /**

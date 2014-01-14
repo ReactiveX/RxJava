@@ -129,10 +129,12 @@ public class OperationSkipLast {
             }));
         }
     }
-    
+
     /**
      * Skip delivering values in the time window before the values.
-     * @param <T> the result value type
+     * 
+     * @param <T>
+     *            the result value type
      */
     public static final class SkipLastTimed<T> implements OnSubscribeFunc<T> {
         final Observable<? extends T> source;
@@ -149,6 +151,7 @@ public class OperationSkipLast {
         public Subscription onSubscribe(Observer<? super T> t1) {
             return source.subscribe(new SourceObserver<T>(t1, timeInMillis, scheduler));
         }
+
         /** Observes the source. */
         private static final class SourceObserver<T> implements Observer<T> {
             final Observer<? super T> observer;
@@ -156,7 +159,7 @@ public class OperationSkipLast {
             final Scheduler scheduler;
             List<Timestamped<T>> buffer = new ArrayList<Timestamped<T>>();
 
-            public SourceObserver(Observer<? super T> observer, 
+            public SourceObserver(Observer<? super T> observer,
                     long timeInMillis, Scheduler scheduler) {
                 this.observer = observer;
                 this.timeInMillis = timeInMillis;
@@ -195,7 +198,7 @@ public class OperationSkipLast {
                     buffer = Collections.emptyList();
                 }
             }
-            
+
         }
     }
 }

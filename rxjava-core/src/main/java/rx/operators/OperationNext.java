@@ -39,13 +39,13 @@ public final class OperationNext {
             public Iterator<T> iterator() {
                 NextObserver<T> nextObserver = new NextObserver<T>();
                 final NextIterator<T> nextIterator = new NextIterator<T>(nextObserver);
-                
+
                 items.materialize().subscribe(nextObserver);
-                
+
                 return nextIterator;
             }
         };
-        
+
     }
 
     private static class NextIterator<T> implements Iterator<T> {

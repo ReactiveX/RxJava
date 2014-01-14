@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,8 +19,8 @@ import static org.junit.Assert.*;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.junit.Assert;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -203,29 +203,30 @@ public class BlockingObservableTest {
         assertEquals(false, it.hasNext());
 
     }
+
     @Test(expected = NoSuchElementException.class)
     public void testToIterableNextOnly() {
         BlockingObservable<Integer> obs = BlockingObservable.from(Observable.from(1, 2, 3));
 
         Iterator<Integer> it = obs.toIterable().iterator();
-        
-        Assert.assertEquals((Integer)1, it.next());
-        Assert.assertEquals((Integer)2, it.next());
-        Assert.assertEquals((Integer)3, it.next());
-        
+
+        Assert.assertEquals((Integer) 1, it.next());
+        Assert.assertEquals((Integer) 2, it.next());
+        Assert.assertEquals((Integer) 3, it.next());
+
         it.next();
     }
-    
+
     @Test(expected = NoSuchElementException.class)
     public void testToIterableNextOnlyTwice() {
         BlockingObservable<Integer> obs = BlockingObservable.from(Observable.from(1, 2, 3));
 
         Iterator<Integer> it = obs.toIterable().iterator();
-        
-        Assert.assertEquals((Integer)1, it.next());
-        Assert.assertEquals((Integer)2, it.next());
-        Assert.assertEquals((Integer)3, it.next());
-        
+
+        Assert.assertEquals((Integer) 1, it.next());
+        Assert.assertEquals((Integer) 2, it.next());
+        Assert.assertEquals((Integer) 3, it.next());
+
         boolean exc = false;
         try {
             it.next();
@@ -233,25 +234,25 @@ public class BlockingObservableTest {
             exc = true;
         }
         Assert.assertEquals(true, exc);
-        
+
         it.next();
     }
-    
+
     @Test
     public void testToIterableManyTimes() {
         BlockingObservable<Integer> obs = BlockingObservable.from(Observable.from(1, 2, 3));
-        
+
         Iterable<Integer> iter = obs.toIterable();
-        
+
         for (int j = 0; j < 3; j++) {
             Iterator<Integer> it = iter.iterator();
-            
+
             Assert.assertTrue(it.hasNext());
-            Assert.assertEquals((Integer)1, it.next());
+            Assert.assertEquals((Integer) 1, it.next());
             Assert.assertTrue(it.hasNext());
-            Assert.assertEquals((Integer)2, it.next());
+            Assert.assertEquals((Integer) 2, it.next());
             Assert.assertTrue(it.hasNext());
-            Assert.assertEquals((Integer)3, it.next());
+            Assert.assertEquals((Integer) 3, it.next());
             Assert.assertFalse(it.hasNext());
         }
     }
@@ -319,7 +320,7 @@ public class BlockingObservableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testFirstWithEmpty() {
-        BlockingObservable.from(Observable.<String>empty()).first();
+        BlockingObservable.from(Observable.<String> empty()).first();
     }
 
     @Test
@@ -353,7 +354,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testFirstOrDefaultWithEmpty() {
-        BlockingObservable<String> observable = BlockingObservable.from(Observable.<String>empty());
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.<String> empty());
         assertEquals("default", observable.firstOrDefault("default"));
     }
 

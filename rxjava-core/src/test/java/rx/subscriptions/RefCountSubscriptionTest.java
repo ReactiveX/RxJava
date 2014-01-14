@@ -15,54 +15,60 @@
  */
 package rx.subscriptions;
 
+import static org.mockito.Mockito.*;
+import static rx.subscriptions.Subscriptions.*;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
-import static org.mockito.Mockito.*;
+
 import rx.Subscription;
-import static rx.subscriptions.Subscriptions.create;
 import rx.util.functions.Action0;
 
 public class RefCountSubscriptionTest {
     Action0 main;
     RefCountSubscription rcs;
+
     @Before
     public void before() {
         main = mock(Action0.class);
         rcs = new RefCountSubscription(create(main));
     }
+
     @Test
     public void testImmediateUnsubscribe() {
         InOrder inOrder = inOrder(main);
 
         rcs.unsubscribe();
-        
+
         inOrder.verify(main, times(1)).call();
-        
+
         rcs.unsubscribe();
 
         inOrder.verifyNoMoreInteractions();
     }
+
     @Test
     public void testRCSUnsubscribeBeforeClient() {
         InOrder inOrder = inOrder(main);
-        
+
         Subscription s = rcs.get();
-        
+
         rcs.unsubscribe();
-        
+
         inOrder.verify(main, never()).call();
-        
+
         s.unsubscribe();
-        
+
         inOrder.verify(main, times(1)).call();
-        
+
         rcs.unsubscribe();
         s.unsubscribe();
-        
+
         inOrder.verifyNoMoreInteractions();
-        
+
     }
+
     @Test
     public void testMultipleClientsUnsubscribeFirst() {
         InOrder inOrder = inOrder(main);
@@ -74,16 +80,17 @@ public class RefCountSubscriptionTest {
         inOrder.verify(main, never()).call();
         s2.unsubscribe();
         inOrder.verify(main, never()).call();
-        
+
         rcs.unsubscribe();
         inOrder.verify(main, times(1)).call();
 
         s1.unsubscribe();
         s2.unsubscribe();
         rcs.unsubscribe();
-        
+
         inOrder.verifyNoMoreInteractions();
     }
+
     @Test
     public void testMultipleClientsMainUnsubscribeFirst() {
         InOrder inOrder = inOrder(main);
@@ -96,13 +103,13 @@ public class RefCountSubscriptionTest {
         s1.unsubscribe();
         inOrder.verify(main, never()).call();
         s2.unsubscribe();
-        
+
         inOrder.verify(main, times(1)).call();
 
         s1.unsubscribe();
         s2.unsubscribe();
         rcs.unsubscribe();
-        
+
         inOrder.verifyNoMoreInteractions();
     }
 }

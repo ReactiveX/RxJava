@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,28 +15,18 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationMap.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
-import rx.schedulers.Schedulers;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
 import rx.util.functions.Action1;
+import rx.util.functions.Func1;
 
 public class OperationDoOnEachTest {
 
@@ -52,7 +42,7 @@ public class OperationDoOnEachTest {
 
     @Test
     public void testDoOnEach() {
-        Observable<String> base     = Observable.from("a", "b", "c");
+        Observable<String> base = Observable.from("a", "b", "c");
         Observable<String> doOnEach = base.doOnEach(sideEffectObserver);
 
         doOnEach.subscribe(subscribedObserver);
@@ -71,8 +61,6 @@ public class OperationDoOnEachTest {
         verify(sideEffectObserver, times(1)).onNext("c");
         verify(sideEffectObserver, times(1)).onCompleted();
     }
-    
-
 
     @Test
     public void testDoOnEachWithError() {
@@ -86,9 +74,8 @@ public class OperationDoOnEachTest {
                 return s;
             }
         });
-        
-        Observable<String> doOnEach = errs.doOnEach(sideEffectObserver);
 
+        Observable<String> doOnEach = errs.doOnEach(sideEffectObserver);
 
         doOnEach.subscribe(subscribedObserver);
         verify(subscribedObserver, times(1)).onNext("one");
@@ -96,7 +83,6 @@ public class OperationDoOnEachTest {
         verify(subscribedObserver, never()).onNext("three");
         verify(subscribedObserver, never()).onCompleted();
         verify(subscribedObserver, times(1)).onError(any(Throwable.class));
-
 
         verify(sideEffectObserver, times(1)).onNext("one");
         verify(sideEffectObserver, never()).onNext("two");
@@ -107,7 +93,7 @@ public class OperationDoOnEachTest {
 
     @Test
     public void testDoOnEachWithErrorInCallback() {
-        Observable<String> base     = Observable.from("one", "two", "fail", "three");
+        Observable<String> base = Observable.from("one", "two", "fail", "three");
         Observable<String> doOnEach = base.doOnNext(new Action1<String>() {
             @Override
             public void call(String s) {
@@ -125,5 +111,5 @@ public class OperationDoOnEachTest {
         verify(subscribedObserver, times(1)).onError(any(Throwable.class));
 
     }
-  
+
 }
