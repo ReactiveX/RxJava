@@ -15,6 +15,8 @@
  */
 package rx.operators;
 
+import java.util.ArrayList;
+import java.util.List;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.inOrder;
@@ -36,6 +38,8 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.TestScheduler;
+import rx.subjects.PublishSubject;
+import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 public class OperationDelayTest {
@@ -234,5 +238,309 @@ public class OperationDelayTest {
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testDelayWithObservableNormal1() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        final List<PublishSubject<Integer>> delays = new ArrayList<PublishSubject<Integer>>();
+        final int n = 10;
+        for (int i = 0; i < n; i++) {
+            PublishSubject<Integer> delay = PublishSubject.create();
+            delays.add(delay);
+        }
+
+        Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return delays.get(t1);
+            }
+        };
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        source.delay(delayFunc).subscribe(o);
+        
+        
+        for (int i = 0; i < n; i++) {
+            source.onNext(i);
+            delays.get(i).onNext(i);
+            inOrder.verify(o).onNext(i);
+        }
+        source.onCompleted();
+        
+        inOrder.verify(o).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testDelayWithObservableSingleSend1() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        final PublishSubject<Integer> delay = PublishSubject.create();
+
+        Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return delay;
+            }
+        };
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        source.delay(delayFunc).subscribe(o);
+        
+        source.onNext(1);
+        delay.onNext(1);
+        delay.onNext(2);
+        
+        inOrder.verify(o).onNext(1);
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void testDelayWithObservableSourceThrows() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        final PublishSubject<Integer> delay = PublishSubject.create();
+
+        Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return delay;
+            }
+        };
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        source.delay(delayFunc).subscribe(o);
+        source.onNext(1);
+        source.onError(new OperationReduceTest.CustomException());
+        delay.onNext(1);
+
+        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+    }
+    @Test
+    public void testDelayWithObservableDelayFunctionThrows() {
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                throw new OperationReduceTest.CustomException();
+            }
+        };
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        source.delay(delayFunc).subscribe(o);
+        source.onNext(1);
+
+        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+    }
+    
+    @Test
+    public void testDelayWithObservableDelayThrows() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        final PublishSubject<Integer> delay = PublishSubject.create();
+
+        Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return delay;
+            }
+        };
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        source.delay(delayFunc).subscribe(o);
+        source.onNext(1);
+        delay.onError(new OperationReduceTest.CustomException());
+
+        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+    }
+    @Test
+    public void testDelayWithObservableSubscriptionNormal() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        final PublishSubject<Integer> delay = PublishSubject.create();
+        Func0<Observable<Integer>> subFunc = new Func0<Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call() {
+                return delay;
+            }
+        };
+        Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return delay;
+            }
+        };
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        source.delay(subFunc, delayFunc).subscribe(o);
+        
+        source.onNext(1);
+        delay.onNext(1);
+
+        source.onNext(2);
+        delay.onNext(2);
+        
+        inOrder.verify(o).onNext(2);
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onError(any(Throwable.class));
+        verify(o, never()).onCompleted();
+    }
+    @Test
+    public void testDelayWithObservableSubscriptionFunctionThrows() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        final PublishSubject<Integer> delay = PublishSubject.create();
+        Func0<Observable<Integer>> subFunc = new Func0<Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call() {
+                throw new OperationReduceTest.CustomException();
+            }
+        };
+        Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return delay;
+            }
+        };
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        source.delay(subFunc, delayFunc).subscribe(o);
+        
+        source.onNext(1);
+        delay.onNext(1);
+
+        source.onNext(2);
+        
+        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+    }
+    @Test
+    public void testDelayWithObservableSubscriptionThrows() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        final PublishSubject<Integer> delay = PublishSubject.create();
+        Func0<Observable<Integer>> subFunc = new Func0<Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call() {
+                return delay;
+            }
+        };
+        Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return delay;
+            }
+        };
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        source.delay(subFunc, delayFunc).subscribe(o);
+        
+        source.onNext(1);
+        delay.onError(new OperationReduceTest.CustomException());
+
+        source.onNext(2);
+        
+        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+    }
+    @Test
+    public void testDelayWithObservableEmptyDelayer() {
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return Observable.empty();
+            }
+        };
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        source.delay(delayFunc).subscribe(o);
+        
+        source.onNext(1);
+        source.onCompleted();
+        
+        inOrder.verify(o).onNext(1);
+        inOrder.verify(o).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testDelayWithObservableSubscriptionRunCompletion() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        final PublishSubject<Integer> sdelay = PublishSubject.create();
+        final PublishSubject<Integer> delay = PublishSubject.create();
+        Func0<Observable<Integer>> subFunc = new Func0<Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call() {
+                return sdelay;
+            }
+        };
+        Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return delay;
+            }
+        };
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        source.delay(subFunc, delayFunc).subscribe(o);
+        
+        source.onNext(1);
+        sdelay.onCompleted();
+
+        source.onNext(2);
+        delay.onNext(2);
+        
+        inOrder.verify(o).onNext(2);
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onError(any(Throwable.class));
+        verify(o, never()).onCompleted();
     }
 }
