@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -47,9 +48,9 @@ public class OperationSampleTest {
 
     @Test
     public void testSample() {
-        Observable<Long> source = Observable.create(new Observable.OnSubscribeFunc<Long>() {
+        IObservable<Long> source = new IObservable<Long>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super Long> observer1) {
+            public Subscription subscribe(final Observer<? super Long> observer1) {
                 scheduler.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -71,9 +72,9 @@ public class OperationSampleTest {
 
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<Long> sampled = Observable.create(OperationSample.sample(source, 400L, TimeUnit.MILLISECONDS, scheduler));
+        IObservable<Long> sampled = OperationSample.sample(source, 400L, TimeUnit.MILLISECONDS, scheduler);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);

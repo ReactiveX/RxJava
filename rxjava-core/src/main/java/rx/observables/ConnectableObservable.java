@@ -15,6 +15,7 @@
  */
 package rx.observables;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -37,7 +38,7 @@ import rx.operators.OperationRefCount;
 
 public abstract class ConnectableObservable<T> extends Observable<T> {
 
-    protected ConnectableObservable(OnSubscribeFunc<T> onSubscribe) {
+    protected ConnectableObservable(IObservable<T> onSubscribe) {
         super(onSubscribe);
     }
 
@@ -54,6 +55,6 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @return a {@link Observable}
      */
     public Observable<T> refCount() {
-        return Observable.create(OperationRefCount.refCount(this));
+        return Observable.from(OperationRefCount.refCount(this));
     }
 }

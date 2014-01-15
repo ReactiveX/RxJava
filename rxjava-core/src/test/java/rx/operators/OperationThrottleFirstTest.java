@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.TestScheduler;
@@ -45,9 +45,9 @@ public class OperationThrottleFirstTest {
 
     @Test
     public void testThrottlingWithCompleted() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 publishNext(observer, 100, "one");    // publish as it's first
                 publishNext(observer, 300, "two");    // skip as it's last within the first 400
                 publishNext(observer, 900, "three");   // publish
@@ -56,9 +56,9 @@ public class OperationThrottleFirstTest {
 
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<String> sampled = Observable.create(OperationThrottleFirst.throttleFirst(source, 400, TimeUnit.MILLISECONDS, scheduler));
+        IObservable<String> sampled = OperationThrottleFirst.throttleFirst(source, 400, TimeUnit.MILLISECONDS, scheduler);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -74,9 +74,9 @@ public class OperationThrottleFirstTest {
 
     @Test
     public void testThrottlingWithError() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 Exception error = new TestException();
                 publishNext(observer, 100, "one");    // Should be published since it is first
                 publishNext(observer, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
@@ -84,9 +84,9 @@ public class OperationThrottleFirstTest {
 
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<String> sampled = Observable.create(OperationThrottleFirst.throttleFirst(source, 400, TimeUnit.MILLISECONDS, scheduler));
+        IObservable<String> sampled = OperationThrottleFirst.throttleFirst(source, 400, TimeUnit.MILLISECONDS, scheduler);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);

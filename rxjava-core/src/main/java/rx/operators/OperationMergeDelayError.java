@@ -21,8 +21,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.IObservable;
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -56,23 +54,22 @@ public final class OperationMergeDelayError {
      * @return An observable sequence whose elements are the result of flattening the output from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099(v=vs.103).aspx">Observable.Merge(TSource) Method (IObservable(TSource)[])</a>
      */
-    public static <T> OnSubscribeFunc<T> mergeDelayError(final IObservable<? extends IObservable<? extends T>> sequences) {
+    public static <T> IObservable<T> mergeDelayError(final IObservable<? extends IObservable<? extends T>> sequences) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new OnSubscribeFunc<T>() {
-
+        return new IObservable<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                return new MergeDelayErrorObservable<T>(sequences).onSubscribe(observer);
+            public Subscription subscribe(Observer<? super T> observer) {
+                return new MergeDelayErrorObservable<T>(sequences).subscribe(observer);
             }
         };
     }
 
-    public static <T> OnSubscribeFunc<T> mergeDelayError(final IObservable<? extends T>... sequences) {
-        return mergeDelayError(Observable.create(new OnSubscribeFunc<IObservable<? extends T>>() {
+    public static <T> IObservable<T> mergeDelayError(final IObservable<? extends T>... sequences) {
+        return mergeDelayError(new IObservable<IObservable<? extends T>>() {
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription onSubscribe(Observer<? super IObservable<? extends T>> observer) {
+            public Subscription subscribe(Observer<? super IObservable<? extends T>> observer) {
                 for (IObservable<? extends T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
@@ -93,16 +90,16 @@ public final class OperationMergeDelayError {
 
                 };
             }
-        }));
+        });
     }
 
-    public static <T> OnSubscribeFunc<T> mergeDelayError(final List<? extends IObservable<? extends T>> sequences) {
-        return mergeDelayError(Observable.create(new OnSubscribeFunc<IObservable<? extends T>>() {
+    public static <T> IObservable<T> mergeDelayError(final List<? extends IObservable<? extends T>> sequences) {
+        return mergeDelayError(new IObservable<IObservable<? extends T>>() {
 
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription onSubscribe(Observer<? super IObservable<? extends T>> observer) {
+            public Subscription subscribe(Observer<? super IObservable<? extends T>> observer) {
                 for (IObservable<? extends T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
@@ -124,7 +121,7 @@ public final class OperationMergeDelayError {
 
                 };
             }
-        }));
+        });
     }
 
     /**
@@ -138,7 +135,7 @@ public final class OperationMergeDelayError {
      * 
      * @param <T>
      */
-    private static final class MergeDelayErrorObservable<T> implements OnSubscribeFunc<T> {
+    private static final class MergeDelayErrorObservable<T> implements IObservable<T> {
         private final IObservable<? extends IObservable<? extends T>> sequences;
         private final MergeSubscription ourSubscription = new MergeSubscription();
         private AtomicBoolean stopped = new AtomicBoolean(false);
@@ -153,7 +150,7 @@ public final class OperationMergeDelayError {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> actualObserver) {
+        public Subscription subscribe(Observer<? super T> actualObserver) {
             CompositeSubscription completeSubscription = new CompositeSubscription();
 
             /**

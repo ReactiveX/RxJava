@@ -22,7 +22,6 @@ import static rx.operators.OperationMap.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
@@ -31,6 +30,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.schedulers.Schedulers;
@@ -62,14 +62,14 @@ public class OperationMapTest {
         Map<String, String> m2 = getMap("Two");
         Observable<Map<String, String>> observable = Observable.from(m1, m2);
 
-        Observable<String> m = Observable.create(map(observable, new Func1<Map<String, String>, String>() {
+        IObservable<String> m = map(observable, new Func1<Map<String, String>, String>() {
 
             @Override
             public String call(Map<String, String> map) {
                 return map.get("firstName");
             }
 
-        }));
+        });
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -81,7 +81,7 @@ public class OperationMapTest {
     @Test
     public void testMapWithIndex() {
         Observable<String> w = Observable.from("a", "b", "c");
-        Observable<String> m = Observable.create(mapWithIndex(w, APPEND_INDEX));
+        IObservable<String> m = mapWithIndex(w, APPEND_INDEX);
         m.subscribe(stringObserver);
         InOrder inOrder = inOrder(stringObserver);
         inOrder.verify(stringObserver, times(1)).onNext("a0");
@@ -94,7 +94,7 @@ public class OperationMapTest {
     @Test
     public void testMapWithIndexAndMultipleSubscribers() {
         Observable<String> w = Observable.from("a", "b", "c");
-        Observable<String> m = Observable.create(mapWithIndex(w, APPEND_INDEX));
+        IObservable<String> m = mapWithIndex(w, APPEND_INDEX);
         m.subscribe(stringObserver);
         m.subscribe(stringObserver2);
         InOrder inOrder = inOrder(stringObserver);
@@ -118,10 +118,10 @@ public class OperationMapTest {
         Observable<Integer> ids = Observable.from(1, 2);
 
         /* now simulate the behavior to take those IDs and perform nested async calls based on them */
-        Observable<String> m = ids.flatMap(new Func1<Integer, Observable<String>>() {
+        Observable<String> m = ids.flatMap(new Func1<Integer, IObservable<String>>() {
 
             @Override
-            public Observable<String> call(Integer id) {
+            public IObservable<String> call(Integer id) {
                 /* simulate making a nested async call which creates another Observable */
                 Observable<Map<String, String>> subObservable = null;
                 if (id == 1) {
@@ -135,12 +135,12 @@ public class OperationMapTest {
                 }
 
                 /* simulate kicking off the async call and performing a select on it to transform the data */
-                return Observable.create(map(subObservable, new Func1<Map<String, String>, String>() {
+                return map(subObservable, new Func1<Map<String, String>, String>() {
                     @Override
                     public String call(Map<String, String> map) {
                         return map.get("firstName");
                     }
-                }));
+                });
             }
 
         });
@@ -166,17 +166,17 @@ public class OperationMapTest {
 
         Observable<Observable<Map<String, String>>> observable = Observable.from(observable1, observable2);
 
-        Observable<String> m = observable.flatMap(new Func1<Observable<Map<String, String>>, Observable<String>>() {
+        Observable<String> m = observable.flatMap(new Func1<Observable<Map<String, String>>, IObservable<String>>() {
 
             @Override
-            public Observable<String> call(Observable<Map<String, String>> o) {
-                return Observable.create(map(o, new Func1<Map<String, String>, String>() {
+            public IObservable<String> call(Observable<Map<String, String>> o) {
+                return map(o, new Func1<Map<String, String>, String>() {
 
                     @Override
                     public String call(Map<String, String> map) {
                         return map.get("firstName");
                     }
-                }));
+                });
             }
 
         });
@@ -194,7 +194,7 @@ public class OperationMapTest {
     @Test
     public void testMapWithError() {
         Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
-        Observable<String> m = Observable.create(map(w, new Func1<String, String>() {
+        IObservable<String> m = map(w, new Func1<String, String>() {
             @Override
             public String call(String s) {
                 if ("fail".equals(s)) {
@@ -202,7 +202,7 @@ public class OperationMapTest {
                 }
                 return s;
             }
-        }));
+        });
 
         m.subscribe(stringObserver);
         verify(stringObserver, times(1)).onNext("one");
@@ -221,7 +221,7 @@ public class OperationMapTest {
         Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
         final AtomicInteger c1 = new AtomicInteger();
         final AtomicInteger c2 = new AtomicInteger();
-        Observable<String> m = Observable.create(map(w, new Func1<String, String>() {
+        Observable<String> m = Observable.from(map(w, new Func1<String, String>() {
             @Override
             public String call(String s) {
                 if ("fail".equals(s))
@@ -258,6 +258,7 @@ public class OperationMapTest {
     public void testMapWithIssue417() {
         Observable.from(1).observeOn(Schedulers.threadPoolForComputation())
                 .map(new Func1<Integer, Integer>() {
+                    @Override
                     public Integer call(Integer arg0) {
                         throw new IllegalArgumentException("any error");
                     }
@@ -265,13 +266,14 @@ public class OperationMapTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testMapWithErrorInFuncAndThreadPoolScheduler() throws InterruptedException {
+    public void testMapWithErrorInFuncAndThreadPoolScheduler() {
         // The error will throw in one of threads in the thread pool.
         // If map does not handle it, the error will disappear.
         // so map needs to handle the error by itself.
         Observable<String> m = Observable.from("one")
                 .observeOn(Schedulers.threadPoolForComputation())
                 .map(new Func1<String, String>() {
+                    @Override
                     public String call(String arg0) {
                         throw new IllegalArgumentException("any error");
                     }

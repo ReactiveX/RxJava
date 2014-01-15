@@ -16,7 +16,7 @@
 package rx.operators;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -44,7 +44,7 @@ public final class OperationMap {
      *            the type of the output sequence.
      * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
      */
-    public static <T, R> OnSubscribeFunc<R> map(final IObservable<? extends T> sequence, final Func1<? super T, ? extends R> func) {
+    public static <T, R> IObservable<R> map(final IObservable<? extends T> sequence, final Func1<? super T, ? extends R> func) {
         return mapWithIndex(sequence, new Func2<T, Integer, R>() {
             @Override
             public R call(T value, @SuppressWarnings("unused") Integer unused) {
@@ -69,11 +69,11 @@ public final class OperationMap {
      * @return a sequence that is the result of applying the transformation function to each item in the input sequence.
      * @deprecated
      */
-    public static <T, R> OnSubscribeFunc<R> mapWithIndex(final IObservable<? extends T> sequence, final Func2<? super T, Integer, ? extends R> func) {
-        return new OnSubscribeFunc<R>() {
+    public static <T, R> IObservable<R> mapWithIndex(final IObservable<? extends T> sequence, final Func2<? super T, Integer, ? extends R> func) {
+        return new IObservable<R>() {
             @Override
-            public Subscription onSubscribe(Observer<? super R> observer) {
-                return new MapObservable<T, R>(sequence, func).onSubscribe(observer);
+            public Subscription subscribe(Observer<? super R> observer) {
+                return new MapObservable<T, R>(sequence, func).subscribe(observer);
             }
         };
     }
@@ -86,7 +86,7 @@ public final class OperationMap {
      * @param <R>
      *            the type of the output sequence.
      */
-    private static class MapObservable<T, R> implements OnSubscribeFunc<R> {
+    private static class MapObservable<T, R> implements IObservable<R> {
         public MapObservable(IObservable<? extends T> sequence, Func2<? super T, Integer, ? extends R> func) {
             this.sequence = sequence;
             this.func = func;
@@ -97,7 +97,7 @@ public final class OperationMap {
         private int index;
 
         @Override
-        public Subscription onSubscribe(final Observer<? super R> observer) {
+        public Subscription subscribe(final Observer<? super R> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
             return subscription.wrap(sequence.subscribe(new SafeObserver<T>(subscription, new Observer<T>() {
                 @Override

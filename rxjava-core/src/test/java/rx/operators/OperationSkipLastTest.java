@@ -22,6 +22,7 @@ import static rx.operators.OperationSkipLast.*;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.concurrency.TestScheduler;
@@ -33,7 +34,7 @@ public class OperationSkipLastTest {
     @Test
     public void testSkipLastEmpty() {
         Observable<String> w = Observable.empty();
-        Observable<String> observable = Observable.create(skipLast(w, 2));
+        IObservable<String> observable = skipLast(w, 2);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -46,7 +47,7 @@ public class OperationSkipLastTest {
     @Test
     public void testSkipLast1() {
         Observable<String> w = Observable.from("one", "two", "three");
-        Observable<String> observable = Observable.create(skipLast(w, 2));
+        IObservable<String> observable = skipLast(w, 2);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -62,7 +63,7 @@ public class OperationSkipLastTest {
     @Test
     public void testSkipLast2() {
         Observable<String> w = Observable.from("one", "two");
-        Observable<String> observable = Observable.create(skipLast(w, 2));
+        IObservable<String> observable = skipLast(w, 2);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -75,7 +76,7 @@ public class OperationSkipLastTest {
     @Test
     public void testSkipLastWithZeroCount() {
         Observable<String> w = Observable.from("one", "two");
-        Observable<String> observable = Observable.create(skipLast(w, 0));
+        IObservable<String> observable = skipLast(w, 0);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -89,7 +90,7 @@ public class OperationSkipLastTest {
     @Test
     public void testSkipLastWithNull() {
         Observable<String> w = Observable.from("one", null, "two");
-        Observable<String> observable = Observable.create(skipLast(w, 1));
+        IObservable<String> observable = skipLast(w, 1);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -104,7 +105,7 @@ public class OperationSkipLastTest {
     @Test
     public void testSkipLastWithNegativeCount() {
         Observable<String> w = Observable.from("one");
-        Observable<String> observable = Observable.create(skipLast(w, -1));
+        IObservable<String> observable = skipLast(w, -1);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);

@@ -23,7 +23,7 @@ import org.apache.http.nio.client.methods.HttpAsyncMethods;
 import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.apache.http.consumers.ResponseConsumerDelegate;
@@ -78,22 +78,22 @@ import rx.subscriptions.Subscriptions;
  */
 public class ObservableHttp<T> {
 
-    private final OnSubscribeFunc<T> onSubscribe;
+    private final IObservable<T> onSubscribe;
 
-    private ObservableHttp(OnSubscribeFunc<T> onSubscribe) {
+    private ObservableHttp(IObservable<T> onSubscribe) {
         this.onSubscribe = onSubscribe;
     }
 
-    private static <T> ObservableHttp<T> create(OnSubscribeFunc<T> onSubscribe) {
+    private static <T> ObservableHttp<T> create(IObservable<T> onSubscribe) {
         return new ObservableHttp<T>(onSubscribe);
     }
 
     public Observable<T> toObservable() {
-        return Observable.create(new OnSubscribeFunc<T>() {
+        return Observable.create(new IObservable<T>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                return onSubscribe.onSubscribe(observer);
+            public Subscription subscribe(Observer<? super T> observer) {
+                return onSubscribe.subscribe(observer);
             }
         });
     }
@@ -135,10 +135,10 @@ public class ObservableHttp<T> {
      */
     public static ObservableHttp<ObservableHttpResponse> createRequest(final HttpAsyncRequestProducer requestProducer, final HttpAsyncClient client) {
 
-        return ObservableHttp.create(new OnSubscribeFunc<ObservableHttpResponse>() {
+        return ObservableHttp.create(new IObservable<ObservableHttpResponse>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super ObservableHttpResponse> observer) {
+            public Subscription subscribe(final Observer<? super ObservableHttpResponse> observer) {
 
                 final CompositeSubscription parentSubscription = new CompositeSubscription();
 

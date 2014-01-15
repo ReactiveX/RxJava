@@ -21,10 +21,10 @@ import static org.mockito.Mockito.*;
 import static rx.operators.OperationElementAt.*;
 
 import java.util.Iterator;
-import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 
@@ -33,7 +33,7 @@ public class OperationElementAtTest {
     @Test
     public void testElementAt() {
         Observable<Integer> w = Observable.from(1, 2);
-        Observable<Integer> observable = Observable.create(elementAt(w, 1));
+        IObservable<Integer> observable = elementAt(w, 1);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> aObserver = mock(Observer.class);
@@ -48,8 +48,7 @@ public class OperationElementAtTest {
     @Test
     public void testElementAtWithMinusIndex() {
         Observable<Integer> w = Observable.from(1, 2);
-        Observable<Integer> observable = Observable
-                .create(elementAt(w, -1));
+        IObservable<Integer> observable = elementAt(w, -1);
 
         try {
             Iterator<Integer> iter = OperationToIterator
@@ -62,10 +61,9 @@ public class OperationElementAtTest {
     }
 
     @Test
-    public void testElementAtWithIndexOutOfBounds()
-            throws InterruptedException, ExecutionException {
+    public void testElementAtWithIndexOutOfBounds() {
         Observable<Integer> w = Observable.from(1, 2);
-        Observable<Integer> observable = Observable.create(elementAt(w, 2));
+        IObservable<Integer> observable = elementAt(w, 2);
         try {
             Iterator<Integer> iter = OperationToIterator
                     .toIterator(observable);
@@ -77,11 +75,9 @@ public class OperationElementAtTest {
     }
 
     @Test
-    public void testElementAtOrDefault() throws InterruptedException,
-            ExecutionException {
+    public void testElementAtOrDefault() {
         Observable<Integer> w = Observable.from(1, 2);
-        Observable<Integer> observable = Observable
-                .create(elementAtOrDefault(w, 1, 0));
+        IObservable<Integer> observable = elementAtOrDefault(w, 1, 0);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> aObserver = mock(Observer.class);
@@ -93,11 +89,9 @@ public class OperationElementAtTest {
     }
 
     @Test
-    public void testElementAtOrDefaultWithIndexOutOfBounds()
-            throws InterruptedException, ExecutionException {
+    public void testElementAtOrDefaultWithIndexOutOfBounds() {
         Observable<Integer> w = Observable.from(1, 2);
-        Observable<Integer> observable = Observable
-                .create(elementAtOrDefault(w, 2, 0));
+        IObservable<Integer> observable = elementAtOrDefault(w, 2, 0);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> aObserver = mock(Observer.class);
@@ -112,8 +106,7 @@ public class OperationElementAtTest {
     @Test
     public void testElementAtOrDefaultWithMinusIndex() {
         Observable<Integer> w = Observable.from(1, 2);
-        Observable<Integer> observable = Observable
-                .create(elementAtOrDefault(w, -1, 0));
+        IObservable<Integer> observable = elementAtOrDefault(w, -1, 0);
 
         try {
             Iterator<Integer> iter = OperationToIterator

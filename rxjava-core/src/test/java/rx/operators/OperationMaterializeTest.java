@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
 
+import rx.IObservable;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
@@ -37,7 +38,7 @@ public class OperationMaterializeTest {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", null, "three");
 
         TestObserver Observer = new TestObserver();
-        Observable<Notification<String>> m = Observable.create(materialize(Observable.create(o1)));
+        IObservable<Notification<String>> m = materialize(o1);
         m.subscribe(Observer);
 
         try {
@@ -62,7 +63,7 @@ public class OperationMaterializeTest {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
 
         TestObserver Observer = new TestObserver();
-        Observable<Notification<String>> m = Observable.create(materialize(Observable.create(o1)));
+        IObservable<Notification<String>> m = materialize(o1);
         m.subscribe(Observer);
 
         try {
@@ -87,7 +88,7 @@ public class OperationMaterializeTest {
     public void testMultipleSubscribes() throws InterruptedException, ExecutionException {
         final TestAsyncErrorObservable o = new TestAsyncErrorObservable("one", "two", null, "three");
 
-        Observable<Notification<String>> m = Observable.create(materialize(Observable.create(o)));
+        Observable<Notification<String>> m = Observable.from(materialize(o));
 
         assertEquals(3, m.toList().toBlockingObservable().toFuture().get().size());
         assertEquals(3, m.toList().toBlockingObservable().toFuture().get().size());
@@ -116,7 +117,7 @@ public class OperationMaterializeTest {
 
     }
 
-    private static class TestAsyncErrorObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestAsyncErrorObservable implements IObservable<String> {
 
         String[] valuesToReturn;
 
@@ -127,7 +128,7 @@ public class OperationMaterializeTest {
         volatile Thread t;
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription subscribe(final Observer<? super String> observer) {
             t = new Thread(new Runnable() {
 
                 @Override

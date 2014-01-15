@@ -17,7 +17,6 @@ package rx.operators;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
@@ -41,9 +40,9 @@ public class OperationMulticast {
         private Subscription subscription;
 
         public MulticastConnectableObservable(IObservable<? extends T> source, final Subject<? super T, ? extends R> subject) {
-            super(new OnSubscribeFunc<R>() {
+            super(new IObservable<R>() {
                 @Override
-                public Subscription onSubscribe(Observer<? super R> observer) {
+                public Subscription subscribe(Observer<? super R> observer) {
                     return subject.subscribe(observer);
                 }
             });
@@ -103,7 +102,7 @@ public class OperationMulticast {
             final IObservable<? extends TInput> source,
             final Func0<? extends Subject<? super TInput, ? extends TIntermediate>> subjectFactory, 
             final Func1<? super IObservable<TIntermediate>, ? extends IObservable<TResult>> selector) {
-        return Observable.create(new MulticastSubscribeFunc<TInput, TIntermediate, TResult>(source, subjectFactory, selector));
+        return Observable.from(new MulticastSubscribeFunc<TInput, TIntermediate, TResult>(source, subjectFactory, selector));
     }
 
     /**
@@ -117,11 +116,11 @@ public class OperationMulticast {
             final Observable<? extends TInput> source,
             final Func0<? extends Subject<? super TInput, ? extends TIntermediate>> subjectFactory, 
             final Func1<? super Observable<TIntermediate>, ? extends IObservable<TResult>> selector) {
-        return Observable.create(new MulticastSubscribeFunc<TInput, TIntermediate, TResult>(source, subjectFactory, selector));
+        return Observable.from(new MulticastSubscribeFunc<TInput, TIntermediate, TResult>(source, subjectFactory, selector));
     }
 
     /** The multicast subscription function. */
-    private static final class MulticastSubscribeFunc<TInput, TIntermediate, TResult> implements OnSubscribeFunc<TResult> {
+    private static final class MulticastSubscribeFunc<TInput, TIntermediate, TResult> implements IObservable<TResult> {
         final IObservable<? extends TInput> source;
         final Func0<? extends Subject<? super TInput, ? extends TIntermediate>> subjectFactory;
         final Func1<? super Observable<TIntermediate>, ? extends IObservable<TResult>> resultSelector;
@@ -135,7 +134,7 @@ public class OperationMulticast {
             this.resultSelector = resultSelector;
         }
         @Override
-        public Subscription onSubscribe(Observer<? super TResult> t1) {
+        public Subscription subscribe(Observer<? super TResult> t1) {
             IObservable<TResult> observable;
             ConnectableObservable<TIntermediate> connectable;
             try {

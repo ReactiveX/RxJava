@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -30,7 +30,7 @@ import rx.util.functions.Func2;
 /**
  * Correlates the elements of two sequences based on overlapping durations.
  */
-public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> implements OnSubscribeFunc<R> {
+public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> implements IObservable<R> {
     final IObservable<TLeft> left;
     final IObservable<TRight> right;
     final Func1<TLeft, ? extends IObservable<TLeftDuration>> leftDurationSelector;
@@ -50,7 +50,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
     }
 
     @Override
-    public Subscription onSubscribe(Observer<? super R> t1) {
+    public Subscription subscribe(Observer<? super R> t1) {
         SerialSubscription cancel = new SerialSubscription();
         ResultSink result = new ResultSink(t1, cancel);
         cancel.setSubscription(result.run());

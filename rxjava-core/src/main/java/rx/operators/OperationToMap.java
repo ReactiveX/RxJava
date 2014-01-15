@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -38,7 +38,7 @@ public class OperationToMap {
     /**
      * ToMap with key selector, identity value selector and default HashMap factory.
      */
-    public static <T, K> OnSubscribeFunc<Map<K, T>> toMap(IObservable<T> source,
+    public static <T, K> IObservable<Map<K, T>> toMap(IObservable<T> source,
             Func1<? super T, ? extends K> keySelector) {
         return new ToMap<T, K, T>(source, keySelector,
         Functions.<T>identity(), new DefaultToMapFactory<K, T>());
@@ -47,7 +47,7 @@ public class OperationToMap {
     /**
      * ToMap with key selector, value selector and default HashMap factory.
      */
-    public static <T, K, V> OnSubscribeFunc<Map<K, V>> toMap(IObservable<T> source,
+    public static <T, K, V> IObservable<Map<K, V>> toMap(IObservable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector) {
         return new ToMap<T, K, V>(source, keySelector,
@@ -57,7 +57,7 @@ public class OperationToMap {
     /**
      * ToMap with key selector, value selector and custom Map factory.
      */
-    public static <T, K, V> OnSubscribeFunc<Map<K, V>> toMap(IObservable<T> source,
+    public static <T, K, V> IObservable<Map<K, V>> toMap(IObservable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector,
             Func0<? extends Map<K, V>> mapFactory) {
@@ -80,7 +80,7 @@ public class OperationToMap {
      * @param <K> the key type
      * @param <V> the value type
      */
-    public static class ToMap<T, K, V> implements OnSubscribeFunc<Map<K, V>> {
+    public static class ToMap<T, K, V> implements IObservable<Map<K, V>> {
         /** The source. */
         private final IObservable<T> source;
         /** Key extractor. */
@@ -102,7 +102,7 @@ public class OperationToMap {
             
         }
         @Override
-        public Subscription onSubscribe(Observer<? super Map<K, V>> t1) {
+        public Subscription subscribe(Observer<? super Map<K, V>> t1) {
             Map<K, V> map;
             try {
                 map = mapFactory.call();

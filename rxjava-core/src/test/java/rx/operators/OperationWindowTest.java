@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -65,7 +66,7 @@ public class OperationWindowTest {
     @Test
     public void testNonOverlappingWindows() {
         Observable<String> subject = Observable.from("one", "two", "three", "four", "five");
-        Observable<Observable<String>> windowed = Observable.create(window(subject, 3));
+        Observable<Observable<String>> windowed = Observable.from(window(subject, 3));
 
         List<List<String>> windows = toLists(windowed);
 
@@ -77,7 +78,7 @@ public class OperationWindowTest {
     @Test
     public void testSkipAndCountGaplessEindows() {
         Observable<String> subject = Observable.from("one", "two", "three", "four", "five");
-        Observable<Observable<String>> windowed = Observable.create(window(subject, 3, 3));
+        Observable<Observable<String>> windowed = Observable.from(window(subject, 3, 3));
 
         List<List<String>> windows = toLists(windowed);
 
@@ -89,7 +90,7 @@ public class OperationWindowTest {
     @Test
     public void testOverlappingWindows() {
         Observable<String> subject = Observable.from(new String[]{"zero", "one", "two", "three", "four", "five"}, Schedulers.currentThread());
-        Observable<Observable<String>> windowed = Observable.create(window(subject, 3, 1));
+        Observable<Observable<String>> windowed = Observable.from(window(subject, 3, 1));
 
         List<List<String>> windows = toLists(windowed);
 
@@ -105,7 +106,7 @@ public class OperationWindowTest {
     @Test
     public void testSkipAndCountWindowsWithGaps() {
         Observable<String> subject = Observable.from("one", "two", "three", "four", "five");
-        Observable<Observable<String>> windowed = Observable.create(window(subject, 2, 3));
+        Observable<Observable<String>> windowed = Observable.from(window(subject, 2, 3));
 
         List<List<String>> windows = toLists(windowed);
 
@@ -119,9 +120,9 @@ public class OperationWindowTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 push(observer, "one", 10);
                 push(observer, "two", 90);
                 push(observer, "three", 110);
@@ -130,9 +131,9 @@ public class OperationWindowTest {
                 complete(observer, 250);
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<Observable<String>> windowed = Observable.create(window(source, 100, TimeUnit.MILLISECONDS, 2, scheduler));
+        Observable<Observable<String>> windowed = Observable.from(window(source, 100, TimeUnit.MILLISECONDS, 2, scheduler));
         windowed.subscribe(observeWindow(list, lists));
 
         scheduler.advanceTimeTo(100, TimeUnit.MILLISECONDS);
@@ -153,9 +154,9 @@ public class OperationWindowTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 push(observer, "one", 98);
                 push(observer, "two", 99);
                 push(observer, "three", 100);
@@ -164,9 +165,9 @@ public class OperationWindowTest {
                 complete(observer, 150);
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<Observable<String>> windowed = Observable.create(window(source, 100, TimeUnit.MILLISECONDS, scheduler));
+        Observable<Observable<String>> windowed = Observable.from(window(source, 100, TimeUnit.MILLISECONDS, scheduler));
         windowed.subscribe(observeWindow(list, lists));
 
         scheduler.advanceTimeTo(101, TimeUnit.MILLISECONDS);
@@ -183,9 +184,9 @@ public class OperationWindowTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 push(observer, "one", 10);
                 push(observer, "two", 60);
                 push(observer, "three", 110);
@@ -194,33 +195,33 @@ public class OperationWindowTest {
                 complete(observer, 500);
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<Object> openings = Observable.create(new Observable.OnSubscribeFunc<Object>() {
+        IObservable<Object> openings = new IObservable<Object>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Object> observer) {
+            public Subscription subscribe(Observer<? super Object> observer) {
                 push(observer, new Object(), 50);
                 push(observer, new Object(), 200);
                 complete(observer, 250);
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Func1<Object, Observable<Object>> closer = new Func1<Object, Observable<Object>>() {
+        Func1<Object, IObservable<Object>> closer = new Func1<Object, IObservable<Object>>() {
             @Override
-            public Observable<Object> call(Object opening) {
-                return Observable.create(new Observable.OnSubscribeFunc<Object>() {
+            public IObservable<Object> call(Object opening) {
+                return new IObservable<Object>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super Object> observer) {
+                    public Subscription subscribe(Observer<? super Object> observer) {
                         push(observer, new Object(), 100);
                         complete(observer, 101);
                         return Subscriptions.empty();
                     }
-                });
+                };
             }
         };
 
-        Observable<Observable<String>> windowed = Observable.create(window(source, openings, closer));
+        Observable<Observable<String>> windowed = Observable.from(window(source, openings, closer));
         windowed.subscribe(observeWindow(list, lists));
 
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
@@ -234,9 +235,9 @@ public class OperationWindowTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 push(observer, "one", 10);
                 push(observer, "two", 60);
                 push(observer, "three", 110);
@@ -245,23 +246,23 @@ public class OperationWindowTest {
                 complete(observer, 250);
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Func0<Observable<Object>> closer = new Func0<Observable<Object>>() {
+        Func0<IObservable<Object>> closer = new Func0<IObservable<Object>>() {
             @Override
-            public Observable<Object> call() {
-                return Observable.create(new Observable.OnSubscribeFunc<Object>() {
+            public IObservable<Object> call() {
+                return new IObservable<Object>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super Object> observer) {
+                    public Subscription subscribe(Observer<? super Object> observer) {
                         push(observer, new Object(), 100);
                         complete(observer, 101);
                         return Subscriptions.empty();
                     }
-                });
+                };
             }
         };
 
-        Observable<Observable<String>> windowed = Observable.create(window(source, closer));
+        Observable<Observable<String>> windowed = Observable.from(window(source, closer));
         windowed.subscribe(observeWindow(list, lists));
 
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);

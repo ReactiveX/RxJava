@@ -29,7 +29,7 @@ import org.junit.Assert.*
 import rx.Notification
 import rx.Subscription
 import kotlin.concurrent.thread
-import rx.Observable.OnSubscribeFunc
+import rx.IObservable
 import rx.lang.kotlin.BasicKotlinTests.AsyncObservable
 
 /**
@@ -344,8 +344,8 @@ public class BasicKotlinTests {
 
     }
 
-    class AsyncObservable : OnSubscribeFunc<Int>{
-        override fun onSubscribe(t1: Observer<in Int>?): Subscription? {
+    class AsyncObservable : IObservable<Int>{
+        override fun subscribe(t1: Observer<in Int>?): Subscription? {
             thread {
                 Thread.sleep(50)
                 t1!!.onNext(1)
@@ -357,8 +357,8 @@ public class BasicKotlinTests {
         }
     }
 
-    class TestOnSubscribe(val count: Int) : OnSubscribeFunc<String>{
-        override fun onSubscribe(t1: Observer<in String>?): Subscription? {
+    class TestOnSubscribe(val count: Int) : IObservable<String>{
+        override fun subscribe(t1: Observer<in String>?): Subscription? {
             t1!!.onNext("hello_$count")
             t1.onCompleted()
             return Subscription { }

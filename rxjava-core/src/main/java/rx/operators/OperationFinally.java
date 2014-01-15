@@ -16,7 +16,7 @@
 package rx.operators;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Action0;
@@ -49,16 +49,16 @@ public final class OperationFinally {
      *         the given action will be called.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN Observable.Finally method</a>
      */
-    public static <T> OnSubscribeFunc<T> finallyDo(final IObservable<? extends T> sequence, final Action0 action) {
-        return new OnSubscribeFunc<T>() {
+    public static <T> IObservable<T> finallyDo(final IObservable<? extends T> sequence, final Action0 action) {
+        return new IObservable<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                return new Finally<T>(sequence, action).onSubscribe(observer);
+            public Subscription subscribe(Observer<? super T> observer) {
+                return new Finally<T>(sequence, action).subscribe(observer);
             }
         };
     }
 
-    private static class Finally<T> implements OnSubscribeFunc<T> {
+    private static class Finally<T> implements IObservable<T> {
         private final IObservable<? extends T> sequence;
         private final Action0 finalAction;
 
@@ -68,7 +68,7 @@ public final class OperationFinally {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             return sequence.subscribe(new FinallyObserver(observer));
         }
 

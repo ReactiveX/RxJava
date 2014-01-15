@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func2;
@@ -46,7 +46,7 @@ public final class OperationToObservableSortedList<T> {
      *             if T objects do not implement Comparable
      * @return an observable containing the sorted list
      */
-    public static <T> OnSubscribeFunc<List<T>> toSortedList(IObservable<? extends T> sequence) {
+    public static <T> IObservable<List<T>> toSortedList(IObservable<? extends T> sequence) {
         return new ToObservableSortedList<T>(sequence);
     }
 
@@ -57,11 +57,11 @@ public final class OperationToObservableSortedList<T> {
      * @param sortFunction
      * @return an observable containing the sorted list
      */
-    public static <T> OnSubscribeFunc<List<T>> toSortedList(IObservable<? extends T> sequence, Func2<? super T, ? super T, Integer> sortFunction) {
+    public static <T> IObservable<List<T>> toSortedList(IObservable<? extends T> sequence, Func2<? super T, ? super T, Integer> sortFunction) {
         return new ToObservableSortedList<T>(sequence, sortFunction);
     }
 
-    private static class ToObservableSortedList<T> implements OnSubscribeFunc<List<T>> {
+    private static class ToObservableSortedList<T> implements IObservable<List<T>> {
 
         private final IObservable<? extends T> that;
         private final ConcurrentLinkedQueue<T> list = new ConcurrentLinkedQueue<T>();
@@ -79,7 +79,7 @@ public final class OperationToObservableSortedList<T> {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super List<T>> observer) {
+        public Subscription subscribe(final Observer<? super List<T>> observer) {
             return that.subscribe(new Observer<T>() {
                 @Override
                 public void onNext(T value) {

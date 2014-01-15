@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subjects.ReplaySubject;
@@ -38,14 +38,14 @@ import rx.subjects.ReplaySubject;
  */
 public class OperationCache {
 
-    public static <T> OnSubscribeFunc<T> cache(final IObservable<? extends T> source) {
-        return new OnSubscribeFunc<T>() {
+    public static <T> IObservable<T> cache(final IObservable<? extends T> source) {
+        return new IObservable<T>() {
 
             final AtomicBoolean subscribed = new AtomicBoolean(false);
             private final ReplaySubject<T> cache = ReplaySubject.create();
 
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
+            public Subscription subscribe(Observer<? super T> observer) {
                 if (subscribed.compareAndSet(false, true)) {
                     // subscribe to the source once
                     source.subscribe(cache);

@@ -16,7 +16,6 @@
 package rx.operators;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func2;
@@ -49,7 +48,7 @@ public final class OperationScan {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212007%28v=vs.103%29.aspx">Observable.Scan(TSource, TAccumulate) Method (IObservable(TSource), TAccumulate, Func(TAccumulate, TSource,
      *      TAccumulate))</a>
      */
-    public static <T, R> OnSubscribeFunc<R> scan(IObservable<? extends T> sequence, R initialValue, Func2<R, ? super T, R> accumulator) {
+    public static <T, R> IObservable<R> scan(IObservable<? extends T> sequence, R initialValue, Func2<R, ? super T, R> accumulator) {
         return new Accumulator<T, R>(sequence, initialValue, accumulator);
     }
 
@@ -64,11 +63,11 @@ public final class OperationScan {
      * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx">Observable.Scan(TSource) Method (IObservable(TSource), Func(TSource, TSource, TSource))</a>
      */
-    public static <T> OnSubscribeFunc<T> scan(IObservable<? extends T> sequence, Func2<T, T, T> accumulator) {
+    public static <T> IObservable<T> scan(IObservable<? extends T> sequence, Func2<T, T, T> accumulator) {
         return new AccuWithoutInitialValue<T>(sequence, accumulator);
     }
 
-    private static class AccuWithoutInitialValue<T> implements OnSubscribeFunc<T> {
+    private static class AccuWithoutInitialValue<T> implements IObservable<T> {
         private final IObservable<? extends T> sequence;
         private final Func2<T, T, T> accumulatorFunction;
 
@@ -80,7 +79,7 @@ public final class OperationScan {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             return sequence.subscribe(new Observer<T>() {
 
                 // has to be synchronized so that the initial value is always sent only once.
@@ -107,7 +106,7 @@ public final class OperationScan {
         }
     }
 
-    private static class Accumulator<T, R> implements OnSubscribeFunc<R> {
+    private static class Accumulator<T, R> implements IObservable<R> {
         private final IObservable<? extends T> sequence;
         private final R initialValue;
         private final Func2<R, ? super T, R> accumulatorFunction;
@@ -119,7 +118,7 @@ public final class OperationScan {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super R> observer) {
+        public Subscription subscribe(final Observer<? super R> observer) {
             observer.onNext(initialValue);
             return sequence.subscribe(new AccumulatingObserver<T, R>(observer, initialValue, accumulatorFunction));
         }

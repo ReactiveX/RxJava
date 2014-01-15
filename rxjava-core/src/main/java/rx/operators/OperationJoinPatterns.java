@@ -23,7 +23,7 @@ import java.util.Map;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.joins.ActivePlan0;
@@ -66,7 +66,7 @@ public class OperationJoinPatterns {
     /**
      * Joins together the results from several patterns.
      */
-    public static <R> OnSubscribeFunc<R> when(Plan0<R>... plans) {
+    public static <R> IObservable<R> when(Plan0<R>... plans) {
         if (plans == null) {
             throw new NullPointerException("plans");
         }
@@ -75,13 +75,13 @@ public class OperationJoinPatterns {
     /**
      * Joins together the results from several patterns.
      */
-    public static <R> OnSubscribeFunc<R> when(final Iterable<? extends Plan0<R>> plans) {
+    public static <R> IObservable<R> when(final Iterable<? extends Plan0<R>> plans) {
         if (plans == null) {
             throw new NullPointerException("plans");
         }
-        return new OnSubscribeFunc<R>() {
+        return new IObservable<R>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super R> t1) {
+            public Subscription subscribe(final Observer<? super R> t1) {
                 final Map<Object, JoinObserver> externalSubscriptions = new HashMap<Object, JoinObserver>();
                 final Object gate = new Object();
                 final List<ActivePlan0> activePlans = new ArrayList<ActivePlan0>();

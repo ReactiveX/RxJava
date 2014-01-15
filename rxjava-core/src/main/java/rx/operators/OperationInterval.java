@@ -17,7 +17,7 @@ package rx.operators;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -34,24 +34,24 @@ public final class OperationInterval {
     /**
      * Creates an event each time interval.
      */
-    public static OnSubscribeFunc<Long> interval(long interval, TimeUnit unit) {
+    public static IObservable<Long> interval(long interval, TimeUnit unit) {
         return interval(interval, unit, Schedulers.threadPoolForComputation());
     }
 
     /**
      * Creates an event each time interval.
      */
-    public static OnSubscribeFunc<Long> interval(final long interval, final TimeUnit unit, final Scheduler scheduler) {
+    public static IObservable<Long> interval(final long interval, final TimeUnit unit, final Scheduler scheduler) {
         // wrapped in order to work with multiple subscribers
-        return new OnSubscribeFunc<Long>() {
+        return new IObservable<Long>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Long> observer) {
-                return new Interval(interval, unit, scheduler).onSubscribe(observer);
+            public Subscription subscribe(Observer<? super Long> observer) {
+                return new Interval(interval, unit, scheduler).subscribe(observer);
             }
         };
     }
 
-    private static class Interval implements OnSubscribeFunc<Long> {
+    private static class Interval implements IObservable<Long> {
         private final long period;
         private final TimeUnit unit;
         private final Scheduler scheduler;
@@ -65,7 +65,7 @@ public final class OperationInterval {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super Long> observer) {
+        public Subscription subscribe(final Observer<? super Long> observer) {
             final Subscription wrapped = scheduler.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {

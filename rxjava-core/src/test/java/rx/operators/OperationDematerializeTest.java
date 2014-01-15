@@ -21,6 +21,7 @@ import static rx.operators.OperationDematerialize.*;
 
 import org.junit.Test;
 
+import rx.IObservable;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
@@ -47,7 +48,7 @@ public class OperationDematerializeTest {
     public void testDematerialize2() {
         Throwable exception = new Throwable("test");
         Observable<Integer> observable = Observable.error(exception);
-        Observable<Integer> dematerialize = Observable.create(dematerialize(observable.materialize()));
+        IObservable<Integer> dematerialize = dematerialize(observable.materialize());
 
         Observer<Integer> aObserver = mock(Observer.class);
         dematerialize.subscribe(aObserver);
@@ -62,7 +63,7 @@ public class OperationDematerializeTest {
     public void testDematerialize3() {
         Exception exception = new Exception("test");
         Observable<Integer> observable = Observable.error(exception);
-        Observable<Integer> dematerialize = Observable.create(dematerialize(observable.materialize()));
+        IObservable<Integer> dematerialize = dematerialize(observable.materialize());
 
         Observer<Integer> aObserver = mock(Observer.class);
         dematerialize.subscribe(aObserver);

@@ -17,7 +17,7 @@
 package rx.lang.scala
 
 import rx.util.functions.FuncN
-import rx.Observable.OnSubscribeFunc
+import rx.IObservable
 import rx.lang.scala.observables.ConnectableObservable
 
 
@@ -2081,8 +2081,8 @@ object Observable {
    *         an Observable that, when an [[rx.lang.scala.Observer]] subscribes to it, will execute the given function.
    */
   def create[T](func: Observer[T] => Subscription): Observable[T] = {
-    toScalaObservable[T](rx.Observable.create(new OnSubscribeFunc[T] {
-      def onSubscribe(t1: rx.Observer[_ >: T]): rx.Subscription = {
+    toScalaObservable[T](rx.Observable.create(new IObservable[T] {
+      def subscribe(t1: rx.Observer[_ >: T]): rx.Subscription = {
         func(Observer(t1))
       }
     }))

@@ -15,11 +15,12 @@
  */
 package rx.subjects;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 
 public abstract class Subject<T, R> extends Observable<R> implements Observer<T> {
-    protected Subject(OnSubscribeFunc<R> onSubscribe) {
+    protected Subject(IObservable<R> onSubscribe) {
         super(onSubscribe);
     }
 }

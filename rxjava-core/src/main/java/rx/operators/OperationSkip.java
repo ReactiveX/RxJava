@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -47,13 +46,12 @@ public final class OperationSkip {
      * 
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229847(v=vs.103).aspx">Observable.Skip(TSource) Method</a>
      */
-    public static <T> OnSubscribeFunc<T> skip(final IObservable<? extends T> items, final int num) {
+    public static <T> IObservable<T> skip(final IObservable<? extends T> items, final int num) {
         // wrap in a Observable so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new OnSubscribeFunc<T>() {
-
+        return new IObservable<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                return new Skip<T>(items, num).onSubscribe(observer);
+            public Subscription subscribe(Observer<? super T> observer) {
+                return new Skip<T>(items, num).subscribe(observer);
             }
 
         };
@@ -66,7 +64,7 @@ public final class OperationSkip {
      * 
      * @param <T>
      */
-    private static class Skip<T> implements OnSubscribeFunc<T> {
+    private static class Skip<T> implements IObservable<T> {
         private final int num;
         private final IObservable<? extends T> items;
 
@@ -76,7 +74,7 @@ public final class OperationSkip {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             return items.subscribe(new ItemObserver(observer));
         }
 
@@ -118,7 +116,7 @@ public final class OperationSkip {
      * Skip the items after subscription for the given duration. 
      * @param <T> the value type
      */
-    public static final class SkipTimed<T> implements OnSubscribeFunc<T> {
+    public static final class SkipTimed<T> implements IObservable<T> {
         final IObservable<? extends T> source;
         final long time;
         final TimeUnit unit;
@@ -132,7 +130,7 @@ public final class OperationSkip {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription subscribe(Observer<? super T> t1) {
             
             SafeObservableSubscription timer = new SafeObservableSubscription();
             SafeObservableSubscription data = new SafeObservableSubscription();

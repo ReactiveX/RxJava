@@ -22,6 +22,7 @@ import static rx.operators.OperationSkip.*;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.concurrency.TestScheduler;
@@ -32,7 +33,7 @@ public class OperationSkipTest {
     @Test
     public void testSkip1() {
         Observable<String> w = Observable.from("one", "two", "three");
-        Observable<String> skip = Observable.create(skip(w, 2));
+        IObservable<String> skip = skip(w, 2);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -47,7 +48,7 @@ public class OperationSkipTest {
     @Test
     public void testSkip2() {
         Observable<String> w = Observable.from("one", "two", "three");
-        Observable<String> skip = Observable.create(skip(w, 1));
+        IObservable<String> skip = skip(w, 1);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);

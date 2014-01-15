@@ -22,6 +22,7 @@ import static rx.operators.OperationTakeLast.*;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.schedulers.TestScheduler;
@@ -32,7 +33,7 @@ public class OperationTakeLastTest {
     @Test
     public void testTakeLastEmpty() {
         Observable<String> w = Observable.empty();
-        Observable<String> take = Observable.create(takeLast(w, 2));
+        IObservable<String> take = takeLast(w, 2);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -45,7 +46,7 @@ public class OperationTakeLastTest {
     @Test
     public void testTakeLast1() {
         Observable<String> w = Observable.from("one", "two", "three");
-        Observable<String> take = Observable.create(takeLast(w, 2));
+        IObservable<String> take = takeLast(w, 2);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -61,7 +62,7 @@ public class OperationTakeLastTest {
     @Test
     public void testTakeLast2() {
         Observable<String> w = Observable.from("one");
-        Observable<String> take = Observable.create(takeLast(w, 10));
+        IObservable<String> take = takeLast(w, 10);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -74,7 +75,7 @@ public class OperationTakeLastTest {
     @Test
     public void testTakeLastWithZeroCount() {
         Observable<String> w = Observable.from("one");
-        Observable<String> take = Observable.create(takeLast(w, 0));
+        IObservable<String> take = takeLast(w, 0);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -87,7 +88,7 @@ public class OperationTakeLastTest {
     @Test
     public void testTakeLastWithNull() {
         Observable<String> w = Observable.from("one", null, "three");
-        Observable<String> take = Observable.create(takeLast(w, 2));
+        IObservable<String> take = takeLast(w, 2);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -102,7 +103,7 @@ public class OperationTakeLastTest {
     @Test
     public void testTakeLastWithNegativeCount() {
         Observable<String> w = Observable.from("one");
-        Observable<String> take = Observable.create(takeLast(w, -1));
+        IObservable<String> take = takeLast(w, -1);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);

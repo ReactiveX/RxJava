@@ -16,7 +16,7 @@
 package rx.operators;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -28,11 +28,11 @@ import rx.util.functions.Func1;
  */
 public final class OperationFilter<T> {
 
-    public static <T> OnSubscribeFunc<T> filter(IObservable<? extends T> that, Func1<? super T, Boolean> predicate) {
+    public static <T> IObservable<T> filter(IObservable<? extends T> that, Func1<? super T, Boolean> predicate) {
         return new Filter<T>(that, predicate);
     }
 
-    private static class Filter<T> implements OnSubscribeFunc<T> {
+    private static class Filter<T> implements IObservable<T> {
 
         private final IObservable<? extends T> that;
         private final Func1<? super T, Boolean> predicate;
@@ -43,7 +43,7 @@ public final class OperationFilter<T> {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
             return subscription.wrap(that.subscribe(new Observer<T>() {
                 @Override

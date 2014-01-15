@@ -15,15 +15,15 @@
  */
 package rx.swing.sources;
 
-import static rx.swing.sources.ComponentEventSource.Predicate.*;
+import static rx.swing.sources.ComponentEventSource.Predicate.RESIZED;
 
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
+import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.SwingObservable;
@@ -37,9 +37,9 @@ public enum ComponentEventSource { ; // no instances
      * @see rx.observables.SwingObservable#fromComponentEvents
      */
     public static Observable<ComponentEvent> fromComponentEventsOf(final Component component) {
-        return Observable.create(new OnSubscribeFunc<ComponentEvent>() {
+        return Observable.from(new IObservable<ComponentEvent>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super ComponentEvent> observer) {
+            public Subscription subscribe(final Observer<? super ComponentEvent> observer) {
                 final ComponentListener listener = new ComponentListener() {
                     @Override
                     public void componentHidden(ComponentEvent event) {

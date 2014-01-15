@@ -8,7 +8,7 @@
 (deftest test-fn*
   (testing "implements Func0-9"
     (let [f (rx/fn* vector)]
-      (is (instance? rx.Observable$OnSubscribeFunc f))
+      (is (instance? rx.IObservable f))
       (is (instance? rx.util.functions.Func0 f))
       (is (instance? rx.util.functions.Func1 f))
       (is (instance? rx.util.functions.Func2 f))

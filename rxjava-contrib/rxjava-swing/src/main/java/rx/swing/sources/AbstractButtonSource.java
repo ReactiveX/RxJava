@@ -25,8 +25,8 @@ import javax.swing.AbstractButton;
 import org.junit.Test;
 import org.mockito.Matchers;
 
+import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -39,9 +39,9 @@ public enum AbstractButtonSource { ; // no instances
      * @see rx.observables.SwingObservable#fromButtonAction
      */
     public static Observable<ActionEvent> fromActionOf(final AbstractButton button) {
-        return Observable.create(new OnSubscribeFunc<ActionEvent>() {
+        return Observable.from(new IObservable<ActionEvent>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super ActionEvent> observer) {
+            public Subscription subscribe(final Observer<? super ActionEvent> observer) {
                 final ActionListener listener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {

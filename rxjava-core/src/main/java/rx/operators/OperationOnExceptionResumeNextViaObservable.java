@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 
@@ -45,11 +45,11 @@ import rx.Subscription;
  */
 public final class OperationOnExceptionResumeNextViaObservable<T> {
 
-    public static <T> OnSubscribeFunc<T> onExceptionResumeNextViaObservable(IObservable<? extends T> originalSequence, IObservable<? extends T> resumeSequence) {
+    public static <T> IObservable<T> onExceptionResumeNextViaObservable(IObservable<? extends T> originalSequence, IObservable<? extends T> resumeSequence) {
         return new OnExceptionResumeNextViaObservable<T>(originalSequence, resumeSequence);
     }
 
-    private static class OnExceptionResumeNextViaObservable<T> implements OnSubscribeFunc<T> {
+    private static class OnExceptionResumeNextViaObservable<T> implements IObservable<T> {
 
         private final IObservable<? extends T> resumeSequence;
         private final IObservable<? extends T> originalSequence;
@@ -60,7 +60,7 @@ public final class OperationOnExceptionResumeNextViaObservable<T> {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed

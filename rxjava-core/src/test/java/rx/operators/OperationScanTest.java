@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.util.functions.Func2;
@@ -41,14 +42,14 @@ public class OperationScanTest {
 
         Observable<Integer> observable = Observable.from(1, 2, 3);
 
-        Observable<String> m = Observable.create(scan(observable, "", new Func2<String, Integer, String>() {
+        IObservable<String> m = scan(observable, "", new Func2<String, Integer, String>() {
 
             @Override
             public String call(String s, Integer n) {
                 return s + n.toString();
             }
 
-        }));
+        });
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -68,14 +69,14 @@ public class OperationScanTest {
 
         Observable<Integer> observable = Observable.from(1, 2, 3);
 
-        Observable<Integer> m = Observable.create(scan(observable, new Func2<Integer, Integer, Integer>() {
+        IObservable<Integer> m = scan(observable, new Func2<Integer, Integer, Integer>() {
 
             @Override
             public Integer call(Integer t1, Integer t2) {
                 return t1 + t2;
             }
 
-        }));
+        });
         m.subscribe(Observer);
 
         verify(Observer, never()).onError(any(Throwable.class));
@@ -95,14 +96,14 @@ public class OperationScanTest {
 
         Observable<Integer> observable = Observable.from(1);
 
-        Observable<Integer> m = Observable.create(scan(observable, new Func2<Integer, Integer, Integer>() {
+        IObservable<Integer> m = scan(observable, new Func2<Integer, Integer, Integer>() {
 
             @Override
             public Integer call(Integer t1, Integer t2) {
                 return t1 + t2;
             }
 
-        }));
+        });
         m.subscribe(Observer);
 
         verify(Observer, never()).onError(any(Throwable.class));

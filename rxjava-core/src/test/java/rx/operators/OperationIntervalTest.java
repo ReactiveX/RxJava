@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -47,7 +48,7 @@ public class OperationIntervalTest {
 
     @Test
     public void testInterval() {
-        Observable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler));
+        IObservable<Long> w = OperationInterval.interval(1, TimeUnit.SECONDS, scheduler);
         Subscription sub = w.subscribe(observer);
 
         verify(observer, never()).onNext(0L);
@@ -72,7 +73,7 @@ public class OperationIntervalTest {
 
     @Test
     public void testWithMultipleSubscribersStartingAtSameTime() {
-        Observable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler));
+        IObservable<Long> w = OperationInterval.interval(1, TimeUnit.SECONDS, scheduler);
         Subscription sub1 = w.subscribe(observer);
         Subscription sub2 = w.subscribe(observer2);
 
@@ -111,7 +112,7 @@ public class OperationIntervalTest {
 
     @Test
     public void testWithMultipleStaggeredSubscribers() {
-        Observable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler));
+        IObservable<Long> w = OperationInterval.interval(1, TimeUnit.SECONDS, scheduler);
         Subscription sub1 = w.subscribe(observer);
 
         verify(observer, never()).onNext(anyLong());
@@ -151,7 +152,7 @@ public class OperationIntervalTest {
 
     @Test
     public void testWithMultipleStaggeredSubscribersAndPublish() {
-        ConnectableObservable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler)).publish();
+        ConnectableObservable<Long> w = Observable.from(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler)).publish();
         Subscription sub1 = w.subscribe(observer);
         w.connect();
 

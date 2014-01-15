@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -41,23 +41,23 @@ import rx.util.functions.Func0;
  */
 public final class OperationTimeout {
 
-    public static <T> OnSubscribeFunc<T> timeout(IObservable<? extends T> source, long timeout, TimeUnit timeUnit) {
+    public static <T> IObservable<T> timeout(IObservable<? extends T> source, long timeout, TimeUnit timeUnit) {
         return new Timeout<T>(source, timeout, timeUnit, null, Schedulers.threadPoolForComputation());
     }
 
-    public static <T> OnSubscribeFunc<T> timeout(IObservable<? extends T> sequence, long timeout, TimeUnit timeUnit, IObservable<? extends T> other) {
+    public static <T> IObservable<T> timeout(IObservable<? extends T> sequence, long timeout, TimeUnit timeUnit, IObservable<? extends T> other) {
         return new Timeout<T>(sequence, timeout, timeUnit, other, Schedulers.threadPoolForComputation());
     }
 
-    public static <T> OnSubscribeFunc<T> timeout(IObservable<? extends T> source, long timeout, TimeUnit timeUnit, Scheduler scheduler) {
+    public static <T> IObservable<T> timeout(IObservable<? extends T> source, long timeout, TimeUnit timeUnit, Scheduler scheduler) {
         return new Timeout<T>(source, timeout, timeUnit, null, scheduler);
     }
 
-    public static <T> OnSubscribeFunc<T> timeout(IObservable<? extends T> sequence, long timeout, TimeUnit timeUnit, IObservable<? extends T> other, Scheduler scheduler) {
+    public static <T> IObservable<T> timeout(IObservable<? extends T> sequence, long timeout, TimeUnit timeUnit, IObservable<? extends T> other, Scheduler scheduler) {
         return new Timeout<T>(sequence, timeout, timeUnit, other, scheduler);
     }
 
-    private static class Timeout<T> implements Observable.OnSubscribeFunc<T> {
+    private static class Timeout<T> implements IObservable<T> {
         private final IObservable<? extends T> source;
         private final long timeout;
         private final TimeUnit timeUnit;
@@ -73,7 +73,7 @@ public final class OperationTimeout {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             final AtomicBoolean terminated = new AtomicBoolean(false);
             final AtomicLong actual = new AtomicLong(0L);  // Required to handle race between onNext and timeout
             final SerialSubscription serial = new SerialSubscription();

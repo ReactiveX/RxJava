@@ -17,7 +17,6 @@ package rx.operators;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -44,8 +43,8 @@ public class OperationTakeUntil {
      * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
      */
     public static <T, E> Observable<T> takeUntil(final IObservable<? extends T> source, final IObservable<? extends E> other) {
-        Observable<Notification<T>> s = Observable.create(new SourceObservable<T>(source));
-        Observable<Notification<T>> o = Observable.create(new OtherObservable<T, E>(other));
+        IObservable<Notification<T>> s = new SourceObservable<T>(source);
+        IObservable<Notification<T>> o = new OtherObservable<T, E>(other);
 
         Observable<Notification<T>> result = Observable.merge(s, o);
 
@@ -81,7 +80,7 @@ public class OperationTakeUntil {
 
     }
 
-    private static class SourceObservable<T> implements OnSubscribeFunc<Notification<T>> {
+    private static class SourceObservable<T> implements IObservable<Notification<T>> {
         private final IObservable<? extends T> sequence;
 
         private SourceObservable(IObservable<? extends T> sequence) {
@@ -89,7 +88,7 @@ public class OperationTakeUntil {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super Notification<T>> notificationObserver) {
+        public Subscription subscribe(final Observer<? super Notification<T>> notificationObserver) {
             return sequence.subscribe(new Observer<T>() {
                 @Override
                 public void onCompleted() {
@@ -109,7 +108,7 @@ public class OperationTakeUntil {
         }
     }
 
-    private static class OtherObservable<T, E> implements OnSubscribeFunc<Notification<T>> {
+    private static class OtherObservable<T, E> implements IObservable<Notification<T>> {
         private final IObservable<? extends E> sequence;
 
         private OtherObservable(IObservable<? extends E> sequence) {
@@ -117,7 +116,7 @@ public class OperationTakeUntil {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super Notification<T>> notificationObserver) {
+        public Subscription subscribe(final Observer<? super Notification<T>> notificationObserver) {
             return sequence.subscribe(new Observer<E>() {
                 @Override
                 public void onCompleted() {

@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -61,17 +60,23 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T, TClosing> OnSubscribeFunc<List<T>> buffer(final IObservable<T> source, final Func0<? extends IObservable<? extends TClosing>> bufferClosingSelector) {
-        return new OnSubscribeFunc<List<T>>() {
-
+    public static <T, TClosing> IObservable<List<T>> buffer(final IObservable<T> source, final Func0<? extends IObservable<? extends TClosing>> bufferClosingSelector) {
+        return new IObservable<List<T>>() {
             @Override
-            public Subscription onSubscribe(Observer<? super List<T>> observer) {
-                NonOverlappingChunks<T, List<T>> buffers = new NonOverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
+            public Subscription subscribe(Observer<? super List<T>> observer) {
+                /* XXX: ChunkedOperation.Chunks.emitChunk() can emit spurious empty chunks
+                 * after the observation has completed, likely because of the recursion in
+                 * listenForChunkEnd(). Inserting a SafeObserver here will prevent those
+                 * chunks from reaching the caller.
+                 */
+                SafeObservableSubscription subscription = new SafeObservableSubscription();
+                SafeObserver<List<T>> safeObserver = new SafeObserver<List<T>>(subscription, observer);
+                NonOverlappingChunks<T, List<T>> buffers = new NonOverlappingChunks<T, List<T>>(safeObserver, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new ObservableBasedSingleChunkCreator<T, List<T>, TClosing>(buffers, bufferClosingSelector);
-                return new CompositeSubscription(
+                CompositeSubscription realSubscription = new CompositeSubscription(
                         new ChunkToSubscription(creator),
-                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator))
-                );
+                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, safeObserver, creator)));
+                return subscription.wrap(realSubscription);
             }
         };
     }
@@ -102,10 +107,10 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T, TOpening, TClosing> OnSubscribeFunc<List<T>> buffer(final IObservable<T> source, final IObservable<? extends TOpening> bufferOpenings, final Func1<? super TOpening, ? extends IObservable<? extends TClosing>> bufferClosingSelector) {
-        return new OnSubscribeFunc<List<T>>() {
+    public static <T, TOpening, TClosing> IObservable<List<T>> buffer(final IObservable<T> source, final IObservable<? extends TOpening> bufferOpenings, final Func1<? super TOpening, ? extends IObservable<? extends TClosing>> bufferClosingSelector) {
+        return new IObservable<List<T>>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super List<T>> observer) {
+            public Subscription subscribe(final Observer<? super List<T>> observer) {
                 OverlappingChunks<T, List<T>> buffers = new OverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new ObservableBasedMultiChunkCreator<T, List<T>, TOpening, TClosing>(buffers, bufferOpenings, bufferClosingSelector);
                 return new CompositeSubscription(
@@ -133,7 +138,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(IObservable<T> source, int count) {
+    public static <T> IObservable<List<T>> buffer(IObservable<T> source, int count) {
         return buffer(source, count, count);
     }
 
@@ -160,10 +165,10 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(final IObservable<T> source, final int count, final int skip) {
-        return new OnSubscribeFunc<List<T>>() {
+    public static <T> IObservable<List<T>> buffer(final IObservable<T> source, final int count, final int skip) {
+        return new IObservable<List<T>>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super List<T>> observer) {
+            public Subscription subscribe(final Observer<? super List<T>> observer) {
                 Chunks<T, List<T>> chunks = new SizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), count);
                 ChunkCreator creator = new SkippingChunkCreator<T, List<T>>(chunks, skip);
                 return new CompositeSubscription(
@@ -193,7 +198,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(IObservable<T> source, long timespan, TimeUnit unit) {
+    public static <T> IObservable<List<T>> buffer(IObservable<T> source, long timespan, TimeUnit unit) {
         return buffer(source, timespan, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -218,10 +223,10 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(final IObservable<T> source, final long timespan, final TimeUnit unit, final Scheduler scheduler) {
-        return new OnSubscribeFunc<List<T>>() {
+    public static <T> IObservable<List<T>> buffer(final IObservable<T> source, final long timespan, final TimeUnit unit, final Scheduler scheduler) {
+        return new IObservable<List<T>>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super List<T>> observer) {
+            public Subscription subscribe(final Observer<? super List<T>> observer) {
                 NonOverlappingChunks<T, List<T>> buffers = new NonOverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new TimeBasedChunkCreator<T, List<T>>(buffers, timespan, unit, scheduler);
                 return new CompositeSubscription(
@@ -254,7 +259,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(IObservable<T> source, long timespan, TimeUnit unit, int count) {
+    public static <T> IObservable<List<T>> buffer(IObservable<T> source, long timespan, TimeUnit unit, int count) {
         return buffer(source, timespan, unit, count, Schedulers.threadPoolForComputation());
     }
 
@@ -282,10 +287,10 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(final IObservable<T> source, final long timespan, final TimeUnit unit, final int count, final Scheduler scheduler) {
-        return new OnSubscribeFunc<List<T>>() {
+    public static <T> IObservable<List<T>> buffer(final IObservable<T> source, final long timespan, final TimeUnit unit, final int count, final Scheduler scheduler) {
+        return new IObservable<List<T>>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super List<T>> observer) {
+            public Subscription subscribe(final Observer<? super List<T>> observer) {
                 TimeAndSizeBasedChunks<T, List<T>> chunks = new TimeAndSizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), count, timespan, unit, scheduler);
                 ChunkCreator creator = new SingleChunkCreator<T, List<T>>(chunks);
                 return new CompositeSubscription(
@@ -319,7 +324,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(IObservable<T> source, long timespan, long timeshift, TimeUnit unit) {
+    public static <T> IObservable<List<T>> buffer(IObservable<T> source, long timespan, long timeshift, TimeUnit unit) {
         return buffer(source, timespan, timeshift, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -347,10 +352,10 @@ public final class OperationBuffer extends ChunkedOperation {
      * @return
      *         the {@link Func1} object representing the specified buffer operation.
      */
-    public static <T> OnSubscribeFunc<List<T>> buffer(final IObservable<T> source, final long timespan, final long timeshift, final TimeUnit unit, final Scheduler scheduler) {
-        return new OnSubscribeFunc<List<T>>() {
+    public static <T> IObservable<List<T>> buffer(final IObservable<T> source, final long timespan, final long timeshift, final TimeUnit unit, final Scheduler scheduler) {
+        return new IObservable<List<T>>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super List<T>> observer) {
+            public Subscription subscribe(final Observer<? super List<T>> observer) {
                 TimeBasedChunks<T, List<T>> buffers = new TimeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), timespan, unit, scheduler);
                 ChunkCreator creator = new TimeBasedChunkCreator<T, List<T>>(buffers, timeshift, unit, scheduler);
                 return new CompositeSubscription(

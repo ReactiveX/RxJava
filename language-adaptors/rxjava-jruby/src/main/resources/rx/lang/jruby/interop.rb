@@ -18,7 +18,7 @@ module Rx
       class Interop
         WRAPPERS = {
           Java::RxUtilFunctions::Action         => Java::RxLangJruby::JRubyActionWrapper,
-          Java::Rx::Observable::OnSubscribeFunc => false
+          Java::Rx::IObservable => false
         }
 
         WRAPPERS.default = Java::RxLangJruby::JRubyFunctionWrapper

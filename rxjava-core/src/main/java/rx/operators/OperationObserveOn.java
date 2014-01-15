@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import rx.IObservable;
 import rx.Notification;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -41,11 +41,11 @@ import rx.util.functions.Func2;
  */
 public class OperationObserveOn {
 
-    public static <T> OnSubscribeFunc<T> observeOn(IObservable<? extends T> source, Scheduler scheduler) {
+    public static <T> IObservable<T> observeOn(IObservable<? extends T> source, Scheduler scheduler) {
         return new ObserveOn<T>(source, scheduler);
     }
 
-    private static class ObserveOn<T> implements OnSubscribeFunc<T> {
+    private static class ObserveOn<T> implements IObservable<T> {
         private final IObservable<? extends T> source;
         private final Scheduler scheduler;
 
@@ -55,7 +55,7 @@ public class OperationObserveOn {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             if (scheduler instanceof ImmediateScheduler) {
                 // do nothing if we request ImmediateScheduler so we don't invoke overhead
                 return source.subscribe(observer);

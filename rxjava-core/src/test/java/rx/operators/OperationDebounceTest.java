@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.TestScheduler;
@@ -45,9 +45,9 @@ public class OperationDebounceTest {
 
     @Test
     public void testDebounceWithCompleted() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 publishNext(observer, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
                 publishNext(observer, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
                 publishNext(observer, 900, "three");   // Should be skipped since onCompleted will arrive before the timeout expires.
@@ -55,9 +55,9 @@ public class OperationDebounceTest {
 
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<String> sampled = Observable.create(OperationDebounce.debounce(source, 400, TimeUnit.MILLISECONDS, scheduler));
+        IObservable<String> sampled = OperationDebounce.debounce(source, 400, TimeUnit.MILLISECONDS, scheduler);
         sampled.subscribe(observer);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
@@ -72,9 +72,9 @@ public class OperationDebounceTest {
 
     @Test
     public void testDebounceNeverEmits() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 // all should be skipped since they are happening faster than the 200ms timeout
                 publishNext(observer, 100, "a");    // Should be skipped
                 publishNext(observer, 200, "b");    // Should be skipped
@@ -88,9 +88,9 @@ public class OperationDebounceTest {
 
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<String> sampled = Observable.create(OperationDebounce.debounce(source, 200, TimeUnit.MILLISECONDS, scheduler));
+        IObservable<String> sampled = OperationDebounce.debounce(source, 200, TimeUnit.MILLISECONDS, scheduler);
         sampled.subscribe(observer);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
@@ -103,9 +103,9 @@ public class OperationDebounceTest {
 
     @Test
     public void testDebounceWithError() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 Exception error = new TestException();
                 publishNext(observer, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
                 publishNext(observer, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.
@@ -113,9 +113,9 @@ public class OperationDebounceTest {
 
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<String> sampled = Observable.create(OperationDebounce.debounce(source, 400, TimeUnit.MILLISECONDS, scheduler));
+        IObservable<String> sampled = OperationDebounce.debounce(source, 400, TimeUnit.MILLISECONDS, scheduler);
         sampled.subscribe(observer);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);

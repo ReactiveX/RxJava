@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -43,7 +43,7 @@ public final class OperationThrottleFirst {
      *            The unit of time for the specified timeout.
      * @return A {@link Func1} which performs the throttle operation.
      */
-    public static <T> OnSubscribeFunc<T> throttleFirst(IObservable<T> items, long windowDuration, TimeUnit unit) {
+    public static <T> IObservable<T> throttleFirst(IObservable<T> items, long windowDuration, TimeUnit unit) {
         return throttleFirst(items, windowDuration, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -60,10 +60,10 @@ public final class OperationThrottleFirst {
      *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
      * @return A {@link Func1} which performs the throttle operation.
      */
-    public static <T> OnSubscribeFunc<T> throttleFirst(final IObservable<T> items, final long windowDuration, final TimeUnit unit, final Scheduler scheduler) {
-        return new OnSubscribeFunc<T>() {
+    public static <T> IObservable<T> throttleFirst(final IObservable<T> items, final long windowDuration, final TimeUnit unit, final Scheduler scheduler) {
+        return new IObservable<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
+            public Subscription subscribe(Observer<? super T> observer) {
 
                 final AtomicLong lastOnNext = new AtomicLong(0);
                 final long timeInMilliseconds = unit.toMillis(windowDuration);

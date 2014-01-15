@@ -33,7 +33,7 @@ import org.codehaus.groovy.runtime.m12n.ExtensionModule;
 import org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.observables.BlockingObservable;
 import rx.util.functions.Action;
 import rx.util.functions.Function;
@@ -109,7 +109,7 @@ public class RxGroovyExtensionModule extends ExtensionModule {
                         if (o instanceof Closure) {
                             if (Action.class.isAssignableFrom(m.getParameterTypes()[i])) {
                                 newArgs[i] = new GroovyActionWrapper((Closure) o);
-                            } else if(OnSubscribeFunc.class.isAssignableFrom(m.getParameterTypes()[i])) {
+                            } else if(IObservable.class.isAssignableFrom(m.getParameterTypes()[i])) {
                                 newArgs[i] = new GroovyOnSubscribeFuncWrapper((Closure) o);
                             } else {
                                 newArgs[i] = new GroovyFunctionWrapper((Closure) o);

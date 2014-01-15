@@ -19,7 +19,7 @@ package rx.operators;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -32,15 +32,15 @@ public class OperationRetry {
 
     private static final int INFINITE_RETRY = -1;
 
-    public static <T> OnSubscribeFunc<T> retry(final IObservable<T> observable, final int retryCount) {
+    public static <T> IObservable<T> retry(final IObservable<T> observable, final int retryCount) {
         return new Retry<T>(observable, retryCount);
     }
 
-    public static <T> OnSubscribeFunc<T> retry(final IObservable<T> observable) {
+    public static <T> IObservable<T> retry(final IObservable<T> observable) {
         return new Retry<T>(observable, INFINITE_RETRY);
     }
 
-    private static class Retry<T> implements OnSubscribeFunc<T> {
+    private static class Retry<T> implements IObservable<T> {
 
         private final IObservable<T> source;
         private final int retryCount;
@@ -53,7 +53,7 @@ public class OperationRetry {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             MultipleAssignmentSubscription rescursiveSubscription = new MultipleAssignmentSubscription();
             subscription.add(Schedulers.currentThread().schedule(rescursiveSubscription, attemptSubscription(observer)));
             subscription.add(rescursiveSubscription);

@@ -29,7 +29,7 @@ import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.apache.http.ObservableHttpResponse;
@@ -81,10 +81,10 @@ class ResponseConsumerEventStream extends AsyncByteConsumer<HttpResponse> implem
     protected void onResponseReceived(HttpResponse response) throws HttpException, IOException {
 
         // wrap the contentSubject so we can chain the Subscription between parent and child
-        Observable<byte[]> contentObservable = Observable.create(new OnSubscribeFunc<byte[]>() {
+        Observable<byte[]> contentObservable = Observable.create(new IObservable<byte[]>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super byte[]> observer) {
+            public Subscription subscribe(Observer<? super byte[]> observer) {
                 parentSubscription.add(contentSubject.subscribe(observer));
                 return parentSubscription;
             }

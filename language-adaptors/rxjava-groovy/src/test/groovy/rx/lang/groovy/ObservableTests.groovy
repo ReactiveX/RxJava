@@ -31,7 +31,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Notification;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
@@ -483,9 +483,9 @@ def class ObservableTests {
         assertEquals(expected, actual);
     }
 
-    def class AsyncObservable implements OnSubscribeFunc {
+    def class AsyncObservable implements IObservable {
 
-        public Subscription onSubscribe(final Observer<Integer> observer) {
+        public Subscription subscribe(final Observer<Integer> observer) {
             new Thread(new Runnable() {
                 public void run() {
                     try {
@@ -525,14 +525,14 @@ def class ObservableTests {
         public void received(Object o);
     }
 
-    def class TestOnSubscribe implements OnSubscribeFunc<String> {
+    def class TestOnSubscribe implements IObservable<String> {
         private final int count;
 
         public TestOnSubscribe(int count) {
             this.count = count;
         }
 
-        public Subscription onSubscribe(Observer<String> observer) {
+        public Subscription subscribe(Observer<String> observer) {
 
             observer.onNext("hello_" + count);
             observer.onCompleted();

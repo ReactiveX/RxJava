@@ -16,7 +16,7 @@
 package rx.operators;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -28,16 +28,16 @@ import rx.util.TimeInterval;
  */
 public class OperationTimeInterval {
 
-    public static <T> OnSubscribeFunc<TimeInterval<T>> timeInterval(
+    public static <T> IObservable<TimeInterval<T>> timeInterval(
             IObservable<? extends T> source) {
         return timeInterval(source, Schedulers.immediate());
     }
 
-    public static <T> OnSubscribeFunc<TimeInterval<T>> timeInterval(
+    public static <T> IObservable<TimeInterval<T>> timeInterval(
             final IObservable<? extends T> source, final Scheduler scheduler) {
-        return new OnSubscribeFunc<TimeInterval<T>>() {
+        return new IObservable<TimeInterval<T>>() {
             @Override
-            public Subscription onSubscribe(
+            public Subscription subscribe(
                     Observer<? super TimeInterval<T>> observer) {
                 return source.subscribe(new TimeIntervalObserver<T>(observer,
                         scheduler));

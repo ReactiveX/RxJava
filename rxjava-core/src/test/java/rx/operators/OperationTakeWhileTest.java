@@ -22,6 +22,7 @@ import static rx.operators.OperationTakeWhile.*;
 
 import org.junit.Test;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -36,12 +37,12 @@ public class OperationTakeWhileTest {
     @Test
     public void testTakeWhile1() {
         Observable<Integer> w = Observable.from(1, 2, 3);
-        Observable<Integer> take = Observable.create(takeWhile(w, new Func1<Integer, Boolean>() {
+        IObservable<Integer> take = takeWhile(w, new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer input) {
                 return input < 3;
             }
-        }));
+        });
 
         @SuppressWarnings("unchecked")
         Observer<Integer> aObserver = mock(Observer.class);
@@ -56,12 +57,12 @@ public class OperationTakeWhileTest {
     @Test
     public void testTakeWhileOnSubject1() {
         Subject<Integer, Integer> s = PublishSubject.create();
-        Observable<Integer> take = Observable.create(takeWhile(s, new Func1<Integer, Boolean>() {
+        IObservable<Integer> take = takeWhile(s, new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer input) {
                 return input < 3;
             }
-        }));
+        });
 
         @SuppressWarnings("unchecked")
         Observer<Integer> aObserver = mock(Observer.class);
@@ -86,12 +87,12 @@ public class OperationTakeWhileTest {
     @Test
     public void testTakeWhile2() {
         Observable<String> w = Observable.from("one", "two", "three");
-        Observable<String> take = Observable.create(takeWhileWithIndex(w, new Func2<String, Integer, Boolean>() {
+        IObservable<String> take = takeWhileWithIndex(w, new Func2<String, Integer, Boolean>() {
             @Override
             public Boolean call(String input, Integer index) {
                 return index < 2;
             }
-        }));
+        });
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -105,16 +106,16 @@ public class OperationTakeWhileTest {
 
     @Test
     public void testTakeWhileDoesntLeakErrors() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new Throwable("test failed"));
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable.create(takeWhile(source, new Func1<String, Boolean>() {
+        Observable.from(takeWhile(source, new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return false;
@@ -129,12 +130,12 @@ public class OperationTakeWhileTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
-        Observable<String> take = Observable.create(takeWhile(Observable.create(source), new Func1<String, Boolean>() {
+        IObservable<String> take = takeWhile(source, new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 throw testException;
             }
-        }));
+        });
         take.subscribe(aObserver);
 
         // wait for the Observable to complete
@@ -156,12 +157,12 @@ public class OperationTakeWhileTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
-        Observable<String> take = Observable.create(takeWhileWithIndex(Observable.create(w), new Func2<String, Integer, Boolean>() {
+        IObservable<String> take = takeWhileWithIndex(w, new Func2<String, Integer, Boolean>() {
             @Override
             public Boolean call(String s, Integer index) {
                 return index < 1;
             }
-        }));
+        });
         take.subscribe(aObserver);
 
         // wait for the Observable to complete
@@ -179,7 +180,7 @@ public class OperationTakeWhileTest {
         verify(s, times(1)).unsubscribe();
     }
 
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements IObservable<String> {
 
         final Subscription s;
         final String[] values;
@@ -191,7 +192,7 @@ public class OperationTakeWhileTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription subscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

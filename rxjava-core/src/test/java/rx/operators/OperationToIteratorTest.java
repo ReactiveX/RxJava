@@ -22,8 +22,8 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
+import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -51,15 +51,14 @@ public class OperationToIteratorTest {
 
     @Test(expected = TestException.class)
     public void testToIteratorWithException() {
-        Observable<String> obs = Observable.create(new OnSubscribeFunc<String>() {
-
+        IObservable<String> obs = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new TestException());
                 return Subscriptions.empty();
             }
-        });
+        };
 
         Iterator<String> it = toIterator(obs);
 

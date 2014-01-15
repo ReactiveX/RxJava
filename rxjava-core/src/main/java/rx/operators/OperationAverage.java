@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -116,7 +116,7 @@ public final class OperationAverage {
      * extractor function.
      * @param <T> the source value type
      */
-    public static final class AverageIntegerExtractor<T> implements OnSubscribeFunc<Integer> {
+    public static final class AverageIntegerExtractor<T> implements IObservable<Integer> {
         final IObservable<? extends T> source;
         final Func1<? super T, Integer> valueExtractor;
 
@@ -126,7 +126,7 @@ public final class OperationAverage {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super Integer> t1) {
+        public Subscription subscribe(Observer<? super Integer> t1) {
             return source.subscribe(new AverageObserver(t1));
         }
         /** Computes the average. */
@@ -172,7 +172,7 @@ public final class OperationAverage {
      * extractor function. 
      * @param <T> the source value type
      */
-    public static final class AverageLongExtractor<T> implements OnSubscribeFunc<Long> {
+    public static final class AverageLongExtractor<T> implements IObservable<Long> {
         final IObservable<? extends T> source;
         final Func1<? super T, Long> valueExtractor;
 
@@ -182,7 +182,7 @@ public final class OperationAverage {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super Long> t1) {
+        public Subscription subscribe(Observer<? super Long> t1) {
             return source.subscribe(new AverageObserver(t1));
         }
         /** Computes the average. */
@@ -228,7 +228,7 @@ public final class OperationAverage {
      * extractor function. 
      * @param <T> the source value type
      */
-    public static final class AverageFloatExtractor<T> implements OnSubscribeFunc<Float> {
+    public static final class AverageFloatExtractor<T> implements IObservable<Float> {
         final IObservable<? extends T> source;
         final Func1<? super T, Float> valueExtractor;
 
@@ -238,7 +238,7 @@ public final class OperationAverage {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super Float> t1) {
+        public Subscription subscribe(Observer<? super Float> t1) {
             return source.subscribe(new AverageObserver(t1));
         }
         /** Computes the average. */
@@ -284,7 +284,7 @@ public final class OperationAverage {
      * extractor function. 
      * @param <T> the source value type
      */
-    public static final class AverageDoubleExtractor<T> implements OnSubscribeFunc<Double> {
+    public static final class AverageDoubleExtractor<T> implements IObservable<Double> {
         final IObservable<? extends T> source;
         final Func1<? super T, Double> valueExtractor;
 
@@ -294,7 +294,7 @@ public final class OperationAverage {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super Double> t1) {
+        public Subscription subscribe(Observer<? super Double> t1) {
             return source.subscribe(new AverageObserver(t1));
         }
         /** Computes the average. */

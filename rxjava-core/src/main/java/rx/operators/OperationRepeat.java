@@ -26,12 +26,12 @@ import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
-public class OperationRepeat<T> implements Observable.OnSubscribeFunc<T> {
+public class OperationRepeat<T> implements IObservable<T> {
 
     private final IObservable<T> source;
     private final Scheduler scheduler;
 
-    public static <T> Observable.OnSubscribeFunc<T> repeat(IObservable<T> source, Scheduler scheduler) {
+    public static <T> IObservable<T> repeat(IObservable<T> source, Scheduler scheduler) {
         return new OperationRepeat<T>(source, scheduler);
     }
 
@@ -41,7 +41,7 @@ public class OperationRepeat<T> implements Observable.OnSubscribeFunc<T> {
     }
 
     @Override
-    public Subscription onSubscribe(final Observer<? super T> observer) {
+    public Subscription subscribe(final Observer<? super T> observer) {
         final CompositeSubscription compositeSubscription = new CompositeSubscription();
         final MultipleAssignmentSubscription innerSubscription = new MultipleAssignmentSubscription();
         compositeSubscription.add(innerSubscription);

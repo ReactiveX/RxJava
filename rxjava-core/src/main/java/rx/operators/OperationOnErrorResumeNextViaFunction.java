@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.CompositeException;
@@ -46,11 +46,11 @@ import rx.util.functions.Func1;
  */
 public final class OperationOnErrorResumeNextViaFunction<T> {
 
-    public static <T> OnSubscribeFunc<T> onErrorResumeNextViaFunction(IObservable<? extends T> originalSequence, Func1<Throwable, ? extends IObservable<? extends T>> resumeFunction) {
+    public static <T> IObservable<T> onErrorResumeNextViaFunction(IObservable<? extends T> originalSequence, Func1<Throwable, ? extends IObservable<? extends T>> resumeFunction) {
         return new OnErrorResumeNextViaFunction<T>(originalSequence, resumeFunction);
     }
 
-    private static class OnErrorResumeNextViaFunction<T> implements OnSubscribeFunc<T> {
+    private static class OnErrorResumeNextViaFunction<T> implements IObservable<T> {
 
         private final Func1<Throwable, ? extends IObservable<? extends T>> resumeFunction;
         private final IObservable<? extends T> originalSequence;
@@ -61,7 +61,7 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
             final AtomicReference<SafeObservableSubscription> subscriptionRef = new AtomicReference<SafeObservableSubscription>(new SafeObservableSubscription());
 

@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.TestScheduler;
@@ -45,25 +45,25 @@ public class OperationSwitchTest {
 
     @Test
     public void testSwitchWhenOuterCompleteBeforeInner() {
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        IObservable<IObservable<String>> source = new IObservable<IObservable<String>>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
-                publishNext(observer, 50, Observable.create(new Observable.OnSubscribeFunc<String>() {
+            public Subscription subscribe(Observer<? super IObservable<String>> observer) {
+                publishNext(observer, 50, new IObservable<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public Subscription subscribe(Observer<? super String> observer) {
                         publishNext(observer, 70, "one");
                         publishNext(observer, 100, "two");
                         publishCompleted(observer, 200);
                         return Subscriptions.empty();
                     }
-                }));
+                });
                 publishCompleted(observer, 60);
 
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        IObservable<String> sampled = OperationSwitch.switchDo(source);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -75,35 +75,35 @@ public class OperationSwitchTest {
 
     @Test
     public void testSwitchWhenInnerCompleteBeforeOuter() {
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        IObservable<IObservable<String>> source = new IObservable<IObservable<String>>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
-                publishNext(observer, 10, Observable.create(new Observable.OnSubscribeFunc<String>() {
+            public Subscription subscribe(Observer<? super IObservable<String>> observer) {
+                publishNext(observer, 10, new IObservable<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public Subscription subscribe(Observer<? super String> observer) {
                         publishNext(observer, 0, "one");
                         publishNext(observer, 10, "two");
                         publishCompleted(observer, 20);
                         return Subscriptions.empty();
                     }
-                }));
+                });
 
-                publishNext(observer, 100, Observable.create(new Observable.OnSubscribeFunc<String>() {
+                publishNext(observer, 100, new IObservable<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public Subscription subscribe(Observer<? super String> observer) {
                         publishNext(observer, 0, "three");
                         publishNext(observer, 10, "four");
                         publishCompleted(observer, 20);
                         return Subscriptions.empty();
                     }
-                }));
+                });
                 publishCompleted(observer, 200);
 
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        IObservable<String> sampled = OperationSwitch.switchDo(source);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -122,34 +122,34 @@ public class OperationSwitchTest {
 
     @Test
     public void testSwitchWithComplete() {
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        IObservable<IObservable<String>> source = new IObservable<IObservable<String>>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
-                publishNext(observer, 50, Observable.create(new Observable.OnSubscribeFunc<String>() {
+            public Subscription subscribe(Observer<? super IObservable<String>> observer) {
+                publishNext(observer, 50, new IObservable<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public Subscription subscribe(Observer<? super String> observer) {
                         publishNext(observer, 60, "one");
                         publishNext(observer, 100, "two");
                         return Subscriptions.empty();
                     }
-                }));
+                });
 
-                publishNext(observer, 200, Observable.create(new Observable.OnSubscribeFunc<String>() {
+                publishNext(observer, 200, new IObservable<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public Subscription subscribe(Observer<? super String> observer) {
                         publishNext(observer, 0, "three");
                         publishNext(observer, 100, "four");
                         return Subscriptions.empty();
                     }
-                }));
+                });
 
                 publishCompleted(observer, 250);
 
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        IObservable<String> sampled = OperationSwitch.switchDo(source);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -182,34 +182,34 @@ public class OperationSwitchTest {
 
     @Test
     public void testSwitchWithError() {
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        IObservable<IObservable<String>> source = new IObservable<IObservable<String>>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
-                publishNext(observer, 50, Observable.create(new Observable.OnSubscribeFunc<String>() {
+            public Subscription subscribe(Observer<? super IObservable<String>> observer) {
+                publishNext(observer, 50, new IObservable<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public Subscription subscribe(Observer<? super String> observer) {
                         publishNext(observer, 50, "one");
                         publishNext(observer, 100, "two");
                         return Subscriptions.empty();
                     }
-                }));
+                });
 
-                publishNext(observer, 200, Observable.create(new Observable.OnSubscribeFunc<String>() {
+                publishNext(observer, 200, new IObservable<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public Subscription subscribe(Observer<? super String> observer) {
                         publishNext(observer, 0, "three");
                         publishNext(observer, 100, "four");
                         return Subscriptions.empty();
                     }
-                }));
+                });
 
                 publishError(observer, 250, new TestException());
 
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        IObservable<String> sampled = OperationSwitch.switchDo(source);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -242,39 +242,39 @@ public class OperationSwitchTest {
 
     @Test
     public void testSwitchWithSubsequenceComplete() {
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        IObservable<IObservable<String>> source = new IObservable<IObservable<String>>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
-                publishNext(observer, 50, Observable.create(new Observable.OnSubscribeFunc<String>() {
+            public Subscription subscribe(Observer<? super IObservable<String>> observer) {
+                publishNext(observer, 50, new IObservable<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public Subscription subscribe(Observer<? super String> observer) {
                         publishNext(observer, 50, "one");
                         publishNext(observer, 100, "two");
                         return Subscriptions.empty();
                     }
-                }));
+                });
 
-                publishNext(observer, 130, Observable.create(new Observable.OnSubscribeFunc<String>() {
+                publishNext(observer, 130, new IObservable<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public Subscription subscribe(Observer<? super String> observer) {
                         publishCompleted(observer, 0);
                         return Subscriptions.empty();
                     }
-                }));
+                });
 
-                publishNext(observer, 150, Observable.create(new Observable.OnSubscribeFunc<String>() {
+                publishNext(observer, 150, new IObservable<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public Subscription subscribe(Observer<? super String> observer) {
                         publishNext(observer, 50, "three");
                         return Subscriptions.empty();
                     }
-                }));
+                });
 
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        IObservable<String> sampled = OperationSwitch.switchDo(source);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -297,39 +297,39 @@ public class OperationSwitchTest {
 
     @Test
     public void testSwitchWithSubsequenceError() {
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        IObservable<IObservable<String>> source = new IObservable<IObservable<String>>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
-                publishNext(observer, 50, Observable.create(new Observable.OnSubscribeFunc<String>() {
+            public Subscription subscribe(Observer<? super IObservable<String>> observer) {
+                publishNext(observer, 50, new IObservable<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public Subscription subscribe(Observer<? super String> observer) {
                         publishNext(observer, 50, "one");
                         publishNext(observer, 100, "two");
                         return Subscriptions.empty();
                     }
-                }));
+                });
 
-                publishNext(observer, 130, Observable.create(new Observable.OnSubscribeFunc<String>() {
+                publishNext(observer, 130, new IObservable<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public Subscription subscribe(Observer<? super String> observer) {
                         publishError(observer, 0, new TestException());
                         return Subscriptions.empty();
                     }
-                }));
+                });
 
-                publishNext(observer, 150, Observable.create(new Observable.OnSubscribeFunc<String>() {
+                publishNext(observer, 150, new IObservable<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public Subscription subscribe(Observer<? super String> observer) {
                         publishNext(observer, 50, "three");
                         return Subscriptions.empty();
                     }
-                }));
+                });
 
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        IObservable<String> sampled = OperationSwitch.switchDo(source);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);

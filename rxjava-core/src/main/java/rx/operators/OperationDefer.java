@@ -16,7 +16,7 @@
 package rx.operators;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func0;
@@ -33,10 +33,10 @@ import rx.util.functions.Func0;
  */
 public final class OperationDefer {
 
-    public static <T> OnSubscribeFunc<T> defer(final Func0<? extends IObservable<? extends T>> observableFactory) {
-        return new OnSubscribeFunc<T>() {
+    public static <T> IObservable<T> defer(final Func0<? extends IObservable<? extends T>> observableFactory) {
+        return new IObservable<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
+            public Subscription subscribe(Observer<? super T> observer) {
                 IObservable<? extends T> obs = observableFactory.call();
                 return obs.subscribe(observer);
             }

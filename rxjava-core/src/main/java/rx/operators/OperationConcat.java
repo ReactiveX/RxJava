@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 
@@ -43,24 +43,24 @@ public final class OperationConcat {
      *            An observable sequence of elements to project.
      * @return An observable sequence whose elements are the result of combining the output from the list of Observables.
      */
-    public static <T> OnSubscribeFunc<T> concat(final IObservable<? extends T>... sequences) {
+    public static <T> IObservable<T> concat(final IObservable<? extends T>... sequences) {
         return concat(Observable.from(sequences));
     }
 
-    public static <T> OnSubscribeFunc<T> concat(final Iterable<? extends IObservable<? extends T>> sequences) {
+    public static <T> IObservable<T> concat(final Iterable<? extends IObservable<? extends T>> sequences) {
         return concat(Observable.from(sequences));
     }
 
-    public static <T> OnSubscribeFunc<T> concat(final IObservable<? extends IObservable<? extends T>> sequences) {
-        return new OnSubscribeFunc<T>() {
+    public static <T> IObservable<T> concat(final IObservable<? extends IObservable<? extends T>> sequences) {
+        return new IObservable<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> t1) {
-                return new Concat<T>(sequences).onSubscribe(t1);
+            public Subscription subscribe(Observer<? super T> t1) {
+                return new Concat<T>(sequences).subscribe(t1);
             }            
         };
     }
 
-    private static class Concat<T> implements OnSubscribeFunc<T> {
+    private static class Concat<T> implements IObservable<T> {
         private IObservable<? extends IObservable<? extends T>> sequences;
         private SafeObservableSubscription innerSubscription = null;
 
@@ -69,7 +69,7 @@ public final class OperationConcat {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             final AtomicBoolean completedOrErred = new AtomicBoolean(false);
             final AtomicBoolean allSequencesReceived = new AtomicBoolean(false);
             final Queue<IObservable<? extends T>> nextSequences = new ConcurrentLinkedQueue<IObservable<? extends T>>();

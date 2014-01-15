@@ -35,7 +35,7 @@ public class OperationToObservableFutureTest {
         ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
         Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = ob.onSubscribe(o);
+        Subscription sub = ob.subscribe(o);
         sub.unsubscribe();
 
         verify(o, times(1)).onNext(value);
@@ -52,7 +52,7 @@ public class OperationToObservableFutureTest {
         ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
         Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = ob.onSubscribe(o);
+        Subscription sub = ob.subscribe(o);
         sub.unsubscribe();
 
         verify(o, never()).onNext(null);

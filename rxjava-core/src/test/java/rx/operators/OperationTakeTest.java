@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -39,7 +40,7 @@ public class OperationTakeTest {
     @Test
     public void testTake1() {
         Observable<String> w = Observable.from("one", "two", "three");
-        Observable<String> take = Observable.create(take(w, 2));
+        IObservable<String> take = take(w, 2);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -54,7 +55,7 @@ public class OperationTakeTest {
     @Test
     public void testTake2() {
         Observable<String> w = Observable.from("one", "two", "three");
-        Observable<String> take = Observable.create(take(w, 1));
+        IObservable<String> take = take(w, 1);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -69,6 +70,7 @@ public class OperationTakeTest {
     @Test(expected = IllegalArgumentException.class)
     public void testTakeWithError() {
         Observable.from(1, 2, 3).take(1).map(new Func1<Integer, Integer>() {
+            @Override
             public Integer call(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
@@ -78,6 +80,7 @@ public class OperationTakeTest {
     @Test
     public void testTakeWithErrorHappeningInOnNext() {
         Observable<Integer> w = Observable.from(1, 2, 3).take(2).map(new Func1<Integer, Integer>() {
+            @Override
             public Integer call(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
@@ -94,6 +97,7 @@ public class OperationTakeTest {
     @Test
     public void testTakeWithErrorHappeningInTheLastOnNext() {
         Observable<Integer> w = Observable.from(1, 2, 3).take(1).map(new Func1<Integer, Integer>() {
+            @Override
             public Integer call(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
@@ -109,19 +113,19 @@ public class OperationTakeTest {
 
     @Test
     public void testTakeDoesntLeakErrors() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new Throwable("test failed"));
                 return Subscriptions.empty();
             }
-        });
+        };
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable.create(take(source, 1)).subscribe(aObserver);
+        take(source, 1).subscribe(aObserver);
 
         verify(aObserver, times(1)).onNext("one");
         // even though onError is called we take(1) so shouldn't see it
@@ -134,9 +138,9 @@ public class OperationTakeTest {
     public void testTakeZeroDoesntLeakError() {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final AtomicBoolean unSubscribed = new AtomicBoolean(false);
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 subscribed.set(true);
                 observer.onError(new Throwable("test failed"));
                 return new Subscription() {
@@ -146,12 +150,12 @@ public class OperationTakeTest {
                     }
                 };
             }
-        });
+        };
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable.create(take(source, 0)).subscribe(aObserver);
+        take(source, 0).subscribe(aObserver);
         assertTrue("source subscribed", subscribed.get());
         assertTrue("source unsubscribed", unSubscribed.get());
 
@@ -166,11 +170,10 @@ public class OperationTakeTest {
     public void testUnsubscribeAfterTake() {
         final Subscription s = mock(Subscription.class);
         TestObservableFunc f = new TestObservableFunc(s, "one", "two", "three");
-        Observable<String> w = Observable.create(f);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
-        Observable<String> take = Observable.create(take(w, 1));
+        IObservable<String> take = take(f, 1);
         take.subscribe(aObserver);
 
         // wait for the Observable to complete
@@ -190,7 +193,7 @@ public class OperationTakeTest {
         verifyNoMoreInteractions(aObserver);
     }
 
-    private static class TestObservableFunc implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservableFunc implements IObservable<String> {
 
         final Subscription s;
         final String[] values;
@@ -202,7 +205,7 @@ public class OperationTakeTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription subscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

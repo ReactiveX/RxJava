@@ -15,7 +15,7 @@
  */
 package rx;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -24,7 +24,6 @@ import org.junit.Test;
 import rx.CovarianceTest.HorrorMovie;
 import rx.CovarianceTest.Media;
 import rx.CovarianceTest.Movie;
-import rx.Observable.OnSubscribeFunc;
 import rx.subscriptions.Subscriptions;
 
 public class MergeTests {
@@ -75,17 +74,16 @@ public class MergeTests {
     @Test
     public void testMergeCovariance4() {
 
-        Observable<Movie> o1 = Observable.create(new OnSubscribeFunc<Movie>() {
-
+        IObservable<Movie> o1 = new IObservable<Movie>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Movie> o) {
+            public Subscription subscribe(Observer<? super Movie> o) {
                 o.onNext(new HorrorMovie());
                 o.onNext(new Movie());
                 //                o.onNext(new Media()); // correctly doesn't compile
                 o.onCompleted();
                 return Subscriptions.empty();
             }
-        });
+        };
 
         Observable<Media> o2 = Observable.from(new Media(), new HorrorMovie());
 

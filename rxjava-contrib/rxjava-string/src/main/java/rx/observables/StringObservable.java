@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -66,9 +65,9 @@ public class StringObservable {
      * @return
      */
     public static Observable<String> decode(final IObservable<byte[]> src, final CharsetDecoder charsetDecoder) {
-        return Observable.create(new OnSubscribeFunc<String>() {
+        return Observable.from(new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 return src.subscribe(new Observer<byte[]>() {
                     private ByteBuffer leftOver = null;
 
@@ -219,9 +218,9 @@ public class StringObservable {
      */
     public static Observable<String> split(final IObservable<String> src, String regex) {
         final Pattern pattern = Pattern.compile(regex);
-        return Observable.create(new OnSubscribeFunc<String>() {
+        return Observable.from(new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 return src.subscribe(new Observer<String>() {
                     private String leftOver = null;
 
@@ -290,10 +289,10 @@ public class StringObservable {
      *         values of the source observable with the separator between elements
      */
     public static <T> Observable<String> join(final IObservable<T> source, final CharSequence separator) {
-        return Observable.create(new OnSubscribeFunc<String>() {
+        return Observable.from(new IObservable<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> t1) {
+            public Subscription subscribe(final Observer<? super String> t1) {
                 return source.subscribe(new Observer<T>() {
                     boolean mayAddSeparator;
                     StringBuilder b = new StringBuilder();

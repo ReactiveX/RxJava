@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -30,11 +29,11 @@ import rx.util.functions.Func2;
  * as soon as the condition becomes false.
  */
 public final class OperationSkipWhile {
-    public static <T> OnSubscribeFunc<T> skipWhileWithIndex(IObservable<? extends T> source, Func2<? super T, Integer, Boolean> predicate) {
+    public static <T> IObservable<T> skipWhileWithIndex(IObservable<? extends T> source, Func2<? super T, Integer, Boolean> predicate) {
         return new SkipWhile<T>(source, predicate);
     }
 
-    public static <T> OnSubscribeFunc<T> skipWhile(IObservable<? extends T> source, final Func1<? super T, Boolean> predicate) {
+    public static <T> IObservable<T> skipWhile(IObservable<? extends T> source, final Func1<? super T, Boolean> predicate) {
         return new SkipWhile<T>(source, new Func2<T, Integer, Boolean>() {
             @Override
             public Boolean call(T value, Integer index) {
@@ -43,7 +42,7 @@ public final class OperationSkipWhile {
         });
     }
 
-    private static class SkipWhile<T> implements OnSubscribeFunc<T> {
+    private static class SkipWhile<T> implements IObservable<T> {
         private final IObservable<? extends T> source;
         private final Func2<? super T, Integer, Boolean> predicate;
         private final AtomicBoolean skipping = new AtomicBoolean(true);
@@ -55,7 +54,7 @@ public final class OperationSkipWhile {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             return source.subscribe(new SkipWhileObserver(observer));
         }
 
@@ -78,18 +77,18 @@ public final class OperationSkipWhile {
 
             @Override
             public void onNext(T next) {
+                /* Don't catch exceptions and invoke onError()! We're wrapping
+                 * another observable, and that one won't know we handled the
+                 * error: it could continue to emit elements when it shouldn't.
+                 * Instead, let it catch the error and invoke onError() on this
+                 * Observer, and we will pass the call along to our delegate
+                 * Observer.
+                 */
                 if (!skipping.get()) {
                     observer.onNext(next);
-                } else {
-                    try {
-                        if (!predicate.call(next, index.getAndIncrement())) {
-                            skipping.set(false);
-                            observer.onNext(next);
-                        } else {
-                        }
-                    } catch (Throwable t) {
-                        observer.onError(t);
-                    }
+                } else if (!predicate.call(next, index.getAndIncrement())) {
+                    skipping.set(false);
+                    observer.onNext(next);
                 }
             }
 

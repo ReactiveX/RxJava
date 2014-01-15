@@ -43,7 +43,7 @@ describe Rx::Lang::Jruby::Interop do
       observable.subscribe(1)
     end
 
-    it "doesn't wrap OnSubscribeFunc arguments" do
+    it "doesn't wrap IObservable arguments" do
       proc = lambda {|observer| observer.onNext("hi")}
       Java::Rx::Observable.__persistent__ = true
       Java::Rx::Observable.should_not_receive(:create_without_wrapping)

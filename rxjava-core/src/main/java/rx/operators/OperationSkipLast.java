@@ -24,10 +24,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.Timestamped;
 
 /**
@@ -55,12 +56,12 @@ public class OperationSkipLast {
      * @throws IndexOutOfBoundsException
      *             count is less than zero.
      */
-    public static <T> OnSubscribeFunc<T> skipLast(
+    public static <T> IObservable<T> skipLast(
             IObservable<? extends T> source, int count) {
         return new SkipLast<T>(source, count);
     }
 
-    private static class SkipLast<T> implements OnSubscribeFunc<T> {
+    private static class SkipLast<T> implements IObservable<T> {
         private final int count;
         private final IObservable<? extends T> source;
 
@@ -70,10 +71,11 @@ public class OperationSkipLast {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             if (count < 0) {
-                throw new IndexOutOfBoundsException(
-                        "count could not be negative");
+                observer.onError(new IndexOutOfBoundsException(
+                        "count could not be negative"));
+                return Subscriptions.empty();
             }
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
             return subscription.wrap(source.subscribe(new Observer<T>() {
@@ -135,7 +137,7 @@ public class OperationSkipLast {
      * Skip delivering values in the time window before the values.
      * @param <T> the result value type
      */
-    public static final class SkipLastTimed<T> implements OnSubscribeFunc<T> {
+    public static final class SkipLastTimed<T> implements IObservable<T> {
         final IObservable<? extends T> source;
         final long timeInMillis;
         final Scheduler scheduler;
@@ -147,7 +149,7 @@ public class OperationSkipLast {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription subscribe(Observer<? super T> t1) {
             return source.subscribe(new SourceObserver<T>(t1, timeInMillis, scheduler));
         }
         /** Observes the source. */

@@ -16,7 +16,7 @@
 package rx.operators;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 
@@ -38,12 +38,12 @@ public class OperationDefaultIfEmpty {
      *         if the source is empty; otherwise, the elements of the source
      *         itself.
      */
-    public static <T> OnSubscribeFunc<T> defaultIfEmpty(
+    public static <T> IObservable<T> defaultIfEmpty(
             IObservable<? extends T> source, T defaultValue) {
         return new DefaultIfEmpty<T>(source, defaultValue);
     }
 
-    private static class DefaultIfEmpty<T> implements OnSubscribeFunc<T> {
+    private static class DefaultIfEmpty<T> implements IObservable<T> {
 
         private final IObservable<? extends T> source;
         private final T defaultValue;
@@ -54,7 +54,7 @@ public class OperationDefaultIfEmpty {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
             return subscription.wrap(source.subscribe(new Observer<T>() {
 

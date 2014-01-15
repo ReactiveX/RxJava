@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -35,7 +35,7 @@ import rx.subscriptions.Subscriptions;
  * <code>Observable.subscribe(Observer)</code> does nothing.
  */
 public class OperationToObservableFuture {
-    /* package accessible for unit tests */static class ToObservableFuture<T> implements OnSubscribeFunc<T> {
+    /* package accessible for unit tests */static class ToObservableFuture<T> implements IObservable<T> {
         private final Future<? extends T> that;
         private final Long time;
         private final TimeUnit unit;
@@ -53,7 +53,7 @@ public class OperationToObservableFuture {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             try {
                 T value = (time == null) ? (T) that.get() : (T) that.get(time, unit);
 
@@ -71,11 +71,11 @@ public class OperationToObservableFuture {
         }
     }
 
-    public static <T> OnSubscribeFunc<T> toObservableFuture(final Future<? extends T> that) {
+    public static <T> IObservable<T> toObservableFuture(final Future<? extends T> that) {
         return new ToObservableFuture<T>(that);
     }
 
-    public static <T> OnSubscribeFunc<T> toObservableFuture(final Future<? extends T> that, long time, TimeUnit unit) {
+    public static <T> IObservable<T> toObservableFuture(final Future<? extends T> that, long time, TimeUnit unit) {
         return new ToObservableFuture<T>(that, time, unit);
     }
 }

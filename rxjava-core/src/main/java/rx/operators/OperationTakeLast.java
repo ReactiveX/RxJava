@@ -21,10 +21,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.Timestamped;
 
 /**
@@ -35,18 +35,18 @@ import rx.util.Timestamped;
  */
 public final class OperationTakeLast {
 
-    public static <T> OnSubscribeFunc<T> takeLast(final IObservable<? extends T> items, final int count) {
-        return new OnSubscribeFunc<T>() {
+    public static <T> IObservable<T> takeLast(final IObservable<? extends T> items, final int count) {
+        return new IObservable<T>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                return new TakeLast<T>(items, count).onSubscribe(observer);
+            public Subscription subscribe(Observer<? super T> observer) {
+                return new TakeLast<T>(items, count).subscribe(observer);
             }
 
         };
     }
 
-    private static class TakeLast<T> implements OnSubscribeFunc<T> {
+    private static class TakeLast<T> implements IObservable<T> {
         private final int count;
         private final IObservable<? extends T> items;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
@@ -57,10 +57,10 @@ public final class OperationTakeLast {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             if (count < 0) {
-                throw new IndexOutOfBoundsException(
-                        "count could not be negative");
+                observer.onError(new IndexOutOfBoundsException("count could not be negative"));
+                return Subscriptions.empty();
             }
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
@@ -128,7 +128,7 @@ public final class OperationTakeLast {
      * Returns the items emitted by source whose arrived in the time window
      * before the source completed.
      */
-    public static <T> OnSubscribeFunc<T> takeLast(IObservable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+    public static <T> IObservable<T> takeLast(IObservable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
         return new TakeLastTimed<T>(source, -1, time, unit, scheduler);
     }
     
@@ -136,12 +136,12 @@ public final class OperationTakeLast {
      * Returns the items emitted by source whose arrived in the time window
      * before the source completed and at most count values.
      */
-    public static <T> OnSubscribeFunc<T> takeLast(IObservable<? extends T> source, int count, long time, TimeUnit unit, Scheduler scheduler) {
+    public static <T> IObservable<T> takeLast(IObservable<? extends T> source, int count, long time, TimeUnit unit, Scheduler scheduler) {
         return new TakeLastTimed<T>(source, count, time, unit, scheduler);
     }
     
     /** Take only the values which appeared some time before the completion. */
-    static final class TakeLastTimed<T> implements OnSubscribeFunc<T> {
+    static final class TakeLastTimed<T> implements IObservable<T> {
         final IObservable<? extends T> source;
         final long ageMillis;
         final Scheduler scheduler;
@@ -155,7 +155,7 @@ public final class OperationTakeLast {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription subscribe(Observer<? super T> t1) {
             SafeObservableSubscription sas = new SafeObservableSubscription();
             sas.wrap(source.subscribe(new TakeLastTimedObserver<T>(t1, sas, count, ageMillis, scheduler)));
             return sas;

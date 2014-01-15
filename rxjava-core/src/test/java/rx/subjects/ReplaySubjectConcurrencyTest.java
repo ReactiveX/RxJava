@@ -15,7 +15,7 @@
  */
 package rx.subjects;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,8 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -54,10 +53,10 @@ public class ReplaySubjectConcurrencyTest {
 
             @Override
             public void run() {
-                Observable.create(new OnSubscribeFunc<Long>() {
+                new IObservable<Long>() {
 
                     @Override
-                    public Subscription onSubscribe(Observer<? super Long> o) {
+                    public Subscription subscribe(Observer<? super Long> o) {
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
                             o.onNext(l);
@@ -66,7 +65,7 @@ public class ReplaySubjectConcurrencyTest {
                         o.onCompleted();
                         return Subscriptions.empty();
                     }
-                }).subscribe(replay);
+                }.subscribe(replay);
             }
         });
         source.start();
@@ -164,10 +163,10 @@ public class ReplaySubjectConcurrencyTest {
 
             @Override
             public void run() {
-                Observable.create(new OnSubscribeFunc<Long>() {
+                new IObservable<Long>() {
 
                     @Override
-                    public Subscription onSubscribe(Observer<? super Long> o) {
+                    public Subscription subscribe(Observer<? super Long> o) {
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
                             o.onNext(l);
@@ -176,7 +175,7 @@ public class ReplaySubjectConcurrencyTest {
                         o.onCompleted();
                         return Subscriptions.empty();
                     }
-                }).subscribe(replay);
+                }.subscribe(replay);
             }
         });
 

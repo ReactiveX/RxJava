@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -36,15 +37,15 @@ public class OperationOnErrorResumeNextViaFunctionTest {
     @Test
     public void testResumeNextWithSynchronousExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
-        Observable<String> w = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> w = new IObservable<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new Throwable("injected failure"));
                 return Subscriptions.empty();
             }
-        });
+        };
 
         Func1<Throwable, Observable<String>> resume = new Func1<Throwable, Observable<String>>() {
 
@@ -55,7 +56,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
             }
 
         };
-        Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(w, resume));
+        IObservable<String> observable = onErrorResumeNextViaFunction(w, resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -85,7 +86,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
             }
 
         };
-        Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(Observable.create(w), resume));
+        IObservable<String> observable = onErrorResumeNextViaFunction(w, resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -122,7 +123,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
             }
 
         };
-        Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(Observable.create(w), resume));
+        IObservable<String> observable = onErrorResumeNextViaFunction(w, resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -142,7 +143,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
         verify(aObserver, times(0)).onCompleted();
     }
 
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements IObservable<String> {
 
         final Subscription s;
         final String[] values;
@@ -154,7 +155,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription subscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

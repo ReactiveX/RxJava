@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import rx.Observable.OnSubscribeFunc;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.BooleanSubscription;
 import rx.util.functions.Action0;
@@ -30,12 +29,12 @@ import rx.util.functions.Action0;
 public class EventStream {
 
     public static Observable<Event> getEventStream(final String type, final int numInstances) {
-        return Observable.create(new OnSubscribeFunc<Event>() {
+        return Observable.from(new IObservable<Event>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Event> observer) {
+            public Subscription subscribe(final Observer<? super Event> observer) {
                 final BooleanSubscription s = new BooleanSubscription();
-                // run on a background thread inside the OnSubscribeFunc so unsubscribe works
+                // run on a background thread inside the IObservable so unsubscribe works
                 Schedulers.newThread().schedule(new Action0() {
 
                     @Override

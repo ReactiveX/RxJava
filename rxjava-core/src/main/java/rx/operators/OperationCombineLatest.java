@@ -23,7 +23,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -61,7 +61,7 @@ public class OperationCombineLatest {
      * @return A function from an observer to a subscription. This can be used to create an observable from.
      */
     @SuppressWarnings("unchecked")
-    public static <T0, T1, R> OnSubscribeFunc<R> combineLatest(IObservable<? extends T0> w0, IObservable<T1> w1, Func2<? super T0, ? super T1, ? extends R> combineLatestFunction) {
+    public static <T0, T1, R> IObservable<R> combineLatest(IObservable<? extends T0> w0, IObservable<T1> w1, Func2<? super T0, ? super T1, ? extends R> combineLatestFunction) {
         return new CombineLatest<Object, R>(Arrays.asList(w0, w1), Functions.fromFunc(combineLatestFunction));
     }
 
@@ -69,7 +69,7 @@ public class OperationCombineLatest {
      * @see #combineLatest(IObservable w0, IObservable w1, Func2 combineLatestFunction)
      */
     @SuppressWarnings("unchecked")
-    public static <T0, T1, T2, R> OnSubscribeFunc<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2,
+    public static <T0, T1, T2, R> IObservable<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2,
             Func3<? super T0, ? super T1, ? super T2, ? extends R> combineLatestFunction) {
         return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2), Functions.fromFunc(combineLatestFunction));
     }
@@ -78,7 +78,7 @@ public class OperationCombineLatest {
      * @see #combineLatest(IObservable w0, IObservable w1, Func2 combineLatestFunction)
      */
     @SuppressWarnings("unchecked")
-    public static <T0, T1, T2, T3, R> OnSubscribeFunc<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2, IObservable<? extends T3> w3,
+    public static <T0, T1, T2, T3, R> IObservable<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2, IObservable<? extends T3> w3,
             Func4<? super T0, ? super T1, ? super T2, ? super T3, ? extends R> combineLatestFunction) {
         return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3), Functions.fromFunc(combineLatestFunction));
     }
@@ -87,7 +87,7 @@ public class OperationCombineLatest {
      * @see #combineLatest(IObservable w0, IObservable w1, Func2 combineLatestFunction)
      */
     @SuppressWarnings("unchecked")
-    public static <T0, T1, T2, T3, T4, R> OnSubscribeFunc<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2, IObservable<? extends T3> w3, IObservable<? extends T4> w4,
+    public static <T0, T1, T2, T3, T4, R> IObservable<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2, IObservable<? extends T3> w3, IObservable<? extends T4> w4,
             Func5<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combineLatestFunction) {
         return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4), Functions.fromFunc(combineLatestFunction));
     }
@@ -96,7 +96,7 @@ public class OperationCombineLatest {
      * @see #combineLatest(IObservable w0, IObservable w1, Func2 combineLatestFunction)
      */
     @SuppressWarnings("unchecked")
-    public static <T0, T1, T2, T3, T4, T5, R> OnSubscribeFunc<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2, IObservable<? extends T3> w3, IObservable<? extends T4> w4, IObservable<? extends T5> w5,
+    public static <T0, T1, T2, T3, T4, T5, R> IObservable<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2, IObservable<? extends T3> w3, IObservable<? extends T4> w4, IObservable<? extends T5> w5,
             Func6<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> combineLatestFunction) {
         return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4, w5), Functions.fromFunc(combineLatestFunction));
     }
@@ -105,7 +105,7 @@ public class OperationCombineLatest {
      * @see #combineLatest(IObservable w0, IObservable w1, Func2 combineLatestFunction)
      */
     @SuppressWarnings("unchecked")
-    public static <T0, T1, T2, T3, T4, T5, T6, R> OnSubscribeFunc<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2, IObservable<? extends T3> w3, IObservable<? extends T4> w4, IObservable<? extends T5> w5, IObservable<? extends T6> w6,
+    public static <T0, T1, T2, T3, T4, T5, T6, R> IObservable<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2, IObservable<? extends T3> w3, IObservable<? extends T4> w4, IObservable<? extends T5> w5, IObservable<? extends T6> w6,
             Func7<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> combineLatestFunction) {
         return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4, w5, w6), Functions.fromFunc(combineLatestFunction));
     }
@@ -114,7 +114,7 @@ public class OperationCombineLatest {
      * @see #combineLatest(IObservable w0, IObservable w1, Func2 combineLatestFunction)
      */
     @SuppressWarnings("unchecked")
-    public static <T0, T1, T2, T3, T4, T5, T6, T7, R> OnSubscribeFunc<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2, IObservable<? extends T3> w3, IObservable<? extends T4> w4, IObservable<? extends T5> w5, IObservable<? extends T6> w6, IObservable<? extends T7> w7,
+    public static <T0, T1, T2, T3, T4, T5, T6, T7, R> IObservable<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2, IObservable<? extends T3> w3, IObservable<? extends T4> w4, IObservable<? extends T5> w5, IObservable<? extends T6> w6, IObservable<? extends T7> w7,
             Func8<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combineLatestFunction) {
         return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4, w5, w6, w7), Functions.fromFunc(combineLatestFunction));
     }
@@ -123,13 +123,13 @@ public class OperationCombineLatest {
      * @see #combineLatest(IObservable w0, IObservable w1, Func2 combineLatestFunction)
      */
     @SuppressWarnings("unchecked")
-    public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, R> OnSubscribeFunc<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2, IObservable<? extends T3> w3, IObservable<? extends T4> w4, IObservable<? extends T5> w5, IObservable<? extends T6> w6, IObservable<? extends T7> w7,
+    public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, R> IObservable<R> combineLatest(IObservable<? extends T0> w0, IObservable<? extends T1> w1, IObservable<? extends T2> w2, IObservable<? extends T3> w3, IObservable<? extends T4> w4, IObservable<? extends T5> w5, IObservable<? extends T6> w6, IObservable<? extends T7> w7,
             IObservable<? extends T8> w8,
             Func9<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> combineLatestFunction) {
         return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4, w5, w6, w7, w8), Functions.fromFunc(combineLatestFunction));
     }
 
-    static final class CombineLatest<T, R> implements OnSubscribeFunc<R> {
+    static final class CombineLatest<T, R> implements IObservable<R> {
         final List<IObservable<? extends T>> sources;
         final FuncN<? extends R> combiner;
 
@@ -142,7 +142,7 @@ public class OperationCombineLatest {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super R> t1) {
+        public Subscription subscribe(Observer<? super R> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
             Collector collector = new Collector(t1, csub, sources.size());

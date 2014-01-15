@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -35,10 +36,10 @@ public class OperationCacheTest {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.create(cache(Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> o = Observable.from(cache(new IObservable<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 final BooleanSubscription subscription = new BooleanSubscription();
                 new Thread(new Runnable() {
 
@@ -52,7 +53,7 @@ public class OperationCacheTest {
                 }).start();
                 return subscription;
             }
-        })));
+        }));
 
         // we then expect the following 2 subscriptions to get that same value
         final CountDownLatch latch = new CountDownLatch(2);

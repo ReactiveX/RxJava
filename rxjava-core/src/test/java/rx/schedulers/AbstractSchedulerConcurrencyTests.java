@@ -24,8 +24,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -215,9 +215,9 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(10);
         final CountDownLatch completionLatch = new CountDownLatch(1);
 
-        Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
+        IObservable<Integer> obs = new IObservable<Integer>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super Integer> observer) {
+            public Subscription subscribe(final Observer<? super Integer> observer) {
 
                 return getScheduler().schedule(null, new Func2<Scheduler, Void, Subscription>() {
                     @Override
@@ -240,7 +240,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                     }
                 });
             }
-        });
+        };
 
         final AtomicInteger count = new AtomicInteger();
         final AtomicBoolean completed = new AtomicBoolean(false);

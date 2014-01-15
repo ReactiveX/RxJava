@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -35,7 +35,7 @@ public class OperationRetryTest {
     public void testOriginFails() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> origin = Observable.create(new FuncWithErrors(2));
+        IObservable<String> origin = new FuncWithErrors(2);
         origin.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -51,8 +51,8 @@ public class OperationRetryTest {
         int NUM_FAILURES = 2;
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        Observable.create(retry(origin, NUM_RETRIES)).subscribe(observer);
+        IObservable<String> origin = new FuncWithErrors(NUM_FAILURES);
+        retry(origin, NUM_RETRIES).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 2 attempts (first time fail, second time (1st retry) fail)
@@ -71,8 +71,8 @@ public class OperationRetryTest {
         int NUM_FAILURES = 2;
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        Observable.create(retry(origin, NUM_RETRIES)).subscribe(observer);
+        IObservable<String> origin = new FuncWithErrors(NUM_FAILURES);
+        retry(origin, NUM_RETRIES).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -91,8 +91,8 @@ public class OperationRetryTest {
         int NUM_FAILURES = 20;
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        Observable.create(retry(origin)).subscribe(observer);
+        IObservable<String> origin = new FuncWithErrors(NUM_FAILURES);
+        retry(origin).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -106,7 +106,7 @@ public class OperationRetryTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    public static class FuncWithErrors implements Observable.OnSubscribeFunc<String> {
+    public static class FuncWithErrors implements IObservable<String> {
 
         private final int numFailures;
         private final AtomicInteger count = new AtomicInteger(0);
@@ -116,7 +116,7 @@ public class OperationRetryTest {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> o) {
+        public Subscription subscribe(Observer<? super String> o) {
             o.onNext("beginningEveryTime");
             if (count.incrementAndGet() <= numFailures) {
                 o.onError(new RuntimeException("forced failure: " + count.get()));

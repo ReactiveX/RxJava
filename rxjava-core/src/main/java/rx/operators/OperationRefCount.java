@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
@@ -27,11 +27,11 @@ import rx.util.functions.Action0;
  * as there is at least one subscription to the observable sequence.
  */
 public final class OperationRefCount<T> {
-    public static <T> Observable.OnSubscribeFunc<T> refCount(ConnectableObservable<T> connectableObservable) {
+    public static <T> IObservable<T> refCount(ConnectableObservable<T> connectableObservable) {
         return new RefCount<T>(connectableObservable);
     }
 
-    private static class RefCount<T> implements Observable.OnSubscribeFunc<T> {
+    private static class RefCount<T> implements IObservable<T> {
         private final ConnectableObservable<T> innerConnectableObservable;
         private final Object gate = new Object();
         private int count = 0;
@@ -42,7 +42,7 @@ public final class OperationRefCount<T> {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             final Subscription subscription = innerConnectableObservable.subscribe(observer);
             synchronized (gate) {
                 if (count++ == 0) {

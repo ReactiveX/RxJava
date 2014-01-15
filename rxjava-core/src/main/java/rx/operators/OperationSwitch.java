@@ -16,7 +16,6 @@
 package rx.operators;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -41,16 +40,16 @@ public final class OperationSwitch {
      *            The {@link IObservable} sequence consisting of {@link IObservable} sequences.
      * @return A {@link Func1} which does this transformation.
      */
-    public static <T> OnSubscribeFunc<T> switchDo(final IObservable<? extends IObservable<? extends T>> sequences) {
-        return new OnSubscribeFunc<T>() {
+    public static <T> IObservable<T> switchDo(final IObservable<? extends IObservable<? extends T>> sequences) {
+        return new IObservable<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                return new Switch<T>(sequences).onSubscribe(observer);
+            public Subscription subscribe(Observer<? super T> observer) {
+                return new Switch<T>(sequences).subscribe(observer);
             }
         };
     }
 
-    private static class Switch<T> implements OnSubscribeFunc<T> {
+    private static class Switch<T> implements IObservable<T> {
 
         private final IObservable<? extends IObservable<? extends T>> sequences;
 
@@ -59,14 +58,20 @@ public final class OperationSwitch {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             SafeObservableSubscription parent;
             parent = new SafeObservableSubscription();
+
+            /* XXX: This operation can emit spurious elements after the
+             * observation has completed. Inserting a SafeObserver here will
+             * prevent those elements from reaching the caller.
+             */
+            SafeObserver<T> safeObserver = new SafeObserver<T>(parent, observer);
 
             MultipleAssignmentSubscription child;
             child = new MultipleAssignmentSubscription();
 
-            parent.wrap(sequences.subscribe(new SwitchObserver<T>(observer, parent, child)));
+            parent.wrap(sequences.subscribe(new SwitchObserver<T>(safeObserver, parent, child)));
 
             return new CompositeSubscription(parent, child);
         }

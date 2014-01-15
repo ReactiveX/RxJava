@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -47,13 +47,13 @@ public final class OperationTake {
      * @param num
      * @return the specified number of contiguous values from the start of the given observable sequence
      */
-    public static <T> OnSubscribeFunc<T> take(final IObservable<? extends T> items, final int num) {
+    public static <T> IObservable<T> take(final IObservable<? extends T> items, final int num) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new OnSubscribeFunc<T>() {
+        return new IObservable<T>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                return new Take<T>(items, num).onSubscribe(observer);
+            public Subscription subscribe(Observer<? super T> observer) {
+                return new Take<T>(items, num).subscribe(observer);
             }
 
         };
@@ -70,7 +70,7 @@ public final class OperationTake {
      * 
      * @param <T>
      */
-    private static class Take<T> implements OnSubscribeFunc<T> {
+    private static class Take<T> implements IObservable<T> {
         private final IObservable<? extends T> items;
         private final int num;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
@@ -81,7 +81,7 @@ public final class OperationTake {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             if (num < 1) {
                 items.subscribe(new Observer<T>()
                 {
@@ -170,7 +170,7 @@ public final class OperationTake {
      * Takes values from the source until a timer fires.
      * @param <T> the result value type
      */
-    public static final class TakeTimed<T> implements OnSubscribeFunc<T> {
+    public static final class TakeTimed<T> implements IObservable<T> {
         final IObservable<? extends T> source;
         final long time;
         final TimeUnit unit;
@@ -184,7 +184,7 @@ public final class OperationTake {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription subscribe(Observer<? super T> t1) {
             
             SafeObservableSubscription timer = new SafeObservableSubscription();
             SafeObservableSubscription data = new SafeObservableSubscription();

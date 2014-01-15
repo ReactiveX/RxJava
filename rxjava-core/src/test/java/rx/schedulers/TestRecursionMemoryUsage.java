@@ -15,8 +15,8 @@
  */
 package rx.schedulers;
 
+import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -44,10 +44,10 @@ public class TestRecursionMemoryUsage {
 
     protected static void usingFunc2(final Scheduler scheduler) {
         System.out.println("************ usingFunc2: " + scheduler);
-        Observable.create(new OnSubscribeFunc<Long>() {
+        Observable.from(new IObservable<Long>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Long> o) {
+            public Subscription subscribe(final Observer<? super Long> o) {
                 return scheduler.schedule(0L, new Func2<Scheduler, Long, Subscription>() {
 
                     @Override
@@ -71,10 +71,10 @@ public class TestRecursionMemoryUsage {
 
     protected static void usingAction0(final Scheduler scheduler) {
         System.out.println("************ usingAction0: " + scheduler);
-        Observable.create(new OnSubscribeFunc<Long>() {
+        Observable.from(new IObservable<Long>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Long> o) {
+            public Subscription subscribe(final Observer<? super Long> o) {
                 return scheduler.schedule(new Action1<Action0>() {
 
                     private long i = 0;

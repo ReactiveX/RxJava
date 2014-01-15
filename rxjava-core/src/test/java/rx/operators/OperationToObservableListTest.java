@@ -25,6 +25,7 @@ import java.util.List;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 
@@ -33,7 +34,7 @@ public class OperationToObservableListTest {
     @Test
     public void testList() {
         Observable<String> w = Observable.from("one", "two", "three");
-        Observable<List<String>> observable = Observable.create(toObservableList(w));
+        IObservable<List<String>> observable = toObservableList(w);
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> aObserver = mock(Observer.class);
@@ -46,7 +47,7 @@ public class OperationToObservableListTest {
     @Test
     public void testListMultipleObservers() {
         Observable<String> w = Observable.from("one", "two", "three");
-        Observable<List<String>> observable = Observable.create(toObservableList(w));
+        IObservable<List<String>> observable = toObservableList(w);
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> o1 = mock(Observer.class);
@@ -70,7 +71,7 @@ public class OperationToObservableListTest {
     @Test
     public void testListWithNullValue() {
         Observable<String> w = Observable.from("one", null, "three");
-        Observable<List<String>> observable = Observable.create(toObservableList(w));
+        IObservable<List<String>> observable = toObservableList(w);
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> aObserver = mock(Observer.class);

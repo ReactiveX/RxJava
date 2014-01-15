@@ -32,12 +32,12 @@ public class OperationAllTest {
         Observable<String> obs = Observable.from("one", "two", "six");
 
         Observer<Boolean> observer = mock(Observer.class);
-        Observable.create(all(obs, new Func1<String, Boolean>() {
+        all(obs, new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(observer);
+        }).subscribe(observer);
 
         verify(observer).onNext(true);
         verify(observer).onCompleted();
@@ -50,12 +50,12 @@ public class OperationAllTest {
         Observable<String> obs = Observable.from("one", "two", "three", "six");
 
         Observer<Boolean> observer = mock(Observer.class);
-        Observable.create(all(obs, new Func1<String, Boolean>() {
+        all(obs, new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(observer);
+        }).subscribe(observer);
 
         verify(observer).onNext(false);
         verify(observer).onCompleted();
@@ -68,12 +68,12 @@ public class OperationAllTest {
         Observable<String> obs = Observable.empty();
 
         Observer<Boolean> observer = mock(Observer.class);
-        Observable.create(all(obs, new Func1<String, Boolean>() {
+        all(obs, new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(observer);
+        }).subscribe(observer);
 
         verify(observer).onNext(true);
         verify(observer).onCompleted();
@@ -87,12 +87,12 @@ public class OperationAllTest {
         Observable<String> obs = Observable.error(error);
 
         Observer<Boolean> observer = mock(Observer.class);
-        Observable.create(all(obs, new Func1<String, Boolean>() {
+        all(obs, new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(observer);
+        }).subscribe(observer);
 
         verify(observer).onError(error);
         verifyNoMoreInteractions(observer);

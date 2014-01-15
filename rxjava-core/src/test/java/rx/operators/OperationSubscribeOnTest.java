@@ -40,7 +40,7 @@ public class OperationSubscribeOnTest {
         Scheduler scheduler = spy(OperatorTester.forwardingScheduler(Schedulers.immediate()));
 
         Observer<Integer> observer = mock(Observer.class);
-        Subscription subscription = Observable.create(subscribeOn(w, scheduler)).subscribe(observer);
+        Subscription subscription = subscribeOn(w, scheduler).subscribe(observer);
 
         verify(scheduler, times(1)).schedule(isNull(), any(Func2.class));
         subscription.unsubscribe();

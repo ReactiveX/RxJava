@@ -20,8 +20,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.IObservable;
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -41,18 +39,18 @@ public final class OperationSample {
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> OnSubscribeFunc<T> sample(final IObservable<? extends T> source, long period, TimeUnit unit) {
+    public static <T> IObservable<T> sample(final IObservable<? extends T> source, long period, TimeUnit unit) {
         return new Sample<T>(source, period, unit, Schedulers.threadPoolForComputation());
     }
 
     /**
      * Samples the observable sequence at each interval.
      */
-    public static <T> OnSubscribeFunc<T> sample(final IObservable<? extends T> source, long period, TimeUnit unit, Scheduler scheduler) {
+    public static <T> IObservable<T> sample(final IObservable<? extends T> source, long period, TimeUnit unit, Scheduler scheduler) {
         return new Sample<T>(source, period, unit, scheduler);
     }
 
-    private static class Sample<T> implements OnSubscribeFunc<T> {
+    private static class Sample<T> implements IObservable<T> {
         private final IObservable<? extends T> source;
         private final long period;
         private final TimeUnit unit;
@@ -69,8 +67,8 @@ public final class OperationSample {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
-            Observable<Long> clock = Observable.create(OperationInterval.interval(period, unit, scheduler));
+        public Subscription subscribe(final Observer<? super T> observer) {
+            IObservable<Long> clock = OperationInterval.interval(period, unit, scheduler);
             final Subscription clockSubscription = clock.subscribe(new Observer<Long>() {
                 @Override
                 public void onCompleted() { /* the clock never completes */
@@ -121,7 +119,7 @@ public final class OperationSample {
      * Sample with the help of another observable. 
      * @see <a href='http://msdn.microsoft.com/en-us/library/hh229742.aspx'>MSDN: Observable.Sample</a>
      */
-    public static class SampleWithObservable<T, U> implements OnSubscribeFunc<T> {
+    public static class SampleWithObservable<T, U> implements IObservable<T> {
         final IObservable<T> source;
         final IObservable<U> sampler;
 
@@ -130,7 +128,7 @@ public final class OperationSample {
             this.sampler = sampler;
         }
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription subscribe(Observer<? super T> t1) {
             return new ResultManager(t1).init();
         }
         /** Observe source values. */

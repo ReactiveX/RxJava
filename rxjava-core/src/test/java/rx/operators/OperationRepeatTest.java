@@ -21,8 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -34,10 +34,10 @@ public class OperationRepeatTest {
     public void testRepetition() {
         int NUM = 10;
         final AtomicInteger count = new AtomicInteger();
-        int value = Observable.create(new OnSubscribeFunc<Integer>() {
+        int value = Observable.from(new IObservable<Integer>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super Integer> o) {
+            public Subscription subscribe(Observer<? super Integer> o) {
                 o.onNext(count.incrementAndGet());
                 o.onCompleted();
                 return Subscriptions.empty();

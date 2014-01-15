@@ -31,8 +31,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Matchers;
 
+import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -47,9 +47,9 @@ public enum KeyEventSource { ; // no instances
      * @see rx.observables.SwingObservable#fromKeyEvents(Component)
      */
     public static Observable<KeyEvent> fromKeyEventsOf(final Component component) {
-        return Observable.create(new OnSubscribeFunc<KeyEvent>() {
+        return Observable.from(new IObservable<KeyEvent>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super KeyEvent> observer) {
+            public Subscription subscribe(final Observer<? super KeyEvent> observer) {
                 final KeyListener listener = new KeyListener() {
                     @Override
                     public void keyPressed(KeyEvent event) {

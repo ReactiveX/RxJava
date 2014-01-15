@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 
@@ -52,7 +52,7 @@ public final class OperationSynchronize<T> {
      * @param <T>
      * @return the wrapped synchronized observable sequence
      */
-    public static <T> OnSubscribeFunc<T> synchronize(IObservable<? extends T> observable) {
+    public static <T> IObservable<T> synchronize(IObservable<? extends T> observable) {
         return new Synchronize<T>(observable, null);
     }
 
@@ -70,11 +70,11 @@ public final class OperationSynchronize<T> {
      * @param <T>
      * @return the wrapped synchronized observable sequence
      */
-    public static <T> OnSubscribeFunc<T> synchronize(IObservable<? extends T> observable, Object lock) {
+    public static <T> IObservable<T> synchronize(IObservable<? extends T> observable, Object lock) {
         return new Synchronize<T>(observable, lock);
     }
 
-    private static class Synchronize<T> implements OnSubscribeFunc<T> {
+    private static class Synchronize<T> implements IObservable<T> {
 
         public Synchronize(IObservable<? extends T> innerObservable, Object lock) {
             this.innerObservable = innerObservable;
@@ -86,7 +86,7 @@ public final class OperationSynchronize<T> {
         private Object lock;
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             SafeObservableSubscription subscription = new SafeObservableSubscription();
             if (lock == null) {
                 atomicObserver = new SynchronizedObserver<T>(observer, subscription);

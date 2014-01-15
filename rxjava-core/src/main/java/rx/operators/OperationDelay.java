@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -51,12 +51,12 @@ public final class OperationDelay {
     /**
      * Delays the subscription to the source by the given amount, running on the given scheduler.
      */
-    public static <T> OnSubscribeFunc<T> delaySubscription(IObservable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+    public static <T> IObservable<T> delaySubscription(IObservable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
         return new DelaySubscribeFunc<T>(source, time, unit, scheduler);
     }
     
     /** Subscribe function which schedules the actual subscription to source on a scheduler at a later time. */
-    private static final class DelaySubscribeFunc<T> implements OnSubscribeFunc<T> {
+    private static final class DelaySubscribeFunc<T> implements IObservable<T> {
         final IObservable<? extends T> source;
         final Scheduler scheduler;
         final long time;
@@ -69,7 +69,7 @@ public final class OperationDelay {
             this.unit = unit;
         }
         @Override
-        public Subscription onSubscribe(final Observer<? super T> t1) {
+        public Subscription subscribe(final Observer<? super T> t1) {
             final SerialSubscription ssub = new SerialSubscription();
             
             ssub.setSubscription(scheduler.schedule(new Action0() {

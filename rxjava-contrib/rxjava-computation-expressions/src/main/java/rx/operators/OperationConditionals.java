@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.Map;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.SerialSubscription;
@@ -52,7 +52,7 @@ public final class OperationConditionals {
      *            the key returned by the {@case caseSelector}
      * @return a subscription function
      */
-    public static <K, R> OnSubscribeFunc<R> switchCase(
+    public static <K, R> IObservable<R> switchCase(
             Func0<? extends K> caseSelector,
             Map<? super K, ? extends IObservable<? extends R>> mapOfCases,
             IObservable<? extends R> defaultCase) {
@@ -73,7 +73,7 @@ public final class OperationConditionals {
      *            the Observable sequence to subscribe to if {@code condition} is {@code false}
      * @return a subscription function
      */
-    public static <R> OnSubscribeFunc<R> ifThen(
+    public static <R> IObservable<R> ifThen(
             Func0<Boolean> condition,
             IObservable<? extends R> then,
             IObservable<? extends R> orElse) {
@@ -92,7 +92,7 @@ public final class OperationConditionals {
      *            the post condition after the source completes
      * @return a subscription function.
      */
-    public static <T> OnSubscribeFunc<T> doWhile(IObservable<? extends T> source, Func0<Boolean> postCondition) {
+    public static <T> IObservable<T> doWhile(IObservable<? extends T> source, Func0<Boolean> postCondition) {
         return new WhileDoWhile<T>(source, TRUE, postCondition);
     }
 
@@ -109,7 +109,7 @@ public final class OperationConditionals {
      *            and subscribe to source if it returns {@code true}
      * @return a subscription function.
      */
-    public static <T> OnSubscribeFunc<T> whileDo(IObservable<? extends T> source, Func0<Boolean> preCondition) {
+    public static <T> IObservable<T> whileDo(IObservable<? extends T> source, Func0<Boolean> preCondition) {
         return new WhileDoWhile<T>(source, preCondition, preCondition);
     }
 
@@ -122,7 +122,7 @@ public final class OperationConditionals {
      * @param <R>
      *            the result value type
      */
-    private static final class SwitchCase<K, R> implements OnSubscribeFunc<R> {
+    private static final class SwitchCase<K, R> implements IObservable<R> {
         final Func0<? extends K> caseSelector;
         final Map<? super K, ? extends IObservable<? extends R>> mapOfCases;
         final IObservable<? extends R> defaultCase;
@@ -136,7 +136,7 @@ public final class OperationConditionals {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super R> t1) {
+        public Subscription subscribe(Observer<? super R> t1) {
             IObservable<? extends R> target;
             try {
                 K caseKey = caseSelector.call();
@@ -171,7 +171,7 @@ public final class OperationConditionals {
      * @param <R>
      *            the result value type
      */
-    private static final class IfThen<R> implements OnSubscribeFunc<R> {
+    private static final class IfThen<R> implements IObservable<R> {
         final Func0<Boolean> condition;
         final IObservable<? extends R> then;
         final IObservable<? extends R> orElse;
@@ -183,7 +183,7 @@ public final class OperationConditionals {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super R> t1) {
+        public Subscription subscribe(Observer<? super R> t1) {
             IObservable<? extends R> target;
             try {
                 if (condition.call()) {
@@ -209,7 +209,7 @@ public final class OperationConditionals {
      * @param <T>
      *            the result value type
      */
-    private static final class WhileDoWhile<T> implements OnSubscribeFunc<T> {
+    private static final class WhileDoWhile<T> implements IObservable<T> {
         final Func0<Boolean> preCondition;
         final Func0<Boolean> postCondition;
         final IObservable<? extends T> source;
@@ -223,7 +223,7 @@ public final class OperationConditionals {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription subscribe(Observer<? super T> t1) {
             boolean first;
             try {
                 first = preCondition.call();

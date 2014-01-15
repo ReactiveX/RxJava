@@ -16,7 +16,7 @@
 package rx.operators;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 
@@ -24,14 +24,14 @@ import rx.Subscription;
  * Hides the identity of another observable.
  * @param <T> the return value type of the wrapped observable.
  */
-public final class OperationAsObservable<T> implements OnSubscribeFunc<T> {
+public final class OperationAsObservable<T> implements IObservable<T> {
     private final IObservable<? extends T> source;
 
     public OperationAsObservable(IObservable<? extends T> source) {
         this.source = source;
     }
     @Override
-    public Subscription onSubscribe(Observer<? super T> t1) {
+    public Subscription subscribe(Observer<? super T> t1) {
         return source.subscribe(t1);
     }
 }

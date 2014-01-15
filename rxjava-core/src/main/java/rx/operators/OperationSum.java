@@ -73,7 +73,7 @@ public final class OperationSum {
      * extractor function.
      * @param <T> the source value type
      */
-    public static final class SumIntegerExtractor<T> implements Observable.OnSubscribeFunc<Integer> {
+    public static final class SumIntegerExtractor<T> implements IObservable<Integer> {
         final IObservable<? extends T> source;
         final Func1<? super T, Integer> valueExtractor;
 
@@ -83,7 +83,7 @@ public final class OperationSum {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super Integer> t1) {
+        public Subscription subscribe(Observer<? super Integer> t1) {
             return source.subscribe(new SumObserver(t1));
         }
         /** Computes the average. */
@@ -129,7 +129,7 @@ public final class OperationSum {
      * extractor function.
      * @param <T> the source value type
      */
-    public static final class SumLongExtractor<T> implements Observable.OnSubscribeFunc<Long> {
+    public static final class SumLongExtractor<T> implements IObservable<Long> {
         final IObservable<? extends T> source;
         final Func1<? super T, Long> valueExtractor;
 
@@ -139,7 +139,7 @@ public final class OperationSum {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super Long> t1) {
+        public Subscription subscribe(Observer<? super Long> t1) {
             return source.subscribe(new SumObserver(t1));
         }
         /** Computes the average. */
@@ -185,7 +185,7 @@ public final class OperationSum {
      * extractor function.
      * @param <T> the source value type
      */
-    public static final class SumFloatExtractor<T> implements Observable.OnSubscribeFunc<Float> {
+    public static final class SumFloatExtractor<T> implements IObservable<Float> {
         final IObservable<? extends T> source;
         final Func1<? super T, Float> valueExtractor;
 
@@ -195,7 +195,7 @@ public final class OperationSum {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super Float> t1) {
+        public Subscription subscribe(Observer<? super Float> t1) {
             return source.subscribe(new SumObserver(t1));
         }
         /** Computes the average. */
@@ -241,7 +241,7 @@ public final class OperationSum {
      * extractor function.
      * @param <T> the source value type
      */
-    public static final class SumDoubleExtractor<T> implements Observable.OnSubscribeFunc<Double> {
+    public static final class SumDoubleExtractor<T> implements IObservable<Double> {
         final IObservable<? extends T> source;
         final Func1<? super T, Double> valueExtractor;
 
@@ -251,7 +251,7 @@ public final class OperationSum {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super Double> t1) {
+        public Subscription subscribe(Observer<? super Double> t1) {
             return source.subscribe(new SumObserver(t1));
         }
         /** Computes the average. */

@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -51,7 +52,7 @@ public class OperationGroupByTest {
     @Test
     public void testGroupBy() {
         Observable<String> source = Observable.from("one", "two", "three", "four", "five", "six");
-        Observable<GroupedObservable<Integer, String>> grouped = Observable.create(groupBy(source, length));
+        IObservable<GroupedObservable<Integer, String>> grouped = groupBy(source, length);
 
         Map<Integer, Collection<String>> map = toMap(grouped);
 
@@ -64,7 +65,7 @@ public class OperationGroupByTest {
     @Test
     public void testEmpty() {
         Observable<String> source = Observable.empty();
-        Observable<GroupedObservable<Integer, String>> grouped = Observable.create(groupBy(source, length));
+        IObservable<GroupedObservable<Integer, String>> grouped = groupBy(source, length);
 
         Map<Integer, Collection<String>> map = toMap(grouped);
 
@@ -77,7 +78,7 @@ public class OperationGroupByTest {
         Observable<String> errorSource = Observable.error(new RuntimeException("forced failure"));
         Observable<String> source = Observable.concat(sourceStrings, errorSource);
 
-        Observable<GroupedObservable<Integer, String>> grouped = Observable.create(groupBy(source, length));
+        Observable<GroupedObservable<Integer, String>> grouped = Observable.from(groupBy(source, length));
 
         final AtomicInteger groupCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();
@@ -122,11 +123,11 @@ public class OperationGroupByTest {
         assertNotNull(error.get());
     }
 
-    private static <K, V> Map<K, Collection<V>> toMap(Observable<GroupedObservable<K, V>> observable) {
+    private static <K, V> Map<K, Collection<V>> toMap(IObservable<GroupedObservable<K, V>> observable) {
 
         final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
 
-        observable.toBlockingObservable().forEach(new Action1<GroupedObservable<K, V>>() {
+        Observable.from(observable).toBlockingObservable().forEach(new Action1<GroupedObservable<K, V>>() {
 
             @Override
             public void call(final GroupedObservable<K, V> o) {
@@ -160,10 +161,10 @@ public class OperationGroupByTest {
         final int count = 100;
         final int groupCount = 2;
 
-        Observable<Event> es = Observable.create(new Observable.OnSubscribeFunc<Event>() {
+        Observable<Event> es = Observable.from(new IObservable<Event>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Event> observer) {
+            public Subscription subscribe(final Observer<? super Event> observer) {
                 System.out.println("*** Subscribing to EventStream ***");
                 subscribeCounter.incrementAndGet();
                 new Thread(new Runnable() {
@@ -248,10 +249,10 @@ public class OperationGroupByTest {
         final int count = 100;
         final int groupCount = 2;
 
-        Observable<Event> es = Observable.create(new Observable.OnSubscribeFunc<Event>() {
+        Observable<Event> es = Observable.from(new IObservable<Event>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Event> observer) {
+            public Subscription subscribe(final Observer<? super Event> observer) {
                 final BooleanSubscription s = new BooleanSubscription();
                 System.out.println("testUnsubscribe => *** Subscribing to EventStream ***");
                 subscribeCounter.incrementAndGet();

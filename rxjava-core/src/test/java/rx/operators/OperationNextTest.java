@@ -24,16 +24,16 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Assert;
 
+import org.junit.Assert;
 import org.junit.Test;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.BlockingObservable;
 import rx.schedulers.Schedulers;
-import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
@@ -137,7 +137,7 @@ public class OperationNextTest {
     }
 
     @Test
-    public void testOnError() throws Throwable {
+    public void testOnError() {
         Subject<String, String> obs = PublishSubject.create();
         Iterator<String> it = next(obs).iterator();
 
@@ -239,10 +239,10 @@ public class OperationNextTest {
         final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
         final AtomicBoolean running = new AtomicBoolean(true);
         final AtomicInteger count = new AtomicInteger(0);
-        final Observable<Integer> obs = Observable.create(new Observable.OnSubscribeFunc<Integer>() {
+        final IObservable<Integer> obs = new IObservable<Integer>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Integer> o) {
+            public Subscription subscribe(final Observer<? super Integer> o) {
                 new Thread(new Runnable() {
 
                     @Override
@@ -263,7 +263,7 @@ public class OperationNextTest {
                 return Subscriptions.empty();
             }
 
-        });
+        };
 
         Iterator<Integer> it = next(obs).iterator();
 

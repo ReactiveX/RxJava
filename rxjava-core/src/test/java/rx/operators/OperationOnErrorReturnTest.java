@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -36,10 +36,9 @@ public class OperationOnErrorReturnTest {
     public void testResumeNext() {
         Subscription s = mock(Subscription.class);
         TestObservable f = new TestObservable(s, "one");
-        Observable<String> w = Observable.create(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Throwable, String>() {
+        IObservable<String> observable = onErrorReturn(f, new Func1<Throwable, String>() {
 
             @Override
             public String call(Throwable e) {
@@ -47,7 +46,7 @@ public class OperationOnErrorReturnTest {
                 return "failure";
             }
 
-        }));
+        });
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -73,10 +72,9 @@ public class OperationOnErrorReturnTest {
     public void testFunctionThrowsError() {
         Subscription s = mock(Subscription.class);
         TestObservable f = new TestObservable(s, "one");
-        Observable<String> w = Observable.create(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Throwable, String>() {
+        IObservable<String> observable = onErrorReturn(f, new Func1<Throwable, String>() {
 
             @Override
             public String call(Throwable e) {
@@ -84,7 +82,7 @@ public class OperationOnErrorReturnTest {
                 throw new RuntimeException("exception from function");
             }
 
-        }));
+        });
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -105,7 +103,7 @@ public class OperationOnErrorReturnTest {
         assertNotNull(capturedException.get());
     }
 
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements IObservable<String> {
 
         final Subscription s;
         final String[] values;
@@ -117,7 +115,7 @@ public class OperationOnErrorReturnTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription subscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

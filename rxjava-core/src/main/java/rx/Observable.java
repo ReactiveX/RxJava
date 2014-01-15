@@ -164,31 +164,19 @@ public class Observable<T> implements IObservable<T> {
     /**
      * Executed when 'subscribe' is invoked.
      */
-    private final OnSubscribeFunc<T> onSubscribe;
-
-    /**
-     * Function interface for work to be performed when an {@link Observable}
-     * is subscribed to via {@link Observable#subscribe(Observer)}
-     * 
-     * @param <T>
-     */
-    public static interface OnSubscribeFunc<T> extends Function {
-
-        public Subscription onSubscribe(Observer<? super T> t1);
-
-    }
+    private final IObservable<T> onSubscribe;
 
     /**
      * Observable with Function to execute when subscribed to.
      * <p>
-     * NOTE: Use {@link #create(OnSubscribeFunc)} to create an Observable
+     * NOTE: Use {@link #from(IObservable)} to create an Observable
      * instead of this constructor unless you specifically have a need for
      * inheritance.
      * 
-     * @param onSubscribe {@link OnSubscribeFunc} to be executed when
+     * @param onSubscribe {@link IObservable} to be executed when
      *                    {@link #subscribe(Observer)} is called
      */
-    protected Observable(OnSubscribeFunc<T> onSubscribe) {
+    protected Observable(IObservable<T> onSubscribe) {
         this.onSubscribe = onSubscribe;
     }
 
@@ -228,7 +216,7 @@ public class Observable<T> implements IObservable<T> {
     @Override
     public Subscription subscribe(Observer<? super T> observer) {
         // allow the hook to intercept and/or decorate
-        OnSubscribeFunc<T> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
+        IObservable<T> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
         // validate and proceed
         if (observer == null) {
             throw new IllegalArgumentException("observer can not be null");
@@ -242,7 +230,7 @@ public class Observable<T> implements IObservable<T> {
              * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an operator"
              */
             if (isInternalImplementation(observer)) {
-                Subscription s = onSubscribeFunction.onSubscribe(observer);
+                Subscription s = onSubscribeFunction.subscribe(observer);
                 if (s == null) {
                     // this generally shouldn't be the case on a 'trusted' onSubscribe but in case it happens
                     // we want to gracefully handle it the same as AtomicObservableSubscription does
@@ -252,7 +240,7 @@ public class Observable<T> implements IObservable<T> {
                 }
             } else {
                 SafeObservableSubscription subscription = new SafeObservableSubscription();
-                subscription.wrap(onSubscribeFunction.onSubscribe(new SafeObserver<T>(subscription, observer)));
+                subscription.wrap(onSubscribeFunction.subscribe(new SafeObserver<T>(subscription, observer)));
                 return hook.onSubscribeReturn(this, subscription);
             }
         } catch (OnErrorNotImplementedException e) {
@@ -455,10 +443,10 @@ public class Observable<T> implements IObservable<T> {
      */
     private static class NeverObservable<T> extends Observable<T> {
         public NeverObservable() {
-            super(new OnSubscribeFunc<T>() {
+            super(new IObservable<T>() {
 
                 @Override
-                public Subscription onSubscribe(Observer<? super T> t1) {
+                public Subscription subscribe(Observer<? super T> t1) {
                     return Subscriptions.empty();
                 }
 
@@ -475,7 +463,7 @@ public class Observable<T> implements IObservable<T> {
     private static class ThrowObservable<T> extends Observable<T> {
 
         public ThrowObservable(final Throwable exception) {
-            super(new OnSubscribeFunc<T>() {
+            super(new IObservable<T>() {
 
                 /**
                  * Accepts an {@link Observer} and calls its
@@ -485,7 +473,7 @@ public class Observable<T> implements IObservable<T> {
                  * @return a reference to the subscription
                  */
                 @Override
-                public Subscription onSubscribe(Observer<? super T> observer) {
+                public Subscription subscribe(Observer<? super T> observer) {
                     observer.onError(exception);
                     return Subscriptions.empty();
                 }
@@ -498,17 +486,12 @@ public class Observable<T> implements IObservable<T> {
     /**
      * Creates an Observable that will execute the given function when an
      * {@link Observer} subscribes to it.
+     * This method is primarily for the internal use of the Observable class
+     * itself, and is public merely for legacy reasons. Most clients should
+     * prefer {@link #from(IObservable)}, which can avoid the creation of
+     * unnecessary intermediate objects.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png">
-     * <p>
-     * Write the function you pass to <code>create</code> so that it behaves as
-     * an Observable: It should invoke the Observer's
-     * {@link Observer#onNext onNext}, {@link Observer#onError onError}, and
-     * {@link Observer#onCompleted onCompleted} methods appropriately.
-     * <p>
-     * A well-formed Observable must invoke either the Observer's
-     * <code>onCompleted</code> method exactly once or its <code>onError</code>
-     * method exactly once.
      * <p>
      * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design
      * Guidelines (PDF)</a> for detailed information.
@@ -523,7 +506,7 @@ public class Observable<T> implements IObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create">RxJava Wiki: create()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.create.aspx">MSDN: Observable.Create</a>
      */
-    public static <T> Observable<T> create(OnSubscribeFunc<T> func) {
+    public static <T> Observable<T> create(IObservable<T> func) {
         return new Observable<T>(func);
     }
 
@@ -2349,12 +2332,25 @@ public class Observable<T> implements IObservable<T> {
 
     /**
      * If the given {@link IObservable} is an {@link Observable} already,
-     * simply return it, cast to its concrete type. If not, wrap it in a new
-     * Observable that will delegate its own {@link #subscribe(Observer)} to
-     * the given Observable.
+     * simply return it. If not, wrap it in a new Observable that will execute
+     * the given function when an {@link Observer} subscribes to it.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png">
+     * <p>
+     * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design
+     * Guidelines (PDF)</a> for detailed information.
+     *
+     * @param <T> the type of the items that this Observable emits
+     * @param func a function that accepts an {@code Observer<T>}, invokes its
+     *             {@code onNext}, {@code onError}, and {@code onCompleted}
+     *             methods as appropriate, and returns a {@link Subscription} to
+     *             allow the Observer to cancel the subscription
      *
      * @return  the given Observable if it is of the correct type, or a new
      *          one that delegates to it if not.
+     *
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create">RxJava Wiki: create()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.create.aspx">MSDN: Observable.Create</a>
      */
     public static <T> Observable<T> from(final IObservable<T> observable) {
         if (null == observable) {
@@ -2362,12 +2358,7 @@ public class Observable<T> implements IObservable<T> {
         } else if (observable instanceof Observable<?>) {
             return (Observable<T>) observable;
         } else {
-            return create(new OnSubscribeFunc<T>() {
-                @Override
-                public Subscription onSubscribe(Observer<? super T> observer) {
-                    return observable.subscribe(observer);
-                }
-            });
+            return create(observable);
         }
     }
 

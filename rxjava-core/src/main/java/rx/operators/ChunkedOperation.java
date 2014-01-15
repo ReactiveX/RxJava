@@ -90,6 +90,11 @@ public class ChunkedOperation {
         public int size() {
             return contents.size();
         }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "[contents=" + getContents() + ']';
+        }
     }
 
     /**

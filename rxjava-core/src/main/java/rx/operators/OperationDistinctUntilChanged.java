@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.Comparator;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -40,7 +40,7 @@ public final class OperationDistinctUntilChanged {
      *            The comparator to use for deciding whether to consider two items as equal or not.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T> OnSubscribeFunc<T> distinctUntilChanged(IObservable<? extends T> source, Comparator<T> equalityComparator) {
+    public static <T> IObservable<T> distinctUntilChanged(IObservable<? extends T> source, Comparator<T> equalityComparator) {
         return new DistinctUntilChanged<T, T>(source, Functions.<T> identity(), equalityComparator);
     }
 
@@ -55,7 +55,7 @@ public final class OperationDistinctUntilChanged {
      *            The comparator to use for deciding whether to consider the two item keys as equal or not.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T, U> OnSubscribeFunc<T> distinctUntilChanged(IObservable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
+    public static <T, U> IObservable<T> distinctUntilChanged(IObservable<? extends T> source, Func1<? super T, ? extends U> keySelector, Comparator<U> equalityComparator) {
         return new DistinctUntilChanged<T, U>(source, keySelector, equalityComparator);
     }
 
@@ -68,7 +68,7 @@ public final class OperationDistinctUntilChanged {
      *            The function to select the key to use for the equality checks.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T, U> OnSubscribeFunc<T> distinctUntilChanged(IObservable<? extends T> source, Func1<? super T, ? extends U> keySelector) {
+    public static <T, U> IObservable<T> distinctUntilChanged(IObservable<? extends T> source, Func1<? super T, ? extends U> keySelector) {
         return new DistinctUntilChanged<T, U>(source, keySelector, new DefaultEqualityComparator<U>());
     }
 
@@ -79,7 +79,7 @@ public final class OperationDistinctUntilChanged {
      *            The source Observable to emit the sequentially distinct items for.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T> OnSubscribeFunc<T> distinctUntilChanged(IObservable<? extends T> source) {
+    public static <T> IObservable<T> distinctUntilChanged(IObservable<? extends T> source) {
         return new DistinctUntilChanged<T, T>(source, Functions.<T> identity(), new DefaultEqualityComparator<T>());
     }
 
@@ -95,7 +95,7 @@ public final class OperationDistinctUntilChanged {
         }
     }
 
-    private static class DistinctUntilChanged<T, U> implements OnSubscribeFunc<T> {
+    private static class DistinctUntilChanged<T, U> implements IObservable<T> {
         private final IObservable<? extends T> source;
         private final Func1<? super T, ? extends U> keySelector;
         private final Comparator<U> equalityComparator;
@@ -107,7 +107,7 @@ public final class OperationDistinctUntilChanged {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             final Subscription sourceSub = source.subscribe(new Observer<T>() {
                 private U lastEmittedKey;
                 private boolean hasEmitted;

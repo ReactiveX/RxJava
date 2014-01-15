@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 
@@ -44,7 +44,7 @@ public class OperationElementAt {
      * @throws IndexOutOfBoundsException
      *             Index is less than 0.
      */
-    public static <T> OnSubscribeFunc<T> elementAt(IObservable<? extends T> source, int index) {
+    public static <T> IObservable<T> elementAt(IObservable<? extends T> source, int index) {
         return new ElementAt<T>(source, index, null, false);
     }
 
@@ -66,11 +66,11 @@ public class OperationElementAt {
      * @throws IndexOutOfBoundsException
      *             Index is less than 0.
      */
-    public static <T> OnSubscribeFunc<T> elementAtOrDefault(IObservable<? extends T> source, int index, T defaultValue) {
+    public static <T> IObservable<T> elementAtOrDefault(IObservable<? extends T> source, int index, T defaultValue) {
         return new ElementAt<T>(source, index, defaultValue, true);
     }
 
-    private static class ElementAt<T> implements OnSubscribeFunc<T> {
+    private static class ElementAt<T> implements IObservable<T> {
 
         private final IObservable<? extends T> source;
         private final int index;
@@ -86,7 +86,7 @@ public class OperationElementAt {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
             return subscription.wrap(source.subscribe(new Observer<T>() {
 

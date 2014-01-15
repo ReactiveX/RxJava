@@ -46,7 +46,7 @@ public class OperationObserveOnTest {
     @SuppressWarnings("unchecked")
     public void testObserveOn() {
         Observer<Integer> observer = mock(Observer.class);
-        Observable.create(observeOn(Observable.from(1, 2, 3), Schedulers.immediate())).subscribe(observer);
+        observeOn(Observable.from(1, 2, 3), Schedulers.immediate()).subscribe(observer);
 
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(2);

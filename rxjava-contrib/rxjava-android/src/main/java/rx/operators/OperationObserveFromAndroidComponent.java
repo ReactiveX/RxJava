@@ -62,7 +62,7 @@ public class OperationObserveFromAndroidComponent {
         return Observable.create(new OnSubscribeBase<T, Activity>(source, activity));
     }
 
-    private static class OnSubscribeBase<T, AndroidComponent> implements Observable.OnSubscribeFunc<T> {
+    private static class OnSubscribeBase<T, AndroidComponent> implements IObservable<T> {
 
         private static final String LOG_TAG = "AndroidObserver";
 
@@ -88,7 +88,7 @@ public class OperationObserveFromAndroidComponent {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             assertUiThread();
             observerRef = observer;
             final Subscription sourceSub = source.observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<T>() {
@@ -232,7 +232,7 @@ public class OperationObserveFromAndroidComponent {
             PublishSubject<Integer> source = PublishSubject.create();
 
             final OnSubscribeFragment<Integer> operator = new OnSubscribeFragment<Integer>(source, mockFragment);
-            operator.onSubscribe(mockObserver);
+            operator.subscribe(mockObserver);
 
             source.onNext(1);
             releaseComponentRef(operator);
@@ -250,7 +250,7 @@ public class OperationObserveFromAndroidComponent {
             PublishSubject<Integer> source = PublishSubject.create();
 
             final OnSubscribeFragment<Integer> operator = new OnSubscribeFragment<Integer>(source, mockFragment);
-            operator.onSubscribe(mockObserver);
+            operator.subscribe(mockObserver);
 
             source.onNext(1);
             releaseComponentRef(operator);

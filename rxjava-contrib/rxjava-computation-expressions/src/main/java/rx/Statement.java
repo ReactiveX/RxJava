@@ -84,7 +84,7 @@ public class Statement {
     public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector,
             Map<? super K, ? extends IObservable<? extends R>> mapOfCases,
             IObservable<? extends R> defaultCase) {
-        return Observable.create(OperationConditionals.switchCase(caseSelector, mapOfCases, defaultCase));
+        return Observable.from(OperationConditionals.switchCase(caseSelector, mapOfCases, defaultCase));
     }
 
     /**
@@ -102,7 +102,7 @@ public class Statement {
      *         condition is true
      */
     public static <T> Observable<T> doWhile(IObservable<T> source, Func0<Boolean> postCondition) {
-        return Observable.create(OperationConditionals.doWhile(source, postCondition));
+        return Observable.from(OperationConditionals.doWhile(source, postCondition));
     }
 
     /**
@@ -118,7 +118,7 @@ public class Statement {
      *         Observable so long as <code>preCondition</code> is true
      */
     public static <T> Observable<T> whileDo(IObservable<T> source, Func0<Boolean> preCondition) {
-        return Observable.create(OperationConditionals.whileDo(source, preCondition));
+        return Observable.from(OperationConditionals.whileDo(source, preCondition));
     }
 
     /**
@@ -185,7 +185,7 @@ public class Statement {
      */
     public static <R> Observable<R> ifThen(Func0<Boolean> condition, IObservable<? extends R> then,
             IObservable<? extends R> orElse) {
-        return Observable.create(OperationConditionals.ifThen(condition, then, orElse));
+        return Observable.from(OperationConditionals.ifThen(condition, then, orElse));
     }
 
 }

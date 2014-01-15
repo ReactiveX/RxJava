@@ -17,12 +17,12 @@
   (let [f-name (gensym "rc")]
     `(let [~f-name ~f]
        (reify
-         ; If they want Func1, give them onSubscribe as well so Observable/create can be
+         ; If they want Func1, give them subscribe as well so Observable/create can be
          ; used seemlessly with rx/fn.
          ~@(if (and (= prefix "rx.util.functions.Func")
                     (some #{1} arities))
-             `(rx.Observable$OnSubscribeFunc
-                (~'onSubscribe [~'this observer#]
+             `(rx.IObservable
+                (~'subscribe [~'this observer#]
                   (~f-name observer#))))
 
          ~@(mapcat (clojure.core/fn [n]
@@ -39,7 +39,7 @@
 
   If the f has the wrong arity, an ArityException will be thrown at runtime.
 
-  This will also implement rx.Observable$OnSubscribeFunc.onSubscribe for use with
+  This will also implement rx.IObservable.subscribe for use with
   Observable/create. In this case, the function must take an Observable as its single
   argument and return a subscription object.
 

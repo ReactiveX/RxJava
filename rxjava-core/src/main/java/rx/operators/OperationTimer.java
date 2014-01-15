@@ -16,7 +16,7 @@
 package rx.operators;
 
 import java.util.concurrent.TimeUnit;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -33,7 +33,7 @@ public final class OperationTimer {
     /**
      * Emit a single 0L after the specified time elapses.
      */
-    public static class TimerOnce implements OnSubscribeFunc<Long> {
+    public static class TimerOnce implements IObservable<Long> {
         private final Scheduler scheduler;
         private final long dueTime;
         private final TimeUnit dueUnit;
@@ -44,7 +44,7 @@ public final class OperationTimer {
         }
         
         @Override
-        public Subscription onSubscribe(final Observer<? super Long> t1) {
+        public Subscription subscribe(final Observer<? super Long> t1) {
             return scheduler.schedule(new Action0() {
                 @Override
                 public void call() {
@@ -58,7 +58,7 @@ public final class OperationTimer {
     /**
      * Emit 0L after the initial period and ever increasing number after each period.
      */
-    public static class TimerPeriodically implements OnSubscribeFunc<Long> {
+    public static class TimerPeriodically implements IObservable<Long> {
         private final Scheduler scheduler;
         private final long initialDelay;
         private final long period;
@@ -71,7 +71,7 @@ public final class OperationTimer {
         }
         
         @Override
-        public Subscription onSubscribe(final Observer<? super Long> t1) {
+        public Subscription subscribe(final Observer<? super Long> t1) {
             return scheduler.schedulePeriodically(new Action0() {
                 long count;
                 @Override

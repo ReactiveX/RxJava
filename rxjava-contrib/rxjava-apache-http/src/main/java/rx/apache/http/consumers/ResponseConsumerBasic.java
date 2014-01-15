@@ -27,7 +27,7 @@ import org.apache.http.nio.protocol.BasicAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.apache.http.ObservableHttpResponse;
@@ -68,10 +68,10 @@ class ResponseConsumerBasic extends BasicAsyncResponseConsumer implements Respon
     public HttpResponse _buildResult(HttpContext context) throws Exception {
         final HttpResponse response = buildResult(context);
 
-        Observable<byte[]> contentObservable = Observable.create(new OnSubscribeFunc<byte[]>() {
+        Observable<byte[]> contentObservable = Observable.create(new IObservable<byte[]>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super byte[]> o) {
+            public Subscription subscribe(Observer<? super byte[]> o) {
                 long length = response.getEntity().getContentLength();
                 if (length > Integer.MAX_VALUE) {
                     o.onError(new IllegalStateException("Content Length too large for a byte[] => " + length));

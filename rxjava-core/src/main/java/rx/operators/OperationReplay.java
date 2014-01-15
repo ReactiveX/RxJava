@@ -27,7 +27,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -60,7 +59,7 @@ public final class OperationReplay {
      */
     public static <T> Subject<T, T> createScheduledSubject(Subject<T, T> subject, Scheduler scheduler) {
         Observable<T> observedOn = subject.observeOn(scheduler);
-        SubjectWrapper<T> s = new SubjectWrapper<T>(subscriberOf(observedOn), subject);
+        SubjectWrapper<T> s = new SubjectWrapper<T>(observedOn, subject);
         return s;
     }
     
@@ -126,19 +125,7 @@ public final class OperationReplay {
         
         return brs;
     }
-    
-    /**
-     * Return an OnSubscribeFunc which delegates the subscription to the given observable.
-     */
-    public static <T> OnSubscribeFunc<T> subscriberOf(final IObservable<T> target) {
-        return new OnSubscribeFunc<T>() {
-            @Override
-            public Subscription onSubscribe(Observer<? super T> t1) {
-                return target.subscribe(t1);
-            }
-        };
-    }
-    
+
     /**
      * Subject that wraps another subject and uses a mapping function
      * to transform the received values.
@@ -146,7 +133,8 @@ public final class OperationReplay {
     public static final class MappingSubject<T, R> extends Subject<T, R> {
         private final Subject<R, R> subject;
         private final Func1<T, R> selector;
-        public MappingSubject(OnSubscribeFunc<R> func, Subject<R, R> subject, Func1<T, R> selector) {
+
+        public MappingSubject(IObservable<R> func, Subject<R, R> subject, Func1<T, R> selector) {
             super(func);
             this.subject = subject;
             this.selector = selector;
@@ -175,7 +163,7 @@ public final class OperationReplay {
     public static final class SubjectWrapper<T> extends Subject<T, T> {
         /** The wrapped subject. */
         final Subject<T, T> subject;
-        public SubjectWrapper(OnSubscribeFunc<T> func, Subject<T, T> subject) {
+        public SubjectWrapper(IObservable<T> func, Subject<T, T> subject) {
             super(func);
             this.subject = subject;
         }
@@ -641,7 +629,7 @@ public final class OperationReplay {
         protected final Func1<? super TInput, ? extends TIntermediate> intermediateSelector;
         
         private CustomReplaySubject(
-                Observable.OnSubscribeFunc<TResult> onSubscribe, 
+                IObservable<TResult> onSubscribe, 
                 ReplayState<TIntermediate, TResult> state,
                 Func1<? super TInput, ? extends TIntermediate> intermediateSelector) {
             super(onSubscribe);
@@ -711,7 +699,7 @@ public final class OperationReplay {
      * @param <TResult> the value type of the observers subscribing to this subject
      */
     protected static final class CustomReplaySubjectSubscribeFunc<TIntermediate, TResult> 
-    implements Observable.OnSubscribeFunc<TResult> {
+    implements IObservable<TResult> {
         
         private final ReplayState<TIntermediate, TResult> state;
         protected CustomReplaySubjectSubscribeFunc(ReplayState<TIntermediate, TResult> state) {
@@ -719,7 +707,7 @@ public final class OperationReplay {
         }
         
         @Override
-        public Subscription onSubscribe(Observer<? super TResult> t1) {
+        public Subscription subscribe(Observer<? super TResult> t1) {
             VirtualList<TIntermediate> values;
             Throwable error;
             state.lock();

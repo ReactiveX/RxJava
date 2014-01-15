@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -58,10 +58,10 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T, TClosing> OnSubscribeFunc<Observable<T>> window(final IObservable<? extends T> source, final Func0<? extends IObservable<? extends TClosing>> windowClosingSelector) {
-        return new OnSubscribeFunc<Observable<T>>() {
+    public static <T, TClosing> IObservable<Observable<T>> window(final IObservable<? extends T> source, final Func0<? extends IObservable<? extends TClosing>> windowClosingSelector) {
+        return new IObservable<Observable<T>>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
+            public Subscription subscribe(final Observer<? super Observable<T>> observer) {
                 NonOverlappingChunks<T, Observable<T>> windows = new NonOverlappingChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker());
                 ChunkCreator creator = new ObservableBasedSingleChunkCreator<T, Observable<T>, TClosing>(windows, windowClosingSelector);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
@@ -95,10 +95,10 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T, TOpening, TClosing> OnSubscribeFunc<Observable<T>> window(final IObservable<? extends T> source, final IObservable<? extends TOpening> windowOpenings, final Func1<? super TOpening, ? extends IObservable<? extends TClosing>> windowClosingSelector) {
-        return new OnSubscribeFunc<Observable<T>>() {
+    public static <T, TOpening, TClosing> IObservable<Observable<T>> window(final IObservable<? extends T> source, final IObservable<? extends TOpening> windowOpenings, final Func1<? super TOpening, ? extends IObservable<? extends TClosing>> windowClosingSelector) {
+        return new IObservable<Observable<T>>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
+            public Subscription subscribe(final Observer<? super Observable<T>> observer) {
                 OverlappingChunks<T, Observable<T>> windows = new OverlappingChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker());
                 ChunkCreator creator = new ObservableBasedMultiChunkCreator<T, Observable<T>, TOpening, TClosing>(windows, windowOpenings, windowClosingSelector);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
@@ -123,7 +123,7 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(IObservable<? extends T> source, int count) {
+    public static <T> IObservable<Observable<T>> window(IObservable<? extends T> source, int count) {
         return window(source, count, count);
     }
 
@@ -150,10 +150,10 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(final IObservable<? extends T> source, final int count, final int skip) {
-        return new OnSubscribeFunc<Observable<T>>() {
+    public static <T> IObservable<Observable<T>> window(final IObservable<? extends T> source, final int count, final int skip) {
+        return new IObservable<Observable<T>>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
+            public Subscription subscribe(final Observer<? super Observable<T>> observer) {
                 Chunks<T, Observable<T>> chunks = new SizeBasedChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker(), count);
                 ChunkCreator creator = new SkippingChunkCreator<T, Observable<T>>(chunks, skip);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(chunks, observer, creator));
@@ -180,7 +180,7 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(IObservable<? extends T> source, long timespan, TimeUnit unit) {
+    public static <T> IObservable<Observable<T>> window(IObservable<? extends T> source, long timespan, TimeUnit unit) {
         return window(source, timespan, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -205,10 +205,10 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(final IObservable<? extends T> source, final long timespan, final TimeUnit unit, final Scheduler scheduler) {
-        return new OnSubscribeFunc<Observable<T>>() {
+    public static <T> IObservable<Observable<T>> window(final IObservable<? extends T> source, final long timespan, final TimeUnit unit, final Scheduler scheduler) {
+        return new IObservable<Observable<T>>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
+            public Subscription subscribe(final Observer<? super Observable<T>> observer) {
                 NonOverlappingChunks<T, Observable<T>> windows = new NonOverlappingChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker());
                 ChunkCreator creator = new TimeBasedChunkCreator<T, Observable<T>>(windows, timespan, unit, scheduler);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
@@ -238,7 +238,7 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(IObservable<? extends T> source, long timespan, TimeUnit unit, int count) {
+    public static <T> IObservable<Observable<T>> window(IObservable<? extends T> source, long timespan, TimeUnit unit, int count) {
         return window(source, timespan, unit, count, Schedulers.threadPoolForComputation());
     }
 
@@ -266,10 +266,10 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(final IObservable<? extends T> source, final long timespan, final TimeUnit unit, final int count, final Scheduler scheduler) {
-        return new OnSubscribeFunc<Observable<T>>() {
+    public static <T> IObservable<Observable<T>> window(final IObservable<? extends T> source, final long timespan, final TimeUnit unit, final int count, final Scheduler scheduler) {
+        return new IObservable<Observable<T>>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
+            public Subscription subscribe(final Observer<? super Observable<T>> observer) {
                 Chunks<T, Observable<T>> chunks = new TimeAndSizeBasedChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker(), count, timespan, unit, scheduler);
                 ChunkCreator creator = new SingleChunkCreator<T, Observable<T>>(chunks);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(chunks, observer, creator));
@@ -299,7 +299,7 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(IObservable<? extends T> source, long timespan, long timeshift, TimeUnit unit) {
+    public static <T> IObservable<Observable<T>> window(IObservable<? extends T> source, long timespan, long timeshift, TimeUnit unit) {
         return window(source, timespan, timeshift, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -327,10 +327,10 @@ public final class OperationWindow extends ChunkedOperation {
      * @return
      *         the {@link rx.util.functions.Func1} object representing the specified window operation.
      */
-    public static <T> OnSubscribeFunc<Observable<T>> window(final IObservable<? extends T> source, final long timespan, final long timeshift, final TimeUnit unit, final Scheduler scheduler) {
-        return new OnSubscribeFunc<Observable<T>>() {
+    public static <T> IObservable<Observable<T>> window(final IObservable<? extends T> source, final long timespan, final long timeshift, final TimeUnit unit, final Scheduler scheduler) {
+        return new IObservable<Observable<T>>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
+            public Subscription subscribe(final Observer<? super Observable<T>> observer) {
                 OverlappingChunks<T, Observable<T>> windows = new TimeBasedChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker(), timespan, unit, scheduler);
                 ChunkCreator creator = new TimeBasedChunkCreator<T, Observable<T>>(windows, timeshift, unit, scheduler);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));

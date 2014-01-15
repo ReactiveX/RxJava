@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -42,7 +42,7 @@ public class OperationToMultimap {
      * ToMultimap with key selector, identitiy value selector,
      * default HashMap factory and default ArrayList collection factory.
      */
-    public static <T, K> OnSubscribeFunc<Map<K, Collection<T>>> toMultimap(
+    public static <T, K> IObservable<Map<K, Collection<T>>> toMultimap(
             IObservable<T> source,
             Func1<? super T, ? extends K> keySelector
     ) {
@@ -57,7 +57,7 @@ public class OperationToMultimap {
      * ToMultimap with key selector, custom value selector,
      * default HashMap factory and default ArrayList collection factory.
      */
-    public static <T, K, V> OnSubscribeFunc<Map<K, Collection<V>>> toMultimap(
+    public static <T, K, V> IObservable<Map<K, Collection<V>>> toMultimap(
             IObservable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector
@@ -72,7 +72,7 @@ public class OperationToMultimap {
      * ToMultimap with key selector, custom value selector,
      * custom Map factory and default ArrayList collection factory.
      */
-    public static <T, K, V> OnSubscribeFunc<Map<K, Collection<V>>> toMultimap(
+    public static <T, K, V> IObservable<Map<K, Collection<V>>> toMultimap(
             IObservable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector,
@@ -88,7 +88,7 @@ public class OperationToMultimap {
      * ToMultimap with key selector, custom value selector,
      * custom Map factory and custom collection factory.
      */
-    public static <T, K, V> OnSubscribeFunc<Map<K, Collection<V>>> toMultimap(
+    public static <T, K, V> IObservable<Map<K, Collection<V>>> toMultimap(
             IObservable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector,
@@ -125,7 +125,7 @@ public class OperationToMultimap {
      * Maps the elements of the source observable int a multimap customized
      * by various selectors and factories.
      */
-    public static class ToMultimap<T, K, V> implements OnSubscribeFunc<Map<K, Collection<V>>> {
+    public static class ToMultimap<T, K, V> implements IObservable<Map<K, Collection<V>>> {
         private final IObservable<T> source;
         private final Func1<? super T, ? extends K> keySelector;
         private final Func1<? super T, ? extends V> valueSelector;
@@ -145,7 +145,7 @@ public class OperationToMultimap {
             this.collectionFactory = collectionFactory;
         }
         @Override
-        public Subscription onSubscribe(Observer<? super Map<K, Collection<V>>> t1) {
+        public Subscription subscribe(Observer<? super Map<K, Collection<V>>> t1) {
             Map<K, Collection<V>> map;
             try {
                 map = mapFactory.call();

@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.IObservable;
 import rx.Notification;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 
@@ -40,11 +40,11 @@ public final class OperationDematerialize {
      * @return An observable sequence exhibiting the behavior corresponding to the source sequence's notification values.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">Observable.Dematerialize(TSource) Method </a>
      */
-    public static <T> OnSubscribeFunc<T> dematerialize(final IObservable<? extends Notification<? extends T>> sequence) {
+    public static <T> IObservable<T> dematerialize(final IObservable<? extends Notification<? extends T>> sequence) {
         return new DematerializeObservable<T>(sequence);
     }
 
-    private static class DematerializeObservable<T> implements OnSubscribeFunc<T> {
+    private static class DematerializeObservable<T> implements IObservable<T> {
 
         private final IObservable<? extends Notification<? extends T>> sequence;
 
@@ -53,7 +53,7 @@ public final class OperationDematerialize {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             return sequence.subscribe(new Observer<Notification<? extends T>>() {
                 @Override
                 public void onCompleted() {

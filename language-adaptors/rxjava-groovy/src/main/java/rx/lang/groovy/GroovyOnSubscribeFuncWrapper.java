@@ -16,16 +16,16 @@
 package rx.lang.groovy;
 
 import groovy.lang.Closure;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 
 /**
- * Concrete wrapper that accepts a {@link Closure} and produces a {@link OnSubscribeFunc}.
+ * Concrete wrapper that accepts a {@link Closure} and produces a {@link IObservable}.
  * 
  * @param <T>
  */
-public class GroovyOnSubscribeFuncWrapper<T> implements OnSubscribeFunc<T> {
+public class GroovyOnSubscribeFuncWrapper<T> implements IObservable<T> {
 
     private final Closure<Subscription> closure;
 
@@ -34,7 +34,7 @@ public class GroovyOnSubscribeFuncWrapper<T> implements OnSubscribeFunc<T> {
     }
 
     @Override
-    public Subscription onSubscribe(Observer<? super T> observer) {
+    public Subscription subscribe(Observer<? super T> observer) {
         return closure.call(observer);
     }
 

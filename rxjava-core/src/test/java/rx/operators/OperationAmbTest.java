@@ -25,8 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.TestScheduler;
@@ -42,12 +41,12 @@ public class OperationAmbTest {
         scheduler = new TestScheduler();
     }
 
-    private Observable<String> createObservable(final String[] values,
+    private IObservable<String> createObservable(final String[] values,
             final long interval, final Throwable e) {
-        return Observable.create(new OnSubscribeFunc<String>() {
+        return new IObservable<String>() {
 
             @Override
-            public Subscription onSubscribe(
+            public Subscription subscribe(
                     final Observer<? super String> observer) {
                 CompositeSubscription parentSubscription = new CompositeSubscription();
                 long delay = interval;
@@ -73,23 +72,22 @@ public class OperationAmbTest {
                 }, delay, TimeUnit.MILLISECONDS));
                 return parentSubscription;
             }
-        });
+        };
     }
 
     @Test
     public void testAmb() {
-        Observable<String> observable1 = createObservable(new String[] {
+        IObservable<String> observable1 = createObservable(new String[] {
                 "1", "11", "111", "1111" }, 2000, null);
-        Observable<String> observable2 = createObservable(new String[] {
+        IObservable<String> observable2 = createObservable(new String[] {
                 "2", "22", "222", "2222" }, 1000, null);
-        Observable<String> observable3 = createObservable(new String[] {
+        IObservable<String> observable3 = createObservable(new String[] {
                 "3", "33", "333", "3333" }, 3000, null);
 
-        Observable<String> o = Observable.create(amb(observable1,
-                observable2, observable3));
+        IObservable<String> o = amb(observable1, observable2, observable3);
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
@@ -107,18 +105,17 @@ public class OperationAmbTest {
     public void testAmb2() {
         IOException needHappenedException = new IOException(
                 "fake exception");
-        Observable<String> observable1 = createObservable(new String[] {},
+        IObservable<String> observable1 = createObservable(new String[] {},
                 2000, new IOException("fake exception"));
-        Observable<String> observable2 = createObservable(new String[] {
+        IObservable<String> observable2 = createObservable(new String[] {
                 "2", "22", "222", "2222" }, 1000, needHappenedException);
-        Observable<String> observable3 = createObservable(new String[] {},
+        IObservable<String> observable3 = createObservable(new String[] {},
                 3000, new IOException("fake exception"));
 
-        Observable<String> o = Observable.create(amb(observable1,
-                observable2, observable3));
+        IObservable<String> o = amb(observable1, observable2, observable3);
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
@@ -134,18 +131,17 @@ public class OperationAmbTest {
 
     @Test
     public void testAmb3() {
-        Observable<String> observable1 = createObservable(new String[] {
+        IObservable<String> observable1 = createObservable(new String[] {
                 "1" }, 2000, null);
-        Observable<String> observable2 = createObservable(new String[] {},
+        IObservable<String> observable2 = createObservable(new String[] {},
                 1000, null);
-        Observable<String> observable3 = createObservable(new String[] {
+        IObservable<String> observable3 = createObservable(new String[] {
                 "3" }, 3000, null);
 
-        Observable<String> o = Observable.create(amb(observable1,
-                observable2, observable3));
+        IObservable<String> o = amb(observable1, observable2, observable3);
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);

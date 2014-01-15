@@ -111,7 +111,7 @@ class CompletenessTest extends JUnitSuite {
       "averageDoubles(Observable[Double])" -> averageProblem,
       "averageFloats(Observable[Float])" -> averageProblem,
       "averageLongs(Observable[Long])" -> averageProblem,
-      "create(OnSubscribeFunc[T])" -> "apply(Observer[T] => Subscription)",
+      "create(IObservable[T])" -> "apply(Observer[T] => Subscription)",
       "combineLatest(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "combineLatest(Observable[U])",
       "concat(Observable[_ <: Observable[_ <: T]])" -> "concat(<:<[Observable[T], Observable[Observable[U]]])",
       "defer(Func0[_ <: Observable[_ <: T]])" -> "defer(=> Observable[T])",

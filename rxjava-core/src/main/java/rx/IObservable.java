@@ -15,6 +15,8 @@
  */
 package rx;
 
+import rx.util.functions.Function;
+
 
 /**
  * The Observable interface that implements the Reactive Pattern.
@@ -29,7 +31,7 @@ package rx;
  *
  * @param <T> the type of the item emitted by the Observable.
  */
-public interface IObservable<T> {
+public interface IObservable<T> extends Function {
 
     /**
      * An {@link Observer} must call an Observable's {@code subscribe} method in

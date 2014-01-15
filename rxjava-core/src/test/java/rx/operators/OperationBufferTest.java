@@ -31,6 +31,7 @@ import org.mockito.Mockito;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -55,15 +56,15 @@ public class OperationBufferTest {
 
     @Test
     public void testComplete() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 observer.onCompleted();
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, 3, 3));
+        IObservable<List<String>> buffered = buffer(source, 3, 3);
         buffered.subscribe(observer);
 
         Mockito.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
@@ -73,9 +74,9 @@ public class OperationBufferTest {
 
     @Test
     public void testSkipAndCountOverlappingBuffers() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onNext("two");
                 observer.onNext("three");
@@ -83,9 +84,9 @@ public class OperationBufferTest {
                 observer.onNext("five");
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, 3, 1));
+        IObservable<List<String>> buffered = buffer(source, 3, 1);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -99,9 +100,9 @@ public class OperationBufferTest {
 
     @Test
     public void testSkipAndCountGaplessBuffers() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onNext("two");
                 observer.onNext("three");
@@ -110,9 +111,9 @@ public class OperationBufferTest {
                 observer.onCompleted();
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, 3, 3));
+        IObservable<List<String>> buffered = buffer(source, 3, 3);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -125,9 +126,9 @@ public class OperationBufferTest {
 
     @Test
     public void testSkipAndCountBuffersWithGaps() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onNext("two");
                 observer.onNext("three");
@@ -136,9 +137,9 @@ public class OperationBufferTest {
                 observer.onCompleted();
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, 2, 3));
+        IObservable<List<String>> buffered = buffer(source, 2, 3);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -151,9 +152,9 @@ public class OperationBufferTest {
 
     @Test
     public void testTimedAndCount() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 push(observer, "one", 10);
                 push(observer, "two", 90);
                 push(observer, "three", 110);
@@ -162,9 +163,9 @@ public class OperationBufferTest {
                 complete(observer, 250);
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, 100, TimeUnit.MILLISECONDS, 2, scheduler));
+        IObservable<List<String>> buffered = buffer(source, 100, TimeUnit.MILLISECONDS, 2, scheduler);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -183,9 +184,9 @@ public class OperationBufferTest {
 
     @Test
     public void testTimed() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 push(observer, "one", 98);
                 push(observer, "two", 99);
                 push(observer, "three", 100);
@@ -194,9 +195,9 @@ public class OperationBufferTest {
                 complete(observer, 150);
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, 100, TimeUnit.MILLISECONDS, scheduler));
+        IObservable<List<String>> buffered = buffer(source, 100, TimeUnit.MILLISECONDS, scheduler);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -212,9 +213,9 @@ public class OperationBufferTest {
 
     @Test
     public void testObservableBasedOpenerAndCloser() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 push(observer, "one", 10);
                 push(observer, "two", 60);
                 push(observer, "three", 110);
@@ -223,33 +224,33 @@ public class OperationBufferTest {
                 complete(observer, 500);
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Observable<Object> openings = Observable.create(new Observable.OnSubscribeFunc<Object>() {
+        IObservable<Object> openings = new IObservable<Object>() {
             @Override
-            public Subscription onSubscribe(Observer<Object> observer) {
+            public Subscription subscribe(Observer<Object> observer) {
                 push(observer, new Object(), 50);
                 push(observer, new Object(), 200);
                 complete(observer, 250);
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Func1<Object, Observable<Object>> closer = new Func1<Object, Observable<Object>>() {
+        Func1<Object, IObservable<Object>> closer = new Func1<Object, IObservable<Object>>() {
             @Override
-            public Observable<Object> call(Object opening) {
-                return Observable.create(new Observable.OnSubscribeFunc<Object>() {
+            public IObservable<Object> call(Object opening) {
+                return new IObservable<Object>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super Object> observer) {
+                    public Subscription subscribe(Observer<? super Object> observer) {
                         push(observer, new Object(), 100);
                         complete(observer, 101);
                         return Subscriptions.empty();
                     }
-                });
+                };
             }
         };
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, openings, closer));
+        IObservable<List<String>> buffered = buffer(source, openings, closer);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -263,9 +264,9 @@ public class OperationBufferTest {
 
     @Test
     public void testObservableBasedCloser() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        IObservable<String> source = new IObservable<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 push(observer, "one", 10);
                 push(observer, "two", 60);
                 push(observer, "three", 110);
@@ -274,23 +275,23 @@ public class OperationBufferTest {
                 complete(observer, 250);
                 return Subscriptions.empty();
             }
-        });
+        };
 
-        Func0<Observable<Object>> closer = new Func0<Observable<Object>>() {
+        Func0<IObservable<Object>> closer = new Func0<IObservable<Object>>() {
             @Override
-            public Observable<Object> call() {
-                return Observable.create(new Observable.OnSubscribeFunc<Object>() {
+            public IObservable<Object> call() {
+                return new IObservable<Object>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super Object> observer) {
+                    public Subscription subscribe(Observer<? super Object> observer) {
                         push(observer, new Object(), 100);
                         complete(observer, 101);
                         return Subscriptions.empty();
                     }
-                });
+                };
             }
         };
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, closer));
+        IObservable<List<String>> buffered = buffer(source, closer);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);

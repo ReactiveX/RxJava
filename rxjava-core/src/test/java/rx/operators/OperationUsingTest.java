@@ -26,8 +26,8 @@ import static rx.operators.OperationUsing.using;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -68,9 +68,8 @@ public class OperationUsingTest {
         };
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
-        Observable<String> observable = Observable.create(using(
-                resourceFactory, observableFactory));
+        Observer<String> observer = mock(Observer.class);
+        IObservable<String> observable = using(resourceFactory, observableFactory);
         observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -118,9 +117,8 @@ public class OperationUsingTest {
         };
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
-        Observable<String> observable = Observable.create(using(
-                resourceFactory, observableFactory));
+        Observer<String> observer = mock(Observer.class);
+        IObservable<String> observable = using(resourceFactory, observableFactory);
         observable.subscribe(observer);
         observable.subscribe(observer);
 
@@ -152,7 +150,7 @@ public class OperationUsingTest {
             }
         };
 
-        Observable.create(using(resourceFactory, observableFactory))
+        Observable.from(using(resourceFactory, observableFactory))
                 .toBlockingObservable().last();
     }
 
@@ -174,7 +172,7 @@ public class OperationUsingTest {
         };
 
         try {
-            Observable.create(using(resourceFactory, observableFactory))
+            Observable.from(using(resourceFactory, observableFactory))
                     .toBlockingObservable().last();
             fail("Should throw a TestException when the observableFactory throws it");
         } catch (TestException e) {
@@ -194,20 +192,20 @@ public class OperationUsingTest {
             }
         };
 
-        Func1<Subscription, Observable<Integer>> observableFactory = new Func1<Subscription, Observable<Integer>>() {
+        Func1<Subscription, IObservable<Integer>> observableFactory = new Func1<Subscription, IObservable<Integer>>() {
             @Override
-            public Observable<Integer> call(Subscription subscription) {
-                return Observable.create(new OnSubscribeFunc<Integer>() {
+            public IObservable<Integer> call(Subscription subscription) {
+                return new IObservable<Integer>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super Integer> t1) {
+                    public Subscription subscribe(Observer<? super Integer> t1) {
                         throw new TestException();
                     }
-                });
+                };
             }
         };
 
         try {
-            Observable.create(using(resourceFactory, observableFactory))
+            Observable.from(using(resourceFactory, observableFactory))
                     .toBlockingObservable().last();
             fail("Should throw a TestException when the observableFactory throws it");
         } catch (TestException e) {

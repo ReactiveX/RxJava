@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -40,7 +40,7 @@ public final class OperationTakeWhile {
      *            a function to test each source element for a condition
      * @return sequence of observable values from the start as long as the predicate is true
      */
-    public static <T> OnSubscribeFunc<T> takeWhile(final IObservable<? extends T> items, final Func1<? super T, Boolean> predicate) {
+    public static <T> IObservable<T> takeWhile(final IObservable<? extends T> items, final Func1<? super T, Boolean> predicate) {
         return takeWhileWithIndex(items, OperationTakeWhile.<T> skipIndex(predicate));
     }
 
@@ -52,13 +52,13 @@ public final class OperationTakeWhile {
      *            a function to test each element for a condition; the second parameter of the function represents the index of the source element; otherwise, false.
      * @return sequence of observable values from the start as long as the predicate is true
      */
-    public static <T> OnSubscribeFunc<T> takeWhileWithIndex(final IObservable<? extends T> items, final Func2<? super T, ? super Integer, Boolean> predicate) {
+    public static <T> IObservable<T> takeWhileWithIndex(final IObservable<? extends T> items, final Func2<? super T, ? super Integer, Boolean> predicate) {
         // wrap in a Func so that if a chain is built up, then asynchronously subscribed to twice we will have 2 instances of Take<T> rather than 1 handing both, which is not thread-safe.
-        return new OnSubscribeFunc<T>() {
+        return new IObservable<T>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                return new TakeWhile<T>(items, predicate).onSubscribe(observer);
+            public Subscription subscribe(Observer<? super T> observer) {
+                return new TakeWhile<T>(items, predicate).subscribe(observer);
             }
 
         };
@@ -84,7 +84,7 @@ public final class OperationTakeWhile {
      * 
      * @param <T>
      */
-    private static class TakeWhile<T> implements OnSubscribeFunc<T> {
+    private static class TakeWhile<T> implements IObservable<T> {
         private final IObservable<? extends T> items;
         private final Func2<? super T, ? super Integer, Boolean> predicate;
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
@@ -95,7 +95,7 @@ public final class OperationTakeWhile {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 

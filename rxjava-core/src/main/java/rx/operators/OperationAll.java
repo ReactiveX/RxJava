@@ -18,7 +18,6 @@ package rx.operators;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -31,11 +30,11 @@ import rx.util.functions.Func1;
  */
 public class OperationAll {
 
-    public static <T> OnSubscribeFunc<Boolean> all(IObservable<? extends T> sequence, Func1<? super T, Boolean> predicate) {
+    public static <T> IObservable<Boolean> all(IObservable<? extends T> sequence, Func1<? super T, Boolean> predicate) {
         return new AllObservable<T>(sequence, predicate);
     }
 
-    private static class AllObservable<T> implements OnSubscribeFunc<Boolean> {
+    private static class AllObservable<T> implements IObservable<Boolean> {
         private final IObservable<? extends T> sequence;
         private final Func1<? super T, Boolean> predicate;
 
@@ -47,7 +46,7 @@ public class OperationAll {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super Boolean> observer) {
+        public Subscription subscribe(final Observer<? super Boolean> observer) {
             return subscription.wrap(sequence.subscribe(new AllObserver(observer)));
 
         }

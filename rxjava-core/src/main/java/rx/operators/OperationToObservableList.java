@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 
@@ -40,11 +40,11 @@ import rx.Subscription;
  */
 public final class OperationToObservableList<T> {
 
-    public static <T> OnSubscribeFunc<List<T>> toObservableList(IObservable<? extends T> that) {
+    public static <T> IObservable<List<T>> toObservableList(IObservable<? extends T> that) {
         return new ToObservableList<T>(that);
     }
 
-    private static class ToObservableList<T> implements OnSubscribeFunc<List<T>> {
+    private static class ToObservableList<T> implements IObservable<List<T>> {
 
         private final IObservable<? extends T> that;
 
@@ -53,7 +53,7 @@ public final class OperationToObservableList<T> {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super List<T>> observer) {
+        public Subscription subscribe(final Observer<? super List<T>> observer) {
 
             return that.subscribe(new Observer<T>() {
                 final List<T> list = new ArrayList<T>();

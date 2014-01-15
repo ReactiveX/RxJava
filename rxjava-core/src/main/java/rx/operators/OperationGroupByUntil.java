@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
@@ -38,7 +38,7 @@ import rx.util.functions.Func1;
  * @see <a href='http://msdn.microsoft.com/en-us/library/hh211932.aspx'>MSDN: Observable.GroupByUntil</a>
  * @see <a href='http://msdn.microsoft.com/en-us/library/hh229433.aspx'>MSDN: Observable.GroupByUntil</a>
  */
-public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements OnSubscribeFunc<GroupedObservable<TKey, TResult>> {
+public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements IObservable<GroupedObservable<TKey, TResult>> {
     final IObservable<TSource> source;
     final Func1<? super TSource, ? extends TKey> keySelector;
     final Func1<? super TSource, ? extends TResult> valueSelector;
@@ -56,7 +56,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
     }
     
     @Override
-    public Subscription onSubscribe(Observer<? super GroupedObservable<TKey, TResult>> t1) {
+    public Subscription subscribe(Observer<? super GroupedObservable<TKey, TResult>> t1) {
         SerialSubscription cancel = new SerialSubscription();
         ResultSink sink = new ResultSink(t1, cancel);
         cancel.setSubscription(sink.run());
@@ -199,10 +199,10 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             
         }
     }
-    protected static <T> OnSubscribeFunc<T> neverSubscribe() {
-        return new OnSubscribeFunc<T>() {
+    protected static <T> IObservable<T> neverSubscribe() {
+        return new IObservable<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> t1) {
+            public Subscription subscribe(Observer<? super T> t1) {
                 return Subscriptions.empty();
             }
         };

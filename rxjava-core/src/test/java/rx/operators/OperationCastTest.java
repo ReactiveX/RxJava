@@ -20,6 +20,7 @@ import static rx.operators.OperationCast.*;
 
 import org.junit.Test;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 
@@ -28,8 +29,7 @@ public class OperationCastTest {
     @Test
     public void testCast() {
         Observable<?> source = Observable.from(1, 2);
-        Observable<Integer> observable = Observable.create(cast(source,
-                Integer.class));
+        IObservable<Integer> observable = cast(source, Integer.class);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> aObserver = mock(Observer.class);
@@ -44,8 +44,7 @@ public class OperationCastTest {
     @Test
     public void testCastWithWrongType() {
         Observable<?> source = Observable.from(1, 2);
-        Observable<Boolean> observable = Observable.create(cast(source,
-                Boolean.class));
+        IObservable<Boolean> observable = cast(source, Boolean.class);
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> aObserver = mock(Observer.class);

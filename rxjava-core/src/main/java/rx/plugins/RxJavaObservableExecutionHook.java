@@ -16,7 +16,7 @@
 package rx.plugins;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -48,7 +48,7 @@ public abstract class RxJavaObservableExecutionHook {
      *            original {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}> to be executed
      * @return {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}> function that can be modified, decorated, replaced or just returned as a pass-thru.
      */
-    public <T> OnSubscribeFunc<T> onSubscribeStart(IObservable<? extends T> observableInstance, OnSubscribeFunc<T> onSubscribe) {
+    public <T> IObservable<T> onSubscribeStart(IObservable<? extends T> observableInstance, IObservable<T> onSubscribe) {
         // pass-thru by default
         return onSubscribe;
     }

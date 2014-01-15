@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -39,11 +38,11 @@ public final class OperationAny {
      *            The source {@link IObservable} to check if not empty.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T> OnSubscribeFunc<Boolean> any(IObservable<? extends T> source) {
+    public static <T> IObservable<Boolean> any(IObservable<? extends T> source) {
         return new Any<T>(source, alwaysTrue(), false);
     }
 
-    public static <T> OnSubscribeFunc<Boolean> isEmpty(IObservable<? extends T> source) {
+    public static <T> IObservable<Boolean> isEmpty(IObservable<? extends T> source) {
         return new Any<T>(source, alwaysTrue(), true);
     }
 
@@ -59,15 +58,15 @@ public final class OperationAny {
      *            The condition to test every element.
      * @return A subscription function for creating the target Observable.
      */
-    public static <T> OnSubscribeFunc<Boolean> any(IObservable<? extends T> source, Func1<? super T, Boolean> predicate) {
+    public static <T> IObservable<Boolean> any(IObservable<? extends T> source, Func1<? super T, Boolean> predicate) {
         return new Any<T>(source, predicate, false);
     }
 
-    public static <T> OnSubscribeFunc<Boolean> exists(IObservable<? extends T> source, Func1<? super T, Boolean> predicate) {
+    public static <T> IObservable<Boolean> exists(IObservable<? extends T> source, Func1<? super T, Boolean> predicate) {
         return any(source, predicate);
     }
 
-    private static class Any<T> implements OnSubscribeFunc<Boolean> {
+    private static class Any<T> implements IObservable<Boolean> {
 
         private final IObservable<? extends T> source;
         private final Func1<? super T, Boolean> predicate;
@@ -80,7 +79,7 @@ public final class OperationAny {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super Boolean> observer) {
+        public Subscription subscribe(final Observer<? super Boolean> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
             return subscription.wrap(source.subscribe(new Observer<T>() {
 

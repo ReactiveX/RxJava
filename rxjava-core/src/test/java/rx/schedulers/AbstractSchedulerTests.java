@@ -31,8 +31,8 @@ import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -57,10 +57,10 @@ public abstract class AbstractSchedulerTests {
     public final void unsubscribeWithFastProducerWithSlowConsumerCausingQueuing() throws InterruptedException {
         final AtomicInteger countEmitted = new AtomicInteger();
         final AtomicInteger countTaken = new AtomicInteger();
-        int value = Observable.create(new OnSubscribeFunc<Integer>() {
+        int value = Observable.from(new IObservable<Integer>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Integer> o) {
+            public Subscription subscribe(final Observer<? super Integer> o) {
                 final BooleanSubscription s = BooleanSubscription.create();
                 Thread t = new Thread(new Runnable() {
 
@@ -394,9 +394,9 @@ public abstract class AbstractSchedulerTests {
     public final void testRecursiveSchedulerSimple() {
         final Scheduler scheduler = getScheduler();
 
-        Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
+        Observable<Integer> obs = Observable.from(new IObservable<Integer>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super Integer> observer) {
+            public Subscription subscribe(final Observer<? super Integer> observer) {
                 return scheduler.schedule(0, new Func2<Scheduler, Integer, Subscription>() {
                     @Override
                     public Subscription call(Scheduler scheduler, Integer i) {
@@ -467,10 +467,10 @@ public abstract class AbstractSchedulerTests {
     public final void testConcurrentOnNextFailsValidation() throws InterruptedException {
         final int count = 10;
         final CountDownLatch latch = new CountDownLatch(count);
-        Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
+        IObservable<String> o = new IObservable<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public Subscription subscribe(final Observer<? super String> observer) {
                 for (int i = 0; i < count; i++) {
                     final int v = i;
                     new Thread(new Runnable() {
@@ -485,7 +485,7 @@ public abstract class AbstractSchedulerTests {
                 }
                 return Subscriptions.empty();
             }
-        });
+        };
 
         ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
         // this should call onNext concurrently
@@ -529,10 +529,10 @@ public abstract class AbstractSchedulerTests {
 
                     @Override
                     public Observable<String> call(final String v) {
-                        return Observable.create(new OnSubscribeFunc<String>() {
+                        return Observable.from(new IObservable<String>() {
 
                             @Override
-                            public Subscription onSubscribe(final Observer<? super String> observer) {
+                            public Subscription subscribe(final Observer<? super String> observer) {
                                 observer.onNext("value_after_map-" + v);
                                 observer.onCompleted();
                                 return Subscriptions.empty();

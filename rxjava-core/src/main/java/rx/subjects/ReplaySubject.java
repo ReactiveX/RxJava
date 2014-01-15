@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import rx.IObservable;
 import rx.Notification;
 import rx.Observer;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
@@ -57,7 +58,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
         final ReplayState<T> state = new ReplayState<T>(initialCapacity);
 
-        OnSubscribeFunc<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+        IObservable<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
                  * This function executes at beginning of subscription.
                  * We want to replay history with the subscribing thread
@@ -105,7 +106,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     private final SubjectSubscriptionManager<T> subscriptionManager;
     private final ReplayState<T> state;
 
-    protected ReplaySubject(OnSubscribeFunc<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, ReplayState<T> state) {
+    protected ReplaySubject(IObservable<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, ReplayState<T> state) {
         super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
         this.state = state;

@@ -20,6 +20,7 @@ import static rx.operators.OperationDefaultIfEmpty.*;
 
 import org.junit.Test;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 
@@ -28,8 +29,7 @@ public class OperationDefaultIfEmptyTest {
     @Test
     public void testDefaultIfEmpty() {
         Observable<Integer> source = Observable.from(1, 2, 3);
-        Observable<Integer> observable = Observable.create(defaultIfEmpty(
-                source, 10));
+        IObservable<Integer> observable = defaultIfEmpty(source, 10);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> aObserver = mock(Observer.class);
@@ -46,8 +46,7 @@ public class OperationDefaultIfEmptyTest {
     @Test
     public void testDefaultIfEmptyWithEmpty() {
         Observable<Integer> source = Observable.empty();
-        Observable<Integer> observable = Observable.create(defaultIfEmpty(
-                source, 10));
+        IObservable<Integer> observable = defaultIfEmpty(source, 10);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> aObserver = mock(Observer.class);

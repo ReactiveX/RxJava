@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
@@ -39,10 +39,10 @@ import rx.util.functions.Action1;
      *            Only runs if Subject is in terminal state and the Observer ends up not being registered.
      * @return
      */
-    public OnSubscribeFunc<T> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, final Action1<SubjectObserver<? super T>> onTerminated) {
-        return new OnSubscribeFunc<T>() {
+    public IObservable<T> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, final Action1<SubjectObserver<? super T>> onTerminated) {
+        return new IObservable<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> actualObserver) {
+            public Subscription subscribe(Observer<? super T> actualObserver) {
                 SubjectObserver<T> observer = new SubjectObserver<T>(actualObserver);
                 // invoke onSubscribe logic 
                 if (onSubscribe != null) {

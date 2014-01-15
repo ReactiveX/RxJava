@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -258,15 +259,15 @@ public class BlockingObservableTest {
 
     @Test(expected = TestException.class)
     public void testToIterableWithException() {
-        BlockingObservable<String> obs = BlockingObservable.from(Observable.create(new Observable.OnSubscribeFunc<String>() {
+        BlockingObservable<String> obs = BlockingObservable.from(new IObservable<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription subscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new TestException());
                 return Subscriptions.empty();
             }
-        }));
+        });
 
         Iterator<String> it = obs.toIterable().iterator();
 
@@ -281,10 +282,10 @@ public class BlockingObservableTest {
     @Test
     public void testForEachWithError() {
         try {
-            BlockingObservable.from(Observable.create(new Observable.OnSubscribeFunc<String>() {
+            BlockingObservable.from(new IObservable<String>() {
 
                 @Override
-                public Subscription onSubscribe(final Observer<? super String> observer) {
+                public Subscription subscribe(final Observer<? super String> observer) {
                     final BooleanSubscription subscription = new BooleanSubscription();
                     new Thread(new Runnable() {
 
@@ -298,7 +299,7 @@ public class BlockingObservableTest {
                     }).start();
                     return subscription;
                 }
-            })).forEach(new Action1<String>() {
+            }).forEach(new Action1<String>() {
 
                 @Override
                 public void call(String t1) {

@@ -39,7 +39,7 @@ public class OperationFinallyTest {
     }
 
     private void checkActionCalled(Observable<String> input) {
-        Observable.create(finallyDo(input, aAction0)).subscribe(aObserver);
+        finallyDo(input, aAction0).subscribe(aObserver);
         verify(aAction0, times(1)).call();
     }
 

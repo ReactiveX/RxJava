@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Matchers;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -45,12 +46,12 @@ public class OperationCombineLatestTest {
         TestObservable w1 = new TestObservable();
         TestObservable w2 = new TestObservable();
 
-        Observable<String> combined = Observable.create(combineLatest(Observable.create(w1), Observable.create(w2), new Func2<String, String, String>() {
+        IObservable<String> combined = combineLatest(w1, w2, new Func2<String, String, String>() {
             @Override
             public String call(String v1, String v2) {
                 throw new RuntimeException("I don't work.");
             }
-        }));
+        });
         combined.subscribe(w);
 
         w1.observer.onNext("first value of w1");
@@ -71,7 +72,7 @@ public class OperationCombineLatestTest {
         TestObservable w2 = new TestObservable();
         TestObservable w3 = new TestObservable();
 
-        Observable<String> combineLatestW = Observable.create(combineLatest(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsCombineLatestFunction()));
+        IObservable<String> combineLatestW = combineLatest(w1, w2, w3, getConcat3StringsCombineLatestFunction());
         combineLatestW.subscribe(w);
 
         /* simulate sending data */
@@ -109,7 +110,7 @@ public class OperationCombineLatestTest {
         TestObservable w2 = new TestObservable();
         TestObservable w3 = new TestObservable();
 
-        Observable<String> combineLatestW = Observable.create(combineLatest(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsCombineLatestFunction()));
+        IObservable<String> combineLatestW = combineLatest(w1, w2, w3, getConcat3StringsCombineLatestFunction());
         combineLatestW.subscribe(w);
 
         /* simulate sending data */
@@ -145,7 +146,7 @@ public class OperationCombineLatestTest {
         TestObservable w2 = new TestObservable();
         TestObservable w3 = new TestObservable();
 
-        Observable<String> combineLatestW = Observable.create(combineLatest(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsCombineLatestFunction()));
+        IObservable<String> combineLatestW = combineLatest(w1, w2, w3, getConcat3StringsCombineLatestFunction());
         combineLatestW.subscribe(w);
 
         /* simulate sending data */
@@ -185,7 +186,7 @@ public class OperationCombineLatestTest {
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable<String> w = Observable.create(combineLatest(Observable.from("one", "two"), Observable.from(2, 3, 4), combineLatestFunction));
+        IObservable<String> w = combineLatest(Observable.from("one", "two"), Observable.from(2, 3, 4), combineLatestFunction);
         w.subscribe(aObserver);
 
         verify(aObserver, never()).onError(any(Throwable.class));
@@ -204,7 +205,7 @@ public class OperationCombineLatestTest {
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable<String> w = Observable.create(combineLatest(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), combineLatestFunction));
+        IObservable<String> w = combineLatest(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), combineLatestFunction);
         w.subscribe(aObserver);
 
         verify(aObserver, never()).onError(any(Throwable.class));
@@ -221,7 +222,7 @@ public class OperationCombineLatestTest {
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable<String> w = Observable.create(combineLatest(Observable.from("one"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction));
+        IObservable<String> w = combineLatest(Observable.from("one"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction);
         w.subscribe(aObserver);
 
         verify(aObserver, never()).onError(any(Throwable.class));
@@ -306,12 +307,12 @@ public class OperationCombineLatestTest {
         }
     }
 
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements IObservable<String> {
 
         Observer<? super String> observer;
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> observer) {
+        public Subscription subscribe(Observer<? super String> observer) {
             // just store the variable where it can be accessed so we can manually trigger it
             this.observer = observer;
             return Subscriptions.empty();

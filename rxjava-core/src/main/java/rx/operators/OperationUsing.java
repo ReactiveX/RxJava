@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -30,12 +30,12 @@ import rx.util.functions.Func1;
  */
 public class OperationUsing {
 
-    public static <T, RESOURCE extends Subscription> OnSubscribeFunc<T> using(
+    public static <T, RESOURCE extends Subscription> IObservable<T> using(
             final Func0<RESOURCE> resourceFactory,
             final Func1<RESOURCE, ? extends IObservable<T>> observableFactory) {
-        return new OnSubscribeFunc<T>() {
+        return new IObservable<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
+            public Subscription subscribe(Observer<? super T> observer) {
                 Subscription resourceSubscription = Subscriptions.empty();
                 try {
                     RESOURCE resource = resourceFactory.call();

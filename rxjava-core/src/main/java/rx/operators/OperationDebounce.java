@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -47,7 +47,7 @@ public final class OperationDebounce {
      *            The unit of time for the specified timeout.
      * @return A {@link Func1} which performs the throttle operation.
      */
-    public static <T> OnSubscribeFunc<T> debounce(IObservable<T> items, long timeout, TimeUnit unit) {
+    public static <T> IObservable<T> debounce(IObservable<T> items, long timeout, TimeUnit unit) {
         return debounce(items, timeout, unit, Schedulers.threadPoolForComputation());
     }
 
@@ -66,16 +66,16 @@ public final class OperationDebounce {
      *            The {@link Scheduler} to use internally to manage the timers which handle timeout for each event.
      * @return A {@link Func1} which performs the throttle operation.
      */
-    public static <T> OnSubscribeFunc<T> debounce(final IObservable<T> items, final long timeout, final TimeUnit unit, final Scheduler scheduler) {
-        return new OnSubscribeFunc<T>() {
+    public static <T> IObservable<T> debounce(final IObservable<T> items, final long timeout, final TimeUnit unit, final Scheduler scheduler) {
+        return new IObservable<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                return new Debounce<T>(items, timeout, unit, scheduler).onSubscribe(observer);
+            public Subscription subscribe(Observer<? super T> observer) {
+                return new Debounce<T>(items, timeout, unit, scheduler).subscribe(observer);
             }
         };
     }
 
-    private static class Debounce<T> implements OnSubscribeFunc<T> {
+    private static class Debounce<T> implements IObservable<T> {
 
         private final IObservable<T> items;
         private final long timeout;
@@ -90,7 +90,7 @@ public final class OperationDebounce {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             return items.subscribe(new DebounceObserver<T>(observer, timeout, unit, scheduler));
         }
     }

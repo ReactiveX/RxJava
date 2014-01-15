@@ -16,7 +16,7 @@
 package rx.util.async.operators;
 
 import java.util.concurrent.Callable;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -34,12 +34,12 @@ public final class OperationFromFunctionals {
     private OperationFromFunctionals() { throw new IllegalStateException("No instances!"); }
     
     /** Subscriber function that invokes an action and returns the given result. */
-    public static <R> OnSubscribeFunc<R> fromAction(Action0 action, R result) {
+    public static <R> IObservable<R> fromAction(Action0 action, R result) {
         return new InvokeAsync<R>(Actions.toFunc(action, result));
     }
     
     /** Subscriber function that invokes a function and returns its value. */
-    public static <R> OnSubscribeFunc<R> fromFunc0(Func0<? extends R> function) {
+    public static <R> IObservable<R> fromFunc0(Func0<? extends R> function) {
         return new InvokeAsync<R>(function);
     }
     
@@ -47,11 +47,11 @@ public final class OperationFromFunctionals {
      * Subscriber function that invokes the callable and returns its value or
      * propagates its checked exception.
      */
-    public static <R> OnSubscribeFunc<R> fromCallable(Callable<? extends R> callable) {
+    public static <R> IObservable<R> fromCallable(Callable<? extends R> callable) {
         return new InvokeAsyncCallable<R>(callable);
     }
     /** Subscriber function that invokes a runnable and returns the given result. */
-    public static <R> OnSubscribeFunc<R> fromRunnable(final Runnable run, final R result) {
+    public static <R> IObservable<R> fromRunnable(final Runnable run, final R result) {
         return new InvokeAsync(new Func0<R>() {
             @Override
             public R call() {
@@ -65,7 +65,7 @@ public final class OperationFromFunctionals {
      * Invokes a function when an observer subscribes.
      * @param <R> the return type
      */
-    static final class InvokeAsync<R> implements OnSubscribeFunc<R> {
+    static final class InvokeAsync<R> implements IObservable<R> {
         final Func0<? extends R> function;
         public InvokeAsync(Func0<? extends R> function) {
             if (function == null) {
@@ -74,7 +74,7 @@ public final class OperationFromFunctionals {
             this.function = function;
         }
         @Override
-        public Subscription onSubscribe(Observer<? super R> t1) {
+        public Subscription subscribe(Observer<? super R> t1) {
             Subscription s = Subscriptions.empty();
             try {
                 t1.onNext(function.call());
@@ -90,7 +90,7 @@ public final class OperationFromFunctionals {
      * Invokes a java.util.concurrent.Callable when an observer subscribes.
      * @param <R> the return type
      */
-    static final class InvokeAsyncCallable<R> implements OnSubscribeFunc<R> {
+    static final class InvokeAsyncCallable<R> implements IObservable<R> {
         final Callable<? extends R> callable;
         public InvokeAsyncCallable(Callable<? extends R> callable) {
             if (callable == null) {
@@ -99,7 +99,7 @@ public final class OperationFromFunctionals {
             this.callable = callable;
         }
         @Override
-        public Subscription onSubscribe(Observer<? super R> t1) {
+        public Subscription subscribe(Observer<? super R> t1) {
             Subscription s = Subscriptions.empty();
             try {
                 t1.onNext(callable.call());

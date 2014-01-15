@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import rx.IObservable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -51,13 +52,13 @@ public class OperationMergeTest {
 
     @Test
     public void testMergeObservableOfObservables() {
-        final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
-        final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
+        final IObservable<String> o1 = new TestSynchronousObservable();
+        final IObservable<String> o2 = new TestSynchronousObservable();
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        IObservable<IObservable<String>> observableOfObservables = new IObservable<IObservable<String>>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+            public Subscription subscribe(Observer<? super IObservable<String>> observer) {
                 // simulate what would happen in an observable
                 observer.onNext(o1);
                 observer.onNext(o2);
@@ -73,8 +74,8 @@ public class OperationMergeTest {
                 };
             }
 
-        });
-        Observable<String> m = Observable.create(merge(observableOfObservables));
+        };
+        IObservable<String> m = merge(observableOfObservables);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -84,11 +85,11 @@ public class OperationMergeTest {
 
     @Test
     public void testMergeArray() {
-        final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
-        final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
+        final IObservable<String> o1 = new TestSynchronousObservable();
+        final IObservable<String> o2 = new TestSynchronousObservable();
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(o1, o2));
+        IObservable<String> m = merge(o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -98,13 +99,13 @@ public class OperationMergeTest {
 
     @Test
     public void testMergeList() {
-        final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
-        final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
-        List<Observable<String>> listOfObservables = new ArrayList<Observable<String>>();
+        final IObservable<String> o1 = new TestSynchronousObservable();
+        final IObservable<String> o2 = new TestSynchronousObservable();
+        List<IObservable<String>> listOfObservables = new ArrayList<IObservable<String>>();
         listOfObservables.add(o1);
         listOfObservables.add(o2);
 
-        Observable<String> m = Observable.create(merge(listOfObservables));
+        IObservable<String> m = merge(listOfObservables);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -118,7 +119,7 @@ public class OperationMergeTest {
         TestObservable tB = new TestObservable();
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(Observable.create(tA), Observable.create(tB)));
+        IObservable<String> m = merge(tA, tB);
         Subscription s = m.subscribe(stringObserver);
 
         tA.sendOnNext("Aone");
@@ -145,10 +146,10 @@ public class OperationMergeTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Observable<Observable<Long>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<Long>>() {
+        IObservable<Observable<Long>> source = new IObservable<Observable<Long>>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Observable<Long>> observer) {
+            public Subscription subscribe(final Observer<? super Observable<Long>> observer) {
                 // verbose on purpose so I can track the inside of it
                 final Subscription s = Subscriptions.create(new Action0() {
 
@@ -179,12 +180,10 @@ public class OperationMergeTest {
                 return s;
             }
 
-            ;
-
-        });
+        };
 
         final AtomicInteger count = new AtomicInteger();
-        Observable.create(merge(source)).take(6).toBlockingObservable().forEach(new Action1<Long>() {
+        Observable.from(merge(source)).take(6).toBlockingObservable().forEach(new Action1<Long>() {
 
             @Override
             public void call(Long v) {
@@ -211,7 +210,7 @@ public class OperationMergeTest {
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(Observable.create(o1), Observable.create(o2)));
+        IObservable<String> m = merge(o1, o2);
         m.subscribe(stringObserver);
 
         try {
@@ -238,7 +237,7 @@ public class OperationMergeTest {
         final AtomicInteger totalCounter = new AtomicInteger();
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(Observable.create(o1), Observable.create(o2)));
+        IObservable<String> m = merge(o1, o2);
         m.subscribe(new Observer<String>() {
 
             @Override
@@ -305,11 +304,11 @@ public class OperationMergeTest {
     @Test
     public void testError1() {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
-        final Observable<String> o1 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six"
-        final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", "three")); // we expect to lose all of these since o1 is done first and fails
+        final IObservable<String> o1 = new TestErrorObservable("four", null, "six"); // we expect to lose "six"
+        final IObservable<String> o2 = new TestErrorObservable("one", "two", "three"); // we expect to lose all of these since o1 is done first and fails
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(o1, o2));
+        IObservable<String> m = merge(o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -328,13 +327,13 @@ public class OperationMergeTest {
     @Test
     public void testError2() {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
-        final Observable<String> o1 = Observable.create(new TestErrorObservable("one", "two", "three"));
-        final Observable<String> o2 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six"
-        final Observable<String> o3 = Observable.create(new TestErrorObservable("seven", "eight", null));// we expect to lose all of these since o2 is done first and fails
-        final Observable<String> o4 = Observable.create(new TestErrorObservable("nine"));// we expect to lose all of these since o2 is done first and fails
+        final IObservable<String> o1 = new TestErrorObservable("one", "two", "three");
+        final IObservable<String> o2 = new TestErrorObservable("four", null, "six"); // we expect to lose "six"
+        final IObservable<String> o3 = new TestErrorObservable("seven", "eight", null);// we expect to lose all of these since o2 is done first and fails
+        final IObservable<String> o4 = new TestErrorObservable("nine");// we expect to lose all of these since o2 is done first and fails
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(merge(o1, o2, o3, o4));
+        IObservable<String> m = merge(o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -350,10 +349,10 @@ public class OperationMergeTest {
         verify(stringObserver, times(0)).onNext("nine");
     }
 
-    private static class TestSynchronousObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestSynchronousObservable implements IObservable<String> {
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> observer) {
+        public Subscription subscribe(Observer<? super String> observer) {
 
             observer.onNext("hello");
             observer.onCompleted();
@@ -369,12 +368,12 @@ public class OperationMergeTest {
         }
     }
 
-    private static class TestASynchronousObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestASynchronousObservable implements IObservable<String> {
         Thread t;
         final CountDownLatch onNextBeingSent = new CountDownLatch(1);
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription subscribe(final Observer<? super String> observer) {
             t = new Thread(new Runnable() {
 
                 @Override
@@ -403,7 +402,7 @@ public class OperationMergeTest {
     /**
      * A Observable that doesn't do the right thing on UnSubscribe/Error/etc in that it will keep sending events down the pipe regardless of what happens.
      */
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements IObservable<String> {
 
         Observer<? super String> observer = null;
         volatile boolean unsubscribed = false;
@@ -434,13 +433,13 @@ public class OperationMergeTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription subscribe(final Observer<? super String> observer) {
             this.observer = observer;
             return s;
         }
     }
 
-    private static class TestErrorObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestErrorObservable implements IObservable<String> {
 
         String[] valuesToReturn;
 
@@ -449,7 +448,7 @@ public class OperationMergeTest {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> observer) {
+        public Subscription subscribe(Observer<? super String> observer) {
 
             for (String s : valuesToReturn) {
                 if (s == null) {

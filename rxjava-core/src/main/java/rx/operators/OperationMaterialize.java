@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.IObservable;
 import rx.Notification;
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Subscription;
 
@@ -40,11 +40,11 @@ public final class OperationMaterialize {
      * @return An observable sequence whose elements are the result of materializing the notifications of the given sequence.
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">Observable.Materialize(TSource) Method </a>
      */
-    public static <T> OnSubscribeFunc<Notification<T>> materialize(final IObservable<? extends T> sequence) {
+    public static <T> IObservable<Notification<T>> materialize(final IObservable<? extends T> sequence) {
         return new MaterializeObservable<T>(sequence);
     }
 
-    private static class MaterializeObservable<T> implements OnSubscribeFunc<Notification<T>> {
+    private static class MaterializeObservable<T> implements IObservable<Notification<T>> {
 
         private final IObservable<? extends T> sequence;
 
@@ -53,7 +53,7 @@ public final class OperationMaterialize {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super Notification<T>> observer) {
+        public Subscription subscribe(final Observer<? super Notification<T>> observer) {
             return sequence.subscribe(new Observer<T>() {
 
                 @Override

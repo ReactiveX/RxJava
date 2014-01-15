@@ -18,6 +18,7 @@ package rx.subjects;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
+import rx.IObservable;
 import rx.Notification;
 import rx.Observer;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
@@ -58,7 +59,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
         final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>(new Notification<T>());
 
-        OnSubscribeFunc<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+        IObservable<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
                  * This function executes at beginning of subscription.
                  * 
@@ -97,7 +98,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     private final SubjectSubscriptionManager<T> subscriptionManager;
     final AtomicReference<Notification<T>> lastNotification;
 
-    protected AsyncSubject(OnSubscribeFunc<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
+    protected AsyncSubject(IObservable<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
         super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;

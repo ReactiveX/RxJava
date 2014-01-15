@@ -22,7 +22,6 @@ import java.util.Map;
 
 import rx.IObservable;
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subjects.PublishSubject;
@@ -38,7 +37,7 @@ import rx.util.functions.Func2;
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/hh244235.aspx">MSDN: Observable.GroupJoin</a>
  */
-public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R> {
+public class OperationGroupJoin<T1, T2, D1, D2, R> implements IObservable<R> {
     protected final IObservable<T1> left;
     protected final IObservable<T2> right;
     protected final Func1<? super T1, ? extends IObservable<D1>> leftDuration;
@@ -65,7 +64,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
         this.resultSelector = resultSelector;
     }
     @Override
-    public Subscription onSubscribe(Observer<? super R> t1) {
+    public Subscription subscribe(Observer<? super R> t1) {
         ResultManager ro = new ResultManager(t1);
         ro.init();
         return ro;
@@ -127,7 +126,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
                         leftMap.put(id, subj);
                     }
                     
-                    Observable<T2> window = Observable.create(new WindowObservableFunc<T2>(subj, cancel));
+                    Observable<T2> window = Observable.from(new WindowObservableFunc<T2>(subj, cancel));
 
                     IObservable<D1> duration = leftDuration.call(args);
 
@@ -299,7 +298,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
      * Subscribes to the underlying Observable by using a reference-counted
      * subscription.
      */
-    static class WindowObservableFunc<T> implements OnSubscribeFunc<T> {
+    static class WindowObservableFunc<T> implements IObservable<T> {
         final RefCountSubscription refCount;
         final IObservable<T> underlying;
 
@@ -309,7 +308,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription subscribe(Observer<? super T> t1) {
             CompositeSubscription cs = new CompositeSubscription();
             cs.add(refCount.getSubscription());
             WindowObserver wo = new WindowObserver(t1, cs);

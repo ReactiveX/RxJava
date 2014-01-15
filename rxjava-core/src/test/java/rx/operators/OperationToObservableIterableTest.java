@@ -24,7 +24,7 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.Observable;
+import rx.IObservable;
 import rx.Observer;
 import rx.schedulers.Schedulers;
 
@@ -32,7 +32,7 @@ public class OperationToObservableIterableTest {
 
     @Test
     public void testIterable() {
-        Observable<String> observable = Observable.create(toObservableIterable(Arrays.<String> asList("one", "two", "three")));
+        IObservable<String> observable = toObservableIterable(Arrays.<String> asList("one", "two", "three"));
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -46,7 +46,7 @@ public class OperationToObservableIterableTest {
     
     @Test
     public void testIterableScheduled() {
-        Observable<String> observable = Observable.create(toObservableIterable(Arrays.<String> asList("one", "two", "three"), Schedulers.currentThread()));
+        IObservable<String> observable = toObservableIterable(Arrays.<String> asList("one", "two", "three"), Schedulers.currentThread());
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);

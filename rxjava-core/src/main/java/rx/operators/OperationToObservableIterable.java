@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import rx.Observable.OnSubscribeFunc;
+import rx.IObservable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
@@ -37,7 +37,7 @@ import java.util.Iterator;
  */
 public final class OperationToObservableIterable<T> {
 
-    public static <T> OnSubscribeFunc<T> toObservableIterable(Iterable<? extends T> list, Scheduler scheduler) {
+    public static <T> IObservable<T> toObservableIterable(Iterable<? extends T> list, Scheduler scheduler) {
         if (scheduler instanceof ImmediateScheduler) {
             return new ToObservableIterable<T>(list);
         } else {
@@ -45,11 +45,11 @@ public final class OperationToObservableIterable<T> {
         }
     }
 
-    public static <T> OnSubscribeFunc<T> toObservableIterable(Iterable<? extends T> list) {
+    public static <T> IObservable<T> toObservableIterable(Iterable<? extends T> list) {
         return new ToObservableIterable<T>(list);
     }
 
-    private static class ToObservableIterableScheduled<T> implements OnSubscribeFunc<T> {
+    private static class ToObservableIterableScheduled<T> implements IObservable<T> {
 
         public ToObservableIterableScheduled(Iterable<? extends T> list, Scheduler scheduler) {
             this.iterable = list;
@@ -59,7 +59,7 @@ public final class OperationToObservableIterable<T> {
         Scheduler scheduler;
         final Iterable<? extends T> iterable;
 
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             final Iterator<? extends T> iterator = iterable.iterator();
             return scheduler.schedule(new Action1<Action0>() {
                 @Override
@@ -80,7 +80,7 @@ public final class OperationToObservableIterable<T> {
         }
     }
 
-    private static class ToObservableIterable<T> implements OnSubscribeFunc<T> {
+    private static class ToObservableIterable<T> implements IObservable<T> {
 
         public ToObservableIterable(Iterable<? extends T> list) {
             this.iterable = list;
@@ -88,7 +88,7 @@ public final class OperationToObservableIterable<T> {
 
         final Iterable<? extends T> iterable;
 
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription subscribe(final Observer<? super T> observer) {
             try {
                 for (T t : iterable) {
                     observer.onNext(t);

@@ -27,7 +27,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import rx.IObservable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -59,43 +58,43 @@ import rx.util.functions.Functions;
  */
 public final class OperationZip {
     
-    public static <T1, T2, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, final Func2<? super T1, ? super T2, ? extends R> zipFunction) {
+    public static <T1, T2, R> IObservable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, final Func2<? super T1, ? super T2, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2), Functions.fromFunc(zipFunction));
     }
     
-    public static <T1, T2, T3, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, final Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
+    public static <T1, T2, T3, R> IObservable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, final Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3), Functions.fromFunc(zipFunction));
     }
     
-    public static <T1, T2, T3, T4, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, final Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
+    public static <T1, T2, T3, T4, R> IObservable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, final Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4), Functions.fromFunc(zipFunction));
     }
     
-    public static <T1, T2, T3, T4, T5, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, final Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
+    public static <T1, T2, T3, T4, T5, R> IObservable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, final Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5), Functions.fromFunc(zipFunction));
     }
     
-    public static <T1, T2, T3, T4, T5, T6, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6,
+    public static <T1, T2, T3, T4, T5, T6, R> IObservable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6,
             final Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5, o6), Functions.fromFunc(zipFunction));
     }
     
-    public static <T1, T2, T3, T4, T5, T6, T7, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7,
+    public static <T1, T2, T3, T4, T5, T6, T7, R> IObservable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7,
             final Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5, o6, o7), Functions.fromFunc(zipFunction));
     }
     
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7, IObservable<? extends T8> o8,
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> IObservable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7, IObservable<? extends T8> o8,
             final Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5, o6, o7, o8), Functions.fromFunc(zipFunction));
     }
     
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> OnSubscribeFunc<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7, IObservable<? extends T8> o8,
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> IObservable<R> zip(IObservable<? extends T1> o1, IObservable<? extends T2> o2, IObservable<? extends T3> o3, IObservable<? extends T4> o4, IObservable<? extends T5> o5, IObservable<? extends T6> o6, IObservable<? extends T7> o7, IObservable<? extends T8> o8,
             IObservable<? extends T9> o9, final Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipFunction) {
         return zip(Arrays.asList(o1, o2, o3, o4, o5, o6, o7, o8, o9), Functions.fromFunc(zipFunction));
     }
     
-    public static <R> OnSubscribeFunc<R> zip(Iterable<? extends IObservable<?>> ws, final FuncN<? extends R> zipFunction) {
+    public static <R> IObservable<R> zip(Iterable<? extends IObservable<?>> ws, final FuncN<? extends R> zipFunction) {
         ManyObservables<?, R> a = new ManyObservables<Object, R>(ws, zipFunction);
         return a;
     }
@@ -148,7 +147,7 @@ public final class OperationZip {
      *
      * @param <T>
      */
-    /* package accessible for unit tests */static class Aggregator<T> implements OnSubscribeFunc<T> {
+    /* package accessible for unit tests */static class Aggregator<T> implements IObservable<T> {
         
         private volatile SynchronizedObserver<T> observer;
         private final FuncN<? extends T> zipFunction;
@@ -256,7 +255,7 @@ public final class OperationZip {
         }
         
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription subscribe(Observer<? super T> observer) {
             if (started.compareAndSet(false, true)) {
                 SafeObservableSubscription subscription = new SafeObservableSubscription();
                 this.observer = new SynchronizedObserver<T>(observer, subscription);
@@ -316,7 +315,7 @@ public final class OperationZip {
      * @param <T> the common element type
      * @param <U> the result element type
      */
-    public static class ManyObservables<T, U> implements OnSubscribeFunc<U> {
+    public static class ManyObservables<T, U> implements IObservable<U> {
         /** */
         protected final Iterable<? extends IObservable<? extends T>> sources;
         /** */
@@ -334,26 +333,33 @@ public final class OperationZip {
         }
         
         @Override
-        public Subscription onSubscribe(final Observer<? super U> observer) {
-            
+        public Subscription subscribe(final Observer<? super U> observer) {
             final CompositeSubscription composite = new CompositeSubscription();
             
             final ReadWriteLock rwLock = new ReentrantReadWriteLock(true);
             
             final List<ItemObserver<T>> all = new ArrayList<ItemObserver<T>>();
-            
+
+            /* XXX: This operation can emit spurious elements after the
+             * observation has completed, because ItemObserver.onNext() calls
+             * onCompleted(). Inserting a SafeObserver here will prevent those
+             * elements from reaching the caller.
+             */
+            final SafeObservableSubscription safeSub = new SafeObservableSubscription();
+            final SafeObserver<U> safeObserver = new SafeObserver<U>(safeSub, observer);
+
             Observer<List<T>> o2 = new Observer<List<T>>() {
                 @Override
                 public void onCompleted() {
-                    observer.onCompleted();
+                    safeObserver.onCompleted();
                 }
                 @Override
                 public void onError(Throwable t) {
-                    observer.onError(t);
+                    safeObserver.onError(t);
                 }
                 @Override
                 public void onNext(List<T> value) {
-                    observer.onNext(selector.call(value.toArray(new Object[value.size()])));
+                    safeObserver.onNext(selector.call(value.toArray(new Object[value.size()])));
                 }
             };
             
@@ -368,8 +374,8 @@ public final class OperationZip {
             for (ItemObserver<T> io : all) {
                 io.connect();
             }
-            
-            return composite;
+
+            return safeSub.wrap(composite);
         }
         /**
          * The individual line's observer.
@@ -435,6 +441,11 @@ public final class OperationZip {
                             for (ItemObserver<T> io : all) {
                                 if (io.queue.isEmpty()) {
                                     if (io.done) {
+                                        /* XXX: Calling onCompleted() (or onError()) from
+                                         * onNext() is dangerous, because the caller of
+                                         * onNext() won't know, and may call onCompleted()
+                                         * again. That's why we use SafeObserver.
+                                         */
                                         observer.onCompleted();
                                         cancel.unsubscribe();
                                         return;
