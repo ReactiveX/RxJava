@@ -1,18 +1,18 @@
- /**
-  * Copyright 2013 Netflix, Inc.
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
-  * use this file except in compliance with the License. You may obtain a copy of
-  * the License at
-  *
-  * http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-  * License for the specific language governing permissions and limitations under
-  * the License.
-  */
+/**
+ * Copyright 2014 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package rx.operators;
 
 import java.util.ArrayList;
@@ -50,6 +50,7 @@ public class OperationJoinPatterns {
         }
         return new Pattern2<T1, T2>(left, right);
     }
+
     /**
      * Matches when the observable sequence has an available element and projects the element by invoking the selector function.
      */
@@ -62,6 +63,7 @@ public class OperationJoinPatterns {
         }
         return new Pattern1<T1>(source).then(selector);
     }
+
     /**
      * Joins together the results from several patterns.
      */
@@ -71,6 +73,7 @@ public class OperationJoinPatterns {
         }
         return when(Arrays.asList(plans));
     }
+
     /**
      * Joins together the results from several patterns.
      */
@@ -84,12 +87,13 @@ public class OperationJoinPatterns {
                 final Map<Object, JoinObserver> externalSubscriptions = new HashMap<Object, JoinObserver>();
                 final Object gate = new Object();
                 final List<ActivePlan0> activePlans = new ArrayList<ActivePlan0>();
-                
+
                 final Observer<R> out = new Observer<R>() {
                     @Override
                     public void onNext(R args) {
                         t1.onNext(args);
                     }
+
                     @Override
                     public void onError(Throwable e) {
                         for (JoinObserver po : externalSubscriptions.values()) {
@@ -97,12 +101,13 @@ public class OperationJoinPatterns {
                         }
                         t1.onError(e);
                     }
+
                     @Override
                     public void onCompleted() {
                         t1.onCompleted();
                     }
                 };
-                
+
                 try {
                     for (Plan0<R> plan : plans) {
                         activePlans.add(plan.activate(externalSubscriptions, out, new Action1<ActivePlan0>() {
@@ -116,7 +121,7 @@ public class OperationJoinPatterns {
                         }));
                     }
                 } catch (Throwable t) {
-                    return Observable.<R>error(t).subscribe(t1);
+                    return Observable.<R> error(t).subscribe(t1);
                 }
                 CompositeSubscription group = new CompositeSubscription();
                 for (JoinObserver jo : externalSubscriptions.values()) {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,10 +112,12 @@ public final class OperationSkip {
         }
 
     }
-    
-    /** 
-     * Skip the items after subscription for the given duration. 
-     * @param <T> the value type
+
+    /**
+     * Skip the items after subscription for the given duration.
+     * 
+     * @param <T>
+     *            the value type
      */
     public static final class SkipTimed<T> implements OnSubscribeFunc<T> {
         final Observable<? extends T> source;
@@ -132,30 +134,33 @@ public final class OperationSkip {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> t1) {
-            
+
             SafeObservableSubscription timer = new SafeObservableSubscription();
             SafeObservableSubscription data = new SafeObservableSubscription();
 
             CompositeSubscription csub = new CompositeSubscription(timer, data);
-            
+
             SourceObserver<T> so = new SourceObserver<T>(t1, csub);
             data.wrap(source.subscribe(so));
             if (!data.isUnsubscribed()) {
                 timer.wrap(scheduler.schedule(so, time, unit));
             }
-            
+
             return csub;
         }
+
         /**
          * Observes the source and relays its values once gate turns into true.
-         * @param <T> the observed value type
+         * 
+         * @param <T>
+         *            the observed value type
          */
         private static final class SourceObserver<T> implements Observer<T>, Action0 {
             final AtomicBoolean gate;
             final Observer<? super T> observer;
             final Subscription cancel;
 
-            public SourceObserver(Observer<? super T> observer, 
+            public SourceObserver(Observer<? super T> observer,
                     Subscription cancel) {
                 this.gate = new AtomicBoolean();
                 this.observer = observer;
@@ -186,12 +191,12 @@ public final class OperationSkip {
                     cancel.unsubscribe();
                 }
             }
-            
+
             @Override
             public void call() {
                 gate.set(true);
             }
-            
+
         }
     }
 }

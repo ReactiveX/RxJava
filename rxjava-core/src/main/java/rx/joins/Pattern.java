@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,9 @@ package rx.joins;
 
 /**
  * Base interface for join patterns.
+ * 
  * @see <a href='http://msdn.microsoft.com/en-us/library/system.reactive.joins.pattern(v=vs.103).aspx'>MSDN: Pattern</a>
  */
 public interface Pattern {
-    
+
 }

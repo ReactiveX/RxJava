@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package rx.operators;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
@@ -63,11 +62,13 @@ public final class OperationSum {
             }
         });
     }
-    
+
     /**
      * Compute the sum by extracting integer values from the source via an
      * extractor function.
-     * @param <T> the source value type
+     * 
+     * @param <T>
+     *            the source value type
      */
     public static final class SumIntegerExtractor<T> implements Observable.OnSubscribeFunc<Integer> {
         final Observable<? extends T> source;
@@ -82,11 +83,13 @@ public final class OperationSum {
         public Subscription onSubscribe(Observer<? super Integer> t1) {
             return source.subscribe(new SumObserver(t1));
         }
+
         /** Computes the average. */
         private final class SumObserver implements Observer<T> {
             final Observer<? super Integer> observer;
             int sum;
             boolean hasValue;
+
             public SumObserver(Observer<? super Integer> observer) {
                 this.observer = observer;
             }
@@ -116,14 +119,16 @@ public final class OperationSum {
                     observer.onError(new IllegalArgumentException("Sequence contains no elements"));
                 }
             }
-            
+
         }
     }
-    
+
     /**
      * Compute the sum by extracting long values from the source via an
      * extractor function.
-     * @param <T> the source value type
+     * 
+     * @param <T>
+     *            the source value type
      */
     public static final class SumLongExtractor<T> implements Observable.OnSubscribeFunc<Long> {
         final Observable<? extends T> source;
@@ -138,11 +143,13 @@ public final class OperationSum {
         public Subscription onSubscribe(Observer<? super Long> t1) {
             return source.subscribe(new SumObserver(t1));
         }
+
         /** Computes the average. */
         private final class SumObserver implements Observer<T> {
             final Observer<? super Long> observer;
             long sum;
             boolean hasValue;
+
             public SumObserver(Observer<? super Long> observer) {
                 this.observer = observer;
             }
@@ -172,14 +179,16 @@ public final class OperationSum {
                     observer.onError(new IllegalArgumentException("Sequence contains no elements"));
                 }
             }
-            
+
         }
     }
-    
+
     /**
      * Compute the sum by extracting float values from the source via an
      * extractor function.
-     * @param <T> the source value type
+     * 
+     * @param <T>
+     *            the source value type
      */
     public static final class SumFloatExtractor<T> implements Observable.OnSubscribeFunc<Float> {
         final Observable<? extends T> source;
@@ -194,11 +203,13 @@ public final class OperationSum {
         public Subscription onSubscribe(Observer<? super Float> t1) {
             return source.subscribe(new SumObserver(t1));
         }
+
         /** Computes the average. */
         private final class SumObserver implements Observer<T> {
             final Observer<? super Float> observer;
             float sum;
             boolean hasValue;
+
             public SumObserver(Observer<? super Float> observer) {
                 this.observer = observer;
             }
@@ -228,14 +239,16 @@ public final class OperationSum {
                     observer.onError(new IllegalArgumentException("Sequence contains no elements"));
                 }
             }
-            
+
         }
     }
 
     /**
      * Compute the sum by extracting float values from the source via an
      * extractor function.
-     * @param <T> the source value type
+     * 
+     * @param <T>
+     *            the source value type
      */
     public static final class SumDoubleExtractor<T> implements Observable.OnSubscribeFunc<Double> {
         final Observable<? extends T> source;
@@ -250,11 +263,13 @@ public final class OperationSum {
         public Subscription onSubscribe(Observer<? super Double> t1) {
             return source.subscribe(new SumObserver(t1));
         }
+
         /** Computes the average. */
         private final class SumObserver implements Observer<T> {
             final Observer<? super Double> observer;
             double sum;
             boolean hasValue;
+
             public SumObserver(Observer<? super Double> observer) {
                 this.observer = observer;
             }
@@ -284,7 +299,7 @@ public final class OperationSum {
                     observer.onError(new IllegalArgumentException("Sequence contains no elements"));
                 }
             }
-            
+
         }
     }
 

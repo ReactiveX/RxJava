@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,12 +156,12 @@ public final class OperationTimeout {
             return composite;
         }
     }
-    
+
     /** Timeout using a per-item observable sequence. */
     public static <T, U, V> OnSubscribeFunc<T> timeoutSelector(Observable<? extends T> source, Func0<? extends Observable<U>> firstValueTimeout, Func1<? super T, ? extends Observable<V>> valueTimeout, Observable<? extends T> other) {
         return new TimeoutSelector<T, U, V>(source, firstValueTimeout, valueTimeout, other);
     }
-    
+
     /** Timeout using a per-item observable sequence. */
     private static final class TimeoutSelector<T, U, V> implements OnSubscribeFunc<T> {
         final Observable<? extends T> source;
@@ -189,13 +189,13 @@ public final class OperationTimeout {
                     t1.onError(t);
                     return Subscriptions.empty();
                 }
-                
+
                 csub.add(o.subscribe(new TimeoutObserver<U>(so)));
             }
             csub.add(source.subscribe(so));
             return csub;
         }
-        
+
         /** Observe the source. */
         private static final class SourceObserver<T, V> implements Observer<T>, TimeoutCallback {
             final Observer<? super T> observer;
@@ -221,14 +221,14 @@ public final class OperationTimeout {
             @Override
             public void onNext(T args) {
                 tsub.set(Subscriptions.empty());
-                
+
                 synchronized (guard) {
                     if (done) {
                         return;
                     }
                     observer.onNext(args);
                 }
-                
+
                 Observable<V> o;
                 try {
                     o = valueTimeout.call(args);
@@ -236,12 +236,13 @@ public final class OperationTimeout {
                     onError(t);
                     return;
                 }
-                
+
                 SerialSubscription osub = new SerialSubscription();
                 tsub.set(osub);
-                
+
                 osub.set(o.subscribe(to));
             }
+
             @Override
             public void onError(Throwable e) {
                 synchronized (guard) {
@@ -265,6 +266,7 @@ public final class OperationTimeout {
                 }
                 cancel.unsubscribe();
             }
+
             @Override
             public void timeout() {
                 if (other != null) {
@@ -281,13 +283,14 @@ public final class OperationTimeout {
                 }
             }
         }
-        
+
         /** The timeout callback. */
         private interface TimeoutCallback {
             void timeout();
+
             void onError(Throwable t);
         }
-        
+
         /** Observe the timeout. */
         private static final class TimeoutObserver<V> implements Observer<V> {
             final TimeoutCallback parent;
@@ -295,7 +298,7 @@ public final class OperationTimeout {
             public TimeoutObserver(TimeoutCallback parent) {
                 this.parent = parent;
             }
-            
+
             @Override
             public void onNext(V args) {
                 parent.timeout();

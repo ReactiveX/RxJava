@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,9 @@ import rx.Subscription;
 
 /**
  * Hides the identity of another observable.
- * @param <T> the return value type of the wrapped observable.
+ * 
+ * @param <T>
+ *            the return value type of the wrapped observable.
  */
 public final class OperationAsObservable<T> implements OnSubscribeFunc<T> {
     private final Observable<? extends T> source;
@@ -30,6 +32,7 @@ public final class OperationAsObservable<T> implements OnSubscribeFunc<T> {
     public OperationAsObservable(Observable<? extends T> source) {
         this.source = source;
     }
+
     @Override
     public Subscription onSubscribe(Observer<? super T> t1) {
         return source.subscribe(t1);

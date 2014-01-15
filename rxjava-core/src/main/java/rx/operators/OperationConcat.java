@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public final class OperationConcat {
             @Override
             public Subscription onSubscribe(Observer<? super T> t1) {
                 return new Concat<T>(sequences).onSubscribe(t1);
-            }            
+            }
         };
     }
 
