@@ -236,8 +236,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
         private void trim() {
             if (this.capacity != ReplaySubjectUnlimitedCapacity && list.size() > this.capacity ) {
-                List<T> toRemove = list.subList(0, list.size() - this.capacity);
-                list.removeAll(toRemove);
+                while(list.size() > this.capacity) {
+                    list.remove(0);
+                }
             }
 
             index.set(list.size());
