@@ -16,19 +16,15 @@
 package rx.subjects;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import org.junit.*;
+import org.mockito.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import rx.*;
+import rx.schedulers.*;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
-
-import rx.Observer;
-import rx.Subscription;
-import rx.schedulers.Schedulers;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 public class ReplaySubjectTest {
 
@@ -144,6 +140,30 @@ public class ReplaySubjectTest {
         verify(aObserver, times(1)).onNext("one");
         verify(aObserver, times(1)).onError(testException);
         verifyNoMoreInteractions(aObserver);
+    }
+
+    @Test
+    public void testCapacity() {
+        ReplaySubject<String> subject = ReplaySubject.create(1);
+        @SuppressWarnings("unchecked")
+        Observer<String> aObserver = mock(Observer.class);
+        subject.subscribe(aObserver);
+
+        subject.onNext("one");
+        subject.onNext("two");
+        subject.onNext("three");
+        subject.onCompleted();
+
+        assertCompletedObserver(aObserver);
+
+        Observer<String> anotherObserver = mock(Observer.class);
+        subject.subscribe(anotherObserver);
+
+        verify(anotherObserver, times(0)).onNext("one");
+        verify(anotherObserver, times(0)).onNext("two");
+        verify(anotherObserver, times(1)).onNext("three");
+        verify(anotherObserver, times(1)).onCompleted();
+        verifyNoMoreInteractions(anotherObserver);
     }
 
     private void assertCompletedObserver(Observer<String> aObserver) {

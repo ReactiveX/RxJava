@@ -15,19 +15,20 @@
  */
 package rx.subjects;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-
 import rx.Notification;
 import rx.Observer;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
- * Subject that retains all events and will replay them to an {@link Observer} that subscribes.
+ * Subject that retains events (unlimited or with given replay capacity) and will replay them to an {@link Observer} that subscribes.
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.ReplaySubject.png">
  * <p>
@@ -50,12 +51,24 @@ import rx.util.functions.Action1;
  * @param <T>
  */
 public final class ReplaySubject<T> extends Subject<T, T> {
+    private static final Integer ReplaySubjectUnlimitedCapacity = Integer.MAX_VALUE;
+
+    /**
+     * @param <T>
+     * @return a new replay subject with the unlimited capacity.
+     */
     public static <T> ReplaySubject<T> create() {
-        return create(16);
+        return create(ReplaySubjectUnlimitedCapacity);
     }
-    public static <T> ReplaySubject<T> create(int initialCapacity) {
+
+    /**
+     * @param capacity Maximum element count of the replay buffer
+     * @param <T>
+     * @return a new replay subject with the given capacity.
+     */
+    public static <T> ReplaySubject<T> create(int capacity) {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
-        final ReplayState<T> state = new ReplayState<T>(initialCapacity);
+        final ReplayState<T> state = new ReplayState<T>(capacity);
 
         OnSubscribeFunc<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
@@ -96,8 +109,8 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         final History<T> history;
         // each Observer is tracked here for what events they have received
         final ConcurrentHashMap<Observer<? super T>, Integer> replayState;
-        public ReplayState(int initialCapacity) {
-            history = new History<T>(initialCapacity);
+        public ReplayState(int capacity) {
+            history = new History<T>(capacity);
             replayState = new ConcurrentHashMap<Observer<? super T>, Integer>();
         }
     }
@@ -206,19 +219,31 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         private final AtomicInteger index;
         private final ArrayList<T> list;
         private final AtomicReference<Notification<T>> terminalValue;
-        public History(int initialCapacity) {
+        private final int capacity;
+        public History(int capacity) {
+             this.capacity = capacity;
              index = new AtomicInteger(0);
-             list = new ArrayList<T>(initialCapacity);
+             list = this.capacity == ReplaySubjectUnlimitedCapacity ? new ArrayList<T>(16) : new ArrayList<T>(capacity);
              terminalValue = new AtomicReference<Notification<T>>();
         }
+
         public boolean next(T n) {
             if (terminalValue.get() == null) {
                 list.add(n);
-                index.getAndIncrement();
+                trim();
                 return true;
             } else {
                 return false;
             }
+        }
+
+        private void trim() {
+            if (this.capacity != ReplaySubjectUnlimitedCapacity && list.size() > this.capacity ) {
+                List<T> toRemove = list.subList(0, list.size() - this.capacity);
+                list.removeAll(toRemove);
+            }
+
+            index.set(list.size());
         }
 
         public void complete(Notification<T> n) {
