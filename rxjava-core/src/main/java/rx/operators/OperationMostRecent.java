@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,9 @@ public final class OperationMostRecent {
             public Iterator<T> iterator() {
                 MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
                 final MostRecentIterator<T> nextIterator = new MostRecentIterator<T>(mostRecentObserver);
-                
+
                 source.subscribe(mostRecentObserver);
-        
+
                 return nextIterator;
             }
         };

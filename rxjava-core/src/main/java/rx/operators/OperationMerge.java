@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,8 +151,8 @@ public final class OperationMerge {
                 }
 
                 Observable<? extends T> observable = null;
-                synchronized(gate) {
-                    if(activeObservableCount >= maxConcurrent) {
+                synchronized (gate) {
+                    if (activeObservableCount >= maxConcurrent) {
                         pendingObservables.add(childObservable);
                     }
                     else {
@@ -189,7 +189,7 @@ public final class OperationMerge {
                 // Try to fetch a pending observable
                 synchronized (gate) {
                     childObservable = pendingObservables.poll();
-                    if(childObservable == null) {
+                    if (childObservable == null) {
                         // There is no pending observable, decrease activeObservableCount.
                         activeObservableCount--;
                     }

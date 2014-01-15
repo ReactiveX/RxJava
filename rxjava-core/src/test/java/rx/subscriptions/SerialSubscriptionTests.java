@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,8 @@
  */
 package rx.subscriptions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,7 +122,7 @@ public class SerialSubscriptionTests {
         final CountDownLatch end = new CountDownLatch(count);
 
         final List<Thread> threads = new ArrayList<Thread>();
-        for (int i = 0 ; i < count ; i++) {
+        for (int i = 0; i < count; i++) {
             final Thread t = new Thread() {
                 @Override
                 public void run() {
@@ -167,7 +162,7 @@ public class SerialSubscriptionTests {
         final CountDownLatch end = new CountDownLatch(count);
 
         final List<Thread> threads = new ArrayList<Thread>();
-        for (int i = 0 ; i < count ; i++) {
+        for (int i = 0; i < count; i++) {
             final Subscription subscription = mock(Subscription.class);
             subscriptions.add(subscription);
 
@@ -192,7 +187,7 @@ public class SerialSubscriptionTests {
         end.await();
         serialSubscription.unsubscribe();
 
-        for(final Subscription subscription : subscriptions) {
+        for (final Subscription subscription : subscriptions) {
             verify(subscription).unsubscribe();
         }
 

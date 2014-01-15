@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,14 @@
  */
 package rx.subjects;
 
-import rx.Notification;
+import rx.*;
 import rx.Observer;
-import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
-import rx.util.functions.Action1;
+import rx.subjects.SubjectSubscriptionManager.*;
+import rx.util.functions.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 /**
  * Subject that retains events (unlimited or with given replay capacity) and will replay them to an {@link Observer} that subscribes.
@@ -221,10 +218,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         private final AtomicReference<Notification<T>> terminalValue;
         private final int capacity;
         public History(int capacity) {
-             this.capacity = capacity;
-             index = new AtomicInteger(0);
-             list = this.capacity == ReplaySubjectUnlimitedCapacity ? new ArrayList<T>(16) : new ArrayList<T>(capacity);
-             terminalValue = new AtomicReference<Notification<T>>();
+            this.capacity = capacity;
+            index = new AtomicInteger(0);
+            list = this.capacity == ReplaySubjectUnlimitedCapacity ? new ArrayList<T>(16) : new ArrayList<T>(capacity);
+            terminalValue = new AtomicReference<Notification<T>>();
         }
 
         public boolean next(T n) {

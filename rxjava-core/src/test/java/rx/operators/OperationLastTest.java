@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -41,7 +39,7 @@ public class OperationLastTest {
         Observable<?> last = Observable.empty().last();
         last.toBlockingObservable().single();
     }
-    
+
     @Test
     public void testLastMultiSubscribe() {
         Observable<Integer> last = Observable.from(1, 2, 3).last();

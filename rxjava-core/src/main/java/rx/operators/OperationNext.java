@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,13 @@ public final class OperationNext {
             public Iterator<T> iterator() {
                 NextObserver<T> nextObserver = new NextObserver<T>();
                 final NextIterator<T> nextIterator = new NextIterator<T>(nextObserver);
-                
+
                 items.materialize().subscribe(nextObserver);
-                
+
                 return nextIterator;
             }
         };
-        
+
     }
 
     private static class NextIterator<T> implements Iterator<T> {

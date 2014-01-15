@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -159,10 +159,10 @@ public class ExecutorScheduler extends Scheduler {
 
         @Override
         public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
-            if(childSubscription.isUnsubscribed()) {
+            if (childSubscription.isUnsubscribed()) {
                 return childSubscription;
             }
-            
+
             CompositeSubscription s = new CompositeSubscription();
             final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
             s.add(discardableAction);
@@ -194,10 +194,10 @@ public class ExecutorScheduler extends Scheduler {
 
         @Override
         public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
-            if(childSubscription.isUnsubscribed()) {
+            if (childSubscription.isUnsubscribed()) {
                 return childSubscription;
             }
-            
+
             CompositeSubscription s = new CompositeSubscription();
             final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
             s.add(discardableAction);

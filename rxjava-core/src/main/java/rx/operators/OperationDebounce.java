@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,7 +153,7 @@ public final class OperationDebounce {
             }
         }
     }
-    
+
     /**
      * Delay the emission via another observable if no new source appears in the meantime.
      */
@@ -162,7 +162,7 @@ public final class OperationDebounce {
             Func1<? super T, ? extends Observable<U>> debounceSelector) {
         return new DebounceSelector<T, U>(source, debounceSelector);
     }
-    
+
     /**
      * Delay the emission via another observable if no new source appears in the meantime.
      */
@@ -178,12 +178,12 @@ public final class OperationDebounce {
         @Override
         public Subscription onSubscribe(Observer<? super T> t1) {
             CompositeSubscription csub = new CompositeSubscription();
-            
+
             csub.add(source.subscribe(new SourceObserver<T, U>(t1, debounceSelector, csub)));
-            
+
             return csub;
         }
-        
+
         /** Observe the source. */
         private static final class SourceObserver<T, U> implements Observer<T> {
             final Observer<? super T> observer;
@@ -194,10 +194,10 @@ public final class OperationDebounce {
             T value;
             boolean hasValue;
             final Object guard;
-            
+
             public SourceObserver(
-                    Observer<? super T> observer, 
-                    Func1<? super T, ? extends Observable<U>> debounceSelector, 
+                    Observer<? super T> observer,
+                    Func1<? super T, ? extends Observable<U>> debounceSelector,
                     CompositeSubscription cancel) {
                 this.observer = observer;
                 this.debounceSelector = debounceSelector;
@@ -224,7 +224,7 @@ public final class OperationDebounce {
                     value = args;
                     currentIndex = ++index;
                 }
-                
+
                 SerialSubscription osub = new SerialSubscription();
                 ssub.set(osub);
 
@@ -269,6 +269,7 @@ public final class OperationDebounce {
                 }
             }
         }
+
         /**
          * The debounce observer.
          */
@@ -308,7 +309,7 @@ public final class OperationDebounce {
                 }
                 cancel.unsubscribe();
             }
-            
+
         }
     }
 }

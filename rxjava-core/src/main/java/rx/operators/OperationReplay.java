@@ -1,18 +1,18 @@
- /**
-  * Copyright 2013 Netflix, Inc.
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *
-  * http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
+/**
+ * Copyright 2014 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.operators;
 
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -38,20 +39,23 @@ import rx.util.functions.Functions;
 
 /**
  * Replay with limited buffer and/or time constraints.
- *
- *
+ * 
+ * 
  * @see <a href='http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.replay.aspx'>MSDN: Observable.Replay overloads</a>
  */
 public final class OperationReplay {
     /** Utility class. */
-    private OperationReplay() { throw new IllegalStateException("No instances!"); }
-    
+    private OperationReplay() {
+        throw new IllegalStateException("No instances!");
+    }
+
     /**
      * Create a BoundedReplaySubject with the given buffer size.
      */
     public static <T> Subject<T, T> replayBuffered(int bufferSize) {
         return CustomReplaySubject.create(bufferSize);
     }
+
     /**
      * Creates a subject whose client observers will observe events
      * propagated through the given wrapped subject.
@@ -61,17 +65,22 @@ public final class OperationReplay {
         SubjectWrapper<T> s = new SubjectWrapper<T>(subscriberOf(observedOn), subject);
         return s;
     }
-    
+
     /**
      * Create a CustomReplaySubject with the given time window length
      * and optional buffer size.
      * 
-     * @param <T> the source and return type
-     * @param time the length of the time window
-     * @param unit the unit of the time window length
-     * @param bufferSize the buffer size if >= 0, otherwise, the buffer will be unlimited
-     * @param scheduler the scheduler from where the current time is retrieved. The
-     *                  observers will not observe on this scheduler.
+     * @param <T>
+     *            the source and return type
+     * @param time
+     *            the length of the time window
+     * @param unit
+     *            the unit of the time window length
+     * @param bufferSize
+     *            the buffer size if >= 0, otherwise, the buffer will be unlimited
+     * @param scheduler
+     *            the scheduler from where the current time is retrieved. The
+     *            observers will not observe on this scheduler.
      * @return a Subject with the required replay behavior
      */
     public static <T> Subject<T, T> replayWindowed(long time, TimeUnit unit, int bufferSize, final Scheduler scheduler) {
@@ -91,7 +100,7 @@ public final class OperationReplay {
                 return t1.getValue();
             }
         };
-        
+
         ReplayState<Timestamped<T>, T> state;
 
         if (bufferSize >= 0) {
@@ -117,14 +126,14 @@ public final class OperationReplay {
         };
         // time based eviction when a client subscribes
         state.onSubscription = state.onValueAdded;
-        
+
         final CustomReplaySubject<T, Timestamped<T>, T> brs = new CustomReplaySubject<T, Timestamped<T>, T>(
                 new CustomReplaySubjectSubscribeFunc<Timestamped<T>, T>(state), state, timestamp
-        );
-        
+                );
+
         return brs;
     }
-    
+
     /**
      * Return an OnSubscribeFunc which delegates the subscription to the given observable.
      */
@@ -136,7 +145,7 @@ public final class OperationReplay {
             }
         };
     }
-    
+
     /**
      * Subject that wraps another subject and uses a mapping function
      * to transform the received values.
@@ -144,6 +153,7 @@ public final class OperationReplay {
     public static final class MappingSubject<T, R> extends Subject<T, R> {
         private final Subject<R, R> subject;
         private final Func1<T, R> selector;
+
         public MappingSubject(OnSubscribeFunc<R> func, Subject<R, R> subject, Func1<T, R> selector) {
             super(func);
             this.subject = subject;
@@ -164,125 +174,149 @@ public final class OperationReplay {
         public void onCompleted() {
             subject.onCompleted();
         }
-        
+
     }
-    
+
     /**
      * A subject that wraps another subject.
      */
     public static final class SubjectWrapper<T> extends Subject<T, T> {
         /** The wrapped subject. */
         final Subject<T, T> subject;
+
         public SubjectWrapper(OnSubscribeFunc<T> func, Subject<T, T> subject) {
             super(func);
             this.subject = subject;
         }
-        
+
         @Override
         public void onNext(T args) {
             subject.onNext(args);
         }
-        
+
         @Override
         public void onError(Throwable e) {
             subject.onError(e);
         }
-        
+
         @Override
         public void onCompleted() {
             subject.onCompleted();
         }
-        
+
     }
-    
+
     /** Base state with lock. */
     static class BaseState {
         /** The lock to protect the other fields. */
         private final Lock lock = new ReentrantLock();
+
         /** Lock. */
         public void lock() {
             lock.lock();
         }
+
         /** Unlock. */
         public void unlock() {
             lock.unlock();
         }
-        
+
     }
+
     /**
      * Base interface for logically indexing a list.
-     * @param <T> the value type
+     * 
+     * @param <T>
+     *            the value type
      */
     public interface VirtualList<T> {
         /** @return the number of elements in this list */
         int size();
-        /** 
-         * Add an element to the list. 
-         * @param value the value to add
+
+        /**
+         * Add an element to the list.
+         * 
+         * @param value
+         *            the value to add
          */
         void add(T value);
+
         /**
          * Retrieve an element at the specified logical index.
+         * 
          * @param index
          * @return
          */
         T get(int index);
+
         /**
          * Remove elements up before the given logical index and move
          * the start() to this index.
          * <p>
          * For example, a list contains 3 items. Calling removeUntil 2 will
          * remove the first two items.
+         * 
          * @param index
          */
         void removeBefore(int index);
+
         /**
          * Clear the elements of this list and increase the
          * start by the number of elements.
          */
         void clear();
+
         /**
          * Returns the current head index of this list.
+         * 
          * @return
          */
         int start();
+
         /**
          * Returns the current tail index of this list (where the next value would appear).
+         * 
          * @return
          */
         int end();
+
         /**
          * Clears and resets the indexes of the list.
          */
         void reset();
+
         /**
          * Returns the current content as a list.
-         * @return 
+         * 
+         * @return
          */
         List<T> toList();
     }
+
     /**
      * Behaves like a normal, unbounded ArrayList but with virtual index.
      */
     public static final class VirtualArrayList<T> implements VirtualList<T> {
-        /** The backing list .*/
+        /** The backing list . */
         final List<T> list = new ArrayList<T>();
         /** The virtual start index of the list. */
         int startIndex;
+
         @Override
         public int size() {
             return list.size();
         }
+
         @Override
         public void add(T value) {
             list.add(value);
         }
-        
+
         @Override
         public T get(int index) {
             return list.get(index - startIndex);
         }
-        
+
         @Override
         public void removeBefore(int index) {
             int j = index - startIndex;
@@ -291,34 +325,36 @@ public final class OperationReplay {
             }
             startIndex = index;
         }
-        
+
         @Override
         public void clear() {
             startIndex += list.size();
             list.clear();
         }
-        
+
         @Override
         public int start() {
             return startIndex;
         }
-        
+
         @Override
         public int end() {
             return startIndex + list.size();
         }
-        
+
         @Override
         public void reset() {
             list.clear();
             startIndex = 0;
         }
+
         @Override
         public List<T> toList() {
             return new ArrayList<T>(list);
         }
-        
+
     }
+
     /**
      * A bounded list which increases its size up to a maximum capacity, then
      * behaves like a circular buffer with virtual indexes.
@@ -336,8 +372,10 @@ public final class OperationReplay {
         int tail;
         /** The number of items in the list. */
         int count;
+
         /**
          * Construct a VirtualBoundedList with the given maximum number of elements.
+         * 
          * @param maxSize
          */
         public VirtualBoundedList(int maxSize) {
@@ -346,16 +384,17 @@ public final class OperationReplay {
             }
             this.maxSize = maxSize;
         }
+
         @Override
         public int start() {
             return startIndex;
         }
-        
+
         @Override
         public int end() {
             return startIndex + count;
         }
-        
+
         @Override
         public void clear() {
             startIndex += count;
@@ -364,11 +403,12 @@ public final class OperationReplay {
             tail = 0;
             count = 0;
         }
+
         @Override
         public int size() {
             return count;
         }
-        
+
         @Override
         public void add(T value) {
             if (list.size() == maxSize) {
@@ -382,7 +422,7 @@ public final class OperationReplay {
                 count++;
             }
         }
-        
+
         @Override
         public T get(int index) {
             if (index < start() || index >= end()) {
@@ -391,7 +431,7 @@ public final class OperationReplay {
             int idx = (head + (index - startIndex)) % maxSize;
             return list.get(idx);
         }
-        
+
         @Override
         public void removeBefore(int index) {
             if (index <= start()) {
@@ -411,6 +451,7 @@ public final class OperationReplay {
             startIndex = index;
             head = head2 % maxSize;
         }
+
         @Override
         public List<T> toList() {
             List<T> r = new ArrayList<T>(list.size() + 1);
@@ -420,7 +461,7 @@ public final class OperationReplay {
             }
             return r;
         }
-        
+
         @Override
         public void reset() {
             list.clear();
@@ -428,12 +469,16 @@ public final class OperationReplay {
             head = 0;
             tail = 0;
         }
-        
+
     }
-    /** 
-     * The state class. 
-     * @param <TIntermediate> the intermediate type stored in the values buffer
-     * @param <TResult> the result type transformed via the resultSelector
+
+    /**
+     * The state class.
+     * 
+     * @param <TIntermediate>
+     *            the intermediate type stored in the values buffer
+     * @param <TResult>
+     *            the result type transformed via the resultSelector
      */
     static final class ReplayState<TIntermediate, TResult> extends BaseState {
         /** The values observed so far. */
@@ -490,49 +535,56 @@ public final class OperationReplay {
             public void call() {
             }
         };
+
         /**
          * Construct a ReplayState with the supplied buffer and result selectors.
+         * 
          * @param values
-         * @param resultSelector 
+         * @param resultSelector
          */
         public ReplayState(final VirtualList<TIntermediate> values,
-            final Func1<? super TIntermediate, ? extends TResult> resultSelector) {
+                final Func1<? super TIntermediate, ? extends TResult> resultSelector) {
             this.values = values;
             this.resultSelector = resultSelector;
         }
+
         /**
          * Returns a live collection of the observers.
          * <p>
          * Caller should hold the lock.
+         * 
          * @return
          */
         Collection<Replayer> replayers() {
             return new ArrayList<Replayer>(replayers.values());
         }
+
         /**
          * Add a replayer to the replayers and create a Subscription for it.
          * <p>
          * Caller should hold the lock.
-         *
+         * 
          * @param obs
          * @return
          */
         Subscription addReplayer(Observer<? super TResult> obs) {
             Subscription s = new Subscription() {
                 final AtomicBoolean once = new AtomicBoolean();
+
                 @Override
                 public void unsubscribe() {
                     if (once.compareAndSet(false, true)) {
                         remove(this);
                     }
                 }
-                
+
             };
             Replayer rp = new Replayer(obs, s);
             replayers.put(s, rp);
             rp.replayTill(values.start() + values.size());
             return s;
         }
+
         /** The replayer that holds a value where the given observer is currently at. */
         final class Replayer {
             protected final Observer<? super TResult> wrapped;
@@ -540,12 +592,15 @@ public final class OperationReplay {
             protected int index;
             /** To cancel and unsubscribe this replayer and observer. */
             protected final Subscription cancel;
+
             protected Replayer(Observer<? super TResult> wrapped, Subscription cancel) {
                 this.wrapped = wrapped;
                 this.cancel = cancel;
             }
+
             /**
              * Replay up to the given index
+             * 
              * @param limit
              */
             void replayTill(int limit) {
@@ -573,8 +628,10 @@ public final class OperationReplay {
                 }
             }
         }
+
         /**
          * Remove the subscription.
+         * 
          * @param s
          */
         void remove(Subscription s) {
@@ -585,15 +642,18 @@ public final class OperationReplay {
                 unlock();
             }
         }
+
         /**
          * Add a notification value and limit the size of values.
          * <p>
          * Caller should hold the lock.
+         * 
          * @param value
          */
         void add(TIntermediate value) {
             values.add(value);
         }
+
         /** Clears the value list. */
         void clearValues() {
             lock();
@@ -604,50 +664,58 @@ public final class OperationReplay {
             }
         }
     }
+
     /**
      * A customizable replay subject with support for transformations.
      * 
-     * @param <TInput> the Observer side's value type
-     * @param <TIntermediate> the type of the elements in the replay buffer
-     * @param <TResult> the value type of the observers subscribing to this subject
+     * @param <TInput>
+     *            the Observer side's value type
+     * @param <TIntermediate>
+     *            the type of the elements in the replay buffer
+     * @param <TResult>
+     *            the value type of the observers subscribing to this subject
      */
     public static final class CustomReplaySubject<TInput, TIntermediate, TResult> extends Subject<TInput, TResult> {
         /**
          * Return a subject that retains all events and will replay them to an {@link Observer} that subscribes.
+         * 
          * @return a subject that retains all events and will replay them to an {@link Observer} that subscribes.
          */
         public static <T> CustomReplaySubject<T, T, T> create() {
-            ReplayState<T, T> state = new ReplayState<T, T>(new VirtualArrayList<T>(), Functions.<T>identity());
+            ReplayState<T, T> state = new ReplayState<T, T>(new VirtualArrayList<T>(), Functions.<T> identity());
             return new CustomReplaySubject<T, T, T>(
-                    new CustomReplaySubjectSubscribeFunc<T, T>(state), state, 
-                    Functions.<T>identity());
+                    new CustomReplaySubjectSubscribeFunc<T, T>(state), state,
+                    Functions.<T> identity());
         }
+
         /**
          * Create a bounded replay subject with the given maximum buffer size.
-         * @param maxSize the maximum size in number of onNext notifications
+         * 
+         * @param maxSize
+         *            the maximum size in number of onNext notifications
          * @return
          */
         public static <T> CustomReplaySubject<T, T, T> create(int maxSize) {
-            ReplayState<T, T> state = new ReplayState<T, T>(new VirtualBoundedList<T>(maxSize), Functions.<T>identity());
+            ReplayState<T, T> state = new ReplayState<T, T>(new VirtualBoundedList<T>(maxSize), Functions.<T> identity());
             return new CustomReplaySubject<T, T, T>(
-                    new CustomReplaySubjectSubscribeFunc<T, T>(state), state, 
-                    Functions.<T>identity());
+                    new CustomReplaySubjectSubscribeFunc<T, T>(state), state,
+                    Functions.<T> identity());
         }
+
         /** The replay state. */
         protected final ReplayState<TIntermediate, TResult> state;
         /** The result selector. */
         protected final Func1<? super TInput, ? extends TIntermediate> intermediateSelector;
-        
+
         private CustomReplaySubject(
-                Observable.OnSubscribeFunc<TResult> onSubscribe, 
+                Observable.OnSubscribeFunc<TResult> onSubscribe,
                 ReplayState<TIntermediate, TResult> state,
                 Func1<? super TInput, ? extends TIntermediate> intermediateSelector) {
             super(onSubscribe);
             this.state = state;
             this.intermediateSelector = intermediateSelector;
         }
-        
-        
+
         @Override
         public void onCompleted() {
             state.lock();
@@ -662,7 +730,7 @@ public final class OperationReplay {
                 state.unlock();
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             state.lock();
@@ -678,7 +746,7 @@ public final class OperationReplay {
                 state.unlock();
             }
         }
-        
+
         @Override
         public void onNext(TInput args) {
             state.lock();
@@ -693,6 +761,7 @@ public final class OperationReplay {
                 state.unlock();
             }
         }
+
         /**
          * Replay values up to the current index.
          */
@@ -703,19 +772,24 @@ public final class OperationReplay {
             }
         }
     }
-    /** 
-     * The subscription function. 
-     * @param <TIntermediate> the type of the elements in the replay buffer
-     * @param <TResult> the value type of the observers subscribing to this subject
+
+    /**
+     * The subscription function.
+     * 
+     * @param <TIntermediate>
+     *            the type of the elements in the replay buffer
+     * @param <TResult>
+     *            the value type of the observers subscribing to this subject
      */
-    protected static final class CustomReplaySubjectSubscribeFunc<TIntermediate, TResult> 
-    implements Observable.OnSubscribeFunc<TResult> {
-        
+    protected static final class CustomReplaySubjectSubscribeFunc<TIntermediate, TResult>
+            implements Observable.OnSubscribeFunc<TResult> {
+
         private final ReplayState<TIntermediate, TResult> state;
+
         protected CustomReplaySubjectSubscribeFunc(ReplayState<TIntermediate, TResult> state) {
             this.state = state;
         }
-        
+
         @Override
         public Subscription onSubscribe(Observer<? super TResult> t1) {
             VirtualList<TIntermediate> values;

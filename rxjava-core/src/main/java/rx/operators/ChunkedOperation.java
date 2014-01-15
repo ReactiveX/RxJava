@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -207,6 +207,7 @@ public class ChunkedOperation {
                 }
             }
         }
+
         @Override
         public void unsubscribe() {
             for (Subscription s : subscriptions.values()) {
@@ -263,7 +264,7 @@ public class ChunkedOperation {
                 s.unsubscribe();
             }
         }
-        
+
     }
 
     /**

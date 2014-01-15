@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,8 +24,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Assert;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import rx.Observable;
@@ -33,7 +33,6 @@ import rx.Observer;
 import rx.Subscription;
 import rx.observables.BlockingObservable;
 import rx.schedulers.Schedulers;
-import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
@@ -296,25 +295,26 @@ public class OperationNextTest {
 
         System.out.println("a: " + a + " b: " + b + " c: " + c);
     }
+
     @Test(timeout = 8000)
     public void testSingleSourceManyIterators() throws InterruptedException {
         BlockingObservable<Long> source = Observable.interval(200, TimeUnit.MILLISECONDS).take(10).toBlockingObservable();
-        
+
         Iterable<Long> iter = source.next();
-        
+
         for (int j = 0; j < 3; j++) {
             Iterator<Long> it = iter.iterator();
-            
+
             for (int i = 0; i < 9; i++) {
                 // hasNext has to set the waiting to true, otherwise, all onNext will be skipped
                 Assert.assertEquals(true, it.hasNext());
                 Assert.assertEquals(Long.valueOf(i), it.next());
             }
-            
+
             Thread.sleep(400);
-            
+
             Assert.assertEquals(false, it.hasNext());
         }
-        
+
     }
 }
