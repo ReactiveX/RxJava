@@ -45,6 +45,7 @@ public final class OperationTimestamp {
             }
         });
     }
+
     /**
      * Timestamp the source elements based on the timing provided by the scheduler.
      */

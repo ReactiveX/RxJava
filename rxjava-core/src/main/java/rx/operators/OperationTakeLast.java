@@ -25,7 +25,6 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.subscriptions.BooleanSubscription;
 import rx.util.Timestamped;
 
 /**
@@ -123,7 +122,7 @@ public final class OperationTakeLast {
         }
 
     }
-    
+
     /**
      * Returns the items emitted by source whose arrived in the time window
      * before the source completed.
@@ -131,7 +130,7 @@ public final class OperationTakeLast {
     public static <T> OnSubscribeFunc<T> takeLast(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
         return new TakeLastTimed<T>(source, -1, time, unit, scheduler);
     }
-    
+
     /**
      * Returns the items emitted by source whose arrived in the time window
      * before the source completed and at most count values.
@@ -139,7 +138,7 @@ public final class OperationTakeLast {
     public static <T> OnSubscribeFunc<T> takeLast(Observable<? extends T> source, int count, long time, TimeUnit unit, Scheduler scheduler) {
         return new TakeLastTimed<T>(source, count, time, unit, scheduler);
     }
-    
+
     /** Take only the values which appeared some time before the completion. */
     static final class TakeLastTimed<T> implements OnSubscribeFunc<T> {
         final Observable<? extends T> source;
@@ -161,6 +160,7 @@ public final class OperationTakeLast {
             return sas;
         }
     }
+
     /** Observes source values and keeps the most recent items. */
     static final class TakeLastTimedObserver<T> implements Observer<T> {
         final Observer<? super T> observer;
@@ -169,10 +169,10 @@ public final class OperationTakeLast {
         final Scheduler scheduler;
         /** -1 indicates unlimited buffer. */
         final int count;
-        
+
         final Deque<Timestamped<T>> buffer = new LinkedList<Timestamped<T>>();
 
-        public TakeLastTimedObserver(Observer<? super T> observer, Subscription cancel, 
+        public TakeLastTimedObserver(Observer<? super T> observer, Subscription cancel,
                 int count, long ageMillis, Scheduler scheduler) {
             this.observer = observer;
             this.cancel = cancel;
@@ -196,7 +196,7 @@ public final class OperationTakeLast {
                 }
             }
         }
-        
+
         @Override
         public void onNext(T args) {
             long t = scheduler.now();
@@ -211,8 +211,9 @@ public final class OperationTakeLast {
             cancel.unsubscribe();
         }
 
-        /** 
-         * Emit the contents of the buffer. 
+        /**
+         * Emit the contents of the buffer.
+         * 
          * @return true if no exception was raised in the process
          */
         protected boolean emitBuffer() {
@@ -228,7 +229,7 @@ public final class OperationTakeLast {
             buffer.clear();
             return true;
         }
-        
+
         @Override
         public void onCompleted() {
             runEvictionPolicy(scheduler.now());
@@ -238,6 +239,6 @@ public final class OperationTakeLast {
             }
             cancel.unsubscribe();
         }
-        
+
     }
 }

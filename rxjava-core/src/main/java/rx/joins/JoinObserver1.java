@@ -41,7 +41,7 @@ public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinOb
     private volatile boolean done;
     private final AtomicBoolean subscribed = new AtomicBoolean(false);
     private final SafeObserver<Notification<T>> safeObserver;
-    
+
     public JoinObserver1(Observable<T> source, Action1<Throwable> onError) {
         this.source = source;
         this.onError = onError;
@@ -49,12 +49,15 @@ public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinOb
         activePlans = new ArrayList<ActivePlan0>();
         safeObserver = new SafeObserver<Notification<T>>(subscription, new InnerObserver());
     }
+
     public Queue<Notification<T>> queue() {
         return queue;
     }
+
     public void addActivePlan(ActivePlan0 activePlan) {
         activePlans.add(activePlan);
     }
+
     @Override
     public void subscribe(Object gate) {
         if (subscribed.compareAndSet(false, true)) {
@@ -100,7 +103,7 @@ public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinOb
             // not expected or ignored
         }
     }
-    
+
     @Override
     public void onNext(Notification<T> args) {
         safeObserver.onNext(args);
@@ -115,7 +118,7 @@ public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinOb
     public void onCompleted() {
         safeObserver.onCompleted();
     }
-    
+
     void removeActivePlan(ActivePlan0 activePlan) {
         activePlans.remove(activePlan);
         if (activePlans.isEmpty()) {
@@ -130,5 +133,5 @@ public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinOb
             subscription.unsubscribe();
         }
     }
-    
+
 }

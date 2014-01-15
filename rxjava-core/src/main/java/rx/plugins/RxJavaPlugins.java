@@ -39,8 +39,8 @@ public class RxJavaPlugins {
     /* package accessible for unit tests */RxJavaPlugins() {
 
     }
-    
-    /* package accessible for ujnit tests */ void reset() {
+
+    /* package accessible for ujnit tests */void reset() {
         INSTANCE.errorHandler.set(null);
         INSTANCE.observableExecutionHook.set(null);
     }

@@ -48,14 +48,14 @@ public final class OperationDelay {
         });
         return Observable.concat(seqs);
     }
-    
+
     /**
      * Delays the subscription to the source by the given amount, running on the given scheduler.
      */
     public static <T> OnSubscribeFunc<T> delaySubscription(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
         return new DelaySubscribeFunc<T>(source, time, unit, scheduler);
     }
-    
+
     /** Subscribe function which schedules the actual subscription to source on a scheduler at a later time. */
     private static final class DelaySubscribeFunc<T> implements OnSubscribeFunc<T> {
         final Observable<? extends T> source;
@@ -69,10 +69,11 @@ public final class OperationDelay {
             this.time = time;
             this.unit = unit;
         }
+
         @Override
         public Subscription onSubscribe(final Observer<? super T> t1) {
             final SerialSubscription ssub = new SerialSubscription();
-            
+
             ssub.setSubscription(scheduler.schedule(new Action0() {
                 @Override
                 public void call() {
@@ -81,25 +82,28 @@ public final class OperationDelay {
                     }
                 }
             }, time, unit));
-            
+
             return ssub;
         }
     }
+
     /**
      * Delay the emission of the source items by a per-item observable that fires its first element.
      */
-    public static <T, U> OnSubscribeFunc<T> delay(Observable<? extends T> source, 
+    public static <T, U> OnSubscribeFunc<T> delay(Observable<? extends T> source,
             Func1<? super T, ? extends Observable<U>> itemDelay) {
         return new DelayViaObservable<T, Object, U>(source, null, itemDelay);
     }
+
     /**
      * Delay the subscription and emission of the source items by a per-item observable that fires its first element.
      */
-    public static <T, U, V> OnSubscribeFunc<T> delay(Observable<? extends T> source, 
+    public static <T, U, V> OnSubscribeFunc<T> delay(Observable<? extends T> source,
             Func0<? extends Observable<U>> subscriptionDelay,
             Func1<? super T, ? extends Observable<V>> itemDelay) {
         return new DelayViaObservable<T, U, V>(source, subscriptionDelay, itemDelay);
     }
+
     /**
      * Delay the emission of the source items by a per-item observable that fires its first element.
      */
@@ -108,7 +112,7 @@ public final class OperationDelay {
         final Func0<? extends Observable<U>> subscriptionDelay;
         final Func1<? super T, ? extends Observable<V>> itemDelay;
 
-        public DelayViaObservable(Observable<? extends T> source, 
+        public DelayViaObservable(Observable<? extends T> source,
                 Func0<? extends Observable<U>> subscriptionDelay,
                 Func1<? super T, ? extends Observable<V>> itemDelay) {
             this.source = source;
@@ -119,7 +123,7 @@ public final class OperationDelay {
         @Override
         public Subscription onSubscribe(Observer<? super T> t1) {
             CompositeSubscription csub = new CompositeSubscription();
-            
+
             SerialSubscription sosub = new SerialSubscription();
             csub.add(sosub);
             SourceObserver<T, V> so = new SourceObserver<T, V>(t1, itemDelay, csub, sosub);
@@ -137,9 +141,10 @@ public final class OperationDelay {
                 csub.add(ssub);
                 ssub.set(subscriptionSource.subscribe(new SubscribeDelay<T, U, V>(source, so, csub, ssub)));
             }
-            
+
             return csub;
         }
+
         /** Subscribe delay observer. */
         private static final class SubscribeDelay<T, U, V> implements Observer<U> {
             final Observable<? extends T> source;
@@ -151,7 +156,7 @@ public final class OperationDelay {
 
             public SubscribeDelay(
                     Observable<? extends T> source,
-                    SourceObserver<T, V> so, 
+                    SourceObserver<T, V> so,
                     CompositeSubscription csub, Subscription self) {
                 this.source = source;
                 this.so = so;
@@ -179,6 +184,7 @@ public final class OperationDelay {
                 so.self.set(source.subscribe(so));
             }
         }
+
         /** The source observer. */
         private static final class SourceObserver<T, U> implements Observer<T> {
             final Observer<? super T> observer;
@@ -190,8 +196,8 @@ public final class OperationDelay {
             boolean done;
             int wip;
 
-            public SourceObserver(Observer<? super T> observer, 
-                    Func1<? super T, ? extends Observable<U>> itemDelay, 
+            public SourceObserver(Observer<? super T> observer,
+                    Func1<? super T, ? extends Observable<U>> itemDelay,
                     CompositeSubscription csub,
                     SerialSubscription self) {
                 this.observer = observer;
@@ -210,11 +216,11 @@ public final class OperationDelay {
                     onError(t);
                     return;
                 }
-                
+
                 synchronized (guard) {
                     wip++;
                 }
-                
+
                 SerialSubscription ssub = new SerialSubscription();
                 csub.add(ssub);
                 ssub.set(delayer.subscribe(new DelayObserver<T, U>(args, this, ssub)));
@@ -241,7 +247,7 @@ public final class OperationDelay {
                     self.unsubscribe();
                 }
             }
-            
+
             void emit(T value, Subscription token) {
                 boolean b;
                 synchronized (guard) {
@@ -255,6 +261,7 @@ public final class OperationDelay {
                     csub.remove(token);
                 }
             }
+
             boolean checkDone() {
                 if (done && wip == 0) {
                     observer.onCompleted();
@@ -263,6 +270,7 @@ public final class OperationDelay {
                 return false;
             }
         }
+
         /**
          * Delay observer.
          */
@@ -291,7 +299,7 @@ public final class OperationDelay {
             public void onCompleted() {
                 parent.emit(value, token);
             }
-            
+
         }
     }
 }

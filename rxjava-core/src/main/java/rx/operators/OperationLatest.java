@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
@@ -31,8 +32,10 @@ import rx.util.Exceptions;
  */
 public final class OperationLatest {
     /** Utility class. */
-    private OperationLatest() { throw new IllegalStateException("No instances!"); }  
-    
+    private OperationLatest() {
+        throw new IllegalStateException("No instances!");
+    }
+
     public static <T> Iterable<T> latest(final Observable<? extends T> source) {
         return new Iterable<T>() {
             @Override
@@ -43,12 +46,13 @@ public final class OperationLatest {
             }
         };
     }
-    
+
     /** Observer of source, iterator for output. */
     static final class LatestObserverIterator<T> implements Observer<Notification<? extends T>>, Iterator<T> {
         final Semaphore notify = new Semaphore(0);
         // observer's notification
         final AtomicReference<Notification<? extends T>> reference = new AtomicReference<Notification<? extends T>>();
+
         @Override
         public void onNext(Notification<? extends T> args) {
             boolean wasntAvailable = reference.getAndSet(args) == null;
@@ -66,9 +70,10 @@ public final class OperationLatest {
         public void onCompleted() {
             // not expected
         }
-        
+
         // iterator's notification
         Notification<? extends T> iNotif;
+
         @Override
         public boolean hasNext() {
             if (iNotif != null && iNotif.isOnError()) {
@@ -83,7 +88,7 @@ public final class OperationLatest {
                         iNotif = new Notification<T>(ex);
                         throw Exceptions.propagate(ex);
                     }
-                    
+
                     iNotif = reference.getAndSet(null);
                     if (iNotif.isOnError()) {
                         throw Exceptions.propagate(iNotif.getThrowable());
@@ -109,6 +114,6 @@ public final class OperationLatest {
         public void remove() {
             throw new UnsupportedOperationException("Read-only iterator.");
         }
-        
+
     }
 }

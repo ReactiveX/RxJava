@@ -17,7 +17,6 @@ package rx.operators;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;

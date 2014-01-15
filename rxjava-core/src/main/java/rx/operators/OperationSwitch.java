@@ -117,7 +117,7 @@ public final class OperationSwitch {
                             s = SwitchObserver.this.parent;
                         }
                     }
-                    if(s != null) {
+                    if (s != null) {
                         s.unsubscribe();
                     }
                 }
@@ -136,7 +136,7 @@ public final class OperationSwitch {
                             }
                         }
                     }
-                    if(s != null) {
+                    if (s != null) {
                         s.unsubscribe();
                     }
                 }
@@ -165,7 +165,7 @@ public final class OperationSwitch {
                     s = this.parent;
                 }
             }
-            if(s != null) {
+            if (s != null) {
                 s.unsubscribe();
             }
         }

@@ -165,10 +165,12 @@ public final class OperationTake {
         }
 
     }
-    
+
     /**
      * Takes values from the source until a timer fires.
-     * @param <T> the result value type
+     * 
+     * @param <T>
+     *            the result value type
      */
     public static final class TakeTimed<T> implements OnSubscribeFunc<T> {
         final Observable<? extends T> source;
@@ -185,23 +187,26 @@ public final class OperationTake {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> t1) {
-            
+
             SafeObservableSubscription timer = new SafeObservableSubscription();
             SafeObservableSubscription data = new SafeObservableSubscription();
 
             CompositeSubscription csub = new CompositeSubscription(timer, data);
-            
+
             SourceObserver<T> so = new SourceObserver<T>(t1, csub);
             data.wrap(source.subscribe(so));
             if (!data.isUnsubscribed()) {
                 timer.wrap(scheduler.schedule(so, time, unit));
             }
-            
+
             return csub;
         }
+
         /**
          * Observes the source and relays its values until gate turns into false.
-         * @param <T> the observed value type
+         * 
+         * @param <T>
+         *            the observed value type
          */
         private static final class SourceObserver<T> implements Observer<T>, Action0 {
             final Observer<? super T> observer;
@@ -211,7 +216,7 @@ public final class OperationTake {
             static final int NEXT = 1;
             static final int DONE = 2;
 
-            public SourceObserver(Observer<? super T> observer, 
+            public SourceObserver(Observer<? super T> observer,
                     Subscription cancel) {
                 this.observer = observer;
                 this.cancel = cancel;
@@ -241,11 +246,9 @@ public final class OperationTake {
                     int s = state.get();
                     if (s == DONE) {
                         return;
-                    } else
-                    if (s == NEXT) {
+                    } else if (s == NEXT) {
                         continue;
-                    } else
-                    if (state.compareAndSet(s, DONE)) {
+                    } else if (state.compareAndSet(s, DONE)) {
                         try {
                             observer.onError(e);
                         } finally {
@@ -262,11 +265,9 @@ public final class OperationTake {
                     int s = state.get();
                     if (s == DONE) {
                         return;
-                    } else
-                    if (s == NEXT) {
+                    } else if (s == NEXT) {
                         continue;
-                    } else
-                    if (state.compareAndSet(s, DONE)) {
+                    } else if (state.compareAndSet(s, DONE)) {
                         try {
                             observer.onCompleted();
                         } finally {
@@ -281,7 +282,7 @@ public final class OperationTake {
             public void call() {
                 onCompleted();
             }
-            
+
         }
     }
 }

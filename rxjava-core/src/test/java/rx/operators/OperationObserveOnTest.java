@@ -213,7 +213,7 @@ public class OperationObserveOnTest {
         verify(observer2, never()).onError(any(Throwable.class));
         inOrder2.verifyNoMoreInteractions();
     }
-    
+
     /**
      * Confirm that running on a NewThreadScheduler uses the same thread for the entire stream
      */

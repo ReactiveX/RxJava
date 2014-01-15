@@ -125,15 +125,17 @@ import rx.util.functions.Action1;
          */
         try {
             // had to circumvent type check, we know what the array contains
-            onTerminate.call((Collection)Arrays.asList(newState.observers));
+            onTerminate.call((Collection) Arrays.asList(newState.observers));
         } finally {
             // mark that termination is completed
             newState.terminationLatch.countDown();
         }
     }
+
     /**
      * Returns the array of observers directly.
      * <em>Don't modify the array!</em>
+     * 
      * @return the array of current observers
      */
     public SubjectObserver<Object>[] rawSnapshot() {
@@ -150,7 +152,8 @@ import rx.util.functions.Action1;
         final Subscription[] EMPTY_S = new Subscription[0];
         // to avoid lots of empty arrays
         final SubjectObserver[] EMPTY_O = new SubjectObserver[0];
-        private State(boolean isTerminated, CountDownLatch terminationLatch, 
+
+        private State(boolean isTerminated, CountDownLatch terminationLatch,
                 Subscription[] subscriptions, SubjectObserver[] observers) {
             this.terminationLatch = terminationLatch;
             this.terminated = isTerminated;
@@ -174,15 +177,16 @@ import rx.util.functions.Action1;
 
         public State<T> addObserver(Subscription s, SubjectObserver<? super T> observer) {
             int n = this.observers.length;
-            
+
             Subscription[] newsubscriptions = Arrays.copyOf(this.subscriptions, n + 1);
             SubjectObserver[] newobservers = Arrays.copyOf(this.observers, n + 1);
-            
+
             newsubscriptions[n] = s;
             newobservers[n] = observer;
-            
+
             return createNewWith(newsubscriptions, newobservers);
         }
+
         private State<T> createNewWith(Subscription[] newsubscriptions, SubjectObserver[] newobservers) {
             return new State<T>(terminated, terminationLatch, newsubscriptions, newobservers);
         }
@@ -211,7 +215,7 @@ import rx.util.functions.Action1;
                     copied++;
                 }
             }
-            
+
             if (copied == 0) {
                 return createNewWith(EMPTY_S, EMPTY_O);
             }

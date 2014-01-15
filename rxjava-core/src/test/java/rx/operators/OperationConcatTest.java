@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import static rx.operators.OperationConcat.*;
 
@@ -553,24 +554,25 @@ public class OperationConcatTest {
             t.join();
         }
     }
+
     @Test
     public void testMultipleObservers() {
         Observer<Object> o1 = mock(Observer.class);
         Observer<Object> o2 = mock(Observer.class);
-        
+
         TestScheduler s = new TestScheduler();
-        
+
         Observable<Long> timer = Observable.interval(500, TimeUnit.MILLISECONDS, s).take(2);
         Observable<Long> o = Observable.concat(timer, timer);
-        
+
         o.subscribe(o1);
         o.subscribe(o2);
-        
+
         InOrder inOrder1 = inOrder(o1);
         InOrder inOrder2 = inOrder(o2);
 
         s.advanceTimeBy(500, TimeUnit.MILLISECONDS);
-        
+
         inOrder1.verify(o1, times(1)).onNext(0L);
         inOrder2.verify(o2, times(1)).onNext(0L);
 

@@ -38,9 +38,9 @@ public final class OperationMostRecent {
             public Iterator<T> iterator() {
                 MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
                 final MostRecentIterator<T> nextIterator = new MostRecentIterator<T>(mostRecentObserver);
-                
+
                 source.subscribe(mostRecentObserver);
-        
+
                 return nextIterator;
             }
         };

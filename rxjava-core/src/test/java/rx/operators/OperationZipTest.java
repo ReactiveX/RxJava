@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,14 +15,9 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static rx.operators.OperationZip.zip;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+import static rx.operators.OperationZip.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,32 +40,34 @@ import rx.util.functions.FuncN;
 import rx.util.functions.Functions;
 
 public class OperationZipTest {
-	Func2<String, String, String> concat2Strings; 
+    Func2<String, String, String> concat2Strings;
     PublishSubject<String> s1;
-	PublishSubject<String> s2;
-	Observable<String> zipped;
-	
-	Observer<String> observer;
-	InOrder inOrder;
-	@Before 
-	@SuppressWarnings("unchecked")
-	public void setUp() {
-		concat2Strings = new Func2<String, String, String>() {
+    PublishSubject<String> s2;
+    Observable<String> zipped;
+
+    Observer<String> observer;
+    InOrder inOrder;
+
+    @Before
+    @SuppressWarnings("unchecked")
+    public void setUp() {
+        concat2Strings = new Func2<String, String, String>() {
             @Override
             public String call(String t1, String t2) {
                 return t1 + "-" + t2;
             }
-        }; 
-        
-		s1 = PublishSubject.create();
-		s2 = PublishSubject.create();
-		zipped = Observable.zip(s1, s2, concat2Strings);
-		
-		observer = mock(Observer.class);
-		inOrder = inOrder(observer);
-		
-		zipped.subscribe(observer);
-	}
+        };
+
+        s1 = PublishSubject.create();
+        s2 = PublishSubject.create();
+        zipped = Observable.zip(s1, s2, concat2Strings);
+
+        observer = mock(Observer.class);
+        inOrder = inOrder(observer);
+
+        zipped.subscribe(observer);
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testCollectionSizeDifferentThanFunction() {
@@ -160,7 +157,6 @@ public class OperationZipTest {
 
     }
 
-    
     Func2<Object, Object, String> zipr2 = new Func2<Object, Object, String>() {
 
         @Override
@@ -177,6 +173,7 @@ public class OperationZipTest {
         }
 
     };
+
     /**
      * Testing internal private logic due to the complexity so I want to use TDD to test as a I build it rather than relying purely on the overall functionality expected by the public methods.
      */
@@ -188,7 +185,7 @@ public class OperationZipTest {
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        
+
         Observable.zip(r1, r2, zipr2).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
@@ -225,7 +222,7 @@ public class OperationZipTest {
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        
+
         Observable.zip(r1, r2, zipr2).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
@@ -255,8 +252,8 @@ public class OperationZipTest {
         PublishSubject<Integer> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        
-        Observable.zip(r1, r2, zipr2).subscribe(aObserver);        
+
+        Observable.zip(r1, r2, zipr2).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
@@ -286,13 +283,13 @@ public class OperationZipTest {
         PublishSubject<List<Integer>> r3 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        
-        Observable.zip(r1, r2, r3, zipr3).subscribe(aObserver);        
+
+        Observable.zip(r1, r2, r3, zipr3).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext(2);
-        r3.onNext(Arrays.asList( 5, 6, 7 ));
+        r3.onNext(Arrays.asList(5, 6, 7));
 
         verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, never()).onCompleted();
@@ -307,7 +304,7 @@ public class OperationZipTest {
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        
+
         Observable.zip(r1, r2, zipr2).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
@@ -344,7 +341,7 @@ public class OperationZipTest {
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        
+
         Observable.zip(r1, r2, zipr2).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
@@ -373,7 +370,7 @@ public class OperationZipTest {
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        
+
         Subscription subscription = Observable.zip(r1, r2, zipr2).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
@@ -402,7 +399,7 @@ public class OperationZipTest {
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
-        
+
         Observable.zip(r1, r2, zipr2).subscribe(aObserver);
 
         /* simulate the Observables pushing data into the aggregator */
@@ -473,7 +470,7 @@ public class OperationZipTest {
 
         verify(aObserver, times(1)).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testOnFirstCompletion() {
         PublishSubject<String> oA = PublishSubject.create();
@@ -502,7 +499,7 @@ public class OperationZipTest {
         oA.onCompleted();
 
         // SHOULD ONCOMPLETE BE EMITTED HERE INSTEAD OF WAITING
-       // FOR B3, B4, B5 TO BE EMITTED?
+        // FOR B3, B4, B5 TO BE EMITTED?
 
         oB.onNext("b3");
         oB.onNext("b4");
@@ -524,7 +521,7 @@ public class OperationZipTest {
         // we should receive nothing else despite oB continuing after oA completed
         io.verifyNoMoreInteractions();
     }
-    
+
     @Test
     public void testOnErrorTermination() {
         PublishSubject<String> oA = PublishSubject.create();
@@ -577,8 +574,6 @@ public class OperationZipTest {
             }
         };
     }
-    
-    
 
     private Func2<Integer, Integer, Integer> getDivideZipr() {
         Func2<Integer, Integer, Integer> zipr = new Func2<Integer, Integer, Integer>() {
@@ -680,89 +675,91 @@ public class OperationZipTest {
         }
 
     }
-    
+
     @Test
-	public void testFirstCompletesThenSecondInfinite() {
-		s1.onNext("a");
-		s1.onNext("b");
-		s1.onCompleted();
-		s2.onNext("1");
-		inOrder.verify(observer, times(1)).onNext("a-1");
-		s2.onNext("2");
-		inOrder.verify(observer, times(1)).onNext("b-2");
-		inOrder.verify(observer, times(1)).onCompleted();
-		inOrder.verifyNoMoreInteractions();
-	}
-	
-	@Test
-	public void testSecondInfiniteThenFirstCompletes() {
-		s2.onNext("1");
-		s2.onNext("2");
-		s1.onNext("a");
-		inOrder.verify(observer, times(1)).onNext("a-1");
-		s1.onNext("b");
-		inOrder.verify(observer, times(1)).onNext("b-2");
-		s1.onCompleted();
-		inOrder.verify(observer, times(1)).onCompleted();
-		inOrder.verifyNoMoreInteractions();
-	}
-	
-	@Test
-	public void testSecondCompletesThenFirstInfinite() {
-		s2.onNext("1");
-		s2.onNext("2");
-		s2.onCompleted();
-		s1.onNext("a");
-		inOrder.verify(observer, times(1)).onNext("a-1");
-		s1.onNext("b");
-		inOrder.verify(observer, times(1)).onNext("b-2");
-		inOrder.verify(observer, times(1)).onCompleted();
-		inOrder.verifyNoMoreInteractions();
-	}
+    public void testFirstCompletesThenSecondInfinite() {
+        s1.onNext("a");
+        s1.onNext("b");
+        s1.onCompleted();
+        s2.onNext("1");
+        inOrder.verify(observer, times(1)).onNext("a-1");
+        s2.onNext("2");
+        inOrder.verify(observer, times(1)).onNext("b-2");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
 
-	@Test
-	public void testFirstInfiniteThenSecondCompletes() {
-		s1.onNext("a");
-		s1.onNext("b");
-		s2.onNext("1");
-		inOrder.verify(observer, times(1)).onNext("a-1");
-		s2.onNext("2");
-		inOrder.verify(observer, times(1)).onNext("b-2");
-		s2.onCompleted();
-		inOrder.verify(observer, times(1)).onCompleted();
-		inOrder.verifyNoMoreInteractions();
-	}
-	@Test
-	public void testFirstFails() {
-		s2.onNext("a");
-		s1.onError(new RuntimeException("Forced failure"));
+    @Test
+    public void testSecondInfiniteThenFirstCompletes() {
+        s2.onNext("1");
+        s2.onNext("2");
+        s1.onNext("a");
+        inOrder.verify(observer, times(1)).onNext("a-1");
+        s1.onNext("b");
+        inOrder.verify(observer, times(1)).onNext("b-2");
+        s1.onCompleted();
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
 
-		inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
+    @Test
+    public void testSecondCompletesThenFirstInfinite() {
+        s2.onNext("1");
+        s2.onNext("2");
+        s2.onCompleted();
+        s1.onNext("a");
+        inOrder.verify(observer, times(1)).onNext("a-1");
+        s1.onNext("b");
+        inOrder.verify(observer, times(1)).onNext("b-2");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
 
-		s2.onNext("b");
-		s1.onNext("1");
-		s1.onNext("2");
-		
-		inOrder.verify(observer, never()).onCompleted();
-		inOrder.verify(observer, never()).onNext(any(String.class));
-		inOrder.verifyNoMoreInteractions();
-	}
-	@Test
-	public void testSecondFails() {
-		s1.onNext("a");
-		s1.onNext("b");
-		s2.onError(new RuntimeException("Forced failure"));
+    @Test
+    public void testFirstInfiniteThenSecondCompletes() {
+        s1.onNext("a");
+        s1.onNext("b");
+        s2.onNext("1");
+        inOrder.verify(observer, times(1)).onNext("a-1");
+        s2.onNext("2");
+        inOrder.verify(observer, times(1)).onNext("b-2");
+        s2.onCompleted();
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
 
-		inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
-		
-		s2.onNext("1");
-		s2.onNext("2");
-		
-		inOrder.verify(observer, never()).onCompleted();
-		inOrder.verify(observer, never()).onNext(any(String.class));
-		inOrder.verifyNoMoreInteractions();
-	}
-    
+    @Test
+    public void testFirstFails() {
+        s2.onNext("a");
+        s1.onError(new RuntimeException("Forced failure"));
+
+        inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
+
+        s2.onNext("b");
+        s1.onNext("1");
+        s1.onNext("2");
+
+        inOrder.verify(observer, never()).onCompleted();
+        inOrder.verify(observer, never()).onNext(any(String.class));
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testSecondFails() {
+        s1.onNext("a");
+        s1.onNext("b");
+        s2.onError(new RuntimeException("Forced failure"));
+
+        inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
+
+        s2.onNext("1");
+        s2.onNext("2");
+
+        inOrder.verify(observer, never()).onCompleted();
+        inOrder.verify(observer, never()).onNext(any(String.class));
+        inOrder.verifyNoMoreInteractions();
+    }
+
     @Test
     public void testZipIterableSameSize() {
         PublishSubject<String> r1 = PublishSubject.create();
@@ -771,22 +768,23 @@ public class OperationZipTest {
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
-        
+
         r1.zip(r2, zipr2).subscribe(o);
-        
+
         r1.onNext("one-");
         r1.onNext("two-");
         r1.onNext("three-");
         r1.onCompleted();
-        
+
         io.verify(o).onNext("one-1");
         io.verify(o).onNext("two-2");
         io.verify(o).onNext("three-3");
         io.verify(o).onCompleted();
-        
+
         verify(o, never()).onError(any(Throwable.class));
-        
+
     }
+
     @Test
     public void testZipIterableEmptyFirstSize() {
         PublishSubject<String> r1 = PublishSubject.create();
@@ -795,17 +793,18 @@ public class OperationZipTest {
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
-        
+
         r1.zip(r2, zipr2).subscribe(o);
 
         r1.onCompleted();
-        
+
         io.verify(o).onCompleted();
 
         verify(o, never()).onNext(any(String.class));
         verify(o, never()).onError(any(Throwable.class));
-        
+
     }
+
     @Test
     public void testZipIterableEmptySecond() {
         PublishSubject<String> r1 = PublishSubject.create();
@@ -814,19 +813,20 @@ public class OperationZipTest {
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = Arrays.asList();
-        
+
         r1.zip(r2, zipr2).subscribe(o);
-        
+
         r1.onNext("one-");
         r1.onNext("two-");
         r1.onNext("three-");
         r1.onCompleted();
-        
+
         io.verify(o).onCompleted();
-        
+
         verify(o, never()).onNext(any(String.class));
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testZipIterableFirstShorter() {
         PublishSubject<String> r1 = PublishSubject.create();
@@ -835,21 +835,21 @@ public class OperationZipTest {
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
-        
+
         r1.zip(r2, zipr2).subscribe(o);
-        
+
         r1.onNext("one-");
         r1.onNext("two-");
         r1.onCompleted();
-        
+
         io.verify(o).onNext("one-1");
         io.verify(o).onNext("two-2");
         io.verify(o).onCompleted();
-        
+
         verify(o, never()).onError(any(Throwable.class));
-        
+
     }
-    
+
     @Test
     public void testZipIterableSecondShorter() {
         PublishSubject<String> r1 = PublishSubject.create();
@@ -858,21 +858,22 @@ public class OperationZipTest {
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = Arrays.asList("1", "2");
-        
+
         r1.zip(r2, zipr2).subscribe(o);
-        
+
         r1.onNext("one-");
         r1.onNext("two-");
         r1.onNext("three-");
         r1.onCompleted();
-        
+
         io.verify(o).onNext("one-1");
         io.verify(o).onNext("two-2");
         io.verify(o).onCompleted();
-        
+
         verify(o, never()).onError(any(Throwable.class));
-        
+
     }
+
     @Test
     public void testZipIterableFirstThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
@@ -881,21 +882,21 @@ public class OperationZipTest {
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
-        
+
         r1.zip(r2, zipr2).subscribe(o);
-        
+
         r1.onNext("one-");
         r1.onNext("two-");
         r1.onError(new OperationReduceTest.CustomException());
-        
+
         io.verify(o).onNext("one-1");
         io.verify(o).onNext("two-2");
         io.verify(o).onError(any(OperationReduceTest.CustomException.class));
-        
+
         verify(o, never()).onCompleted();
-        
+
     }
-    
+
     @Test
     public void testZipIterableIteratorThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
@@ -909,19 +910,20 @@ public class OperationZipTest {
                 throw new OperationReduceTest.CustomException();
             }
         };
-        
+
         r1.zip(r2, zipr2).subscribe(o);
-        
+
         r1.onNext("one-");
         r1.onNext("two-");
         r1.onError(new OperationReduceTest.CustomException());
-        
+
         io.verify(o).onError(any(OperationReduceTest.CustomException.class));
-        
+
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any(String.class));
-        
+
     }
+
     @Test
     public void testZipIterableHasNextThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
@@ -935,6 +937,7 @@ public class OperationZipTest {
             public Iterator<String> iterator() {
                 return new Iterator<String>() {
                     int count;
+
                     @Override
                     public boolean hasNext() {
                         if (count == 0) {
@@ -953,23 +956,24 @@ public class OperationZipTest {
                     public void remove() {
                         throw new UnsupportedOperationException("Not supported yet.");
                     }
-                    
+
                 };
             }
-            
+
         };
-        
+
         r1.zip(r2, zipr2).subscribe(o);
-        
+
         r1.onNext("one-");
         r1.onError(new OperationReduceTest.CustomException());
-        
+
         io.verify(o).onNext("one-1");
         io.verify(o).onError(any(OperationReduceTest.CustomException.class));
-        
+
         verify(o, never()).onCompleted();
-        
+
     }
+
     @Test
     public void testZipIterableNextThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
@@ -983,6 +987,7 @@ public class OperationZipTest {
             public Iterator<String> iterator() {
                 return new Iterator<String>() {
                     int count;
+
                     @Override
                     public boolean hasNext() {
                         return true;
@@ -997,20 +1002,20 @@ public class OperationZipTest {
                     public void remove() {
                         throw new UnsupportedOperationException("Not supported yet.");
                     }
-                    
+
                 };
             }
-            
+
         };
-        
+
         r1.zip(r2, zipr2).subscribe(o);
-        
+
         r1.onError(new OperationReduceTest.CustomException());
-        
+
         io.verify(o).onError(any(OperationReduceTest.CustomException.class));
-        
+
         verify(o, never()).onNext(any(String.class));
         verify(o, never()).onCompleted();
-        
+
     }
 }

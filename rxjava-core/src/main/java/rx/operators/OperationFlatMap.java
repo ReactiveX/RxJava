@@ -16,6 +16,7 @@
 package rx.operators;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
@@ -31,8 +32,10 @@ import rx.util.functions.Func2;
  */
 public final class OperationFlatMap {
     /** Utility class. */
-    private OperationFlatMap() { throw new IllegalStateException("No instances!"); }
-    
+    private OperationFlatMap() {
+        throw new IllegalStateException("No instances!");
+    }
+
     /**
      * Observable that pairs up the source values and all the derived collection
      * values and projects them via the selector.
@@ -43,6 +46,7 @@ public final class OperationFlatMap {
             ) {
         return new FlatMapPairSelector<T, U, R>(source, collectionSelector, resultSelector);
     }
+
     /**
      * Converts the result Iterable of a function into an Observable.
      */
@@ -50,10 +54,14 @@ public final class OperationFlatMap {
             Func1<? super T, ? extends Iterable<? extends U>> collectionSelector) {
         return new IterableToObservableFunc<T, U>(collectionSelector);
     }
+
     /**
      * Converts the result Iterable of a function into an Observable.
-     * @param <T> the parameter type
-     * @param <R> the result type
+     * 
+     * @param <T>
+     *            the parameter type
+     * @param <R>
+     *            the result type
      */
     private static final class IterableToObservableFunc<T, R> implements Func1<T, Observable<R>> {
         final Func1<? super T, ? extends Iterable<? extends R>> func;
@@ -67,12 +75,17 @@ public final class OperationFlatMap {
             return Observable.from(func.call(t1));
         }
     }
+
     /**
      * Pairs up the source value with each of the associated observable values
      * and uses a selector function to calculate the result sequence.
-     * @param <T> the source value type
-     * @param <U> the collection value type
-     * @param <R> the result type
+     * 
+     * @param <T>
+     *            the source value type
+     * @param <U>
+     *            the collection value type
+     * @param <R>
+     *            the result type
      */
     private static final class FlatMapPairSelector<T, U, R> implements OnSubscribeFunc<R> {
         final Observable<? extends T> source;
@@ -88,12 +101,12 @@ public final class OperationFlatMap {
         @Override
         public Subscription onSubscribe(Observer<? super R> t1) {
             CompositeSubscription csub = new CompositeSubscription();
-            
+
             csub.add(source.subscribe(new SourceObserver<T, U, R>(t1, collectionSelector, resultSelector, csub)));
-            
+
             return csub;
         }
-        
+
         /** Observes the source, starts the collections and projects the result. */
         private static final class SourceObserver<T, U, R> implements Observer<T> {
             final Observer<? super R> observer;
@@ -123,11 +136,11 @@ public final class OperationFlatMap {
                     onError(e);
                     return;
                 }
-                
+
                 SerialSubscription ssub = new SerialSubscription();
                 csub.add(ssub);
                 wip.incrementAndGet();
-                
+
                 ssub.set(coll.subscribe(new CollectionObserver<T, U, R>(this, args, ssub)));
             }
 
@@ -156,12 +169,12 @@ public final class OperationFlatMap {
                     csub.unsubscribe();
                 }
             }
-            
+
             void complete(Subscription s) {
                 csub.remove(s);
                 onCompleted();
             }
-            
+
             void emit(T t, U u) {
                 R r;
                 try {
@@ -178,6 +191,7 @@ public final class OperationFlatMap {
                 }
             }
         }
+
         /** Observe a collection and call emit with the pair of the key and the value. */
         private static final class CollectionObserver<T, U, R> implements Observer<U> {
             final SourceObserver<T, U, R> so;
@@ -206,23 +220,26 @@ public final class OperationFlatMap {
             }
         };
     }
-    
+
     /**
      * Projects the notification of an observable sequence to an observable
      * sequence and merges the results into one.
      */
-    public static <T, R> OnSubscribeFunc<R> flatMap(Observable<? extends T> source, 
-            Func1<? super T, ? extends Observable<? extends R>> onNext, 
-            Func1<? super Throwable, ? extends Observable<? extends R>> onError, 
+    public static <T, R> OnSubscribeFunc<R> flatMap(Observable<? extends T> source,
+            Func1<? super T, ? extends Observable<? extends R>> onNext,
+            Func1<? super Throwable, ? extends Observable<? extends R>> onError,
             Func0<? extends Observable<? extends R>> onCompleted) {
         return new FlatMapTransform<T, R>(source, onNext, onError, onCompleted);
     }
-    
+
     /**
      * Projects the notification of an observable sequence to an observable
      * sequence and merges the results into one.
-     * @param <T> the source value type
-     * @param <R> the result value type
+     * 
+     * @param <T>
+     *            the source value type
+     * @param <R>
+     *            the result value type
      */
     private static final class FlatMapTransform<T, R> implements OnSubscribeFunc<R> {
         final Observable<? extends T> source;
@@ -240,15 +257,19 @@ public final class OperationFlatMap {
         @Override
         public Subscription onSubscribe(Observer<? super R> t1) {
             CompositeSubscription csub = new CompositeSubscription();
-            
+
             csub.add(source.subscribe(new SourceObserver<T, R>(t1, onNext, onError, onCompleted, csub)));
-            
+
             return csub;
         }
+
         /**
          * Observe the source and merge the values.
-         * @param <T> the source value type
-         * @param <R> the result value type
+         * 
+         * @param <T>
+         *            the source value type
+         * @param <R>
+         *            the result value type
          */
         private static final class SourceObserver<T, R> implements Observer<T> {
             final Observer<? super R> observer;
@@ -318,14 +339,15 @@ public final class OperationFlatMap {
                 done = true;
                 finish();
             }
-            
+
             void subscribeInner(Observable<? extends R> o) {
                 SerialSubscription ssub = new SerialSubscription();
                 wip.incrementAndGet();
                 csub.add(ssub);
-                
+
                 ssub.set(o.subscribe(new CollectionObserver<T, R>(this, ssub)));
             }
+
             void finish() {
                 if (wip.decrementAndGet() == 0) {
                     synchronized (guard) {
@@ -335,6 +357,7 @@ public final class OperationFlatMap {
                 }
             }
         }
+
         /** Observes the collections. */
         private static final class CollectionObserver<T, R> implements Observer<R> {
             final SourceObserver<T, R> parent;

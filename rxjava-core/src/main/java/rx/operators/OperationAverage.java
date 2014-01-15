@@ -105,11 +105,13 @@ public final class OperationAverage {
             }
         });
     }
-    
+
     /**
      * Compute the average by extracting integer values from the source via an
      * extractor function.
-     * @param <T> the source value type
+     * 
+     * @param <T>
+     *            the source value type
      */
     public static final class AverageIntegerExtractor<T> implements OnSubscribeFunc<Integer> {
         final Observable<? extends T> source;
@@ -124,11 +126,13 @@ public final class OperationAverage {
         public Subscription onSubscribe(Observer<? super Integer> t1) {
             return source.subscribe(new AverageObserver(t1));
         }
+
         /** Computes the average. */
         private final class AverageObserver implements Observer<T> {
             final Observer<? super Integer> observer;
             int sum;
             int count;
+
             public AverageObserver(Observer<? super Integer> observer) {
                 this.observer = observer;
             }
@@ -158,14 +162,16 @@ public final class OperationAverage {
                     observer.onError(new IllegalArgumentException("Sequence contains no elements"));
                 }
             }
-            
+
         }
     }
-    
+
     /**
      * Compute the average by extracting long values from the source via an
-     * extractor function. 
-     * @param <T> the source value type
+     * extractor function.
+     * 
+     * @param <T>
+     *            the source value type
      */
     public static final class AverageLongExtractor<T> implements OnSubscribeFunc<Long> {
         final Observable<? extends T> source;
@@ -180,11 +186,13 @@ public final class OperationAverage {
         public Subscription onSubscribe(Observer<? super Long> t1) {
             return source.subscribe(new AverageObserver(t1));
         }
+
         /** Computes the average. */
         private final class AverageObserver implements Observer<T> {
             final Observer<? super Long> observer;
             long sum;
             int count;
+
             public AverageObserver(Observer<? super Long> observer) {
                 this.observer = observer;
             }
@@ -214,14 +222,16 @@ public final class OperationAverage {
                     observer.onError(new IllegalArgumentException("Sequence contains no elements"));
                 }
             }
-            
+
         }
     }
-    
+
     /**
      * Compute the average by extracting float values from the source via an
-     * extractor function. 
-     * @param <T> the source value type
+     * extractor function.
+     * 
+     * @param <T>
+     *            the source value type
      */
     public static final class AverageFloatExtractor<T> implements OnSubscribeFunc<Float> {
         final Observable<? extends T> source;
@@ -236,11 +246,13 @@ public final class OperationAverage {
         public Subscription onSubscribe(Observer<? super Float> t1) {
             return source.subscribe(new AverageObserver(t1));
         }
+
         /** Computes the average. */
         private final class AverageObserver implements Observer<T> {
             final Observer<? super Float> observer;
             float sum;
             int count;
+
             public AverageObserver(Observer<? super Float> observer) {
                 this.observer = observer;
             }
@@ -270,14 +282,16 @@ public final class OperationAverage {
                     observer.onError(new IllegalArgumentException("Sequence contains no elements"));
                 }
             }
-            
+
         }
     }
-    
+
     /**
      * Compute the average by extracting double values from the source via an
-     * extractor function. 
-     * @param <T> the source value type
+     * extractor function.
+     * 
+     * @param <T>
+     *            the source value type
      */
     public static final class AverageDoubleExtractor<T> implements OnSubscribeFunc<Double> {
         final Observable<? extends T> source;
@@ -292,11 +306,13 @@ public final class OperationAverage {
         public Subscription onSubscribe(Observer<? super Double> t1) {
             return source.subscribe(new AverageObserver(t1));
         }
+
         /** Computes the average. */
         private final class AverageObserver implements Observer<T> {
             final Observer<? super Double> observer;
             double sum;
             int count;
+
             public AverageObserver(Observer<? super Double> observer) {
                 this.observer = observer;
             }
@@ -326,7 +342,7 @@ public final class OperationAverage {
                     observer.onError(new IllegalArgumentException("Sequence contains no elements"));
                 }
             }
-            
+
         }
     }
 }

@@ -15,17 +15,16 @@
  */
 package rx.operators;
 
+import java.util.Iterator;
+
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.schedulers.ImmediateScheduler;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
-
-import java.util.Iterator;
 
 /**
  * Converts an Iterable sequence into an Observable.

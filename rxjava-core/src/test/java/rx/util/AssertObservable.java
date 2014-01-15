@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,8 +53,7 @@ public class AssertObservable {
 
     /**
      * Asserts that two {@link Observable}s are equal and returns an empty {@link Observable}. If
-     * they are not, an {@link Observable} is returned that calls onError with an
-     * {@link AssertionError} when subscribed to. If <code>expected</code> and <code>actual</code>
+     * they are not, an {@link Observable} is returned that calls onError with an {@link AssertionError} when subscribed to. If <code>expected</code> and <code>actual</code>
      * are <code>null</code>, they are considered equal.
      * 
      * @param message
@@ -70,8 +69,7 @@ public class AssertObservable {
 
     /**
      * Asserts that two {@link Observable}s are equal and returns an empty {@link Observable}. If
-     * they are not, an {@link Observable} is returned that calls onError with an
-     * {@link AssertionError} when subscribed to with the given message. If <code>expected</code>
+     * they are not, an {@link Observable} is returned that calls onError with an {@link AssertionError} when subscribed to with the given message. If <code>expected</code>
      * and <code>actual</code> are <code>null</code>, they are considered equal.
      * 
      * @param message

@@ -358,6 +358,7 @@ public final class OperationWindow extends ChunkedOperation {
             return Observable.from(contents);
         }
     }
+
     /**
      * Emits windows of values of the source Observable where the window boundary is
      * determined by the items of the boundary Observable.
@@ -365,6 +366,7 @@ public final class OperationWindow extends ChunkedOperation {
     public static <T, U> OnSubscribeFunc<Observable<T>> window(Observable<? extends T> source, Observable<U> boundary) {
         return new WindowViaObservable<T, U>(source, boundary);
     }
+
     /**
      * Create non-overlapping windows from the source values by using another observable's
      * values as to when to replace a window.
@@ -390,13 +392,14 @@ public final class OperationWindow extends ChunkedOperation {
                 return Subscriptions.empty();
             }
             csub.add(source.subscribe(so));
-            
+
             if (!csub.isUnsubscribed()) {
                 csub.add(boundary.subscribe(new BoundaryObserver<T, U>(so)));
             }
-            
+
             return csub;
         }
+
         /**
          * Observe the source and emit the values into the current window.
          */
@@ -416,6 +419,7 @@ public final class OperationWindow extends ChunkedOperation {
             Subject<T, T> create() {
                 return PublishSubject.create();
             }
+
             @Override
             public void onNext(T args) {
                 synchronized (guard) {
@@ -434,7 +438,7 @@ public final class OperationWindow extends ChunkedOperation {
                     }
                     Subject<T, T> s = subject;
                     subject = null;
-    
+
                     s.onError(e);
                     observer.onError(e);
                 }
@@ -449,12 +453,13 @@ public final class OperationWindow extends ChunkedOperation {
                     }
                     Subject<T, T> s = subject;
                     subject = null;
-                    
+
                     s.onCompleted();
                     observer.onCompleted();
                 }
                 cancel.unsubscribe();
             }
+
             public void replace() {
                 try {
                     synchronized (guard) {
@@ -472,6 +477,7 @@ public final class OperationWindow extends ChunkedOperation {
                 }
             }
         }
+
         /**
          * Observe the boundary and replace the window on each item.
          */

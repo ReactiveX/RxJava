@@ -55,7 +55,7 @@ public final class OperationConcat {
             @Override
             public Subscription onSubscribe(Observer<? super T> t1) {
                 return new Concat<T>(sequences).onSubscribe(t1);
-            }            
+            }
         };
     }
 

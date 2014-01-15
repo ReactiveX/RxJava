@@ -64,7 +64,7 @@ public class OperationToIterator {
 
         return new Iterator<T>() {
             private Notification<? extends T> buf;
-            
+
             @Override
             public boolean hasNext() {
                 if (buf == null) {

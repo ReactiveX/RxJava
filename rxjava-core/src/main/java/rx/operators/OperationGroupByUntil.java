@@ -1,18 +1,18 @@
- /**
-  * Copyright 2013 Netflix, Inc.
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *
-  * http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
+/**
+ * Copyright 2013 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.operators;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import rx.util.functions.Func1;
 
 /**
  * Groups the elements of an observable sequence according to a specified key selector, value selector and duration selector function.
- *
+ * 
  * @see <a href='http://msdn.microsoft.com/en-us/library/hh211932.aspx'>MSDN: Observable.GroupByUntil</a>
  * @see <a href='http://msdn.microsoft.com/en-us/library/hh229433.aspx'>MSDN: Observable.GroupByUntil</a>
  */
@@ -43,6 +43,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
     final Func1<? super TSource, ? extends TKey> keySelector;
     final Func1<? super TSource, ? extends TResult> valueSelector;
     final Func1<? super GroupedObservable<TKey, TResult>, ? extends Observable<? extends TDuration>> durationSelector;
+
     public OperationGroupByUntil(Observable<TSource> source,
             Func1<? super TSource, ? extends TKey> keySelector,
             Func1<? super TSource, ? extends TResult> valueSelector,
@@ -52,7 +53,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
         this.valueSelector = valueSelector;
         this.durationSelector = durationSelector;
     }
-    
+
     @Override
     public Subscription onSubscribe(Observer<? super GroupedObservable<TKey, TResult>> t1) {
         SerialSubscription cancel = new SerialSubscription();
@@ -60,6 +61,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
         cancel.setSubscription(sink.run());
         return cancel;
     }
+
     /** The source value sink and group manager. */
     class ResultSink implements Observer<TSource> {
         /** Guarded by gate. */
@@ -69,20 +71,22 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
         protected final Object gate = new Object();
         /** Guarded by gate. */
         protected final Map<TKey, GroupSubject<TKey, TResult>> map = new HashMap<TKey, GroupSubject<TKey, TResult>>();
+
         public ResultSink(Observer<? super GroupedObservable<TKey, TResult>> observer, Subscription cancel) {
             this.observer = observer;
             this.cancel = cancel;
         }
+
         /** Prepare the subscription tree. */
         public Subscription run() {
             SerialSubscription toSource = new SerialSubscription();
             group.add(toSource);
-            
+
             toSource.setSubscription(source.subscribe(this));
-            
+
             return group;
         }
-        
+
         @Override
         public void onNext(TSource args) {
             TKey key;
@@ -94,7 +98,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
                 onError(t);
                 return;
             }
-            
+
             GroupSubject<TKey, TResult> g;
             boolean newGroup = false;
             synchronized (key) {
@@ -105,7 +109,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
                     newGroup = true;
                 }
             }
-            
+
             if (newGroup) {
                 Observable<? extends TDuration> duration;
                 try {
@@ -114,24 +118,24 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
                     onError(t);
                     return;
                 }
-                
+
                 synchronized (gate) {
                     observer.onNext(g);
                 }
-                
+
                 SerialSubscription durationHandle = new SerialSubscription();
                 group.add(durationHandle);
-                
+
                 DurationObserver durationObserver = new DurationObserver(key, durationHandle);
                 durationHandle.setSubscription(duration.subscribe(durationObserver));
-                
+
             }
-            
+
             synchronized (gate) {
                 g.onNext(value);
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             synchronized (gate) {
@@ -144,7 +148,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             }
             cancel.unsubscribe();
         }
-        
+
         @Override
         public void onCompleted() {
             synchronized (gate) {
@@ -157,11 +161,13 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             }
             cancel.unsubscribe();
         }
+
         /** Create a new group. */
         public GroupSubject<TKey, TResult> create(TKey key) {
             PublishSubject<TResult> publish = PublishSubject.create();
             return new GroupSubject<TKey, TResult>(key, publish);
         }
+
         /** Terminate a group. */
         public void expire(TKey key, Subscription handle) {
             synchronized (gate) {
@@ -172,31 +178,35 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             }
             handle.unsubscribe();
         }
+
         /** Observe the completion of a group. */
         class DurationObserver implements Observer<TDuration> {
             final TKey key;
             final Subscription handle;
+
             public DurationObserver(TKey key, Subscription handle) {
                 this.key = key;
                 this.handle = handle;
             }
+
             @Override
             public void onNext(TDuration args) {
                 expire(key, handle);
             }
-            
+
             @Override
             public void onError(Throwable e) {
                 ResultSink.this.onError(e);
             }
-            
+
             @Override
             public void onCompleted() {
                 expire(key, handle);
             }
-            
+
         }
     }
+
     protected static <T> OnSubscribeFunc<T> neverSubscribe() {
         return new OnSubscribeFunc<T>() {
             @Override
@@ -205,33 +215,35 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             }
         };
     }
+
     /** A grouped observable with subject-like behavior. */
     public static class GroupSubject<K, V> extends GroupedObservable<K, V> implements Observer<V> {
         protected final Subject<V, V> publish;
+
         public GroupSubject(K key, Subject<V, V> publish) {
-            super(key, OperationGroupByUntil.<V>neverSubscribe());
+            super(key, OperationGroupByUntil.<V> neverSubscribe());
             this.publish = publish;
         }
-        
+
         @Override
         public Subscription subscribe(Observer<? super V> observer) {
             return publish.subscribe(observer);
         }
-        
+
         @Override
         public void onNext(V args) {
             publish.onNext(args);
         }
-        
+
         @Override
         public void onError(Throwable e) {
             publish.onError(e);
         }
-        
+
         @Override
         public void onCompleted() {
             publish.onCompleted();
         }
-        
+
     }
 }
