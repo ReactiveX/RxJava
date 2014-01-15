@@ -158,7 +158,8 @@ import rx.util.functions.Functions;
 public class Observable<T> {
 
     /**
-     * Function interface for work to be performed when an {@link Observable} is subscribed to via {@link Observable#subscribe(Observer)}
+     * Function interface for work to be performed when an {@link Observable} is subscribed to via
+     * {@link Observable#subscribe(Observer)}
      * 
      * @param <T>
      */
@@ -403,6 +404,9 @@ public class Observable<T> {
         return create(OperationAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8, o9));
     }
 
+    /**
+     * @deprecated use {@link #averageInteger}
+     */
     @Deprecated
     public final static Observable<Integer> average(Observable<Integer> source) {
         return OperationAverage.average(source);
@@ -1237,9 +1241,9 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
      * <p>
-     * Note: the item is immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is
-     * returned, it is not possible to unsubscribe from the sequence before it
-     * completes.
+     * Note: the item is immediately emitted each time an {@link Observer} subscribes. Since this
+     * occurs before the {@link Subscription} is returned, it is not possible to unsubscribe from
+     * the sequence before it completes.
      * 
      * @param t1
      *            the item
@@ -1260,9 +1264,9 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
      * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is
-     * returned, it is not possible to unsubscribe from the sequence before it
-     * completes.
+     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
+     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
+     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1287,9 +1291,9 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
      * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is
-     * returned, it is not possible to unsubscribe from the sequence before it
-     * completes.
+     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
+     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
+     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1316,9 +1320,9 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
      * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is
-     * returned, it is not possible to unsubscribe from the sequence before it
-     * completes.
+     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
+     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
+     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1347,9 +1351,9 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
      * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is
-     * returned, it is not possible to unsubscribe from the sequence before it
-     * completes.
+     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
+     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
+     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1380,9 +1384,9 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
      * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is
-     * returned, it is not possible to unsubscribe from the sequence before it
-     * completes.
+     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
+     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
+     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1415,9 +1419,9 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
      * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is
-     * returned, it is not possible to unsubscribe from the sequence before it
-     * completes.
+     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
+     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
+     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1452,9 +1456,9 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
      * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is
-     * returned, it is not possible to unsubscribe from the sequence before it
-     * completes.
+     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
+     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
+     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1491,9 +1495,9 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
      * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is
-     * returned, it is not possible to unsubscribe from the sequence before it
-     * completes.
+     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
+     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
+     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1809,7 +1813,7 @@ public class Observable<T> {
      * Flattens a sequence of Observables emitted by an Observable into one
      * Observable, without any transformation.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.oo.png">
      * <p>
      * You can combine the items emitted by multiple Observables so that they
      * act like a single Observable, by using the {@code merge} method.
@@ -1826,10 +1830,11 @@ public class Observable<T> {
     }
 
     /**
-     * Flattens a sequence of Observables emitted by an Observable into one Observable, without any transformation.
-     * The number of concurrent subscriptions to the Observables is limited by maxConcurrent.
+     * Flattens a sequence of Observables emitted by an Observable into one Observable, without any
+     * transformation. The number of concurrent subscriptions to the Observables is limited by
+     * maxConcurrent.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.oo.png">
      * <p>
      * You can combine the items emitted by multiple Observables so that they
      * act like a single Observable, by using the {@code merge} method.
@@ -2084,7 +2089,7 @@ public class Observable<T> {
     /**
      * Flattens an Observable array into one Observable, without any transformation.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.io.png">
      * <p>
      * You can combine the items emitted by multiple Observables so that they
      * act like a single Observable, by using the {@code merge} method.
@@ -2103,7 +2108,7 @@ public class Observable<T> {
     /**
      * Flattens an Observable array into one Observable, without any transformation.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.ios.png">
      * <p>
      * You can combine the items emitted by multiple Observables so that they
      * act like a single Observable, by using the {@code merge} method.
@@ -2122,14 +2127,15 @@ public class Observable<T> {
     }
 
     /**
-     * This behaves like {@link #merge(Observable)} except that if any of the
-     * merged Observables notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain
-     * from propagating that error notification until all of the merged
-     * Observables have finished emitting items.
+     * This behaves like {@link #merge(Observable)} except that if any of the merged Observables
+     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain
+     * from propagating that error notification until all of the merged Observables have finished
+     * emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
+     * Even if multiple merged Observables send {@code onError} notifications,
+     * {@code mergeDelayError} will only invoke the {@code onError} method of
      * its Observers once.
      * <p>
      * This method allows an Observer to receive all successfully emitted items
@@ -2149,13 +2155,14 @@ public class Observable<T> {
 
     /**
      * This behaves like {@link #merge(Observable, Observable)} except that if
-     * any of the merged Observables notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain
-     * from propagating that error notification until all of the merged
-     * Observables have finished emitting items.
+     * any of the merged Observables notify of an error via {@link Observer#onError onError},
+     * {@code mergeDelayError} will refrain from propagating that error notification until all of
+     * the merged Observables have finished emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
+     * Even if multiple merged Observables send {@code onError} notifications,
+     * {@code mergeDelayError} will only invoke the {@code onError} method of
      * its Observers once.
      * <p>
      * This method allows an Observer to receive all successfully emitted items
@@ -2178,14 +2185,15 @@ public class Observable<T> {
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable)} except that if any of the merged Observables notify of an error via {@link Observer#onError onError},
-     * {@code mergeDelayError} will refrain
-     * from propagating that error notification until all of the merged
-     * Observables have finished emitting items.
+     * This behaves like {@link #merge(Observable, Observable, Observable)} except that if any of
+     * the merged Observables notify of an error via {@link Observer#onError onError},
+     * {@code mergeDelayError} will refrain from propagating that error notification until all of
+     * the merged Observables have finished emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
+     * Even if multiple merged Observables send {@code onError} notifications,
+     * {@code mergeDelayError} will only invoke the {@code onError} method of
      * its Observers once.
      * <p>
      * This method allows an Observer to receive all successfully emitted items
@@ -2210,14 +2218,15 @@ public class Observable<T> {
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable)} except
-     * that if any of the merged Observables notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain
-     * from propagating that error notification until all of the merged
-     * Observables have finished emitting items.
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable)} except that
+     * if any of the merged Observables notify of an error via {@link Observer#onError onError},
+     * {@code mergeDelayError} will refrain from propagating that error notification until all of
+     * the merged Observables have finished emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
+     * Even if multiple merged Observables send {@code onError} notifications,
+     * {@code mergeDelayError} will only invoke the {@code onError} method of
      * its Observers once.
      * <p>
      * This method allows an Observer to receive all successfully emitted items
@@ -2244,14 +2253,15 @@ public class Observable<T> {
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables notify of an error via {@link Observer#onError onError}
-     * , {@code mergeDelayError} will refrain
-     * from propagating that error notification until all of the merged
-     * Observables have finished emitting items.
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable)}
+     * except that if any of the merged Observables notify of an error via
+     * {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
+     * error notification until all of the merged Observables have finished emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
+     * Even if multiple merged Observables send {@code onError} notifications,
+     * {@code mergeDelayError} will only invoke the {@code onError} method of
      * its Observers once.
      * <p>
      * This method allows an Observer to receive all successfully emitted items
@@ -2280,14 +2290,15 @@ public class Observable<T> {
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables notify of an error via
-     * {@link Observer#onError onError}, {@code mergeDelayError} will refrain
-     * from propagating that error notification until all of the merged
-     * Observables have finished emitting items.
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable)}
+     * except that if any of the merged Observables notify of an error via
+     * {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
+     * error notification until all of the merged Observables have finished emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
+     * Even if multiple merged Observables send {@code onError} notifications,
+     * {@code mergeDelayError} will only invoke the {@code onError} method of
      * its Observers once.
      * <p>
      * This method allows an Observer to receive all successfully emitted items
@@ -2318,14 +2329,15 @@ public class Observable<T> {
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables notify of an error via
-     * {@link Observer#onError onError}, {@code mergeDelayError} will refrain
-     * from propagating that error notification until all of the merged
-     * Observables have finished emitting items.
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable)}
+     * except that if any of the merged Observables notify of an error via
+     * {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
+     * error notification until all of the merged Observables have finished emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
+     * Even if multiple merged Observables send {@code onError} notifications,
+     * {@code mergeDelayError} will only invoke the {@code onError} method of
      * its Observers once.
      * <p>
      * This method allows an Observer to receive all successfully emitted items
@@ -2358,14 +2370,16 @@ public class Observable<T> {
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables notify of an error
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)}
+     * except that if any of the merged Observables notify of an error
      * via {@link Observer#onError onError}, {@code mergeDelayError} will refrain
      * from propagating that error notification until all of the merged
      * Observables have finished emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
+     * Even if multiple merged Observables send {@code onError} notifications,
+     * {@code mergeDelayError} will only invoke the {@code onError} method of
      * its Observers once.
      * <p>
      * This method allows an Observer to receive all successfully emitted items
@@ -2400,14 +2414,16 @@ public class Observable<T> {
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables notify
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)}
+     * except that if any of the merged Observables notify
      * of an error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain
      * from propagating that error notification until all of the merged
      * Observables have finished emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
+     * Even if multiple merged Observables send {@code onError} notifications,
+     * {@code mergeDelayError} will only invoke the {@code onError} method of
      * its Observers once.
      * <p>
      * This method allows an Observer to receive all successfully emitted items
@@ -2489,11 +2505,11 @@ public class Observable<T> {
      * be emitted and <code>parallelObservables</code> is 8, the 100 will be
      * grouped onto 8 output Observables.
      * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallelMerge.png">
+     * <p>
      * This is a mechanism for efficiently processing <i>n</i> number of
      * Observables on a smaller <i>m</i> number of resources (typically CPU
      * cores).
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallelMerge.png">
      * 
      * @param parallelObservables
      *            the number of Observables to merge into
@@ -2516,11 +2532,11 @@ public class Observable<T> {
      * be emitted and <code>parallelObservables</code> is 8, the 100 will be
      * grouped onto 8 output Observables.
      * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallelMerge.png">
+     * <p>
      * This is a mechanism for efficiently processing <i>n</i> number of
      * Observables on a smaller <i>m</i> number of resources (typically CPU
      * cores).
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallelMerge.png">
      * 
      * @param parallelObservables
      *            the number of Observables to merge into
@@ -2539,7 +2555,6 @@ public class Observable<T> {
      * specified range.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/range.png">
-     * <p>
      * 
      * @param start
      *            the value of the first Integer in the sequence
@@ -2627,6 +2642,9 @@ public class Observable<T> {
         return OperationSequenceEqual.sequenceEqual(first, second, equality);
     }
 
+    /**
+     * @deprecated use {@link #sumInteger}
+     */
     @Deprecated
     public final static Observable<Integer> sum(Observable<Integer> source) {
         return OperationSum.sum(source);
@@ -3925,7 +3943,10 @@ public class Observable<T> {
     }
 
     /**
-     * Create an Observable that emits non-overlapping buffered items once the boundary observable emits an item.
+     * Create an Observable that emits non-overlapping buffered items once the boundary observable
+     * emits an item.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer8.png">
      * <p>
      * Completion of either this or the boundary observable causes the returned observable
      * to emit the latest buffer and complete.
@@ -3942,7 +3963,10 @@ public class Observable<T> {
     }
 
     /**
-     * Create an Observable that emits non-overlapping buffered items once the boundary observable emits an item.
+     * Create an Observable that emits non-overlapping buffered items once the boundary observable
+     * emits an item.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer8.png">
      * <p>
      * Completion of either this or the boundary observable causes the returned observable
      * to emit the latest buffer and complete.
@@ -4005,7 +4029,8 @@ public class Observable<T> {
     /**
      * Collect values into a single mutable data structure.
      * <p>
-     * A simplified version of `reduce` that does not need to return the state on each pass.
+     * A simplified version of <code>reduce</code> that does not need to return the state on each
+     * pass.
      * <p>
      * 
      * @param state
@@ -4093,11 +4118,14 @@ public class Observable<T> {
      * Create an Observable that ignores elements from this observable
      * sequence which are followed by another value within a computed
      * debounce duration.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/debounce.f.png">
      * 
      * @param <U>
      *            the debounce value type (ignored)
      * @param debounceSelector
-     *            function to retrieve a sequence indicating the throttle duration for each given element.
+     *            function to retrieve a sequence indicating the throttle duration for each given
+     *            element
      * @return an Observable that ignores elements from this observable
      *         sequence which are followed by another value within a computed
      *         debounce duration
@@ -4193,7 +4221,10 @@ public class Observable<T> {
     }
 
     /**
-     * Create an Observable which delays the subscription and events via another Observables on a per item-basis.
+     * Create an Observable which delays the subscription and events via another Observables on a
+     * per item-basis.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.oo.png">
      * <p>
      * Note: onError event is immediately propagated.
      * 
@@ -4219,6 +4250,8 @@ public class Observable<T> {
 
     /**
      * Create an Observable which delays the events via another Observable on a per item-basis.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.o.png">
      * <p>
      * Note: onError event is immediately propagated.
      * 
@@ -4314,9 +4347,9 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that reverses the effect of {@link #materialize materialize} by transforming the {@link Notification} objects emitted by the source Observable into the items or
-     * notifications
-     * they represent.
+     * Returns an Observable that reverses the effect of {@link #materialize materialize} by
+     * transforming the {@link Notification} objects emitted by the source Observable into the items
+     * or notifications they represent.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/dematerialize.png">
      * 
@@ -4598,10 +4631,10 @@ public class Observable<T> {
      * otherwise <code>false</code>. Note: this always emits <code>false</code>
      * if the source {@link Observable} is empty.
      * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/exists.png">
+     * <p>
      * In Rx.Net this is the <code>any</code> operator but we renamed it in
      * RxJava to better match Java naming idioms.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/exists.png">
      * 
      * @param predicate
      *            the condition to test every item emitted by the source
@@ -4632,7 +4665,8 @@ public class Observable<T> {
     }
 
     /**
-     * Registers an {@link Action0} to be called when this Observable invokes {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
+     * Registers an {@link Action0} to be called when this Observable invokes
+     * {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/finallyDo.png">
      * 
@@ -5191,8 +5225,8 @@ public class Observable<T> {
     }
 
     /**
-     * Create an Observable that projects the notification of an observable sequence to an observable
-     * sequence and merges the results into one.
+     * Create an Observable that projects the notification of an observable sequence to an
+     * observable sequence and merges the results into one.
      * 
      * @param <R>
      *            the result type
@@ -5215,6 +5249,8 @@ public class Observable<T> {
     /**
      * Create an Observable that applies a function to the pair of values from the source
      * Observable and the collection Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.r.png">
      * 
      * @param <U>
      *            the element type of the collection Observable
@@ -5235,6 +5271,8 @@ public class Observable<T> {
     /**
      * Create an Observable that merges the values of the iterables returned by the
      * collectionSelector for each source value.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMapIterable.png">
      * 
      * @param <R>
      *            the result value type
@@ -5251,6 +5289,8 @@ public class Observable<T> {
     /**
      * Create an Observable that applies a function to the pair of values from the source
      * Observable and the collection Iterable sequence.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMapIterable.r.png">
      * 
      * @param <U>
      *            the collection element type
@@ -5532,20 +5572,22 @@ public class Observable<T> {
      *            take over if the source Observable encounters an
      *            error
      * @return the original Observable, with appropriately modified behavior
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onexceptionresumenextviaobservable">RxJava Wiki: onExceptionResumeNextViaObservable()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onexceptionresumenext">RxJava Wiki: onExceptionResumeNext()</a>
      */
     public final Observable<T> onExceptionResumeNext(final Observable<? extends T> resumeSequence) {
         return create(OperationOnExceptionResumeNextViaObservable.onExceptionResumeNextViaObservable(this, resumeSequence));
     }
 
     /**
-     * Perform work in parallel by sharding an {@code Observable<T>} on a {@link Schedulers#threadPoolForComputation()} {@link Scheduler} and
+     * Perform work in parallel by sharding an {@code Observable<T>} on a
+     * {@link Schedulers#threadPoolForComputation()} {@link Scheduler} and
      * return an {@code Observable<R>} with the output.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallel.png">
      * 
      * @param f
-     *            a {@link Func1} that applies Observable operators to {@code Observable<T>} in parallel and returns an {@code Observable<R>}
+     *            a {@link Func1} that applies Observable operators to {@code Observable<T>} in
+     *            parallel and returns an {@code Observable<R>}
      * @return an Observable with the output of the {@link Func1} executed on a {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#parallel">RxJava Wiki: parallel()</a>
      */
@@ -5554,12 +5596,14 @@ public class Observable<T> {
     }
 
     /**
-     * Perform work in parallel by sharding an {@code Observable<T>} on a {@link Scheduler} and return an {@code Observable<R>} with the output.
+     * Perform work in parallel by sharding an {@code Observable<T>} on a {@link Scheduler} and
+     * return an {@code Observable<R>} with the output.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallel.png">
      * 
      * @param f
-     *            a {@link Func1} that applies Observable operators to {@code Observable<T>} in parallel and returns an {@code Observable<R>}
+     *            a {@link Func1} that applies Observable operators to {@code Observable<T>} in
+     *            parallel and returns an {@code Observable<R>}
      * @param s
      *            a {@link Scheduler} to perform the work on
      * @return an Observable with the output of the {@link Func1} executed on a {@link Scheduler}
@@ -5582,9 +5626,9 @@ public class Observable<T> {
     }
 
     /**
-     * Returns a {@link ConnectableObservable}, which waits until its {@link ConnectableObservable#connect connect} method is called before it
-     * begins emitting items to those {@link Observer}s that have subscribed to
-     * it.
+     * Returns a {@link ConnectableObservable}, which waits until its
+     * {@link ConnectableObservable#connect connect} method is called before it
+     * begins emitting items to those {@link Observer}s that have subscribed to it.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.png">
      * 
@@ -5600,6 +5644,8 @@ public class Observable<T> {
      * Create an observable sequence that is the result of invoking the
      * selector on a connectable observable sequence that shares a single
      * subscription to the underlying sequence.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.f.png">
      * 
      * @param <R>
      *            the result type
@@ -5623,8 +5669,11 @@ public class Observable<T> {
     }
 
     /**
-     * Create an observable sequence that is the result of invoking the selector on a connectable observable sequence that shares a single subscription to the underlying sequence and starts with
-     * initialValue.
+     * Create an observable sequence that is the result of invoking the selector on a connectable
+     * observable sequence that shares a single subscription to the underlying sequence and starts
+     * with initialValue.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.if.png">
      * 
      * @param <R>
      *            the result type
@@ -5651,6 +5700,8 @@ public class Observable<T> {
     /**
      * Create a connectable observable sequence that shares a single
      * subscription to the underlying sequence and starts with initialValue.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.i.png">
      * 
      * @param initialValue
      *            the initial value of the underlying BehaviorSubject
@@ -5678,6 +5729,8 @@ public class Observable<T> {
      * selector on a connectable observable sequence that shares a single
      * subscription to the underlying sequence containing only the last
      * notification.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishLast.f.png">
      * 
      * @param <R>
      *            the result type
@@ -6121,8 +6174,8 @@ public class Observable<T> {
     }
 
     /**
-     * Returns a connectable observable sequence that shares a single
-     * subscription to the source Observable and replays at most {@code bufferSize} items emitted by that Observable.
+     * Returns a connectable observable sequence that shares a single subscription to the source
+     * Observable and replays at most {@code bufferSize} items emitted by that Observable.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ns.png">
      * 
@@ -7947,6 +8000,8 @@ public class Observable<T> {
     /**
      * Create an Observable which completes if either the first item or any subsequent item
      * doesn't arrive within the time window specified by the timeout selectors' Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout5.png">
      * 
      * @param <U>
      *            the first timeout value type (ignored)
@@ -7969,9 +8024,11 @@ public class Observable<T> {
     }
 
     /**
-     * Create an Observable which switches to another Observable
-     * if either the first item or any subsequent item
-     * doesn't arrive within the time window specified by the timeout selectors' Observable.
+     * Create an Observable which switches to another Observable if either the first item or any
+     * subsequent item doesn't arrive within the time window specified by the timeout selectors'
+     * Observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout6.png">
      * 
      * @param <U>
      *            the first timeout value type (ignored)
@@ -8003,6 +8060,8 @@ public class Observable<T> {
      * Create an observable which completes if a source item doesn't arrive after the
      * previous one in the time window specified by the per-item observable.
      * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout3.png">
+     * <p>
      * The arrival of the first source item is not timed out.
      * 
      * @param <U>
@@ -8018,9 +8077,10 @@ public class Observable<T> {
     }
 
     /**
-     * Create an observable which switches to the other Observable if a source
-     * item doesn't arrive after the
-     * previous one in the time window specified by the per-item observable.
+     * Create an observable which switches to the other Observable if a source item doesn't arrive
+     * after the previous one in the time window specified by the per-item observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout4.png">
      * <p>
      * The arrival of the first source item is not timed out.
      * 
@@ -8155,7 +8215,8 @@ public class Observable<T> {
     }
 
     /**
-     * Wraps each item emitted by a source Observable in a {@link Timestamped} object with timestamps provided by the given Scheduler.
+     * Wraps each item emitted by a source Observable in a {@link Timestamped} object with
+     * timestamps provided by the given Scheduler.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timestamp.s.png">
      * 
@@ -8692,6 +8753,8 @@ public class Observable<T> {
      * Create an Observable which emits non-overlapping windows of items it collects from the
      * source observable where the boundary of each window is determined by the items
      * emitted from the boundary observable.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window8.png">
      * 
      * @param <U>
      *            the window element type (ignored)
@@ -8709,6 +8772,8 @@ public class Observable<T> {
     /**
      * Return an Observable that pairs up values from this Observable and an
      * Iterable sequence and applies a function.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.i.png">
      * <p>
      * Note that the other Iterable is evaluated as items appear from this
      * Observable and is not pre-consumed, allowing zipping infinite streams
@@ -8733,6 +8798,8 @@ public class Observable<T> {
     /**
      * Return an Observable that pairs up values from this Observable and the other
      * Observable and applies a function.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
      * 
      * @param <T2>
      *            the other value type
