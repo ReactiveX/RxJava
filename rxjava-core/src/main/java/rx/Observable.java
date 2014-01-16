@@ -5216,7 +5216,7 @@ public class Observable<T> {
      * @return an Observable that emits the result of applying the
      *         transformation function to each item emitted by the source
      *         Observable and merging the results of the Observables obtained
-     *         from this transformation.
+     *         from this transformation
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mapmany-or-flatmap-and-mapmanydelayerror">RxJava Wiki: flatMap()</a>
      * @see #flatMap(Func1)
      */
@@ -5227,6 +5227,8 @@ public class Observable<T> {
     /**
      * Create an Observable that projects the notification of an observable sequence to an
      * observable sequence and merges the results into one.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.nce.png">
      * 
      * @param <R>
      *            the result type
@@ -5236,8 +5238,8 @@ public class Observable<T> {
      *            function returning a collection to merge for an onError event
      * @param onCompleted
      *            function returning a collection to merge for an onCompleted event
-     * @return an Observable that projects the notification of an observable sequence to an observable
-     *         sequence and merges the results into one.
+     * @return an Observable that projects the notification of an observable sequence to an
+     *         observable sequence and merges the results into one
      */
     public final <R> Observable<R> mergeMap(
             Func1<? super T, ? extends Observable<? extends R>> onNext,
