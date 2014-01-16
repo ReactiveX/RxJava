@@ -5870,6 +5870,8 @@ public class Observable<T> {
      * Returns an observable sequence that is the result of invoking the
      * selector on a connectable observable sequence that shares a single
      * subscription to the underlying sequence and starts with initial value.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.f.png">
      * 
      * @param <R>
      *            the return element type
@@ -5897,6 +5899,8 @@ public class Observable<T> {
      * Returns an observable sequence that is the result of invoking the
      * selector on a connectable observable sequence that shares a single
      * subscription to the underlying sequence replaying {@code bufferSize} notifications.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fn.png">
      * 
      * @param <R>
      *            the return element type
@@ -5924,7 +5928,10 @@ public class Observable<T> {
     /**
      * Returns an observable sequence that is the result of invoking the
      * selector on a connectable observable sequence that shares a single
-     * subscription to the underlying sequence replaying {@code bufferSize} notifications within window.
+     * subscription to the underlying sequence replaying {@code bufferSize}
+     * notifications within window.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fnt.png">
      * 
      * @param <R>
      *            the return element type
@@ -5951,7 +5958,10 @@ public class Observable<T> {
     /**
      * Returns an observable sequence that is the result of invoking the
      * selector on a connectable observable sequence that shares a single
-     * subscription to the underlying sequence replaying {@code bufferSize} notifications within window.
+     * subscription to the underlying sequence replaying {@code bufferSize}
+     * notifications within window.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fnts.png">
      * 
      * @param <R>
      *            the return element type
@@ -5990,6 +6000,8 @@ public class Observable<T> {
      * Returns an observable sequence that is the result of invoking the
      * selector on a connectable observable sequence that shares a single
      * subscription to the underlying sequence replaying {@code bufferSize} notifications.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fns.png">
      * 
      * @param <R>
      *            the return element type
@@ -6021,6 +6033,8 @@ public class Observable<T> {
      * selector on a connectable observable sequence that shares a single
      * subscription to the underlying sequence replaying all notifications
      * within window.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ft.png">
      * 
      * @param <R>
      *            the return element type
@@ -6048,6 +6062,8 @@ public class Observable<T> {
      * selector on a connectable observable sequence that shares a single
      * subscription to the underlying sequence replaying all notifications
      * within window.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fts.png">
      * 
      * @param <R>
      *            the return element type
@@ -6082,6 +6098,8 @@ public class Observable<T> {
      * Returns an observable sequence that is the result of invoking the
      * selector on a connectable observable sequence that shares a single
      * subscription to the underlying sequence replaying all notifications.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fs.png">
      * 
      * @param <R>
      *            the return element type
