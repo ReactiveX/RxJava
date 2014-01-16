@@ -19,6 +19,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.operators.OperationRefCount;
+import rx.util.functions.Action2;
 
 /**
  * A ConnectableObservable resembles an ordinary {@link Observable}, except that it does not begin
@@ -37,7 +38,7 @@ import rx.operators.OperationRefCount;
 
 public abstract class ConnectableObservable<T> extends Observable<T> {
 
-    protected ConnectableObservable(OnSubscribeFunc<T> onSubscribe) {
+    protected ConnectableObservable(Action2<Observer<? super T>, OperatorSubscription> onSubscribe) {
         super(onSubscribe);
     }
 

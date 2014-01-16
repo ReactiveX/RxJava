@@ -25,6 +25,7 @@ import rx.Notification;
 import rx.Observer;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
+import rx.util.functions.Action2;
 
 /**
  * Subject that retains all events and will replay them to an {@link Observer} that subscribes.
@@ -58,7 +59,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
         final ReplayState<T> state = new ReplayState<T>(initialCapacity);
 
-        OnSubscribeFunc<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+        Action2<Observer<? super T>, OperatorSubscription> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
                  * This function executes at beginning of subscription.
                  * We want to replay history with the subscribing thread
@@ -107,7 +108,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     private final SubjectSubscriptionManager<T> subscriptionManager;
     private final ReplayState<T> state;
 
-    protected ReplaySubject(OnSubscribeFunc<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, ReplayState<T> state) {
+    protected ReplaySubject(Action2<Observer<? super T>, OperatorSubscription> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, ReplayState<T> state) {
         super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
         this.state = state;

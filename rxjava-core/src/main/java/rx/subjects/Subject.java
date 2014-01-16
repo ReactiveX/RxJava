@@ -17,9 +17,10 @@ package rx.subjects;
 
 import rx.Observable;
 import rx.Observer;
+import rx.util.functions.Action2;
 
 public abstract class Subject<T, R> extends Observable<R> implements Observer<T> {
-    protected Subject(OnSubscribeFunc<R> onSubscribe) {
+    protected Subject(Action2<Observer<? super R>, OperatorSubscription> onSubscribe) {
         super(onSubscribe);
     }
 }

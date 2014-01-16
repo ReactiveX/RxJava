@@ -22,6 +22,7 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
+import rx.Observable.OperatorSubscription;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
@@ -30,6 +31,8 @@ import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action2;
+import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
 /**
@@ -212,10 +215,16 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
         protected final Subject<V, V> publish;
 
         public GroupSubject(K key, final Subject<V, V> publish) {
-            super(key, new OnSubscribeFunc<V>() {
+            super(key, new Action2<Observer<? super V>, OperatorSubscription>() {
                 @Override
-                public Subscription onSubscribe(Observer<? super V> o) {
-                    return publish.subscribe(o);
+                public void call(Observer<? super V> o, final OperatorSubscription os) {
+                    publish.subscribe(o, new Func0<OperatorSubscription>() {
+
+                        @Override
+                        public OperatorSubscription call() {
+                            return os;
+                        }
+                    });
                 }
             });
             this.publish = publish;

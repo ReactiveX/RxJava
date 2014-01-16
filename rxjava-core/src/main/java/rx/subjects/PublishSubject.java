@@ -22,6 +22,7 @@ import rx.Notification;
 import rx.Observer;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
+import rx.util.functions.Action2;
 
 /**
  * Subject that, once and {@link Observer} has subscribed, publishes all subsequent events to the subscriber.
@@ -53,7 +54,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
         // set a default value so subscriptions will immediately receive this until a new notification is received
         final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>();
 
-        OnSubscribeFunc<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+        Action2<Observer<? super T>, OperatorSubscription> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
                  * This function executes at beginning of subscription.
                  * 
@@ -87,7 +88,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
     private final SubjectSubscriptionManager<T> subscriptionManager;
     final AtomicReference<Notification<T>> lastNotification;
 
-    protected PublishSubject(OnSubscribeFunc<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
+    protected PublishSubject(Action2<Observer<? super T>, OperatorSubscription> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
         super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;

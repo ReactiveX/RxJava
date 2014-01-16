@@ -23,6 +23,7 @@ import rx.observables.ConnectableObservable;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action2;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
@@ -40,10 +41,15 @@ public class OperationMulticast {
         private Subscription subscription;
 
         public MulticastConnectableObservable(Observable<? extends T> source, final Subject<? super T, ? extends R> subject) {
-            super(new OnSubscribeFunc<R>() {
+            super(new Action2<Observer<? super R>, OperatorSubscription>() {
                 @Override
-                public Subscription onSubscribe(Observer<? super R> observer) {
-                    return subject.subscribe(observer);
+                public void call(Observer<? super R> observer, final OperatorSubscription os) {
+                    subject.subscribe(observer, new Func0<OperatorSubscription>() {
+
+                        @Override
+                        public rx.Observable.OperatorSubscription call() {
+                            return os;
+                        }});
                 }
             });
             this.source = source;

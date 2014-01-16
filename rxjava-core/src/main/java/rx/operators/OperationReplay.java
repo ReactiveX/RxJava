@@ -26,14 +26,15 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.Observable.OperatorSubscription;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subjects.Subject;
-import rx.subscriptions.Subscriptions;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
+import rx.util.functions.Action2;
+import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
 
@@ -137,11 +138,18 @@ public final class OperationReplay {
     /**
      * Return an OnSubscribeFunc which delegates the subscription to the given observable.
      */
-    public static <T> OnSubscribeFunc<T> subscriberOf(final Observable<T> target) {
-        return new OnSubscribeFunc<T>() {
+    public static <T> Action2<Observer<? super T>, OperatorSubscription> subscriberOf(final Observable<T> target) {
+        return new Action2<Observer<? super T>, OperatorSubscription>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> t1) {
-                return target.subscribe(t1);
+            public void call(Observer<? super T> t1, final OperatorSubscription os) {
+                target.subscribe(t1, new Func0<OperatorSubscription>() {
+
+                    @Override
+                    public OperatorSubscription call() {
+                        return os;
+                    }
+                    
+                });
             }
         };
     }
@@ -154,7 +162,7 @@ public final class OperationReplay {
         private final Subject<R, R> subject;
         private final Func1<T, R> selector;
 
-        public MappingSubject(OnSubscribeFunc<R> func, Subject<R, R> subject, Func1<T, R> selector) {
+        public MappingSubject(Action2<Observer<? super R>, OperatorSubscription> func, Subject<R, R> subject, Func1<T, R> selector) {
             super(func);
             this.subject = subject;
             this.selector = selector;
@@ -184,7 +192,7 @@ public final class OperationReplay {
         /** The wrapped subject. */
         final Subject<T, T> subject;
 
-        public SubjectWrapper(OnSubscribeFunc<T> func, Subject<T, T> subject) {
+        public SubjectWrapper(Action2<Observer<? super T>, OperatorSubscription> func, Subject<T, T> subject) {
             super(func);
             this.subject = subject;
         }
@@ -708,7 +716,7 @@ public final class OperationReplay {
         protected final Func1<? super TInput, ? extends TIntermediate> intermediateSelector;
 
         private CustomReplaySubject(
-                Observable.OnSubscribeFunc<TResult> onSubscribe,
+                Action2<Observer<? super TResult>, OperatorSubscription> onSubscribe,
                 ReplayState<TIntermediate, TResult> state,
                 Func1<? super TInput, ? extends TIntermediate> intermediateSelector) {
             super(onSubscribe);
@@ -782,7 +790,7 @@ public final class OperationReplay {
      *            the value type of the observers subscribing to this subject
      */
     protected static final class CustomReplaySubjectSubscribeFunc<TIntermediate, TResult>
-            implements Observable.OnSubscribeFunc<TResult> {
+            implements Action2<Observer<? super TResult>, OperatorSubscription> {
 
         private final ReplayState<TIntermediate, TResult> state;
 
@@ -791,14 +799,14 @@ public final class OperationReplay {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super TResult> t1) {
+        public void call(Observer<? super TResult> t1, OperatorSubscription os) {
             VirtualList<TIntermediate> values;
             Throwable error;
             state.lock();
             try {
                 if (!state.done) {
                     state.onSubscription.call();
-                    return state.addReplayer(t1);
+                    os.add(state.addReplayer(t1));
                 }
                 values = state.values;
                 error = state.error;
@@ -811,7 +819,7 @@ public final class OperationReplay {
                     t1.onNext(state.resultSelector.call(values.get(i)));
                 } catch (Throwable t) {
                     t1.onError(t);
-                    return Subscriptions.empty();
+                    return;
                 }
             }
             if (error != null) {
@@ -819,7 +827,7 @@ public final class OperationReplay {
             } else {
                 t1.onCompleted();
             }
-            return Subscriptions.empty();
+            return;
         }
     }
 }

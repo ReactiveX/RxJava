@@ -22,9 +22,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
+import rx.Observable.OperatorSubscription;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
+import rx.util.functions.Action2;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
 
@@ -162,18 +164,16 @@ public final class OperationGroupBy {
 
         static <K, T> GroupedSubject<K, T> create(final K key, final GroupBy<K, T> parent) {
             final AtomicReference<Observer<? super T>> subscribedObserver = new AtomicReference<Observer<? super T>>(OperationGroupBy.<T> emptyObserver());
-            return new GroupedSubject<K, T>(key, new OnSubscribeFunc<T>() {
-
-                private final SafeObservableSubscription subscription = new SafeObservableSubscription();
+            return new GroupedSubject<K, T>(key, new Action2<Observer<? super T>, OperatorSubscription>() {
 
                 @Override
-                public Subscription onSubscribe(Observer<? super T> observer) {
+                public void call(Observer<? super T> observer, OperatorSubscription os) {
                     // register Observer
                     subscribedObserver.set(observer);
 
                     parent.subscribeKey(key);
 
-                    return subscription.wrap(new Subscription() {
+                    os.add(new Subscription() {
                         @Override
                         public void unsubscribe() {
                             // we remove the Observer so we stop emitting further events (they will be ignored if parent continues to send)
@@ -188,7 +188,7 @@ public final class OperationGroupBy {
 
         private final AtomicReference<Observer<? super T>> subscribedObserver;
 
-        public GroupedSubject(K key, OnSubscribeFunc<T> onSubscribe, AtomicReference<Observer<? super T>> subscribedObserver) {
+        public GroupedSubject(K key, Action2<Observer<? super T>, OperatorSubscription> onSubscribe, AtomicReference<Observer<? super T>> subscribedObserver) {
             super(key, onSubscribe);
             this.subscribedObserver = subscribedObserver;
         }
