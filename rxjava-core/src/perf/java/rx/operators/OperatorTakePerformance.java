@@ -27,11 +27,11 @@ public class OperatorTakePerformance extends AbstractPerformanceTester {
     /**
      * Observable.range(0, 10).take(5);
      * 
-     * Run: 10 - 6,660,042 ops/sec
-     * Run: 11 - 6,721,423 ops/sec
-     * Run: 12 - 6,556,035 ops/sec
-     * Run: 13 - 6,692,284 ops/sec
-     * Run: 14 - 6,731,287 ops/sec
+     * Run: 10 - 8,780,556 ops/sec
+     * Run: 11 - 8,822,590 ops/sec
+     * Run: 12 - 8,842,733 ops/sec
+     * Run: 13 - 8,825,486 ops/sec
+     * Run: 14 - 8,771,545 ops/sec
      */
     public long timeTake5() {
 

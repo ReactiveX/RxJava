@@ -47,15 +47,20 @@ public final class OperatorTake<T> implements Func2<Observer<? super T>, Operato
         return new Observer<T>() {
 
             int count = 0;
+            boolean completed = false;
 
             @Override
             public void onCompleted() {
-                o.onCompleted();
+                if (!completed) {
+                    o.onCompleted();
+                }
             }
 
             @Override
             public void onError(Throwable e) {
-                o.onError(e);
+                if (!completed) {
+                    o.onError(e);
+                }
             }
 
             @Override
@@ -63,6 +68,7 @@ public final class OperatorTake<T> implements Func2<Observer<? super T>, Operato
                 if (!s.isUnsubscribed()) {
                     o.onNext(i);
                     if (++count >= limit) {
+                        completed = true;
                         o.onCompleted();
                         s.unsubscribe();
                     }
