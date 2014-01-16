@@ -39,7 +39,7 @@ import rx.operators.OperationAsObservable;
 import rx.operators.OperationAverage;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCache;
-import rx.operators.OperationCast;
+import rx.operators.OperatorCast;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDebounce;
@@ -60,7 +60,7 @@ import rx.operators.OperationGroupJoin;
 import rx.operators.OperationInterval;
 import rx.operators.OperationJoin;
 import rx.operators.OperationJoinPatterns;
-import rx.operators.OperationMap;
+import rx.operators.OperatorMap;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMerge;
 import rx.operators.OperationMergeDelayError;
@@ -95,7 +95,7 @@ import rx.operators.OperationThrottleFirst;
 import rx.operators.OperationTimeInterval;
 import rx.operators.OperationTimeout;
 import rx.operators.OperationTimer;
-import rx.operators.OperationTimestamp;
+import rx.operators.OperatorTimestamp;
 import rx.operators.OperationToMap;
 import rx.operators.OperationToMultimap;
 import rx.operators.OperationToObservableFuture;
@@ -4043,7 +4043,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211842.aspx">MSDN: Observable.Cast</a>
      */
     public final <R> Observable<R> cast(final Class<R> klass) {
-        return create(OperationCast.cast(this, klass));
+        return bind(new OperatorCast<T, R>(klass));
     }
 
     /**
@@ -5061,7 +5061,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244306.aspx">MSDN: Observable.Select</a>
      */
     public final <R> Observable<R> map(Func1<? super T, ? extends R> func) {
-        return create(OperationMap.map(this, func));
+        return bind(new OperatorMap<T, R>(func));
     }
 
     /**
@@ -5089,6 +5089,7 @@ public class Observable<T> {
     }
 
     /**
+<<<<<<< HEAD
      * Returns an Observable that applies the specified function to each item emitted by an
      * Observable and emits the results of these function applications.
      * <p>
@@ -5111,6 +5112,10 @@ public class Observable<T> {
     /**
      * Turns all of the emissions and notifications from a source Observable into emissions marked
      * with their original types within {@link Notification} objects.
+=======
+     * Turns all of the emissions and notifications from a source Observable
+     * into emissions marked with their original types within {@link Notification} objects.
+>>>>>>> Bind implementation of Map, Cast, Timestamp
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/materialize.png">
      * 
@@ -8157,7 +8162,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229003.aspx">MSDN: Observable.Timestamp</a>
      */
     public final Observable<Timestamped<T>> timestamp() {
-        return create(OperationTimestamp.timestamp(this));
+        return timestamp(Schedulers.immediate());
     }
 
     /**
@@ -8174,7 +8179,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229003.aspx">MSDN: Observable.Timestamp</a>
      */
     public final Observable<Timestamped<T>> timestamp(Scheduler scheduler) {
-        return create(OperationTimestamp.timestamp(this, scheduler));
+        return bind(new OperatorTimestamp<T>(scheduler));
     }
 
     /**

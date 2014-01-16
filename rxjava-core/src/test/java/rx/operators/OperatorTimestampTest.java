@@ -32,7 +32,7 @@ import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.util.Timestamped;
 
-public class OperationTimestampTest {
+public class OperatorTimestampTest {
     @Mock
     Observer<Object> observer;
 
