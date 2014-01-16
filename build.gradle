@@ -31,22 +31,27 @@ subprojects {
     configurations { 
         examplesCompile.extendsFrom compile
         examplesRuntime.extendsFrom runtime
+	    perfCompile.extendsFrom compile
+	    perfRuntime.extendsFrom runtime
     }
 
-    sourceSets.test.java.srcDir 'src/main/java'
 
     tasks.withType(Javadoc).each {
         it.classpath = sourceSets.main.compileClasspath
     }
 
-    //include /src/examples folder
     sourceSets { 
+		//include /src/examples folder
         examples
+		//include /src/perf folder
+		// perf //-> Not working so commented out
     }
     
-    //include 'examples' in build task
     tasks.build { 
+		//include 'examples' in build task
         dependsOn(examplesClasses)
+		//include 'perf' in build task
+        // dependsOn(perfClasses)  //-> Not working so commented out
     }
     
     eclipse {  
