@@ -17,7 +17,7 @@ package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationToObservableList.*;
+import static rx.operators.OperatorToObservableList.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,12 +28,25 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 
-public class OperationToObservableListTest {
+public class OperatorToObservableListTest {
 
     @Test
     public void testList() {
-        Observable<String> w = Observable.from("one", "two", "three");
-        Observable<List<String>> observable = Observable.create(toObservableList(w));
+        Observable<String> w = Observable.from(Arrays.asList("one", "two", "three"));
+        Observable<List<String>> observable = w.bind(new OperatorToObservableList<String>());
+
+        @SuppressWarnings("unchecked")
+        Observer<List<String>> aObserver = mock(Observer.class);
+        observable.subscribe(aObserver);
+        verify(aObserver, times(1)).onNext(Arrays.asList("one", "two", "three"));
+        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
+        verify(aObserver, times(1)).onCompleted();
+    }
+    
+    @Test
+    public void testListViaObservable() {
+        Observable<String> w = Observable.from(Arrays.asList("one", "two", "three"));
+        Observable<List<String>> observable = w.toList();
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> aObserver = mock(Observer.class);
@@ -45,8 +58,8 @@ public class OperationToObservableListTest {
 
     @Test
     public void testListMultipleObservers() {
-        Observable<String> w = Observable.from("one", "two", "three");
-        Observable<List<String>> observable = Observable.create(toObservableList(w));
+        Observable<String> w = Observable.from(Arrays.asList("one", "two", "three"));
+        Observable<List<String>> observable = w.bind(new OperatorToObservableList<String>());
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> o1 = mock(Observer.class);
@@ -69,8 +82,8 @@ public class OperationToObservableListTest {
 
     @Test
     public void testListWithNullValue() {
-        Observable<String> w = Observable.from("one", null, "three");
-        Observable<List<String>> observable = Observable.create(toObservableList(w));
+        Observable<String> w = Observable.from(Arrays.asList("one", null, "three"));
+        Observable<List<String>> observable = w.bind(new OperatorToObservableList<String>());
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> aObserver = mock(Observer.class);

@@ -88,7 +88,6 @@ import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSum;
 import rx.operators.OperationSwitch;
 import rx.operators.OperationSynchronize;
-import rx.operators.OperatorTake;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
@@ -100,13 +99,14 @@ import rx.operators.OperationTimestamp;
 import rx.operators.OperationToMap;
 import rx.operators.OperationToMultimap;
 import rx.operators.OperationToObservableFuture;
-import rx.operators.OperationToObservableIterable;
-import rx.operators.OperationToObservableList;
-import rx.operators.OperationToObservableSortedList;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperationZip;
+import rx.operators.OperatorFromIterable;
+import rx.operators.OperatorTake;
 import rx.operators.OperatorTakeTimed;
+import rx.operators.OperatorToObservableList;
+import rx.operators.OperatorToObservableSortedList;
 import rx.operators.SafeObservableSubscription;
 import rx.operators.SafeObserver;
 import rx.plugins.RxJavaObservableExecutionHook;
@@ -159,6 +159,22 @@ import rx.util.functions.Functions;
  */
 public class Observable<T> {
 
+    final Action2<Observer<? super T>, OperatorSubscription> f;
+
+    /**
+     * Observable with Function to execute when subscribed to.
+     * <p>
+     * NOTE: Use {@link #create(OnSubscribeFunc)} to create an Observable
+     * instead of this constructor unless you specifically have a need for
+     * inheritance.
+     * 
+     * @param onSubscribe
+     *            {@link OnSubscribeFunc} to be executed when {@link #subscribe(Observer)} is called
+     */
+    protected Observable(Action2<Observer<? super T>, OperatorSubscription> f) {
+        this.f = f;
+    }
+
     /**
 <<<<<<< HEAD
      * Function interface for work to be performed when an Observable is subscribed to via
@@ -198,11 +214,10 @@ public class Observable<T> {
 
     }
 
-    final Action2<Observer<? super T>, OperatorSubscription> f;
-
     private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     /**
+<<<<<<< HEAD
      * Observable with Function to execute when subscribed to.
      * <p>
      * <em>Note:</em> Use {@link #create(OnSubscribeFunc)} to create an Observable, instead of this
@@ -219,6 +234,8 @@ public class Observable<T> {
 <<<<<<< HEAD
      * Mirror the one Observable in an Iterable of several Observables that first emits an item.
 =======
+=======
+>>>>>>> Bind implementation of fromIterable, toList, toSortedList
      * Creates an Observable that will execute the given function when an {@link Observer} subscribes to it.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png">
@@ -257,7 +274,7 @@ public class Observable<T> {
 
         });
     }
-    
+
     public <R> Observable<R> bind(final Func2<Observer<? super R>, OperatorSubscription, Observer<? super T>> bind) {
         return new Observable<R>(new Action2<Observer<? super R>, OperatorSubscription>() {
 
@@ -1277,7 +1294,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Iterable<? extends T> iterable) {
-        return from(iterable, Schedulers.immediate());
+        return create(new OperatorFromIterable<T>(iterable));
     }
 
     /**
@@ -1299,7 +1316,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
      */
     public final static <T> Observable<T> from(Iterable<? extends T> iterable, Scheduler scheduler) {
-        return create(OperationToObservableIterable.toObservableIterable(iterable, scheduler));
+        return create(new OperatorFromIterable<T>(iterable)).subscribeOn(scheduler);
     }
 
     /**
@@ -1644,8 +1661,9 @@ public class Observable<T> {
      * @return an Observable that emits each item in the source Array
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
      */
-    public final static <T> Observable<T> from(T[] items) {
-        return from(Arrays.asList(items));
+    @SafeVarargs
+    public final static <T> Observable<T> from(T... t1) {
+        return from(Arrays.asList(t1));
     }
 
     /**
@@ -8190,7 +8208,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tolist">RxJava Wiki: toList()</a>
      */
     public final Observable<List<T>> toList() {
-        return create(OperationToObservableList.toObservableList(this));
+        return bind(new OperatorToObservableList<T>());
     }
 
     /**
@@ -8364,7 +8382,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tosortedlist">RxJava Wiki: toSortedList()</a>
      */
     public final Observable<List<T>> toSortedList() {
-        return create(OperationToObservableSortedList.toSortedList(this));
+        return bind(new OperatorToObservableSortedList<T>());
     }
 
     /**
@@ -8381,7 +8399,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tosortedlist">RxJava Wiki: toSortedList()</a>
      */
     public final Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) {
-        return create(OperationToObservableSortedList.toSortedList(this, sortFunction));
+        return bind(new OperatorToObservableSortedList<T>(sortFunction));
     }
 
     /**

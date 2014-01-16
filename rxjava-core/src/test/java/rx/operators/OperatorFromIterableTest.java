@@ -17,7 +17,6 @@ package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationToObservableIterable.*;
 
 import java.util.Arrays;
 
@@ -26,13 +25,12 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.schedulers.Schedulers;
 
-public class OperationToObservableIterableTest {
+public class OperatorFromIterableTest {
 
     @Test
     public void testIterable() {
-        Observable<String> observable = Observable.create(toObservableIterable(Arrays.<String> asList("one", "two", "three")));
+        Observable<String> observable = Observable.create(new OperatorFromIterable<String>(Arrays.<String> asList("one", "two", "three")));
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -43,10 +41,10 @@ public class OperationToObservableIterableTest {
         verify(aObserver, Mockito.never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
     }
-
+    
     @Test
-    public void testIterableScheduled() {
-        Observable<String> observable = Observable.create(toObservableIterable(Arrays.<String> asList("one", "two", "three"), Schedulers.currentThread()));
+    public void testObservableFromIterable() {
+        Observable<String> observable = Observable.from(Arrays.<String> asList("one", "two", "three"));
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -57,4 +55,5 @@ public class OperationToObservableIterableTest {
         verify(aObserver, Mockito.never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
     }
+
 }
