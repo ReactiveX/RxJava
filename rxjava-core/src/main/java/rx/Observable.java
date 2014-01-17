@@ -62,7 +62,7 @@ import rx.operators.OperationJoin;
 import rx.operators.OperationJoinPatterns;
 import rx.operators.OperatorMap;
 import rx.operators.OperationMaterialize;
-import rx.operators.OperationMerge;
+import rx.operators.OperatorMerge;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMinMax;
 import rx.operators.OperationMulticast;
@@ -1902,7 +1902,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
-        return create(OperationMerge.merge(source));
+        return source.bind(new OperatorMerge()); // any idea how to get these generics working?!
     }
 
     /**
@@ -1926,7 +1926,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211914.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source, int maxConcurrent) {
-        return create(OperationMerge.merge(source, maxConcurrent));
+        return source.bind(new OperatorMerge(maxConcurrent)); // any idea how to get these generics working?!
     }
 
     /**

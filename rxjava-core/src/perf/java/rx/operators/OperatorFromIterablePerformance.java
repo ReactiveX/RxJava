@@ -31,6 +31,31 @@ public class OperatorFromIterablePerformance extends AbstractPerformanceTester {
     }
 
     /**
+     * Single Observable from an Iterable with REPETITIONS items.
+     * 
+     * Run: 10 - 210,730,391 ops/sec
+     * Run: 11 - 137,608,366 ops/sec
+     * Run: 12 - 204,114,957 ops/sec
+     * Run: 13 - 217,561,569 ops/sec
+     * Run: 14 - 185,061,810 ops/sec
+     * 
+     * For comparison, if we don't check for isUnsubscribed then we get this:
+     * 
+     * Run: 10 - 243,546,030 ops/sec
+     * Run: 11 - 149,102,403 ops/sec
+     * Run: 12 - 250,325,423 ops/sec
+     * Run: 13 - 249,289,524 ops/sec
+     * Run: 14 - 266,965,668 ops/sec
+     * 
+     * @return
+     */
+    public long timeRepetitionsEmission() {
+        LongSumObserver o = new LongSumObserver();
+        Observable.from(ITERABLE_OF_REPETITIONS).subscribe(o);
+        return o.sum;
+    }
+
+    /**
      * Observable.from(Iterable)
      * 
      * Run: 0 - 259,801 ops/sec
@@ -103,58 +128,6 @@ public class OperatorFromIterablePerformance extends AbstractPerformanceTester {
         for (long l = 0; l < REPETITIONS; l++) {
             s.subscribe(o);
         }
-        return o.sum;
-    }
-
-    /**
-     * Single Observable from an Iterable with REPETITIONS items.
-     * 
-     * Run: 10 - 210,730,391 ops/sec
-     * Run: 11 - 137,608,366 ops/sec
-     * Run: 12 - 204,114,957 ops/sec
-     * Run: 13 - 217,561,569 ops/sec
-     * Run: 14 - 185,061,810 ops/sec
-     * 
-     * For comparison, if we don't check for isUnsubscribed then we get this:
-     * 
-     * Run: 10 - 243,546,030 ops/sec
-     * Run: 11 - 149,102,403 ops/sec
-     * Run: 12 - 250,325,423 ops/sec
-     * Run: 13 - 249,289,524 ops/sec
-     * Run: 14 - 266,965,668 ops/sec
-     * 
-     * @return
-     */
-    public long timeRepetitionsEmission() {
-
-        Iterable<Long> i = new Iterable<Long>() {
-
-            @Override
-            public Iterator<Long> iterator() {
-                return new Iterator<Long>() {
-                    long count = 0;
-
-                    @Override
-                    public boolean hasNext() {
-                        return count <= REPETITIONS;
-                    }
-
-                    @Override
-                    public Long next() {
-                        return count++;
-                    }
-
-                    @Override
-                    public void remove() {
-                        // do nothing
-                    }
-
-                };
-            };
-        };
-
-        LongSumObserver o = new LongSumObserver();
-        Observable.from(i).subscribe(o);
         return o.sum;
     }
 

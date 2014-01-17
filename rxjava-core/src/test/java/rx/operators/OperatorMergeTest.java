@@ -18,7 +18,7 @@ package rx.operators;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationMerge.*;
+import static rx.operators.OperatorMerge.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
-public class OperationMergeTest {
+public class OperatorMergeTest {
 
     @Mock
     Observer<String> stringObserver;
@@ -115,32 +115,6 @@ public class OperationMergeTest {
     }
 
     @Test
-    public void testUnSubscribe() {
-        TestObservable tA = new TestObservable();
-        TestObservable tB = new TestObservable();
-
-        Observable<String> m = Observable.merge(Observable.create(tA), Observable.create(tB));
-        Subscription s = m.subscribe(stringObserver);
-
-        tA.sendOnNext("Aone");
-        tB.sendOnNext("Bone");
-        s.unsubscribe();
-        tA.sendOnNext("Atwo");
-        tB.sendOnNext("Btwo");
-        tA.sendOnCompleted();
-        tB.sendOnCompleted();
-
-        verify(stringObserver, never()).onError(any(Throwable.class));
-        verify(stringObserver, times(1)).onNext("Aone");
-        verify(stringObserver, times(1)).onNext("Bone");
-        assertTrue(tA.unsubscribed);
-        assertTrue(tB.unsubscribed);
-        verify(stringObserver, never()).onNext("Atwo");
-        verify(stringObserver, never()).onNext("Btwo");
-        verify(stringObserver, never()).onCompleted();
-    }
-
-    @Test
     public void testUnSubscribeObservableOfObservables() throws InterruptedException {
 
         final AtomicBoolean unsubscribed = new AtomicBoolean();
@@ -185,7 +159,7 @@ public class OperationMergeTest {
         });
 
         final AtomicInteger count = new AtomicInteger();
-        Observable.create(merge(source)).take(6).toBlockingObservable().forEach(new Action1<Long>() {
+        Observable.merge(source).take(6).toBlockingObservable().forEach(new Action1<Long>() {
 
             @Override
             public void call(Long v) {
