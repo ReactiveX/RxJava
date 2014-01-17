@@ -15,10 +15,8 @@
  */
 package rx.operators;
 
-import rx.Observable.OperatorSubscription;
-import rx.Observer;
+import rx.Operator;
 import rx.util.functions.Func1;
-import rx.util.functions.Func2;
 
 /**
  * Applies a function of your choosing to every item emitted by an Observable, and returns this
@@ -26,7 +24,7 @@ import rx.util.functions.Func2;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/map.png">
  */
-public final class OperatorMap<T, R> implements Func2<Observer<? super R>, OperatorSubscription, Observer<? super T>> {
+public final class OperatorMap<T, R> implements Func1<Operator<? super R>, Operator<? super T>> {
 
     private final Func1<? super T, ? extends R> transformer;
 
@@ -35,8 +33,8 @@ public final class OperatorMap<T, R> implements Func2<Observer<? super R>, Opera
     }
 
     @Override
-    public Observer<? super T> call(final Observer<? super R> o, OperatorSubscription os) {
-        return new Observer<T>() {
+    public Operator<? super T> call(final Operator<? super R> o) {
+        return new Operator<T>(o) {
 
             @Override
             public void onCompleted() {

@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observer;
+import rx.Operator;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Action2;
@@ -59,7 +60,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
         final ReplayState<T> state = new ReplayState<T>(initialCapacity);
 
-        Action2<Observer<? super T>, OperatorSubscription> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+        Action1<Operator<? super T>> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
                  * This function executes at beginning of subscription.
                  * We want to replay history with the subscribing thread
@@ -108,7 +109,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     private final SubjectSubscriptionManager<T> subscriptionManager;
     private final ReplayState<T> state;
 
-    protected ReplaySubject(Action2<Observer<? super T>, OperatorSubscription> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, ReplayState<T> state) {
+    protected ReplaySubject(Action1<Operator<? super T>> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, ReplayState<T> state) {
         super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
         this.state = state;

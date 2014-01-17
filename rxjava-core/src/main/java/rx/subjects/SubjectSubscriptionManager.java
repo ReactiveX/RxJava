@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable.OperatorSubscription;
 import rx.Observer;
+import rx.Operator;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action1;
@@ -39,11 +39,11 @@ import rx.util.functions.Action2;
      *            Only runs if Subject is in terminal state and the Observer ends up not being registered.
      * @return
      */
-    public Action2<Observer<? super T>, OperatorSubscription> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, final Action1<SubjectObserver<? super T>> onTerminated) {
-        return new Action2<Observer<? super T>, OperatorSubscription>() {
+    public Action1<Operator<? super T>> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, final Action1<SubjectObserver<? super T>> onTerminated) {
+        return new Action1<Operator<? super T>>() {
             @Override
-            public void call(Observer<? super T> actualObserver, OperatorSubscription os) {
-                SubjectObserver<T> observer = new SubjectObserver<T>(actualObserver);
+            public void call(Operator<? super T> actualOperator) {
+                SubjectObserver<T> observer = new SubjectObserver<T>(actualOperator);
                 // invoke onSubscribe logic 
                 if (onSubscribe != null) {
                     onSubscribe.call(observer);
@@ -69,7 +69,7 @@ import rx.util.functions.Action2;
                         break;
                     } else {
                         final SafeObservableSubscription subscription = new SafeObservableSubscription();
-                        os.add(subscription); // add to parent if the Subject itself is unsubscribed
+                        actualOperator.add(subscription); // add to parent if the Subject itself is unsubscribed
                         addedObserver = true;
                         subscription.wrap(new Subscription() {
                             @Override

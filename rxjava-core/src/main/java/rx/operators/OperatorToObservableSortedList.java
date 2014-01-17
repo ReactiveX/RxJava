@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import rx.Observable.OperatorSubscription;
-import rx.Observer;
+import rx.Operator;
+import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 /**
@@ -33,7 +33,7 @@ import rx.util.functions.Func2;
  * 
  * @param <T>
  */
-public final class OperatorToObservableSortedList<T> implements Func2<Observer<? super List<T>>, OperatorSubscription, Observer<? super T>> {
+public final class OperatorToObservableSortedList<T> implements Func1<Operator<? super List<T>>, Operator<? super T>> {
     private final Func2<? super T, ? super T, Integer> sortFunction;
 
     @SuppressWarnings("unchecked")
@@ -46,8 +46,8 @@ public final class OperatorToObservableSortedList<T> implements Func2<Observer<?
     }
 
     @Override
-    public Observer<? super T> call(final Observer<? super List<T>> observer, OperatorSubscription t2) {
-        return new Observer<T>() {
+    public Operator<? super T> call(final Operator<? super List<T>> o) {
+        return new Operator<T>(o) {
 
             final List<T> list = new ArrayList<T>();
 
@@ -65,8 +65,8 @@ public final class OperatorToObservableSortedList<T> implements Func2<Observer<?
 
                     });
 
-                    observer.onNext(Collections.unmodifiableList(list));
-                    observer.onCompleted();
+                    o.onNext(Collections.unmodifiableList(list));
+                    o.onCompleted();
                 } catch (Throwable e) {
                     onError(e);
                 }
@@ -74,7 +74,7 @@ public final class OperatorToObservableSortedList<T> implements Func2<Observer<?
 
             @Override
             public void onError(Throwable e) {
-                observer.onError(e);
+                o.onError(e);
             }
 
             @Override

@@ -16,7 +16,6 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
-import static rx.operators.OperationGroupBy.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,14 +31,15 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Operator;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
-import rx.subscriptions.BooleanSubscription;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
-public class OperationGroupByTest {
+public class OperatorGroupByTest {
 
     final Func1<String, Integer> length = new Func1<String, Integer>() {
         @Override
@@ -51,7 +51,7 @@ public class OperationGroupByTest {
     @Test
     public void testGroupBy() {
         Observable<String> source = Observable.from("one", "two", "three", "four", "five", "six");
-        Observable<GroupedObservable<Integer, String>> grouped = Observable.create(groupBy(source, length));
+        Observable<GroupedObservable<Integer, String>> grouped = source.bind(new OperatorGroupBy<Integer, String>(length));
 
         Map<Integer, Collection<String>> map = toMap(grouped);
 
@@ -64,7 +64,7 @@ public class OperationGroupByTest {
     @Test
     public void testEmpty() {
         Observable<String> source = Observable.empty();
-        Observable<GroupedObservable<Integer, String>> grouped = Observable.create(groupBy(source, length));
+        Observable<GroupedObservable<Integer, String>> grouped = source.bind(new OperatorGroupBy<Integer, String>(length));
 
         Map<Integer, Collection<String>> map = toMap(grouped);
 
@@ -77,13 +77,13 @@ public class OperationGroupByTest {
         Observable<String> errorSource = Observable.error(new RuntimeException("forced failure"));
         Observable<String> source = Observable.concat(sourceStrings, errorSource);
 
-        Observable<GroupedObservable<Integer, String>> grouped = Observable.create(groupBy(source, length));
+        Observable<GroupedObservable<Integer, String>> grouped = source.bind(new OperatorGroupBy<Integer, String>(length));
 
         final AtomicInteger groupCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
-        grouped.mapMany(new Func1<GroupedObservable<Integer, String>, Observable<String>>() {
+        grouped.flatMap(new Func1<GroupedObservable<Integer, String>, Observable<String>>() {
 
             @Override
             public Observable<String> call(final GroupedObservable<Integer, String> o) {
@@ -191,7 +191,7 @@ public class OperationGroupByTest {
             public Integer call(Event e) {
                 return e.source;
             }
-        }).mapMany(new Func1<GroupedObservable<Integer, Event>, Observable<String>>() {
+        }).flatMap(new Func1<GroupedObservable<Integer, Event>, Observable<String>>() {
 
             @Override
             public Observable<String> call(GroupedObservable<Integer, Event> eventGroupedObservable) {
@@ -238,45 +238,26 @@ public class OperationGroupByTest {
      * We will only take 1 group with 20 events from it and then unsubscribe.
      */
     @Test
-    public void testUnsubscribe() throws InterruptedException {
-
-        final AtomicInteger eventCounter = new AtomicInteger();
+    public void testUnsubscribeOnNestedTakeAndSyncInfiniteStream() throws InterruptedException {
         final AtomicInteger subscribeCounter = new AtomicInteger();
-        final AtomicInteger groupCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
+        doTestUnsubscribeOnNestedTakeAndAsyncInfiniteStream(SYNC_INFINITE_OBSERVABLE_OF_EVENT(2, subscribeCounter, sentEventCounter), subscribeCounter);
+    }
+
+    /*
+     * We will only take 1 group with 20 events from it and then unsubscribe.
+     */
+    @Test
+    public void testUnsubscribeOnNestedTakeAndAsyncInfiniteStream() throws InterruptedException {
+        final AtomicInteger subscribeCounter = new AtomicInteger();
+        final AtomicInteger sentEventCounter = new AtomicInteger();
+        doTestUnsubscribeOnNestedTakeAndAsyncInfiniteStream(ASYNC_INFINITE_OBSERVABLE_OF_EVENT(2, subscribeCounter, sentEventCounter), subscribeCounter);
+    }
+
+    private void doTestUnsubscribeOnNestedTakeAndAsyncInfiniteStream(Observable<Event> es, AtomicInteger subscribeCounter) throws InterruptedException {
+        final AtomicInteger eventCounter = new AtomicInteger();
+        final AtomicInteger groupCounter = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
-        final int count = 100;
-        final int groupCount = 2;
-
-        Observable<Event> es = Observable.create(new Observable.OnSubscribeFunc<Event>() {
-
-            @Override
-            public Subscription onSubscribe(final Observer<? super Event> observer) {
-                final BooleanSubscription s = new BooleanSubscription();
-                System.out.println("testUnsubscribe => *** Subscribing to EventStream ***");
-                subscribeCounter.incrementAndGet();
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < count; i++) {
-                            if (s.isUnsubscribed()) {
-                                break;
-                            }
-                            Event e = new Event();
-                            e.source = i % groupCount;
-                            e.message = "Event-" + i;
-                            observer.onNext(e);
-                            sentEventCounter.incrementAndGet();
-                        }
-                        observer.onCompleted();
-                    }
-
-                }).start();
-                return s;
-            }
-
-        });
 
         es.groupBy(new Func1<Event, Integer>() {
 
@@ -286,11 +267,11 @@ public class OperationGroupByTest {
             }
         })
                 .take(1) // we want only the first group
-                .mapMany(new Func1<GroupedObservable<Integer, Event>, Observable<String>>() {
+                .flatMap(new Func1<GroupedObservable<Integer, Event>, Observable<String>>() {
 
                     @Override
                     public Observable<String> call(GroupedObservable<Integer, Event> eventGroupedObservable) {
-                        System.out.println("testUnsubscribe => GroupedObservable Key: " + eventGroupedObservable.getKey());
+                        //                        System.out.println("testUnsubscribe => GroupedObservable Key: " + eventGroupedObservable.getKey());
                         groupCounter.incrementAndGet();
 
                         return eventGroupedObservable
@@ -324,15 +305,165 @@ public class OperationGroupByTest {
                     }
                 });
 
-        latch.await(5000, TimeUnit.MILLISECONDS);
+        if (!latch.await(2000, TimeUnit.MILLISECONDS)) {
+            fail("timed out so likely did not unsubscribe correctly");
+        }
         assertEquals(1, subscribeCounter.get());
         assertEquals(1, groupCounter.get());
         assertEquals(20, eventCounter.get());
         // sentEvents will go until 'eventCounter' hits 20 and then unsubscribes
         // which means it will also send (but ignore) the 19/20 events for the other group
         // It will not however send all 100 events.
-        assertEquals(39, sentEventCounter.get(), 10);
-        // gave it a delta of 10 to account for the threading/unsubscription race condition which can vary depending on a machines performance, thread-scheduler, etc
+    }
+
+    @Test
+    public void testUnsubscribeViaTakeOnGroupThenMergeAndTake() {
+        final AtomicInteger subscribeCounter = new AtomicInteger();
+        final AtomicInteger sentEventCounter = new AtomicInteger();
+        final AtomicInteger eventCounter = new AtomicInteger();
+
+        SYNC_INFINITE_OBSERVABLE_OF_EVENT(4, subscribeCounter, sentEventCounter)
+                .groupBy(new Func1<Event, Integer>() {
+
+                    @Override
+                    public Integer call(Event e) {
+                        return e.source;
+                    }
+                })
+                // take 2 of the 4 groups
+                .take(2)
+                .flatMap(new Func1<GroupedObservable<Integer, Event>, Observable<String>>() {
+
+                    @Override
+                    public Observable<String> call(GroupedObservable<Integer, Event> eventGroupedObservable) {
+                        return eventGroupedObservable
+                                .map(new Func1<Event, String>() {
+
+                                    @Override
+                                    public String call(Event event) {
+                                        return "testUnsubscribe => Source: " + event.source + "  Message: " + event.message;
+                                    }
+                                });
+
+                    }
+                })
+                .take(30).subscribe(new Action1<String>() {
+
+                    @Override
+                    public void call(String s) {
+                        eventCounter.incrementAndGet();
+                        System.out.println("=> " + s);
+                    }
+
+                });
+
+        assertEquals(30, eventCounter.get());
+        // we should send 28 additional events that are filtered out as they are in the groups we skip
+        assertEquals(58, sentEventCounter.get());
+    }
+
+    @Test
+    public void testUnsubscribeViaTakeOnGroupThenTakeOnInner() {
+        final AtomicInteger subscribeCounter = new AtomicInteger();
+        final AtomicInteger sentEventCounter = new AtomicInteger();
+        final AtomicInteger eventCounter = new AtomicInteger();
+
+        SYNC_INFINITE_OBSERVABLE_OF_EVENT(4, subscribeCounter, sentEventCounter)
+                .groupBy(new Func1<Event, Integer>() {
+
+                    @Override
+                    public Integer call(Event e) {
+                        return e.source;
+                    }
+                })
+                // take 2 of the 4 groups
+                .take(2)
+                .flatMap(new Func1<GroupedObservable<Integer, Event>, Observable<String>>() {
+
+                    @Override
+                    public Observable<String> call(GroupedObservable<Integer, Event> eventGroupedObservable) {
+                        int numToTake = 0;
+                        if (eventGroupedObservable.getKey() == 1) {
+                            numToTake = 10;
+                        } else if (eventGroupedObservable.getKey() == 2) {
+                            numToTake = 5;
+                        }
+                        return eventGroupedObservable
+                                .take(numToTake)
+                                .map(new Func1<Event, String>() {
+
+                                    @Override
+                                    public String call(Event event) {
+                                        return "testUnsubscribe => Source: " + event.source + "  Message: " + event.message;
+                                    }
+                                });
+
+                    }
+                })
+                .subscribe(new Action1<String>() {
+
+                    @Override
+                    public void call(String s) {
+                        eventCounter.incrementAndGet();
+                        System.out.println("=> " + s);
+                    }
+
+                });
+
+        assertEquals(15, eventCounter.get());
+        // we should send 22 additional events that are filtered out as they are skipped while taking the 15 we want
+        assertEquals(37, sentEventCounter.get());
+    }
+
+    @Test
+    public void testUnsubscribeOnGroupViaOnlyTakeOnInner() {
+        final AtomicInteger subscribeCounter = new AtomicInteger();
+        final AtomicInteger sentEventCounter = new AtomicInteger();
+        final AtomicInteger eventCounter = new AtomicInteger();
+
+        SYNC_INFINITE_OBSERVABLE_OF_EVENT(4, subscribeCounter, sentEventCounter)
+                .groupBy(new Func1<Event, Integer>() {
+
+                    @Override
+                    public Integer call(Event e) {
+                        return e.source;
+                    }
+                })
+                .flatMap(new Func1<GroupedObservable<Integer, Event>, Observable<String>>() {
+
+                    @Override
+                    public Observable<String> call(GroupedObservable<Integer, Event> eventGroupedObservable) {
+                        int numToTake = 0;
+                        if (eventGroupedObservable.getKey() == 1) {
+                            numToTake = 10;
+                        } else if (eventGroupedObservable.getKey() == 2) {
+                            numToTake = 5;
+                        }
+                        return eventGroupedObservable
+                                .take(numToTake)
+                                .map(new Func1<Event, String>() {
+
+                                    @Override
+                                    public String call(Event event) {
+                                        return "testUnsubscribe => Source: " + event.source + "  Message: " + event.message;
+                                    }
+                                });
+
+                    }
+                })
+                .subscribe(new Action1<String>() {
+
+                    @Override
+                    public void call(String s) {
+                        eventCounter.incrementAndGet();
+                        System.out.println("=> " + s);
+                    }
+
+                });
+
+        assertEquals(15, eventCounter.get());
+        // we should send 22 additional events that are filtered out as they are skipped while taking the 15 we want
+        assertEquals(37, sentEventCounter.get());
     }
 
     private static class Event {
@@ -344,4 +475,30 @@ public class OperationGroupByTest {
             return "Event => source: " + source + " message: " + message;
         }
     }
+
+    Observable<Event> ASYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
+        return SYNC_INFINITE_OBSERVABLE_OF_EVENT(numGroups, subscribeCounter, sentEventCounter).subscribeOn(Schedulers.newThread());
+    };
+
+    Observable<Event> SYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
+        return Observable.create(new Action1<Operator<? super Event>>() {
+
+            @Override
+            public void call(final Operator<? super Event> op) {
+                subscribeCounter.incrementAndGet();
+                int i = 0;
+                while (!op.isUnsubscribed()) {
+                    i++;
+                    Event e = new Event();
+                    e.source = i % numGroups;
+                    e.message = "Event-" + i;
+                    op.onNext(e);
+                    sentEventCounter.incrementAndGet();
+                }
+                op.onCompleted();
+            }
+
+        });
+    };
+
 }

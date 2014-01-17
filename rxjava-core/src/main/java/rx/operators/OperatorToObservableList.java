@@ -18,9 +18,8 @@ package rx.operators;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable.OperatorSubscription;
-import rx.Observer;
-import rx.util.functions.Func2;
+import rx.Operator;
+import rx.util.functions.Func1;
 
 /**
  * Returns an Observable that emits a single item, a list composed of all the items emitted by the
@@ -36,19 +35,19 @@ import rx.util.functions.Func2;
  * Be careful not to use this operator on Observables that emit infinite or very large numbers of
  * items, as you do not have the option to unsubscribe.
  */
-public final class OperatorToObservableList<T> implements Func2<Observer<? super List<T>>, OperatorSubscription, Observer<? super T>> {
+public final class OperatorToObservableList<T> implements Func1<Operator<? super List<T>>, Operator<? super T>> {
 
     @Override
-    public Observer<? super T> call(final Observer<? super List<T>> observer, OperatorSubscription t2) {
-        return new Observer<T>() {
+    public Operator<? super T> call(final Operator<? super List<T>> o) {
+        return new Operator<T>(o) {
 
             final List<T> list = new ArrayList<T>();
 
             @Override
             public void onCompleted() {
                 try {
-                    observer.onNext(new ArrayList<T>(list));
-                    observer.onCompleted();
+                    o.onNext(new ArrayList<T>(list));
+                    o.onCompleted();
                 } catch (Throwable e) {
                     onError(e);
                 }
@@ -56,7 +55,7 @@ public final class OperatorToObservableList<T> implements Func2<Observer<? super
 
             @Override
             public void onError(Throwable e) {
-                observer.onError(e);
+                o.onError(e);
             }
 
             @Override

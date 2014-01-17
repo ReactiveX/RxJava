@@ -177,48 +177,6 @@ public class OperatorMapTest {
         verify(stringObserver, times(1)).onError(any(Throwable.class));
     }
 
-    /**
-     * This is testing how unsubscribe behavior is handled when an error occurs in a user provided function
-     * and the source is unsubscribed from ... but ignores or can't receive the unsubscribe as it is synchronous.
-     */
-    @Test
-    public void testMapContainingErrorWithSequenceThatDoesntUnsubscribe() {
-        Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
-        final AtomicInteger c1 = new AtomicInteger();
-        final AtomicInteger c2 = new AtomicInteger();
-        Observable<String> m = w.bind(new OperatorMap<String, String>(new Func1<String, String>() {
-            @Override
-            public String call(String s) {
-                if ("fail".equals(s))
-                    throw new RuntimeException("Forced Failure");
-                System.out.println("BadMapper:" + s);
-                c1.incrementAndGet();
-                return s;
-            }
-        })).map(new Func1<String, String>() {
-            @Override
-            public String call(String s) {
-                System.out.println("SecondMapper:" + s);
-                c2.incrementAndGet();
-                return s;
-            }
-        });
-
-        m.subscribe(stringObserver);
-
-        verify(stringObserver, times(1)).onNext("one");
-        verify(stringObserver, never()).onNext("two");
-        verify(stringObserver, never()).onNext("three");
-        verify(stringObserver, never()).onCompleted();
-        verify(stringObserver, times(1)).onError(any(Throwable.class));
-
-        // We should have only returned 1 value: "one"
-        // Since the unsubscribe doesn't propagate, we will actually be sent all events and need
-        // to ignore all after the first failure.
-        assertEquals(1, c1.get());
-        assertEquals(1, c2.get());
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void testMapWithIssue417() {
         Observable.from(1).observeOn(Schedulers.computation())

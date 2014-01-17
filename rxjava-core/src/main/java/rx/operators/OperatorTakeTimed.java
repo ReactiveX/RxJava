@@ -40,6 +40,8 @@ import rx.util.functions.Action0;
  */
 public final class OperatorTakeTimed {
 
+    //TODO this has not been migrated to use bind yet
+    
     /**
      * Returns a specified number of contiguous values from the start of an observable sequence.
      * 

@@ -19,10 +19,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
-import rx.Observable.OperatorSubscription;
 import rx.Observer;
-import rx.util.functions.Func0;
-import rx.util.functions.Func2;
+import rx.Operator;
+import rx.subscriptions.CompositeSubscription;
+import rx.util.functions.Func1;
 
 /**
  * Flattens a list of Observables into one Observable sequence, without any transformation.
@@ -32,7 +32,7 @@ import rx.util.functions.Func2;
  * You can combine the items emitted by multiple Observables so that they act like a single
  * Observable, by using the merge operation.
  */
-public final class OperatorMerge<T> implements Func2<Observer<? super T>, OperatorSubscription, Observer<? extends Observable<? extends T>>> {
+public final class OperatorMerge<T> implements Func1<Operator<? super T>, Operator<? extends Observable<? extends T>>> {
     private final int maxConcurrent;
 
     public OperatorMerge() {
@@ -47,15 +47,15 @@ public final class OperatorMerge<T> implements Func2<Observer<? super T>, Operat
     }
 
     @Override
-    public Observer<? extends Observable<? extends T>> call(Observer<? super T> _o, final OperatorSubscription os) {
+    public Operator<? extends Observable<? extends T>> call(final Operator<? super T> outerOperation) {
 
         final AtomicInteger completionCounter = new AtomicInteger(1);
         final AtomicInteger concurrentCounter = new AtomicInteger(1);
         // Concurrent* since we'll be accessing them from the inner Observers which can be on other threads
         final ConcurrentLinkedQueue<Observable<? extends T>> pending = new ConcurrentLinkedQueue<Observable<? extends T>>();
 
-        final Observer<T> o = new SynchronizedObserver<T>(_o);
-        return new Observer<Observable<? extends T>>() {
+        final Observer<T> o = new SynchronizedObserver<T>(outerOperation);
+        return new Operator<Observable<? extends T>>(outerOperation) {
 
             @Override
             public void onCompleted() {
@@ -77,7 +77,9 @@ public final class OperatorMerge<T> implements Func2<Observer<? super T>, Operat
                     concurrentCounter.decrementAndGet();
                 } else {
                     // we are able to proceed
-                    innerObservable.subscribe(new InnerObserver(), subscriptionFunc);
+                    CompositeSubscription innerSubscription = new CompositeSubscription();
+                    outerOperation.add(innerSubscription);
+                    innerObservable.subscribe(Operator.create(new InnerObserver(), innerSubscription));
                 }
             }
 
@@ -98,7 +100,9 @@ public final class OperatorMerge<T> implements Func2<Observer<? super T>, Operat
                     // we can run
                     Observable<? extends T> outstandingObservable = pending.poll();
                     if (outstandingObservable != null) {
-                        outstandingObservable.subscribe(new InnerObserver(), subscriptionFunc);
+                        CompositeSubscription innerSubscription = new CompositeSubscription();
+                        outerOperation.add(innerSubscription);
+                        outstandingObservable.subscribe(Operator.create(new InnerObserver(), innerSubscription));
                     }
                 }
             }
@@ -118,17 +122,6 @@ public final class OperatorMerge<T> implements Func2<Observer<? super T>, Operat
                 @Override
                 public void onNext(T a) {
                     o.onNext(a);
-                }
-
-            };
-
-            Func0<OperatorSubscription> subscriptionFunc = new Func0<OperatorSubscription>() {
-
-                @Override
-                public OperatorSubscription call() {
-                    OperatorSubscription innerSubscription = new OperatorSubscription();
-                    os.add(innerSubscription);
-                    return innerSubscription;
                 }
 
             };

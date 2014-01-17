@@ -15,9 +15,9 @@
  */
 package rx.operators;
 
-import rx.Observable.OperatorSubscription;
-import rx.Observer;
-import rx.util.functions.Func2;
+import rx.Operator;
+import rx.subscriptions.CompositeSubscription;
+import rx.util.functions.Func1;
 
 /**
  * Returns an Observable that emits the first <code>num</code> items emitted by the source
@@ -30,7 +30,7 @@ import rx.util.functions.Func2;
  * subscribing Observer's <code>onNext</code> function a maximum of <code>num</code> times before
  * invoking <code>onCompleted</code>.
  */
-public final class OperatorTake<T> implements Func2<Observer<? super T>, OperatorSubscription, Observer<? super T>> {
+public final class OperatorTake<T> implements Func1<Operator<? super T>, Operator<? super T>> {
 
     final int limit;
 
@@ -39,12 +39,19 @@ public final class OperatorTake<T> implements Func2<Observer<? super T>, Operato
     }
 
     @Override
-    public Observer<T> call(final Observer<? super T> o, final OperatorSubscription s) {
+    public Operator<? super T> call(final Operator<? super T> o) {
+        CompositeSubscription parent = new CompositeSubscription();
         if (limit == 0) {
             o.onCompleted();
-            s.unsubscribe();
+            parent.unsubscribe();
         }
-        return new Observer<T>() {
+        /*
+         * We decouple the parent and child subscription so there can be multiple take() in a chain
+         * such as for the groupBy operator use case where you may take(1) on groups and take(20) on the children.
+         * 
+         * Thus, we only unsubscribe UPWARDS to the parent and an onComplete DOWNSTREAM.
+         */
+        return new Operator<T>(parent) {
 
             int count = 0;
             boolean completed = false;
@@ -65,12 +72,12 @@ public final class OperatorTake<T> implements Func2<Observer<? super T>, Operato
 
             @Override
             public void onNext(T i) {
-                if (!s.isUnsubscribed()) {
+                if (!isUnsubscribed()) {
                     o.onNext(i);
                     if (++count >= limit) {
                         completed = true;
                         o.onCompleted();
-                        s.unsubscribe();
+                        unsubscribe();
                     }
                 }
             }

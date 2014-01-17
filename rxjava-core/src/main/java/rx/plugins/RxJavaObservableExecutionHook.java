@@ -17,10 +17,10 @@ package rx.plugins;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observable.OperatorSubscription;
 import rx.Observer;
+import rx.Operator;
 import rx.Subscription;
-import rx.util.functions.Action2;
+import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
 /**
@@ -55,7 +55,7 @@ public abstract class RxJavaObservableExecutionHook {
         return onSubscribe;
     }
     
-    public <T> Action2<Observer<? super T>, OperatorSubscription> onSubscribeStart(Observable<? extends T> observableInstance, final Action2<Observer<? super T>, OperatorSubscription> onSubscribe) {
+    public <T> Action1<Operator<? super T>> onSubscribeStart(Observable<? extends T> observableInstance, final Action1<Operator<? super T>> onSubscribe) {
         // pass-thru by default
         return onSubscribe;
     }

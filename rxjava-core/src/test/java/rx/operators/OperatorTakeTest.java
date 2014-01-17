@@ -21,16 +21,17 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Operator;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
 public class OperatorTakeTest {
@@ -189,6 +190,20 @@ public class OperatorTakeTest {
         verifyNoMoreInteractions(aObserver);
     }
 
+    @Test(timeout = 2000)
+    public void testUnsubscribeFromSynchronousInfiniteObservable() {
+        final AtomicLong count = new AtomicLong();
+        INFINITE_OBSERVABLE.take(10).subscribe(new Action1<Long>() {
+
+            @Override
+            public void call(Long l) {
+                count.set(l);
+            }
+
+        });
+        assertEquals(10, count.get());
+    }
+
     private static class TestObservableFunc implements Observable.OnSubscribeFunc<String> {
 
         final Subscription s;
@@ -226,4 +241,17 @@ public class OperatorTakeTest {
             return s;
         }
     }
+
+    private static Observable<Long> INFINITE_OBSERVABLE = Observable.create(new Action1<Operator<? super Long>>() {
+
+        @Override
+        public void call(Operator<? super Long> op) {
+            long l = 1;
+            while (!op.isUnsubscribed()) {
+                op.onNext(l++);
+            }
+            op.onCompleted();
+        }
+
+    });
 }

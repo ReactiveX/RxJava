@@ -15,9 +15,8 @@
  */
 package rx.operators;
 
-import rx.Observable.OperatorSubscription;
-import rx.Observer;
-import rx.util.functions.Action2;
+import rx.Operator;
+import rx.util.functions.Action1;
 
 /**
  * Converts an Iterable sequence into an Observable.
@@ -27,7 +26,7 @@ import rx.util.functions.Action2;
  * You can convert any object that supports the Iterable interface into an Observable that emits
  * each item in the object, with the toObservable operation.
  */
-public final class OperatorFromIterable<T> implements Action2<Observer<? super T>, OperatorSubscription> {
+public final class OperatorFromIterable<T> implements Action1<Operator<? super T>> {
 
     final Iterable<? extends T> is;
 
@@ -36,9 +35,9 @@ public final class OperatorFromIterable<T> implements Action2<Observer<? super T
     }
 
     @Override
-    public void call(Observer<? super T> o, OperatorSubscription s) {
+    public void call(Operator<? super T> o) {
         for (T i : is) {
-            if (s.isUnsubscribed()) {
+            if (o.isUnsubscribed()) {
                 break;
             }
             o.onNext(i);
