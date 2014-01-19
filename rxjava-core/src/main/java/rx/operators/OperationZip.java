@@ -142,10 +142,24 @@ public final class OperationZip {
             this.selector = selector;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public Subscription onSubscribe(final Observer<? super U> observer) {
+            final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
             final CompositeSubscription composite = new CompositeSubscription();
+            subscription.wrap(composite);
+
+            final SafeObserver<U> safeObserver;
+            // prevent double-wrapping
+            if(observer instanceof SafeObserver) {
+                safeObserver = (SafeObserver<U>) observer;
+            }
+            else {
+                // issue: https://groups.google.com/forum/#!topic/rxjava/79cWTv3TFp0
+                // For an internal observer, we need to wrap it with a SafeObserver.
+                safeObserver = new SafeObserver<U>(subscription, observer);
+            }
 
             final ReadWriteLock rwLock = new ReentrantReadWriteLock(true);
 
@@ -154,17 +168,17 @@ public final class OperationZip {
             Observer<List<T>> o2 = new Observer<List<T>>() {
                 @Override
                 public void onCompleted() {
-                    observer.onCompleted();
+                    safeObserver.onCompleted();
                 }
 
                 @Override
                 public void onError(Throwable t) {
-                    observer.onError(t);
+                    safeObserver.onError(t);
                 }
 
                 @Override
                 public void onNext(List<T> value) {
-                    observer.onNext(selector.call(value.toArray(new Object[value.size()])));
+                    safeObserver.onNext(selector.call(value.toArray(new Object[value.size()])));
                 }
             };
 
@@ -180,7 +194,7 @@ public final class OperationZip {
                 io.connect();
             }
 
-            return composite;
+            return subscription;
         }
 
         /**
