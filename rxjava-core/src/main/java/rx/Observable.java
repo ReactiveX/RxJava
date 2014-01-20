@@ -71,7 +71,7 @@ import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
-import rx.operators.OperationParallel;
+import rx.operators.OperatorParallel;
 import rx.operators.OperationParallelMerge;
 import rx.operators.OperationRepeat;
 import rx.operators.OperationReplay;
@@ -5550,7 +5550,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#parallel">RxJava Wiki: parallel()</a>
      */
     public final <R> Observable<R> parallel(Func1<Observable<T>, Observable<R>> f) {
-        return OperationParallel.parallel(this, f);
+        return bind(new OperatorParallel<T, R>(f, Schedulers.computation()));
     }
 
     /**
@@ -5569,7 +5569,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#parallel">RxJava Wiki: parallel()</a>
      */
     public final <R> Observable<R> parallel(final Func1<Observable<T>, Observable<R>> f, final Scheduler s) {
-        return OperationParallel.parallel(this, f, s);
+        return bind(new OperatorParallel<T, R>(f, s));
     }
 
     /**
