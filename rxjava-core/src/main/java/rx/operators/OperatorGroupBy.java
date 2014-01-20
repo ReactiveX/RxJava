@@ -53,11 +53,15 @@ public final class OperatorGroupBy<K, T> implements Func1<Operator<? super Group
 
             @Override
             public void onCompleted() {
-                // if we receive onCompleted from our parent we onComplete everything
+                // if we receive onCompleted from our parent we onComplete children
                 for (PublishSubject<T> ps : groups.values()) {
                     ps.onCompleted();
                 }
-                childOperator.onCompleted();
+
+                if (completionCounter.get() == 0) {
+                    // special case if no children are running (such as an empty sequence)
+                    childOperator.onCompleted();
+                }
             }
 
             @Override
@@ -92,7 +96,25 @@ public final class OperatorGroupBy<K, T> implements Func1<Operator<? super Group
                                     }
 
                                 }));
-                                _gps.subscribe(o);
+                                _gps.subscribe(new Operator<T>(o) {
+
+                                    @Override
+                                    public void onCompleted() {
+                                        o.onCompleted();
+                                        completeInner();
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        o.onError(e);
+                                    }
+
+                                    @Override
+                                    public void onNext(T t) {
+                                        o.onNext(t);
+                                    }
+
+                                });
                             }
 
                         });

@@ -466,6 +466,56 @@ public class OperatorGroupByTest {
         assertEquals(37, sentEventCounter.get());
     }
 
+    @Test
+    public void testStaggeredCompletion() throws InterruptedException {
+        final AtomicInteger eventCounter = new AtomicInteger();
+        final CountDownLatch latch = new CountDownLatch(1);
+        Observable.range(0, 100)
+                .groupBy(new Func1<Integer, Integer>() {
+
+                    @Override
+                    public Integer call(Integer i) {
+                        return i % 2;
+                    }
+                })
+                .flatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
+
+                    @Override
+                    public Observable<Integer> call(GroupedObservable<Integer, Integer> group) {
+                        if (group.getKey() == 0) {
+                            return group.observeOn(Schedulers.newThread()).delay(200, TimeUnit.MILLISECONDS);
+                        } else {
+                            return group.observeOn(Schedulers.newThread());
+                        }
+                    }
+                })
+                .subscribe(new Observer<Integer>() {
+
+                    @Override
+                    public void onCompleted() {
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onNext(Integer s) {
+                        eventCounter.incrementAndGet();
+                        System.out.println("=> " + s);
+                    }
+                });
+
+        if (!latch.await(2000, TimeUnit.MILLISECONDS)) {
+            fail("timed out");
+        }
+
+        assertEquals(100, eventCounter.get());
+    }
+
     private static class Event {
         int source;
         String message;
