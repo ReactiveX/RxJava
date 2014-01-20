@@ -1018,4 +1018,49 @@ public class OperationZipTest {
         verify(o, never()).onCompleted();
 
     }
+    
+    @Test
+    public void testZipWithOnCompletedTwice() {
+        // issue: https://groups.google.com/forum/#!topic/rxjava/79cWTv3TFp0
+        // The problem is the original "zip" implementation does not wrap
+        // an internal observer with a SafeObserver. However, in the "zip",
+        // it may calls "onCompleted" twice. That breaks the Rx contract.
+
+        // This test tries to emulate this case.
+        // As "mock(Observer.class)" will create an instance in the package "rx",
+        // we need to wrap "mock(Observer.class)" with an observer instance
+        // which is in the package "rx.operators".
+        @SuppressWarnings("unchecked")
+        final Observer<Integer> observer = mock(Observer.class);
+
+        Observable.zip(Observable.from(1),
+                Observable.from(1), new Func2<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer call(Integer a, Integer b) {
+                        return a + b;
+                    }
+                }).subscribe(new Observer<Integer>() {
+
+            @Override
+            public void onCompleted() {
+                observer.onCompleted();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                observer.onError(e);
+            }
+
+            @Override
+            public void onNext(Integer args) {
+                observer.onNext(args);
+            }
+
+        });
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(2);
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
 }
