@@ -71,7 +71,3 @@ subprojects {
         }
     }
 }
-
-project(':rxjava-core') {
-    sourceSets.test.java.srcDir 'src/test/java'
-}
