@@ -40,7 +40,6 @@ jar {
         name = 'rxjava-scala'
         instruction 'Bundle-Vendor', 'Netflix'
         instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
-        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,!org.scalatest.*,*'
         instruction 'Fragment-Host', 'com.netflix.rxjava.core'
     }
 }

@@ -5,10 +5,9 @@ dependencies {
     provided 'com.google.android:android:4.0.1.2'
     provided 'com.google.android:support-v4:r7'
 
-    // testing
-    provided 'junit:junit-dep:4.10'
-    provided 'org.mockito:mockito-core:1.8.5'
-    provided 'org.robolectric:robolectric:2.1.1'
+    testCompile 'junit:junit-dep:4.10'
+    testCompile 'org.mockito:mockito-core:1.8.5'
+    testCompile 'org.robolectric:robolectric:2.1.1'
 }
 
 
@@ -17,7 +16,6 @@ jar {
         name = 'rxjava-android'
         instruction 'Bundle-Vendor', 'Netflix'
         instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
-        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
     }
 }
 
