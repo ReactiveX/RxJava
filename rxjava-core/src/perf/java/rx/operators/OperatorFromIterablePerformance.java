@@ -19,9 +19,9 @@ public class OperatorFromIterablePerformance extends AbstractPerformanceTester {
 
                 @Override
                 public void call() {
-                    spt.timeRepetitionsEmission();
-                    //                    spt.timeTenLongs();
-                    //                    spt.time1000Longs();
+                    //                    spt.timeRepetitionsEmission();
+                    spt.timeTenLongs();
+                    //                                        spt.time1000Longs();
                 }
             });
         } catch (Exception e) {
@@ -114,11 +114,11 @@ public class OperatorFromIterablePerformance extends AbstractPerformanceTester {
      * 
      * --- New synchronous implementation with OperatorSubscription and unsubscribe support
      * 
-     * Run: 10 - 7,957,006 ops/sec
-     * Run: 11 - 8,017,973 ops/sec
-     * Run: 12 - 8,020,519 ops/sec
-     * Run: 13 - 8,220,250 ops/sec
-     * Run: 14 - 7,770,853 ops/sec
+     * Run: 10 - 8,096,667 ops/sec
+     * Run: 11 - 8,382,131 ops/sec
+     * Run: 12 - 8,256,288 ops/sec
+     * Run: 13 - 8,139,703 ops/sec
+     * Run: 14 - 8,011,023 ops/sec
      */
     public long timeTenLongs() {
 

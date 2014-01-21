@@ -49,11 +49,11 @@ public class ObservableCreatePerformance extends AbstractPerformanceTester {
      * 
      * --- always with CompositeSubscription():
      * 
-     * Run: 10 - 13,716,405 ops/sec
-     * Run: 11 - 13,920,015 ops/sec
-     * Run: 12 - 14,122,977 ops/sec
-     * Run: 13 - 14,048,534 ops/sec
-     * Run: 14 - 13,824,451 ops/sec
+     * Run: 10 - 15,846,002 ops/sec
+     * Run: 11 - 15,671,181 ops/sec
+     * Run: 12 - 15,401,580 ops/sec
+     * Run: 13 - 15,841,283 ops/sec
+     * Run: 14 - 15,317,970 ops/sec
      */
     public long timeCreateAndSubscribe() {
 

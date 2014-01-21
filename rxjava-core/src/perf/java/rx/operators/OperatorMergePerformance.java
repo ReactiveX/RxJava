@@ -4,6 +4,7 @@ import rx.Observable;
 import rx.perf.AbstractPerformanceTester;
 import rx.perf.IntegerSumObserver;
 import rx.perf.LongSumObserver;
+import rx.schedulers.Schedulers;
 import rx.util.functions.Action0;
 
 public class OperatorMergePerformance extends AbstractPerformanceTester {
@@ -16,7 +17,7 @@ public class OperatorMergePerformance extends AbstractPerformanceTester {
 
                 @Override
                 public void call() {
-                    spt.timeRepetitionsEmission();
+                    spt.timeRepetitionsEmissionSynchronous();
                     //                    spt.timeMergeAandBwithSingleItems();
                     //                    spt.timeMergeAandBwith100Items();
                 }
@@ -28,16 +29,34 @@ public class OperatorMergePerformance extends AbstractPerformanceTester {
     }
 
     /**
-     * Run: 10 - 44,561,691 ops/sec
-     * Run: 11 - 44,038,119 ops/sec
-     * Run: 12 - 44,032,689 ops/sec
-     * Run: 13 - 43,390,724 ops/sec
-     * Run: 14 - 44,088,600 ops/sec
+     * Run: 10 - 32,609,617 ops/sec
+     * Run: 11 - 33,511,839 ops/sec
+     * Run: 12 - 34,768,096 ops/sec
+     * Run: 13 - 32,376,499 ops/sec
+     * Run: 14 - 33,166,835 ops/sec
      */
-    public long timeRepetitionsEmission() {
+    public long timeRepetitionsEmissionSynchronous() {
 
         Observable<Long> sA = Observable.from(ITERABLE_OF_REPETITIONS);
         Observable<Long> sB = Observable.from(ITERABLE_OF_REPETITIONS);
+        Observable<Long> s = Observable.merge(sA, sB);
+
+        LongSumObserver o = new LongSumObserver();
+        s.subscribe(o);
+        return o.sum;
+    }
+
+    /**
+     * Run: 10 - 7,911,392,405 ops/sec
+     * Run: 11 - 8,620,689,655 ops/sec
+     * Run: 12 - 8,333,333,333 ops/sec
+     * Run: 13 - 6,775,067,750 ops/sec
+     * Run: 14 - 9,074,410,163 ops/sec
+     */
+    public long timeRepetitionsEmissionConcurrent() {
+
+        Observable<Long> sA = Observable.from(ITERABLE_OF_REPETITIONS).subscribeOn(Schedulers.newThread());
+        Observable<Long> sB = Observable.from(ITERABLE_OF_REPETITIONS).subscribeOn(Schedulers.newThread());
         Observable<Long> s = Observable.merge(sA, sB);
 
         LongSumObserver o = new LongSumObserver();
