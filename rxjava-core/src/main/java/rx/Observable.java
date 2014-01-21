@@ -39,7 +39,6 @@ import rx.operators.OperationAsObservable;
 import rx.operators.OperationAverage;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCache;
-import rx.operators.OperatorCast;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDebounce;
@@ -54,15 +53,12 @@ import rx.operators.OperationElementAt;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFlatMap;
-import rx.operators.OperatorGroupBy;
 import rx.operators.OperationGroupByUntil;
 import rx.operators.OperationGroupJoin;
 import rx.operators.OperationInterval;
 import rx.operators.OperationJoin;
 import rx.operators.OperationJoinPatterns;
-import rx.operators.OperatorMap;
 import rx.operators.OperationMaterialize;
-import rx.operators.OperatorMerge;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMinMax;
 import rx.operators.OperationMulticast;
@@ -71,7 +67,6 @@ import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
-import rx.operators.OperatorParallel;
 import rx.operators.OperationParallelMerge;
 import rx.operators.OperationRepeat;
 import rx.operators.OperationReplay;
@@ -95,16 +90,21 @@ import rx.operators.OperationThrottleFirst;
 import rx.operators.OperationTimeInterval;
 import rx.operators.OperationTimeout;
 import rx.operators.OperationTimer;
-import rx.operators.OperatorTimestamp;
 import rx.operators.OperationToMap;
 import rx.operators.OperationToMultimap;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperationZip;
+import rx.operators.OperatorCast;
 import rx.operators.OperatorFromIterable;
+import rx.operators.OperatorGroupBy;
+import rx.operators.OperatorMap;
+import rx.operators.OperatorMerge;
+import rx.operators.OperatorParallel;
 import rx.operators.OperatorTake;
 import rx.operators.OperatorTakeTimed;
+import rx.operators.OperatorTimestamp;
 import rx.operators.OperatorToObservableList;
 import rx.operators.OperatorToObservableSortedList;
 import rx.operators.SafeObservableSubscription;
@@ -164,9 +164,8 @@ public class Observable<T> {
     /**
      * Observable with Function to execute when subscribed to.
      * <p>
-     * NOTE: Use {@link #create(OnSubscribeFunc)} to create an Observable
-     * instead of this constructor unless you specifically have a need for
-     * inheritance.
+     * <em>Note:</em> Use {@link #create(OnSubscribeFunc)} to create an Observable, instead of this
+     * constructor, unless you specifically have a need for inheritance.
      * 
      * @param onSubscribe
      *            {@link OnSubscribeFunc} to be executed when {@link #subscribe(Observer)} is called
@@ -176,12 +175,7 @@ public class Observable<T> {
     }
 
     /**
-<<<<<<< HEAD
-     * Function interface for work to be performed when an Observable is subscribed to via
-     * {@link #subscribe(Observer)}
-=======
      * Function interface for work to be performed when an {@link Observable} is subscribed to via {@link Observable#subscribe(Observer)}
->>>>>>> Added Observable.bind
      * 
      * @param <T>
      * @deprecated
@@ -194,46 +188,29 @@ public class Observable<T> {
     private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     /**
-<<<<<<< HEAD
-     * Observable with Function to execute when subscribed to.
-     * <p>
-     * <em>Note:</em> Use {@link #create(OnSubscribeFunc)} to create an Observable, instead of this
-     * constructor, unless you specifically have a need for inheritance.
-     * 
-     * @param onSubscribe
-     *            {@link OnSubscribeFunc} to be executed when {@link #subscribe(Observer)} is called
-     */
-    protected Observable(Action2<Observer<? super T>, OperatorSubscription> f) {
-        this.f = f;
-    }
-
-    /**
-<<<<<<< HEAD
-     * Mirror the one Observable in an Iterable of several Observables that first emits an item.
-=======
-=======
->>>>>>> Bind implementation of fromIterable, toList, toSortedList
-     * Creates an Observable that will execute the given function when an {@link Observer} subscribes to it.
+     * Returns an Observable that will execute the specified function when an {@link Observer}
+     * subscribes to it.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png">
      * <p>
-     * Write the function you pass to <code>create</code> so that it behaves as
-     * an Observable: It should invoke the Observer's {@link Observer#onNext onNext}, {@link Observer#onError onError}, and {@link Observer#onCompleted onCompleted} methods appropriately.
+     * Write the function you pass to {@code create} so that it behaves as an Observable: It should
+     * invoke the Observer's {@link Observer#onNext onNext}, {@link Observer#onError onError}, and
+     * {@link Observer#onCompleted onCompleted} methods appropriately.
      * <p>
-     * A well-formed Observable must invoke either the Observer's
-     * <code>onCompleted</code> method exactly once or its <code>onError</code>
-     * method exactly once.
+     * A well-formed Observable must invoke either the Observer's {@code onCompleted} method
+     * exactly once or its {@code onError} method exactly once.
      * <p>
-     * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design
-     * Guidelines (PDF)</a> for detailed information.
+     * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a>
+     * for detailed information.
      * 
      * @param <T>
      *            the type of the items that this Observable emits
      * @param func
-     *            a function that accepts an {@code Observer<T>}, invokes its {@code onNext}, {@code onError}, and {@code onCompleted} methods as appropriate, and returns a {@link Subscription} to
-     *            allow the Observer to cancel the subscription
-     * @return an Observable that, when an {@link Observer} subscribes to it,
-     *         will execute the given function
+     *            a function that accepts an {@code Observer<T>}, invokes its {@code onNext},
+     *            {@code onError}, and {@code onCompleted} methods as appropriate, and returns a
+     *            {@link Subscription} that allows the Observer to cancel the subscription
+     * @return an Observable that, when an {@link Observer} subscribes to it, will execute the
+     *         specified function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create">RxJava Wiki: create()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.create.aspx">MSDN: Observable.Create</a>
      */
@@ -241,6 +218,34 @@ public class Observable<T> {
         return new Observable<T>(f);
     }
 
+    /**
+     * Returns an Observable that will execute the specified function when an {@link Observer}
+     * subscribes to it.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png">
+     * <p>
+     * Write the function you pass to {@code create} so that it behaves as an Observable: It should
+     * invoke the Observer's {@link Observer#onNext onNext}, {@link Observer#onError onError}, and
+     * {@link Observer#onCompleted onCompleted} methods appropriately.
+     * <p>
+     * A well-formed Observable must invoke either the Observer's {@code onCompleted} method
+     * exactly once or its {@code onError} method exactly once.
+     * <p>
+     * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a>
+     * for detailed information.
+     * 
+     * @param <T>
+     *            the type of the items that this Observable emits
+     * @param func
+     *            a function that accepts an {@code Observer<T>}, invokes its {@code onNext},
+     *            {@code onError}, and {@code onCompleted} methods as appropriate, and returns a
+     *            {@link Subscription} that allows the Observer to cancel the subscription
+     * @return an Observable that, when an {@link Observer} subscribes to it, will execute the
+     *         specified function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create">RxJava Wiki: create()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.create.aspx">MSDN: Observable.Create</a>
+     * @deprecated
+     */
     @Deprecated
     public final static <T> Observable<T> create(final OnSubscribeFunc<T> func) {
         return new Observable<T>(new Action1<Operator<? super T>>() {
@@ -269,8 +274,7 @@ public class Observable<T> {
      */
 
     /**
-     * Given multiple Observables, return the one that first emits an item.
->>>>>>> Added Observable.bind
+     * Mirror the one Observable in an Iterable of several Observables that first emits an item.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
      * 
@@ -1041,46 +1045,9 @@ public class Observable<T> {
     }
 
     /**
-<<<<<<< HEAD
-     * Returns an Observable that will execute the specified function when an {@link Observer}
-     * subscribes to it.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png">
-     * <p>
-     * Write the function you pass to {@code create} so that it behaves as an Observable: It should
-     * invoke the Observer's {@link Observer#onNext onNext}, {@link Observer#onError onError}, and
-     * {@link Observer#onCompleted onCompleted} methods appropriately.
-     * <p>
-     * A well-formed Observable must invoke either the Observer's {@code onCompleted} method
-     * exactly once or its {@code onError} method exactly once.
-     * <p>
-     * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a>
-     * for detailed information.
-     * 
-     * @param <T>
-     *            the type of the items that this Observable emits
-     * @param func
-     *            a function that accepts an {@code Observer<T>}, invokes its {@code onNext},
-     *            {@code onError}, and {@code onCompleted} methods as appropriate, and returns a
-     *            {@link Subscription} that allows the Observer to cancel the subscription
-     * @return an Observable that, when an {@link Observer} subscribes to it, will execute the
-     *         specified function
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create">RxJava Wiki: create()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.create.aspx">MSDN: Observable.Create</a>
-     */
-    public final static <T> Observable<T> create(OnSubscribeFunc<T> func) {
-        return new Observable<T>(func);
-    }
-
-    /**
      * Returns an Observable that calls an Observable factory to create its Observable for each new
      * Observer that subscribes. That is, for each subscriber, the actual Observable that subscriber
      * observs is determined by the factory function.
-=======
-     * Returns an Observable that calls an Observable factory to create its
-     * Observable for each new Observer that subscribes. That is, for each
-     * subscriber, the actual Observable is determined by the factory function.
->>>>>>> Added Observable.bind
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/defer.png">
      * <p>
@@ -2172,13 +2139,8 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-<<<<<<< HEAD
      * Even if multiple merged Observables send {@code onError} notifications,
      * {@code mergeDelayError} will only invoke the {@code onError} method of its Observers once.
-=======
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
-     * its Observers once.
->>>>>>> Added Observable.bind
      * <p>
      * This method allows an Observer to observe all successfully emitted items from all of the
      * source Observables without being interrupted by an error notification from one of them.
@@ -2195,7 +2157,6 @@ public class Observable<T> {
     }
 
     /**
-<<<<<<< HEAD
      * This behaves like {@link #merge(Observable, Observable)} except that if any of the merged
      * Observables notify of an error via {@link Observer#onError onError}, {@code mergeDelayError}
      * will refrain from propagating that error notification until all of the merged Observables
@@ -2205,16 +2166,6 @@ public class Observable<T> {
      * <p>
      * Even if both merged Observables send {@code onError} notifications, {@code mergeDelayError}
      * will only invoke the {@code onError} method of its Observers once.
-=======
-     * This behaves like {@link #merge(Observable, Observable)} except that if
-     * any of the merged Observables notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that error notification until all of
-     * the merged Observables have finished emitting items.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
-     * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
-     * its Observers once.
->>>>>>> Added Observable.bind
      * <p>
      * This method allows an Observer to receive all successfully emitted items from each of the
      * source Observables without being interrupted by an error notification from one of them.
@@ -2236,18 +2187,14 @@ public class Observable<T> {
 
     /**
      * This behaves like {@link #merge(Observable, Observable, Observable)} except that if any of
-     * the merged Observables notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that error notification until all of
+     * the merged Observables notify of an error via {@link Observer#onError onError},
+     * {@code mergeDelayError} will refrain from propagating that error notification until all of
      * the merged Observables have finished emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-<<<<<<< HEAD
      * Even if multiple merged Observables send {@code onError} notifications,
      * {@code mergeDelayError} will only invoke the {@code onError} method of its Observers once.
-=======
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
-     * its Observers once.
->>>>>>> Added Observable.bind
      * <p>
      * This method allows an Observer to receive all successfully emitted items from all of the
      * source Observables without being interrupted by an error notification from one of them.
@@ -2270,18 +2217,14 @@ public class Observable<T> {
 
     /**
      * This behaves like {@link #merge(Observable, Observable, Observable, Observable)} except that
-     * if any of the merged Observables notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that error notification until all of
+     * if any of the merged Observables notify of an error via {@link Observer#onError onError},
+     * {@code mergeDelayError} will refrain from propagating that error notification until all of
      * the merged Observables have finished emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-<<<<<<< HEAD
      * Even if multiple merged Observables send {@code onError} notifications,
      * {@code mergeDelayError} will only invoke the {@code onError} method of its Observers once.
-=======
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
-     * its Observers once.
->>>>>>> Added Observable.bind
      * <p>
      * This method allows an Observer to receive all successfully emitted items from all of the
      * source Observables without being interrupted by an error notification from one of them.
@@ -2305,19 +2248,15 @@ public class Observable<T> {
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables notify of an error via {@link Observer#onError onError}
-     * , {@code mergeDelayError} will refrain from propagating that
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable)}
+     * except that if any of the merged Observables notify of an error via
+     * {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged Observables have finished emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-<<<<<<< HEAD
      * Even if multiple merged Observables send {@code onError} notifications,
      * {@code mergeDelayError} will only invoke the {@code onError} method of its Observers once.
-=======
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
-     * its Observers once.
->>>>>>> Added Observable.bind
      * <p>
      * This method allows an Observer to receive all successfully emitted items from all of the
      * source Observables without being interrupted by an error notification from one of them.
@@ -2343,25 +2282,16 @@ public class Observable<T> {
     }
 
     /**
-<<<<<<< HEAD
      * This behaves like
      * {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable)}
      * except that if any of the merged Observables notify of an error via
-=======
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables notify of an error via
->>>>>>> Added Observable.bind
      * {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged Observables have finished emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-<<<<<<< HEAD
      * Even if multiple merged Observables send {@code onError} notifications,
      * {@code mergeDelayError} will only invoke the {@code onError} method of its Observers once.
-=======
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
-     * its Observers once.
->>>>>>> Added Observable.bind
      * <p>
      * This method allows an Observer to receive all successfully emitted items from all of the
      * source Observables without being interrupted by an error notification from one of them.
@@ -2389,19 +2319,15 @@ public class Observable<T> {
     }
 
     /**
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables notify of an error via
+     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable)}
+     * except that if any of the merged Observables notify of an error via
      * {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged Observables have finished emitting items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
      * <p>
-<<<<<<< HEAD
      * Even if multiple merged Observables send {@code onError} notifications,
      * {@code mergeDelayError} will only invoke the {@code onError} method of its Observers once.
-=======
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
-     * its Observers once.
->>>>>>> Added Observable.bind
      * <p>
      * This method allows an Observer to receive all successfully emitted items from all of the
      * source Observables without being interrupted by an error notification from one of them.
@@ -2431,7 +2357,6 @@ public class Observable<T> {
     }
 
     /**
-<<<<<<< HEAD
      * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)}
      * except that if any of the merged Observables notify of an error via
      * {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
@@ -2441,17 +2366,6 @@ public class Observable<T> {
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications,
      * {@code mergeDelayError} will only invoke the {@code onError} method of its Observers once.
-=======
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables notify of an error
-     * via {@link Observer#onError onError}, {@code mergeDelayError} will refrain
-     * from propagating that error notification until all of the merged
-     * Observables have finished emitting items.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
-     * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
-     * its Observers once.
->>>>>>> Added Observable.bind
      * <p>
      * This method allows an Observer to receive all successfully emitted items from all of the
      * source Observables without being interrupted by an error notification from one of them.
@@ -2483,7 +2397,6 @@ public class Observable<T> {
     }
 
     /**
-<<<<<<< HEAD
      * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)}
      * except that if any of the merged Observables notify of an error via
      * {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
@@ -2493,17 +2406,6 @@ public class Observable<T> {
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications,
      * {@code mergeDelayError} will only invoke the {@code onError} method of its Observers once.
-=======
-     * This behaves like {@link #merge(Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable, Observable)} except that if any of the merged Observables notify
-     * of an error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain
-     * from propagating that error notification until all of the merged
-     * Observables have finished emitting items.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
-     * <p>
-     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only invoke the {@code onError} method of
-     * its Observers once.
->>>>>>> Added Observable.bind
      * <p>
      * This method allows an Observer to receive all successfully emitted items from all of the
      * source Observables without being interrupted by an error notification from one of them.
@@ -4642,12 +4544,8 @@ public class Observable<T> {
     }
 
     /**
-<<<<<<< HEAD
      * Registers an {@link Action0} to be called when this Observable invokes either
      * {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
-=======
-     * Registers an {@link Action0} to be called when this Observable invokes {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
->>>>>>> Added Observable.bind
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/finallyDo.png">
      * 
@@ -5067,33 +4965,8 @@ public class Observable<T> {
     }
 
     /**
-<<<<<<< HEAD
-     * Returns an Observable that applies the specified function to each item emitted by an
-     * Observable and emits the results of these function applications.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mapWithIndex.png">
-     * 
-     * @param func
-     *            a function to apply to each item emitted by the source Observable that takes the
-     *            sequential index of the emitted item as additional parameter
-     * @return an Observable that emits the items from the source Observable, transformed by the
-     *         specified function
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mapwithindex">RxJava Wiki: mapWithIndex()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244311.aspx">MSDN: Observable.Select</a>
-     * @deprecated just use {@code zip} with {@link #range(int)}
-     */
-    @Deprecated
-    public final <R> Observable<R> mapWithIndex(Func2<? super T, Integer, ? extends R> func) {
-        return create(OperationMap.mapWithIndex(this, func));
-    }
-
-    /**
      * Turns all of the emissions and notifications from a source Observable into emissions marked
      * with their original types within {@link Notification} objects.
-=======
-     * Turns all of the emissions and notifications from a source Observable
-     * into emissions marked with their original types within {@link Notification} objects.
->>>>>>> Bind implementation of Map, Cast, Timestamp
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/materialize.png">
      * 
@@ -5534,14 +5407,9 @@ public class Observable<T> {
     }
 
     /**
-<<<<<<< HEAD
      * Perform work on the source {@code Observable<T>} in parallel by sharding it on a
      * {@link Schedulers#threadPoolForComputation()} {@link Scheduler}, and return the resulting
      * {@code Observable<R>}.
-=======
-     * Perform work in parallel by sharding an {@code Observable<T>} on a {@link Schedulers#threadPoolForComputation()} {@link Scheduler} and
-     * return an {@code Observable<R>} with the output.
->>>>>>> Added Observable.bind
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallel.png">
      * 
@@ -5588,14 +5456,9 @@ public class Observable<T> {
     }
 
     /**
-<<<<<<< HEAD
      * Returns a {@link ConnectableObservable}, which waits until its
      * {@link ConnectableObservable#connect connect} method is called before it begins emitting
      * items to those {@link Observer}s that have subscribed to it.
-=======
-     * Returns a {@link ConnectableObservable}, which waits until its {@link ConnectableObservable#connect connect} method is called before it
-     * begins emitting items to those {@link Observer}s that have subscribed to it.
->>>>>>> Added Observable.bind
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.png">
      * 
