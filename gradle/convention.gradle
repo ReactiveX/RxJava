@@ -1,7 +1,7 @@
 // GRADLE-2087 workaround, perform after java plugin
 status = project.hasProperty('preferredStatus') ? project.preferredStatus : (version.contains('SNAPSHOT') ? 'snapshot' : 'release')
 
-subprojects { project ->
+subprojects {
     if (!subprojects.empty) { // is a container
         return
     }
@@ -10,6 +10,15 @@ subprojects { project ->
 
     apply plugin: 'java'
     apply plugin: 'osgi'
+
+    dependencies {
+        if (project.path != ":rxjava-core") {
+            compile project(':rxjava-core')
+        }
+
+        testCompile 'junit:junit-dep:4.10'
+        testCompile 'org.mockito:mockito-core:1.8.5'
+    }
 
     sourceCompatibility = JavaVersion.VERSION_1_6
     targetCompatibility = JavaVersion.VERSION_1_6
@@ -49,7 +58,7 @@ subprojects { project ->
         }
     }
 
-    // When outputing to an Ivy repo, we want to use the proper type field
+// When outputing to an Ivy repo, we want to use the proper type field
     gradle.taskGraph.whenReady {
         def isNotMaven = !it.hasTask(project.uploadMavenCentral)
         if (isNotMaven) {
@@ -116,8 +125,8 @@ subprojects { project ->
         dependsOn examplesClasses
     }
 
-    // Individual projects will apply specific language plugins which add to source sets…
-    // do this late so we get those additions
+// Individual projects will apply specific language plugins which add to source sets…
+// do this late so we get those additions
     afterEvaluate {
         idea {
             module {
