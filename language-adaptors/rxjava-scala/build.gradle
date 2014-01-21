@@ -34,12 +34,3 @@ task test(overwrite: true, dependsOn: testClasses) << {
             haltonfailure: 'true',
             fork: 'false') {reporter(type: 'stdout')}
 }
-
-jar {
-    manifest {
-        name = 'rxjava-scala'
-        instruction 'Bundle-Vendor', 'Netflix'
-        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
-        instruction 'Fragment-Host', 'com.netflix.rxjava.core'
-    }
-}

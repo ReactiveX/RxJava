@@ -35,12 +35,3 @@ task(rspec, type: JavaExec) {
 
 tasks.build.dependsOn << 'rspec'
 */
-
-jar {
-    manifest {
-        name = 'rxjava-jruby'
-        instruction 'Bundle-Vendor', 'Netflix'
-        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
-        instruction 'Fragment-Host', 'com.netflix.rxjava.core'
-    }
-}

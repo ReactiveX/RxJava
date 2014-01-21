@@ -29,6 +29,17 @@ subprojects { project ->
         extension 'jar'
     }
 
+    jar {
+        manifest {
+            name = project.name
+            instruction 'Bundle-Vendor', 'Netflix'
+            instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+            if (project.path != ":rxjava-core") {
+                instruction 'Fragment-Host', 'com.netflix.rxjava.core'
+            }
+        }
+    }
+
     configurations {
         create("sources")
         create("javadoc")

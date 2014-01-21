@@ -10,15 +10,6 @@ dependencies {
     testCompile 'org.robolectric:robolectric:2.1.1'
 }
 
-
-jar {
-    manifest {
-        name = 'rxjava-android'
-        instruction 'Bundle-Vendor', 'Netflix'
-        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
-    }
-}
-
 test {
     testLogging {
         exceptionFormat "full"

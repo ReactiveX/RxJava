@@ -23,12 +23,3 @@ eclipse {
     natures "ccw.nature"
   }
 }
-
-jar {
-    manifest {
-        name = 'rxjava-clojure'
-        instruction 'Bundle-Vendor', 'Netflix'
-        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
-        instruction 'Fragment-Host', 'com.netflix.rxjava.core'
-    }
-}
