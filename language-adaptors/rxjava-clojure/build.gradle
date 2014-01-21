@@ -1,44 +1,28 @@
+buildscript {
+    repositories { maven { url "http://clojars.org/repo" } }
+    dependencies { classpath "clojuresque:clojuresque:1.5.8" }
+}
+
 apply plugin: 'clojure'
 apply plugin: 'osgi'
 
-dependencies {
-    compile project(':rxjava-core')
-
-    // clojure
-    compile 'org.clojure:clojure:1.4.+'
-
-    // this should be 'compile' for the 'examples' module ... can't figure that out right now so making 'provided'
-    provided 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
+repositories {
+    clojarsRepo()
 }
 
-tasks.compileExamplesClojure.classpath = files(tasks.compileClojure.destinationDir) + tasks.compileClojure.classpath
+dependencies {
+    compile project(':rxjava-core')
+    compile 'org.clojure:clojure:1.4.+'
+    compile 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
+}
 
-/*
- * Clojure
- */
 aotCompile = true
 warnOnReflection = false
 
-buildscript {
-  repositories { maven { url "http://clojars.org/repo" } }
-  dependencies { classpath "clojuresque:clojuresque:1.5.8" }
-}
-
-repositories {
-  clojarsRepo()
-}
-
-/*
- * Add Counterclockwise and include 'provided' dependencies
- */
 eclipse {
   project {
     natures "ccw.nature"
   }
-}
-
-tasks.clojureTest {
-    classpath = classpath + configurations.provided
 }
 
 jar {
