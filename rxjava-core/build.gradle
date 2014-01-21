@@ -1,5 +1,3 @@
-apply plugin: 'maven'
-
 dependencies {
     testCompile project(":rxjava-test")
 }
