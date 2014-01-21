@@ -9,6 +9,7 @@ subprojects { project ->
     description = name.capitalize().replaceAll("-\\w") { " " + (it.toUpperCase() - "-") }.replaceAll("Rxjava", "RxJava")
 
     apply plugin: 'java'
+    apply plugin: 'osgi'
 
     sourceCompatibility = JavaVersion.VERSION_1_6
     targetCompatibility = JavaVersion.VERSION_1_6
