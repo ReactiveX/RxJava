@@ -15,23 +15,16 @@
  */
 package rx.swing.sources;
 
-import static org.mockito.Mockito.*;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.AbstractButton;
-
-import org.junit.Test;
-import org.mockito.Matchers;
-
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-import rx.util.functions.Action1;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public enum AbstractButtonSource { ; // no instances
 
@@ -60,42 +53,4 @@ public enum AbstractButtonSource { ; // no instances
         });
     }
 
-    public static class UnitTest {
-        @Test
-        public void testObservingActionEvents() {
-            @SuppressWarnings("unchecked")
-            Action1<ActionEvent> action = mock(Action1.class);
-            @SuppressWarnings("unchecked")
-            Action1<Throwable> error = mock(Action1.class);
-            Action0 complete = mock(Action0.class);
-            
-            final ActionEvent event = new ActionEvent(this, 1, "command");
-            
-            @SuppressWarnings("serial")
-            class TestButton extends AbstractButton {
-                void testAction() {
-                    fireActionPerformed(event);
-                }
-            }
-            
-            TestButton button = new TestButton();
-            Subscription sub = fromActionOf(button).subscribe(action, error, complete);
-            
-            verify(action, never()).call(Matchers.<ActionEvent>any());
-            verify(error, never()).call(Matchers.<Throwable>any());
-            verify(complete, never()).call();
-            
-            button.testAction();
-            verify(action, times(1)).call(Matchers.<ActionEvent>any());
-            
-            button.testAction();
-            verify(action, times(2)).call(Matchers.<ActionEvent>any());
-            
-            sub.unsubscribe();
-            button.testAction();
-            verify(action, times(2)).call(Matchers.<ActionEvent>any());
-            verify(error, never()).call(Matchers.<Throwable>any());
-            verify(complete, never()).call();
-        }
-    }
 }

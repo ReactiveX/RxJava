@@ -1,31 +1,62 @@
-// GRADLE-2087 workaround, perform after java plugin
-status = project.hasProperty('preferredStatus')?project.preferredStatus:(version.contains('SNAPSHOT')?'snapshot':'release')
+subprojects {
+    if (!subprojects.empty) { // is a container
+        return
+    }
 
-subprojects { project ->
-    apply plugin: 'java' // Plugin as major conventions
+    description = name.capitalize().replaceAll("-\\w") { " " + (it.toUpperCase() - "-") }.replaceAll("Rxjava", "RxJava")
 
-    sourceCompatibility = 1.6
+    apply plugin: 'java'
+    apply plugin: 'osgi'
 
-    // Restore status after Java plugin
-    status = rootProject.status
+    repositories {
+        mavenLocal()
+        mavenCentral() // maven { url: 'http://jcenter.bintray.com' }
+    }
 
-    task sourcesJar(type: Jar, dependsOn:classes) {
+    dependencies {
+        if (project.path != ":rxjava-core") {
+            compile project(':rxjava-core')
+        }
+
+        testCompile 'junit:junit-dep:4.10'
+        testCompile 'org.mockito:mockito-core:1.8.5'
+    }
+
+    sourceCompatibility = JavaVersion.VERSION_1_6
+    targetCompatibility = JavaVersion.VERSION_1_6
+
+    status = project.hasProperty('preferredStatus') ? project.preferredStatus : (version.contains('SNAPSHOT') ? 'snapshot' : 'release')
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
         from sourceSets.main.allSource
         classifier 'sources'
         extension 'jar'
     }
 
-    task javadocJar(type: Jar, dependsOn:javadoc) {
+    task javadocJar(type: Jar, dependsOn: javadoc) {
         from javadoc.destinationDir
         classifier 'javadoc'
         extension 'jar'
     }
 
-    configurations.create('sources')
-    configurations.create('javadoc')
-    configurations.archives {
-        extendsFrom configurations.sources
-        extendsFrom configurations.javadoc
+    jar {
+        manifest {
+            name = project.name
+            instruction 'Bundle-Vendor', 'Netflix'
+            instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+            if (project.path != ":rxjava-core") {
+                instruction 'Fragment-Host', 'com.netflix.rxjava.core'
+            }
+        }
+    }
+
+    configurations {
+        create("sources")
+        create("javadoc")
+        archives {
+            extendsFrom configurations.sources
+            extendsFrom configurations.javadoc
+        }
     }
 
     // When outputing to an Ivy repo, we want to use the proper type field
@@ -56,46 +87,65 @@ subprojects { project ->
         }
     }
 
-    project.sourceSets {
-        main.compileClasspath += project.configurations.provided
-        main.runtimeClasspath -= project.configurations.provided
-        test.compileClasspath += project.configurations.provided
-        test.runtimeClasspath += project.configurations.provided
-    }
-}
-
-apply plugin: 'github-pages' // Used to create publishGhPages task
-
-def docTasks = [:]
-[Javadoc,ScalaDoc,Groovydoc].each{ Class docClass ->
-    def allSources = allprojects.tasks*.withType(docClass).flatten()*.source 
-    if (allSources) {
-        def shortName = docClass.simpleName.toLowerCase()
-        def docTask = task "aggregate${shortName.capitalize()}"(type: docClass, description: "Aggregate subproject ${shortName}s") {
-            source = allSources
-            destinationDir = file("${project.buildDir}/docs/${shortName}")
-            doFirst {
-                def classpaths = allprojects.findAll { it.plugins.hasPlugin(JavaPlugin) }.collect { it.sourceSets.main.compileClasspath }
-                classpath = files(classpaths)
-            }
+    sourceSets {
+        main {
+            compileClasspath += configurations.provided
+            runtimeClasspath -= configurations.provided
         }
-        docTasks[shortName] = docTask
-        processGhPages.dependsOn(docTask)
-    }
-}
-
-githubPages {
-    repoUri = "git@github.com:Netflix/${rootProject.githubProjectName}.git"
-    pages {
-        docTasks.each { shortName, docTask ->
-            from(docTask.outputs.files) {
-                into "docs/${shortName}"
-            }
+        test {
+            compileClasspath += configurations.provided
+            runtimeClasspath += configurations.provided
+        }
+        examples {
+            compileClasspath += configurations.provided + main.output
+        }
+        perf {
+            compileClasspath += configurations.provided + main.output
         }
     }
-}
 
-// Generate wrapper, which is distributed as part of source to alleviate the need of installing gradle
-task createWrapper(type: Wrapper) {
-    gradleVersion = '1.6'
+    configurations {
+        examplesCompile.extendsFrom testCompile
+        examplesRuntime.extendsFrom testRuntime
+        perfCompile.extendsFrom testCompile
+        perfRuntime.extendsFrom testRuntime
+    }
+
+    javadoc {
+        options {
+            doclet = "org.benjchristensen.doclet.DocletExclude"
+            docletpath = [rootProject.file('gradle/doclet-exclude.jar')]
+            stylesheetFile = rootProject.file('gradle/javadocStyleSheet.css')
+            windowTitle = "$project.description Javadoc $project.version"
+            addStringOption('top').value = '<h2 class="title" style="padding-top:40px">' + project.description + '</h2>'.toString()
+        }
+        classpath += configurations.provided
+    }
+
+    build {
+        dependsOn examplesClasses
+    }
+
+    // Individual projects will apply specific language plugins which add to source sets…
+    // do this late so we get those additions
+    afterEvaluate {
+        idea {
+            module {
+                [sourceSets.examples, sourceSets.perf].each {
+                    [it.allSource.srcDirs, it.resources.srcDirs].each {
+                        testSourceDirs += it
+                    }
+                }
+                scopes.PROVIDED.plus += configurations.provided
+            }
+        }
+
+        eclipse {
+            classpath {
+                plusConfigurations += configurations.provided
+                downloadJavadoc = true
+            }
+        }
+    }
+
 }

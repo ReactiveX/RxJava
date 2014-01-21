@@ -1,5 +1,4 @@
 apply plugin: 'scala'
-apply plugin: 'osgi'
 
 tasks.withType(ScalaCompile) {
 	scalaCompileOptions.fork = true
@@ -12,50 +11,9 @@ tasks.withType(ScalaCompile) {
     }
 }
 
-sourceSets { 
-	main { 
-        scala { 
-            srcDir 'src/main/scala'
-        }
-    }
-    test { 
-        scala { 
-            srcDir 'src/main/scala'
-            srcDir 'src/test/scala'
-            srcDir 'src/examples/scala'
-            //srcDir 'src/examples/java'
-        }
-        java.srcDirs = []
-    }
-    examples {
-        // It seems that in Gradle, the dependency "compileScala depends on compileJava" is hardcoded,
-        // or at least not meant to be removed.
-        // However, compileScala also runs javac at the very end, so we just add the Java sources to
-        // the scala source set:
-        scala { 
-            srcDir 'src/examples/scala'
-            //srcDir 'src/examples/java'
-        }
-        java.srcDirs = []
-    }
-}
-
 dependencies {
     compile 'org.scala-lang:scala-library:2.10.+'
-
-    compile project(':rxjava-core')
-    
-    provided 'junit:junit-dep:4.10'
-    provided 'org.mockito:mockito-core:1.8.5'
-    provided 'org.scalatest:scalatest_2.10:1.9.1'
-}
-
-tasks.compileScala {  
-    classpath = classpath + (configurations.compile + configurations.provided)
-}
-
-tasks.compileExamplesScala {  
-    classpath = classpath + files(compileScala.destinationDir) + (configurations.compile + configurations.provided)
+    testCompile 'org.scalatest:scalatest_2.10:1.9.1'
 }
 
 // Add RxJava core to Scaladoc input:
@@ -71,14 +29,4 @@ task test(overwrite: true, dependsOn: testClasses) << {
     ant.scalatest(runpath: sourceSets.test.output.classesDir,
             haltonfailure: 'true',
             fork: 'false') {reporter(type: 'stdout')}
-}
-
-jar {
-    manifest {
-        name = 'rxjava-scala'
-        instruction 'Bundle-Vendor', 'Netflix'
-        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
-        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,!org.scalatest.*,*'
-        instruction 'Fragment-Host', 'com.netflix.rxjava.core'
-    }
 }

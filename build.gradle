@@ -1,77 +1,28 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral() // maven { url 'http://jcenter.bintray.com' }
+        repositories { maven { url 'http://dl.bintray.com/content/netflixoss/external-gradle-plugins/' } } // For gradle-release
+    }
+    dependencies {
+        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.6.1'
+        classpath 'com.mapvine:gradle-cobertura-plugin:0.1'
+        classpath 'gradle-release:gradle-release:1.1.5'
+        classpath 'org.ajoberstar:gradle-git:0.5.0'
+    }
+}
+
 ext.githubProjectName = 'RxJava'
+
+allprojects {
+    group = "com.netflix.rxjava"
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+}
 
 apply from: file('gradle/convention.gradle')
 apply from: file('gradle/maven.gradle')
 //apply from: file('gradle/check.gradle')
 apply from: file('gradle/license.gradle')
 apply from: file('gradle/release.gradle')
-
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral() // maven { url 'http://jcenter.bintray.com' }
-    }
-    apply from: file('gradle/buildscript.gradle'), to: buildscript 
-}
-
-allprojects {
-    apply plugin: 'eclipse'
-    apply plugin: 'idea'
-    repositories { 
-        mavenLocal()
-        mavenCentral() // maven { url: 'http://jcenter.bintray.com' }
-    }
-}
-
-subprojects {
-    apply plugin: 'java'
-    group = "com.netflix.rxjava"
-
-    // make 'examples' use the same classpath
-    configurations { 
-        examplesCompile.extendsFrom compile
-        examplesRuntime.extendsFrom runtime
-	    perfCompile.extendsFrom compile
-	    perfRuntime.extendsFrom runtime
-    }
-
-
-    tasks.withType(Javadoc).each {
-        it.classpath = sourceSets.main.compileClasspath
-    }
-
-    sourceSets { 
-		//include /src/examples folder
-        examples
-		//include /src/perf folder
-		// perf //-> Not working so commented out
-    }
-    
-    tasks.build { 
-		//include 'examples' in build task
-        dependsOn(examplesClasses)
-		//include 'perf' in build task
-        // dependsOn(perfClasses)  //-> Not working so commented out
-    }
-    
-    eclipse {  
-        classpath {  
-            // include 'provided' dependencies on the classpath
-            plusConfigurations += configurations.provided
-            
-            downloadSources = true
-            downloadJavadoc = true
-        }
-    }
-    
-    idea {
-        module {
-            // include 'provided' dependencies on the classpath
-            scopes.PROVIDED.plus += configurations.provided
-        }
-    }
-}
-
-project(':rxjava-core') {
-    sourceSets.test.java.srcDir 'src/test/java'
-}
+apply from: file('gradle/github-pages.gradle')
