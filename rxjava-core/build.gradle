@@ -2,3 +2,6 @@ dependencies {
     testCompile project(":rxjava-test")
 }
 
+test {
+    maxParallelForks 4
+}
