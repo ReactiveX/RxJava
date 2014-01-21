@@ -1,7 +1,8 @@
 // GRADLE-2087 workaround, perform after java plugin
-status = project.hasProperty('preferredStatus')?project.preferredStatus:(version.contains('SNAPSHOT')?'snapshot':'release')
+status = project.hasProperty('preferredStatus') ? project.preferredStatus : (version.contains('SNAPSHOT') ? 'snapshot' : 'release')
 
 subprojects { project ->
+
     apply plugin: 'java' // Plugin as major conventions
 
     sourceCompatibility = 1.6
@@ -9,23 +10,25 @@ subprojects { project ->
     // Restore status after Java plugin
     status = rootProject.status
 
-    task sourcesJar(type: Jar, dependsOn:classes) {
+    task sourcesJar(type: Jar, dependsOn: classes) {
         from sourceSets.main.allSource
         classifier 'sources'
         extension 'jar'
     }
 
-    task javadocJar(type: Jar, dependsOn:javadoc) {
+    task javadocJar(type: Jar, dependsOn: javadoc) {
         from javadoc.destinationDir
         classifier 'javadoc'
         extension 'jar'
     }
 
-    configurations.create('sources')
-    configurations.create('javadoc')
-    configurations.archives {
-        extendsFrom configurations.sources
-        extendsFrom configurations.javadoc
+    configurations {
+        create("sources")
+        create("javadoc")
+        archives {
+            extendsFrom configurations.sources
+            extendsFrom configurations.javadoc
+        }
     }
 
     // When outputing to an Ivy repo, we want to use the proper type field
@@ -56,26 +59,72 @@ subprojects { project ->
         }
     }
 
-    project.sourceSets {
-        main.compileClasspath += project.configurations.provided
-        main.runtimeClasspath -= project.configurations.provided
-        test.compileClasspath += project.configurations.provided
-        test.runtimeClasspath += project.configurations.provided
+    sourceSets {
+        main {
+            compileClasspath += configurations.provided
+            runtimeClasspath -= configurations.provided
+        }
+        test {
+            compileClasspath += configurations.provided
+            runtimeClasspath += configurations.provided
+        }
+        examples {
+            compileClasspath += configurations.provided + main.output
+        }
+        perf {
+            compileClasspath += configurations.provided + main.output
+        }
     }
+
+    configurations {
+        examplesCompile.extendsFrom testCompile
+        examplesRuntime.extendsFrom testRuntime
+        perfCompile.extendsFrom testCompile
+        perfRuntime.extendsFrom testRuntime
+    }
+
+    build {
+        dependsOn examplesClasses
+    }
+
+    // Individual projects will apply specific language plugins which add to source sets…
+    // do this late so we get those additions
+    afterEvaluate {
+        idea {
+            module {
+                [sourceSets.examples, sourceSets.perf].each {
+                    [it.allSource.srcDirs, it.resources.srcDirs].each {
+                        testSourceDirs += it
+                    }
+                }
+                scopes.PROVIDED.plus += configurations.provided
+            }
+        }
+
+        eclipse {
+            classpath {
+                plusConfigurations += configurations.provided
+                downloadJavadoc = true
+            }
+        }
+    }
+
 }
 
 apply plugin: 'github-pages' // Used to create publishGhPages task
 
 def docTasks = [:]
-[Javadoc,ScalaDoc,Groovydoc].each{ Class docClass ->
-    def allSources = allprojects.tasks*.withType(docClass).flatten()*.source 
+[Javadoc, ScalaDoc, Groovydoc].each { Class docClass ->
+    def allSources = allprojects.tasks*.withType(docClass).flatten()*.source
     if (allSources) {
         def shortName = docClass.simpleName.toLowerCase()
         def docTask = task "aggregate${shortName.capitalize()}"(type: docClass, description: "Aggregate subproject ${shortName}s") {
             source = allSources
             destinationDir = file("${project.buildDir}/docs/${shortName}")
             doFirst {
-                def classpaths = allprojects.findAll { it.plugins.hasPlugin(JavaPlugin) }.collect { it.sourceSets.main.compileClasspath }
+                def classpaths = allprojects.findAll { it.plugins.hasPlugin(JavaPlugin) }.collect {
+                    it.sourceSets.main.compileClasspath
+                }
                 classpath = files(classpaths)
             }
         }
@@ -93,9 +142,4 @@ githubPages {
             }
         }
     }
-}
-
-// Generate wrapper, which is distributed as part of source to alleviate the need of installing gradle
-task createWrapper(type: Wrapper) {
-    gradleVersion = '1.6'
 }

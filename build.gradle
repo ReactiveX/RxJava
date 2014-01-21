@@ -1,11 +1,5 @@
 ext.githubProjectName = 'RxJava'
 
-apply from: file('gradle/convention.gradle')
-apply from: file('gradle/maven.gradle')
-//apply from: file('gradle/check.gradle')
-apply from: file('gradle/license.gradle')
-apply from: file('gradle/release.gradle')
-
 buildscript {
     repositories {
         mavenLocal()
@@ -15,59 +9,19 @@ buildscript {
 }
 
 allprojects {
+    group = "com.netflix.rxjava"
+
     apply plugin: 'eclipse'
     apply plugin: 'idea'
+
     repositories { 
         mavenLocal()
         mavenCentral() // maven { url: 'http://jcenter.bintray.com' }
     }
 }
 
-subprojects {
-    apply plugin: 'java'
-    group = "com.netflix.rxjava"
-
-    // make 'examples' use the same classpath
-    configurations { 
-        examplesCompile.extendsFrom compile
-        examplesRuntime.extendsFrom runtime
-	    perfCompile.extendsFrom compile
-	    perfRuntime.extendsFrom runtime
-    }
-
-
-    tasks.withType(Javadoc).each {
-        it.classpath = sourceSets.main.compileClasspath
-    }
-
-    sourceSets { 
-		//include /src/examples folder
-        examples
-		//include /src/perf folder
-		// perf //-> Not working so commented out
-    }
-    
-    tasks.build { 
-		//include 'examples' in build task
-        dependsOn(examplesClasses)
-		//include 'perf' in build task
-        // dependsOn(perfClasses)  //-> Not working so commented out
-    }
-    
-    eclipse {  
-        classpath {  
-            // include 'provided' dependencies on the classpath
-            plusConfigurations += configurations.provided
-            
-            downloadSources = true
-            downloadJavadoc = true
-        }
-    }
-    
-    idea {
-        module {
-            // include 'provided' dependencies on the classpath
-            scopes.PROVIDED.plus += configurations.provided
-        }
-    }
-}
+apply from: file('gradle/convention.gradle')
+apply from: file('gradle/maven.gradle')
+//apply from: file('gradle/check.gradle')
+apply from: file('gradle/license.gradle')
+apply from: file('gradle/release.gradle')
