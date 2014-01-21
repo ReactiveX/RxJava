@@ -18,29 +18,28 @@ package rx.operators;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationTake.*;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Operator;
 import rx.Subscription;
-import rx.operators.OperationSkipTest.CustomException;
-import rx.schedulers.TestScheduler;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
-public class OperationTakeTest {
+public class OperatorTakeTest {
 
     @Test
     public void testTake1() {
-        Observable<String> w = Observable.from("one", "two", "three");
-        Observable<String> take = Observable.create(take(w, 2));
+        Observable<String> w = Observable.from(Arrays.asList("one", "two", "three"));
+        Observable<String> take = w.bind(new OperatorTake<String>(2));
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -54,8 +53,8 @@ public class OperationTakeTest {
 
     @Test
     public void testTake2() {
-        Observable<String> w = Observable.from("one", "two", "three");
-        Observable<String> take = Observable.create(take(w, 1));
+        Observable<String> w = Observable.from(Arrays.asList("one", "two", "three"));
+        Observable<String> take = w.bind(new OperatorTake<String>(1));
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -69,7 +68,7 @@ public class OperationTakeTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testTakeWithError() {
-        Observable.from(1, 2, 3).take(1).map(new Func1<Integer, Integer>() {
+        Observable.from(Arrays.asList(1, 2, 3)).take(1).map(new Func1<Integer, Integer>() {
             public Integer call(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
@@ -78,7 +77,7 @@ public class OperationTakeTest {
 
     @Test
     public void testTakeWithErrorHappeningInOnNext() {
-        Observable<Integer> w = Observable.from(1, 2, 3).take(2).map(new Func1<Integer, Integer>() {
+        Observable<Integer> w = Observable.from(Arrays.asList(1, 2, 3)).take(2).map(new Func1<Integer, Integer>() {
             public Integer call(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
@@ -94,7 +93,7 @@ public class OperationTakeTest {
 
     @Test
     public void testTakeWithErrorHappeningInTheLastOnNext() {
-        Observable<Integer> w = Observable.from(1, 2, 3).take(1).map(new Func1<Integer, Integer>() {
+        Observable<Integer> w = Observable.from(Arrays.asList(1, 2, 3)).take(1).map(new Func1<Integer, Integer>() {
             public Integer call(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
@@ -122,7 +121,7 @@ public class OperationTakeTest {
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable.create(take(source, 1)).subscribe(aObserver);
+        source.bind(new OperatorTake<String>(1)).subscribe(aObserver);
 
         verify(aObserver, times(1)).onNext("one");
         // even though onError is called we take(1) so shouldn't see it
@@ -152,7 +151,7 @@ public class OperationTakeTest {
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable.create(take(source, 0)).subscribe(aObserver);
+        source.bind(new OperatorTake<String>(0)).subscribe(aObserver);
         assertTrue("source subscribed", subscribed.get());
         assertTrue("source unsubscribed", unSubscribed.get());
 
@@ -171,7 +170,7 @@ public class OperationTakeTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
-        Observable<String> take = Observable.create(take(w, 1));
+        Observable<String> take = w.bind(new OperatorTake<String>(1));
         take.subscribe(aObserver);
 
         // wait for the Observable to complete
@@ -189,6 +188,20 @@ public class OperationTakeTest {
         verify(aObserver, times(1)).onCompleted();
         verify(s, times(1)).unsubscribe();
         verifyNoMoreInteractions(aObserver);
+    }
+
+    @Test(timeout = 2000)
+    public void testUnsubscribeFromSynchronousInfiniteObservable() {
+        final AtomicLong count = new AtomicLong();
+        INFINITE_OBSERVABLE.take(10).subscribe(new Action1<Long>() {
+
+            @Override
+            public void call(Long l) {
+                count.set(l);
+            }
+
+        });
+        assertEquals(10, count.get());
     }
 
     private static class TestObservableFunc implements Observable.OnSubscribeFunc<String> {
@@ -229,98 +242,16 @@ public class OperationTakeTest {
         }
     }
 
-    @Test
-    public void testTakeTimed() {
-        TestScheduler scheduler = new TestScheduler();
+    private static Observable<Long> INFINITE_OBSERVABLE = Observable.create(new Action1<Operator<? super Long>>() {
 
-        PublishSubject<Integer> source = PublishSubject.create();
+        @Override
+        public void call(Operator<? super Long> op) {
+            long l = 1;
+            while (!op.isUnsubscribed()) {
+                op.onNext(l++);
+            }
+            op.onCompleted();
+        }
 
-        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
-
-        Observer<Object> o = mock(Observer.class);
-
-        result.subscribe(o);
-
-        source.onNext(1);
-        source.onNext(2);
-        source.onNext(3);
-
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-
-        source.onNext(4);
-
-        InOrder inOrder = inOrder(o);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(2);
-        inOrder.verify(o).onNext(3);
-        inOrder.verify(o).onCompleted();
-        inOrder.verifyNoMoreInteractions();
-
-        verify(o, never()).onNext(4);
-        verify(o, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    public void testTakeTimedErrorBeforeTime() {
-        TestScheduler scheduler = new TestScheduler();
-
-        PublishSubject<Integer> source = PublishSubject.create();
-
-        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
-
-        Observer<Object> o = mock(Observer.class);
-
-        result.subscribe(o);
-
-        source.onNext(1);
-        source.onNext(2);
-        source.onNext(3);
-        source.onError(new CustomException());
-
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-
-        source.onNext(4);
-
-        InOrder inOrder = inOrder(o);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(2);
-        inOrder.verify(o).onNext(3);
-        inOrder.verify(o).onError(any(CustomException.class));
-        inOrder.verifyNoMoreInteractions();
-
-        verify(o, never()).onCompleted();
-        verify(o, never()).onNext(4);
-    }
-
-    @Test
-    public void testTakeTimedErrorAfterTime() {
-        TestScheduler scheduler = new TestScheduler();
-
-        PublishSubject<Integer> source = PublishSubject.create();
-
-        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
-
-        Observer<Object> o = mock(Observer.class);
-
-        result.subscribe(o);
-
-        source.onNext(1);
-        source.onNext(2);
-        source.onNext(3);
-
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-
-        source.onNext(4);
-        source.onError(new CustomException());
-
-        InOrder inOrder = inOrder(o);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(2);
-        inOrder.verify(o).onNext(3);
-        inOrder.verify(o).onCompleted();
-        inOrder.verifyNoMoreInteractions();
-
-        verify(o, never()).onNext(4);
-        verify(o, never()).onError(any(CustomException.class));
-    }
+    });
 }

@@ -16,8 +16,8 @@ public class OperatorZipPerformance extends AbstractPerformanceTester {
 
                 @Override
                 public void call() {
-                    //                    spt.timeZipAandBwithSingleItems();
-                    spt.timeZipAandBwith100Items();
+                    spt.timeZipAandBwithSingleItems();
+                    //                    spt.timeZipAandBwith100Items();
                 }
             });
         } catch (Exception e) {

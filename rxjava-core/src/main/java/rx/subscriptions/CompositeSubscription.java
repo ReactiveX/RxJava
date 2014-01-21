@@ -18,7 +18,6 @@ package rx.subscriptions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
@@ -34,11 +33,13 @@ public final class CompositeSubscription implements Subscription {
 
     private final AtomicReference<State> state = new AtomicReference<State>();
 
+    private static final State CLEAR_STATE = new State(false, new Subscription[0]);
+
     private static final class State {
         final boolean isUnsubscribed;
-        final List<Subscription> subscriptions;
+        final Subscription[] subscriptions;
 
-        State(boolean u, List<Subscription> s) {
+        State(boolean u, Subscription[] s) {
             this.isUnsubscribed = u;
             this.subscriptions = s;
         }
@@ -48,26 +49,32 @@ public final class CompositeSubscription implements Subscription {
         }
 
         State add(Subscription s) {
-            List<Subscription> newSubscriptions = new ArrayList<Subscription>();
-            newSubscriptions.addAll(subscriptions);
-            newSubscriptions.add(s);
+            Subscription[] newSubscriptions = Arrays.copyOf(subscriptions, subscriptions.length + 1);
+            newSubscriptions[newSubscriptions.length - 1] = s;
             return new State(isUnsubscribed, newSubscriptions);
         }
 
         State remove(Subscription s) {
-            List<Subscription> newSubscriptions = new ArrayList<Subscription>();
-            newSubscriptions.addAll(subscriptions);
-            newSubscriptions.remove(s); // only first occurrence
-            return new State(isUnsubscribed, newSubscriptions);
+            ArrayList<Subscription> newSubscriptions = new ArrayList<Subscription>(subscriptions.length);
+            for (Subscription _s : subscriptions) {
+                if (!_s.equals(s)) {
+                    newSubscriptions.add(_s);
+                }
+            }
+            return new State(isUnsubscribed, newSubscriptions.toArray(new Subscription[newSubscriptions.size()]));
         }
 
         State clear() {
-            return new State(isUnsubscribed, new ArrayList<Subscription>());
+            return new State(isUnsubscribed, new Subscription[0]);
         }
     }
 
+    public CompositeSubscription() {
+        state.set(CLEAR_STATE);
+    }
+
     public CompositeSubscription(final Subscription... subscriptions) {
-        state.set(new State(false, Arrays.asList(subscriptions)));
+        state.set(new State(false, subscriptions));
     }
 
     public boolean isUnsubscribed() {
@@ -133,7 +140,7 @@ public final class CompositeSubscription implements Subscription {
         unsubscribeFromAll(oldState.subscriptions);
     }
 
-    private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {
+    private static void unsubscribeFromAll(Subscription[] subscriptions) {
         final Collection<Throwable> es = new ArrayList<Throwable>();
         for (Subscription s : subscriptions) {
             try {

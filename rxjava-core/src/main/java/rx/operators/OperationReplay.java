@@ -28,12 +28,14 @@ import java.util.concurrent.locks.ReentrantLock;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Operator;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
 
@@ -61,8 +63,16 @@ public final class OperationReplay {
      * propagated through the given wrapped subject.
      */
     public static <T> Subject<T, T> createScheduledSubject(Subject<T, T> subject, Scheduler scheduler) {
-        Observable<T> observedOn = subject.observeOn(scheduler);
-        SubjectWrapper<T> s = new SubjectWrapper<T>(subscriberOf(observedOn), subject);
+        final Observable<T> observedOn = subject.observeOn(scheduler);
+        SubjectWrapper<T> s = new SubjectWrapper<T>(new Action1<Operator<? super T>>() {
+
+            @Override
+            public void call(Operator<? super T> o) {
+                // TODO HACK between OnSubscribeFunc and Action1
+                subscriberOf(observedOn).onSubscribe(o);
+            }
+
+        }, subject);
         return s;
     }
 
@@ -154,7 +164,7 @@ public final class OperationReplay {
         private final Subject<R, R> subject;
         private final Func1<T, R> selector;
 
-        public MappingSubject(OnSubscribeFunc<R> func, Subject<R, R> subject, Func1<T, R> selector) {
+        public MappingSubject(Action1<Operator<? super R>> func, Subject<R, R> subject, Func1<T, R> selector) {
             super(func);
             this.subject = subject;
             this.selector = selector;
@@ -184,7 +194,7 @@ public final class OperationReplay {
         /** The wrapped subject. */
         final Subject<T, T> subject;
 
-        public SubjectWrapper(OnSubscribeFunc<T> func, Subject<T, T> subject) {
+        public SubjectWrapper(Action1<Operator<? super T>> func, Subject<T, T> subject) {
             super(func);
             this.subject = subject;
         }
@@ -708,10 +718,17 @@ public final class OperationReplay {
         protected final Func1<? super TInput, ? extends TIntermediate> intermediateSelector;
 
         private CustomReplaySubject(
-                Observable.OnSubscribeFunc<TResult> onSubscribe,
+                final Observable.OnSubscribeFunc<TResult> onSubscribe,
                 ReplayState<TIntermediate, TResult> state,
                 Func1<? super TInput, ? extends TIntermediate> intermediateSelector) {
-            super(onSubscribe);
+            super(new Action1<Operator<? super TResult>>() {
+
+                @Override
+                public void call(Operator<? super TResult> o) {
+                    //TODO hack from OnSubscribeFunc to Action0
+                    onSubscribe.onSubscribe(o);
+                }
+            });
             this.state = state;
             this.intermediateSelector = intermediateSelector;
         }

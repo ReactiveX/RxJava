@@ -23,13 +23,14 @@ import java.util.Map;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Operator;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
-import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
 /**
@@ -58,7 +59,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
     public Subscription onSubscribe(Observer<? super GroupedObservable<TKey, TResult>> t1) {
         SerialSubscription cancel = new SerialSubscription();
         ResultSink sink = new ResultSink(t1, cancel);
-        cancel.setSubscription(sink.run());
+        cancel.set(sink.run());
         return cancel;
     }
 
@@ -82,7 +83,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             SerialSubscription toSource = new SerialSubscription();
             group.add(toSource);
 
-            toSource.setSubscription(source.subscribe(this));
+            toSource.set(source.subscribe(this));
 
             return group;
         }
@@ -127,7 +128,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
                 group.add(durationHandle);
 
                 DurationObserver durationObserver = new DurationObserver(key, durationHandle);
-                durationHandle.setSubscription(duration.subscribe(durationObserver));
+                durationHandle.set(duration.subscribe(durationObserver));
 
             }
 
@@ -212,10 +213,10 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
         protected final Subject<V, V> publish;
 
         public GroupSubject(K key, final Subject<V, V> publish) {
-            super(key, new OnSubscribeFunc<V>() {
+            super(key, new Action1<Operator<? super V>>() {
                 @Override
-                public Subscription onSubscribe(Observer<? super V> o) {
-                    return publish.subscribe(o);
+                public void call(Operator<? super V> o) {
+                    publish.subscribe(o);
                 }
             });
             this.publish = publish;

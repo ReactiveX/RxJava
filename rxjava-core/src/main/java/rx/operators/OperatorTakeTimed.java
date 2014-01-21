@@ -38,8 +38,10 @@ import rx.util.functions.Action0;
  * subscribing Observer's <code>onNext</code> function a maximum of <code>num</code> times before
  * invoking <code>onCompleted</code>.
  */
-public final class OperationTake {
+public final class OperatorTakeTimed {
 
+    //TODO this has not been migrated to use bind yet
+    
     /**
      * Returns a specified number of contiguous values from the start of an observable sequence.
      * 

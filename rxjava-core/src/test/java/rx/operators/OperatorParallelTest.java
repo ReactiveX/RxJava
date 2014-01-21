@@ -25,7 +25,7 @@ import rx.Observable;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
-public class OperationParallelTest {
+public class OperatorParallelTest {
 
     @Test
     public void testParallel() {
