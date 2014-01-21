@@ -5,7 +5,8 @@ subprojects { project ->
 
     apply plugin: 'java' // Plugin as major conventions
 
-    sourceCompatibility = 1.6
+    sourceCompatibility = JavaVersion.VERSION_1_6
+    targetCompatibility = JavaVersion.VERSION_1_6
 
     // Restore status after Java plugin
     status = rootProject.status

@@ -1,8 +1,5 @@
 apply plugin: 'osgi'
 
-sourceCompatibility = JavaVersion.VERSION_1_6
-targetCompatibility = JavaVersion.VERSION_1_6
-
 dependencies {
     compile project(':rxjava-core')
     testCompile 'junit:junit-dep:4.10'
