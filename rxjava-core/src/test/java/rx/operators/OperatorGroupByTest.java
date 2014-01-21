@@ -483,7 +483,19 @@ public class OperatorGroupByTest {
                     @Override
                     public Observable<Integer> call(GroupedObservable<Integer, Integer> group) {
                         if (group.getKey() == 0) {
-                            return group.observeOn(Schedulers.newThread()).delay(200, TimeUnit.MILLISECONDS);
+                            return group.observeOn(Schedulers.newThread()).map(new Func1<Integer, Integer>() {
+
+                                @Override
+                                public Integer call(Integer t) {
+                                    try {
+                                        Thread.sleep(2);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    return t * 10;
+                                }
+
+                            });
                         } else {
                             return group.observeOn(Schedulers.newThread());
                         }
@@ -493,6 +505,7 @@ public class OperatorGroupByTest {
 
                     @Override
                     public void onCompleted() {
+                        System.out.println("=> onCompleted");
                         latch.countDown();
                     }
 
@@ -514,6 +527,43 @@ public class OperatorGroupByTest {
         }
 
         assertEquals(100, eventCounter.get());
+    }
+
+    @Test
+    public void testCompletionIfInnerNotSubscribed() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicInteger eventCounter = new AtomicInteger();
+        Observable.range(0, 100)
+                .groupBy(new Func1<Integer, Integer>() {
+
+                    @Override
+                    public Integer call(Integer i) {
+                        return i % 2;
+                    }
+                })
+                .subscribe(new Observer<GroupedObservable<Integer, Integer>>() {
+
+                    @Override
+                    public void onCompleted() {
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onNext(GroupedObservable<Integer, Integer> s) {
+                        eventCounter.incrementAndGet();
+                        System.out.println("=> " + s);
+                    }
+                });
+        if (!latch.await(500, TimeUnit.MILLISECONDS)) {
+            fail("timed out - never got completion");
+        }
+        assertEquals(2, eventCounter.get());
     }
 
     private static class Event {

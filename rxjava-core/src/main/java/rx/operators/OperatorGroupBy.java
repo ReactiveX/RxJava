@@ -59,7 +59,7 @@ public final class OperatorGroupBy<K, T> implements Func1<Operator<? super Group
                 }
 
                 if (completionCounter.get() == 0) {
-                    // special case if no children are running (such as an empty sequence)
+                    // special case if no children are running (such as an empty sequence, or just getting the groups and not subscribing)
                     childOperator.onCompleted();
                 }
             }
@@ -88,6 +88,8 @@ public final class OperatorGroupBy<K, T> implements Func1<Operator<? super Group
 
                             @Override
                             public void call(final Operator<? super T> o) {
+                                // number of children we have running
+                                completionCounter.incrementAndGet();
                                 o.add(Subscriptions.create(new Action0() {
 
                                     @Override
@@ -119,8 +121,6 @@ public final class OperatorGroupBy<K, T> implements Func1<Operator<? super Group
 
                         });
                         groups.put(key, gps);
-                        // number of children we have running
-                        completionCounter.incrementAndGet();
                         childOperator.onNext(go);
                     }
                     // we have the correct group so send value to it
