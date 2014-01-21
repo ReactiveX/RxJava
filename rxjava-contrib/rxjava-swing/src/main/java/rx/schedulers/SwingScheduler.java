@@ -15,30 +15,19 @@
  */
 package rx.schedulers;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.mockito.InOrder;
-
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Func2;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Executes work on the Swing UI thread.
@@ -157,118 +146,4 @@ public final class SwingScheduler extends Scheduler {
         }
     }
 
-    public static class UnitTest {
-        @Rule
-        public ExpectedException exception = ExpectedException.none();
-
-        @Test
-        public void testInvalidDelayValues() {
-            final SwingScheduler scheduler = new SwingScheduler();
-            final Action0 action = mock(Action0.class);
-
-            exception.expect(IllegalArgumentException.class);
-            scheduler.schedulePeriodically(action, -1L, 100L, TimeUnit.SECONDS);
-
-            exception.expect(IllegalArgumentException.class);
-            scheduler.schedulePeriodically(action, 100L, -1L, TimeUnit.SECONDS);
-
-            exception.expect(IllegalArgumentException.class);
-            scheduler.schedulePeriodically(action, 1L + Integer.MAX_VALUE, 100L, TimeUnit.MILLISECONDS);
-
-            exception.expect(IllegalArgumentException.class);
-            scheduler.schedulePeriodically(action, 100L, 1L + Integer.MAX_VALUE / 1000, TimeUnit.SECONDS);
-        }
-
-        @Test
-        public void testPeriodicScheduling() throws Exception {
-            final SwingScheduler scheduler = new SwingScheduler();
-
-            final CountDownLatch latch = new CountDownLatch(4);
-
-            final Action0 innerAction = mock(Action0.class);
-            final Action0 action = new Action0() {
-                @Override
-                public void call() {
-                    try {
-                        innerAction.call();
-                        assertTrue(SwingUtilities.isEventDispatchThread());
-                    } finally {
-                        latch.countDown();
-                    }
-                }
-            };
-
-            Subscription sub = scheduler.schedulePeriodically(action, 50, 200, TimeUnit.MILLISECONDS);
-
-            if (!latch.await(5000, TimeUnit.MILLISECONDS)) {
-                fail("timed out waiting for tasks to execute");
-            }
-
-            sub.unsubscribe();
-            waitForEmptyEventQueue();
-            verify(innerAction, times(4)).call();
-        }
-
-        @Test
-        public void testNestedActions() throws Exception {
-            final SwingScheduler scheduler = new SwingScheduler();
-
-            final Action0 firstStepStart = mock(Action0.class);
-            final Action0 firstStepEnd = mock(Action0.class);
-
-            final Action0 secondStepStart = mock(Action0.class);
-            final Action0 secondStepEnd = mock(Action0.class);
-
-            final Action0 thirdStepStart = mock(Action0.class);
-            final Action0 thirdStepEnd = mock(Action0.class);
-
-            final Action0 firstAction = new Action0() {
-                @Override
-                public void call() {
-                    assertTrue(SwingUtilities.isEventDispatchThread());
-                    firstStepStart.call();
-                    firstStepEnd.call();
-                }
-            };
-            final Action0 secondAction = new Action0() {
-                @Override
-                public void call() {
-                    assertTrue(SwingUtilities.isEventDispatchThread());
-                    secondStepStart.call();
-                    scheduler.schedule(firstAction);
-                    secondStepEnd.call();
-                }
-            };
-            final Action0 thirdAction = new Action0() {
-                @Override
-                public void call() {
-                    assertTrue(SwingUtilities.isEventDispatchThread());
-                    thirdStepStart.call();
-                    scheduler.schedule(secondAction);
-                    thirdStepEnd.call();
-                }
-            };
-
-            InOrder inOrder = inOrder(firstStepStart, firstStepEnd, secondStepStart, secondStepEnd, thirdStepStart, thirdStepEnd);
-
-            scheduler.schedule(thirdAction);
-            waitForEmptyEventQueue();
-
-            inOrder.verify(thirdStepStart, times(1)).call();
-            inOrder.verify(thirdStepEnd, times(1)).call();
-            inOrder.verify(secondStepStart, times(1)).call();
-            inOrder.verify(secondStepEnd, times(1)).call();
-            inOrder.verify(firstStepStart, times(1)).call();
-            inOrder.verify(firstStepEnd, times(1)).call();
-        }
-
-        private static void waitForEmptyEventQueue() throws Exception {
-            EventQueue.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    // nothing to do, we're just waiting here for the event queue to be emptied
-                }
-            });
-        }
-    }
 }
