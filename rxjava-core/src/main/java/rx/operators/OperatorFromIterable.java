@@ -38,7 +38,7 @@ public final class OperatorFromIterable<T> implements Action1<Operator<? super T
     public void call(Operator<? super T> o) {
         for (T i : is) {
             if (o.isUnsubscribed()) {
-                break;
+                return;
             }
             o.onNext(i);
         }
