@@ -184,7 +184,9 @@ public class Observable<T> {
 >>>>>>> Added Observable.bind
      * 
      * @param <T>
+     * @deprecated
      */
+    @Deprecated
     public static interface OnSubscribeFunc<T> extends Function {
         public Subscription onSubscribe(Observer<? super T> t1);
     }
@@ -239,6 +241,7 @@ public class Observable<T> {
         return new Observable<T>(f);
     }
 
+    @Deprecated
     public final static <T> Observable<T> create(final OnSubscribeFunc<T> func) {
         return new Observable<T>(new Action1<Operator<? super T>>() {
 
