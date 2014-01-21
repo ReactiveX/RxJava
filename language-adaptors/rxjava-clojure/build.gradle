@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
     compile 'org.clojure:clojure:1.4.+'
-    compile 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
+    examplesCompile 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
 }
 
 aotCompile = true
