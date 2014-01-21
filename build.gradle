@@ -1,12 +1,18 @@
-ext.githubProjectName = 'RxJava'
-
 buildscript {
     repositories {
         mavenLocal()
         mavenCentral() // maven { url 'http://jcenter.bintray.com' }
+        repositories { maven { url 'http://dl.bintray.com/content/netflixoss/external-gradle-plugins/' } } // For gradle-release
     }
-    apply from: file('gradle/buildscript.gradle'), to: buildscript 
+    dependencies {
+        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.6.1'
+        classpath 'com.mapvine:gradle-cobertura-plugin:0.1'
+        classpath 'gradle-release:gradle-release:1.1.5'
+        classpath 'org.ajoberstar:gradle-git:0.5.0'
+    }
 }
+
+ext.githubProjectName = 'RxJava'
 
 allprojects {
     group = "com.netflix.rxjava"
