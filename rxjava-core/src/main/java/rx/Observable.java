@@ -252,6 +252,18 @@ public class Observable<T> {
         });
     }
 
+    /**
+     * Bind a function to the current Observable and return a new Observable that when subscribed to will pass the values of the current Observable through the function.
+     * <p>
+     * In other words, this allows chaining operators together on an Observable for acting on the values within the Observable.
+     * <p>
+     * {@code
+     * observable.map(...).filter(...).take(5).bind(new OperatorA()).bind(new OperatorB(...)).subscribe()
+     * }
+     * 
+     * @param bind
+     * @return an Observable that emits values that are the result of applying the bind function to the values of the current Observable
+     */
     public <R> Observable<R> bind(final Func1<Operator<? super R>, Operator<? super T>> bind) {
         return new Observable<R>(new Action1<Operator<? super R>>() {
 
