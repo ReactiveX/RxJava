@@ -44,10 +44,9 @@ public final class OperatorGroupBy<K, T> implements Func1<Operator<? super Group
 
     @Override
     public Operator<? super T> call(final Operator<? super GroupedObservable<K, T>> childOperator) {
-        final CompositeSubscription parentSubscription = new CompositeSubscription();
-        // a parentSubscription to decouple the subscription as the inner subscriptions need a separate lifecycle
+        // a new CompositeSubscription to decouple the subscription as the inner subscriptions need a separate lifecycle
         // and will unsubscribe on this parent if they are all unsubscribed
-        return new Operator<T>(parentSubscription) {
+        return new Operator<T>(new CompositeSubscription()) {
             private final Map<K, PublishSubject<T>> groups = new HashMap<K, PublishSubject<T>>();
             private final AtomicInteger completionCounter = new AtomicInteger(0);
 
@@ -132,7 +131,7 @@ public final class OperatorGroupBy<K, T> implements Func1<Operator<? super Group
 
             private void completeInner() {
                 if (completionCounter.decrementAndGet() == 0) {
-                    parentSubscription.unsubscribe();
+                    unsubscribe();
                     for (PublishSubject<T> ps : groups.values()) {
                         ps.onCompleted();
                     }
