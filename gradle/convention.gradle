@@ -1,6 +1,3 @@
-// GRADLE-2087 workaround, perform after java plugin
-status = project.hasProperty('preferredStatus') ? project.preferredStatus : (version.contains('SNAPSHOT') ? 'snapshot' : 'release')
-
 subprojects {
     if (!subprojects.empty) { // is a container
         return
@@ -23,8 +20,7 @@ subprojects {
     sourceCompatibility = JavaVersion.VERSION_1_6
     targetCompatibility = JavaVersion.VERSION_1_6
 
-    // Restore status after Java plugin
-    status = rootProject.status
+    status = project.hasProperty('preferredStatus') ? project.preferredStatus : (version.contains('SNAPSHOT') ? 'snapshot' : 'release')
 
     task sourcesJar(type: Jar, dependsOn: classes) {
         from sourceSets.main.allSource
