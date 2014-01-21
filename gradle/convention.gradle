@@ -8,6 +8,11 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'osgi'
 
+    repositories {
+        mavenLocal()
+        mavenCentral() // maven { url: 'http://jcenter.bintray.com' }
+    }
+
     dependencies {
         if (project.path != ":rxjava-core") {
             compile project(':rxjava-core')
