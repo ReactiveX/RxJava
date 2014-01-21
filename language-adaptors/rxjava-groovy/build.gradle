@@ -1,5 +1,4 @@
 apply plugin: 'groovy'
-apply plugin: 'osgi'
 
 dependencies {
     compile project(':rxjava-core')

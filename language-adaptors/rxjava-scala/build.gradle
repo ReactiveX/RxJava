@@ -1,5 +1,4 @@
 apply plugin: 'scala'
-apply plugin: 'osgi'
 
 tasks.withType(ScalaCompile) {
 	scalaCompileOptions.fork = true

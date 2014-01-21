@@ -2,9 +2,13 @@
 status = project.hasProperty('preferredStatus') ? project.preferredStatus : (version.contains('SNAPSHOT') ? 'snapshot' : 'release')
 
 subprojects { project ->
+    if (!subprojects.empty) { // is a container
+        return
+    }
+
     description = name.capitalize().replaceAll("-\\w") { " " + (it.toUpperCase() - "-") }.replaceAll("Rxjava", "RxJava")
 
-    apply plugin: 'java' // Plugin as major conventions
+    apply plugin: 'java'
 
     sourceCompatibility = JavaVersion.VERSION_1_6
     targetCompatibility = JavaVersion.VERSION_1_6

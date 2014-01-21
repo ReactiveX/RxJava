@@ -1,5 +1,4 @@
 apply plugin: 'maven'
-apply plugin: 'osgi'
 
 dependencies {
     provided 'junit:junit-dep:4.10'

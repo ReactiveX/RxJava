@@ -9,7 +9,6 @@ buildscript {
 }
 
 apply plugin: 'kotlin'
-apply plugin: 'osgi'
 
 dependencies {
     compile project(':rxjava-core')

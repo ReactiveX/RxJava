@@ -4,7 +4,6 @@ buildscript {
 }
 
 apply plugin: 'clojure'
-apply plugin: 'osgi'
 
 repositories {
     clojarsRepo()

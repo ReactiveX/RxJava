@@ -1,5 +1,3 @@
-apply plugin: 'osgi'
-
 dependencies {
     compile project(':rxjava-core')
     compile 'org.apache.httpcomponents:httpclient:4.3'

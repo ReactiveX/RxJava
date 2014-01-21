@@ -1,5 +1,3 @@
-apply plugin: 'osgi'
-
 dependencies {
     compile project(':rxjava-core')
     provided 'junit:junit-dep:4.10'
