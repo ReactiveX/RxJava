@@ -11,15 +11,6 @@ dependencies {
     provided 'org.robolectric:robolectric:2.1.1'
 }
 
-javadoc {
-    options {
-        doclet = "org.benjchristensen.doclet.DocletExclude"
-        docletpath = [rootProject.file('./gradle/doclet-exclude.jar')]
-        stylesheetFile = rootProject.file('./gradle/javadocStyleSheet.css')
-        windowTitle = "RxJava Android Javadoc ${project.version}"
-    }
-    options.addStringOption('top').value = '<h2 class="title" style="padding-top:40px">RxJava Android</h2>'
-}
 
 jar {
     manifest {

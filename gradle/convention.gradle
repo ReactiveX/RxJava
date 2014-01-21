@@ -2,6 +2,7 @@
 status = project.hasProperty('preferredStatus') ? project.preferredStatus : (version.contains('SNAPSHOT') ? 'snapshot' : 'release')
 
 subprojects { project ->
+    description = name.capitalize().replaceAll("-\\w") { " " + (it.toUpperCase() - "-") }.replaceAll("Rxjava", "RxJava")
 
     apply plugin: 'java' // Plugin as major conventions
 
@@ -82,6 +83,17 @@ subprojects { project ->
         examplesRuntime.extendsFrom testRuntime
         perfCompile.extendsFrom testCompile
         perfRuntime.extendsFrom testRuntime
+    }
+
+    javadoc {
+        options {
+            doclet = "org.benjchristensen.doclet.DocletExclude"
+            docletpath = [rootProject.file('gradle/doclet-exclude.jar')]
+            stylesheetFile = rootProject.file('gradle/javadocStyleSheet.css')
+            windowTitle = "$project.description Javadoc $project.version"
+            addStringOption('top').value = '<h2 class="title" style="padding-top:40px">' + project.description + '</h2>'.toString()
+        }
+        classpath += configurations.provided
     }
 
     build {
