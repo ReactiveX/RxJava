@@ -152,19 +152,28 @@ public final class OperationZip {
             final List<ItemObserver<T>> all = new ArrayList<ItemObserver<T>>();
 
             Observer<List<T>> o2 = new Observer<List<T>>() {
+                boolean done;
                 @Override
                 public void onCompleted() {
-                    observer.onCompleted();
+                    if (!done) {
+                        done = true;
+                        observer.onCompleted();
+                    }
                 }
 
                 @Override
                 public void onError(Throwable t) {
-                    observer.onError(t);
+                    if (!done) {
+                        done = true;
+                        observer.onError(t);
+                    }
                 }
 
                 @Override
                 public void onNext(List<T> value) {
-                    observer.onNext(selector.call(value.toArray(new Object[value.size()])));
+                    if (!done) {
+                        observer.onNext(selector.call(value.toArray(new Object[value.size()])));
+                    }
                 }
             };
 
@@ -251,6 +260,7 @@ public final class OperationZip {
                 }
                 // run collector
                 if (rwLock.writeLock().tryLock()) {
+                    boolean cu = false;
                     try {
                         while (true) {
                             List<T> values = new ArrayList<T>(all.size());
@@ -258,7 +268,7 @@ public final class OperationZip {
                                 if (io.queue.isEmpty()) {
                                     if (io.done) {
                                         observer.onCompleted();
-                                        cancel.unsubscribe();
+                                        cu = true;
                                         return;
                                     }
                                     continue;
@@ -280,61 +290,60 @@ public final class OperationZip {
                         }
                     } finally {
                         rwLock.writeLock().unlock();
+                        if (cu) {
+                            cancel.unsubscribe();
+                        }
                     }
                 }
             }
 
             @Override
             public void onError(Throwable ex) {
-                boolean c = false;
                 rwLock.writeLock().lock();
                 try {
                     if (done) {
                         return;
                     }
                     done = true;
-                    c = true;
                     observer.onError(ex);
-                    cancel.unsubscribe();
                 } finally {
                     rwLock.writeLock().unlock();
                 }
-                if (c) {
-                    unsubscribe();
-                }
+                cancel.unsubscribe();
+                unsubscribe();
             }
 
             @Override
             public void onCompleted() {
-                boolean c = false;
                 rwLock.readLock().lock();
                 try {
                     done = true;
-                    c = true;
                 } finally {
                     rwLock.readLock().unlock();
                 }
                 if (rwLock.writeLock().tryLock()) {
+                    boolean cu = false;
                     try {
                         for (ItemObserver<T> io : all) {
                             if (io.queue.isEmpty() && io.done) {
                                 observer.onCompleted();
-                                cancel.unsubscribe();
+                                cu = true;
                                 return;
                             }
                         }
                     } finally {
                         rwLock.writeLock().unlock();
+                        if (cu) {
+                            cancel.unsubscribe();
+                        }
                     }
                 }
-                if (c) {
-                    unsubscribe();
-                }
+                unsubscribe();
             }
 
             /** Connect to the source observable. */
             public void connect() {
-                toSource.setSubscription(source.subscribe(this));
+                toSource.set(source.subscribe(this));
             }
 
             @Override
