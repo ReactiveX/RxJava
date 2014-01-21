@@ -1280,7 +1280,6 @@ public class Observable<T> {
      * @return an Observable that emits the item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
      */
-    @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public final static <T> Observable<T> from(T t1) {
         return from(Arrays.asList(t1));
@@ -1306,7 +1305,6 @@ public class Observable<T> {
      * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}
      */
     @Deprecated
-    @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public final static <T> Observable<T> from(T t1, T t2) {
         return from(Arrays.asList(t1, t2));
@@ -1334,7 +1332,6 @@ public class Observable<T> {
      * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
     @Deprecated
-    @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public final static <T> Observable<T> from(T t1, T t2, T t3) {
         return from(Arrays.asList(t1, t2, t3));
@@ -1364,7 +1361,6 @@ public class Observable<T> {
      * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
     @Deprecated
-    @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4) {
         return from(Arrays.asList(t1, t2, t3, t4));
@@ -1396,7 +1392,6 @@ public class Observable<T> {
      * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
     @Deprecated
-    @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5) {
         return from(Arrays.asList(t1, t2, t3, t4, t5));
@@ -1430,7 +1425,6 @@ public class Observable<T> {
      * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
     @Deprecated
-    @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6) {
         return from(Arrays.asList(t1, t2, t3, t4, t5, t6));
@@ -1466,7 +1460,6 @@ public class Observable<T> {
      * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
     @Deprecated
-    @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7) {
         return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7));
@@ -1504,7 +1497,6 @@ public class Observable<T> {
      * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
     @Deprecated
-    @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8) {
         return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8));
@@ -1544,7 +1536,6 @@ public class Observable<T> {
      * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
     @Deprecated
-    @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
         return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9));
@@ -1583,7 +1574,6 @@ public class Observable<T> {
      * @deprecated Use {@link #from(Iterable)} instead such as {@code from(Arrays.asList(t1))}.
      */
     @Deprecated
-    @SuppressWarnings("unchecked")
     // suppress unchecked because we are using varargs inside the method
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9, T t10) {
         return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
@@ -1606,7 +1596,7 @@ public class Observable<T> {
      * @return an Observable that emits each item in the source Array
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
      */
-    @SafeVarargs
+    //    @SafeVarargs // commenting out until we figure out if we can do Java7 compilation without breaking Android for just this feature
     public final static <T> Observable<T> from(T... t1) {
         return from(Arrays.asList(t1));
     }
