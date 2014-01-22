@@ -103,8 +103,7 @@ public final class OperationZip {
     }
 
     public static <R> OnSubscribeFunc<R> zip(Iterable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction) {
-        ManyObservables<?, R> a = new ManyObservables<Object, R>(ws, zipFunction);
-        return a;
+        return new ManyObservables<Object, R>(ws, zipFunction);
     }
 
     /**
@@ -203,11 +202,9 @@ public final class OperationZip {
             /** Reader-writer lock. */
             protected final ReadWriteLock rwLock;
             /** The queue. */
-            public final Queue<Object> queue = new LinkedList<Object>();
+            public final Queue<T> queue = new LinkedList<T>();
             /** The list of the other observers. */
             public final List<ItemObserver<T>> all;
-            /** The null sentinel value. */
-            protected static final Object NULL_SENTINEL = new Object();
             /** The global cancel. */
             protected final Subscription cancel;
             /** The subscription to the source. */
@@ -246,7 +243,6 @@ public final class OperationZip {
                 this.cancel = cancel;
             }
 
-            @SuppressWarnings("unchecked")
             @Override
             public void onNext(T value) {
                 rwLock.readLock().lock();
@@ -254,47 +250,11 @@ public final class OperationZip {
                     if (done) {
                         return;
                     }
-                    queue.add(value != null ? value : NULL_SENTINEL);
+                    queue.add(value);
                 } finally {
                     rwLock.readLock().unlock();
                 }
-                // run collector
-                if (rwLock.writeLock().tryLock()) {
-                    boolean cu = false;
-                    try {
-                        while (true) {
-                            List<T> values = new ArrayList<T>(all.size());
-                            for (ItemObserver<T> io : all) {
-                                if (io.queue.isEmpty()) {
-                                    if (io.done) {
-                                        observer.onCompleted();
-                                        cu = true;
-                                        return;
-                                    }
-                                    continue;
-                                }
-                                Object v = io.queue.peek();
-                                if (v == NULL_SENTINEL) {
-                                    v = null;
-                                }
-                                values.add((T) v);
-                            }
-                            if (values.size() == all.size()) {
-                                for (ItemObserver<T> io : all) {
-                                    io.queue.poll();
-                                }
-                                observer.onNext(values);
-                            } else {
-                                break;
-                            }
-                        }
-                    } finally {
-                        rwLock.writeLock().unlock();
-                        if (cu) {
-                            cancel.unsubscribe();
-                        }
-                    }
-                }
+                runCollector();
             }
 
             @Override
@@ -321,23 +281,7 @@ public final class OperationZip {
                 } finally {
                     rwLock.readLock().unlock();
                 }
-                if (rwLock.writeLock().tryLock()) {
-                    boolean cu = false;
-                    try {
-                        for (ItemObserver<T> io : all) {
-                            if (io.queue.isEmpty() && io.done) {
-                                observer.onCompleted();
-                                cu = true;
-                                return;
-                            }
-                        }
-                    } finally {
-                        rwLock.writeLock().unlock();
-                        if (cu) {
-                            cancel.unsubscribe();
-                        }
-                    }
-                }
+                runCollector();
                 unsubscribe();
             }
 
@@ -351,6 +295,41 @@ public final class OperationZip {
                 toSource.unsubscribe();
             }
 
+            private void runCollector() {
+                if (rwLock.writeLock().tryLock()) {
+                    boolean cu = false;
+                    try {
+                        while (true) {
+                            List<T> values = new ArrayList<T>(all.size());
+                            for (ItemObserver<T> io : all) {
+                                if (io.queue.isEmpty()) {
+                                    if (io.done) {
+                                        observer.onCompleted();
+                                        cu = true;
+                                        return;
+                                    }
+                                } else {
+                                    T value = io.queue.peek();
+                                    values.add(value);
+                                }
+                            }
+                            if (values.size() == all.size()) {
+                                for (ItemObserver<T> io : all) {
+                                    io.queue.poll();
+                                }
+                                observer.onNext(values);
+                            } else {
+                                break;
+                            }
+                        }
+                    } finally {
+                        rwLock.writeLock().unlock();
+                        if (cu) {
+                            cancel.unsubscribe();
+                        }
+                    }
+                }
+            }
         }
     }
 
