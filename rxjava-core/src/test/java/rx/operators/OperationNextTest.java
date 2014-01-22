@@ -296,24 +296,27 @@ public class OperationNextTest {
         System.out.println("a: " + a + " b: " + b + " c: " + c);
     }
 
-    @Test(timeout = 8000)
+    @Test /* (timeout = 8000) */
     public void testSingleSourceManyIterators() throws InterruptedException {
-        BlockingObservable<Long> source = Observable.interval(200, TimeUnit.MILLISECONDS).take(10).toBlockingObservable();
+        PublishSubject<Long> ps = PublishSubject.create();
+        BlockingObservable<Long> source = ps.take(10).toBlockingObservable();
 
         Iterable<Long> iter = source.next();
 
         for (int j = 0; j < 3; j++) {
-            Iterator<Long> it = iter.iterator();
+            OperationNext.NextIterator<Long> it = (OperationNext.NextIterator<Long>)iter.iterator();
 
-            for (int i = 0; i < 9; i++) {
+            for (long i = 0; i < 9; i++) {
                 // hasNext has to set the waiting to true, otherwise, all onNext will be skipped
+                it.setWaiting(true);
+                ps.onNext(i);
                 Assert.assertEquals(true, it.hasNext());
-                Assert.assertEquals(Long.valueOf(i), it.next());
+                Assert.assertEquals(j + "th iteration", Long.valueOf(i), it.next());
             }
+            it.setWaiting(true);
+            ps.onNext(9L);
 
-            Thread.sleep(400);
-
-            Assert.assertEquals(false, it.hasNext());
+            Assert.assertEquals(j + "th iteration", false, it.hasNext());
         }
 
     }
