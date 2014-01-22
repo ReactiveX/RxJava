@@ -103,8 +103,7 @@ public final class OperationZip {
     }
 
     public static <R> OnSubscribeFunc<R> zip(Iterable<? extends Observable<?>> ws, final FuncN<? extends R> zipFunction) {
-        ManyObservables<?, R> a = new ManyObservables<Object, R>(ws, zipFunction);
-        return a;
+        return new ManyObservables<Object, R>(ws, zipFunction);
     }
 
     /**
@@ -246,7 +245,6 @@ public final class OperationZip {
                 this.cancel = cancel;
             }
 
-            @SuppressWarnings("unchecked")
             @Override
             public void onNext(T value) {
                 rwLock.readLock().lock();
@@ -258,7 +256,49 @@ public final class OperationZip {
                 } finally {
                     rwLock.readLock().unlock();
                 }
-                // run collector
+                runCollector();
+            }
+
+            @Override
+            public void onError(Throwable ex) {
+                rwLock.writeLock().lock();
+                try {
+                    if (done) {
+                        return;
+                    }
+                    done = true;
+                    observer.onError(ex);
+                } finally {
+                    rwLock.writeLock().unlock();
+                }
+                cancel.unsubscribe();
+                unsubscribe();
+            }
+
+            @Override
+            public void onCompleted() {
+                rwLock.readLock().lock();
+                try {
+                    done = true;
+                } finally {
+                    rwLock.readLock().unlock();
+                }
+                runCollector();
+                unsubscribe();
+            }
+
+            /** Connect to the source observable. */
+            public void connect() {
+                toSource.set(source.subscribe(this));
+            }
+
+            @Override
+            public void unsubscribe() {
+                toSource.unsubscribe();
+            }
+
+            @SuppressWarnings("unchecked")
+            private void runCollector() {
                 if (rwLock.writeLock().tryLock()) {
                     boolean cu = false;
                     try {
@@ -296,61 +336,6 @@ public final class OperationZip {
                     }
                 }
             }
-
-            @Override
-            public void onError(Throwable ex) {
-                rwLock.writeLock().lock();
-                try {
-                    if (done) {
-                        return;
-                    }
-                    done = true;
-                    observer.onError(ex);
-                } finally {
-                    rwLock.writeLock().unlock();
-                }
-                cancel.unsubscribe();
-                unsubscribe();
-            }
-
-            @Override
-            public void onCompleted() {
-                rwLock.readLock().lock();
-                try {
-                    done = true;
-                } finally {
-                    rwLock.readLock().unlock();
-                }
-                if (rwLock.writeLock().tryLock()) {
-                    boolean cu = false;
-                    try {
-                        for (ItemObserver<T> io : all) {
-                            if (io.queue.isEmpty() && io.done) {
-                                observer.onCompleted();
-                                cu = true;
-                                return;
-                            }
-                        }
-                    } finally {
-                        rwLock.writeLock().unlock();
-                        if (cu) {
-                            cancel.unsubscribe();
-                        }
-                    }
-                }
-                unsubscribe();
-            }
-
-            /** Connect to the source observable. */
-            public void connect() {
-                toSource.set(source.subscribe(this));
-            }
-
-            @Override
-            public void unsubscribe() {
-                toSource.unsubscribe();
-            }
-
         }
     }
 
