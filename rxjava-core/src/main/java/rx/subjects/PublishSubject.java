@@ -19,8 +19,9 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
+import rx.Observable;
 import rx.Observer;
-import rx.Operator;
+import rx.Observable.OnSubscribe;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Action2;
@@ -48,14 +49,14 @@ import rx.util.functions.Action2;
  * 
  * @param <T>
  */
-public final class PublishSubject<T> extends Subject<T, T> {
+public final class PublishSubject<T> extends Subject<T> {
 
     public static <T> PublishSubject<T> create() {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
         // set a default value so subscriptions will immediately receive this until a new notification is received
         final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>();
 
-        Action1<Operator<? super T>> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+        OnSubscribe<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
                  * This function executes at beginning of subscription.
                  * 
@@ -86,13 +87,19 @@ public final class PublishSubject<T> extends Subject<T, T> {
         return new PublishSubject<T>(onSubscribe, subscriptionManager, lastNotification);
     }
 
+    private final OnSubscribe<T> onSubscribe;
     private final SubjectSubscriptionManager<T> subscriptionManager;
     final AtomicReference<Notification<T>> lastNotification;
 
-    protected PublishSubject(Action1<Operator<? super T>> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
-        super(onSubscribe);
+    protected PublishSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
+        this.onSubscribe = onSubscribe;
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
+    }
+
+    @Override
+    public Observable<T> toObservable() {
+        return Observable.create(onSubscribe);
     }
 
     @Override

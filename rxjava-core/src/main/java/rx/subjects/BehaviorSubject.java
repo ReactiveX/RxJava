@@ -19,8 +19,9 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
+import rx.Observable;
 import rx.Observer;
-import rx.Operator;
+import rx.Observable.OnSubscribe;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Action2;
@@ -66,19 +67,7 @@ import rx.util.functions.Action2;
  * 
  * @param <T>
  */
-public final class BehaviorSubject<T> extends Subject<T, T> {
-
-    /**
-     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each {@link Observer} that subscribes to it.
-     * 
-     * @param defaultValue
-     *            The value which will be published to any {@link Observer} as long as the {@link BehaviorSubject} has not yet received any events.
-     * @return the constructed {@link BehaviorSubject}.
-     * @deprecated Use {@link create()} instead.
-     */
-    public static <T> BehaviorSubject<T> createWithDefaultValue(T defaultValue) {
-        return create(defaultValue);
-    }
+public final class BehaviorSubject<T> extends Subject<T> {
 
     /**
      * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each {@link Observer} that subscribes to it.
@@ -92,7 +81,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         // set a default value so subscriptions will immediately receive this until a new notification is received
         final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>(new Notification<T>(defaultValue));
 
-        Action1<Operator<? super T>> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+        OnSubscribe<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
                  * This function executes at beginning of subscription.
                  * 
@@ -131,13 +120,19 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         return new BehaviorSubject<T>(onSubscribe, subscriptionManager, lastNotification);
     }
 
+    private final OnSubscribe<T> onSubscribe;
     private final SubjectSubscriptionManager<T> subscriptionManager;
     final AtomicReference<Notification<T>> lastNotification;
 
-    protected BehaviorSubject(Action1<Operator<? super T>> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
-        super(onSubscribe);
+    protected BehaviorSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
+        this.onSubscribe = onSubscribe;
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
+    }
+
+    @Override
+    public Observable<T> toObservable() {
+        return Observable.create(onSubscribe);
     }
 
     @Override

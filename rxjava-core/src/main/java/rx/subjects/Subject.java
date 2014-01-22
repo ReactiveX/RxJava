@@ -17,11 +17,9 @@ package rx.subjects;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Operator;
-import rx.util.functions.Action1;
 
-public abstract class Subject<T, R> extends Observable<R> implements Observer<T> {
-    protected Subject(Action1<Operator<? super R>> onSubscribe) {
-        super(onSubscribe);
-    }
+public abstract class Subject<T> extends Observer<T> {
+
+    public abstract Observable<T> toObservable();
+
 }

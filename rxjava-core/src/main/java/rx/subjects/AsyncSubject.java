@@ -19,8 +19,9 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
+import rx.Observable;
 import rx.Observer;
-import rx.Operator;
+import rx.Observable.OnSubscribe;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
 
@@ -53,13 +54,13 @@ import rx.util.functions.Action1;
  * 
  * @param <T>
  */
-public final class AsyncSubject<T> extends Subject<T, T> {
+public final class AsyncSubject<T> extends Subject<T> {
 
     public static <T> AsyncSubject<T> create() {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
         final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>(new Notification<T>());
 
-        Action1<Operator<? super T>> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+        OnSubscribe<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
                  * This function executes at beginning of subscription.
                  * 
@@ -95,13 +96,19 @@ public final class AsyncSubject<T> extends Subject<T, T> {
         }
     }
 
+    private final OnSubscribe<T> onSubscribe;
     private final SubjectSubscriptionManager<T> subscriptionManager;
     final AtomicReference<Notification<T>> lastNotification;
 
-    protected AsyncSubject(Action1<Operator<? super T>> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
-        super(onSubscribe);
+    protected AsyncSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
+        this.onSubscribe = onSubscribe;
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
+    }
+
+    @Override
+    public Observable<T> toObservable() {
+        return Observable.create(onSubscribe);
     }
 
     @Override
