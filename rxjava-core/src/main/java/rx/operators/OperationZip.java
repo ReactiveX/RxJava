@@ -202,11 +202,9 @@ public final class OperationZip {
             /** Reader-writer lock. */
             protected final ReadWriteLock rwLock;
             /** The queue. */
-            public final Queue<Object> queue = new LinkedList<Object>();
+            public final Queue<T> queue = new LinkedList<T>();
             /** The list of the other observers. */
             public final List<ItemObserver<T>> all;
-            /** The null sentinel value. */
-            protected static final Object NULL_SENTINEL = new Object();
             /** The global cancel. */
             protected final Subscription cancel;
             /** The subscription to the source. */
@@ -252,7 +250,7 @@ public final class OperationZip {
                     if (done) {
                         return;
                     }
-                    queue.add(value != null ? value : NULL_SENTINEL);
+                    queue.add(value);
                 } finally {
                     rwLock.readLock().unlock();
                 }
@@ -297,7 +295,6 @@ public final class OperationZip {
                 toSource.unsubscribe();
             }
 
-            @SuppressWarnings("unchecked")
             private void runCollector() {
                 if (rwLock.writeLock().tryLock()) {
                     boolean cu = false;
@@ -311,13 +308,10 @@ public final class OperationZip {
                                         cu = true;
                                         return;
                                     }
-                                    continue;
+                                } else {
+                                    T value = io.queue.peek();
+                                    values.add(value);
                                 }
-                                Object v = io.queue.peek();
-                                if (v == NULL_SENTINEL) {
-                                    v = null;
-                                }
-                                values.add((T) v);
                             }
                             if (values.size() == all.size()) {
                                 for (ItemObserver<T> io : all) {
