@@ -15,6 +15,11 @@
  */
 package rx;
 
+import rx.subscriptions.CompositeSubscription;
+import rx.util.OnErrorNotImplementedException;
+import rx.util.functions.Action0;
+import rx.util.functions.Action1;
+
 /**
  * Provides a mechanism for receiving push-based notifications.
  * <p>
@@ -26,14 +31,28 @@ package rx;
  * 
  * @param <T>
  */
-public interface Observer<T> {
+public abstract class Observer<T> implements Subscription {
+
+    private final CompositeSubscription cs;
+
+    protected Observer(CompositeSubscription cs) {
+        this.cs = cs;
+    }
+
+    protected Observer() {
+        this(new CompositeSubscription());
+    }
+
+    protected Observer(Observer<?> op) {
+        this(op.cs);
+    }
 
     /**
      * Notifies the Observer that the {@link Observable} has finished sending push-based notifications.
      * <p>
      * The {@link Observable} will not call this closure if it calls <code>onError</code>.
      */
-    public void onCompleted();
+    public abstract void onCompleted();
 
     /**
      * Notifies the Observer that the {@link Observable} has experienced an error condition.
@@ -42,7 +61,7 @@ public interface Observer<T> {
      * 
      * @param e
      */
-    public void onError(Throwable e);
+    public abstract void onError(Throwable e);
 
     /**
      * Provides the Observer with new data.
@@ -53,5 +72,140 @@ public interface Observer<T> {
      * 
      * @param args
      */
-    public void onNext(T args);
+    public abstract void onNext(T args);
+
+    /**
+     * Create an empty Observer that ignores all events.
+     */
+    public static final <T> Observer<T> create() {
+        return new Observer<T>() {
+
+            @Override
+            public final void onCompleted() {
+                // do nothing
+            }
+
+            @Override
+            public final void onError(Throwable e) {
+                throw new OnErrorNotImplementedException(e);
+            }
+
+            @Override
+            public final void onNext(T args) {
+                // do nothing
+            }
+
+        };
+    }
+
+    /**
+     * Create an Observer that receives `onNext` and ignores `onError` and `onCompleted`.
+     */
+    public static final <T> Observer<T> create(final Action1<? super T> onNext) {
+        if (onNext == null) {
+            throw new IllegalArgumentException("onNext can not be null");
+        }
+
+        return new Observer<T>() {
+
+            @Override
+            public final void onCompleted() {
+                // do nothing
+            }
+
+            @Override
+            public final void onError(Throwable e) {
+                throw new OnErrorNotImplementedException(e);
+            }
+
+            @Override
+            public final void onNext(T args) {
+                onNext.call(args);
+            }
+
+        };
+    }
+
+    /**
+     * Create an Observer that receives `onNext` and `onError` and ignores `onCompleted`.
+     * 
+     */
+    public static final <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError) {
+        if (onNext == null) {
+            throw new IllegalArgumentException("onNext can not be null");
+        }
+        if (onError == null) {
+            throw new IllegalArgumentException("onError can not be null");
+        }
+
+        return new Observer<T>() {
+
+            @Override
+            public final void onCompleted() {
+                // do nothing
+            }
+
+            @Override
+            public final void onError(Throwable e) {
+                onError.call(e);
+            }
+
+            @Override
+            public final void onNext(T args) {
+                onNext.call(args);
+            }
+
+        };
+    }
+
+    /**
+     * Create an Observer that receives `onNext`, `onError` and `onCompleted`.
+     * 
+     */
+    public static final <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
+        if (onNext == null) {
+            throw new IllegalArgumentException("onNext can not be null");
+        }
+        if (onError == null) {
+            throw new IllegalArgumentException("onError can not be null");
+        }
+        if (onComplete == null) {
+            throw new IllegalArgumentException("onComplete can not be null");
+        }
+
+        return new Observer<T>() {
+
+            @Override
+            public final void onCompleted() {
+                onComplete.call();
+            }
+
+            @Override
+            public final void onError(Throwable e) {
+                onError.call(e);
+            }
+
+            @Override
+            public final void onNext(T args) {
+                onNext.call(args);
+            }
+
+        };
+    }
+
+    /**
+     * Used to register an unsubscribe callback.
+     */
+    public final void add(Subscription s) {
+        cs.add(s);
+    }
+
+    @Override
+    public final void unsubscribe() {
+        cs.unsubscribe();
+    }
+
+    public final boolean isUnsubscribed() {
+        return cs.isUnsubscribed();
+    }
 }

@@ -159,14 +159,8 @@ import rx.util.functions.Functions;
  */
 public class Observable<T> {
 
-    final Action1<Operator<? super T>> f;
+    final Action1<Observer<? super T>> f;
 
-    public static interface OnSubscribe<T> extends Function {
-        
-        public void onSubscribe(Operator<? super T> op);
-        
-    }
-    
     /**
      * Observable with Function to execute when subscribed to.
      * <p>
@@ -176,19 +170,8 @@ public class Observable<T> {
      * @param onSubscribe
      *            {@link OnSubscribeFunc} to be executed when {@link #subscribe(Observer)} is called
      */
-    protected Observable(Action1<Operator<? super T>> f) {
+    protected Observable(Action1<Observer<? super T>> f) {
         this.f = f;
-    }
-
-    /**
-     * Function interface for work to be performed when an {@link Observable} is subscribed to via {@link Observable#subscribe(Observer)}
-     * 
-     * @param <T>
-     * @deprecated
-     */
-    @Deprecated
-    public static interface OnSubscribeFunc<T> extends Function {
-        public Subscription onSubscribe(Observer<? super T> t1);
     }
 
     private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
@@ -217,45 +200,12 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create">RxJava Wiki: create()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.create.aspx">MSDN: Observable.Create</a>
      */
-    public final static <T> Observable<T> create(final Action1<Operator<? super T>> f) {
+    public final static <T> Observable<T> create(OnSubscribe<T> f) {
         return new Observable<T>(f);
     }
 
-    /**
-     * Returns an Observable that will execute the specified function when an {@link Observer} subscribes to it.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png">
-     * <p>
-     * Write the function you pass to {@code create} so that it behaves as an Observable: It should
-     * invoke the Observer's {@link Observer#onNext onNext}, {@link Observer#onError onError}, and {@link Observer#onCompleted onCompleted} methods appropriately.
-     * <p>
-     * A well-formed Observable must invoke either the Observer's {@code onCompleted} method
-     * exactly once or its {@code onError} method exactly once.
-     * <p>
-     * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a>
-     * for detailed information.
-     * 
-     * @param <T>
-     *            the type of the items that this Observable emits
-     * @param func
-     *            a function that accepts an {@code Observer<T>}, invokes its {@code onNext}, {@code onError}, and {@code onCompleted} methods as appropriate, and returns a {@link Subscription} that
-     *            allows the Observer to cancel the subscription
-     * @return an Observable that, when an {@link Observer} subscribes to it, will execute the
-     *         specified function
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create">RxJava Wiki: create()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.create.aspx">MSDN: Observable.Create</a>
-     * @deprecated
-     */
-    @Deprecated
-    public final static <T> Observable<T> create(final OnSubscribeFunc<T> func) {
-        return new Observable<T>(new Action1<Operator<? super T>>() {
-
-            @Override
-            public void call(Operator<? super T> o) {
-                o.add(func.onSubscribe(o));
-            }
-
-        });
+    public static interface OnSubscribe<T> extends Action1<Observer<? super T>> {
+        
     }
 
     /**
@@ -270,11 +220,11 @@ public class Observable<T> {
      * @param bind
      * @return an Observable that emits values that are the result of applying the bind function to the values of the current Observable
      */
-    public <R> Observable<R> lift(final Func1<Operator<? super R>, Operator<? super T>> bind) {
-        return new Observable<R>(new Action1<Operator<? super R>>() {
+    public <R> Observable<R> lift(final Func1<Observer<? super R>, Observer<? super T>> bind) {
+        return new Observable<R>(new Action1<Observer<? super R>>() {
 
             @Override
-            public void call(Operator<? super R> o) {
+            public void call(Observer<? super R> o) {
                 subscribe(bind.call(o));
             }
         });
