@@ -16,20 +16,18 @@
 package rx.operators;
 
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationCast.*;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
 
-public class OperationCastTest {
+public class OperatorCastTest {
 
     @Test
     public void testCast() {
         Observable<?> source = Observable.from(1, 2);
-        Observable<Integer> observable = Observable.create(cast(source,
-                Integer.class));
+        Observable<Integer> observable = source.cast(Integer.class);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> aObserver = mock(Observer.class);
@@ -44,8 +42,7 @@ public class OperationCastTest {
     @Test
     public void testCastWithWrongType() {
         Observable<?> source = Observable.from(1, 2);
-        Observable<Boolean> observable = Observable.create(cast(source,
-                Boolean.class));
+        Observable<Boolean> observable = source.cast(Boolean.class);
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> aObserver = mock(Observer.class);

@@ -1,5 +1,7 @@
 package rx.perf;
 
+import java.util.Iterator;
+
 import rx.util.functions.Action0;
 
 public abstract class AbstractPerformanceTester {
@@ -43,5 +45,31 @@ public abstract class AbstractPerformanceTester {
         o.onCompleted();
         return o.sum;
     }
+    
+    public static Iterable<Long> ITERABLE_OF_REPETITIONS = new Iterable<Long>() {
+
+        @Override
+        public Iterator<Long> iterator() {
+            return new Iterator<Long>() {
+                long count = 0;
+
+                @Override
+                public boolean hasNext() {
+                    return count <= REPETITIONS;
+                }
+
+                @Override
+                public Long next() {
+                    return count++;
+                }
+
+                @Override
+                public void remove() {
+                    // do nothing
+                }
+
+            };
+        };
+    };
     
 }

@@ -15,8 +15,8 @@
  */
 package rx.operators;
 
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.Observer;
+import rx.Operator;
 import rx.Scheduler;
 import rx.util.Timestamped;
 import rx.util.functions.Func1;
@@ -26,35 +26,37 @@ import rx.util.functions.Func1;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/timestamp.png">
  */
-public final class OperationTimestamp {
+public final class OperatorTimestamp<T> implements Func1<Operator<? super Timestamped<T>>, Operator<? super T>> {
+
+    private final Scheduler scheduler;
+
+    public OperatorTimestamp(Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
 
     /**
-     * Accepts a sequence and adds timestamps to each item in it.
-     * 
-     * @param sequence
-     *            the input sequence.
-     * @param <T>
-     *            the type of the input sequence.
      * @return a sequence of timestamped values created by adding timestamps to each item in the input sequence.
      */
-    public static <T> OnSubscribeFunc<Timestamped<T>> timestamp(Observable<? extends T> sequence) {
-        return OperationMap.map(sequence, new Func1<T, Timestamped<T>>() {
+    @Override
+    public Operator<? super T> call(final Operator<? super Timestamped<T>> o) {
+        return new Operator<T>(o) {
+
             @Override
-            public Timestamped<T> call(T value) {
-                return new Timestamped<T>(System.currentTimeMillis(), value);
+            public void onCompleted() {
+                o.onCompleted();
             }
-        });
+
+            @Override
+            public void onError(Throwable e) {
+                o.onError(e);
+            }
+
+            @Override
+            public void onNext(T t) {
+                o.onNext(new Timestamped<T>(scheduler.now(), t));
+            }
+
+        };
     }
 
-    /**
-     * Timestamp the source elements based on the timing provided by the scheduler.
-     */
-    public static <T> OnSubscribeFunc<Timestamped<T>> timestamp(Observable<? extends T> source, final Scheduler scheduler) {
-        return OperationMap.map(source, new Func1<T, Timestamped<T>>() {
-            @Override
-            public Timestamped<T> call(T value) {
-                return new Timestamped<T>(scheduler.now(), value);
-            }
-        });
-    }
 }

@@ -28,7 +28,7 @@ import rx.subscriptions.CompositeSubscription;
 import rx.util.CompositeException;
 
 /**
- * This behaves like {@link OperationMerge} except that if any of the merged Observables notify of
+ * This behaves like {@link OperatorMerge} except that if any of the merged Observables notify of
  * an error via <code>onError</code>, mergeDelayError will refrain from propagating that error
  * notification until all of the merged Observables have finished emitting items.
  * <p>

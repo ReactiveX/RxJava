@@ -18,11 +18,13 @@ package rx.operators;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Operator;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action1;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
@@ -40,10 +42,10 @@ public class OperationMulticast {
         private Subscription subscription;
 
         public MulticastConnectableObservable(Observable<? extends T> source, final Subject<? super T, ? extends R> subject) {
-            super(new OnSubscribeFunc<R>() {
+            super(new Action1<Operator<? super R>>() {
                 @Override
-                public Subscription onSubscribe(Observer<? super R> observer) {
-                    return subject.subscribe(observer);
+                public void call(Operator<? super R> observer) {
+                    subject.subscribe(observer);
                 }
             });
             this.source = source;

@@ -310,9 +310,8 @@ trait Observable[+T]
    *         their index. Indices start at 0.
    */
   def zipWithIndex: Observable[(T, Int)] = {
-    val fScala: (T, Integer) => (T, Int) = (elem: T, index: Integer) => (elem, index)
-    val fJava : Func2[_ >: T, Integer, _ <: (T, Int)] = fScala
-    toScalaObservable[(T, Int)](asJavaObservable.mapWithIndex[(T, Int)](fJava))
+    var n = 0;
+    this.map(x => { val result = (x,n); n += 1; result })
   }
 
   /**
