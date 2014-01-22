@@ -33,7 +33,7 @@ public class OperatorToObservableSortedListTest {
     @Test
     public void testSortedList() {
         Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
-        Observable<List<Integer>> observable = w.bind(new OperatorToObservableSortedList<Integer>());
+        Observable<List<Integer>> observable = w.lift(new OperatorToObservableSortedList<Integer>());
 
         @SuppressWarnings("unchecked")
         Observer<List<Integer>> aObserver = mock(Observer.class);
@@ -46,7 +46,7 @@ public class OperatorToObservableSortedListTest {
     @Test
     public void testSortedListWithCustomFunction() {
         Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
-        Observable<List<Integer>> observable = w.bind(new OperatorToObservableSortedList<Integer>(new Func2<Integer, Integer, Integer>() {
+        Observable<List<Integer>> observable = w.lift(new OperatorToObservableSortedList<Integer>(new Func2<Integer, Integer, Integer>() {
 
             @Override
             public Integer call(Integer t1, Integer t2) {

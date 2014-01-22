@@ -33,7 +33,7 @@ public class OperatorToObservableListTest {
     @Test
     public void testList() {
         Observable<String> w = Observable.from(Arrays.asList("one", "two", "three"));
-        Observable<List<String>> observable = w.bind(new OperatorToObservableList<String>());
+        Observable<List<String>> observable = w.lift(new OperatorToObservableList<String>());
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> aObserver = mock(Observer.class);
@@ -59,7 +59,7 @@ public class OperatorToObservableListTest {
     @Test
     public void testListMultipleObservers() {
         Observable<String> w = Observable.from(Arrays.asList("one", "two", "three"));
-        Observable<List<String>> observable = w.bind(new OperatorToObservableList<String>());
+        Observable<List<String>> observable = w.lift(new OperatorToObservableList<String>());
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> o1 = mock(Observer.class);
@@ -83,7 +83,7 @@ public class OperatorToObservableListTest {
     @Test
     public void testListWithNullValue() {
         Observable<String> w = Observable.from(Arrays.asList("one", null, "three"));
-        Observable<List<String>> observable = w.bind(new OperatorToObservableList<String>());
+        Observable<List<String>> observable = w.lift(new OperatorToObservableList<String>());
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> aObserver = mock(Observer.class);

@@ -161,6 +161,12 @@ public class Observable<T> {
 
     final Action1<Operator<? super T>> f;
 
+    public static interface OnSubscribe<T> extends Function {
+        
+        public void onSubscribe(Operator<? super T> op);
+        
+    }
+    
     /**
      * Observable with Function to execute when subscribed to.
      * <p>
@@ -253,18 +259,18 @@ public class Observable<T> {
     }
 
     /**
-     * Bind a function to the current Observable and return a new Observable that when subscribed to will pass the values of the current Observable through the function.
+     * Lift a function to the current Observable and return a new Observable that when subscribed to will pass the values of the current Observable through the function.
      * <p>
      * In other words, this allows chaining operators together on an Observable for acting on the values within the Observable.
      * <p>
      * {@code
-     * observable.map(...).filter(...).take(5).bind(new OperatorA()).bind(new OperatorB(...)).subscribe()
+     * observable.map(...).filter(...).take(5).lift(new OperatorA()).lift(new OperatorB(...)).subscribe()
      * }
      * 
      * @param bind
      * @return an Observable that emits values that are the result of applying the bind function to the values of the current Observable
      */
-    public <R> Observable<R> bind(final Func1<Operator<? super R>, Operator<? super T>> bind) {
+    public <R> Observable<R> lift(final Func1<Operator<? super R>, Operator<? super T>> bind) {
         return new Observable<R>(new Action1<Operator<? super R>>() {
 
             @Override
@@ -1828,7 +1834,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
-        return source.bind(new OperatorMerge()); // any idea how to get these generics working?!
+        return source.lift(new OperatorMerge()); // any idea how to get these generics working?!
     }
 
     /**
@@ -1852,7 +1858,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211914.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source, int maxConcurrent) {
-        return source.bind(new OperatorMerge(maxConcurrent)); // any idea how to get these generics working?!
+        return source.lift(new OperatorMerge(maxConcurrent)); // any idea how to get these generics working?!
     }
 
     /**
@@ -3845,7 +3851,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211842.aspx">MSDN: Observable.Cast</a>
      */
     public final <R> Observable<R> cast(final Class<R> klass) {
-        return bind(new OperatorCast<T, R>(klass));
+        return lift(new OperatorCast<T, R>(klass));
     }
 
     /**
@@ -4587,7 +4593,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava Wiki: groupBy</a>
      */
     public final <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) {
-        return bind(new OperatorGroupBy<K, T>(keySelector));
+        return lift(new OperatorGroupBy<K, T>(keySelector));
     }
 
     /**
@@ -4849,7 +4855,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244306.aspx">MSDN: Observable.Select</a>
      */
     public final <R> Observable<R> map(Func1<? super T, ? extends R> func) {
-        return bind(new OperatorMap<T, R>(func));
+        return lift(new OperatorMap<T, R>(func));
     }
 
     /**
@@ -5321,7 +5327,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#parallel">RxJava Wiki: parallel()</a>
      */
     public final <R> Observable<R> parallel(Func1<Observable<T>, Observable<R>> f) {
-        return bind(new OperatorParallel<T, R>(f, Schedulers.computation()));
+        return lift(new OperatorParallel<T, R>(f, Schedulers.computation()));
     }
 
     /**
@@ -5339,7 +5345,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#parallel">RxJava Wiki: parallel()</a>
      */
     public final <R> Observable<R> parallel(final Func1<Observable<T>, Observable<R>> f, final Scheduler s) {
-        return bind(new OperatorParallel<T, R>(f, s));
+        return lift(new OperatorParallel<T, R>(f, s));
     }
 
     /**
@@ -7133,7 +7139,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#take">RxJava Wiki: take()</a>
      */
     public final Observable<T> take(final int num) {
-        return bind(new OperatorTake<T>(num));
+        return lift(new OperatorTake<T>(num));
     }
 
     /**
@@ -7899,7 +7905,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229003.aspx">MSDN: Observable.Timestamp</a>
      */
     public final Observable<Timestamped<T>> timestamp(Scheduler scheduler) {
-        return bind(new OperatorTimestamp<T>(scheduler));
+        return lift(new OperatorTimestamp<T>(scheduler));
     }
 
     /**
@@ -7932,7 +7938,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tolist">RxJava Wiki: toList()</a>
      */
     public final Observable<List<T>> toList() {
-        return bind(new OperatorToObservableList<T>());
+        return lift(new OperatorToObservableList<T>());
     }
 
     /**
@@ -8099,7 +8105,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tosortedlist">RxJava Wiki: toSortedList()</a>
      */
     public final Observable<List<T>> toSortedList() {
-        return bind(new OperatorToObservableSortedList<T>());
+        return lift(new OperatorToObservableSortedList<T>());
     }
 
     /**
@@ -8116,7 +8122,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tosortedlist">RxJava Wiki: toSortedList()</a>
      */
     public final Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) {
-        return bind(new OperatorToObservableSortedList<T>(sortFunction));
+        return lift(new OperatorToObservableSortedList<T>(sortFunction));
     }
 
     /**

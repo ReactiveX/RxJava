@@ -6,6 +6,10 @@ public abstract class Operator<T> implements Observer<T>, Subscription {
 
     private final CompositeSubscription cs;
 
+    public Operator() {
+        this.cs = new CompositeSubscription();
+    }
+    
     // TODO I'm questioning this API, it could be confusing and misused
     protected Operator(Operator<?> op) {
         this.cs = op.cs;

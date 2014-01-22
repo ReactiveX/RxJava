@@ -61,7 +61,7 @@ public class OperatorMapTest {
         Map<String, String> m2 = getMap("Two");
         Observable<Map<String, String>> observable = Observable.from(m1, m2);
 
-        Observable<String> m = observable.bind(new OperatorMap<Map<String, String>, String>(new Func1<Map<String, String>, String>() {
+        Observable<String> m = observable.lift(new OperatorMap<Map<String, String>, String>(new Func1<Map<String, String>, String>() {
 
             @Override
             public String call(Map<String, String> map) {
@@ -159,7 +159,7 @@ public class OperatorMapTest {
     @Test
     public void testMapWithError() {
         Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
-        Observable<String> m = w.bind(new OperatorMap<String, String>(new Func1<String, String>() {
+        Observable<String> m = w.lift(new OperatorMap<String, String>(new Func1<String, String>() {
             @Override
             public String call(String s) {
                 if ("fail".equals(s)) {

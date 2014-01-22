@@ -39,7 +39,7 @@ public class OperatorTakeTest {
     @Test
     public void testTake1() {
         Observable<String> w = Observable.from(Arrays.asList("one", "two", "three"));
-        Observable<String> take = w.bind(new OperatorTake<String>(2));
+        Observable<String> take = w.lift(new OperatorTake<String>(2));
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -54,7 +54,7 @@ public class OperatorTakeTest {
     @Test
     public void testTake2() {
         Observable<String> w = Observable.from(Arrays.asList("one", "two", "three"));
-        Observable<String> take = w.bind(new OperatorTake<String>(1));
+        Observable<String> take = w.lift(new OperatorTake<String>(1));
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
@@ -121,7 +121,7 @@ public class OperatorTakeTest {
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
 
-        source.bind(new OperatorTake<String>(1)).subscribe(aObserver);
+        source.lift(new OperatorTake<String>(1)).subscribe(aObserver);
 
         verify(aObserver, times(1)).onNext("one");
         // even though onError is called we take(1) so shouldn't see it
@@ -151,7 +151,7 @@ public class OperatorTakeTest {
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
 
-        source.bind(new OperatorTake<String>(0)).subscribe(aObserver);
+        source.lift(new OperatorTake<String>(0)).subscribe(aObserver);
         assertTrue("source subscribed", subscribed.get());
         assertTrue("source unsubscribed", unSubscribed.get());
 
@@ -170,7 +170,7 @@ public class OperatorTakeTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
-        Observable<String> take = w.bind(new OperatorTake<String>(1));
+        Observable<String> take = w.lift(new OperatorTake<String>(1));
         take.subscribe(aObserver);
 
         // wait for the Observable to complete
