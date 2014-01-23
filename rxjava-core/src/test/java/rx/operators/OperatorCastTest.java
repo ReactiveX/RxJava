@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 
 public class OperatorCastTest {
 
@@ -31,7 +32,7 @@ public class OperatorCastTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
+        observable.subscribe(new TestObserver<Integer>(aObserver));
         verify(aObserver, times(1)).onNext(1);
         verify(aObserver, times(1)).onNext(1);
         verify(aObserver, never()).onError(
@@ -46,7 +47,7 @@ public class OperatorCastTest {
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
+        observable.subscribe(new TestObserver<Boolean>(aObserver));
         verify(aObserver, times(1)).onError(
                 org.mockito.Matchers.any(ClassCastException.class));
     }

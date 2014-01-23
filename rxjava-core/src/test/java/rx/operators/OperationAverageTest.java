@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.operators.OperationReduceTest.CustomException;
 import rx.util.functions.Func1;
 
@@ -281,7 +282,7 @@ public class OperationAverageTest {
 
         Observable<Integer> result = source.averageInteger(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, CustomException.class);
     }
@@ -298,7 +299,7 @@ public class OperationAverageTest {
 
         Observable<Long> result = source.averageLong(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, CustomException.class);
     }
@@ -315,7 +316,7 @@ public class OperationAverageTest {
 
         Observable<Float> result = source.averageFloat(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, CustomException.class);
     }
@@ -332,7 +333,7 @@ public class OperationAverageTest {
 
         Observable<Double> result = source.averageDouble(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, CustomException.class);
     }

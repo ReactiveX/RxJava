@@ -27,6 +27,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.concurrency.TestScheduler;
+import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 
 public class OperationSkipTest {
@@ -71,7 +72,7 @@ public class OperationSkipTest {
 
         Observer<Object> o = mock(Observer.class);
 
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         source.onNext(1);
         source.onNext(2);
@@ -108,7 +109,7 @@ public class OperationSkipTest {
 
         Observer<Object> o = mock(Observer.class);
 
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         source.onNext(1);
         source.onNext(2);
@@ -138,7 +139,7 @@ public class OperationSkipTest {
 
         Observer<Object> o = mock(Observer.class);
 
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         source.onNext(1);
         source.onNext(2);
@@ -165,7 +166,7 @@ public class OperationSkipTest {
 
         Observer<Object> o = mock(Observer.class);
 
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         source.onNext(1);
         source.onNext(2);

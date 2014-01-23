@@ -34,6 +34,7 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
@@ -166,7 +167,7 @@ public class OperationBufferTest {
         });
 
         Observable<List<String>> buffered = Observable.create(buffer(source, 100, TimeUnit.MILLISECONDS, 2, scheduler));
-        buffered.subscribe(observer);
+        buffered.subscribe(new TestObserver<List<String>>(observer));
 
         InOrder inOrder = Mockito.inOrder(observer);
         scheduler.advanceTimeTo(100, TimeUnit.MILLISECONDS);
@@ -198,7 +199,7 @@ public class OperationBufferTest {
         });
 
         Observable<List<String>> buffered = Observable.create(buffer(source, 100, TimeUnit.MILLISECONDS, scheduler));
-        buffered.subscribe(observer);
+        buffered.subscribe(new TestObserver<List<String>>(observer));
 
         InOrder inOrder = Mockito.inOrder(observer);
         scheduler.advanceTimeTo(101, TimeUnit.MILLISECONDS);
@@ -251,7 +252,7 @@ public class OperationBufferTest {
         };
 
         Observable<List<String>> buffered = Observable.create(buffer(source, openings, closer));
-        buffered.subscribe(observer);
+        buffered.subscribe(new TestObserver<List<String>>(observer));
 
         InOrder inOrder = Mockito.inOrder(observer);
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
@@ -292,7 +293,7 @@ public class OperationBufferTest {
         };
 
         Observable<List<String>> buffered = Observable.create(buffer(source, closer));
-        buffered.subscribe(observer);
+        buffered.subscribe(new TestObserver<List<String>>(observer));
 
         InOrder inOrder = Mockito.inOrder(observer);
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
@@ -370,7 +371,7 @@ public class OperationBufferTest {
 
         Observer<List<Integer>> o = mock(Observer.class);
 
-        Subscription s = source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler).subscribe(o);
+        Subscription s = source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler).subscribe(new TestObserver<List<Integer>>(o));
 
         InOrder inOrder = Mockito.inOrder(o);
 
@@ -394,7 +395,7 @@ public class OperationBufferTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = Mockito.inOrder(o);
 
-        source.toObservable().buffer(boundary.toObservable()).subscribe(o);
+        source.toObservable().buffer(boundary.toObservable()).subscribe(new TestObserver<Object>(o));
 
         source.onNext(1);
         source.onNext(2);
@@ -430,7 +431,7 @@ public class OperationBufferTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = Mockito.inOrder(o);
 
-        source.toObservable().buffer(boundary.toObservable()).subscribe(o);
+        source.toObservable().buffer(boundary.toObservable()).subscribe(new TestObserver<Object>(o));
 
         boundary.onCompleted();
 
@@ -450,7 +451,7 @@ public class OperationBufferTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = Mockito.inOrder(o);
 
-        source.toObservable().buffer(boundary.toObservable()).subscribe(o);
+        source.toObservable().buffer(boundary.toObservable()).subscribe(new TestObserver<Object>(o));
 
         source.onCompleted();
 
@@ -470,7 +471,7 @@ public class OperationBufferTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = Mockito.inOrder(o);
 
-        source.toObservable().buffer(boundary.toObservable()).subscribe(o);
+        source.toObservable().buffer(boundary.toObservable()).subscribe(new TestObserver<Object>(o));
 
         source.onCompleted();
         boundary.onCompleted();
@@ -490,7 +491,7 @@ public class OperationBufferTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.toObservable().buffer(boundary.toObservable()).subscribe(o);
+        source.toObservable().buffer(boundary.toObservable()).subscribe(new TestObserver<Object>(o));
         source.onNext(1);
         source.onError(new OperationReduceTest.CustomException());
 
@@ -507,7 +508,7 @@ public class OperationBufferTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.toObservable().buffer(boundary.toObservable()).subscribe(o);
+        source.toObservable().buffer(boundary.toObservable()).subscribe(new TestObserver<Object>(o));
 
         source.onNext(1);
         boundary.onError(new OperationReduceTest.CustomException());

@@ -27,6 +27,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.subscriptions.Subscriptions;
 
 public class OperationRetryTest {
@@ -36,7 +37,7 @@ public class OperationRetryTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(2));
-        origin.subscribe(observer);
+        origin.subscribe(new TestObserver<String>(observer));
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext("beginningEveryTime");

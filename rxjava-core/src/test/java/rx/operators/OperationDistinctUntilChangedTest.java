@@ -29,14 +29,15 @@ import org.mockito.Mock;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
 public class OperationDistinctUntilChangedTest {
 
     @Mock
-    Observer<? super String> w;
+    Observer<String> w;
     @Mock
-    Observer<? super String> w2;
+    Observer<String> w2;
 
     // nulls lead to exceptions
     final Func1<String, String> TO_UPPER_WITH_EXCEPTION = new Func1<String, String>() {
@@ -134,7 +135,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedOfSourceWithExceptionsFromKeySelector() {
         Observable<String> src = Observable.from("a", "b", null, "c");
-        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
+        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(new TestObserver<String>(w));
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("a");

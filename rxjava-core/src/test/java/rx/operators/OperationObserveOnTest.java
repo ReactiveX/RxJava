@@ -31,6 +31,7 @@ import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.util.functions.Action0;
@@ -155,8 +156,8 @@ public class OperationObserveOnTest {
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);
 
-        o2.subscribe(observer1);
-        o2.subscribe(observer2);
+        o2.subscribe(new TestObserver<Object>(observer1));
+        o2.subscribe(new TestObserver<Object>(observer2));
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -193,8 +194,8 @@ public class OperationObserveOnTest {
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);
 
-        o1.subscribe(observer1);
-        o2.subscribe(observer2);
+        o1.subscribe(new TestObserver<Object>(observer1));
+        o2.subscribe(new TestObserver<Object>(observer2));
 
         scheduler1.advanceTimeBy(1, TimeUnit.SECONDS);
         scheduler2.advanceTimeBy(1, TimeUnit.SECONDS);

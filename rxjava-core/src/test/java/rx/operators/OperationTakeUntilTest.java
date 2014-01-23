@@ -23,6 +23,7 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 
 public class OperationTakeUntilTest {
 
@@ -86,7 +87,7 @@ public class OperationTakeUntilTest {
 
         Observer<String> result = mock(Observer.class);
         Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
-        stringObservable.subscribe(result);
+        stringObservable.subscribe(new TestObserver<String>(result));
         source.sendOnNext("one");
         source.sendOnNext("two");
         source.sendOnError(error);
@@ -110,7 +111,7 @@ public class OperationTakeUntilTest {
 
         Observer<String> result = mock(Observer.class);
         Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
-        stringObservable.subscribe(result);
+        stringObservable.subscribe(new TestObserver<String>(result));
         source.sendOnNext("one");
         source.sendOnNext("two");
         other.sendOnError(error);
@@ -134,7 +135,7 @@ public class OperationTakeUntilTest {
 
         Observer<String> result = mock(Observer.class);
         Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
-        stringObservable.subscribe(result);
+        stringObservable.subscribe(new TestObserver<String>(result));
         source.sendOnNext("one");
         source.sendOnNext("two");
         other.sendOnCompleted();

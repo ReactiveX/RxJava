@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
 public class OperationSumTest {
@@ -148,7 +149,7 @@ public class OperationSumTest {
 
         Observable<Integer> result = source.sumInteger(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testValue(o, 10);
     }
@@ -165,7 +166,7 @@ public class OperationSumTest {
 
         Observable<Long> result = source.sumLong(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testValue(o, 10L);
     }
@@ -182,7 +183,7 @@ public class OperationSumTest {
 
         Observable<Float> result = source.sumFloat(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testValue(o, 10f);
     }
@@ -199,7 +200,7 @@ public class OperationSumTest {
 
         Observable<Double> result = source.sumDouble(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testValue(o, 10d);
     }
@@ -216,7 +217,7 @@ public class OperationSumTest {
 
         Observable<Integer> result = source.sumInteger(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, IllegalArgumentException.class);
     }
@@ -233,7 +234,7 @@ public class OperationSumTest {
 
         Observable<Long> result = source.sumLong(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, IllegalArgumentException.class);
     }
@@ -250,7 +251,7 @@ public class OperationSumTest {
 
         Observable<Float> result = source.sumFloat(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, IllegalArgumentException.class);
     }
@@ -267,7 +268,7 @@ public class OperationSumTest {
 
         Observable<Double> result = source.sumDouble(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, IllegalArgumentException.class);
     }
@@ -284,7 +285,7 @@ public class OperationSumTest {
 
         Observable<Integer> result = source.sumInteger(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, OperationReduceTest.CustomException.class);
     }
@@ -301,7 +302,7 @@ public class OperationSumTest {
 
         Observable<Long> result = source.sumLong(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, OperationReduceTest.CustomException.class);
     }
@@ -318,7 +319,7 @@ public class OperationSumTest {
 
         Observable<Float> result = source.sumFloat(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, OperationReduceTest.CustomException.class);
     }
@@ -335,7 +336,7 @@ public class OperationSumTest {
 
         Observable<Double> result = source.sumDouble(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, OperationReduceTest.CustomException.class);
     }

@@ -31,6 +31,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.operators.OperationReduceTest.CustomException;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
@@ -65,7 +66,7 @@ public class OperationZipTest {
         observer = mock(Observer.class);
         inOrder = inOrder(observer);
 
-        zipped.subscribe(observer);
+        zipped.subscribe(new TestObserver<String>(observer));
     }
 
     @SuppressWarnings("unchecked")
@@ -80,7 +81,7 @@ public class OperationZipTest {
         @SuppressWarnings("rawtypes")
         Collection ws = java.util.Collections.singleton(Observable.from("one", "two"));
         Observable<String> w = Observable.create(zip(ws, zipr));
-        w.subscribe(aObserver);
+        w.subscribe(new TestObserver<String>(aObserver));
 
         verify(aObserver, times(1)).onError(any(Throwable.class));
         verify(aObserver, never()).onCompleted();
@@ -98,7 +99,7 @@ public class OperationZipTest {
         TestObservable w3 = new TestObservable();
 
         Observable<String> zipW = Observable.create(zip(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsZipr()));
-        zipW.subscribe(w);
+        zipW.subscribe(new TestObserver<String>(w));
 
         /* simulate sending data */
         // once for w1
@@ -132,7 +133,7 @@ public class OperationZipTest {
         TestObservable w3 = new TestObservable();
 
         Observable<String> zipW = Observable.create(zip(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsZipr()));
-        zipW.subscribe(w);
+        zipW.subscribe(new TestObserver<String>(w));
 
         /* simulate sending data */
         // 4 times for w1
@@ -186,7 +187,7 @@ public class OperationZipTest {
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(aObserver);
+        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
@@ -223,7 +224,7 @@ public class OperationZipTest {
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(aObserver);
+        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
@@ -253,7 +254,7 @@ public class OperationZipTest {
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(aObserver);
+        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
@@ -284,7 +285,7 @@ public class OperationZipTest {
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), r3.toObservable(), zipr3).subscribe(aObserver);
+        Observable.zip(r1.toObservable(), r2.toObservable(), r3.toObservable(), zipr3).subscribe(new TestObserver<String>(aObserver));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
@@ -305,7 +306,7 @@ public class OperationZipTest {
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(aObserver);
+        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("one");
@@ -342,7 +343,7 @@ public class OperationZipTest {
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(aObserver);
+        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
@@ -371,7 +372,7 @@ public class OperationZipTest {
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
 
-        Subscription subscription = Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(aObserver);
+        Subscription subscription = Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
@@ -400,7 +401,7 @@ public class OperationZipTest {
         /* define a Observer to receive aggregated events */
         Observer<String> aObserver = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(aObserver);
+        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("one");
@@ -431,7 +432,7 @@ public class OperationZipTest {
         Observer<String> aObserver = mock(Observer.class);
 
         Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2, 3, 4), zipr));
-        w.subscribe(aObserver);
+        w.subscribe(new TestObserver<String>(aObserver));
 
         verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
@@ -450,7 +451,7 @@ public class OperationZipTest {
         Observer<String> aObserver = mock(Observer.class);
 
         Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), zipr));
-        w.subscribe(aObserver);
+        w.subscribe(new TestObserver<String>(aObserver));
 
         verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
@@ -466,7 +467,7 @@ public class OperationZipTest {
         Observer<Integer> aObserver = mock(Observer.class);
 
         Observable<Integer> w = Observable.create(zip(Observable.from(10, 20, 30), Observable.from(0, 1, 2), zipr));
-        w.subscribe(aObserver);
+        w.subscribe(new TestObserver<Integer>(aObserver));
 
         verify(aObserver, times(1)).onError(any(Throwable.class));
     }
@@ -480,7 +481,7 @@ public class OperationZipTest {
         Observer<String> obs = mock(Observer.class);
 
         Observable<String> o = Observable.create(zip(oA.toObservable(), oB.toObservable(), getConcat2Strings()));
-        o.subscribe(obs);
+        o.subscribe(new TestObserver<String>(obs));
 
         InOrder io = inOrder(obs);
 
@@ -531,7 +532,7 @@ public class OperationZipTest {
         Observer<String> obs = mock(Observer.class);
 
         Observable<String> o = Observable.create(zip(oA.toObservable(), oB.toObservable(), getConcat2Strings()));
-        o.subscribe(obs);
+        o.subscribe(new TestObserver<String>(obs));
 
         InOrder io = inOrder(obs);
 
@@ -769,7 +770,7 @@ public class OperationZipTest {
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
 
-        r1.toObservable().zip(r2, zipr2).subscribe(o);
+        r1.toObservable().zip(r2, zipr2).subscribe(new TestObserver<String>(o));
 
         r1.onNext("one-");
         r1.onNext("two-");
@@ -794,7 +795,7 @@ public class OperationZipTest {
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
 
-        r1.toObservable().zip(r2, zipr2).subscribe(o);
+        r1.toObservable().zip(r2, zipr2).subscribe(new TestObserver<String>(o));
 
         r1.onCompleted();
 
@@ -814,7 +815,7 @@ public class OperationZipTest {
 
         Iterable<String> r2 = Arrays.asList();
 
-        r1.toObservable().zip(r2, zipr2).subscribe(o);
+        r1.toObservable().zip(r2, zipr2).subscribe(new TestObserver<String>(o));
 
         r1.onNext("one-");
         r1.onNext("two-");
@@ -836,7 +837,7 @@ public class OperationZipTest {
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
 
-        r1.toObservable().zip(r2, zipr2).subscribe(o);
+        r1.toObservable().zip(r2, zipr2).subscribe(new TestObserver<String>(o));
 
         r1.onNext("one-");
         r1.onNext("two-");
@@ -859,7 +860,7 @@ public class OperationZipTest {
 
         Iterable<String> r2 = Arrays.asList("1", "2");
 
-        r1.toObservable().zip(r2, zipr2).subscribe(o);
+        r1.toObservable().zip(r2, zipr2).subscribe(new TestObserver<String>(o));
 
         r1.onNext("one-");
         r1.onNext("two-");
@@ -883,7 +884,7 @@ public class OperationZipTest {
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
 
-        r1.toObservable().zip(r2, zipr2).subscribe(o);
+        r1.toObservable().zip(r2, zipr2).subscribe(new TestObserver<String>(o));
 
         r1.onNext("one-");
         r1.onNext("two-");
@@ -911,7 +912,7 @@ public class OperationZipTest {
             }
         };
 
-        r1.toObservable().zip(r2, zipr2).subscribe(o);
+        r1.toObservable().zip(r2, zipr2).subscribe(new TestObserver<String>(o));
 
         r1.onNext("one-");
         r1.onNext("two-");
@@ -962,7 +963,7 @@ public class OperationZipTest {
 
         };
 
-        r1.toObservable().zip(r2, zipr2).subscribe(o);
+        r1.toObservable().zip(r2, zipr2).subscribe(new TestObserver<String>(o));
 
         r1.onNext("one-");
         r1.onError(new OperationReduceTest.CustomException());
@@ -1008,7 +1009,7 @@ public class OperationZipTest {
 
         };
 
-        r1.toObservable().zip(r2, zipr2).subscribe(o);
+        r1.toObservable().zip(r2, zipr2).subscribe(new TestObserver<String>(o));
 
         r1.onError(new OperationReduceTest.CustomException());
 

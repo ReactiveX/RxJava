@@ -31,6 +31,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.util.CompositeException;
 
 public class OperationMergeDelayErrorTest {
@@ -281,7 +282,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(Observable.create(tA), Observable.create(tB)));
-        Subscription s = m.subscribe(stringObserver);
+        Subscription s = m.subscribe(new TestObserver<String>(stringObserver));
 
         tA.sendOnNext("Aone");
         tB.sendOnNext("Bone");

@@ -26,6 +26,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -127,7 +128,7 @@ public class OperationTakeLastTest {
 
         InOrder inOrder = inOrder(o);
 
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
@@ -162,7 +163,7 @@ public class OperationTakeLastTest {
 
         InOrder inOrder = inOrder(o);
 
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
@@ -194,7 +195,7 @@ public class OperationTakeLastTest {
 
         InOrder inOrder = inOrder(o);
 
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
@@ -231,7 +232,7 @@ public class OperationTakeLastTest {
 
         InOrder inOrder = inOrder(o);
 
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
@@ -263,7 +264,7 @@ public class OperationTakeLastTest {
 
         InOrder inOrder = inOrder(o);
 
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);

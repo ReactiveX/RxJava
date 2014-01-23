@@ -33,6 +33,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 
@@ -308,7 +309,7 @@ public class OperationConcatTest {
 
         Observable<String> concat = Observable.create(concatF);
 
-        concat.take(50).subscribe(aObserver);
+        concat.take(50).subscribe(new TestObserver<String>(aObserver));
 
         //Wait for the thread to start up.
         try {
@@ -404,7 +405,7 @@ public class OperationConcatTest {
 
         try {
             // Subscribe
-            s1.wrap(concat.subscribe(aObserver));
+            s1.wrap(concat.subscribe(new TestObserver<String>(aObserver)));
             //Block main thread to allow observable "w1" to complete and observable "w2" to call onNext once.
             callOnce.await();
             // Unsubcribe
@@ -447,7 +448,7 @@ public class OperationConcatTest {
 
         Observable<String> concat = Observable.create(concatF);
 
-        Subscription s1 = concat.subscribe(aObserver);
+        Subscription s1 = concat.subscribe(new TestObserver<String>(aObserver));
 
         try {
             //Block main thread to allow observable "w1" to complete and observable "w2" to call onNext exactly once.
@@ -565,8 +566,8 @@ public class OperationConcatTest {
         Observable<Long> timer = Observable.interval(500, TimeUnit.MILLISECONDS, s).take(2);
         Observable<Long> o = Observable.concat(timer, timer);
 
-        o.subscribe(o1);
-        o.subscribe(o2);
+        o.subscribe(new TestObserver<Object>(o1));
+        o.subscribe(new TestObserver<Object>(o2));
 
         InOrder inOrder1 = inOrder(o1);
         InOrder inOrder2 = inOrder(o2);

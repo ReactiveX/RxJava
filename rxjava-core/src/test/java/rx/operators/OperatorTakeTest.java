@@ -30,7 +30,9 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
@@ -151,7 +153,7 @@ public class OperatorTakeTest {
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
 
-        source.lift(new OperatorTake<String>(0)).subscribe(aObserver);
+        source.lift(new OperatorTake<String>(0)).subscribe(new TestObserver<String>(aObserver));
         assertTrue("source subscribed", subscribed.get());
         assertTrue("source unsubscribed", unSubscribed.get());
 
@@ -171,7 +173,7 @@ public class OperatorTakeTest {
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
         Observable<String> take = w.lift(new OperatorTake<String>(1));
-        take.subscribe(aObserver);
+        take.subscribe(new TestObserver<String>(aObserver));
 
         // wait for the Observable to complete
         try {

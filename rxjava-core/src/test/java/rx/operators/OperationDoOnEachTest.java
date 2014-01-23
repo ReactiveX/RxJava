@@ -25,6 +25,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
@@ -45,7 +46,7 @@ public class OperationDoOnEachTest {
         Observable<String> base = Observable.from("a", "b", "c");
         Observable<String> doOnEach = base.doOnEach(sideEffectObserver);
 
-        doOnEach.subscribe(subscribedObserver);
+        doOnEach.subscribe(new TestObserver<String>(subscribedObserver));
 
         // ensure the leaf observer is still getting called
         verify(subscribedObserver, never()).onError(any(Throwable.class));

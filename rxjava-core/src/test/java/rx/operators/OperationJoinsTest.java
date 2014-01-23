@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.joins.Plan0;
+import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -369,7 +370,7 @@ public class OperationJoinsTest {
                 xs.toObservable().and(zs.toObservable()).then(mul2),
                 ys.toObservable().and(zs.toObservable()).then(sub2)
                 );
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         xs.onNext(1); // t == 210
 

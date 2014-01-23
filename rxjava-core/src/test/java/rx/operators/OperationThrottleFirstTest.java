@@ -27,6 +27,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -59,7 +60,7 @@ public class OperationThrottleFirstTest {
         });
 
         Observable<String> sampled = Observable.create(OperationThrottleFirst.throttleFirst(source, 400, TimeUnit.MILLISECONDS, scheduler));
-        sampled.subscribe(observer);
+        sampled.subscribe(new TestObserver<String>(observer));
 
         InOrder inOrder = inOrder(observer);
 
@@ -87,7 +88,7 @@ public class OperationThrottleFirstTest {
         });
 
         Observable<String> sampled = Observable.create(OperationThrottleFirst.throttleFirst(source, 400, TimeUnit.MILLISECONDS, scheduler));
-        sampled.subscribe(observer);
+        sampled.subscribe(new TestObserver<String>(observer));
 
         InOrder inOrder = inOrder(observer);
 

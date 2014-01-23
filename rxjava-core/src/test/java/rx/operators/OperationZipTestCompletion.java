@@ -23,6 +23,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 import rx.util.functions.Func2;
 
@@ -58,7 +59,7 @@ public class OperationZipTestCompletion {
         observer = mock(Observer.class);
         inOrder = inOrder(observer);
 
-        zipped.subscribe(observer);
+        zipped.subscribe(new TestObserver<String>(observer));
     }
 
     @Test

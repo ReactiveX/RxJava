@@ -28,6 +28,7 @@ import org.mockito.Matchers;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func2;
@@ -51,7 +52,7 @@ public class OperationCombineLatestTest {
                 throw new RuntimeException("I don't work.");
             }
         }));
-        combined.subscribe(w);
+        combined.subscribe(new TestObserver<String>(w));
 
         w1.observer.onNext("first value of w1");
         w2.observer.onNext("first value of w2");
@@ -72,7 +73,7 @@ public class OperationCombineLatestTest {
         TestObservable w3 = new TestObservable();
 
         Observable<String> combineLatestW = Observable.create(combineLatest(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsCombineLatestFunction()));
-        combineLatestW.subscribe(w);
+        combineLatestW.subscribe(new TestObserver<String>(w));
 
         /* simulate sending data */
         // once for w1
@@ -110,7 +111,7 @@ public class OperationCombineLatestTest {
         TestObservable w3 = new TestObservable();
 
         Observable<String> combineLatestW = Observable.create(combineLatest(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsCombineLatestFunction()));
-        combineLatestW.subscribe(w);
+        combineLatestW.subscribe(new TestObserver<String>(w));
 
         /* simulate sending data */
         // 4 times for w1
@@ -146,7 +147,7 @@ public class OperationCombineLatestTest {
         TestObservable w3 = new TestObservable();
 
         Observable<String> combineLatestW = Observable.create(combineLatest(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsCombineLatestFunction()));
-        combineLatestW.subscribe(w);
+        combineLatestW.subscribe(new TestObserver<String>(w));
 
         /* simulate sending data */
         w1.observer.onNext("1a");
@@ -185,7 +186,7 @@ public class OperationCombineLatestTest {
         Observer<String> aObserver = mock(Observer.class);
 
         Observable<String> w = Observable.create(combineLatest(Observable.from("one", "two"), Observable.from(2, 3, 4), combineLatestFunction));
-        w.subscribe(aObserver);
+        w.subscribe(new TestObserver<String>(aObserver));
 
         verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
@@ -204,7 +205,7 @@ public class OperationCombineLatestTest {
         Observer<String> aObserver = mock(Observer.class);
 
         Observable<String> w = Observable.create(combineLatest(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), combineLatestFunction));
-        w.subscribe(aObserver);
+        w.subscribe(new TestObserver<String>(aObserver));
 
         verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
@@ -221,7 +222,7 @@ public class OperationCombineLatestTest {
         Observer<String> aObserver = mock(Observer.class);
 
         Observable<String> w = Observable.create(combineLatest(Observable.from("one"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction));
-        w.subscribe(aObserver);
+        w.subscribe(new TestObserver<String>(aObserver));
 
         verify(aObserver, never()).onError(any(Throwable.class));
         verify(aObserver, times(1)).onCompleted();
@@ -334,7 +335,7 @@ public class OperationCombineLatestTest {
 
         Observer<Object> observer = mock(Observer.class);
 
-        source.subscribe(observer);
+        source.subscribe(new TestObserver<Object>(observer));
 
         InOrder inOrder = inOrder(observer);
 
@@ -380,8 +381,8 @@ public class OperationCombineLatestTest {
         Observer<Object> observer1 = mock(Observer.class);
         Observer<Object> observer2 = mock(Observer.class);
 
-        source.subscribe(observer1);
-        source.subscribe(observer2);
+        source.subscribe(new TestObserver<Object>(observer1));
+        source.subscribe(new TestObserver<Object>(observer2));
 
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);
@@ -435,7 +436,7 @@ public class OperationCombineLatestTest {
 
         Observer<Object> observer = mock(Observer.class);
 
-        source.subscribe(observer);
+        source.subscribe(new TestObserver<Object>(observer));
 
         InOrder inOrder = inOrder(observer);
 
@@ -458,7 +459,7 @@ public class OperationCombineLatestTest {
 
         Observer<Object> observer = mock(Observer.class);
 
-        source.subscribe(observer);
+        source.subscribe(new TestObserver<Object>(observer));
 
         InOrder inOrder = inOrder(observer);
 

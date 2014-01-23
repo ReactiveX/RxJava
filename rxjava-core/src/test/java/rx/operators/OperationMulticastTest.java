@@ -22,6 +22,7 @@ import org.junit.Test;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
+import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
@@ -36,7 +37,7 @@ public class OperationMulticastTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        multicasted.subscribe(observer);
+        multicasted.subscribe(new TestObserver<String>(observer));
 
         source.onNext("one");
         source.onNext("two");
@@ -64,7 +65,7 @@ public class OperationMulticastTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        multicasted.subscribe(observer);
+        multicasted.subscribe(new TestObserver<String>(observer));
 
         source.onNext("one");
 
@@ -89,7 +90,7 @@ public class OperationMulticastTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        multicasted.subscribe(observer);
+        multicasted.subscribe(new TestObserver<String>(observer));
 
         source.onNext("one");
 

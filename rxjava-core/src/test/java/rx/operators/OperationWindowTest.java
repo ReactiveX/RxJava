@@ -30,6 +30,7 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
@@ -344,7 +345,7 @@ public class OperationWindowTest {
                 final Observer<Object> mo = mock(Observer.class);
                 values.add(mo);
 
-                args.subscribe(mo);
+                args.subscribe(new TestObserver<Object>(mo));
             }
 
             @Override
@@ -358,7 +359,7 @@ public class OperationWindowTest {
             }
         };
 
-        source.toObservable().window(boundary.toObservable()).subscribe(wo);
+        source.toObservable().window(boundary.toObservable()).subscribe(new TestObserver<Observable<Integer>>(wo));
 
         int n = 30;
         for (int i = 0; i < n; i++) {
@@ -402,7 +403,7 @@ public class OperationWindowTest {
                 final Observer<Object> mo = mock(Observer.class);
                 values.add(mo);
 
-                args.subscribe(mo);
+                args.subscribe(new TestObserver<Object>(mo));
             }
 
             @Override
@@ -416,7 +417,7 @@ public class OperationWindowTest {
             }
         };
 
-        source.toObservable().window(boundary.toObservable()).subscribe(wo);
+        source.toObservable().window(boundary.toObservable()).subscribe(new TestObserver<Observable<Integer>>(wo));
 
         int n = 30;
         for (int i = 0; i < n; i++) {
@@ -460,7 +461,7 @@ public class OperationWindowTest {
                 final Observer<Object> mo = mock(Observer.class);
                 values.add(mo);
 
-                args.subscribe(mo);
+                args.subscribe(new TestObserver<Object>(mo));
             }
 
             @Override
@@ -474,7 +475,7 @@ public class OperationWindowTest {
             }
         };
 
-        source.toObservable().window(boundary.toObservable()).subscribe(wo);
+        source.toObservable().window(boundary.toObservable()).subscribe(new TestObserver<Observable<Integer>>(wo));
 
         source.onNext(0);
         source.onNext(1);
@@ -512,7 +513,7 @@ public class OperationWindowTest {
                 final Observer<Object> mo = mock(Observer.class);
                 values.add(mo);
 
-                args.subscribe(mo);
+                args.subscribe(new TestObserver<Object>(mo));
             }
 
             @Override
@@ -526,7 +527,7 @@ public class OperationWindowTest {
             }
         };
 
-        source.toObservable().window(boundary.toObservable()).subscribe(wo);
+        source.toObservable().window(boundary.toObservable()).subscribe(new TestObserver<Observable<Integer>>(wo));
 
         source.onNext(0);
         source.onNext(1);

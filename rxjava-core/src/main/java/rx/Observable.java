@@ -104,7 +104,7 @@ import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
 import rx.operators.OperatorParallel;
 import rx.operators.OperatorTake;
-import rx.operators.OperatorTakeTimed;
+import rx.operators.OperationTakeTimed;
 import rx.operators.OperatorTimestamp;
 import rx.operators.OperatorToObservableList;
 import rx.operators.OperatorToObservableSortedList;
@@ -212,7 +212,10 @@ public class Observable<T> {
 
             @Override
             public void call(Observer<? super T> observer) {
-                f.onSubscribe(observer);
+                Subscription s = f.onSubscribe(observer);
+                if (s != null) {
+                    observer.add(s);
+                }
             }
 
         });
@@ -7134,7 +7137,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#take">RxJava Wiki: take()</a>
      */
     public final Observable<T> take(long time, TimeUnit unit, Scheduler scheduler) {
-        return create(new OperatorTakeTimed.TakeTimed<T>(this, time, unit, scheduler));
+        return create(new OperationTakeTimed.TakeTimed<T>(this, time, unit, scheduler));
     }
 
     /**
@@ -8465,7 +8468,7 @@ public class Observable<T> {
         } else {
             // we treat the following package as "internal" and don't wrap it
             Package p = o.getClass().getPackage(); // it can be null
-            Boolean isInternal = (p != null && p.getName().startsWith("rx.Observers"));
+            Boolean isInternal = (p != null && p.getName().startsWith("rx.operators"));
             internalClassMap.put(clazz, isInternal);
             return isInternal;
         }

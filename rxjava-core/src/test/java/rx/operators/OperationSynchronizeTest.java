@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 
 public class OperationSynchronizeTest {
 
@@ -38,7 +39,7 @@ public class OperationSynchronizeTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
-        Subscription ws = st.subscribe(w);
+        Subscription ws = st.subscribe(new TestObserver<String>(w));
 
         t.sendOnNext("one");
         ws.unsubscribe();
@@ -58,7 +59,7 @@ public class OperationSynchronizeTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
-        Subscription ws = st.subscribe(w);
+        Subscription ws = st.subscribe(new TestObserver<String>(w));
 
         t.sendOnNext("one");
         ws.unsubscribe();
@@ -78,7 +79,7 @@ public class OperationSynchronizeTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
-        Subscription ws = st.subscribe(w);
+        Subscription ws = st.subscribe(new TestObserver<String>(w));
 
         t.sendOnNext("one");
         ws.unsubscribe();
@@ -99,7 +100,7 @@ public class OperationSynchronizeTest {
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
         @SuppressWarnings("unused")
-        Subscription ws = st.subscribe(w);
+        Subscription ws = st.subscribe(new TestObserver<String>(w));
 
         t.sendOnNext("one");
         t.sendOnError(new RuntimeException("bad"));
@@ -121,7 +122,7 @@ public class OperationSynchronizeTest {
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
         @SuppressWarnings("unused")
-        Subscription ws = st.subscribe(w);
+        Subscription ws = st.subscribe(new TestObserver<String>(w));
 
         t.sendOnNext("one");
         t.sendOnError(new RuntimeException("bad"));
@@ -143,7 +144,7 @@ public class OperationSynchronizeTest {
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
         @SuppressWarnings("unused")
-        Subscription ws = st.subscribe(w);
+        Subscription ws = st.subscribe(new TestObserver<String>(w));
 
         t.sendOnNext("one");
         t.sendOnCompleted();
@@ -166,7 +167,7 @@ public class OperationSynchronizeTest {
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
         @SuppressWarnings("unused")
-        Subscription ws = st.subscribe(w);
+        Subscription ws = st.subscribe(new TestObserver<String>(w));
 
         t.sendOnNext("one");
         t.sendOnCompleted();
