@@ -72,7 +72,7 @@ public abstract class Observer<T> implements Subscription {
      * 
      * @param args
      */
-    public abstract void onNext(T args);
+    public abstract void onNext(T t);
 
     /**
      * Used to register an unsubscribe callback.
