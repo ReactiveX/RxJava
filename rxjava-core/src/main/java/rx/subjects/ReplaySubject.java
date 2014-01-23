@@ -51,7 +51,7 @@ import rx.util.functions.Action1;
  * 
  * @param <T>
  */
-public final class ReplaySubject<T> extends Subject<T> {
+public final class ReplaySubject<T> extends Subject<T, T> {
     public static <T> ReplaySubject<T> create() {
         return create(16);
     }

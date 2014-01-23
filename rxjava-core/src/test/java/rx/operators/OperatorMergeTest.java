@@ -18,7 +18,6 @@ package rx.operators;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperatorMerge.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;

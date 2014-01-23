@@ -15,22 +15,21 @@
  */
 package rx.operators;
 
-import rx.Operator;
+import rx.Observer;
 import rx.subscriptions.CompositeSubscription;
-import rx.util.functions.Func1;
 
 /**
  * Returns an Observable that emits the first <code>num</code> items emitted by the source
  * Observable.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/take.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-Observers/take.png">
  * <p>
  * You can choose to pay attention only to the first <code>num</code> items emitted by an
  * Observable by using the take operation. This operation returns an Observable that will invoke a
  * subscribing Observer's <code>onNext</code> function a maximum of <code>num</code> times before
  * invoking <code>onCompleted</code>.
  */
-public final class OperatorTake<T> implements Func1<Operator<? super T>, Operator<? super T>> {
+public final class OperatorTake<T> implements Operator<T, T> {
 
     final int limit;
 
@@ -39,7 +38,7 @@ public final class OperatorTake<T> implements Func1<Operator<? super T>, Operato
     }
 
     @Override
-    public Operator<? super T> call(final Operator<? super T> o) {
+    public Observer<? super T> call(final Observer<? super T> o) {
         CompositeSubscription parent = new CompositeSubscription();
         if (limit == 0) {
             o.onCompleted();
@@ -47,11 +46,11 @@ public final class OperatorTake<T> implements Func1<Operator<? super T>, Operato
         }
         /*
          * We decouple the parent and child subscription so there can be multiple take() in a chain
-         * such as for the groupBy operator use case where you may take(1) on groups and take(20) on the children.
+         * such as for the groupBy Observer use case where you may take(1) on groups and take(20) on the children.
          * 
          * Thus, we only unsubscribe UPWARDS to the parent and an onComplete DOWNSTREAM.
          */
-        return new Operator<T>(parent) {
+        return new Observer<T>(parent) {
 
             int count = 0;
             boolean completed = false;

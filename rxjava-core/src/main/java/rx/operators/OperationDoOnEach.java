@@ -19,6 +19,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.SafeObserver;
 
 /**
  * Converts the elements of an observable sequence to the specified type.

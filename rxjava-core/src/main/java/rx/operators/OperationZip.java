@@ -198,7 +198,7 @@ public final class OperationZip {
          * @param <T>
          *            the element type
          */
-        private static final class ItemObserver<T> implements Observer<T>, Subscription {
+        private static final class ItemObserver<T> extends Observer<T> {
             /** Reader-writer lock. */
             protected final ReadWriteLock rwLock;
             /** The queue. */
@@ -241,6 +241,7 @@ public final class OperationZip {
                 this.source = source;
                 this.observer = observer;
                 this.cancel = cancel;
+                add(toSource);
             }
 
             @Override
@@ -288,11 +289,6 @@ public final class OperationZip {
             /** Connect to the source observable. */
             public void connect() {
                 toSource.set(source.subscribe(this));
-            }
-
-            @Override
-            public void unsubscribe() {
-                toSource.unsubscribe();
             }
 
             private void runCollector() {
@@ -382,7 +378,7 @@ public final class OperationZip {
         }
 
         /** Observe the source. */
-        private static final class SourceObserver<T, U, R> implements Observer<T> {
+        private static final class SourceObserver<T, U, R> extends Observer<T> {
             final Observer<? super R> observer;
             final Iterator<? extends U> other;
             final Func2<? super T, ? super U, ? extends R> zipFunction;

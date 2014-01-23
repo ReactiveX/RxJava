@@ -23,6 +23,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
+import rx.observers.SynchronizedObserver;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
@@ -97,7 +98,7 @@ public final class OperationDebounce {
         }
     }
 
-    private static class DebounceObserver<T> implements Observer<T> {
+    private static class DebounceObserver<T> extends Observer<T> {
 
         private final Observer<? super T> observer;
         private final long timeout;
@@ -185,7 +186,7 @@ public final class OperationDebounce {
         }
 
         /** Observe the source. */
-        private static final class SourceObserver<T, U> implements Observer<T> {
+        private static final class SourceObserver<T, U> extends Observer<T> {
             final Observer<? super T> observer;
             final Func1<? super T, ? extends Observable<U>> debounceSelector;
             final CompositeSubscription cancel;
@@ -273,7 +274,7 @@ public final class OperationDebounce {
         /**
          * The debounce observer.
          */
-        private static final class DebounceObserver<T, U> implements Observer<U> {
+        private static final class DebounceObserver<T, U> extends Observer<U> {
             final SourceObserver<T, U> parent;
             final Subscription cancel;
             final T value;

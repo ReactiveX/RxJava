@@ -2,7 +2,7 @@ package rx.perf;
 
 import rx.Observer;
 
-public class IntegerSumObserver implements Observer<Integer> {
+public class IntegerSumObserver extends Observer<Integer> {
 
     public int sum = 0;
 

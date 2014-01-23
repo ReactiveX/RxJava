@@ -146,7 +146,7 @@ public final class OperationDelay {
         }
 
         /** Subscribe delay observer. */
-        private static final class SubscribeDelay<T, U, V> implements Observer<U> {
+        private static final class SubscribeDelay<T, U, V> extends Observer<U> {
             final Observable<? extends T> source;
             final SourceObserver<T, V> so;
             final CompositeSubscription csub;
@@ -186,7 +186,7 @@ public final class OperationDelay {
         }
 
         /** The source observer. */
-        private static final class SourceObserver<T, U> implements Observer<T> {
+        private static final class SourceObserver<T, U> extends Observer<T> {
             final Observer<? super T> observer;
             final Func1<? super T, ? extends Observable<U>> itemDelay;
             final CompositeSubscription csub;
@@ -274,7 +274,7 @@ public final class OperationDelay {
         /**
          * Delay observer.
          */
-        private static final class DelayObserver<T, U> implements Observer<U> {
+        private static final class DelayObserver<T, U> extends Observer<U> {
             final T value;
             final SourceObserver<T, U> parent;
             final Subscription token;

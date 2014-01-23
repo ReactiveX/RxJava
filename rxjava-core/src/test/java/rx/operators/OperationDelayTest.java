@@ -249,7 +249,7 @@ public class OperationDelayTest {
         Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t1) {
-                return delays.get(t1);
+                return delays.get(t1).toObservable();
             }
         };
 
@@ -257,7 +257,7 @@ public class OperationDelayTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.delay(delayFunc).subscribe(o);
+        source.toObservable().delay(delayFunc).subscribe(o);
 
         for (int i = 0; i < n; i++) {
             source.onNext(i);
@@ -281,14 +281,14 @@ public class OperationDelayTest {
 
             @Override
             public Observable<Integer> call(Integer t1) {
-                return delay;
+                return delay.toObservable();
             }
         };
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.delay(delayFunc).subscribe(o);
+        source.toObservable().delay(delayFunc).subscribe(o);
 
         source.onNext(1);
         delay.onNext(1);
@@ -308,14 +308,14 @@ public class OperationDelayTest {
 
             @Override
             public Observable<Integer> call(Integer t1) {
-                return delay;
+                return delay.toObservable();
             }
         };
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.delay(delayFunc).subscribe(o);
+        source.toObservable().delay(delayFunc).subscribe(o);
         source.onNext(1);
         source.onError(new OperationReduceTest.CustomException());
         delay.onNext(1);
@@ -341,7 +341,7 @@ public class OperationDelayTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.delay(delayFunc).subscribe(o);
+        source.toObservable().delay(delayFunc).subscribe(o);
         source.onNext(1);
 
         inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
@@ -359,14 +359,14 @@ public class OperationDelayTest {
 
             @Override
             public Observable<Integer> call(Integer t1) {
-                return delay;
+                return delay.toObservable();
             }
         };
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.delay(delayFunc).subscribe(o);
+        source.toObservable().delay(delayFunc).subscribe(o);
         source.onNext(1);
         delay.onError(new OperationReduceTest.CustomException());
 
@@ -383,14 +383,14 @@ public class OperationDelayTest {
         Func0<Observable<Integer>> subFunc = new Func0<Observable<Integer>>() {
             @Override
             public Observable<Integer> call() {
-                return delay;
+                return delay.toObservable();
             }
         };
         Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
 
             @Override
             public Observable<Integer> call(Integer t1) {
-                return delay;
+                return delay.toObservable();
             }
         };
 
@@ -398,7 +398,7 @@ public class OperationDelayTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.delay(subFunc, delayFunc).subscribe(o);
+        source.toObservable().delay(subFunc, delayFunc).subscribe(o);
 
         source.onNext(1);
         delay.onNext(1);
@@ -426,7 +426,7 @@ public class OperationDelayTest {
 
             @Override
             public Observable<Integer> call(Integer t1) {
-                return delay;
+                return delay.toObservable();
             }
         };
 
@@ -434,7 +434,7 @@ public class OperationDelayTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.delay(subFunc, delayFunc).subscribe(o);
+        source.toObservable().delay(subFunc, delayFunc).subscribe(o);
 
         source.onNext(1);
         delay.onNext(1);
@@ -454,14 +454,14 @@ public class OperationDelayTest {
         Func0<Observable<Integer>> subFunc = new Func0<Observable<Integer>>() {
             @Override
             public Observable<Integer> call() {
-                return delay;
+                return delay.toObservable();
             }
         };
         Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
 
             @Override
             public Observable<Integer> call(Integer t1) {
-                return delay;
+                return delay.toObservable();
             }
         };
 
@@ -469,7 +469,7 @@ public class OperationDelayTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.delay(subFunc, delayFunc).subscribe(o);
+        source.toObservable().delay(subFunc, delayFunc).subscribe(o);
 
         source.onNext(1);
         delay.onError(new OperationReduceTest.CustomException());
@@ -497,7 +497,7 @@ public class OperationDelayTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.delay(delayFunc).subscribe(o);
+        source.toObservable().delay(delayFunc).subscribe(o);
 
         source.onNext(1);
         source.onCompleted();
@@ -516,14 +516,14 @@ public class OperationDelayTest {
         Func0<Observable<Integer>> subFunc = new Func0<Observable<Integer>>() {
             @Override
             public Observable<Integer> call() {
-                return sdelay;
+                return sdelay.toObservable();
             }
         };
         Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
 
             @Override
             public Observable<Integer> call(Integer t1) {
-                return delay;
+                return delay.toObservable();
             }
         };
 
@@ -531,7 +531,7 @@ public class OperationDelayTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.delay(subFunc, delayFunc).subscribe(o);
+        source.toObservable().delay(subFunc, delayFunc).subscribe(o);
 
         source.onNext(1);
         sdelay.onCompleted();

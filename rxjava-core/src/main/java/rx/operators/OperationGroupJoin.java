@@ -90,8 +90,8 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
             group.add(s1);
             group.add(s2);
 
-            s1.setSubscription(left.subscribe(new LeftObserver(s1)));
-            s2.setSubscription(right.subscribe(new RightObserver(s2)));
+            s1.set(left.subscribe(new LeftObserver(s1)));
+            s2.set(right.subscribe(new RightObserver(s2)));
 
         }
 
@@ -110,7 +110,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
         }
 
         /** Observe the left source. */
-        class LeftObserver implements Observer<T1> {
+        class LeftObserver extends Observer<T1> {
             final Subscription tosource;
 
             public LeftObserver(Subscription tosource) {
@@ -127,13 +127,13 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
                         leftMap.put(id, subj);
                     }
 
-                    Observable<T2> window = Observable.create(new WindowObservableFunc<T2>(subj, cancel));
+                    Observable<T2> window = Observable.create(new WindowObservableFunc<T2>(subj.toObservable(), cancel));
 
                     Observable<D1> duration = leftDuration.call(args);
 
                     SerialSubscription sduration = new SerialSubscription();
                     group.add(sduration);
-                    sduration.setSubscription(duration.subscribe(new LeftDurationObserver(id, sduration, subj)));
+                    sduration.set(duration.subscribe(new LeftDurationObserver(id, sduration, subj)));
 
                     R result = resultSelector.call(args, window);
 
@@ -175,7 +175,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
         }
 
         /** Observe the right source. */
-        class RightObserver implements Observer<T2> {
+        class RightObserver extends Observer<T2> {
             final Subscription tosource;
 
             public RightObserver(Subscription tosource) {
@@ -233,7 +233,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
         }
 
         /** Observe left duration and apply termination. */
-        class LeftDurationObserver implements Observer<D1> {
+        class LeftDurationObserver extends Observer<D1> {
             final int id;
             final Subscription sduration;
             final Observer<T2> gr;
@@ -269,7 +269,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
         }
 
         /** Observe right duration and apply termination. */
-        class RightDurationObserver implements Observer<D2> {
+        class RightDurationObserver extends Observer<D2> {
             final int id;
             final Subscription sduration;
 
@@ -318,14 +318,14 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
         @Override
         public Subscription onSubscribe(Observer<? super T> t1) {
             CompositeSubscription cs = new CompositeSubscription();
-            cs.add(refCount.getSubscription());
+            cs.add(refCount.get());
             WindowObserver wo = new WindowObserver(t1, cs);
             cs.add(underlying.subscribe(wo));
             return cs;
         }
 
         /** Observe activities on the window. */
-        class WindowObserver implements Observer<T> {
+        class WindowObserver extends Observer<T> {
             final Observer<? super T> observer;
             final Subscription self;
 

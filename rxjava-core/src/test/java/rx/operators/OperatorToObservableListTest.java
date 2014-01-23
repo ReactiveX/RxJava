@@ -17,7 +17,6 @@ package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperatorToObservableList.*;
 
 import java.util.Arrays;
 import java.util.List;

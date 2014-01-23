@@ -127,7 +127,7 @@ public class SubjectPerformanceTests {
     public long unboundedReplaySubject() {
         ReplaySubject<Long> s = ReplaySubject.create();
         LongObserver o = new LongObserver();
-        s.subscribe(o);
+        s.toObservable().subscribe(o);
         for (long l = 0; l < REPETITIONS; l++) {
             s.onNext(l);
         }
@@ -135,7 +135,7 @@ public class SubjectPerformanceTests {
         return o.sum;
     }
 
-    private static class LongObserver implements Observer<Long> {
+    private static class LongObserver extends Observer<Long> {
 
         long sum = 0;
 

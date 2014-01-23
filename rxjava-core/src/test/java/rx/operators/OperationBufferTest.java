@@ -394,7 +394,7 @@ public class OperationBufferTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = Mockito.inOrder(o);
 
-        source.buffer(boundary).subscribe(o);
+        source.toObservable().buffer(boundary.toObservable()).subscribe(o);
 
         source.onNext(1);
         source.onNext(2);
@@ -430,7 +430,7 @@ public class OperationBufferTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = Mockito.inOrder(o);
 
-        source.buffer(boundary).subscribe(o);
+        source.toObservable().buffer(boundary.toObservable()).subscribe(o);
 
         boundary.onCompleted();
 
@@ -450,7 +450,7 @@ public class OperationBufferTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = Mockito.inOrder(o);
 
-        source.buffer(boundary).subscribe(o);
+        source.toObservable().buffer(boundary.toObservable()).subscribe(o);
 
         source.onCompleted();
 
@@ -470,7 +470,7 @@ public class OperationBufferTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = Mockito.inOrder(o);
 
-        source.buffer(boundary).subscribe(o);
+        source.toObservable().buffer(boundary.toObservable()).subscribe(o);
 
         source.onCompleted();
         boundary.onCompleted();
@@ -490,7 +490,7 @@ public class OperationBufferTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.buffer(boundary).subscribe(o);
+        source.toObservable().buffer(boundary.toObservable()).subscribe(o);
         source.onNext(1);
         source.onError(new OperationReduceTest.CustomException());
 
@@ -507,7 +507,7 @@ public class OperationBufferTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.buffer(boundary).subscribe(o);
+        source.toObservable().buffer(boundary.toObservable()).subscribe(o);
 
         source.onNext(1);
         boundary.onError(new OperationReduceTest.CustomException());

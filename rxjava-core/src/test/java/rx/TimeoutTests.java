@@ -42,7 +42,7 @@ public class TimeoutTests {
 
         underlyingSubject = PublishSubject.create();
         testScheduler = new TestScheduler();
-        withTimeout = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler);
+        withTimeout = underlyingSubject.toObservable().timeout(TIMEOUT, TIME_UNIT, testScheduler);
     }
 
     @Test
@@ -124,7 +124,7 @@ public class TimeoutTests {
     @Test
     public void shouldSwitchToOtherIfOnNextNotWithinTimeout() {
         Observable<String> other = Observable.from("a", "b", "c");
-        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+        Observable<String> source = underlyingSubject.toObservable().timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -147,7 +147,7 @@ public class TimeoutTests {
     @Test
     public void shouldSwitchToOtherIfOnErrorNotWithinTimeout() {
         Observable<String> other = Observable.from("a", "b", "c");
-        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+        Observable<String> source = underlyingSubject.toObservable().timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -170,7 +170,7 @@ public class TimeoutTests {
     @Test
     public void shouldSwitchToOtherIfOnCompletedNotWithinTimeout() {
         Observable<String> other = Observable.from("a", "b", "c");
-        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+        Observable<String> source = underlyingSubject.toObservable().timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -193,7 +193,7 @@ public class TimeoutTests {
     @Test
     public void shouldSwitchToOtherAndCanBeUnsubscribedIfOnNextNotWithinTimeout() {
         PublishSubject<String> other = PublishSubject.create();
-        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+        Observable<String> source = underlyingSubject.toObservable().timeout(TIMEOUT, TIME_UNIT, other.toObservable(), testScheduler);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);

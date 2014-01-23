@@ -21,6 +21,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.SafeObserver;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -99,7 +100,7 @@ public final class OperationTakeWhile {
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
-        private class ItemObserver implements Observer<T> {
+        private class ItemObserver extends Observer<T> {
             private final Observer<? super T> observer;
 
             private final AtomicInteger counter = new AtomicInteger();

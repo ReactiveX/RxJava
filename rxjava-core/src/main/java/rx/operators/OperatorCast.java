@@ -15,13 +15,13 @@
  */
 package rx.operators;
 
-import rx.Operator;
-import rx.util.functions.Func1;
+import rx.Observer;
+
 
 /**
  * Converts the elements of an observable sequence to the specified type.
  */
-public class OperatorCast<T, R> implements Func1<Operator<? super R>, Operator<? super T>> {
+public class OperatorCast<T, R> implements Operator<R, T> {
 
     private final Class<R> castClass;
 
@@ -30,8 +30,8 @@ public class OperatorCast<T, R> implements Func1<Operator<? super R>, Operator<?
     }
 
     @Override
-    public Operator<? super T> call(final Operator<? super R> o) {
-        return new Operator<T>(o) {
+    public Observer<? super T> call(final Observer<? super R> o) {
+        return new Observer<T>(o) {
 
             @Override
             public void onCompleted() {

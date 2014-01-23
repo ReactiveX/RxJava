@@ -20,11 +20,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observable;
-import rx.Observer;
 import rx.Observable.OnSubscribe;
+import rx.Observer;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
-import rx.util.functions.Action2;
 
 /**
  * Subject that publishes the most recent and all subsequent events to each subscribed {@link Observer}.
@@ -67,7 +66,7 @@ import rx.util.functions.Action2;
  * 
  * @param <T>
  */
-public final class BehaviorSubject<T> extends Subject<T> {
+public final class BehaviorSubject<T> extends Subject<T, T> {
 
     /**
      * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each {@link Observer} that subscribes to it.

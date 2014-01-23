@@ -35,7 +35,7 @@ public class BehaviorSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
-        subject.subscribe(aObserver);
+        subject.toObservable().subscribe(aObserver);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -57,7 +57,7 @@ public class BehaviorSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
-        subject.subscribe(aObserver);
+        subject.toObservable().subscribe(aObserver);
 
         subject.onNext("two");
         subject.onNext("three");
@@ -76,7 +76,7 @@ public class BehaviorSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
-        subject.subscribe(aObserver);
+        subject.toObservable().subscribe(aObserver);
 
         subject.onNext("one");
         subject.onCompleted();
@@ -95,7 +95,7 @@ public class BehaviorSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
-        subject.subscribe(aObserver);
+        subject.toObservable().subscribe(aObserver);
 
         verify(aObserver, never()).onNext("default");
         verify(aObserver, never()).onNext("one");
@@ -112,7 +112,7 @@ public class BehaviorSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
-        subject.subscribe(aObserver);
+        subject.toObservable().subscribe(aObserver);
 
         verify(aObserver, never()).onNext("default");
         verify(aObserver, never()).onNext("one");
@@ -130,8 +130,8 @@ public class BehaviorSubjectTest {
         @SuppressWarnings("unchecked")
         Observer<Object> observerC = mock(Observer.class);
 
-        Subscription a = channel.subscribe(observerA);
-        Subscription b = channel.subscribe(observerB);
+        Subscription a = channel.toObservable().subscribe(observerA);
+        Subscription b = channel.toObservable().subscribe(observerB);
 
         InOrder inOrderA = inOrder(observerA);
         InOrder inOrderB = inOrder(observerB);
@@ -156,7 +156,7 @@ public class BehaviorSubjectTest {
 
         inOrderB.verify(observerB).onCompleted();
 
-        Subscription c = channel.subscribe(observerC);
+        Subscription c = channel.toObservable().subscribe(observerC);
 
         inOrderC.verify(observerC).onCompleted();
 
@@ -172,7 +172,7 @@ public class BehaviorSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
-        subject.subscribe(aObserver);
+        subject.toObservable().subscribe(aObserver);
 
         subject.onNext("one");
         subject.onError(testException);
@@ -192,7 +192,7 @@ public class BehaviorSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
-        subject.subscribe(aObserver);
+        subject.toObservable().subscribe(aObserver);
 
         subject.onNext("one");
         subject.onError(testException);
@@ -206,7 +206,7 @@ public class BehaviorSubjectTest {
         verify(aObserver, never()).onCompleted();
 
         Observer<Object> o2 = mock(Observer.class);
-        subject.subscribe(o2);
+        subject.toObservable().subscribe(o2);
         verify(o2, times(1)).onError(testException);
         verify(o2, never()).onNext(any());
         verify(o2, never()).onCompleted();
@@ -218,7 +218,7 @@ public class BehaviorSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
-        subject.subscribe(aObserver);
+        subject.toObservable().subscribe(aObserver);
 
         subject.onNext("one");
         subject.onCompleted();
@@ -232,7 +232,7 @@ public class BehaviorSubjectTest {
         verify(aObserver, never()).onNext("two");
 
         Observer<Object> o2 = mock(Observer.class);
-        subject.subscribe(o2);
+        subject.toObservable().subscribe(o2);
         verify(o2, times(1)).onCompleted();
         verify(o2, never()).onNext(any());
         verify(aObserver, never()).onError(any(Throwable.class));

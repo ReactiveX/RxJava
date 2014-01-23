@@ -226,7 +226,7 @@ public class PerformanceTest {
 
     }
 
-    private static final class TestObserver implements Observer<Integer> {
+    private static final class TestObserver extends Observer<Integer> {
         private final AtomicInteger onNextSum;
         private final AtomicLong aggregateTime;
         private final long start;
@@ -256,7 +256,7 @@ public class PerformanceTest {
         }
     }
 
-    private static final class TestStringObserver implements Observer<String> {
+    private static final class TestStringObserver extends Observer<String> {
         private final AtomicInteger onNextSum;
         private final long start;
 

@@ -153,7 +153,7 @@ public class OperationSkipLast {
         }
 
         /** Observes the source. */
-        private static final class SourceObserver<T> implements Observer<T> {
+        private static final class SourceObserver<T> extends Observer<T> {
             final Observer<? super T> observer;
             final long timeInMillis;
             final Scheduler scheduler;

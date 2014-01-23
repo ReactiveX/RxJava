@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.operators;
+package rx.observers;
 
 import rx.Observer;
+import rx.operators.SafeObservableSubscription;
 
 /**
  * A thread-safe Observer for transitioning states in operators.
@@ -29,7 +30,7 @@ import rx.Observer;
  * 
  * @param <T>
  */
-public final class SynchronizedObserver<T> implements Observer<T> {
+public final class SynchronizedObserver<T> extends Observer<T> {
 
     /**
      * Intrinsic synchronized locking with double-check short-circuiting was chosen after testing several other implementations.

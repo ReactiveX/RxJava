@@ -20,11 +20,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observable;
-import rx.Observer;
 import rx.Observable.OnSubscribe;
+import rx.Observer;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
-import rx.util.functions.Action2;
 
 /**
  * Subject that, once and {@link Observer} has subscribed, publishes all subsequent events to the subscriber.
@@ -49,7 +48,7 @@ import rx.util.functions.Action2;
  * 
  * @param <T>
  */
-public final class PublishSubject<T> extends Subject<T> {
+public final class PublishSubject<T> extends Subject<T, T> {
 
     public static <T> PublishSubject<T> create() {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();

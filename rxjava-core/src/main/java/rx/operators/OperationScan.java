@@ -125,7 +125,7 @@ public final class OperationScan {
         }
     }
 
-    private static class AccumulatingObserver<T, R> implements Observer<T> {
+    private static class AccumulatingObserver<T, R> extends Observer<T> {
         private final Observer<? super R> observer;
         private final Func2<R, ? super T, R> accumulatorFunction;
 

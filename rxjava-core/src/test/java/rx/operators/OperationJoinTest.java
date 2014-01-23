@@ -59,7 +59,7 @@ public class OperationJoinTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Observable<Integer> m = source1.join(source2,
+        Observable<Integer> m = source1.toObservable().join(source2.toObservable(),
                 just(Observable.never()),
                 just(Observable.never()), add);
 
@@ -97,8 +97,8 @@ public class OperationJoinTest {
 
         PublishSubject<Integer> duration1 = PublishSubject.create();
 
-        Observable<Integer> m = source1.join(source2,
-                just(duration1),
+        Observable<Integer> m = source1.toObservable().join(source2.toObservable(),
+                just(duration1.toObservable()),
                 just(Observable.never()), add);
         m.subscribe(observer);
 
@@ -129,7 +129,7 @@ public class OperationJoinTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Observable<Integer> m = source1.join(source2,
+        Observable<Integer> m = source1.toObservable().join(source2.toObservable(),
                 just(Observable.never()),
                 just(Observable.never()), add);
 
@@ -161,7 +161,7 @@ public class OperationJoinTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Observable<Integer> m = source1.join(source2,
+        Observable<Integer> m = source1.toObservable().join(source2.toObservable(),
                 just(Observable.never()),
                 just(Observable.never()), add);
 
@@ -180,7 +180,7 @@ public class OperationJoinTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Observable<Integer> m = source1.join(source2,
+        Observable<Integer> m = source1.toObservable().join(source2.toObservable(),
                 just(Observable.never()),
                 just(Observable.never()), add);
 
@@ -201,7 +201,7 @@ public class OperationJoinTest {
 
         Observable<Integer> duration1 = Observable.<Integer> error(new RuntimeException("Forced failure"));
 
-        Observable<Integer> m = source1.join(source2,
+        Observable<Integer> m = source1.toObservable().join(source2.toObservable(),
                 just(duration1),
                 just(Observable.never()), add);
         m.subscribe(observer);
@@ -220,7 +220,7 @@ public class OperationJoinTest {
 
         Observable<Integer> duration1 = Observable.<Integer> error(new RuntimeException("Forced failure"));
 
-        Observable<Integer> m = source1.join(source2,
+        Observable<Integer> m = source1.toObservable().join(source2.toObservable(),
                 just(Observable.never()),
                 just(duration1), add);
         m.subscribe(observer);
@@ -244,7 +244,7 @@ public class OperationJoinTest {
             }
         };
 
-        Observable<Integer> m = source1.join(source2,
+        Observable<Integer> m = source1.toObservable().join(source2.toObservable(),
                 fail,
                 just(Observable.never()), add);
         m.subscribe(observer);
@@ -268,7 +268,7 @@ public class OperationJoinTest {
             }
         };
 
-        Observable<Integer> m = source1.join(source2,
+        Observable<Integer> m = source1.toObservable().join(source2.toObservable(),
                 just(Observable.never()),
                 fail, add);
         m.subscribe(observer);
@@ -292,7 +292,7 @@ public class OperationJoinTest {
             }
         };
 
-        Observable<Integer> m = source1.join(source2,
+        Observable<Integer> m = source1.toObservable().join(source2.toObservable(),
                 just(Observable.never()),
                 just(Observable.never()), fail);
         m.subscribe(observer);

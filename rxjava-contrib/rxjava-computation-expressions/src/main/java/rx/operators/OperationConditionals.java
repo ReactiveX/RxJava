@@ -243,7 +243,7 @@ public final class OperationConditionals {
         }
 
         /** Observe the source. */
-        final class SourceObserver implements Observer<T> {
+        final class SourceObserver extends Observer<T> {
             final SerialSubscription cancel;
             final Observer<? super T> observer;
 
@@ -273,7 +273,7 @@ public final class OperationConditionals {
                     return;
                 }
                 if (next) {
-                    cancel.setSubscription(source.subscribe(this));
+                    cancel.set(source.subscribe(this));
                 } else {
                     observer.onCompleted();
                     cancel.unsubscribe();

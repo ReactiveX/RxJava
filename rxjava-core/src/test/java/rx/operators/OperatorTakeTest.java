@@ -27,8 +27,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Operator;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
@@ -242,10 +242,10 @@ public class OperatorTakeTest {
         }
     }
 
-    private static Observable<Long> INFINITE_OBSERVABLE = Observable.create(new Action1<Operator<? super Long>>() {
+    private static Observable<Long> INFINITE_OBSERVABLE = Observable.create(new OnSubscribe<Long>() {
 
         @Override
-        public void call(Operator<? super Long> op) {
+        public void call(Observer<? super Long> op) {
             long l = 1;
             while (!op.isUnsubscribed()) {
                 op.onNext(l++);

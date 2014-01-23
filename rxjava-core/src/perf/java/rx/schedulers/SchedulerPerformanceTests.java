@@ -152,7 +152,7 @@ public class SchedulerPerformanceTests {
         return o.sum;
     }
 
-    private static class LongObserver implements Observer<Long> {
+    private static class LongObserver extends Observer<Long> {
 
         long sum = 0;
 

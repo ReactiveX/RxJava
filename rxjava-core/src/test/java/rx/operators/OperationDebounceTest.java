@@ -169,7 +169,7 @@ public class OperationDebounceTest {
 
             @Override
             public Observable<Integer> call(Integer t1) {
-                return debouncer;
+                return debouncer.toObservable();
             }
         };
 
@@ -177,7 +177,7 @@ public class OperationDebounceTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.debounce(debounceSel).subscribe(o);
+        source.toObservable().debounce(debounceSel).subscribe(o);
 
         source.onNext(1);
         debouncer.onNext(1);
@@ -213,7 +213,7 @@ public class OperationDebounceTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.debounce(debounceSel).subscribe(o);
+        source.toObservable().debounce(debounceSel).subscribe(o);
 
         source.onNext(1);
 
@@ -236,7 +236,7 @@ public class OperationDebounceTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.debounce(debounceSel).subscribe(o);
+        source.toObservable().debounce(debounceSel).subscribe(o);
 
         source.onNext(1);
 

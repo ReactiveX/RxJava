@@ -16,9 +16,6 @@
 package rx;
 
 import rx.subscriptions.CompositeSubscription;
-import rx.util.OnErrorNotImplementedException;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
 
 /**
  * Provides a mechanism for receiving push-based notifications.
@@ -36,6 +33,9 @@ public abstract class Observer<T> implements Subscription {
     private final CompositeSubscription cs;
 
     protected Observer(CompositeSubscription cs) {
+        if (cs == null) {
+            throw new IllegalArgumentException("The CompositeException can not be null");
+        }
         this.cs = cs;
     }
 

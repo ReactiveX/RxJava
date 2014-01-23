@@ -365,9 +365,9 @@ public class OperationJoinsTest {
         PublishSubject<Integer> zs = PublishSubject.create();
 
         Observable<Integer> m = Observable.when(
-                xs.and(ys).then(add2),
-                xs.and(zs).then(mul2),
-                ys.and(zs).then(sub2)
+                xs.toObservable().and(ys.toObservable()).then(add2),
+                xs.toObservable().and(zs.toObservable()).then(mul2),
+                ys.toObservable().and(zs.toObservable()).then(sub2)
                 );
         m.subscribe(observer);
 

@@ -15,18 +15,18 @@
  */
 package rx.operators;
 
-import rx.Operator;
-import rx.util.functions.Action1;
+import rx.Observable.OnSubscribe;
+import rx.Observer;
 
 /**
  * Converts an Iterable sequence into an Observable.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/toObservable.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-Observers/toObservable.png">
  * <p>
  * You can convert any object that supports the Iterable interface into an Observable that emits
  * each item in the object, with the toObservable operation.
  */
-public final class OperatorFromIterable<T> implements Action1<Operator<? super T>> {
+public final class OperatorFromIterable<T> implements OnSubscribe<T> {
 
     final Iterable<? extends T> is;
 
@@ -35,7 +35,7 @@ public final class OperatorFromIterable<T> implements Action1<Operator<? super T
     }
 
     @Override
-    public void call(Operator<? super T> o) {
+    public void call(Observer<? super T> o) {
         for (T i : is) {
             if (o.isUnsubscribed()) {
                 return;

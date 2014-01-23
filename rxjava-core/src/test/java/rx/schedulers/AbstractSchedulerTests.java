@@ -561,7 +561,7 @@ public abstract class AbstractSchedulerTests {
      * 
      * @param <T>
      */
-    private static class ConcurrentObserverValidator<T> implements Observer<T> {
+    private static class ConcurrentObserverValidator<T> extends Observer<T> {
 
         final AtomicInteger concurrentCounter = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();

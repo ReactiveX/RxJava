@@ -114,7 +114,7 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.sample(sampler);
+        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
         m.subscribe(observer2);
 
         source.onNext(1);
@@ -140,7 +140,7 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.sample(sampler);
+        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
         m.subscribe(observer2);
 
         source.onNext(1);
@@ -170,7 +170,7 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.sample(sampler);
+        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
         m.subscribe(observer2);
 
         source.onNext(1);
@@ -194,7 +194,7 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.sample(sampler);
+        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
         m.subscribe(observer2);
 
         source.onNext(1);
@@ -219,7 +219,7 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.sample(sampler);
+        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
         m.subscribe(observer2);
 
         source.onCompleted();
@@ -236,7 +236,7 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.sample(sampler);
+        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
         m.subscribe(observer2);
 
         source.onNext(1);
@@ -254,7 +254,7 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.sample(sampler);
+        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
         m.subscribe(observer2);
 
         source.onNext(1);

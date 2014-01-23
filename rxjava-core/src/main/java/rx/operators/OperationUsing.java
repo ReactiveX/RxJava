@@ -19,6 +19,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.SafeObserver;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func0;

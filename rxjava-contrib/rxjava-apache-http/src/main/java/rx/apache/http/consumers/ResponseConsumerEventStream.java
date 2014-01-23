@@ -85,7 +85,7 @@ class ResponseConsumerEventStream extends AsyncByteConsumer<HttpResponse> implem
 
             @Override
             public Subscription onSubscribe(Observer<? super byte[]> observer) {
-                parentSubscription.add(contentSubject.subscribe(observer));
+                parentSubscription.add(contentSubject.toObservable().subscribe(observer));
                 return parentSubscription;
             }
         });

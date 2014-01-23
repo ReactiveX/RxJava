@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.operators;
+package rx.observers;
 
 import static org.junit.Assert.*;
 
@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import rx.Observer;
+import rx.operators.SafeObservableSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.CompositeException;
 import rx.util.OnErrorNotImplementedException;

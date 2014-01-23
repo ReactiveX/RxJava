@@ -121,7 +121,7 @@ public class OperationTakeLastTest {
 
         PublishSubject<Object> source = PublishSubject.create();
 
-        Observable<Object> result = source.takeLast(1, TimeUnit.SECONDS, scheduler);
+        Observable<Object> result = source.toObservable().takeLast(1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
@@ -156,7 +156,7 @@ public class OperationTakeLastTest {
 
         PublishSubject<Object> source = PublishSubject.create();
 
-        Observable<Object> result = source.takeLast(1, TimeUnit.SECONDS, scheduler);
+        Observable<Object> result = source.toObservable().takeLast(1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
@@ -188,7 +188,7 @@ public class OperationTakeLastTest {
 
         PublishSubject<Object> source = PublishSubject.create();
 
-        Observable<Object> result = source.takeLast(2, 1, TimeUnit.SECONDS, scheduler);
+        Observable<Object> result = source.toObservable().takeLast(2, 1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
@@ -225,7 +225,7 @@ public class OperationTakeLastTest {
 
         PublishSubject<Object> source = PublishSubject.create();
 
-        Observable<Object> result = source.takeLast(1, TimeUnit.SECONDS, scheduler);
+        Observable<Object> result = source.toObservable().takeLast(1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
@@ -257,7 +257,7 @@ public class OperationTakeLastTest {
 
         PublishSubject<Object> source = PublishSubject.create();
 
-        Observable<Object> result = source.takeLast(0, 1, TimeUnit.SECONDS, scheduler);
+        Observable<Object> result = source.toObservable().takeLast(0, 1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 

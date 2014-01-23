@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.operators;
+package rx.observers;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
@@ -35,6 +35,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.operators.SafeObservableSubscription;
 
 public class SynchronizedObserverTest {
 
@@ -419,7 +420,7 @@ public class SynchronizedObserverTest {
         onCompleted, onError, onNext
     }
 
-    private static class TestConcurrencyObserver implements Observer<String> {
+    private static class TestConcurrencyObserver extends Observer<String> {
 
         /**
          * used to store the order and number of events received
@@ -644,7 +645,7 @@ public class SynchronizedObserverTest {
         }
     }
 
-    private static class BusyObserver implements Observer<String> {
+    private static class BusyObserver extends Observer<String> {
         volatile boolean onCompleted = false;
         volatile boolean onError = false;
         AtomicInteger onNextCount = new AtomicInteger();

@@ -15,26 +15,19 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperatorTake.*;
 
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscription;
 import rx.operators.OperationSkipTest.CustomException;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func1;
 
 public class OperatorTakeTimedTest {
 
@@ -44,7 +37,7 @@ public class OperatorTakeTimedTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.toObservable().take(1, TimeUnit.SECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
@@ -76,7 +69,7 @@ public class OperatorTakeTimedTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.toObservable().take(1, TimeUnit.SECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
@@ -109,7 +102,7 @@ public class OperatorTakeTimedTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.toObservable().take(1, TimeUnit.SECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);

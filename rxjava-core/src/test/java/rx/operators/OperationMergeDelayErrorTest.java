@@ -493,7 +493,7 @@ public class OperationMergeDelayErrorTest {
         }
     }
 
-    private static class CaptureObserver implements Observer<String> {
+    private static class CaptureObserver extends Observer<String> {
         volatile Throwable e;
 
         @Override

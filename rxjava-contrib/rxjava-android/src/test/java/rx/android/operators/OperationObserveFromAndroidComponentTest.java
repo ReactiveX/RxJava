@@ -148,7 +148,7 @@ public class OperationObserveFromAndroidComponentTest {
     public void itDropsOnNextOnCompletedSequenceIfTargetComponentIsGone() throws Throwable {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        final Observable.OnSubscribeFunc<Integer> operator = newOnSubscribeFragmentInstance(source, mockFragment);
+        final Observable.OnSubscribeFunc<Integer> operator = newOnSubscribeFragmentInstance(source.toObservable(), mockFragment);
         operator.onSubscribe(mockObserver);
 
         source.onNext(1);
@@ -166,7 +166,7 @@ public class OperationObserveFromAndroidComponentTest {
     public void itDropsOnErrorIfTargetComponentIsGone() throws Throwable {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        final Observable.OnSubscribeFunc<Integer> operator = newOnSubscribeFragmentInstance(source, mockFragment);
+        final Observable.OnSubscribeFunc<Integer> operator = newOnSubscribeFragmentInstance(source.toObservable(), mockFragment);
         operator.onSubscribe(mockObserver);
 
         source.onNext(1);
@@ -202,7 +202,7 @@ public class OperationObserveFromAndroidComponentTest {
     @Test
     public void itDoesNotForwardOnNextOnCompletedSequenceIfFragmentIsDetached() {
         PublishSubject<Integer> source = PublishSubject.create();
-        OperationObserveFromAndroidComponent.observeFromAndroidComponent(source, mockFragment).subscribe(mockObserver);
+        OperationObserveFromAndroidComponent.observeFromAndroidComponent(source.toObservable(), mockFragment).subscribe(mockObserver);
 
         source.onNext(1);
 
@@ -218,7 +218,7 @@ public class OperationObserveFromAndroidComponentTest {
     @Test
     public void itDoesNotForwardOnErrorIfFragmentIsDetached() {
         PublishSubject<Integer> source = PublishSubject.create();
-        OperationObserveFromAndroidComponent.observeFromAndroidComponent(source, mockFragment).subscribe(mockObserver);
+        OperationObserveFromAndroidComponent.observeFromAndroidComponent(source.toObservable(), mockFragment).subscribe(mockObserver);
 
         source.onNext(1);
 

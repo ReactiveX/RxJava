@@ -394,7 +394,7 @@ public class ChunkedOperation {
      *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
      *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class ChunkObserver<T, C> implements Observer<T> {
+    protected static class ChunkObserver<T, C> extends Observer<T> {
 
         private final Chunks<T, C> chunks;
         private final Observer<? super C> observer;

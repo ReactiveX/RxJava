@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.operators;
+package rx.observers;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observer;
 import rx.Subscription;
+import rx.operators.SafeObservableSubscription;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.Subscriptions;
 import rx.util.CompositeException;
@@ -57,7 +58,7 @@ import rx.util.OnErrorNotImplementedException;
  * 
  * @param <T>
  */
-public class SafeObserver<T> implements Observer<T> {
+public class SafeObserver<T> extends Observer<T> {
 
     private final Observer<? super T> actual;
     private final AtomicBoolean isFinished = new AtomicBoolean(false);

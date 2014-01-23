@@ -82,7 +82,7 @@ public final class OperationSkip {
         /**
          * Used to subscribe to the 'items' Observable sequence and forward to the actualObserver up to 'num' count.
          */
-        private class ItemObserver implements Observer<T> {
+        private class ItemObserver extends Observer<T> {
 
             private AtomicInteger counter = new AtomicInteger();
             private final Observer<? super T> observer;
@@ -155,7 +155,7 @@ public final class OperationSkip {
          * @param <T>
          *            the observed value type
          */
-        private static final class SourceObserver<T> implements Observer<T>, Action0 {
+        private static final class SourceObserver<T> extends Observer<T> implements Action0 {
             final AtomicBoolean gate;
             final Observer<? super T> observer;
             final Subscription cancel;

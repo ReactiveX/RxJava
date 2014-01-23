@@ -56,7 +56,7 @@ public class OperationCache {
                      */
                 }
 
-                return cache.subscribe(observer);
+                return cache.toObservable().subscribe(observer);
             }
 
         };

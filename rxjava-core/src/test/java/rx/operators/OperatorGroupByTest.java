@@ -30,8 +30,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Operator;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
@@ -581,10 +581,10 @@ public class OperatorGroupByTest {
     };
 
     Observable<Event> SYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
-        return Observable.create(new Action1<Operator<? super Event>>() {
+        return Observable.create(new OnSubscribe<Event>() {
 
             @Override
-            public void call(final Operator<? super Event> op) {
+            public void call(final Observer<? super Event> op) {
                 subscribeCounter.incrementAndGet();
                 int i = 0;
                 while (!op.isUnsubscribed()) {
