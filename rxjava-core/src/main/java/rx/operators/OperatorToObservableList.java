@@ -35,7 +35,7 @@ import rx.util.functions.Func1;
  * Be careful not to use this operator on Observables that emit infinite or very large numbers of
  * items, as you do not have the option to unsubscribe.
  */
-public final class OperatorToObservableList<T> implements Func1<Operator<? super List<T>>, Operator<? super T>> {
+public final class OperatorToObservableList<T> implements OperatorFunc<List<T>, T> {
 
     @Override
     public Operator<? super T> call(final Operator<? super List<T>> o) {

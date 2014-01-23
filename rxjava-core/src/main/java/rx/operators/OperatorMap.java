@@ -24,7 +24,7 @@ import rx.util.functions.Func1;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/map.png">
  */
-public final class OperatorMap<T, R> implements Func1<Operator<? super R>, Operator<? super T>> {
+public final class OperatorMap<T, R> implements OperatorFunc<R, T> {
 
     private final Func1<? super T, ? extends R> transformer;
 

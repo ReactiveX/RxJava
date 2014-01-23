@@ -15,18 +15,16 @@
  */
 package rx.operators;
 
-import rx.Observer;
 import rx.Operator;
 import rx.Scheduler;
 import rx.util.Timestamped;
-import rx.util.functions.Func1;
 
 /**
  * Wraps each item emitted by a source Observable in a {@link Timestamped} object.
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/timestamp.png">
  */
-public final class OperatorTimestamp<T> implements Func1<Operator<? super Timestamped<T>>, Operator<? super T>> {
+public final class OperatorTimestamp<T> implements OperatorFunc<Timestamped<T>, T> {
 
     private final Scheduler scheduler;
 

@@ -24,7 +24,7 @@ import rx.util.functions.Func1;
 /**
  * Identifies unit of work that can be executed in parallel on a given Scheduler.
  */
-public final class OperatorParallel<T, R> implements Func1<Operator<? super R>, Operator<? super T>> {
+public final class OperatorParallel<T, R> implements OperatorFunc<R, T> {
 
     private final Scheduler scheduler;
     private final Func1<Observable<T>, Observable<R>> f;
