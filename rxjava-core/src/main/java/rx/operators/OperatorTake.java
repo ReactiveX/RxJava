@@ -30,7 +30,7 @@ import rx.util.functions.Func1;
  * subscribing Observer's <code>onNext</code> function a maximum of <code>num</code> times before
  * invoking <code>onCompleted</code>.
  */
-public final class OperatorTake<T> implements Func1<Operator<? super T>, Operator<? super T>> {
+public final class OperatorTake<T> implements OperatorFunc<T, T> {
 
     final int limit;
 

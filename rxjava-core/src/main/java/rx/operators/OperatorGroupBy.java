@@ -34,7 +34,7 @@ import rx.util.functions.Func1;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/groupBy.png">
  */
-public final class OperatorGroupBy<K, T> implements Func1<Operator<? super GroupedObservable<K, T>>, Operator<? super T>> {
+public final class OperatorGroupBy<K, T> implements OperatorFunc<GroupedObservable<K, T>, T> {
 
     final Func1<? super T, ? extends K> keySelector;
 

@@ -98,6 +98,7 @@ import rx.operators.OperationWindow;
 import rx.operators.OperationZip;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorFromIterable;
+import rx.operators.OperatorFunc;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
@@ -264,7 +265,7 @@ public class Observable<T> {
      * @param bind
      * @return an Observable that emits values that are the result of applying the bind function to the values of the current Observable
      */
-    public <R> Observable<R> bind(final Func1<Operator<? super R>, Operator<? super T>> bind) {
+    public <R> Observable<R> bind(final OperatorFunc<R, T> bind) {
         return new Observable<R>(new Action1<Operator<? super R>>() {
 
             @Override

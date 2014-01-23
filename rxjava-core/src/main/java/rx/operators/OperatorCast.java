@@ -16,12 +16,11 @@
 package rx.operators;
 
 import rx.Operator;
-import rx.util.functions.Func1;
 
 /**
  * Converts the elements of an observable sequence to the specified type.
  */
-public class OperatorCast<T, R> implements Func1<Operator<? super R>, Operator<? super T>> {
+public class OperatorCast<T, R> implements OperatorFunc<R, T> {
 
     private final Class<R> castClass;
 

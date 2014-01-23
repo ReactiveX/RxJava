@@ -21,7 +21,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import rx.Operator;
-import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 /**
@@ -33,7 +32,7 @@ import rx.util.functions.Func2;
  * 
  * @param <T>
  */
-public final class OperatorToObservableSortedList<T> implements Func1<Operator<? super List<T>>, Operator<? super T>> {
+public final class OperatorToObservableSortedList<T> implements OperatorFunc<List<T>, T> {
     private final Func2<? super T, ? super T, Integer> sortFunction;
 
     @SuppressWarnings("unchecked")

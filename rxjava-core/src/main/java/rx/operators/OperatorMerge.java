@@ -22,7 +22,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Operator;
 import rx.subscriptions.CompositeSubscription;
-import rx.util.functions.Func1;
 
 /**
  * Flattens a list of Observables into one Observable sequence, without any transformation.
@@ -32,7 +31,7 @@ import rx.util.functions.Func1;
  * You can combine the items emitted by multiple Observables so that they act like a single
  * Observable, by using the merge operation.
  */
-public final class OperatorMerge<T> implements Func1<Operator<? super T>, Operator<? extends Observable<? extends T>>> {
+public final class OperatorMerge<T> implements OperatorFunc<T, Observable<? extends T>> {
     private final int maxConcurrent;
 
     public OperatorMerge() {
@@ -47,7 +46,7 @@ public final class OperatorMerge<T> implements Func1<Operator<? super T>, Operat
     }
 
     @Override
-    public Operator<? extends Observable<? extends T>> call(final Operator<? super T> outerOperation) {
+    public Operator<? super Observable<? extends T>> call(final Operator<? super T> outerOperation) {
 
         final AtomicInteger completionCounter = new AtomicInteger(1);
         final AtomicInteger concurrentCounter = new AtomicInteger(1);
