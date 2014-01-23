@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -53,7 +54,7 @@ public class OperationFlatMapTest {
 
         List<Integer> source = Arrays.asList(16, 32, 64);
 
-        Observable.from(source).mergeMapIterable(func, resFunc).subscribe(o);
+        Observable.from(source).mergeMapIterable(func, resFunc).subscribe(new TestObserver<Object>(o));
 
         for (Integer s : source) {
             for (Integer v : list) {
@@ -85,7 +86,7 @@ public class OperationFlatMapTest {
 
         List<Integer> source = Arrays.asList(16, 32, 64);
 
-        Observable.from(source).mergeMapIterable(func, resFunc).subscribe(o);
+        Observable.from(source).mergeMapIterable(func, resFunc).subscribe(new TestObserver<Object>(o));
 
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any());
@@ -115,7 +116,7 @@ public class OperationFlatMapTest {
 
         List<Integer> source = Arrays.asList(16, 32, 64);
 
-        Observable.from(source).mergeMapIterable(func, resFunc).subscribe(o);
+        Observable.from(source).mergeMapIterable(func, resFunc).subscribe(new TestObserver<Object>(o));
 
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any());
@@ -143,7 +144,7 @@ public class OperationFlatMapTest {
 
         List<Integer> source = Arrays.asList(16, 32, 64);
 
-        Observable.from(source).mergeMap(func, resFunc).subscribe(o);
+        Observable.from(source).mergeMap(func, resFunc).subscribe(new TestObserver<Object>(o));
 
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any());
@@ -181,7 +182,7 @@ public class OperationFlatMapTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.mergeMap(just(onNext), just(onError), just0(onCompleted)).subscribe(o);
+        source.mergeMap(just(onNext), just(onError), just0(onCompleted)).subscribe(new TestObserver<Object>(o));
 
         verify(o, times(3)).onNext(1);
         verify(o, times(3)).onNext(2);
@@ -207,7 +208,7 @@ public class OperationFlatMapTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.mergeMap(just(onNext), just(onError), just0(onCompleted)).subscribe(o);
+        source.mergeMap(just(onNext), just(onError), just0(onCompleted)).subscribe(new TestObserver<Object>(o));
 
         verify(o, times(3)).onNext(1);
         verify(o, times(3)).onNext(2);
@@ -247,7 +248,7 @@ public class OperationFlatMapTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.mergeMap(funcThrow(1, onError), just(onError), just0(onCompleted)).subscribe(o);
+        source.mergeMap(funcThrow(1, onError), just(onError), just0(onCompleted)).subscribe(new TestObserver<Object>(o));
 
         verify(o).onError(any(OperationReduceTest.CustomException.class));
         verify(o, never()).onNext(any());
@@ -265,7 +266,7 @@ public class OperationFlatMapTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.mergeMap(just(onNext), funcThrow((Throwable) null, onError), just0(onCompleted)).subscribe(o);
+        source.mergeMap(just(onNext), funcThrow((Throwable) null, onError), just0(onCompleted)).subscribe(new TestObserver<Object>(o));
 
         verify(o).onError(any(OperationReduceTest.CustomException.class));
         verify(o, never()).onNext(any());
@@ -283,7 +284,7 @@ public class OperationFlatMapTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.mergeMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(o);
+        source.mergeMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(new TestObserver<Object>(o));
 
         verify(o).onError(any(OperationReduceTest.CustomException.class));
         verify(o, never()).onNext(any());
@@ -301,7 +302,7 @@ public class OperationFlatMapTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.mergeMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(o);
+        source.mergeMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(new TestObserver<Object>(o));
 
         verify(o).onError(any(OperationReduceTest.CustomException.class));
         verify(o, never()).onNext(any());

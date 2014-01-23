@@ -44,13 +44,13 @@ public class OperatorTakeTest {
         Observable<String> take = w.lift(new OperatorTake<String>(2));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        take.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, never()).onNext("three");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        take.subscribe(new TestObserver<String>(observer));
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -59,13 +59,13 @@ public class OperatorTakeTest {
         Observable<String> take = w.lift(new OperatorTake<String>(1));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        take.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, never()).onNext("two");
-        verify(aObserver, never()).onNext("three");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        take.subscribe(new TestObserver<String>(observer));
+        verify(observer, times(1)).onNext("one");
+        verify(observer, never()).onNext("two");
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -87,7 +87,7 @@ public class OperatorTakeTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
-        w.subscribe(observer);
+        w.subscribe(new TestObserver<Integer>(observer));
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(any(IllegalArgumentException.class));
         inOrder.verifyNoMoreInteractions();
@@ -103,7 +103,7 @@ public class OperatorTakeTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
-        w.subscribe(observer);
+        w.subscribe(new TestObserver<Integer>(observer));
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(any(IllegalArgumentException.class));
         inOrder.verifyNoMoreInteractions();
@@ -121,15 +121,15 @@ public class OperatorTakeTest {
         });
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
-        source.lift(new OperatorTake<String>(1)).subscribe(aObserver);
+        source.lift(new OperatorTake<String>(1)).subscribe(new TestObserver<String>(observer));
 
-        verify(aObserver, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("one");
         // even though onError is called we take(1) so shouldn't see it
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verifyNoMoreInteractions(aObserver);
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -151,17 +151,17 @@ public class OperatorTakeTest {
         });
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
-        source.lift(new OperatorTake<String>(0)).subscribe(new TestObserver<String>(aObserver));
+        source.lift(new OperatorTake<String>(0)).subscribe(new TestObserver<String>(observer));
         assertTrue("source subscribed", subscribed.get());
         assertTrue("source unsubscribed", unSubscribed.get());
 
-        verify(aObserver, never()).onNext(anyString());
+        verify(observer, never()).onNext(anyString());
         // even though onError is called we take(0) so shouldn't see it
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verifyNoMoreInteractions(aObserver);
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -171,9 +171,9 @@ public class OperatorTakeTest {
         Observable<String> w = Observable.create(f);
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<String> take = w.lift(new OperatorTake<String>(1));
-        take.subscribe(new TestObserver<String>(aObserver));
+        take.subscribe(new TestObserver<String>(observer));
 
         // wait for the Observable to complete
         try {
@@ -184,12 +184,12 @@ public class OperatorTakeTest {
         }
 
         System.out.println("TestObservable thread finished");
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, never()).onNext("two");
-        verify(aObserver, never()).onNext("three");
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, never()).onNext("two");
+        verify(observer, never()).onNext("three");
+        verify(observer, times(1)).onCompleted();
         verify(s, times(1)).unsubscribe();
-        verifyNoMoreInteractions(aObserver);
+        verifyNoMoreInteractions(observer);
     }
 
     @Test(timeout = 2000)

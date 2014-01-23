@@ -66,7 +66,7 @@ public class OperationBufferTest {
         });
 
         Observable<List<String>> buffered = Observable.create(buffer(source, 3, 3));
-        buffered.subscribe(observer);
+        buffered.subscribe(new TestObserver<List<String>>(observer));
 
         Mockito.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
         Mockito.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
@@ -88,7 +88,7 @@ public class OperationBufferTest {
         });
 
         Observable<List<String>> buffered = Observable.create(buffer(source, 3, 1));
-        buffered.subscribe(observer);
+        buffered.subscribe(new TestObserver<List<String>>(observer));
 
         InOrder inOrder = Mockito.inOrder(observer);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
@@ -115,7 +115,7 @@ public class OperationBufferTest {
         });
 
         Observable<List<String>> buffered = Observable.create(buffer(source, 3, 3));
-        buffered.subscribe(observer);
+        buffered.subscribe(new TestObserver<List<String>>(observer));
 
         InOrder inOrder = Mockito.inOrder(observer);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
@@ -141,7 +141,7 @@ public class OperationBufferTest {
         });
 
         Observable<List<String>> buffered = Observable.create(buffer(source, 2, 3));
-        buffered.subscribe(observer);
+        buffered.subscribe(new TestObserver<List<String>>(observer));
 
         InOrder inOrder = Mockito.inOrder(observer);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));

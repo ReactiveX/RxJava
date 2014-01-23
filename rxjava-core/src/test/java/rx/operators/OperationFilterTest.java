@@ -24,6 +24,7 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
 public class OperationFilterTest {
@@ -40,12 +41,12 @@ public class OperationFilterTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, Mockito.never()).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, Mockito.never()).onNext("three");
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<String>(observer));
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 }

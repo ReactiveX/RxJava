@@ -28,6 +28,7 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
 public class OperationOnErrorReturnTest {
@@ -50,8 +51,8 @@ public class OperationOnErrorReturnTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<String>(observer));
 
         try {
             f.t.join();
@@ -59,10 +60,10 @@ public class OperationOnErrorReturnTest {
             fail(e.getMessage());
         }
 
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("failure");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("failure");
         assertNotNull(capturedException.get());
     }
 
@@ -87,8 +88,8 @@ public class OperationOnErrorReturnTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<String>(observer));
 
         try {
             f.t.join();
@@ -97,11 +98,11 @@ public class OperationOnErrorReturnTest {
         }
 
         // we should get the "one" value before the error
-        verify(aObserver, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("one");
 
         // we should have received an onError call on the Observer since the resume function threw an exception
-        verify(aObserver, times(1)).onError(any(Throwable.class));
-        verify(aObserver, times(0)).onCompleted();
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, times(0)).onCompleted();
         assertNotNull(capturedException.get());
     }
 

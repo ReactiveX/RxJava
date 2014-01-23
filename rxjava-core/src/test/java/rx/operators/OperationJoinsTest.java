@@ -105,7 +105,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(some.and(some).then(add2));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(2);
@@ -120,7 +120,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(error.and(some).then(add2));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());
@@ -135,7 +135,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(some.and(error).then(add2));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());
@@ -148,7 +148,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(some.and(some).and(some).then(add3));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(3);
@@ -163,7 +163,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(error.and(some).and(some).then(add3));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());
@@ -178,7 +178,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(some.and(error).and(some).then(add3));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());
@@ -193,7 +193,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(some.and(some).and(error).then(add3));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());
@@ -226,7 +226,7 @@ public class OperationJoinsTest {
         Observable<Integer> some = Observable.just(1);
 
         Observable<Integer> m = Observable.when(some.then(Functions.<Integer> identity()));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(1);
@@ -238,7 +238,7 @@ public class OperationJoinsTest {
         Observable<Integer> some = Observable.error(new RuntimeException("Forced failure"));
 
         Observable<Integer> m = Observable.when(some.then(Functions.<Integer> identity()));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());
@@ -250,7 +250,7 @@ public class OperationJoinsTest {
         Observable<Integer> some = Observable.just(1);
 
         Observable<Integer> m = Observable.when(some.then(func1Throw));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());
@@ -262,7 +262,7 @@ public class OperationJoinsTest {
         Observable<Integer> some = Observable.just(1);
 
         Observable<Integer> m = Observable.when(some.and(some).then(func2Throw));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());
@@ -274,7 +274,7 @@ public class OperationJoinsTest {
         Observable<Integer> some = Observable.just(1);
 
         Observable<Integer> m = Observable.when(some.and(some).and(some).then(func3Throw));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());
@@ -297,7 +297,7 @@ public class OperationJoinsTest {
         Observable<Integer> source2 = Observable.from(4, 5, 6);
 
         Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(1 + 4);
@@ -312,7 +312,7 @@ public class OperationJoinsTest {
         Observable<Integer> source2 = Observable.from(4, 5);
 
         Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(1 + 4);
@@ -326,7 +326,7 @@ public class OperationJoinsTest {
         Observable<Integer> source2 = Observable.empty();
 
         Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());
@@ -339,7 +339,7 @@ public class OperationJoinsTest {
         Observable<Integer> source2 = Observable.never();
 
         Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());
@@ -352,7 +352,7 @@ public class OperationJoinsTest {
         Observable<Integer> source2 = Observable.error(new RuntimeException("Forced failure"));
 
         Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());

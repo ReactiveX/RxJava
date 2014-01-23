@@ -47,7 +47,7 @@ public class OperationObserveOnTest {
     @SuppressWarnings("unchecked")
     public void testObserveOn() {
         Observer<Integer> observer = mock(Observer.class);
-        Observable.create(observeOn(Observable.from(1, 2, 3), Schedulers.immediate())).subscribe(observer);
+        Observable.create(observeOn(Observable.from(1, 2, 3), Schedulers.immediate())).subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(2);
@@ -74,7 +74,7 @@ public class OperationObserveOnTest {
             }
         }).when(observer).onCompleted();
 
-        obs.observeOn(Schedulers.threadPoolForComputation()).subscribe(observer);
+        obs.observeOn(Schedulers.computation()).subscribe(new TestObserver<String>(observer));
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
@@ -130,7 +130,7 @@ public class OperationObserveOnTest {
                 completedLatch.countDown();
 
             }
-        }).subscribe(observer);
+        }).subscribe(new TestObserver<String>(observer));
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");

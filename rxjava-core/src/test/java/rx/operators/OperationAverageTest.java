@@ -41,7 +41,7 @@ public class OperationAverageTest {
     @Test
     public void testAverageOfAFewInts() throws Throwable {
         Observable<Integer> src = Observable.from(1, 2, 3, 4, 6);
-        average(src).subscribe(w);
+        average(src).subscribe(new TestObserver<Integer>(w));
 
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(3);
@@ -52,7 +52,7 @@ public class OperationAverageTest {
     @Test
     public void testEmptyAverage() throws Throwable {
         Observable<Integer> src = Observable.empty();
-        average(src).subscribe(w);
+        average(src).subscribe(new TestObserver<Integer>(w));
 
         verify(w, never()).onNext(anyInt());
         verify(w, times(1)).onError(isA(IllegalArgumentException.class));
@@ -62,7 +62,7 @@ public class OperationAverageTest {
     @Test
     public void testAverageOfAFewLongs() throws Throwable {
         Observable<Long> src = Observable.from(1L, 2L, 3L, 4L, 6L);
-        averageLongs(src).subscribe(wl);
+        averageLongs(src).subscribe(new TestObserver<Long>(wl));
 
         verify(wl, times(1)).onNext(anyLong());
         verify(wl).onNext(3L);
@@ -73,7 +73,7 @@ public class OperationAverageTest {
     @Test
     public void testEmptyAverageLongs() throws Throwable {
         Observable<Long> src = Observable.empty();
-        averageLongs(src).subscribe(wl);
+        averageLongs(src).subscribe(new TestObserver<Long>(wl));
 
         verify(wl, never()).onNext(anyLong());
         verify(wl, times(1)).onError(isA(IllegalArgumentException.class));
@@ -83,7 +83,7 @@ public class OperationAverageTest {
     @Test
     public void testAverageOfAFewFloats() throws Throwable {
         Observable<Float> src = Observable.from(1.0f, 2.0f);
-        averageFloats(src).subscribe(wf);
+        averageFloats(src).subscribe(new TestObserver<Float>(wf));
 
         verify(wf, times(1)).onNext(anyFloat());
         verify(wf).onNext(1.5f);
@@ -94,7 +94,7 @@ public class OperationAverageTest {
     @Test
     public void testEmptyAverageFloats() throws Throwable {
         Observable<Float> src = Observable.empty();
-        averageFloats(src).subscribe(wf);
+        averageFloats(src).subscribe(new TestObserver<Float>(wf));
 
         verify(wf, never()).onNext(anyFloat());
         verify(wf, times(1)).onError(isA(IllegalArgumentException.class));
@@ -104,7 +104,7 @@ public class OperationAverageTest {
     @Test
     public void testAverageOfAFewDoubles() throws Throwable {
         Observable<Double> src = Observable.from(1.0d, 2.0d);
-        averageDoubles(src).subscribe(wd);
+        averageDoubles(src).subscribe(new TestObserver<Double>(wd));
 
         verify(wd, times(1)).onNext(anyDouble());
         verify(wd).onNext(1.5d);
@@ -115,7 +115,7 @@ public class OperationAverageTest {
     @Test
     public void testEmptyAverageDoubles() throws Throwable {
         Observable<Double> src = Observable.empty();
-        averageDoubles(src).subscribe(wd);
+        averageDoubles(src).subscribe(new TestObserver<Double>(wd));
 
         verify(wd, never()).onNext(anyDouble());
         verify(wd, times(1)).onError(isA(IllegalArgumentException.class));
@@ -146,7 +146,7 @@ public class OperationAverageTest {
 
         Observable<Integer> result = source.averageInteger(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testValue(o, 2);
     }
@@ -163,7 +163,7 @@ public class OperationAverageTest {
 
         Observable<Long> result = source.averageLong(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testValue(o, 2L);
     }
@@ -180,7 +180,7 @@ public class OperationAverageTest {
 
         Observable<Float> result = source.averageFloat(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testValue(o, 2.5f);
     }
@@ -197,7 +197,7 @@ public class OperationAverageTest {
 
         Observable<Double> result = source.averageDouble(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testValue(o, 2.5d);
     }
@@ -214,7 +214,7 @@ public class OperationAverageTest {
 
         Observable<Integer> result = source.averageInteger(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, IllegalArgumentException.class);
     }
@@ -231,7 +231,7 @@ public class OperationAverageTest {
 
         Observable<Long> result = source.averageLong(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, IllegalArgumentException.class);
     }
@@ -248,7 +248,7 @@ public class OperationAverageTest {
 
         Observable<Float> result = source.averageFloat(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, IllegalArgumentException.class);
     }
@@ -265,7 +265,7 @@ public class OperationAverageTest {
 
         Observable<Double> result = source.averageDouble(length);
         Observer<Object> o = mock(Observer.class);
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         testThrows(o, IllegalArgumentException.class);
     }

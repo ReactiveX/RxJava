@@ -137,8 +137,7 @@ public class OperationMulticast {
 
             CompositeSubscription csub = new CompositeSubscription();
 
-            csub.add(observable.subscribe(new SafeObserver<TResult>(
-                    new SafeObservableSubscription(csub), t1)));
+            csub.add(observable.subscribe(t1));
             csub.add(connectable.connect());
 
             return csub;

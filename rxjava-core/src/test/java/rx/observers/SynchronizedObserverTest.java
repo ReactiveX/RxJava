@@ -40,7 +40,7 @@ import rx.operators.SafeObservableSubscription;
 public class SynchronizedObserverTest {
 
     @Mock
-    Observer<String> aObserver;
+    Observer<String> observer;
 
     @Before
     public void before() {
@@ -54,16 +54,16 @@ public class SynchronizedObserverTest {
         Observable<String> w = Observable.create(onSubscribe);
 
         SafeObservableSubscription as = new SafeObservableSubscription(s);
-        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(aObserver, as);
+        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(observer, as);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
 
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
         // non-deterministic because unsubscribe happens after 'waitToFinish' releases
         // so commenting out for now as this is not a critical thing to test here
         //            verify(s, times(1)).unsubscribe();

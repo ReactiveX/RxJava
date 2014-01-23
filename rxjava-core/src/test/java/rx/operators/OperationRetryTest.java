@@ -53,7 +53,7 @@ public class OperationRetryTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        Observable.create(retry(origin, NUM_RETRIES)).subscribe(observer);
+        Observable.create(retry(origin, NUM_RETRIES)).subscribe(new TestObserver<String>(observer));
 
         InOrder inOrder = inOrder(observer);
         // should show 2 attempts (first time fail, second time (1st retry) fail)
@@ -73,7 +73,7 @@ public class OperationRetryTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        Observable.create(retry(origin, NUM_RETRIES)).subscribe(observer);
+        Observable.create(retry(origin, NUM_RETRIES)).subscribe(new TestObserver<String>(observer));
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -93,7 +93,7 @@ public class OperationRetryTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        Observable.create(retry(origin)).subscribe(observer);
+        Observable.create(retry(origin)).subscribe(new TestObserver<String>(observer));
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts

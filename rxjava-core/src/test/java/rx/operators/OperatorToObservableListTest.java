@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 
 public class OperatorToObservableListTest {
 
@@ -35,11 +36,11 @@ public class OperatorToObservableListTest {
         Observable<List<String>> observable = w.lift(new OperatorToObservableList<String>());
 
         @SuppressWarnings("unchecked")
-        Observer<List<String>> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext(Arrays.asList("one", "two", "three"));
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<List<String>> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<List<String>>(observer));
+        verify(observer, times(1)).onNext(Arrays.asList("one", "two", "three"));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
     
     @Test
@@ -48,11 +49,11 @@ public class OperatorToObservableListTest {
         Observable<List<String>> observable = w.toList();
 
         @SuppressWarnings("unchecked")
-        Observer<List<String>> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext(Arrays.asList("one", "two", "three"));
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<List<String>> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<List<String>>(observer));
+        verify(observer, times(1)).onNext(Arrays.asList("one", "two", "three"));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -62,11 +63,11 @@ public class OperatorToObservableListTest {
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> o1 = mock(Observer.class);
-        observable.subscribe(o1);
+        observable.subscribe(new TestObserver<List<String>>(o1));
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> o2 = mock(Observer.class);
-        observable.subscribe(o2);
+        observable.subscribe(new TestObserver<List<String>>(o2));
 
         List<String> expected = Arrays.asList("one", "two", "three");
 
@@ -85,10 +86,10 @@ public class OperatorToObservableListTest {
         Observable<List<String>> observable = w.lift(new OperatorToObservableList<String>());
 
         @SuppressWarnings("unchecked")
-        Observer<List<String>> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext(Arrays.asList("one", null, "three"));
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<List<String>> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<List<String>>(observer));
+        verify(observer, times(1)).onNext(Arrays.asList("one", null, "three"));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 }

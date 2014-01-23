@@ -76,16 +76,16 @@ public class OperationZipTest {
         //Func3<String, Integer, int[], String>
 
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
         @SuppressWarnings("rawtypes")
         Collection ws = java.util.Collections.singleton(Observable.from("one", "two"));
         Observable<String> w = Observable.create(zip(ws, zipr));
-        w.subscribe(new TestObserver<String>(aObserver));
+        w.subscribe(new TestObserver<String>(observer));
 
-        verify(aObserver, times(1)).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        verify(aObserver, never()).onNext(any(String.class));
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onNext(any(String.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -185,32 +185,32 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
+        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
 
-        InOrder inOrder = inOrder(aObserver);
+        InOrder inOrder = inOrder(observer);
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        inOrder.verify(aObserver, times(1)).onNext("helloworld");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
+        inOrder.verify(observer, times(1)).onNext("helloworld");
 
         r1.onNext("hello ");
         r2.onNext("again");
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        inOrder.verify(aObserver, times(1)).onNext("hello again");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
+        inOrder.verify(observer, times(1)).onNext("hello again");
 
         r1.onCompleted();
         r2.onCompleted();
 
-        inOrder.verify(aObserver, never()).onNext(anyString());
-        verify(aObserver, times(1)).onCompleted();
+        inOrder.verify(observer, never()).onNext(anyString());
+        verify(observer, times(1)).onCompleted();
     }
 
     @SuppressWarnings("unchecked")
@@ -222,27 +222,27 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
+        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
         r2.onCompleted();
 
-        InOrder inOrder = inOrder(aObserver);
+        InOrder inOrder = inOrder(observer);
 
-        inOrder.verify(aObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(aObserver, times(1)).onNext("helloworld");
-        inOrder.verify(aObserver, times(1)).onCompleted();
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, times(1)).onNext("helloworld");
+        inOrder.verify(observer, times(1)).onCompleted();
 
         r1.onNext("hi");
         r1.onCompleted();
 
-        inOrder.verify(aObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(aObserver, never()).onCompleted();
-        inOrder.verify(aObserver, never()).onNext(anyString());
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onCompleted();
+        inOrder.verify(observer, never()).onNext(anyString());
     }
 
     @SuppressWarnings("unchecked")
@@ -252,27 +252,27 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<Integer> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
+        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext(1);
         r2.onCompleted();
 
-        InOrder inOrder = inOrder(aObserver);
+        InOrder inOrder = inOrder(observer);
 
-        inOrder.verify(aObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(aObserver, times(1)).onNext("hello1");
-        inOrder.verify(aObserver, times(1)).onCompleted();
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, times(1)).onNext("hello1");
+        inOrder.verify(observer, times(1)).onCompleted();
 
         r1.onNext("hi");
         r1.onCompleted();
 
-        inOrder.verify(aObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(aObserver, never()).onCompleted();
-        inOrder.verify(aObserver, never()).onNext(anyString());
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onCompleted();
+        inOrder.verify(observer, never()).onNext(anyString());
     }
 
     @SuppressWarnings("unchecked")
@@ -283,18 +283,18 @@ public class OperationZipTest {
         PublishSubject<Integer> r2 = PublishSubject.create();
         PublishSubject<List<Integer>> r3 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), r3.toObservable(), zipr3).subscribe(new TestObserver<String>(aObserver));
+        Observable.zip(r1.toObservable(), r2.toObservable(), r3.toObservable(), zipr3).subscribe(new TestObserver<String>(observer));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext(2);
         r3.onNext(Arrays.asList(5, 6, 7));
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        verify(aObserver, times(1)).onNext("hello2[5, 6, 7]");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
+        verify(observer, times(1)).onNext("hello2[5, 6, 7]");
     }
 
     @SuppressWarnings("unchecked")
@@ -304,9 +304,9 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
+        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("one");
@@ -314,24 +314,24 @@ public class OperationZipTest {
         r1.onNext("three");
         r2.onNext("A");
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        verify(aObserver, times(1)).onNext("oneA");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
+        verify(observer, times(1)).onNext("oneA");
 
         r1.onNext("four");
         r1.onCompleted();
         r2.onNext("B");
-        verify(aObserver, times(1)).onNext("twoB");
+        verify(observer, times(1)).onNext("twoB");
         r2.onNext("C");
-        verify(aObserver, times(1)).onNext("threeC");
+        verify(observer, times(1)).onNext("threeC");
         r2.onNext("D");
-        verify(aObserver, times(1)).onNext("fourD");
+        verify(observer, times(1)).onNext("fourD");
         r2.onNext("E");
-        verify(aObserver, never()).onNext("E");
+        verify(observer, never()).onNext("E");
         r2.onCompleted();
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @SuppressWarnings("unchecked")
@@ -341,26 +341,26 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
+        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        verify(aObserver, times(1)).onNext("helloworld");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
+        verify(observer, times(1)).onNext("helloworld");
 
         r1.onError(new RuntimeException(""));
         r1.onNext("hello");
         r2.onNext("again");
 
-        verify(aObserver, times(1)).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
         // we don't want to be called again after an error
-        verify(aObserver, times(0)).onNext("helloagain");
+        verify(observer, times(0)).onNext("helloagain");
     }
 
     @SuppressWarnings("unchecked")
@@ -370,26 +370,26 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
-        Subscription subscription = Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
+        Subscription subscription = Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        verify(aObserver, times(1)).onNext("helloworld");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
+        verify(observer, times(1)).onNext("helloworld");
 
         subscription.unsubscribe();
         r1.onNext("hello");
         r2.onNext("again");
 
-        verify(aObserver, times(0)).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
+        verify(observer, times(0)).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
         // we don't want to be called again after an error
-        verify(aObserver, times(0)).onNext("helloagain");
+        verify(observer, times(0)).onNext("helloagain");
     }
 
     @SuppressWarnings("unchecked")
@@ -399,9 +399,9 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
-        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(aObserver));
+        Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("one");
@@ -409,17 +409,17 @@ public class OperationZipTest {
         r1.onCompleted();
         r2.onNext("A");
 
-        InOrder inOrder = inOrder(aObserver);
+        InOrder inOrder = inOrder(observer);
 
-        inOrder.verify(aObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(aObserver, never()).onCompleted();
-        inOrder.verify(aObserver, times(1)).onNext("oneA");
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onCompleted();
+        inOrder.verify(observer, times(1)).onNext("oneA");
 
         r2.onCompleted();
 
-        inOrder.verify(aObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(aObserver, times(1)).onCompleted();
-        inOrder.verify(aObserver, never()).onNext(anyString());
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verify(observer, never()).onNext(anyString());
     }
 
     @SuppressWarnings("unchecked")
@@ -429,16 +429,16 @@ public class OperationZipTest {
         Func2<String, Integer, String> zipr = getConcatStringIntegerZipr();
 
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
         Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2, 3, 4), zipr));
-        w.subscribe(new TestObserver<String>(aObserver));
+        w.subscribe(new TestObserver<String>(observer));
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("one2");
-        verify(aObserver, times(1)).onNext("two3");
-        verify(aObserver, never()).onNext("4");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one2");
+        verify(observer, times(1)).onNext("two3");
+        verify(observer, never()).onNext("4");
     }
 
     @SuppressWarnings("unchecked")
@@ -448,15 +448,15 @@ public class OperationZipTest {
         Func3<String, Integer, int[], String> zipr = getConcatStringIntegerIntArrayZipr();
 
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
         Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), zipr));
-        w.subscribe(new TestObserver<String>(aObserver));
+        w.subscribe(new TestObserver<String>(observer));
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("one2[4, 5, 6]");
-        verify(aObserver, never()).onNext("two");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one2[4, 5, 6]");
+        verify(observer, never()).onNext("two");
     }
 
     @Test
@@ -464,12 +464,12 @@ public class OperationZipTest {
         Func2<Integer, Integer, Integer> zipr = getDivideZipr();
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> aObserver = mock(Observer.class);
+        Observer<Integer> observer = mock(Observer.class);
 
         Observable<Integer> w = Observable.create(zip(Observable.from(10, 20, 30), Observable.from(0, 1, 2), zipr));
-        w.subscribe(new TestObserver<Integer>(aObserver));
+        w.subscribe(new TestObserver<Integer>(observer));
 
-        verify(aObserver, times(1)).onError(any(Throwable.class));
+        verify(observer, times(1)).onError(any(Throwable.class));
     }
 
     @Test

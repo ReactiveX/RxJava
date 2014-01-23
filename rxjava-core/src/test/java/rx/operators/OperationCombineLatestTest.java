@@ -183,16 +183,16 @@ public class OperationCombineLatestTest {
         Func2<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
         Observable<String> w = Observable.create(combineLatest(Observable.from("one", "two"), Observable.from(2, 3, 4), combineLatestFunction));
-        w.subscribe(new TestObserver<String>(aObserver));
+        w.subscribe(new TestObserver<String>(observer));
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("two2");
-        verify(aObserver, times(1)).onNext("two3");
-        verify(aObserver, times(1)).onNext("two4");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("two2");
+        verify(observer, times(1)).onNext("two3");
+        verify(observer, times(1)).onNext("two4");
     }
 
     @SuppressWarnings("unchecked")
@@ -202,14 +202,14 @@ public class OperationCombineLatestTest {
         Func3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
         Observable<String> w = Observable.create(combineLatest(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), combineLatestFunction));
-        w.subscribe(new TestObserver<String>(aObserver));
+        w.subscribe(new TestObserver<String>(observer));
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("two2[4, 5, 6]");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("two2[4, 5, 6]");
     }
 
     @SuppressWarnings("unchecked")
@@ -219,15 +219,15 @@ public class OperationCombineLatestTest {
         Func3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
         Observable<String> w = Observable.create(combineLatest(Observable.from("one"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction));
-        w.subscribe(new TestObserver<String>(aObserver));
+        w.subscribe(new TestObserver<String>(observer));
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("one2[4, 5, 6]");
-        verify(aObserver, times(1)).onNext("one2[7, 8]");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one2[4, 5, 6]");
+        verify(observer, times(1)).onNext("one2[7, 8]");
     }
 
     private Func3<String, String, String, String> getConcat3StringsCombineLatestFunction() {

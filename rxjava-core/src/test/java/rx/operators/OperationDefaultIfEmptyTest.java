@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 
 public class OperationDefaultIfEmptyTest {
 
@@ -32,15 +33,15 @@ public class OperationDefaultIfEmptyTest {
                 source, 10));
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, never()).onNext(10);
-        verify(aObserver, times(1)).onNext(1);
-        verify(aObserver, times(1)).onNext(2);
-        verify(aObserver, times(1)).onNext(3);
-        verify(aObserver, never()).onError(
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Integer>(observer));
+        verify(observer, never()).onNext(10);
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(2);
+        verify(observer, times(1)).onNext(3);
+        verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -50,11 +51,11 @@ public class OperationDefaultIfEmptyTest {
                 source, 10));
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext(10);
-        verify(aObserver, never()).onError(
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Integer>(observer));
+        verify(observer, times(1)).onNext(10);
+        verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, times(1)).onCompleted();
     }
 }

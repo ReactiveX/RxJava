@@ -38,11 +38,11 @@ public class OperationTakeLastTest {
         Observable<String> take = Observable.create(takeLast(w, 2));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        take.subscribe(aObserver);
-        verify(aObserver, never()).onNext(any(String.class));
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        take.subscribe(new TestObserver<String>(observer));
+        verify(observer, never()).onNext(any(String.class));
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -51,14 +51,14 @@ public class OperationTakeLastTest {
         Observable<String> take = Observable.create(takeLast(w, 2));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        InOrder inOrder = inOrder(aObserver);
-        take.subscribe(aObserver);
-        inOrder.verify(aObserver, times(1)).onNext("two");
-        inOrder.verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, never()).onNext("one");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        InOrder inOrder = inOrder(observer);
+        take.subscribe(new TestObserver<String>(observer));
+        inOrder.verify(observer, times(1)).onNext("two");
+        inOrder.verify(observer, times(1)).onNext("three");
+        verify(observer, never()).onNext("one");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -67,11 +67,11 @@ public class OperationTakeLastTest {
         Observable<String> take = Observable.create(takeLast(w, 10));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        take.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        take.subscribe(new TestObserver<String>(observer));
+        verify(observer, times(1)).onNext("one");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -80,11 +80,11 @@ public class OperationTakeLastTest {
         Observable<String> take = Observable.create(takeLast(w, 0));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        take.subscribe(aObserver);
-        verify(aObserver, never()).onNext("one");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        take.subscribe(new TestObserver<String>(observer));
+        verify(observer, never()).onNext("one");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -93,13 +93,13 @@ public class OperationTakeLastTest {
         Observable<String> take = Observable.create(takeLast(w, 2));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        take.subscribe(aObserver);
-        verify(aObserver, never()).onNext("one");
-        verify(aObserver, times(1)).onNext(null);
-        verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        take.subscribe(new TestObserver<String>(observer));
+        verify(observer, never()).onNext("one");
+        verify(observer, times(1)).onNext(null);
+        verify(observer, times(1)).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -108,12 +108,12 @@ public class OperationTakeLastTest {
         Observable<String> take = Observable.create(takeLast(w, -1));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        take.subscribe(aObserver);
-        verify(aObserver, never()).onNext("one");
-        verify(aObserver, times(1)).onError(
+        Observer<String> observer = mock(Observer.class);
+        take.subscribe(new TestObserver<String>(observer));
+        verify(observer, never()).onNext("one");
+        verify(observer, times(1)).onError(
                 any(IndexOutOfBoundsException.class));
-        verify(aObserver, never()).onCompleted();
+        verify(observer, never()).onCompleted();
     }
 
     @Test

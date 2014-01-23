@@ -26,7 +26,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.concurrency.TestScheduler;
+import rx.schedulers.TestScheduler;
 import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 
@@ -38,13 +38,13 @@ public class OperationSkipTest {
         Observable<String> skip = Observable.create(skip(w, 2));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        skip.subscribe(aObserver);
-        verify(aObserver, never()).onNext("one");
-        verify(aObserver, never()).onNext("two");
-        verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        skip.subscribe(new TestObserver<String>(observer));
+        verify(observer, never()).onNext("one");
+        verify(observer, never()).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -53,13 +53,13 @@ public class OperationSkipTest {
         Observable<String> skip = Observable.create(skip(w, 1));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        skip.subscribe(aObserver);
-        verify(aObserver, never()).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        skip.subscribe(new TestObserver<String>(observer));
+        verify(observer, never()).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test

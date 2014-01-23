@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 
 public class OperationElementAtTest {
 
@@ -36,13 +37,13 @@ public class OperationElementAtTest {
         Observable<Integer> observable = Observable.create(elementAt(w, 1));
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, never()).onNext(1);
-        verify(aObserver, times(1)).onNext(2);
-        verify(aObserver, never()).onError(
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Integer>(observer));
+        verify(observer, never()).onNext(1);
+        verify(observer, times(1)).onNext(2);
+        verify(observer, never()).onError(
                 any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -84,12 +85,12 @@ public class OperationElementAtTest {
                 .create(elementAtOrDefault(w, 1, 0));
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, never()).onNext(1);
-        verify(aObserver, times(1)).onNext(2);
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Integer>(observer));
+        verify(observer, never()).onNext(1);
+        verify(observer, times(1)).onNext(2);
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -100,13 +101,13 @@ public class OperationElementAtTest {
                 .create(elementAtOrDefault(w, 2, 0));
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, never()).onNext(1);
-        verify(aObserver, never()).onNext(2);
-        verify(aObserver, times(1)).onNext(0);
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Integer>(observer));
+        verify(observer, never()).onNext(1);
+        verify(observer, never()).onNext(2);
+        verify(observer, times(1)).onNext(0);
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test

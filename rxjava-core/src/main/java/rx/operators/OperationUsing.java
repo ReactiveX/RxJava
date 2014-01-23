@@ -43,13 +43,8 @@ public class OperationUsing {
                         resourceSubscription = resource;
                     }
                     Observable<T> observable = observableFactory.call(resource);
-                    SafeObservableSubscription subscription = new SafeObservableSubscription();
-                    // Use SafeObserver to guarantee resourceSubscription will
-                    // be unsubscribed.
-                    return subscription.wrap(new CompositeSubscription(
-                            observable.subscribe(new SafeObserver<T>(
-                                    subscription, observer)),
-                            resourceSubscription));
+                    // Use SafeObserver to guarantee resourceSubscription will be unsubscribed.
+                    return new CompositeSubscription(observable.subscribe(new SafeObserver<T>(observer)), resourceSubscription);
                 } catch (Throwable e) {
                     resourceSubscription.unsubscribe();
                     return Observable.<T> error(e).subscribe(observer);

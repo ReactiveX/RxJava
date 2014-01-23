@@ -206,7 +206,7 @@ public class OperationReplayTest {
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            co.subscribe(new TestObserver<Object>(observer1));
 
             source.onNext(1);
             source.onNext(2);
@@ -229,7 +229,7 @@ public class OperationReplayTest {
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            co.subscribe(new TestObserver<Object>(observer1));
 
             inOrder.verify(observer1, times(1)).onCompleted();
             inOrder.verifyNoMoreInteractions();
@@ -268,7 +268,7 @@ public class OperationReplayTest {
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            co.subscribe(new TestObserver<Object>(observer1));
 
             source.onNext(1);
             source.onNext(2);
@@ -291,7 +291,7 @@ public class OperationReplayTest {
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            co.subscribe(new TestObserver<Object>(observer1));
 
             inOrder.verify(observer1, times(1)).onCompleted();
             inOrder.verifyNoMoreInteractions();
@@ -330,7 +330,7 @@ public class OperationReplayTest {
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            co.subscribe(new TestObserver<Object>(observer1));
 
             source.onNext(1);
             scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
@@ -354,7 +354,7 @@ public class OperationReplayTest {
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            co.subscribe(new TestObserver<Object>(observer1));
 
             inOrder.verify(observer1, times(1)).onCompleted();
             inOrder.verifyNoMoreInteractions();

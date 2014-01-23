@@ -29,18 +29,18 @@ import rx.util.functions.Action0;
 public class OperationFinallyTest {
 
     private Action0 aAction0;
-    private Observer<String> aObserver;
+    private Observer<String> observer;
 
     @SuppressWarnings("unchecked")
     // mocking has to be unchecked, unfortunately
     @Before
     public void before() {
         aAction0 = mock(Action0.class);
-        aObserver = mock(Observer.class);
+        observer = mock(Observer.class);
     }
 
     private void checkActionCalled(Observable<String> input) {
-        Observable.create(finallyDo(input, aAction0)).subscribe(new TestObserver<String>(aObserver));
+        Observable.create(finallyDo(input, aAction0)).subscribe(new TestObserver<String>(observer));
         verify(aAction0, times(1)).call();
     }
 

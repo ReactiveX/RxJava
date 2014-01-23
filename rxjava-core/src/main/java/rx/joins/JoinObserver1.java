@@ -37,7 +37,6 @@ public final class JoinObserver1<T> extends Observer<Notification<T>> implements
     private final Action1<Throwable> onError;
     private final List<ActivePlan0> activePlans;
     private final Queue<Notification<T>> queue;
-    private final SafeObservableSubscription subscription = new SafeObservableSubscription();
     //    private volatile boolean done;
     private final AtomicBoolean subscribed = new AtomicBoolean(false);
     private final SafeObserver<Notification<T>> safeObserver;
@@ -47,7 +46,7 @@ public final class JoinObserver1<T> extends Observer<Notification<T>> implements
         this.onError = onError;
         queue = new LinkedList<Notification<T>>();
         activePlans = new ArrayList<ActivePlan0>();
-        safeObserver = new SafeObserver<Notification<T>>(subscription, new InnerObserver());
+        safeObserver = new SafeObserver<Notification<T>>(new InnerObserver());
         // add this subscription so it gets unsubscribed when the parent does
         add(safeObserver);
     }
@@ -64,7 +63,7 @@ public final class JoinObserver1<T> extends Observer<Notification<T>> implements
     public void subscribe(Object gate) {
         if (subscribed.compareAndSet(false, true)) {
             this.gate = gate;
-            subscription.wrap(source.materialize().subscribe(this));
+            source.materialize().subscribe(this);
         } else {
             throw new IllegalStateException("Can only be subscribed to once.");
         }

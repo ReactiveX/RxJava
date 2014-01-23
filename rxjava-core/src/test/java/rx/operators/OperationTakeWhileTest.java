@@ -25,6 +25,7 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
@@ -44,13 +45,13 @@ public class OperationTakeWhileTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> aObserver = mock(Observer.class);
-        take.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext(1);
-        verify(aObserver, times(1)).onNext(2);
-        verify(aObserver, never()).onNext(3);
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<Integer> observer = mock(Observer.class);
+        take.subscribe(new TestObserver<Integer>(observer));
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(2);
+        verify(observer, never()).onNext(3);
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -64,8 +65,8 @@ public class OperationTakeWhileTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> aObserver = mock(Observer.class);
-        take.subscribe(aObserver);
+        Observer<Integer> observer = mock(Observer.class);
+        take.subscribe(new TestObserver<Integer>(observer));
 
         s.onNext(1);
         s.onNext(2);
@@ -74,13 +75,13 @@ public class OperationTakeWhileTest {
         s.onNext(5);
         s.onCompleted();
 
-        verify(aObserver, times(1)).onNext(1);
-        verify(aObserver, times(1)).onNext(2);
-        verify(aObserver, never()).onNext(3);
-        verify(aObserver, never()).onNext(4);
-        verify(aObserver, never()).onNext(5);
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(2);
+        verify(observer, never()).onNext(3);
+        verify(observer, never()).onNext(4);
+        verify(observer, never()).onNext(5);
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -94,13 +95,13 @@ public class OperationTakeWhileTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        take.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, never()).onNext("three");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        take.subscribe(new TestObserver<String>(observer));
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -128,14 +129,14 @@ public class OperationTakeWhileTest {
         final RuntimeException testException = new RuntimeException("test exception");
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<String> take = Observable.create(takeWhile(Observable.create(source), new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 throw testException;
             }
         }));
-        take.subscribe(aObserver);
+        take.subscribe(new TestObserver<String>(observer));
 
         // wait for the Observable to complete
         try {
@@ -145,8 +146,8 @@ public class OperationTakeWhileTest {
             fail(e.getMessage());
         }
 
-        verify(aObserver, never()).onNext(any(String.class));
-        verify(aObserver, times(1)).onError(testException);
+        verify(observer, never()).onNext(any(String.class));
+        verify(observer, times(1)).onError(testException);
     }
 
     @Test
@@ -155,14 +156,14 @@ public class OperationTakeWhileTest {
         TestObservable w = new TestObservable(s, "one", "two", "three");
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<String> take = Observable.create(takeWhileWithIndex(Observable.create(w), new Func2<String, Integer, Boolean>() {
             @Override
             public Boolean call(String s, Integer index) {
                 return index < 1;
             }
         }));
-        take.subscribe(aObserver);
+        take.subscribe(new TestObserver<String>(observer));
 
         // wait for the Observable to complete
         try {
@@ -173,9 +174,9 @@ public class OperationTakeWhileTest {
         }
 
         System.out.println("TestObservable thread finished");
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, never()).onNext("two");
-        verify(aObserver, never()).onNext("three");
+        verify(observer, times(1)).onNext("one");
+        verify(observer, never()).onNext("two");
+        verify(observer, never()).onNext("three");
         verify(s, times(1)).unsubscribe();
     }
 

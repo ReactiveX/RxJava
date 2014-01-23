@@ -76,9 +76,9 @@ public class OperationDoOnEachTest {
             }
         });
 
-        Observable<String> doOnEach = errs.doOnEach(sideEffectObserver);
+        Observable<String> doOnEach = errs.doOnEach(new TestObserver<String>(sideEffectObserver));
 
-        doOnEach.subscribe(subscribedObserver);
+        doOnEach.subscribe(new TestObserver<String>(subscribedObserver));
         verify(subscribedObserver, times(1)).onNext("one");
         verify(subscribedObserver, never()).onNext("two");
         verify(subscribedObserver, never()).onNext("three");
@@ -104,7 +104,7 @@ public class OperationDoOnEachTest {
             }
         });
 
-        doOnEach.subscribe(subscribedObserver);
+        doOnEach.subscribe(new TestObserver<String>(subscribedObserver));
         verify(subscribedObserver, times(1)).onNext("one");
         verify(subscribedObserver, times(1)).onNext("two");
         verify(subscribedObserver, never()).onNext("three");

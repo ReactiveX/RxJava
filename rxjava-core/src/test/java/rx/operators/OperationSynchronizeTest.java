@@ -41,6 +41,8 @@ public class OperationSynchronizeTest {
         Observer<String> w = mock(Observer.class);
         Subscription ws = st.subscribe(new TestObserver<String>(w));
 
+        System.out.println("ws: " + ws);
+        
         t.sendOnNext("one");
         ws.unsubscribe();
         t.sendOnCompleted();
@@ -211,6 +213,7 @@ public class OperationSynchronizeTest {
                 @Override
                 public void unsubscribe() {
                     // going to do nothing to pretend I'm a bad Observable that keeps allowing events to be sent
+                    System.out.println("==> SynchronizeTest unsubscribe that does nothing!");
                 }
 
             };

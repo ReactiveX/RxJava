@@ -5324,8 +5324,7 @@ public class Observable<T> {
      * calls to user code from within an Observer"
      */
     private Subscription protectivelyWrapAndSubscribe(Observer<? super T> o) {
-        SafeObservableSubscription subscription = new SafeObservableSubscription();
-        return subscription.wrap(subscribe(new SafeObserver<T>(subscription, o)));
+        return subscribe(new SafeObserver<T>(o));
     }
 
     /**
@@ -6885,9 +6884,7 @@ public class Observable<T> {
             if (isInternalImplementation(observer)) {
                 onSubscribeFunction.call(observer);
             } else {
-                // TODO this doesn't seem correct any longer with the Observer and injecting of CompositeSubscription
-                SafeObservableSubscription subscription = new SafeObservableSubscription(observer);
-                onSubscribeFunction.call(new SafeObserver<T>(subscription, observer));
+                onSubscribeFunction.call(new SafeObserver<T>(observer));
             }
             return hook.onSubscribeReturn(this, observer);
         } catch (OnErrorNotImplementedException e) {

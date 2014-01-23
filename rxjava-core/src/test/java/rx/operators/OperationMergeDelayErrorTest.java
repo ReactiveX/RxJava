@@ -51,7 +51,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(o1, o2));
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
         verify(stringObserver, never()).onCompleted();
@@ -72,7 +72,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(o1, o2, o3, o4));
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
         verify(stringObserver, never()).onCompleted();
@@ -96,7 +96,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(o1, o2, o3, o4));
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
         verify(stringObserver, never()).onCompleted();
@@ -120,7 +120,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(o1, o2, o3, o4));
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
         verify(stringObserver, never()).onCompleted();
@@ -145,7 +145,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(Observable.create(o1), Observable.create(o2), Observable.create(o3), Observable.create(o4)));
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         try {
             o1.t.join();
@@ -176,7 +176,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(o1, o2));
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         verify(stringObserver, times(1)).onError(any(CompositeException.class));
         verify(stringObserver, never()).onCompleted();
@@ -238,7 +238,7 @@ public class OperationMergeDelayErrorTest {
 
         });
         Observable<String> m = Observable.create(mergeDelayError(observableOfObservables));
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(1)).onCompleted();
@@ -252,7 +252,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(o1, o2));
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(2)).onNext("hello");
@@ -268,7 +268,7 @@ public class OperationMergeDelayErrorTest {
         listOfObservables.add(o2);
 
         Observable<String> m = Observable.create(mergeDelayError(listOfObservables));
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(1)).onCompleted();
@@ -309,7 +309,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(Observable.create(o1), Observable.create(o2)));
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         try {
             o1.t.join();

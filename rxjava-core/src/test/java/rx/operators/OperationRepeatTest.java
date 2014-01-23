@@ -42,7 +42,7 @@ public class OperationRepeatTest {
                 o.onCompleted();
                 return Subscriptions.empty();
             }
-        }).repeat(Schedulers.threadPoolForComputation()).take(NUM).toBlockingObservable().last();
+        }).repeat(Schedulers.computation()).take(NUM).toBlockingObservable().last();
 
         assertEquals(NUM, value);
     }

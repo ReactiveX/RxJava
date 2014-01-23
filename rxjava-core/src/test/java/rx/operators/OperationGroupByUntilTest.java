@@ -34,6 +34,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.observables.GroupedObservable;
+import rx.observers.TestObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
@@ -130,7 +131,7 @@ public class OperationGroupByUntilTest {
                 keysel, valuesel,
                 duration).map(getkey);
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext("foo");
@@ -246,7 +247,7 @@ public class OperationGroupByUntilTest {
                 identity, dbl,
                 duration).map(getkey);
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onNext(0);
         verify(observer, times(1)).onError(any(Throwable.class));
@@ -277,7 +278,7 @@ public class OperationGroupByUntilTest {
             }
         });
 
-        inner.get().subscribe(observer);
+        inner.get().subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
