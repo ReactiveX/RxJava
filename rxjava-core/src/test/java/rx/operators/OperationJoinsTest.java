@@ -370,7 +370,8 @@ public class OperationJoinsTest {
                 xs.toObservable().and(zs.toObservable()).then(mul2),
                 ys.toObservable().and(zs.toObservable()).then(sub2)
                 );
-        m.subscribe(new TestObserver<Object>(observer));
+        TestObserver<Object> to = new TestObserver<Object>(observer);
+        m.subscribe(to);
 
         xs.onNext(1); // t == 210
 
@@ -392,6 +393,8 @@ public class OperationJoinsTest {
 
         zs.onCompleted(); // t == 300
 
+        System.out.println("Events: " + to.getOnNextEvents());
+        
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext(1 * 7);
         inOrder.verify(observer, times(1)).onNext(2 * 8);

@@ -29,6 +29,7 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
@@ -39,8 +40,8 @@ public class PublishSubjectTest {
         PublishSubject<String> subject = PublishSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        subject.toObservable().subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        subject.toObservable().subscribe(new TestObserver<String>(observer));
 
         subject.onNext("one");
         subject.onNext("two");
@@ -49,13 +50,13 @@ public class PublishSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> anotherObserver = mock(Observer.class);
-        subject.toObservable().subscribe(anotherObserver);
+        subject.toObservable().subscribe(new TestObserver<String>(anotherObserver));
 
         subject.onNext("four");
         subject.onCompleted();
         subject.onError(new Throwable());
 
-        assertCompletedObserver(aObserver);
+        assertCompletedObserver(observer);
         // todo bug?            assertNeverObserver(anotherObserver);
     }
 
@@ -69,8 +70,8 @@ public class PublishSubjectTest {
         @SuppressWarnings("unchecked")
         Observer<Object> observerC = mock(Observer.class);
 
-        Subscription a = channel.toObservable().subscribe(observerA);
-        Subscription b = channel.toObservable().subscribe(observerB);
+        Subscription a = channel.toObservable().subscribe(new TestObserver<Object>(observerA));
+        Subscription b = channel.toObservable().subscribe(new TestObserver<Object>(observerB));
 
         InOrder inOrderA = inOrder(observerA);
         InOrder inOrderB = inOrder(observerB);
@@ -92,7 +93,7 @@ public class PublishSubjectTest {
 
         inOrderB.verify(observerB).onCompleted();
 
-        Subscription c = channel.toObservable().subscribe(observerC);
+        Subscription c = channel.toObservable().subscribe(new TestObserver<Object>(observerC));
 
         inOrderC.verify(observerC).onCompleted();
 
@@ -102,12 +103,12 @@ public class PublishSubjectTest {
         inOrderC.verifyNoMoreInteractions();
     }
 
-    private void assertCompletedObserver(Observer<String> aObserver) {
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+    private void assertCompletedObserver(Observer<String> observer) {
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -115,8 +116,8 @@ public class PublishSubjectTest {
         PublishSubject<String> subject = PublishSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        subject.toObservable().subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        subject.toObservable().subscribe(new TestObserver<String>(observer));
 
         subject.onNext("one");
         subject.onNext("two");
@@ -125,22 +126,22 @@ public class PublishSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> anotherObserver = mock(Observer.class);
-        subject.toObservable().subscribe(anotherObserver);
+        subject.toObservable().subscribe(new TestObserver<String>(anotherObserver));
 
         subject.onNext("four");
         subject.onError(new Throwable());
         subject.onCompleted();
 
-        assertErrorObserver(aObserver);
+        assertErrorObserver(observer);
         // todo bug?            assertNeverObserver(anotherObserver);
     }
 
-    private void assertErrorObserver(Observer<String> aObserver) {
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, times(1)).onError(testException);
-        verify(aObserver, Mockito.never()).onCompleted();
+    private void assertErrorObserver(Observer<String> observer) {
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, times(1)).onError(testException);
+        verify(observer, Mockito.never()).onCompleted();
     }
 
     @Test
@@ -148,31 +149,31 @@ public class PublishSubjectTest {
         PublishSubject<String> subject = PublishSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        subject.toObservable().subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        subject.toObservable().subscribe(new TestObserver<String>(observer));
 
         subject.onNext("one");
         subject.onNext("two");
 
-        assertObservedUntilTwo(aObserver);
+        assertObservedUntilTwo(observer);
 
         @SuppressWarnings("unchecked")
         Observer<String> anotherObserver = mock(Observer.class);
-        subject.toObservable().subscribe(anotherObserver);
+        subject.toObservable().subscribe(new TestObserver<String>(anotherObserver));
 
         subject.onNext("three");
         subject.onCompleted();
 
-        assertCompletedObserver(aObserver);
+        assertCompletedObserver(observer);
         assertCompletedStartingWithThreeObserver(anotherObserver);
     }
 
-    private void assertCompletedStartingWithThreeObserver(Observer<String> aObserver) {
-        verify(aObserver, Mockito.never()).onNext("one");
-        verify(aObserver, Mockito.never()).onNext("two");
-        verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+    private void assertCompletedStartingWithThreeObserver(Observer<String> observer) {
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -180,32 +181,32 @@ public class PublishSubjectTest {
         PublishSubject<String> subject = PublishSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        Subscription subscription = subject.toObservable().subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = subject.toObservable().subscribe(new TestObserver<String>(observer));
 
         subject.onNext("one");
         subject.onNext("two");
 
         subscription.unsubscribe();
-        assertObservedUntilTwo(aObserver);
+        assertObservedUntilTwo(observer);
 
         @SuppressWarnings("unchecked")
         Observer<String> anotherObserver = mock(Observer.class);
-        subject.toObservable().subscribe(anotherObserver);
+        subject.toObservable().subscribe(new TestObserver<String>(anotherObserver));
 
         subject.onNext("three");
         subject.onCompleted();
 
-        assertObservedUntilTwo(aObserver);
+        assertObservedUntilTwo(observer);
         assertCompletedStartingWithThreeObserver(anotherObserver);
     }
 
-    private void assertObservedUntilTwo(Observer<String> aObserver) {
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, Mockito.never()).onNext("three");
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, Mockito.never()).onCompleted();
+    private void assertObservedUntilTwo(Observer<String> observer) {
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, Mockito.never()).onCompleted();
     }
 
     @Test
@@ -267,7 +268,7 @@ public class PublishSubjectTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         Observer<Integer> o1 = mock(Observer.class);
-        Subscription s1 = ps.toObservable().subscribe(o1);
+        Subscription s1 = ps.toObservable().subscribe(new TestObserver<Integer>(o1));
 
         // emit
         ps.onNext(1);
@@ -284,7 +285,7 @@ public class PublishSubjectTest {
         ps.onNext(2);
 
         Observer<Integer> o2 = mock(Observer.class);
-        Subscription s2 = ps.toObservable().subscribe(o2);
+        Subscription s2 = ps.toObservable().subscribe(new TestObserver<Integer>(o2));
 
         // emit
         ps.onNext(3);
