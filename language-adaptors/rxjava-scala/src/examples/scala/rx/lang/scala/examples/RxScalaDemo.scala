@@ -243,13 +243,10 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def groupByUntilExample() {
-    val numbers = Observable.interval(250 millis) take 14
-    val grouped = numbers.groupByUntil[Long, Long](
-      {case x => x % 2},
-      {case (key, obs) => obs filter {case x => x == 7}}
-    )
-    val sequenced = (grouped map {case (key, obs) => obs.toSeq}).flatten
-    sequenced subscribe {x => println(s"Emitted group: $x")}
+    val numbers = Observable.interval(250 millis).take(14)
+    val grouped = numbers.groupByUntil[Long](x => x % 2, {case (key, obs) => obs.filter(x => x == 7)})
+    val sequenced = (grouped.map({ case (key, obs) => obs.toSeq })).flatten
+    sequenced.subscribe(x => println(s"Emitted group: $x"))
   }
 
 
@@ -312,7 +309,7 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def averageExample() {
-    println(doubleAverage(Observable.empty[Double]).toBlockingObservable.single)
+    println(doubleAverage(Observable.empty).toBlockingObservable.single)
     println(doubleAverage(List(0.0).toObservable).toBlockingObservable.single)
     println(doubleAverage(List(4.44).toObservable).toBlockingObservable.single)
     println(doubleAverage(List(1, 2, 3.5).toObservable).toBlockingObservable.single)

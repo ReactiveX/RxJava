@@ -80,7 +80,7 @@ object Olympics {
     // So we don't use this:
     // Observable.interval(fourYears).take(1).map(i => neverUsedDummyMedal).filter(m => false)
     // But we just return empty, which completes immediately
-    Observable.empty[Medal]
+    Observable.empty
   }
 
 }
