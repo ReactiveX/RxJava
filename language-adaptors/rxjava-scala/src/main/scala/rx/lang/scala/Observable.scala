@@ -1349,6 +1349,48 @@ trait Observable[+T]
   }
 
   /**
+   * Correlates the items emitted by two Observables based on overlapping durations.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/join_.png">
+   *
+   * @param inner
+   *          the second Observable to join items from
+   * @param leftDurationSelector
+   *          a function to select a duration for each item emitted by the source Observable,
+   *          used to determine overlap
+   * @param rightDurationSelector
+   *         a function to select a duration for each item emitted by the inner Observable,
+   *         used to determine overlap
+   * @param resultSelector
+   *         a function that computes an item to be emitted by the resulting Observable for any
+   *         two overlapping items emitted by the two Observables
+   * @return
+   *         an Observable that emits items correlating to items emitted by the source Observables
+   *         that have overlapping durations
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#join">RxJava Wiki: join()</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229750.aspx">MSDN: Observable.Join</a>
+   */
+  def join[S, LeftClosing, RightClosing, R] (
+                                              inner: Observable[S],
+                                              leftDurationSelector: T=>Observable[LeftClosing],
+                                              rightDurationSelector: S=>Observable[RightClosing],
+                                              resultSelector: (T,S) => R
+                                              ): Observable[R] = {
+
+    val outer : rx.Observable[_ <: T] = this.asJavaObservable
+    val left:  Func1[_ >: T, _<: rx.Observable[_ <: LeftClosing]] =   (t: T) => leftDurationSelector(t).asJavaObservable
+    val right: Func1[_ >: S, _<: rx.Observable[_ <: RightClosing]] =  (s: S) => rightDurationSelector(s).asJavaObservable
+
+    val o1 = outer.asInstanceOf[rx.Observable[T]].join[S, LeftClosing, RightClosing, R](
+      inner.asJavaObservable.asInstanceOf[rx.Observable[S]],
+      left. asInstanceOf[Func1[T, rx.Observable[LeftClosing]]],
+      right.asInstanceOf[Func1[S, rx.Observable[RightClosing]]],
+      resultSelector.asInstanceOf[Func2[T,S,R]])
+
+    toScalaObservable[R](o1)
+  }
+
+  /**
    * Given an Observable that emits Observables, creates a single Observable that
    * emits the items emitted by the most recently published of those Observables.
    *
