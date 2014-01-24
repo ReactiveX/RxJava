@@ -37,7 +37,6 @@ public final class JoinObserver1<T> extends Observer<Notification<T>> implements
     private final Action1<Throwable> onError;
     private final List<ActivePlan0> activePlans;
     private final Queue<Notification<T>> queue;
-    //    private volatile boolean done;
     private final AtomicBoolean subscribed = new AtomicBoolean(false);
     private final SafeObserver<Notification<T>> safeObserver;
 
@@ -74,6 +73,30 @@ public final class JoinObserver1<T> extends Observer<Notification<T>> implements
         queue.remove();
     }
 
+
+    @Override
+    public void onNext(Notification<T> args) {
+        safeObserver.onNext(args);
+    }
+
+    @Override
+    public void onError(Throwable e) {
+        safeObserver.onError(e);
+    }
+
+    @Override
+    public void onCompleted() {
+        safeObserver.onCompleted();
+    }
+
+    void removeActivePlan(ActivePlan0 activePlan) {
+        activePlans.remove(activePlan);
+        if (activePlans.isEmpty()) {
+            unsubscribe();
+        }
+    }
+    
+    
     private final class InnerObserver extends Observer<Notification<T>> {
 
         @Override
@@ -102,28 +125,6 @@ public final class JoinObserver1<T> extends Observer<Notification<T>> implements
         @Override
         public void onCompleted() {
             // not expected or ignored
-        }
-    }
-
-    @Override
-    public void onNext(Notification<T> args) {
-        safeObserver.onNext(args);
-    }
-
-    @Override
-    public void onError(Throwable e) {
-        safeObserver.onError(e);
-    }
-
-    @Override
-    public void onCompleted() {
-        safeObserver.onCompleted();
-    }
-
-    void removeActivePlan(ActivePlan0 activePlan) {
-        activePlans.remove(activePlan);
-        if (activePlans.isEmpty()) {
-            unsubscribe();
         }
     }
 

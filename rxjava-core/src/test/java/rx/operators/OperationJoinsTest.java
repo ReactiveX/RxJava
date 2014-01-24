@@ -366,10 +366,13 @@ public class OperationJoinsTest {
         PublishSubject<Integer> zs = PublishSubject.create();
 
         Observable<Integer> m = Observable.when(
-                xs.toObservable().and(ys.toObservable()).then(add2),
-                xs.toObservable().and(zs.toObservable()).then(mul2),
-                ys.toObservable().and(zs.toObservable()).then(sub2)
+                xs.toObservable().and(ys.toObservable()).then(add2), // 1+4=5, 2+5=7, 3+6=9
+                xs.toObservable().and(zs.toObservable()).then(mul2), // 1*7=7, 2*8=16, 3*9=27
+                ys.toObservable().and(zs.toObservable()).then(sub2)  // 4-7=-3, 5-8=-3, 6-9=-3
                 );
+
+        // 5, 7, 9, 7, 16, 27, -3, -3, -3
+
         TestObserver<Object> to = new TestObserver<Object>(observer);
         m.subscribe(to);
 
@@ -394,7 +397,7 @@ public class OperationJoinsTest {
         zs.onCompleted(); // t == 300
 
         System.out.println("Events: " + to.getOnNextEvents());
-        
+
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext(1 * 7);
         inOrder.verify(observer, times(1)).onNext(2 * 8);
