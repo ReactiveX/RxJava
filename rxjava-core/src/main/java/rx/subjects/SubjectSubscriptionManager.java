@@ -24,6 +24,7 @@ import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
 
 /* package */class SubjectSubscriptionManager<T> {
@@ -51,10 +52,12 @@ import rx.util.functions.Action1;
                 State<T> current;
                 State<T> newState = null;
                 boolean addedObserver = false;
+                Subscription s;
                 do {
                     current = state.get();
                     if (current.terminated) {
                         // we are terminated so don't need to do anything
+                        s = Subscriptions.empty();
                         addedObserver = false;
                         // break out and don't try to modify state
                         newState = current;
@@ -67,10 +70,8 @@ import rx.util.functions.Action1;
                         }
                         break;
                     } else {
-                        final SafeObservableSubscription subscription = new SafeObservableSubscription();
-                        actualObserver.add(subscription); // add to parent if the Subject itself is unsubscribed
                         addedObserver = true;
-                        subscription.wrap(new Subscription() {
+                        s = new Subscription() {
                             @Override
                             public void unsubscribe() {
                                 State<T> current;
@@ -78,13 +79,13 @@ import rx.util.functions.Action1;
                                 do {
                                     current = state.get();
                                     // on unsubscribe remove it from the map of outbound observers to notify
-                                    newState = current.removeObserver(subscription);
+                                    newState = current.removeObserver(this);
                                 } while (!state.compareAndSet(current, newState));
                             }
-                        });
+                        };
 
                         // on subscribe add it to the map of outbound observers to notify
-                        newState = current.addObserver(subscription, observer);
+                        newState = current.addObserver(s, observer);
                     }
                 } while (!state.compareAndSet(current, newState));
 
@@ -94,12 +95,13 @@ import rx.util.functions.Action1;
                 if (newState.terminated && !addedObserver) {
                     onTerminated.call(observer);
                 }
+
+                actualObserver.add(s);
             }
 
         };
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void terminate(Action1<Collection<SubjectObserver<? super T>>> onTerminate) {
         State<T> current;
         State<T> newState = null;
@@ -134,7 +136,6 @@ import rx.util.functions.Action1;
      * 
      * @return the array of current observers
      */
-    @SuppressWarnings("unchecked")
     public SubjectObserver<Object>[] rawSnapshot() {
         return state.get().observers;
     }
@@ -231,6 +232,7 @@ import rx.util.functions.Action1;
         protected volatile boolean caughtUp = false;
 
         SubjectObserver(Observer<? super T> actual) {
+            super(actual);
             this.actual = actual;
         }
 
