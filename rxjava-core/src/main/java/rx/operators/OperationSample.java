@@ -107,13 +107,15 @@ public final class OperationSample {
                 }
             });
 
-            return Subscriptions.create(new Action0() {
+            observer.add(Subscriptions.create(new Action0() {
                 @Override
                 public void call() {
                     clockSubscription.unsubscribe();
                     sourceSubscription.unsubscribe();
                 }
-            });
+            }));
+            
+            return observer;
         }
     }
 

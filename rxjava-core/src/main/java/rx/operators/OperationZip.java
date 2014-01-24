@@ -150,7 +150,7 @@ public final class OperationZip {
 
             final List<ItemObserver<T>> all = new ArrayList<ItemObserver<T>>();
 
-            Observer<List<T>> o2 = new Observer<List<T>>() {
+            Observer<List<T>> o2 = new Observer<List<T>>(observer) {
                 boolean done;
                 @Override
                 public void onCompleted() {

@@ -74,8 +74,7 @@ public class OperationSkipLast {
                 throw new IndexOutOfBoundsException(
                         "count could not be negative");
             }
-            final SafeObservableSubscription subscription = new SafeObservableSubscription();
-            return subscription.wrap(source.subscribe(new Observer<T>() {
+            return source.subscribe(new Observer<T>(observer) {
 
                 private final ReentrantLock lock = new ReentrantLock();
 
@@ -104,7 +103,7 @@ public class OperationSkipLast {
                             observer.onNext(value);
                         } catch (Throwable ex) {
                             observer.onError(ex);
-                            subscription.unsubscribe();
+                            unsubscribe();
                         }
                         return;
                     }
@@ -120,13 +119,13 @@ public class OperationSkipLast {
                         }
                     } catch (Throwable ex) {
                         observer.onError(ex);
-                        subscription.unsubscribe();
+                        unsubscribe();
                     } finally {
                         lock.unlock();
                     }
                 }
 
-            }));
+            });
         }
     }
 

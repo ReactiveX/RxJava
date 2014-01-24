@@ -93,7 +93,7 @@ public class OperationRetry {
                             if ((retryCount == INFINITE_RETRY || attempts.get() <= retryCount) && !subscription.isUnsubscribed()) {
                                 // retry again
                                 // add the new subscription and schedule a retry recursively
-                                rescursiveSubscription.setSubscription(scheduler.schedule(rescursiveSubscription, attemptSubscription(observer)));
+                                rescursiveSubscription.set(scheduler.schedule(rescursiveSubscription, attemptSubscription(observer)));
                             } else {
                                 // give up and pass the failure
                                 observer.onError(e);

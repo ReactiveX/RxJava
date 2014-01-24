@@ -47,7 +47,7 @@ public class OperationRepeat<T> implements Observable.OnSubscribeFunc<T> {
         compositeSubscription.add(scheduler.schedule(new Action1<Action0>() {
             @Override
             public void call(final Action0 self) {
-                innerSubscription.set(source.subscribe(new Observer<T>() {
+                innerSubscription.set(source.subscribe(new Observer<T>(observer) {
 
                     @Override
                     public void onCompleted() {

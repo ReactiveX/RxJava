@@ -40,7 +40,7 @@ public class OperationDoOnEach {
 
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
-            return sequence.subscribe(new Observer<T>() {
+            return sequence.subscribe(new Observer<T>(observer) {
                 @Override
                 public void onCompleted() {
                     try {

@@ -213,7 +213,7 @@ public class Observable<T> {
             @Override
             public void call(Observer<? super T> observer) {
                 Subscription s = f.onSubscribe(observer);
-                if (s != null) {
+                if (s != null && s != observer) {
                     observer.add(s);
                 }
             }
