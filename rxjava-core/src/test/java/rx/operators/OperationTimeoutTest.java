@@ -73,8 +73,8 @@ public class OperationTimeoutTest {
     }
 
     @Test
-    public void testTimeoutSelectorTimeoutFirst() {
-        PublishSubject<Integer> source = PublishSubject.create();
+    public void testTimeoutSelectorTimeoutFirst() throws InterruptedException {
+        Observable<Integer> source = Observable.<Integer>never();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
         Func1<Integer, Observable<Integer>> timeoutFunc = new Func1<Integer, Observable<Integer>>() {
@@ -97,10 +97,10 @@ public class OperationTimeoutTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(new TestObserver<Object>(o));
-
+        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(new TestObserver<Object>(o));
+        
         timeout.onNext(1);
-
+        
         inOrder.verify(o).onNext(100);
         inOrder.verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
@@ -109,7 +109,7 @@ public class OperationTimeoutTest {
 
     @Test
     public void testTimeoutSelectorFirstThrows() {
-        PublishSubject<Integer> source = PublishSubject.create();
+        Observable<Integer> source = Observable.<Integer>never();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
         Func1<Integer, Observable<Integer>> timeoutFunc = new Func1<Integer, Observable<Integer>>() {
@@ -131,7 +131,7 @@ public class OperationTimeoutTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(new TestObserver<Object>(o));
+        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(new TestObserver<Object>(o));
 
         verify(o).onError(any(OperationReduceTest.CustomException.class));
         verify(o, never()).onNext(any());
