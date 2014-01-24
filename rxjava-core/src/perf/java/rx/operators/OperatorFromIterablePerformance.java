@@ -119,6 +119,15 @@ public class OperatorFromIterablePerformance extends AbstractPerformanceTester {
      * Run: 12 - 8,256,288 ops/sec
      * Run: 13 - 8,139,703 ops/sec
      * Run: 14 - 8,011,023 ops/sec
+     * 
+     * ... after v0.17 work:
+     * 
+     * Run: 10 - 31,296,553 ops/sec
+     * Run: 11 - 30,080,435 ops/sec
+     * Run: 12 - 31,886,941 ops/sec
+     * Run: 13 - 32,281,807 ops/sec
+     * Run: 14 - 33,519,028 ops/sec
+     * 
      */
     public long timeTenLongs() {
 

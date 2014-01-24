@@ -17,7 +17,7 @@ public class OperatorZipPerformance extends AbstractPerformanceTester {
                 @Override
                 public void call() {
                     spt.timeZipAandBwithSingleItems();
-                    //                    spt.timeZipAandBwith100Items();
+                    //                                        spt.timeZipAandBwith100Items();
                 }
             });
         } catch (Exception e) {
@@ -34,6 +34,14 @@ public class OperatorZipPerformance extends AbstractPerformanceTester {
      * Run: 12 - 1,420,459 ops/sec
      * Run: 13 - 1,409,877 ops/sec
      * Run: 14 - 1,426,019 ops/sec
+     * 
+     * ... after v0.17 work (still old implementation of zip):
+     * 
+     * Run: 10 - 1,202,371 ops/sec
+     * Run: 11 - 1,204,806 ops/sec
+     * Run: 12 - 1,196,630 ops/sec
+     * Run: 13 - 1,206,332 ops/sec
+     * Run: 14 - 1,206,169 ops/sec
      */
     public long timeZipAandBwithSingleItems() {
 
@@ -63,6 +71,11 @@ public class OperatorZipPerformance extends AbstractPerformanceTester {
      * 
      * Run: 0 - 30,698 ops/sec
      * Run: 1 - 31,061 ops/sec
+     * 
+     * ... after v0.17 work (still old implementation of zip):
+     * 
+     * Run: 0 - 40,048 ops/sec
+     * Run: 1 - 40,165 ops/sec
      * 
      */
     public long timeZipAandBwith100Items() {

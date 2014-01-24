@@ -33,6 +33,14 @@ public class OperatorMapPerformance extends AbstractPerformanceTester {
      * Run: 12 - 11,655,527 ops/sec
      * Run: 13 - 11,528,440 ops/sec
      * Run: 14 - 11,321,181 ops/sec
+     * 
+     * ... after v0.17 work:
+     * 
+     * Run: 10 - 17,674,464 ops/sec
+     * Run: 11 - 17,890,239 ops/sec
+     * Run: 12 - 17,919,155 ops/sec
+     * Run: 13 - 16,356,974 ops/sec
+     * Run: 14 - 16,723,414 ops/sec
      */
     public long timeMapPlusOne() {
 
