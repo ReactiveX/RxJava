@@ -148,7 +148,7 @@ public class SafeObserver<T> extends Observer<T> {
                 throw new RuntimeException("Error occurred when trying to propagate error to Observer.onError", new CompositeException(Arrays.asList(e, e2)));
             }
         }
-        // if we did not throw about we will unsubscribe here, if onError failed then unsubscribe happens in the catch
+        // if we did not throw above we will unsubscribe here, if onError failed then unsubscribe happens in the catch
         try {
             unsubscribe();
         } catch (RuntimeException unsubscribeException) {
