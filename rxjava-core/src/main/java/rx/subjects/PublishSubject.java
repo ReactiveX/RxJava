@@ -86,19 +86,19 @@ public final class PublishSubject<T> extends Subject<T, T> {
         return new PublishSubject<T>(onSubscribe, subscriptionManager, lastNotification);
     }
 
-    private final OnSubscribe<T> onSubscribe;
     private final SubjectSubscriptionManager<T> subscriptionManager;
     final AtomicReference<Notification<T>> lastNotification;
+    private final Observable<T> observable;
 
     protected PublishSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
-        this.onSubscribe = onSubscribe;
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
+        this.observable = Observable.create(onSubscribe);
     }
 
     @Override
     public Observable<T> toObservable() {
-        return Observable.create(onSubscribe);
+        return observable;
     }
 
     @Override
@@ -107,7 +107,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(new Notification<T>());
+                lastNotification.set(Notification.<T>createOnCompleted());
                 for (Observer<? super T> o : observers) {
                     o.onCompleted();
                 }
@@ -121,7 +121,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(new Notification<T>(e));
+                lastNotification.set(Notification.<T>createOnError(e));
                 for (Observer<? super T> o : observers) {
                     o.onError(e);
                 }

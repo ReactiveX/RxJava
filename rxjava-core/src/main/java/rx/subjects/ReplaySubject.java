@@ -108,17 +108,17 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     private final SubjectSubscriptionManager<T> subscriptionManager;
     private final ReplayState<T> state;
-    private final OnSubscribe<T> onSubscribe;
+    private final Observable<T> observable;
 
     protected ReplaySubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, ReplayState<T> state) {
-        this.onSubscribe = onSubscribe;
         this.subscriptionManager = subscriptionManager;
         this.state = state;
+        this.observable = Observable.create(onSubscribe);
     }
 
     @Override
     public Observable<T> toObservable() {
-        return Observable.create(onSubscribe);
+        return observable;
     }
 
     @Override
@@ -127,7 +127,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                state.history.complete(new Notification<T>());
+                state.history.complete(Notification.<T>createOnCompleted());
                 for (SubjectObserver<? super T> o : observers) {
                     if (caughtUp(o)) {
                         o.onCompleted();
@@ -143,7 +143,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                state.history.complete(new Notification<T>(e));
+                state.history.complete(Notification.<T>createOnError(e));
                 for (SubjectObserver<? super T> o : observers) {
                     if (caughtUp(o)) {
                         o.onError(e);

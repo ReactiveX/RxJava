@@ -119,19 +119,19 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         return new BehaviorSubject<T>(onSubscribe, subscriptionManager, lastNotification);
     }
 
-    private final OnSubscribe<T> onSubscribe;
     private final SubjectSubscriptionManager<T> subscriptionManager;
     final AtomicReference<Notification<T>> lastNotification;
+    private final Observable<T> observable;
 
     protected BehaviorSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
-        this.onSubscribe = onSubscribe;
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
+        this.observable = Observable.create(onSubscribe);
     }
 
     @Override
     public Observable<T> toObservable() {
-        return Observable.create(onSubscribe);
+        return observable;
     }
 
     @Override
@@ -140,7 +140,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(new Notification<T>());
+                lastNotification.set(Notification.<T>createOnCompleted());
                 for (Observer<? super T> o : observers) {
                     o.onCompleted();
                 }
@@ -154,7 +154,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(new Notification<T>(e));
+                lastNotification.set(Notification.<T>createOnError(e));
                 for (Observer<? super T> o : observers) {
                     o.onError(e);
                 }
@@ -168,7 +168,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         // do not overwrite a terminal notification
         // so new subscribers can get them
         if (lastNotification.get().isOnNext()) {
-            lastNotification.set(new Notification<T>(v));
+            lastNotification.set(Notification.<T>createOnNext(v));
             for (Observer<? super T> o : subscriptionManager.rawSnapshot()) {
                 o.onNext(v);
             }
