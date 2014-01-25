@@ -23,6 +23,7 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -361,12 +362,6 @@ public class OperationJoinsTest {
         verify(observer, never()).onCompleted();
     }
 
-    /**
-     * Disabled for now as I am not sure what this should assert to and it is non-deterministic. 
-     * 
-     * Where is the non-determinism coming from since there is no concurrency in this test?
-     */
-    @Ignore
     @Test
     public void whenComplicated() {
         PublishSubject<Integer> xs = PublishSubject.create();
@@ -379,53 +374,41 @@ public class OperationJoinsTest {
                 ys.toObservable().and(zs.toObservable()).then(sub2)  // 4-7=-3, 5-8=-3, 6-9=-3
                 );
 
-        // 5, 7, 9, 7, 16, 27, -3, -3, -3
-
-        // order they join is ...
-        // 7, 16, 5, -3, 27, 7, -3, 9, -3
-
-        // 7, 16, 7, -4
-
         TestObserver<Integer> to = new TestObserver<Integer>(observer);
         m.subscribe(to);
 
-        xs.onNext(1); // t == 210
+        xs.onNext(1); // t == 210, xs[1], ys[], zs[]
 
-        xs.onNext(2); // t == 220
-        zs.onNext(7); // t == 220
+        xs.onNext(2); // t == 220, xs[1, 2], ys[], zs[]
+        zs.onNext(7); // t == 220, xs[1, 2], ys[], zs[7] triggers x and z; emit 1 * 7, remains xs[2], ys[], zs[]
 
-        xs.onNext(3); // t == 230
-        zs.onNext(8); // t == 230
+        xs.onNext(3); // t == 230, xs[2,3], ys[], zs[]
+        zs.onNext(8); // t == 230, xs[2,3], ys[], zs[8] triggers x and z, emit 2 * 8, remains xs[3], ys[], zs[]
 
-        ys.onNext(4); // t == 240
-        zs.onNext(9); // t == 240
-        xs.onCompleted(); // t == 240
+        ys.onNext(4); // t == 240, xs[], ys[4], zs[] triggers x and y, emit 3 + 4, remains xs[], ys[], zs[]
+        zs.onNext(9); // t == 240, xs[], ys[], zs[9]
+        xs.onCompleted(); // t == 240, completed 1
 
-        ys.onNext(5); // t == 250
+        ys.onNext(5); // t == 250, xs[], ys[5], zs[9], triggers ys and zs, emits 5 - 9, remains xs[], ys[], zs[]
 
-        ys.onNext(6); // t == 260
+        ys.onNext(6); // t == 260, xs[], ys[6], zs[]
 
-        ys.onCompleted(); // t == 270
+        ys.onCompleted(); // t == 270, completed 2
 
-        zs.onCompleted(); // t == 300
+        zs.onCompleted(); // t == 300, completed 3, triggers when() oncompleted
 
         System.out.println("Events: " + to.getOnNextEvents());
 
-        to.assertReceivedOnNext(Arrays.asList(7, 16, 5, -3, 27, 7, -3, 9, -3));
+        to.assertReceivedOnNext(Arrays.asList(7, 16, 7, -4));
         to.assertTerminalEvent();
 
-        // TODO validate the following
-        /**
-         * The following assertions existed and passed in 0.16. How did it ever pass?
-         * What is this supposed to do if not [7, 16, 5, -3, 27, 7, -3, 9, -3] ?
-         */
-        //        InOrder inOrder = inOrder(observer);
-        //        
-        //        inOrder.verify(observer, times(1)).onNext(1 * 7);
-        //        inOrder.verify(observer, times(1)).onNext(2 * 8);
-        //        inOrder.verify(observer, times(1)).onNext(3 + 4);
-        //        inOrder.verify(observer, times(1)).onNext(5 - 9);
-        //        inOrder.verify(observer, times(1)).onCompleted();
-        //        verify(observer, never()).onError(any(Throwable.class));
+        InOrder inOrder = inOrder(observer);
+
+        inOrder.verify(observer, times(1)).onNext(1 * 7);
+        inOrder.verify(observer, times(1)).onNext(2 * 8);
+        inOrder.verify(observer, times(1)).onNext(3 + 4);
+        inOrder.verify(observer, times(1)).onNext(5 - 9);
+        inOrder.verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 }
