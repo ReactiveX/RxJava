@@ -15,27 +15,21 @@
  */
 package rx.android.schedulers;
 
-import android.os.Handler;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Func2;
-
-import java.util.concurrent.TimeUnit;
-
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import android.os.Handler;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest=Config.NONE)
