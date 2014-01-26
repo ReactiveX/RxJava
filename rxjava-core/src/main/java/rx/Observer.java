@@ -20,9 +20,9 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Provides a mechanism for receiving push-based notifications.
  * <p>
- * After an Observer calls an {@link Observable}'s <code>Observable.subscribe</code> method, the {@link Observable} calls the Observer's <code>onNext</code> method to provide notifications. A
- * well-behaved {@link Observable} will
- * call an Observer's <code>onCompleted</code> closure exactly once or the Observer's <code>onError</code> closure exactly once.
+ * After an Observer calls an {@link Observable}'s <code>Observable.subscribe</code> method, the {@link Observable} calls the 
+ * Observer's <code>onNext</code> method to provide notifications. A well-behaved {@link Observable} will call an Observer's 
+ * <code>onCompleted</code> closure exactly once or the Observer's <code>onError</code> closure exactly once.
  * <p>
  * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
  * 
@@ -34,7 +34,7 @@ public abstract class Observer<T> implements Subscription {
 
     protected Observer(CompositeSubscription cs) {
         if (cs == null) {
-            throw new IllegalArgumentException("The CompositeException can not be null");
+            throw new IllegalArgumentException("The CompositeSubscription can not be null");
         }
         this.cs = cs;
     }
