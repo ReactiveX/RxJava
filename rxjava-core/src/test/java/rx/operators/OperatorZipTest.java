@@ -15,31 +15,38 @@
  */
 package rx.operators;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationZip.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.operators.OperationReduceTest.CustomException;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action1;
 import rx.util.functions.Func2;
 import rx.util.functions.Func3;
 import rx.util.functions.FuncN;
 import rx.util.functions.Functions;
 
-public class OperationZipTest {
+public class OperatorZipTest {
     Func2<String, String, String> concat2Strings;
     PublishSubject<String> s1;
     PublishSubject<String> s2;
@@ -79,7 +86,7 @@ public class OperationZipTest {
 
         @SuppressWarnings("rawtypes")
         Collection ws = java.util.Collections.singleton(Observable.from("one", "two"));
-        Observable<String> w = Observable.create(zip(ws, zipr));
+        Observable<String> w = Observable.zip(ws, zipr);
         w.subscribe(observer);
 
         verify(observer, times(1)).onError(any(Throwable.class));
@@ -97,7 +104,7 @@ public class OperationZipTest {
         TestObservable w2 = new TestObservable();
         TestObservable w3 = new TestObservable();
 
-        Observable<String> zipW = Observable.create(zip(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsZipr()));
+        Observable<String> zipW = Observable.zip(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsZipr());
         zipW.subscribe(w);
 
         /* simulate sending data */
@@ -131,7 +138,7 @@ public class OperationZipTest {
         TestObservable w2 = new TestObservable();
         TestObservable w3 = new TestObservable();
 
-        Observable<String> zipW = Observable.create(zip(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsZipr()));
+        Observable<String> zipW = Observable.zip(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsZipr());
         zipW.subscribe(w);
 
         /* simulate sending data */
@@ -222,7 +229,6 @@ public class OperationZipTest {
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
         Observer<String> observer = mock(Observer.class);
-
         Observable.zip(r1, r2, zipr2).subscribe(observer);
 
         /* simulate the Observables pushing data into the aggregator */
@@ -430,7 +436,7 @@ public class OperationZipTest {
         /* define a Observer to receive aggregated events */
         Observer<String> observer = mock(Observer.class);
 
-        Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2, 3, 4), zipr));
+        Observable<String> w = Observable.zip(Observable.from("one", "two"), Observable.from(2, 3, 4), zipr);
         w.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -449,7 +455,7 @@ public class OperationZipTest {
         /* define a Observer to receive aggregated events */
         Observer<String> observer = mock(Observer.class);
 
-        Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), zipr));
+        Observable<String> w = Observable.zip(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), zipr);
         w.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -465,7 +471,7 @@ public class OperationZipTest {
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
 
-        Observable<Integer> w = Observable.create(zip(Observable.from(10, 20, 30), Observable.from(0, 1, 2), zipr));
+        Observable<Integer> w = Observable.zip(Observable.from(10, 20, 30), Observable.from(0, 1, 2), zipr);
         w.subscribe(observer);
 
         verify(observer, times(1)).onError(any(Throwable.class));
@@ -479,7 +485,7 @@ public class OperationZipTest {
         @SuppressWarnings("unchecked")
         Observer<String> obs = mock(Observer.class);
 
-        Observable<String> o = Observable.create(zip(oA, oB, getConcat2Strings()));
+        Observable<String> o = Observable.zip(oA, oB, getConcat2Strings());
         o.subscribe(obs);
 
         InOrder io = inOrder(obs);
@@ -530,7 +536,7 @@ public class OperationZipTest {
         @SuppressWarnings("unchecked")
         Observer<String> obs = mock(Observer.class);
 
-        Observable<String> o = Observable.create(zip(oA, oB, getConcat2Strings()));
+        Observable<String> o = Observable.zip(oA, oB, getConcat2Strings());
         o.subscribe(obs);
 
         InOrder io = inOrder(obs);
@@ -1018,7 +1024,7 @@ public class OperationZipTest {
         verify(o, never()).onCompleted();
 
     }
-    
+
     @Test
     public void testZipWithOnCompletedTwice() {
         // issue: https://groups.google.com/forum/#!topic/rxjava/79cWTv3TFp0
@@ -1062,5 +1068,171 @@ public class OperationZipTest {
         inOrder.verify(observer, times(1)).onNext(2);
         inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testZip() {
+        Observable<String> os = OBSERVABLE_OF_5_INTEGERS
+                .zip(OBSERVABLE_OF_5_INTEGERS, new Func2<Integer, Integer, String>() {
+
+                    @Override
+                    public String call(Integer a, Integer b) {
+                        return a + "-" + b;
+                    }
+                });
+
+        final ArrayList<String> list = new ArrayList<String>();
+        os.subscribe(new Action1<String>() {
+
+            @Override
+            public void call(String s) {
+                System.out.println(s);
+                list.add(s);
+            }
+        });
+
+        assertEquals(5, list.size());
+        assertEquals("1-1", list.get(0));
+        assertEquals("2-2", list.get(1));
+        assertEquals("5-5", list.get(4));
+    }
+
+    @Test
+    public void testZipAsync() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch infiniteObservables = new CountDownLatch(2);
+        Observable<String> os = ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteObservables)
+                .zip(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteObservables), new Func2<Integer, Integer, String>() {
+
+                    @Override
+                    public String call(Integer a, Integer b) {
+                        return a + "-" + b;
+                    }
+                }).take(5);
+
+        final ArrayList<String> list = new ArrayList<String>();
+        os.subscribe(new Observer<String>() {
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+                latch.countDown();
+            }
+
+            @Override
+            public void onNext(String s) {
+                System.out.println(s);
+                list.add(s);
+            }
+        });
+
+        latch.await(2000, TimeUnit.MILLISECONDS);
+        if (!infiniteObservables.await(2000, TimeUnit.MILLISECONDS)) {
+            throw new RuntimeException("didn't unsubscribe");
+        }
+
+        assertEquals(5, list.size());
+        assertEquals("1-1", list.get(0));
+        assertEquals("2-2", list.get(1));
+        assertEquals("5-5", list.get(4));
+    }
+
+    @Test
+    public void testZipInfiniteAndFinite() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch infiniteObservable = new CountDownLatch(1);
+        Observable<String> os = OBSERVABLE_OF_5_INTEGERS
+                .zip(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteObservable), new Func2<Integer, Integer, String>() {
+
+                    @Override
+                    public String call(Integer a, Integer b) {
+                        return a + "-" + b;
+                    }
+                });
+
+        final ArrayList<String> list = new ArrayList<String>();
+        os.subscribe(new Observer<String>() {
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+                latch.countDown();
+            }
+
+            @Override
+            public void onNext(String s) {
+                System.out.println(s);
+                list.add(s);
+            }
+        });
+
+        latch.await(1000, TimeUnit.MILLISECONDS);
+        if (!infiniteObservable.await(2000, TimeUnit.MILLISECONDS)) {
+            throw new RuntimeException("didn't unsubscribe");
+        }
+
+        assertEquals(5, list.size());
+        assertEquals("1-1", list.get(0));
+        assertEquals("2-2", list.get(1));
+        assertEquals("5-5", list.get(4));
+    }
+
+    Observable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
+
+    Observable<Integer> OBSERVABLE_OF_5_INTEGERS(final AtomicInteger numEmitted) {
+        return Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> o) {
+                for (int i = 1; i <= 5; i++) {
+                    if (o.isUnsubscribed()) {
+                        break;
+                    }
+                    numEmitted.incrementAndGet();
+                    o.onNext(i);
+                    Thread.yield();
+                }
+                o.onCompleted();
+            }
+
+        });
+    }
+
+    Observable<Integer> ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(final CountDownLatch latch) {
+        return Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> o) {
+                Thread t = new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        System.out.println("-------> subscribe to infinite sequence");
+                        System.out.println("Starting thread: " + Thread.currentThread());
+                        int i = 1;
+                        while (!o.isUnsubscribed()) {
+                            o.onNext(i++);
+                            Thread.yield();
+                        }
+                        o.onCompleted();
+                        latch.countDown();
+                        System.out.println("Ending thread: " + Thread.currentThread());
+                    }
+                });
+                t.start();
+
+            }
+
+        });
     }
 }
