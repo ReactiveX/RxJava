@@ -403,7 +403,6 @@ public class OperationConditionalsTest {
 
     @Test
     public void testDoWhileManyTimes() {
-        fail("deadlocking");
         Observable<Integer> source1 = Observable.from(1, 2, 3).subscribeOn(Schedulers.currentThread());
 
         List<Integer> expected = new ArrayList<Integer>(numRecursion * 3);
