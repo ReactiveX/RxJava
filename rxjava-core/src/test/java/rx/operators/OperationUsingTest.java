@@ -26,6 +26,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;
@@ -67,7 +68,7 @@ public class OperationUsingTest {
         Observer<String> observer = (Observer<String>) mock(Observer.class);
         Observable<String> observable = Observable.create(using(
                 resourceFactory, observableFactory));
-        observable.subscribe(observer);
+        observable.subscribe(new TestObserver<String>(observer));
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext("Hello");
@@ -117,8 +118,8 @@ public class OperationUsingTest {
         Observer<String> observer = (Observer<String>) mock(Observer.class);
         Observable<String> observable = Observable.create(using(
                 resourceFactory, observableFactory));
-        observable.subscribe(observer);
-        observable.subscribe(observer);
+        observable.subscribe(new TestObserver<String>(observer));
+        observable.subscribe(new TestObserver<String>(observer));
 
         InOrder inOrder = inOrder(observer);
 

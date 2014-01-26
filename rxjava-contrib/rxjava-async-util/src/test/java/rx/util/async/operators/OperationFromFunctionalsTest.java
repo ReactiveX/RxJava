@@ -20,13 +20,17 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
+
 import static org.mockito.Mockito.*;
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.util.async.Async;
 import rx.util.functions.Action0;
@@ -42,7 +46,7 @@ public class OperationFromFunctionalsTest {
         for (int i = 0; i < 3; i++) {
             
             Observer<Object> observer = mock(Observer.class);
-            source.subscribe(observer);
+            source.subscribe(new TestObserver<Object>(observer));
 
             InOrder inOrder = inOrder(observer);
 
@@ -74,7 +78,7 @@ public class OperationFromFunctionalsTest {
             value.set(0);
             
             Observer<Object> observer = mock(Observer.class);
-            source.subscribe(observer);
+            source.subscribe(new TestObserver<Object>(observer));
 
             InOrder inOrder = inOrder(observer);
 
@@ -118,7 +122,7 @@ public class OperationFromFunctionalsTest {
         for (int i = 0; i < 3; i++) {
             
             Observer<Object> observer = mock(Observer.class);
-            source.subscribe(observer);
+            source.subscribe(new TestObserver<Object>(observer));
 
             InOrder inOrder = inOrder(observer);
 
@@ -165,7 +169,7 @@ public class OperationFromFunctionalsTest {
             value.set(0);
             
             Observer<Object> observer = mock(Observer.class);
-            source.subscribe(observer);
+            source.subscribe(new TestObserver<Object>(observer));
 
             InOrder inOrder = inOrder(observer);
 
@@ -209,7 +213,7 @@ public class OperationFromFunctionalsTest {
         for (int i = 0; i < 3; i++) {
             
             Observer<Object> observer = mock(Observer.class);
-            source.subscribe(observer);
+            source.subscribe(new TestObserver<Object>(observer));
 
             InOrder inOrder = inOrder(observer);
 

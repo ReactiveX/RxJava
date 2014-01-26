@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
 public class OperationOnErrorResumeNextViaObservableTest {
@@ -40,8 +41,8 @@ public class OperationOnErrorResumeNextViaObservableTest {
         Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<String>(observer));
 
         try {
             f.t.join();
@@ -49,13 +50,13 @@ public class OperationOnErrorResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, Mockito.never()).onNext("two");
-        verify(aObserver, Mockito.never()).onNext("three");
-        verify(aObserver, times(1)).onNext("twoResume");
-        verify(aObserver, times(1)).onNext("threeResume");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, times(1)).onNext("twoResume");
+        verify(observer, times(1)).onNext("threeResume");
     }
 
     @Test
@@ -81,8 +82,8 @@ public class OperationOnErrorResumeNextViaObservableTest {
         Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<String>(observer));
 
         try {
             f.t.join();
@@ -90,13 +91,13 @@ public class OperationOnErrorResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, Mockito.never()).onNext("two");
-        verify(aObserver, Mockito.never()).onNext("three");
-        verify(aObserver, times(1)).onNext("twoResume");
-        verify(aObserver, times(1)).onNext("threeResume");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, times(1)).onNext("twoResume");
+        verify(observer, times(1)).onNext("threeResume");
     }
 
     private static class TestObservable implements Observable.OnSubscribeFunc<String> {

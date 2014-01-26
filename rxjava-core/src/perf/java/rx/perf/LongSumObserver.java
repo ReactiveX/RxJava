@@ -2,7 +2,7 @@ package rx.perf;
 
 import rx.Observer;
 
-public class LongSumObserver implements Observer<Long> {
+public class LongSumObserver extends Observer<Long> {
 
     public long sum = 0;
 

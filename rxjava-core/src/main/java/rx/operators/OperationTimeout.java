@@ -197,7 +197,7 @@ public final class OperationTimeout {
         }
 
         /** Observe the source. */
-        private static final class SourceObserver<T, V> implements Observer<T>, TimeoutCallback {
+        private static final class SourceObserver<T, V> extends Observer<T> implements TimeoutCallback {
             final Observer<? super T> observer;
             final Func1<? super T, ? extends Observable<V>> valueTimeout;
             final Observable<? extends T> other;
@@ -292,7 +292,7 @@ public final class OperationTimeout {
         }
 
         /** Observe the timeout. */
-        private static final class TimeoutObserver<V> implements Observer<V> {
+        private static final class TimeoutObserver<V> extends Observer<V> {
             final TimeoutCallback parent;
 
             public TimeoutObserver(TimeoutCallback parent) {

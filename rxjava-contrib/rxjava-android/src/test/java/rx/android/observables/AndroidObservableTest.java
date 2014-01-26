@@ -25,15 +25,15 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.operators.OperationObserveFromAndroidComponent;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Build;
 import android.support.v4.app.FragmentActivity;
-
 import rx.android.observables.AndroidObservable;
 
 
@@ -66,14 +66,14 @@ public class AndroidObservableTest {
 
     @Test
     public void itSupportsFragmentsFromTheSupportV4Library() {
-        AndroidObservable.fromFragment(supportFragment, Observable.just("success")).subscribe(observer);
+        AndroidObservable.fromFragment(supportFragment, Observable.just("success")).subscribe(new TestObserver<String>(observer));
         verify(observer).onNext("success");
         verify(observer).onCompleted();
     }
 
     @Test
     public void itSupportsNativeFragments() {
-        AndroidObservable.fromFragment(fragment, Observable.just("success")).subscribe(observer);
+        AndroidObservable.fromFragment(fragment, Observable.just("success")).subscribe(new TestObserver<String>(observer));
         verify(observer).onNext("success");
         verify(observer).onCompleted();
     }

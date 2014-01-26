@@ -21,6 +21,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.SafeObserver;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -87,7 +88,6 @@ public final class OperationTakeWhile {
     private static class TakeWhile<T> implements OnSubscribeFunc<T> {
         private final Observable<? extends T> items;
         private final Func2<? super T, ? super Integer, Boolean> predicate;
-        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
         private TakeWhile(Observable<? extends T> items, Func2<? super T, ? super Integer, Boolean> predicate) {
             this.items = items;
@@ -96,19 +96,20 @@ public final class OperationTakeWhile {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
-            return subscription.wrap(items.subscribe(new ItemObserver(observer)));
+            return items.subscribe(new ItemObserver(observer));
         }
 
-        private class ItemObserver implements Observer<T> {
+        private class ItemObserver extends Observer<T> {
             private final Observer<? super T> observer;
 
             private final AtomicInteger counter = new AtomicInteger();
 
             public ItemObserver(Observer<? super T> observer) {
+                super(observer);
                 // Using AtomicObserver because the unsubscribe, onCompleted, onError and error handling behavior
                 // needs "isFinished" logic to not send duplicated events
                 // The 'testTakeWhile1' and 'testTakeWhile2' tests fail without this.
-                this.observer = new SafeObserver<T>(subscription, observer);
+                this.observer = new SafeObserver<T>(observer);
             }
 
             @Override
@@ -134,8 +135,7 @@ public final class OperationTakeWhile {
                     observer.onNext(args);
                 } else {
                     observer.onCompleted();
-                    // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
-                    subscription.unsubscribe();
+                    unsubscribe();
                 }
             }
 

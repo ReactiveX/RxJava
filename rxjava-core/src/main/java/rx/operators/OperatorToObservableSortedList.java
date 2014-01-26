@@ -20,8 +20,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import rx.Operator;
-import rx.util.functions.Func1;
+import rx.Observer;
 import rx.util.functions.Func2;
 
 /**
@@ -29,11 +28,11 @@ import rx.util.functions.Func2;
  * (each item emitted by the Observable must implement Comparable with respect to all other items
  * in the sequence, or you must pass in a sort function).
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/toSortedList.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-Observers/toSortedList.png">
  * 
  * @param <T>
  */
-public final class OperatorToObservableSortedList<T> implements Func1<Operator<? super List<T>>, Operator<? super T>> {
+public final class OperatorToObservableSortedList<T> implements Operator<List<T>, T> {
     private final Func2<? super T, ? super T, Integer> sortFunction;
 
     @SuppressWarnings("unchecked")
@@ -46,8 +45,8 @@ public final class OperatorToObservableSortedList<T> implements Func1<Operator<?
     }
 
     @Override
-    public Operator<? super T> call(final Operator<? super List<T>> o) {
-        return new Operator<T>(o) {
+    public Observer<? super T> call(final Observer<? super List<T>> o) {
+        return new Observer<T>(o) {
 
             final List<T> list = new ArrayList<T>();
 

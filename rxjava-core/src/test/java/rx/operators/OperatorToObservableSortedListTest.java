@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.util.functions.Func2;
 
 public class OperatorToObservableSortedListTest {
@@ -33,20 +34,20 @@ public class OperatorToObservableSortedListTest {
     @Test
     public void testSortedList() {
         Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
-        Observable<List<Integer>> observable = w.bind(new OperatorToObservableSortedList<Integer>());
+        Observable<List<Integer>> observable = w.lift(new OperatorToObservableSortedList<Integer>());
 
         @SuppressWarnings("unchecked")
-        Observer<List<Integer>> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<List<Integer>> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<List<Integer>>(observer));
+        verify(observer, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
     public void testSortedListWithCustomFunction() {
         Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
-        Observable<List<Integer>> observable = w.bind(new OperatorToObservableSortedList<Integer>(new Func2<Integer, Integer, Integer>() {
+        Observable<List<Integer>> observable = w.lift(new OperatorToObservableSortedList<Integer>(new Func2<Integer, Integer, Integer>() {
 
             @Override
             public Integer call(Integer t1, Integer t2) {
@@ -56,10 +57,10 @@ public class OperatorToObservableSortedListTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Observer<List<Integer>> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<List<Integer>> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<List<Integer>>(observer));
+        verify(observer, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 }

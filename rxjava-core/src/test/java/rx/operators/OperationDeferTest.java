@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.util.functions.Func0;
 
 public class OperationDeferTest {
@@ -40,7 +41,7 @@ public class OperationDeferTest {
         verifyZeroInteractions(factory);
 
         Observer<String> firstObserver = mock(Observer.class);
-        deferred.subscribe(firstObserver);
+        deferred.subscribe(new TestObserver<String>(firstObserver));
 
         verify(factory, times(1)).call();
         verify(firstObserver, times(1)).onNext("one");
@@ -50,7 +51,7 @@ public class OperationDeferTest {
         verify(firstObserver, times(1)).onCompleted();
 
         Observer<String> secondObserver = mock(Observer.class);
-        deferred.subscribe(secondObserver);
+        deferred.subscribe(new TestObserver<String>(secondObserver));
 
         verify(factory, times(2)).call();
         verify(secondObserver, times(0)).onNext("one");

@@ -107,13 +107,15 @@ public final class OperationSample {
                 }
             });
 
-            return Subscriptions.create(new Action0() {
+            observer.add(Subscriptions.create(new Action0() {
                 @Override
                 public void call() {
                     clockSubscription.unsubscribe();
                     sourceSubscription.unsubscribe();
                 }
-            });
+            }));
+            
+            return observer;
         }
     }
 
@@ -137,7 +139,7 @@ public final class OperationSample {
         }
 
         /** Observe source values. */
-        class ResultManager implements Observer<T> {
+        class ResultManager extends Observer<T> {
             final Observer<? super T> observer;
             final CompositeSubscription cancel;
             T value;
@@ -189,7 +191,7 @@ public final class OperationSample {
             }
 
             /** Take the latest value, but only once. */
-            class Sampler implements Observer<U> {
+            class Sampler extends Observer<U> {
                 @Override
                 public void onNext(U args) {
                     synchronized (guard) {

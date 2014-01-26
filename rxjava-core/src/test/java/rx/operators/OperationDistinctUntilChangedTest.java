@@ -29,14 +29,15 @@ import org.mockito.Mock;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
 public class OperationDistinctUntilChangedTest {
 
     @Mock
-    Observer<? super String> w;
+    Observer<String> w;
     @Mock
-    Observer<? super String> w2;
+    Observer<String> w2;
 
     // nulls lead to exceptions
     final Func1<String, String> TO_UPPER_WITH_EXCEPTION = new Func1<String, String>() {
@@ -64,7 +65,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedOfNone() {
         Observable<String> src = Observable.empty();
-        Observable.create(distinctUntilChanged(src)).subscribe(w);
+        Observable.create(distinctUntilChanged(src)).subscribe(new TestObserver<String>(w));
 
         verify(w, never()).onNext(anyString());
         verify(w, never()).onError(any(Throwable.class));
@@ -74,7 +75,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedOfNoneWithKeySelector() {
         Observable<String> src = Observable.empty();
-        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
+        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(new TestObserver<String>(w));
 
         verify(w, never()).onNext(anyString());
         verify(w, never()).onError(any(Throwable.class));
@@ -84,7 +85,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedOfNormalSource() {
         Observable<String> src = Observable.from("a", "b", "c", "c", "c", "b", "b", "a", "e");
-        Observable.create(distinctUntilChanged(src)).subscribe(w);
+        Observable.create(distinctUntilChanged(src)).subscribe(new TestObserver<String>(w));
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("a");
@@ -101,7 +102,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedOfNormalSourceWithKeySelector() {
         Observable<String> src = Observable.from("a", "b", "c", "C", "c", "B", "b", "a", "e");
-        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
+        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(new TestObserver<String>(w));
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("a");
@@ -118,7 +119,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedOfSourceWithNulls() {
         Observable<String> src = Observable.from(null, "a", "a", null, null, "b", null, null);
-        Observable.create(distinctUntilChanged(src)).subscribe(w);
+        Observable.create(distinctUntilChanged(src)).subscribe(new TestObserver<String>(w));
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext(null);
@@ -134,7 +135,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedOfSourceWithExceptionsFromKeySelector() {
         Observable<String> src = Observable.from("a", "b", null, "c");
-        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
+        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(new TestObserver<String>(w));
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("a");
@@ -147,7 +148,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedWithComparator() {
         Observable<String> src = Observable.from("a", "b", "c", "aa", "bb", "c", "ddd");
-        Observable.create(distinctUntilChanged(src, COMPARE_LENGTH)).subscribe(w);
+        Observable.create(distinctUntilChanged(src, COMPARE_LENGTH)).subscribe(new TestObserver<String>(w));
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("a");
         inOrder.verify(w, times(1)).onNext("aa");
@@ -161,7 +162,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedWithComparatorAndKeySelector() {
         Observable<String> src = Observable.from("a", "b", "x", "aa", "bb", "c", "ddd");
-        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w);
+        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(new TestObserver<String>(w));
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("a");
         inOrder.verify(w, times(1)).onNext("x");
@@ -175,11 +176,11 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedWithComparatorAndKeySelectorandTwoSubscriptions() {
         Observable<String> src = Observable.from("a", "b", "x", "aa", "bb", "c", "ddd");
-        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w);
+        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(new TestObserver<String>(w));
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("a");
         inOrder.verify(w, times(1)).onNext("x");
-        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w2);
+        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(new TestObserver<String>(w2));
         inOrder.verify(w, times(1)).onNext("c");
         inOrder.verify(w, times(1)).onNext("ddd");
         inOrder.verify(w, times(1)).onCompleted();

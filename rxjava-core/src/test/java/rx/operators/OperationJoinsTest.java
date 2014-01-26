@@ -18,7 +18,10 @@ package rx.operators;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
+
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -27,6 +30,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.joins.Plan0;
+import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -35,7 +39,7 @@ import rx.util.functions.Functions;
 
 public class OperationJoinsTest {
     @Mock
-    Observer<Object> observer;
+    Observer<Integer> observer;
 
     Func2<Integer, Integer, Integer> add2 = new Func2<Integer, Integer, Integer>() {
         @Override
@@ -104,7 +108,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(some.and(some).then(add2));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(2);
@@ -119,10 +123,10 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(error.and(some).then(add2));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any());
+        verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onCompleted();
     }
 
@@ -134,10 +138,10 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(some.and(error).then(add2));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any());
+        verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onCompleted();
     }
 
@@ -147,7 +151,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(some.and(some).and(some).then(add3));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(3);
@@ -162,10 +166,10 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(error.and(some).and(some).then(add3));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any());
+        verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onCompleted();
     }
 
@@ -177,10 +181,10 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(some.and(error).and(some).then(add3));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any());
+        verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onCompleted();
     }
 
@@ -192,10 +196,10 @@ public class OperationJoinsTest {
 
         Observable<Integer> m = Observable.when(some.and(some).and(error).then(add3));
 
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any());
+        verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onCompleted();
     }
 
@@ -225,7 +229,7 @@ public class OperationJoinsTest {
         Observable<Integer> some = Observable.just(1);
 
         Observable<Integer> m = Observable.when(some.then(Functions.<Integer> identity()));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(1);
@@ -237,10 +241,10 @@ public class OperationJoinsTest {
         Observable<Integer> some = Observable.error(new RuntimeException("Forced failure"));
 
         Observable<Integer> m = Observable.when(some.then(Functions.<Integer> identity()));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any());
+        verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onCompleted();
     }
 
@@ -249,10 +253,10 @@ public class OperationJoinsTest {
         Observable<Integer> some = Observable.just(1);
 
         Observable<Integer> m = Observable.when(some.then(func1Throw));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any());
+        verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onCompleted();
     }
 
@@ -261,10 +265,10 @@ public class OperationJoinsTest {
         Observable<Integer> some = Observable.just(1);
 
         Observable<Integer> m = Observable.when(some.and(some).then(func2Throw));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any());
+        verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onCompleted();
     }
 
@@ -273,10 +277,10 @@ public class OperationJoinsTest {
         Observable<Integer> some = Observable.just(1);
 
         Observable<Integer> m = Observable.when(some.and(some).and(some).then(func3Throw));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any());
+        verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onCompleted();
     }
 
@@ -296,7 +300,7 @@ public class OperationJoinsTest {
         Observable<Integer> source2 = Observable.from(4, 5, 6);
 
         Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(1 + 4);
@@ -311,7 +315,7 @@ public class OperationJoinsTest {
         Observable<Integer> source2 = Observable.from(4, 5);
 
         Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(1 + 4);
@@ -325,10 +329,10 @@ public class OperationJoinsTest {
         Observable<Integer> source2 = Observable.empty();
 
         Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any());
+        verify(observer, never()).onNext(any(Integer.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -338,10 +342,10 @@ public class OperationJoinsTest {
         Observable<Integer> source2 = Observable.never();
 
         Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any());
+        verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onCompleted();
     }
 
@@ -351,10 +355,10 @@ public class OperationJoinsTest {
         Observable<Integer> source2 = Observable.error(new RuntimeException("Forced failure"));
 
         Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
-        m.subscribe(observer);
+        m.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any());
+        verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onCompleted();
     }
 
@@ -365,33 +369,41 @@ public class OperationJoinsTest {
         PublishSubject<Integer> zs = PublishSubject.create();
 
         Observable<Integer> m = Observable.when(
-                xs.and(ys).then(add2),
-                xs.and(zs).then(mul2),
-                ys.and(zs).then(sub2)
+                xs.toObservable().and(ys.toObservable()).then(add2), // 1+4=5, 2+5=7, 3+6=9
+                xs.toObservable().and(zs.toObservable()).then(mul2), // 1*7=7, 2*8=16, 3*9=27
+                ys.toObservable().and(zs.toObservable()).then(sub2)  // 4-7=-3, 5-8=-3, 6-9=-3
                 );
-        m.subscribe(observer);
 
-        xs.onNext(1); // t == 210
+        TestObserver<Integer> to = new TestObserver<Integer>(observer);
+        m.subscribe(to);
 
-        xs.onNext(2); // t == 220
-        zs.onNext(7); // t == 220
+        xs.onNext(1); // t == 210, xs[1], ys[], zs[]
 
-        xs.onNext(3); // t == 230
-        zs.onNext(8); // t == 230
+        xs.onNext(2); // t == 220, xs[1, 2], ys[], zs[]
+        zs.onNext(7); // t == 220, xs[1, 2], ys[], zs[7] triggers x and z; emit 1 * 7, remains xs[2], ys[], zs[]
 
-        ys.onNext(4); // t == 240
-        zs.onNext(9); // t == 240
-        xs.onCompleted(); // t == 240
+        xs.onNext(3); // t == 230, xs[2,3], ys[], zs[]
+        zs.onNext(8); // t == 230, xs[2,3], ys[], zs[8] triggers x and z, emit 2 * 8, remains xs[3], ys[], zs[]
 
-        ys.onNext(5); // t == 250
+        ys.onNext(4); // t == 240, xs[], ys[4], zs[] triggers x and y, emit 3 + 4, remains xs[], ys[], zs[]
+        zs.onNext(9); // t == 240, xs[], ys[], zs[9]
+        xs.onCompleted(); // t == 240, completed 1
 
-        ys.onNext(6); // t == 260
+        ys.onNext(5); // t == 250, xs[], ys[5], zs[9], triggers ys and zs, emits 5 - 9, remains xs[], ys[], zs[]
 
-        ys.onCompleted(); // t == 270
+        ys.onNext(6); // t == 260, xs[], ys[6], zs[]
 
-        zs.onCompleted(); // t == 300
+        ys.onCompleted(); // t == 270, completed 2
+
+        zs.onCompleted(); // t == 300, completed 3, triggers when() oncompleted
+
+        System.out.println("Events: " + to.getOnNextEvents());
+
+        to.assertReceivedOnNext(Arrays.asList(7, 16, 7, -4));
+        to.assertTerminalEvent();
 
         InOrder inOrder = inOrder(observer);
+
         inOrder.verify(observer, times(1)).onNext(1 * 7);
         inOrder.verify(observer, times(1)).onNext(2 * 8);
         inOrder.verify(observer, times(1)).onNext(3 + 4);

@@ -31,14 +31,14 @@ import rx.util.functions.Action0;
  * Returns an Observable that emits the first <code>num</code> items emitted by the source
  * Observable.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/take.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-Observers/take.png">
  * <p>
  * You can choose to pay attention only to the first <code>num</code> items emitted by an
  * Observable by using the take operation. This operation returns an Observable that will invoke a
  * subscribing Observer's <code>onNext</code> function a maximum of <code>num</code> times before
  * invoking <code>onCompleted</code>.
  */
-public final class OperatorTakeTimed {
+public final class OperationTakeTimed {
 
     //TODO this has not been migrated to use bind yet
     
@@ -109,7 +109,7 @@ public final class OperatorTakeTimed {
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
-        private class ItemObserver implements Observer<T> {
+        private class ItemObserver extends Observer<T> {
             private final Observer<? super T> observer;
 
             private final AtomicInteger counter = new AtomicInteger();
@@ -210,7 +210,7 @@ public final class OperatorTakeTimed {
          * @param <T>
          *            the observed value type
          */
-        private static final class SourceObserver<T> implements Observer<T>, Action0 {
+        private static final class SourceObserver<T> extends Observer<T> implements Action0 {
             final Observer<? super T> observer;
             final Subscription cancel;
             final AtomicInteger state = new AtomicInteger();

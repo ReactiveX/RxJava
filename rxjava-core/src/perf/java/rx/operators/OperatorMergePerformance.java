@@ -34,6 +34,14 @@ public class OperatorMergePerformance extends AbstractPerformanceTester {
      * Run: 12 - 34,768,096 ops/sec
      * Run: 13 - 32,376,499 ops/sec
      * Run: 14 - 33,166,835 ops/sec
+     * 
+     * ... after v0.17 work:
+     * 
+     * Run: 10 - 45,945,747 ops/sec
+     * Run: 11 - 46,342,209 ops/sec
+     * Run: 12 - 44,493,090 ops/sec
+     * Run: 13 - 44,999,640 ops/sec
+     * Run: 14 - 47,389,771 ops/sec
      */
     public long timeRepetitionsEmissionSynchronous() {
 

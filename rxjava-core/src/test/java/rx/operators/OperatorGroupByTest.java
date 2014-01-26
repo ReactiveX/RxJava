@@ -30,8 +30,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Operator;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
@@ -51,7 +51,7 @@ public class OperatorGroupByTest {
     @Test
     public void testGroupBy() {
         Observable<String> source = Observable.from("one", "two", "three", "four", "five", "six");
-        Observable<GroupedObservable<Integer, String>> grouped = source.bind(new OperatorGroupBy<Integer, String>(length));
+        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OperatorGroupBy<Integer, String>(length));
 
         Map<Integer, Collection<String>> map = toMap(grouped);
 
@@ -64,7 +64,7 @@ public class OperatorGroupByTest {
     @Test
     public void testEmpty() {
         Observable<String> source = Observable.empty();
-        Observable<GroupedObservable<Integer, String>> grouped = source.bind(new OperatorGroupBy<Integer, String>(length));
+        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OperatorGroupBy<Integer, String>(length));
 
         Map<Integer, Collection<String>> map = toMap(grouped);
 
@@ -77,7 +77,7 @@ public class OperatorGroupByTest {
         Observable<String> errorSource = Observable.error(new RuntimeException("forced failure"));
         Observable<String> source = Observable.concat(sourceStrings, errorSource);
 
-        Observable<GroupedObservable<Integer, String>> grouped = source.bind(new OperatorGroupBy<Integer, String>(length));
+        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OperatorGroupBy<Integer, String>(length));
 
         final AtomicInteger groupCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();
@@ -581,10 +581,10 @@ public class OperatorGroupByTest {
     };
 
     Observable<Event> SYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
-        return Observable.create(new Action1<Operator<? super Event>>() {
+        return Observable.create(new OnSubscribe<Event>() {
 
             @Override
-            public void call(final Operator<? super Event> op) {
+            public void call(final Observer<? super Event> op) {
                 subscribeCounter.incrementAndGet();
                 int i = 0;
                 while (!op.isUnsubscribed()) {

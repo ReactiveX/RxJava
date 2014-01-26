@@ -23,13 +23,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.SafeObserver;
 import rx.operators.OperationLatest;
 import rx.operators.OperationMostRecent;
 import rx.operators.OperationNext;
 import rx.operators.OperationToFuture;
 import rx.operators.OperationToIterator;
 import rx.operators.SafeObservableSubscription;
-import rx.operators.SafeObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
@@ -73,8 +73,7 @@ public class BlockingObservable<T> {
      * "Guideline 6.4: Protect calls to user code from within an operator"
      */
     private Subscription protectivelyWrapAndSubscribe(Observer<? super T> observer) {
-        SafeObservableSubscription subscription = new SafeObservableSubscription();
-        return subscription.wrap(o.subscribe(new SafeObserver<T>(subscription, observer)));
+        return o.subscribe(new SafeObserver<T>(observer));
     }
 
     /**

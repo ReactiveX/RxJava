@@ -20,12 +20,12 @@ import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
+import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Operator;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
-import rx.util.functions.Action2;
 
 /* package */class SubjectSubscriptionManager<T> {
 
@@ -39,11 +39,11 @@ import rx.util.functions.Action2;
      *            Only runs if Subject is in terminal state and the Observer ends up not being registered.
      * @return
      */
-    public Action1<Operator<? super T>> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, final Action1<SubjectObserver<? super T>> onTerminated) {
-        return new Action1<Operator<? super T>>() {
+    public OnSubscribe<T> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, final Action1<SubjectObserver<? super T>> onTerminated) {
+        return new OnSubscribe<T>() {
             @Override
-            public void call(Operator<? super T> actualOperator) {
-                SubjectObserver<T> observer = new SubjectObserver<T>(actualOperator);
+            public void call(Observer<? super T> actualObserver) {
+                SubjectObserver<T> observer = new SubjectObserver<T>(actualObserver);
                 // invoke onSubscribe logic 
                 if (onSubscribe != null) {
                     onSubscribe.call(observer);
@@ -52,10 +52,12 @@ import rx.util.functions.Action2;
                 State<T> current;
                 State<T> newState = null;
                 boolean addedObserver = false;
+                Subscription s;
                 do {
                     current = state.get();
                     if (current.terminated) {
                         // we are terminated so don't need to do anything
+                        s = Subscriptions.empty();
                         addedObserver = false;
                         // break out and don't try to modify state
                         newState = current;
@@ -68,10 +70,8 @@ import rx.util.functions.Action2;
                         }
                         break;
                     } else {
-                        final SafeObservableSubscription subscription = new SafeObservableSubscription();
-                        actualOperator.add(subscription); // add to parent if the Subject itself is unsubscribed
                         addedObserver = true;
-                        subscription.wrap(new Subscription() {
+                        s = new Subscription() {
                             @Override
                             public void unsubscribe() {
                                 State<T> current;
@@ -79,13 +79,13 @@ import rx.util.functions.Action2;
                                 do {
                                     current = state.get();
                                     // on unsubscribe remove it from the map of outbound observers to notify
-                                    newState = current.removeObserver(subscription);
+                                    newState = current.removeObserver(this);
                                 } while (!state.compareAndSet(current, newState));
                             }
-                        });
+                        };
 
                         // on subscribe add it to the map of outbound observers to notify
-                        newState = current.addObserver(subscription, observer);
+                        newState = current.addObserver(s, observer);
                     }
                 } while (!state.compareAndSet(current, newState));
 
@@ -95,12 +95,13 @@ import rx.util.functions.Action2;
                 if (newState.terminated && !addedObserver) {
                     onTerminated.call(observer);
                 }
+
+                actualObserver.add(s);
             }
 
         };
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void terminate(Action1<Collection<SubjectObserver<? super T>>> onTerminate) {
         State<T> current;
         State<T> newState = null;
@@ -135,7 +136,6 @@ import rx.util.functions.Action2;
      * 
      * @return the array of current observers
      */
-    @SuppressWarnings("unchecked")
     public SubjectObserver<Object>[] rawSnapshot() {
         return state.get().observers;
     }
@@ -226,12 +226,13 @@ import rx.util.functions.Action2;
         }
     }
 
-    protected static class SubjectObserver<T> implements Observer<T> {
+    protected static class SubjectObserver<T> extends Observer<T> {
 
         private final Observer<? super T> actual;
         protected volatile boolean caughtUp = false;
 
         SubjectObserver(Observer<? super T> actual) {
+            super(actual);
             this.actual = actual;
         }
 

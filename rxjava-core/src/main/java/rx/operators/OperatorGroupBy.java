@@ -19,22 +19,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.Operator;
+import rx.Observable.OnSubscribe;
+import rx.Observer;
 import rx.observables.GroupedObservable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
-import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
 /**
  * Groups the items emitted by an Observable according to a specified criterion, and emits these
  * grouped items as Observables, one Observable per group.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/groupBy.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-Observers/groupBy.png">
  */
-public final class OperatorGroupBy<K, T> implements Func1<Operator<? super GroupedObservable<K, T>>, Operator<? super T>> {
+public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K, T>, T> {
 
     final Func1<? super T, ? extends K> keySelector;
 
@@ -43,10 +43,10 @@ public final class OperatorGroupBy<K, T> implements Func1<Operator<? super Group
     }
 
     @Override
-    public Operator<? super T> call(final Operator<? super GroupedObservable<K, T>> childOperator) {
+    public Observer<? super T> call(final Observer<? super GroupedObservable<K, T>> childObserver) {
         // a new CompositeSubscription to decouple the subscription as the inner subscriptions need a separate lifecycle
         // and will unsubscribe on this parent if they are all unsubscribed
-        return new Operator<T>(new CompositeSubscription()) {
+        return new Observer<T>(new CompositeSubscription()) {
             private final Map<K, PublishSubject<T>> groups = new HashMap<K, PublishSubject<T>>();
             private final AtomicInteger completionCounter = new AtomicInteger(0);
 
@@ -59,14 +59,14 @@ public final class OperatorGroupBy<K, T> implements Func1<Operator<? super Group
 
                 if (completionCounter.get() == 0) {
                     // special case if no children are running (such as an empty sequence, or just getting the groups and not subscribing)
-                    childOperator.onCompleted();
+                    childObserver.onCompleted();
                 }
             }
 
             @Override
             public void onError(Throwable e) {
                 // we immediately tear everything down if we receive an error
-                childOperator.onError(e);
+                childObserver.onError(e);
             }
 
             @Override
@@ -76,17 +76,17 @@ public final class OperatorGroupBy<K, T> implements Func1<Operator<? super Group
                     PublishSubject<T> gps = groups.get(key);
                     if (gps == null) {
                         // this group doesn't exist
-                        if (childOperator.isUnsubscribed()) {
+                        if (childObserver.isUnsubscribed()) {
                             // we have been unsubscribed on the outer so won't send any  more groups 
                             return;
                         }
                         gps = PublishSubject.create();
                         final PublishSubject<T> _gps = gps;
 
-                        GroupedObservable<K, T> go = new GroupedObservable<K, T>(key, new Action1<Operator<? super T>>() {
+                        GroupedObservable<K, T> go = new GroupedObservable<K, T>(key, new OnSubscribe<T>() {
 
                             @Override
-                            public void call(final Operator<? super T> o) {
+                            public void call(final Observer<? super T> o) {
                                 // number of children we have running
                                 completionCounter.incrementAndGet();
                                 o.add(Subscriptions.create(new Action0() {
@@ -97,7 +97,7 @@ public final class OperatorGroupBy<K, T> implements Func1<Operator<? super Group
                                     }
 
                                 }));
-                                _gps.subscribe(new Operator<T>(o) {
+                                _gps.toObservable().subscribe(new Observer<T>(o) {
 
                                     @Override
                                     public void onCompleted() {
@@ -120,7 +120,7 @@ public final class OperatorGroupBy<K, T> implements Func1<Operator<? super Group
 
                         });
                         groups.put(key, gps);
-                        childOperator.onNext(go);
+                        childObserver.onNext(go);
                     }
                     // we have the correct group so send value to it
                     gps.onNext(t);
@@ -135,7 +135,7 @@ public final class OperatorGroupBy<K, T> implements Func1<Operator<? super Group
                     for (PublishSubject<T> ps : groups.values()) {
                         ps.onCompleted();
                     }
-                    childOperator.onCompleted();
+                    childObserver.onCompleted();
                 }
             }
 

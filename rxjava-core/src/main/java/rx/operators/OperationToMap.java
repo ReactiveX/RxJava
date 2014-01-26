@@ -124,7 +124,7 @@ public class OperationToMap {
          * Observer that collects the source values of T into
          * a map.
          */
-        public static class ToMapObserver<K, V, T> implements Observer<T> {
+        public static class ToMapObserver<K, V, T> extends Observer<T> {
             /** The map. */
             Map<K, V> map;
             /** Key extractor. */

@@ -19,6 +19,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.SynchronizedObserver;
 
 /**
  * Wraps an Observable in another Observable that ensures that the resulting Observable is

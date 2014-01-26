@@ -15,25 +15,44 @@
  */
 package rx;
 
+import rx.subscriptions.CompositeSubscription;
+
 /**
  * Provides a mechanism for receiving push-based notifications.
  * <p>
- * After an Observer calls an {@link Observable}'s <code>Observable.subscribe</code> method, the {@link Observable} calls the Observer's <code>onNext</code> method to provide notifications. A
- * well-behaved {@link Observable} will
- * call an Observer's <code>onCompleted</code> closure exactly once or the Observer's <code>onError</code> closure exactly once.
+ * After an Observer calls an {@link Observable}'s <code>Observable.subscribe</code> method, the {@link Observable} calls the 
+ * Observer's <code>onNext</code> method to provide notifications. A well-behaved {@link Observable} will call an Observer's 
+ * <code>onCompleted</code> closure exactly once or the Observer's <code>onError</code> closure exactly once.
  * <p>
  * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
  * 
  * @param <T>
  */
-public interface Observer<T> {
+public abstract class Observer<T> implements Subscription {
+
+    private final CompositeSubscription cs;
+
+    protected Observer(CompositeSubscription cs) {
+        if (cs == null) {
+            throw new IllegalArgumentException("The CompositeSubscription can not be null");
+        }
+        this.cs = cs;
+    }
+
+    protected Observer() {
+        this(new CompositeSubscription());
+    }
+
+    protected Observer(Observer<?> op) {
+        this(op.cs);
+    }
 
     /**
      * Notifies the Observer that the {@link Observable} has finished sending push-based notifications.
      * <p>
      * The {@link Observable} will not call this closure if it calls <code>onError</code>.
      */
-    public void onCompleted();
+    public abstract void onCompleted();
 
     /**
      * Notifies the Observer that the {@link Observable} has experienced an error condition.
@@ -42,7 +61,7 @@ public interface Observer<T> {
      * 
      * @param e
      */
-    public void onError(Throwable e);
+    public abstract void onError(Throwable e);
 
     /**
      * Provides the Observer with new data.
@@ -53,5 +72,21 @@ public interface Observer<T> {
      * 
      * @param args
      */
-    public void onNext(T args);
+    public abstract void onNext(T t);
+
+    /**
+     * Used to register an unsubscribe callback.
+     */
+    public final void add(Subscription s) {
+        cs.add(s);
+    }
+
+    @Override
+    public final void unsubscribe() {
+        cs.unsubscribe();
+    }
+
+    public final boolean isUnsubscribed() {
+        return cs.isUnsubscribed();
+    }
 }

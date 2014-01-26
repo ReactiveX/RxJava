@@ -17,14 +17,13 @@ package rx.lang.scala.examples
 
 import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
-
 import org.junit.Test
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.junit.JUnitSuite
-
 import rx.lang.scala._
 import rx.lang.scala.schedulers.TestScheduler
+import rx.observers.TestObserver
 
 class TestSchedulerExample extends JUnitSuite {
 
@@ -36,7 +35,7 @@ class TestSchedulerExample extends JUnitSuite {
     val o = Observable.interval(1 second, scheduler)
 
     // Wrap Java Observer in Scala Observer, then subscribe
-    val sub = o.subscribe(Observer(observer))
+    val sub = o.subscribe(Observer(new TestObserver(observer)))
 
     verify(observer, never).onNext(0L)
     verify(observer, never).onCompleted()

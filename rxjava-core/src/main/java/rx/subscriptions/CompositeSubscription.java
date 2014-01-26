@@ -18,6 +18,7 @@ package rx.subscriptions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
@@ -141,7 +142,7 @@ public final class CompositeSubscription implements Subscription {
     }
 
     private static void unsubscribeFromAll(Subscription[] subscriptions) {
-        final Collection<Throwable> es = new ArrayList<Throwable>();
+        final List<Throwable> es = new ArrayList<Throwable>();
         for (Subscription s : subscriptions) {
             try {
                 s.unsubscribe();
@@ -150,8 +151,18 @@ public final class CompositeSubscription implements Subscription {
             }
         }
         if (!es.isEmpty()) {
-            throw new CompositeException(
-                    "Failed to unsubscribe to 1 or more subscriptions.", es);
+            if (es.size() == 1) {
+                Throwable t = es.get(0);
+                if (t instanceof RuntimeException) {
+                    throw (RuntimeException) t;
+                } else {
+                    throw new CompositeException(
+                            "Failed to unsubscribe to 1 or more subscriptions.", es);
+                }
+            } else {
+                throw new CompositeException(
+                        "Failed to unsubscribe to 2 or more subscriptions.", es);
+            }
         }
     }
 }

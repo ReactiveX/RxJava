@@ -26,7 +26,8 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.concurrency.TestScheduler;
+import rx.schedulers.TestScheduler;
+import rx.observers.TestObserver;
 import rx.operators.OperationSkipTest.CustomException;
 import rx.subjects.PublishSubject;
 
@@ -38,11 +39,11 @@ public class OperationSkipLastTest {
         Observable<String> observable = Observable.create(skipLast(w, 2));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, never()).onNext(any(String.class));
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<String>(observer));
+        verify(observer, never()).onNext(any(String.class));
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -51,14 +52,14 @@ public class OperationSkipLastTest {
         Observable<String> observable = Observable.create(skipLast(w, 2));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        InOrder inOrder = inOrder(aObserver);
-        observable.subscribe(aObserver);
-        inOrder.verify(aObserver, never()).onNext("two");
-        inOrder.verify(aObserver, never()).onNext("three");
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        InOrder inOrder = inOrder(observer);
+        observable.subscribe(new TestObserver<String>(observer));
+        inOrder.verify(observer, never()).onNext("two");
+        inOrder.verify(observer, never()).onNext("three");
+        verify(observer, times(1)).onNext("one");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -67,11 +68,11 @@ public class OperationSkipLastTest {
         Observable<String> observable = Observable.create(skipLast(w, 2));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, never()).onNext(any(String.class));
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<String>(observer));
+        verify(observer, never()).onNext(any(String.class));
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -80,12 +81,12 @@ public class OperationSkipLastTest {
         Observable<String> observable = Observable.create(skipLast(w, 0));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<String>(observer));
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -94,13 +95,13 @@ public class OperationSkipLastTest {
         Observable<String> observable = Observable.create(skipLast(w, 1));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext(null);
-        verify(aObserver, never()).onNext("two");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<String>(observer));
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext(null);
+        verify(observer, never()).onNext("two");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -109,12 +110,12 @@ public class OperationSkipLastTest {
         Observable<String> observable = Observable.create(skipLast(w, -1));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, never()).onNext(any(String.class));
-        verify(aObserver, times(1)).onError(
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<String>(observer));
+        verify(observer, never()).onNext(any(String.class));
+        verify(observer, times(1)).onError(
                 any(IndexOutOfBoundsException.class));
-        verify(aObserver, never()).onCompleted();
+        verify(observer, never()).onCompleted();
     }
 
     @Test
@@ -123,11 +124,11 @@ public class OperationSkipLastTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.toObservable().skipLast(1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         source.onNext(1);
         source.onNext(2);
@@ -161,11 +162,11 @@ public class OperationSkipLastTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.toObservable().skipLast(1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         source.onNext(1);
         source.onNext(2);
@@ -186,11 +187,11 @@ public class OperationSkipLastTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.toObservable().skipLast(1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
-        result.subscribe(o);
+        result.subscribe(new TestObserver<Object>(o));
 
         source.onNext(1);
         source.onNext(2);

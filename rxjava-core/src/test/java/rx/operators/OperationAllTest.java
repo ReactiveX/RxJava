@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
 public class OperationAllTest {
@@ -37,7 +38,7 @@ public class OperationAllTest {
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(observer);
+        })).subscribe(new TestObserver<Boolean>(observer));
 
         verify(observer).onNext(true);
         verify(observer).onCompleted();
@@ -55,7 +56,7 @@ public class OperationAllTest {
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(observer);
+        })).subscribe(new TestObserver<Boolean>(observer));
 
         verify(observer).onNext(false);
         verify(observer).onCompleted();
@@ -73,7 +74,7 @@ public class OperationAllTest {
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(observer);
+        })).subscribe(new TestObserver<Boolean>(observer));
 
         verify(observer).onNext(true);
         verify(observer).onCompleted();
@@ -92,7 +93,7 @@ public class OperationAllTest {
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(observer);
+        })).subscribe(new TestObserver<Boolean>(observer));
 
         verify(observer).onError(error);
         verifyNoMoreInteractions(observer);

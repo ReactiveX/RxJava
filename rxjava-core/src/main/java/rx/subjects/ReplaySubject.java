@@ -22,11 +22,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
+import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Operator;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
-import rx.util.functions.Action2;
 
 /**
  * Subject that retains all events and will replay them to an {@link Observer} that subscribes.
@@ -60,7 +60,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
         final ReplayState<T> state = new ReplayState<T>(initialCapacity);
 
-        Action1<Operator<? super T>> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+        OnSubscribe<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
                  * This function executes at beginning of subscription.
                  * We want to replay history with the subscribing thread
@@ -108,11 +108,17 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     private final SubjectSubscriptionManager<T> subscriptionManager;
     private final ReplayState<T> state;
+    private final Observable<T> observable;
 
-    protected ReplaySubject(Action1<Operator<? super T>> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, ReplayState<T> state) {
-        super(onSubscribe);
+    protected ReplaySubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, ReplayState<T> state) {
         this.subscriptionManager = subscriptionManager;
         this.state = state;
+        this.observable = Observable.create(onSubscribe);
+    }
+
+    @Override
+    public Observable<T> toObservable() {
+        return observable;
     }
 
     @Override
@@ -121,7 +127,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                state.history.complete(new Notification<T>());
+                state.history.complete(Notification.<T>createOnCompleted());
                 for (SubjectObserver<? super T> o : observers) {
                     if (caughtUp(o)) {
                         o.onCompleted();
@@ -137,7 +143,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                state.history.complete(new Notification<T>(e));
+                state.history.complete(Notification.<T>createOnError(e));
                 for (SubjectObserver<? super T> o : observers) {
                     if (caughtUp(o)) {
                         o.onError(e);

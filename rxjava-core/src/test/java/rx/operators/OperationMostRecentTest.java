@@ -34,40 +34,40 @@ public class OperationMostRecentTest {
 
     @Test
     public void testMostRecent() {
-        Subject<String, String> observable = PublishSubject.create();
+        Subject<String, String> s = PublishSubject.create();
 
-        Iterator<String> it = mostRecent(observable, "default").iterator();
+        Iterator<String> it = mostRecent(s.toObservable(), "default").iterator();
 
         assertTrue(it.hasNext());
         assertEquals("default", it.next());
         assertEquals("default", it.next());
 
-        observable.onNext("one");
+        s.onNext("one");
         assertTrue(it.hasNext());
         assertEquals("one", it.next());
         assertEquals("one", it.next());
 
-        observable.onNext("two");
+        s.onNext("two");
         assertTrue(it.hasNext());
         assertEquals("two", it.next());
         assertEquals("two", it.next());
 
-        observable.onCompleted();
+        s.onCompleted();
         assertFalse(it.hasNext());
 
     }
 
     @Test(expected = TestException.class)
     public void testMostRecentWithException() {
-        Subject<String, String> observable = PublishSubject.create();
+        Subject<String, String> s = PublishSubject.create();
 
-        Iterator<String> it = mostRecent(observable, "default").iterator();
+        Iterator<String> it = mostRecent(s.toObservable(), "default").iterator();
 
         assertTrue(it.hasNext());
         assertEquals("default", it.next());
         assertEquals("default", it.next());
 
-        observable.onError(new TestException());
+        s.onError(new TestException());
         assertTrue(it.hasNext());
 
         it.next();

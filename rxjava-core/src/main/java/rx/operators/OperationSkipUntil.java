@@ -21,7 +21,6 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
 
 /**
@@ -45,15 +44,13 @@ public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
     }
 
     /** Manage the source and other observers. */
-    private class ResultManager implements Subscription, Observer<T> {
+    private class ResultManager extends Observer<T>  {
         final Observer<? super T> observer;
-        final CompositeSubscription cancel;
         final Object guard = new Object();
         final AtomicBoolean running = new AtomicBoolean();
 
         public ResultManager(Observer<? super T> observer) {
             this.observer = observer;
-            this.cancel = new CompositeSubscription();
         }
 
         public ResultManager init() {
@@ -61,18 +58,13 @@ public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
             SerialSubscription toSource = new SerialSubscription();
             SerialSubscription toOther = new SerialSubscription();
 
-            cancel.add(toSource);
-            cancel.add(toOther);
+            add(toSource);
+            add(toOther);
 
-            toSource.setSubscription(source.subscribe(this));
-            toOther.setSubscription(other.subscribe(new OtherObserver(toOther)));
+            toSource.set(source.subscribe(this));
+            toOther.set(other.subscribe(new OtherObserver(toOther)));
 
             return this;
-        }
-
-        @Override
-        public void unsubscribe() {
-            cancel.unsubscribe();
         }
 
         @Override
@@ -99,7 +91,7 @@ public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
         }
 
         /** Observe the other stream. */
-        private class OtherObserver implements Observer<U> {
+        private class OtherObserver extends Observer<U> {
             final Subscription self;
 
             public OtherObserver(Subscription self) {

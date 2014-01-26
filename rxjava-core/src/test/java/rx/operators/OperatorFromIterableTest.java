@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 
 public class OperatorFromIterableTest {
 
@@ -33,13 +34,13 @@ public class OperatorFromIterableTest {
         Observable<String> observable = Observable.create(new OperatorFromIterable<String>(Arrays.<String> asList("one", "two", "three")));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<String>(observer));
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
     
     @Test
@@ -47,13 +48,13 @@ public class OperatorFromIterableTest {
         Observable<String> observable = Observable.from(Arrays.<String> asList("one", "two", "three"));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<String>(observer));
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
 }

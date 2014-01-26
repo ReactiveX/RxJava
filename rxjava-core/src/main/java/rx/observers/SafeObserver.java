@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.operators;
+package rx.observers;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observer;
 import rx.Subscription;
+import rx.operators.SafeObservableSubscription;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.Subscriptions;
 import rx.util.CompositeException;
@@ -57,19 +58,13 @@ import rx.util.OnErrorNotImplementedException;
  * 
  * @param <T>
  */
-public class SafeObserver<T> implements Observer<T> {
+public class SafeObserver<T> extends Observer<T> {
 
     private final Observer<? super T> actual;
     private final AtomicBoolean isFinished = new AtomicBoolean(false);
-    private final Subscription subscription;
 
     public SafeObserver(Observer<? super T> actual) {
-        this.subscription = Subscriptions.empty();
-        this.actual = actual;
-    }
-
-    public SafeObserver(SafeObservableSubscription subscription, Observer<? super T> actual) {
-        this.subscription = subscription;
+        super(actual);
         this.actual = actual;
     }
 
@@ -83,7 +78,7 @@ public class SafeObserver<T> implements Observer<T> {
                 _onError(e);
             } finally {
                 // auto-unsubscribe
-                subscription.unsubscribe();
+                unsubscribe();
             }
         }
     }
@@ -130,7 +125,7 @@ public class SafeObserver<T> implements Observer<T> {
                  * The OnCompleted behavior in this case is to do nothing."
                  */
                 try {
-                    subscription.unsubscribe();
+                    unsubscribe();
                 } catch (Throwable unsubscribeException) {
                     RxJavaPlugins.getInstance().getErrorHandler().handleError(unsubscribeException);
                     throw new RuntimeException("Observer.onError not implemented and error while unsubscribing.", new CompositeException(Arrays.asList(e, unsubscribeException)));
@@ -144,7 +139,7 @@ public class SafeObserver<T> implements Observer<T> {
                  */
                 RxJavaPlugins.getInstance().getErrorHandler().handleError(e2);
                 try {
-                    subscription.unsubscribe();
+                    unsubscribe();
                 } catch (Throwable unsubscribeException) {
                     RxJavaPlugins.getInstance().getErrorHandler().handleError(unsubscribeException);
                     throw new RuntimeException("Error occurred when trying to propagate error to Observer.onError and during unsubscription.", new CompositeException(Arrays.asList(e, e2, unsubscribeException)));
@@ -153,9 +148,9 @@ public class SafeObserver<T> implements Observer<T> {
                 throw new RuntimeException("Error occurred when trying to propagate error to Observer.onError", new CompositeException(Arrays.asList(e, e2)));
             }
         }
-        // if we did not throw about we will unsubscribe here, if onError failed then unsubscribe happens in the catch
+        // if we did not throw above we will unsubscribe here, if onError failed then unsubscribe happens in the catch
         try {
-            subscription.unsubscribe();
+            unsubscribe();
         } catch (RuntimeException unsubscribeException) {
             RxJavaPlugins.getInstance().getErrorHandler().handleError(unsubscribeException);
             throw unsubscribeException;

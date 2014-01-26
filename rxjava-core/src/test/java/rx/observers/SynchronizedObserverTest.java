@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.operators;
+package rx.observers;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
@@ -35,11 +35,12 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.operators.SafeObservableSubscription;
 
 public class SynchronizedObserverTest {
 
     @Mock
-    Observer<String> aObserver;
+    Observer<String> observer;
 
     @Before
     public void before() {
@@ -53,16 +54,16 @@ public class SynchronizedObserverTest {
         Observable<String> w = Observable.create(onSubscribe);
 
         SafeObservableSubscription as = new SafeObservableSubscription(s);
-        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(aObserver, as);
+        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(observer, as);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
 
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
         // non-deterministic because unsubscribe happens after 'waitToFinish' releases
         // so commenting out for now as this is not a critical thing to test here
         //            verify(s, times(1)).unsubscribe();
@@ -419,7 +420,7 @@ public class SynchronizedObserverTest {
         onCompleted, onError, onNext
     }
 
-    private static class TestConcurrencyObserver implements Observer<String> {
+    private static class TestConcurrencyObserver extends Observer<String> {
 
         /**
          * used to store the order and number of events received
@@ -644,7 +645,7 @@ public class SynchronizedObserverTest {
         }
     }
 
-    private static class BusyObserver implements Observer<String> {
+    private static class BusyObserver extends Observer<String> {
         volatile boolean onCompleted = false;
         volatile boolean onError = false;
         AtomicInteger onNextCount = new AtomicInteger();

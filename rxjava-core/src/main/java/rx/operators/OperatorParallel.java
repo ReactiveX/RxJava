@@ -16,7 +16,7 @@
 package rx.operators;
 
 import rx.Observable;
-import rx.Operator;
+import rx.Observer;
 import rx.Scheduler;
 import rx.observables.GroupedObservable;
 import rx.util.functions.Func1;
@@ -24,7 +24,7 @@ import rx.util.functions.Func1;
 /**
  * Identifies unit of work that can be executed in parallel on a given Scheduler.
  */
-public final class OperatorParallel<T, R> implements Func1<Operator<? super R>, Operator<? super T>> {
+public final class OperatorParallel<T, R> implements Operator<R, T> {
 
     private final Scheduler scheduler;
     private final Func1<Observable<T>, Observable<R>> f;
@@ -35,28 +35,31 @@ public final class OperatorParallel<T, R> implements Func1<Operator<? super R>, 
     }
 
     @Override
-    public Operator<? super T> call(Operator<? super R> op) {
+    public Observer<? super T> call(Observer<? super R> op) {
 
-        Func1<Operator<? super GroupedObservable<Integer, T>>, Operator<? super T>> groupBy = new OperatorGroupBy<Integer, T>(new Func1<T, Integer>() {
+        Func1<Observer<? super GroupedObservable<Integer, T>>, Observer<? super T>> groupBy =
+                new OperatorGroupBy<Integer, T>(new Func1<T, Integer>() {
 
-            int i = 0;
+                    int i = 0;
 
-            @Override
-            public Integer call(T t) {
-                return i++ % scheduler.degreeOfParallelism();
-            }
+                    @Override
+                    public Integer call(T t) {
+                        return i++ % scheduler.degreeOfParallelism();
+                    }
 
-        });
+                });
 
-        Func1<Operator<? super Observable<R>>, Operator<? super GroupedObservable<Integer, T>>> map = new OperatorMap<GroupedObservable<Integer, T>, Observable<R>>(new Func1<GroupedObservable<Integer, T>, Observable<R>>() {
+        Func1<Observer<? super Observable<R>>, Observer<? super GroupedObservable<Integer, T>>> map =
+                new OperatorMap<GroupedObservable<Integer, T>, Observable<R>>(
+                        new Func1<GroupedObservable<Integer, T>, Observable<R>>() {
 
-            @Override
-            public Observable<R> call(GroupedObservable<Integer, T> g) {
-                return f.call(g.observeOn(scheduler));
-            }
-        });
+                            @Override
+                            public Observable<R> call(GroupedObservable<Integer, T> g) {
+                                return f.call(g.observeOn(scheduler));
+                            }
+                        });
 
-        // bind together operators
-        return groupBy.call(map.call(new OperatorMerge().call(op)));
+        // bind together Observers
+        return groupBy.call(map.call(new OperatorMerge<R>().call(op)));
     }
 }

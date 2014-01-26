@@ -16,11 +16,11 @@
 package rx.lang.groovy;
 
 import groovy.lang.Closure;
-import rx.Operator;
+import rx.Observable.OnSubscribe;
+import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Action1;
 
-public class GroovyCreateWrapper<T> implements Action1<Operator<? super T>> {
+public class GroovyCreateWrapper<T> implements OnSubscribe<T> {
 
     private final Closure<Void> closure;
 
@@ -29,7 +29,7 @@ public class GroovyCreateWrapper<T> implements Action1<Operator<? super T>> {
     }
 
     @Override
-    public void call(Operator<? super T> op) {
+    public void call(Observer<? super T> op) {
         Object o = closure.call(op);
         /*
          * If the new signature is being used, we will get NULL back.

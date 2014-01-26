@@ -28,6 +28,7 @@ import org.mockito.Mockito;
 
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 
 public class ReplaySubjectTest {
@@ -40,7 +41,7 @@ public class ReplaySubjectTest {
         ReplaySubject<String> subject = ReplaySubject.create();
 
         Observer<String> o1 = mock(Observer.class);
-        subject.subscribe(o1);
+        subject.toObservable().subscribe(new TestObserver<String>(o1));
 
         subject.onNext("one");
         subject.onNext("two");
@@ -55,7 +56,7 @@ public class ReplaySubjectTest {
 
         // assert that subscribing a 2nd time gets the same data
         Observer<String> o2 = mock(Observer.class);
-        subject.subscribe(o2);
+        subject.toObservable().subscribe(new TestObserver<String>(o2));
         assertCompletedObserver(o2);
     }
 
@@ -71,8 +72,8 @@ public class ReplaySubjectTest {
         @SuppressWarnings("unchecked")
         Observer<Object> observerD = mock(Observer.class);
 
-        Subscription a = channel.subscribe(observerA);
-        Subscription b = channel.subscribe(observerB);
+        Subscription a = channel.toObservable().subscribe(new TestObserver<Object>(observerA));
+        Subscription b = channel.toObservable().subscribe(new TestObserver<Object>(observerB));
 
         InOrder inOrderA = inOrder(observerA);
         InOrder inOrderB = inOrder(observerB);
@@ -100,7 +101,7 @@ public class ReplaySubjectTest {
         // B is subscribed so should receive onCompleted
         inOrderB.verify(observerB).onCompleted();
 
-        Subscription c = channel.subscribe(observerC);
+        Subscription c = channel.toObservable().subscribe(new TestObserver<Object>(observerC));
 
         // when C subscribes it should receive 42, 4711, onCompleted
         inOrderC.verify(observerC).onNext(42);
@@ -114,7 +115,7 @@ public class ReplaySubjectTest {
         channel.onError(new RuntimeException());
 
         // a new subscription should only receive what was emitted prior to terminal state onCompleted
-        Subscription d = channel.subscribe(observerD);
+        Subscription d = channel.toObservable().subscribe(new TestObserver<Object>(observerD));
 
         inOrderD.verify(observerD).onNext(42);
         inOrderD.verify(observerD).onNext(4711);
@@ -132,7 +133,7 @@ public class ReplaySubjectTest {
         ReplaySubject<String> subject = ReplaySubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
         subject.onNext("one");
         subject.onError(testException);
@@ -140,20 +141,20 @@ public class ReplaySubjectTest {
         subject.onCompleted();
         subject.onError(new RuntimeException());
 
-        subject.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onError(testException);
-        verifyNoMoreInteractions(aObserver);
+        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onError(testException);
+        verifyNoMoreInteractions(observer);
     }
 
-    private void assertCompletedObserver(Observer<String> aObserver) {
-        InOrder inOrder = inOrder(aObserver);
+    private void assertCompletedObserver(Observer<String> observer) {
+        InOrder inOrder = inOrder(observer);
 
-        inOrder.verify(aObserver, times(1)).onNext("one");
-        inOrder.verify(aObserver, times(1)).onNext("two");
-        inOrder.verify(aObserver, times(1)).onNext("three");
-        inOrder.verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        inOrder.verify(aObserver, times(1)).onCompleted();
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onNext("two");
+        inOrder.verify(observer, times(1)).onNext("three");
+        inOrder.verify(observer, Mockito.never()).onError(any(Throwable.class));
+        inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -162,8 +163,8 @@ public class ReplaySubjectTest {
     public void testError() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
-        Observer<String> aObserver = mock(Observer.class);
-        subject.subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        subject.toObservable().subscribe(new TestObserver<String>(observer));
 
         subject.onNext("one");
         subject.onNext("two");
@@ -174,19 +175,19 @@ public class ReplaySubjectTest {
         subject.onError(new Throwable());
         subject.onCompleted();
 
-        assertErrorObserver(aObserver);
+        assertErrorObserver(observer);
 
-        aObserver = mock(Observer.class);
-        subject.subscribe(aObserver);
-        assertErrorObserver(aObserver);
+        observer = mock(Observer.class);
+        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        assertErrorObserver(observer);
     }
 
-    private void assertErrorObserver(Observer<String> aObserver) {
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, times(1)).onError(testException);
-        verify(aObserver, Mockito.never()).onCompleted();
+    private void assertErrorObserver(Observer<String> observer) {
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, times(1)).onError(testException);
+        verify(observer, Mockito.never()).onCompleted();
     }
 
     @SuppressWarnings("unchecked")
@@ -194,22 +195,22 @@ public class ReplaySubjectTest {
     public void testSubscribeMidSequence() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
-        Observer<String> aObserver = mock(Observer.class);
-        subject.subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        subject.toObservable().subscribe(new TestObserver<String>(observer));
 
         subject.onNext("one");
         subject.onNext("two");
 
-        assertObservedUntilTwo(aObserver);
+        assertObservedUntilTwo(observer);
 
         Observer<String> anotherObserver = mock(Observer.class);
-        subject.subscribe(anotherObserver);
+        subject.toObservable().subscribe(new TestObserver<String>(anotherObserver));
         assertObservedUntilTwo(anotherObserver);
 
         subject.onNext("three");
         subject.onCompleted();
 
-        assertCompletedObserver(aObserver);
+        assertCompletedObserver(observer);
         assertCompletedObserver(anotherObserver);
     }
 
@@ -218,32 +219,32 @@ public class ReplaySubjectTest {
     public void testUnsubscribeFirstObserver() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
-        Observer<String> aObserver = mock(Observer.class);
-        Subscription subscription = subject.subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = subject.toObservable().subscribe(new TestObserver<String>(observer));
 
         subject.onNext("one");
         subject.onNext("two");
 
         subscription.unsubscribe();
-        assertObservedUntilTwo(aObserver);
+        assertObservedUntilTwo(observer);
 
         Observer<String> anotherObserver = mock(Observer.class);
-        subject.subscribe(anotherObserver);
+        subject.toObservable().subscribe(new TestObserver<String>(anotherObserver));
         assertObservedUntilTwo(anotherObserver);
 
         subject.onNext("three");
         subject.onCompleted();
 
-        assertObservedUntilTwo(aObserver);
+        assertObservedUntilTwo(observer);
         assertCompletedObserver(anotherObserver);
     }
 
-    private void assertObservedUntilTwo(Observer<String> aObserver) {
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, Mockito.never()).onNext("three");
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, Mockito.never()).onCompleted();
+    private void assertObservedUntilTwo(Observer<String> observer) {
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, Mockito.never()).onCompleted();
     }
 
     @Test(timeout = 2000)
@@ -304,13 +305,13 @@ public class ReplaySubjectTest {
         };
 
         ReplaySubject<String> subject = ReplaySubject.create();
-        Subscription s1 = subject.subscribe(observer1);
+        Subscription s1 = subject.toObservable().subscribe(new TestObserver<String>(observer1));
         subject.onNext("one");
         assertEquals("one", lastValueForObserver1.get());
         subject.onNext("two");
         assertEquals("two", lastValueForObserver1.get());
 
-        Subscription s2 = subject.observeOn(Schedulers.newThread()).subscribe(observer2);
+        Subscription s2 = subject.toObservable().observeOn(Schedulers.newThread()).subscribe(new TestObserver<String>(observer2));
 
         System.out.println("before waiting for one");
 

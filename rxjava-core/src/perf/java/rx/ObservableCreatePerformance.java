@@ -1,9 +1,9 @@
 package rx;
 
+import rx.Observable.OnSubscribe;
 import rx.perf.AbstractPerformanceTester;
 import rx.perf.LongSumObserver;
 import rx.util.functions.Action0;
-import rx.util.functions.Action1;
 
 public class ObservableCreatePerformance extends AbstractPerformanceTester {
 
@@ -57,10 +57,10 @@ public class ObservableCreatePerformance extends AbstractPerformanceTester {
      */
     public long timeCreateAndSubscribe() {
 
-        Observable<Long> s = Observable.create(new Action1<Operator<? super Long>>() {
+        Observable<Long> s = Observable.create(new OnSubscribe<Long>() {
 
             @Override
-            public void call(Operator<? super Long> o) {
+            public void call(Observer<? super Long> o) {
                 o.onNext(1L);
                 o.onCompleted();
             }
