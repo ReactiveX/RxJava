@@ -9,5 +9,6 @@ include 'rxjava-core', \
 'rxjava-contrib:rxjava-android', \
 'rxjava-contrib:rxjava-apache-http', \
 'rxjava-contrib:rxjava-string', \
+'rxjava-contrib:rxjava-debug', \
 'rxjava-contrib:rxjava-async-util', \
 'rxjava-contrib:rxjava-computation-expressions'

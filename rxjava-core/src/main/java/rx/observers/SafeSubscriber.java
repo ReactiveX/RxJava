@@ -157,4 +157,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
         }
     }
 
+    public Subscriber<? super T> getActual() {
+        return actual;
+    }
 }

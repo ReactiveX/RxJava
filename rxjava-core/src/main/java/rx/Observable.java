@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import rx.Observable.OnSubscribe;
 import rx.joins.Pattern2;
 import rx.joins.Plan0;
 import rx.observables.BlockingObservable;
@@ -49,6 +50,7 @@ import rx.operators.OperationDelay;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
+import rx.operators.Operator;
 import rx.operators.OperatorDoOnEach;
 import rx.operators.OperationElementAt;
 import rx.operators.OperationFilter;
@@ -98,6 +100,7 @@ import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorZip;
+import rx.operators.Operator;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorFromIterable;
 import rx.operators.OperatorGroupBy;
@@ -251,10 +254,9 @@ public class Observable<T> {
      */
     public <R> Observable<R> lift(final Func1<Subscriber<? super R>, Subscriber<? super T>> bind) {
         return new Observable<R>(new OnSubscribe<R>() {
-
             @Override
             public void call(Subscriber<? super R> o) {
-                subscribe(bind.call(o));
+                subscribe(hook.onLift((Operator<R, T>) bind).call(o));
             }
         });
     }
