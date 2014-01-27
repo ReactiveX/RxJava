@@ -15,24 +15,25 @@
  */
 package rx.observables;
 
-import static org.junit.Assert.*;
-
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.subjects.BehaviorSubject;
+import rx.subjects.ReplaySubject;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class BlockingObservableTest {
 
@@ -380,6 +381,26 @@ public class BlockingObservableTest {
             }
         });
         assertEquals("default", first);
+    }
+
+    @Test
+    public void testBehaviorSubject() {
+        BehaviorSubject<String> subject = BehaviorSubject.create("default");
+        subject.onNext("one");
+        BlockingObservable<String> observable = subject.toBlockingObservable();
+        String last = observable.first();
+        assertEquals("one", last);
+    }
+
+    @Test
+    public void testReplaySubjectWithCapacity() {
+        ReplaySubject<String> subject = ReplaySubject.create(1);
+        subject.onNext("one");
+        subject.onNext("two");
+        subject.onNext("three");
+
+        String last = subject.asObservable().toBlockingObservable().first();
+        assertEquals("three", last);
     }
 
     private static class TestException extends RuntimeException {
