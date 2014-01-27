@@ -16,12 +16,23 @@
 
 package rx.lang.kotlin
 
-import rx.Subscription
 import rx.Observer
 import rx.Observable
+import rx.Observable.OnSubscribe
+import rx.Subscription
+import rx.Observable.OnSubscribeFunc
 
-public fun<T> Function1<Observer<in T>, Subscription>.asObservable(): Observable<T> {
-    return Observable.create { this(it!!) }!!
+
+public fun<T> Function1<Observer<in T>, Unit>.asObservable(): Observable<T> {
+    return Observable.create(OnSubscribe<T>{ t1 ->
+        this(t1!!)
+    })!!
+}
+
+public fun<T> Function1<Observer<in T>, Subscription>.asObservableFunc(): Observable<T> {
+    return Observable.create(OnSubscribeFunc<T>{ op ->
+        this(op!!)
+    })!!
 }
 
 public fun<T> Function0<Observable<out T>>.defer(): Observable<T> {
@@ -41,11 +52,11 @@ public fun<T> Throwable.asObservable(): Observable<T> {
 }
 
 public fun<T> Pair<T, T>.asObservable(): Observable<T> {
-    return Observable.from(this.component1(), this.component2())!!
+    return Observable.from(listOf(this.component1(), this.component2()))!!
 }
 
 public fun<T> Triple<T, T, T>.asObservable(): Observable<T> {
-    return Observable.from(this.component1(), this.component2(), this.component3())!!
+    return Observable.from(listOf(this.component1(), this.component2(), this.component3()))!!
 }
 
 public fun<T> Pair<Observable<T>, Observable<T>>.merge(): Observable<T> {
