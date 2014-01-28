@@ -55,8 +55,7 @@ public class OperationDefaultIfEmpty {
 
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
-            final SafeObservableSubscription subscription = new SafeObservableSubscription();
-            return subscription.wrap(source.subscribe(new Observer<T>() {
+            return source.subscribe(new Observer<T>(observer) {
 
                 private volatile boolean hasEmitted = false;
 
@@ -67,9 +66,7 @@ public class OperationDefaultIfEmpty {
                         observer.onNext(value);
                     } catch (Throwable ex) {
                         observer.onError(ex);
-                        // this will work if the sequence is asynchronous, it
-                        // will have no effect on a synchronous observable
-                        subscription.unsubscribe();
+                        unsubscribe();
                     }
                 }
 
@@ -87,7 +84,7 @@ public class OperationDefaultIfEmpty {
                         observer.onCompleted();
                     }
                 }
-            }));
+            });
         }
     }
 }

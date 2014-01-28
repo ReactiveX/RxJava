@@ -21,14 +21,10 @@ import rx.Subscription;
 
 /**
  * Thread-safe wrapper around Observable Subscription that ensures unsubscribe can be called only once.
- * <p>
- * Also used to:
- * <p>
- * <ul>
- * <li>allow the AtomicObserver to have access to the subscription in asynchronous execution for checking if unsubscribed occurred without onComplete/onError.</li>
- * <li>handle both synchronous and asynchronous subscribe() execution flows</li>
- * </ul>
+ * 
+ * @deprecated since `Observer` now implements `Subscription` and `CompositeSubscription` etc handle these things
  */
+@Deprecated
 public final class SafeObservableSubscription implements Subscription {
 
     private static final Subscription UNSUBSCRIBED = new Subscription()

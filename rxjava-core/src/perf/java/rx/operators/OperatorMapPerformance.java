@@ -28,11 +28,19 @@ public class OperatorMapPerformance extends AbstractPerformanceTester {
     /**
      * Observable.from(1L).map((l) -> { l+1})
      * 
-     * Run: 10 - 7,377,982 ops/sec
-     * Run: 11 - 7,714,715 ops/sec
-     * Run: 12 - 7,783,579 ops/sec
-     * Run: 13 - 7,693,372 ops/sec
-     * Run: 14 - 7,567,777 ops/sec
+     * Run: 10 - 11,375,632 ops/sec
+     * Run: 11 - 11,390,325 ops/sec
+     * Run: 12 - 11,655,527 ops/sec
+     * Run: 13 - 11,528,440 ops/sec
+     * Run: 14 - 11,321,181 ops/sec
+     * 
+     * ... after v0.17 work:
+     * 
+     * Run: 10 - 17,674,464 ops/sec
+     * Run: 11 - 17,890,239 ops/sec
+     * Run: 12 - 17,919,155 ops/sec
+     * Run: 13 - 16,356,974 ops/sec
+     * Run: 14 - 16,723,414 ops/sec
      */
     public long timeMapPlusOne() {
 

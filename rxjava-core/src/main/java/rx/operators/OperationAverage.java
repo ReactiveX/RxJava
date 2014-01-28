@@ -128,7 +128,7 @@ public final class OperationAverage {
         }
 
         /** Computes the average. */
-        private final class AverageObserver implements Observer<T> {
+        private final class AverageObserver extends Observer<T> {
             final Observer<? super Integer> observer;
             int sum;
             int count;
@@ -188,7 +188,7 @@ public final class OperationAverage {
         }
 
         /** Computes the average. */
-        private final class AverageObserver implements Observer<T> {
+        private final class AverageObserver extends Observer<T> {
             final Observer<? super Long> observer;
             long sum;
             int count;
@@ -248,7 +248,7 @@ public final class OperationAverage {
         }
 
         /** Computes the average. */
-        private final class AverageObserver implements Observer<T> {
+        private final class AverageObserver extends Observer<T> {
             final Observer<? super Float> observer;
             float sum;
             int count;
@@ -308,7 +308,7 @@ public final class OperationAverage {
         }
 
         /** Computes the average. */
-        private final class AverageObserver implements Observer<T> {
+        private final class AverageObserver extends Observer<T> {
             final Observer<? super Double> observer;
             double sum;
             int count;

@@ -33,6 +33,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 
@@ -51,7 +52,7 @@ public class OperationConcatTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> concat = Observable.create(concat(odds, even));
-        concat.subscribe(observer);
+        concat.subscribe(new TestObserver<String>(observer));
 
         verify(observer, times(7)).onNext(anyString());
     }
@@ -70,7 +71,7 @@ public class OperationConcatTest {
         list.add(odds);
         list.add(even);
         Observable<String> concat = Observable.create(concat(list));
-        concat.subscribe(observer);
+        concat.subscribe(new TestObserver<String>(observer));
 
         verify(observer, times(7)).onNext(anyString());
     }
@@ -108,7 +109,7 @@ public class OperationConcatTest {
         });
         Observable<String> concat = Observable.create(concat(observableOfObservables));
 
-        concat.subscribe(observer);
+        concat.subscribe(new TestObserver<String>(observer));
 
         verify(observer, times(7)).onNext(anyString());
     }
@@ -124,7 +125,7 @@ public class OperationConcatTest {
         TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
         TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
 
-        Observable.concat(Observable.create(o1), Observable.create(o2)).subscribe(observer);
+        Observable.concat(Observable.create(o1), Observable.create(o2)).subscribe(new TestObserver<String>(observer));
 
         try {
             // wait for async observables to complete
@@ -204,7 +205,7 @@ public class OperationConcatTest {
             }
         });
 
-        Observable.create(concat(observableOfObservables)).subscribe(observer);
+        Observable.create(concat(observableOfObservables)).subscribe(new TestObserver<String>(observer));
 
         // wait for parent to start
         parentHasStarted.await();
@@ -266,7 +267,7 @@ public class OperationConcatTest {
         TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(callOnce, okToContinue, odds, even);
         Observable.OnSubscribeFunc<String> concatF = concat(Observable.create(observableOfObservables));
         Observable<String> concat = Observable.create(concatF);
-        concat.subscribe(observer);
+        concat.subscribe(new TestObserver<String>(observer));
         try {
             //Block main thread to allow observables to serve up o1.
             callOnce.await();
@@ -301,14 +302,14 @@ public class OperationConcatTest {
         final TestObservable<String> w2 = new TestObservable<String>("hello", Integer.MAX_VALUE);
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         @SuppressWarnings("unchecked")
         TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.create(w1), Observable.create(w2));
         Observable.OnSubscribeFunc<String> concatF = concat(Observable.create(observableOfObservables));
 
         Observable<String> concat = Observable.create(concatF);
 
-        concat.take(50).subscribe(aObserver);
+        concat.take(50).subscribe(new TestObserver<String>(observer));
 
         //Wait for the thread to start up.
         try {
@@ -319,13 +320,13 @@ public class OperationConcatTest {
             e.printStackTrace();
         }
 
-        InOrder inOrder = inOrder(aObserver);
-        inOrder.verify(aObserver, times(1)).onNext("one");
-        inOrder.verify(aObserver, times(1)).onNext("two");
-        inOrder.verify(aObserver, times(1)).onNext("three");
-        inOrder.verify(aObserver, times(47)).onNext("hello");
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, never()).onError(any(Throwable.class));
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onNext("two");
+        inOrder.verify(observer, times(1)).onNext("three");
+        inOrder.verify(observer, times(47)).onNext("hello");
+        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -338,7 +339,7 @@ public class OperationConcatTest {
         final TestObservable<String> w2 = new TestObservable<String>(null, okToContinueW2, "four", "five", "six");
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
 
             @Override
@@ -359,9 +360,9 @@ public class OperationConcatTest {
 
         });
         Observable<String> concat = Observable.create(concat(observableOfObservables));
-        concat.subscribe(aObserver);
+        concat.subscribe(new TestObserver<String>(observer));
 
-        verify(aObserver, times(0)).onCompleted();
+        verify(observer, times(0)).onCompleted();
 
         try {
             // release both threads
@@ -371,18 +372,17 @@ public class OperationConcatTest {
             w1.t.join();
             w2.t.join();
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
-        InOrder inOrder = inOrder(aObserver);
-        inOrder.verify(aObserver, times(1)).onNext("one");
-        inOrder.verify(aObserver, times(1)).onNext("two");
-        inOrder.verify(aObserver, times(1)).onNext("three");
-        inOrder.verify(aObserver, times(1)).onNext("four");
-        inOrder.verify(aObserver, times(1)).onNext("five");
-        inOrder.verify(aObserver, times(1)).onNext("six");
-        verify(aObserver, times(1)).onCompleted();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onNext("two");
+        inOrder.verify(observer, times(1)).onNext("three");
+        inOrder.verify(observer, times(1)).onNext("four");
+        inOrder.verify(observer, times(1)).onNext("five");
+        inOrder.verify(observer, times(1)).onNext("six");
+        verify(observer, times(1)).onCompleted();
 
     }
 
@@ -397,14 +397,13 @@ public class OperationConcatTest {
         final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
 
         @SuppressWarnings("unchecked")
-        final Observer<String> aObserver = mock(Observer.class);
+        final Observer<String> observer = mock(Observer.class);
         @SuppressWarnings("unchecked")
         final Observable<String> concat = Observable.create(concat(Observable.create(w1), Observable.create(w2)));
-        final SafeObservableSubscription s1 = new SafeObservableSubscription();
 
         try {
             // Subscribe
-            s1.wrap(concat.subscribe(aObserver));
+            Subscription s1 = concat.subscribe(new TestObserver<String>(observer));
             //Block main thread to allow observable "w1" to complete and observable "w2" to call onNext once.
             callOnce.await();
             // Unsubcribe
@@ -418,14 +417,14 @@ public class OperationConcatTest {
             fail(e.getMessage());
         }
 
-        InOrder inOrder = inOrder(aObserver);
-        inOrder.verify(aObserver, times(1)).onNext("one");
-        inOrder.verify(aObserver, times(1)).onNext("two");
-        inOrder.verify(aObserver, times(1)).onNext("three");
-        inOrder.verify(aObserver, times(1)).onNext("four");
-        inOrder.verify(aObserver, never()).onNext("five");
-        inOrder.verify(aObserver, never()).onNext("six");
-        inOrder.verify(aObserver, never()).onCompleted();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onNext("two");
+        inOrder.verify(observer, times(1)).onNext("three");
+        inOrder.verify(observer, times(1)).onNext("four");
+        inOrder.verify(observer, never()).onNext("five");
+        inOrder.verify(observer, never()).onNext("six");
+        inOrder.verify(observer, never()).onCompleted();
 
     }
 
@@ -440,14 +439,14 @@ public class OperationConcatTest {
         final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         @SuppressWarnings("unchecked")
         TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.create(w1), Observable.create(w2));
         Observable.OnSubscribeFunc<String> concatF = concat(Observable.create(observableOfObservables));
 
         Observable<String> concat = Observable.create(concatF);
 
-        Subscription s1 = concat.subscribe(aObserver);
+        Subscription s1 = concat.subscribe(new TestObserver<String>(observer));
 
         try {
             //Block main thread to allow observable "w1" to complete and observable "w2" to call onNext exactly once.
@@ -464,15 +463,15 @@ public class OperationConcatTest {
             fail(e.getMessage());
         }
 
-        InOrder inOrder = inOrder(aObserver);
-        inOrder.verify(aObserver, times(1)).onNext("one");
-        inOrder.verify(aObserver, times(1)).onNext("two");
-        inOrder.verify(aObserver, times(1)).onNext("three");
-        inOrder.verify(aObserver, times(1)).onNext("four");
-        inOrder.verify(aObserver, never()).onNext("five");
-        inOrder.verify(aObserver, never()).onNext("six");
-        verify(aObserver, never()).onCompleted();
-        verify(aObserver, never()).onError(any(Throwable.class));
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onNext("two");
+        inOrder.verify(observer, times(1)).onNext("three");
+        inOrder.verify(observer, times(1)).onNext("four");
+        inOrder.verify(observer, never()).onNext("five");
+        inOrder.verify(observer, never()).onNext("six");
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     private static class TestObservable<T> implements Observable.OnSubscribeFunc<T> {
@@ -565,8 +564,8 @@ public class OperationConcatTest {
         Observable<Long> timer = Observable.interval(500, TimeUnit.MILLISECONDS, s).take(2);
         Observable<Long> o = Observable.concat(timer, timer);
 
-        o.subscribe(o1);
-        o.subscribe(o2);
+        o.subscribe(new TestObserver<Object>(o1));
+        o.subscribe(new TestObserver<Object>(o2));
 
         InOrder inOrder1 = inOrder(o1);
         InOrder inOrder2 = inOrder(o2);

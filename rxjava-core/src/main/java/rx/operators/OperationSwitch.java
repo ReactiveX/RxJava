@@ -70,7 +70,7 @@ public final class OperationSwitch {
         }
     }
 
-    private static class SwitchObserver<T> implements Observer<Observable<? extends T>> {
+    private static class SwitchObserver<T> extends Observer<Observable<? extends T>> {
 
         private final Object gate;
         private final Observer<? super T> observer;

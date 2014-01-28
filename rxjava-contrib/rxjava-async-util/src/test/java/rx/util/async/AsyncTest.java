@@ -35,6 +35,7 @@ import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.util.functions.Action0;
@@ -81,7 +82,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call()
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
@@ -101,7 +102,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call()
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
@@ -120,7 +121,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
@@ -140,7 +141,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
@@ -159,7 +160,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
@@ -179,7 +180,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
@@ -198,7 +199,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
@@ -218,7 +219,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
@@ -237,7 +238,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
@@ -257,7 +258,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
@@ -276,7 +277,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
@@ -296,7 +297,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
@@ -315,7 +316,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
@@ -335,7 +336,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
@@ -354,7 +355,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
@@ -374,7 +375,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
@@ -393,7 +394,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
@@ -413,7 +414,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
@@ -432,7 +433,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128, 256)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
@@ -452,7 +453,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128, 256)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
@@ -475,7 +476,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128, 256, 512)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(null);
@@ -495,7 +496,7 @@ public class AsyncTest {
 
         Async.toAsync(action, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128, 256, 512)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onNext(null);
@@ -512,7 +513,7 @@ public class AsyncTest {
         };
         Async.toAsync(func, Schedulers.immediate())
                 .call()
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(0);
@@ -530,7 +531,7 @@ public class AsyncTest {
         };
         Async.toAsync(func, Schedulers.immediate())
                 .call(1)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(1);
@@ -547,7 +548,7 @@ public class AsyncTest {
         };
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(3);
@@ -564,7 +565,7 @@ public class AsyncTest {
         };
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(7);
@@ -581,7 +582,7 @@ public class AsyncTest {
         };
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(15);
@@ -598,7 +599,7 @@ public class AsyncTest {
         };
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(31);
@@ -615,7 +616,7 @@ public class AsyncTest {
         };
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(63);
@@ -632,7 +633,7 @@ public class AsyncTest {
         };
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(127);
@@ -649,7 +650,7 @@ public class AsyncTest {
         };
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(255);
@@ -666,7 +667,7 @@ public class AsyncTest {
         };
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128, 256)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(511);
@@ -687,7 +688,7 @@ public class AsyncTest {
         };
         Async.toAsync(func, Schedulers.immediate())
                 .call(1, 2, 4, 8, 16, 32, 64, 128, 256, 512)
-                .subscribe(observer);
+                .subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext(1023);
@@ -731,7 +732,7 @@ public class AsyncTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        observable.subscribe(observer);
+        observable.subscribe(new TestObserver<String>(observer));
 
         InOrder inOrder = inOrder(observer);
         inOrder.verifyNoMoreInteractions();
@@ -762,7 +763,7 @@ public class AsyncTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        observable.subscribe(observer);
+        observable.subscribe(new TestObserver<String>(observer));
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext("one");
@@ -794,9 +795,9 @@ public class AsyncTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer3 = mock(Observer.class);
 
-        observable.subscribe(observer1);
-        observable.subscribe(observer2);
-        observable.subscribe(observer3);
+        observable.subscribe(new TestObserver<String>(observer1));
+        observable.subscribe(new TestObserver<String>(observer2));
+        observable.subscribe(new TestObserver<String>(observer3));
 
         InOrder inOrder;
         inOrder = inOrder(observer1);

@@ -119,9 +119,49 @@ public class CompositeSubscriptionTest {
         try {
             s.unsubscribe();
             fail("Expecting an exception");
+        } catch (RuntimeException e) {
+            // we expect this
+            assertEquals(e.getMessage(), "failed on first one");
+        }
+
+        // we should still have unsubscribed to the second one
+        assertEquals(1, counter.get());
+    }
+
+    @Test
+    public void testCompositeException() {
+        final AtomicInteger counter = new AtomicInteger();
+        CompositeSubscription s = new CompositeSubscription();
+        s.add(new Subscription() {
+
+            @Override
+            public void unsubscribe() {
+                throw new RuntimeException("failed on first one");
+            }
+        });
+
+        s.add(new Subscription() {
+
+            @Override
+            public void unsubscribe() {
+                throw new RuntimeException("failed on second one too");
+            }
+        });
+
+        s.add(new Subscription() {
+
+            @Override
+            public void unsubscribe() {
+                counter.incrementAndGet();
+            }
+        });
+
+        try {
+            s.unsubscribe();
+            fail("Expecting an exception");
         } catch (CompositeException e) {
             // we expect this
-            assertEquals(1, e.getExceptions().size());
+            assertEquals(e.getExceptions().size(), 2);
         }
 
         // we should still have unsubscribed to the second one

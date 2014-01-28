@@ -18,8 +18,8 @@ package rx.subjects;
 import rx.Observable;
 import rx.Observer;
 
-public abstract class Subject<T, R> extends Observable<R> implements Observer<T> {
-    protected Subject(OnSubscribeFunc<R> onSubscribe) {
-        super(onSubscribe);
-    }
+public abstract class Subject<T, R> extends Observer<T> {
+
+    public abstract Observable<R> toObservable();
+
 }

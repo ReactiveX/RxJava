@@ -36,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable.OnSubscribeFunc;
 import rx.observables.ConnectableObservable;
+import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
@@ -115,19 +116,19 @@ public class ObservableTests {
         });
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("two");
-        verify(aObserver, times(1)).onNext("three");
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<String>(observer));
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
     public void testCountAFewItems() {
         Observable<String> observable = Observable.from("a", "b", "c", "d");
-        observable.count().subscribe(w);
+        observable.count().subscribe(new TestObserver<Integer>(w));
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(4);
@@ -138,7 +139,7 @@ public class ObservableTests {
     @Test
     public void testCountZeroItems() {
         Observable<String> observable = Observable.empty();
-        observable.count().subscribe(w);
+        observable.count().subscribe(new TestObserver<Integer>(w));
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(0);
@@ -155,7 +156,7 @@ public class ObservableTests {
                 return Subscriptions.empty();
             }
         });
-        o.count().subscribe(w);
+        o.count().subscribe(new TestObserver<Integer>(w));
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onCompleted();
         verify(w, times(1)).onError(any(RuntimeException.class));
@@ -163,7 +164,7 @@ public class ObservableTests {
 
     public void testTakeFirstWithPredicateOfSome() {
         Observable<Integer> observable = Observable.from(1, 3, 5, 4, 6, 3);
-        observable.takeFirst(IS_EVEN).subscribe(w);
+        observable.takeFirst(IS_EVEN).subscribe(new TestObserver<Integer>(w));
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(4);
         verify(w, times(1)).onCompleted();
@@ -173,7 +174,7 @@ public class ObservableTests {
     @Test
     public void testTakeFirstWithPredicateOfNoneMatchingThePredicate() {
         Observable<Integer> observable = Observable.from(1, 3, 5, 7, 9, 7, 5, 3, 1);
-        observable.takeFirst(IS_EVEN).subscribe(w);
+        observable.takeFirst(IS_EVEN).subscribe(new TestObserver<Integer>(w));
         verify(w, never()).onNext(anyInt());
         verify(w, times(1)).onCompleted();
         verify(w, never()).onError(any(Throwable.class));
@@ -182,7 +183,7 @@ public class ObservableTests {
     @Test
     public void testTakeFirstOfSome() {
         Observable<Integer> observable = Observable.from(1, 2, 3);
-        observable.takeFirst().subscribe(w);
+        observable.takeFirst().subscribe(new TestObserver<Integer>(w));
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(1);
         verify(w, times(1)).onCompleted();
@@ -192,7 +193,7 @@ public class ObservableTests {
     @Test
     public void testTakeFirstOfNone() {
         Observable<Integer> observable = Observable.empty();
-        observable.takeFirst().subscribe(w);
+        observable.takeFirst().subscribe(new TestObserver<Integer>(w));
         verify(w, never()).onNext(anyInt());
         verify(w, times(1)).onCompleted();
         verify(w, never()).onError(any(Throwable.class));
@@ -201,7 +202,7 @@ public class ObservableTests {
     @Test
     public void testFirstOfNone() {
         Observable<Integer> observable = Observable.empty();
-        observable.first().subscribe(w);
+        observable.first().subscribe(new TestObserver<Integer>(w));
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onCompleted();
         verify(w, times(1)).onError(isA(IllegalArgumentException.class));
@@ -210,7 +211,7 @@ public class ObservableTests {
     @Test
     public void testFirstWithPredicateOfNoneMatchingThePredicate() {
         Observable<Integer> observable = Observable.from(1, 3, 5, 7, 9, 7, 5, 3, 1);
-        observable.first(IS_EVEN).subscribe(w);
+        observable.first(IS_EVEN).subscribe(new TestObserver<Integer>(w));
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onCompleted();
         verify(w, times(1)).onError(isA(IllegalArgumentException.class));
@@ -226,7 +227,7 @@ public class ObservableTests {
                 return t1 + t2;
             }
 
-        }).subscribe(w);
+        }).subscribe(new TestObserver<Integer>(w));
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(10);
@@ -286,7 +287,7 @@ public class ObservableTests {
                 return t1 + t2;
             }
 
-        }).subscribe(w);
+        }).subscribe(new TestObserver<Integer>(w));
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(60);
@@ -305,7 +306,7 @@ public class ObservableTests {
             }
 
         });
-        o.subscribe(observer);
+        o.subscribe(new TestObserver<String>(observer));
         verify(observer, times(0)).onNext(anyString());
         verify(observer, times(0)).onCompleted();
         verify(observer, times(1)).onError(re);
@@ -318,7 +319,7 @@ public class ObservableTests {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
-        chained.subscribe(observer);
+        chained.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onCompleted();
@@ -807,15 +808,15 @@ public class ObservableTests {
         Observable<String> observable = Observable.from(1, "abc", false, 2L).ofType(String.class);
 
         @SuppressWarnings("unchecked")
-        Observer<Object> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, never()).onNext(1);
-        verify(aObserver, times(1)).onNext("abc");
-        verify(aObserver, never()).onNext(false);
-        verify(aObserver, never()).onNext(2L);
-        verify(aObserver, never()).onError(
+        Observer<Object> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Object>(observer));
+        verify(observer, never()).onNext(1);
+        verify(observer, times(1)).onNext("abc");
+        verify(observer, never()).onNext(false);
+        verify(observer, never()).onNext(2L);
+        verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -829,14 +830,14 @@ public class ObservableTests {
         Observable<List> observable = Observable.<Object> from(l1, l2, "123").ofType(List.class);
 
         @SuppressWarnings("unchecked")
-        Observer<Object> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext(l1);
-        verify(aObserver, times(1)).onNext(l2);
-        verify(aObserver, never()).onNext("123");
-        verify(aObserver, never()).onError(
+        Observer<Object> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Object>(observer));
+        verify(observer, times(1)).onNext(l1);
+        verify(observer, times(1)).onNext(l2);
+        verify(observer, never()).onNext("123");
+        verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -844,13 +845,13 @@ public class ObservableTests {
         Observable<Boolean> observable = Observable.from("a", "b", null).contains("b");
 
         @SuppressWarnings("unchecked")
-        Observer<Object> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext(true);
-        verify(aObserver, never()).onNext(false);
-        verify(aObserver, never()).onError(
+        Observer<Object> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Object>(observer));
+        verify(observer, times(1)).onNext(true);
+        verify(observer, never()).onNext(false);
+        verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -858,13 +859,13 @@ public class ObservableTests {
         Observable<Boolean> observable = Observable.from("a", "b", null).contains("c");
 
         @SuppressWarnings("unchecked")
-        Observer<Object> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext(false);
-        verify(aObserver, never()).onNext(true);
-        verify(aObserver, never()).onError(
+        Observer<Object> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Object>(observer));
+        verify(observer, times(1)).onNext(false);
+        verify(observer, never()).onNext(true);
+        verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -872,13 +873,13 @@ public class ObservableTests {
         Observable<Boolean> observable = Observable.from("a", "b", null).contains(null);
 
         @SuppressWarnings("unchecked")
-        Observer<Object> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext(true);
-        verify(aObserver, never()).onNext(false);
-        verify(aObserver, never()).onError(
+        Observer<Object> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Object>(observer));
+        verify(observer, times(1)).onNext(true);
+        verify(observer, never()).onNext(false);
+        verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -886,13 +887,13 @@ public class ObservableTests {
         Observable<Boolean> observable = Observable.<String> empty().contains("a");
 
         @SuppressWarnings("unchecked")
-        Observer<Object> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, times(1)).onNext(false);
-        verify(aObserver, never()).onNext(true);
-        verify(aObserver, never()).onError(
+        Observer<Object> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Object>(observer));
+        verify(observer, times(1)).onNext(false);
+        verify(observer, never()).onNext(true);
+        verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -900,11 +901,11 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.from(1, 2, 3).ignoreElements();
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
-        verify(aObserver, never()).onNext(any(Integer.class));
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Integer>(observer));
+        verify(observer, never()).onNext(any(Integer.class));
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
     }
 
     @Test
@@ -913,15 +914,15 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.from(Arrays.asList(1, 2), scheduler);
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Integer>(observer));
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(aObserver);
-        inOrder.verify(aObserver, times(1)).onNext(1);
-        inOrder.verify(aObserver, times(1)).onNext(2);
-        inOrder.verify(aObserver, times(1)).onCompleted();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(1);
+        inOrder.verify(observer, times(1)).onNext(2);
+        inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -931,17 +932,17 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.from(3, 4).startWith(Arrays.asList(1, 2), scheduler);
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Integer>(observer));
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(aObserver);
-        inOrder.verify(aObserver, times(1)).onNext(1);
-        inOrder.verify(aObserver, times(1)).onNext(2);
-        inOrder.verify(aObserver, times(1)).onNext(3);
-        inOrder.verify(aObserver, times(1)).onNext(4);
-        inOrder.verify(aObserver, times(1)).onCompleted();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(1);
+        inOrder.verify(observer, times(1)).onNext(2);
+        inOrder.verify(observer, times(1)).onNext(3);
+        inOrder.verify(observer, times(1)).onNext(4);
+        inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -951,17 +952,17 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.range(3, 4, scheduler);
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(new TestObserver<Integer>(observer));
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(aObserver);
-        inOrder.verify(aObserver, times(1)).onNext(3);
-        inOrder.verify(aObserver, times(1)).onNext(4);
-        inOrder.verify(aObserver, times(1)).onNext(5);
-        inOrder.verify(aObserver, times(1)).onNext(6);
-        inOrder.verify(aObserver, times(1)).onCompleted();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(3);
+        inOrder.verify(observer, times(1)).onNext(4);
+        inOrder.verify(observer, times(1)).onNext(5);
+        inOrder.verify(observer, times(1)).onNext(6);
+        inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
 

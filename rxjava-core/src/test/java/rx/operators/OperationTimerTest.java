@@ -29,6 +29,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 
 public class OperationTimerTest {
@@ -44,7 +45,7 @@ public class OperationTimerTest {
 
     @Test
     public void testTimerOnce() {
-        Observable.timer(100, TimeUnit.MILLISECONDS, s).subscribe(observer);
+        Observable.timer(100, TimeUnit.MILLISECONDS, s).subscribe(new TestObserver<Object>(observer));
         s.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
         verify(observer, times(1)).onNext(0L);
@@ -54,7 +55,7 @@ public class OperationTimerTest {
 
     @Test
     public void testTimerPeriodically() {
-        Subscription c = Observable.timer(100, 100, TimeUnit.MILLISECONDS, s).subscribe(observer);
+        Subscription c = Observable.timer(100, 100, TimeUnit.MILLISECONDS, s).subscribe(new TestObserver<Object>(observer));
         s.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
         InOrder inOrder = inOrder(observer);

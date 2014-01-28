@@ -58,7 +58,7 @@ public final class OperationSkipWhile {
             return source.subscribe(new SkipWhileObserver(observer));
         }
 
-        private class SkipWhileObserver implements Observer<T> {
+        private class SkipWhileObserver extends Observer<T> {
             private final Observer<? super T> observer;
 
             public SkipWhileObserver(Observer<? super T> observer) {

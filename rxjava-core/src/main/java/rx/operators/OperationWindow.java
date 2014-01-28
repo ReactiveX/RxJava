@@ -386,7 +386,7 @@ public final class OperationWindow extends ChunkedOperation {
 
             final SourceObserver<T> so = new SourceObserver<T>(t1, csub);
             try {
-                t1.onNext(so.subject);
+                t1.onNext(so.subject.toObservable());
             } catch (Throwable t) {
                 t1.onError(t);
                 return Subscriptions.empty();
@@ -403,7 +403,7 @@ public final class OperationWindow extends ChunkedOperation {
         /**
          * Observe the source and emit the values into the current window.
          */
-        private static final class SourceObserver<T> implements Observer<T> {
+        private static final class SourceObserver<T> extends Observer<T> {
             final Observer<? super Observable<T>> observer;
             final Subscription cancel;
             final Object guard;
@@ -470,7 +470,7 @@ public final class OperationWindow extends ChunkedOperation {
                         s.onCompleted();
 
                         subject = create();
-                        observer.onNext(subject);
+                        observer.onNext(subject.toObservable());
                     }
                 } catch (Throwable t) {
                     onError(t);
@@ -481,7 +481,7 @@ public final class OperationWindow extends ChunkedOperation {
         /**
          * Observe the boundary and replace the window on each item.
          */
-        private static final class BoundaryObserver<T, U> implements Observer<U> {
+        private static final class BoundaryObserver<T, U> extends Observer<U> {
             final SourceObserver<T> so;
 
             public BoundaryObserver(SourceObserver<T> so) {

@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 import rx.util.functions.Functions;
@@ -51,7 +52,7 @@ public class OperationReduceTest {
 
         Observable<Integer> result = Observable.from(1, 2, 3, 4, 5).reduce(0, sum).map(Functions.<Integer> identity());
 
-        result.subscribe(observer);
+        result.subscribe(new TestObserver<Object>(observer));
 
         verify(observer).onNext(1 + 2 + 3 + 4 + 5);
         verify(observer).onCompleted();
@@ -67,7 +68,7 @@ public class OperationReduceTest {
                 Observable.<Integer> error(new CustomException()))
                 .reduce(0, sum).map(Functions.<Integer> identity());
 
-        result.subscribe(observer);
+        result.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onNext(any());
         verify(observer, never()).onCompleted();
@@ -86,7 +87,7 @@ public class OperationReduceTest {
         Observable<Integer> result = Observable.from(1, 2, 3, 4, 5)
                 .reduce(0, sumErr).map(Functions.<Integer> identity());
 
-        result.subscribe(observer);
+        result.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onNext(any());
         verify(observer, never()).onCompleted();
@@ -107,7 +108,7 @@ public class OperationReduceTest {
         Observable<Integer> result = Observable.from(1, 2, 3, 4, 5)
                 .reduce(0, sum).map(error);
 
-        result.subscribe(observer);
+        result.subscribe(new TestObserver<Object>(observer));
 
         verify(observer, never()).onNext(any());
         verify(observer, never()).onCompleted();

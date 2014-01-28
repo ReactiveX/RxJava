@@ -21,6 +21,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.subscriptions.SerialSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func0;
@@ -231,7 +232,7 @@ public final class OperationConditionals {
                 return Subscriptions.empty();
             }
             if (first) {
-                SerialSubscription ssub = new SerialSubscription();
+                MultipleAssignmentSubscription ssub = new MultipleAssignmentSubscription();
 
                 ssub.set(source.subscribe(new SourceObserver(t1, ssub)));
 
@@ -243,11 +244,11 @@ public final class OperationConditionals {
         }
 
         /** Observe the source. */
-        final class SourceObserver implements Observer<T> {
-            final SerialSubscription cancel;
+        final class SourceObserver extends Observer<T> {
+            final MultipleAssignmentSubscription cancel;
             final Observer<? super T> observer;
 
-            public SourceObserver(Observer<? super T> observer, SerialSubscription cancel) {
+            public SourceObserver(Observer<? super T> observer, MultipleAssignmentSubscription cancel) {
                 this.observer = observer;
                 this.cancel = cancel;
             }
@@ -273,7 +274,7 @@ public final class OperationConditionals {
                     return;
                 }
                 if (next) {
-                    cancel.setSubscription(source.subscribe(this));
+                    cancel.set(source.subscribe(this));
                 } else {
                     observer.onCompleted();
                     cancel.unsubscribe();

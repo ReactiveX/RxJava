@@ -108,7 +108,7 @@ public final class OperationDistinctUntilChanged {
 
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
-            final Subscription sourceSub = source.subscribe(new Observer<T>() {
+            return source.subscribe(new Observer<T>(observer) {
                 private U lastEmittedKey;
                 private boolean hasEmitted;
 
@@ -133,13 +133,6 @@ public final class OperationDistinctUntilChanged {
                     } else if (equalityComparator.compare(lastKey, nextKey) != 0) {
                         observer.onNext(next);
                     }
-                }
-            });
-
-            return Subscriptions.create(new Action0() {
-                @Override
-                public void call() {
-                    sourceSub.unsubscribe();
                 }
             });
         }

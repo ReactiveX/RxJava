@@ -15,7 +15,15 @@
  */
 package rx.subjects;
 
-import rx.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import rx.Notification;
+import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.subjects.SubjectSubscriptionManager.*;
 import rx.util.functions.*;
@@ -67,7 +75,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
         final ReplayState<T> state = new ReplayState<T>(capacity);
 
-        OnSubscribeFunc<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+        OnSubscribe<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
                  * This function executes at beginning of subscription.
                  * We want to replay history with the subscribing thread
@@ -78,7 +86,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 new Action1<SubjectObserver<? super T>>() {
 
                     @Override
-                    public void call(SubjectObserver<? super T> o) {
+                    public void call(SubjectSubscriptionManager.SubjectObserver<? super T> o) {
                         // replay history for this observer using the subscribing thread
                         int lastIndex = replayObserverFromIndex(state.history, 0, o);
 
@@ -115,11 +123,17 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     private final SubjectSubscriptionManager<T> subscriptionManager;
     private final ReplayState<T> state;
+    private final Observable<T> observable;
 
-    protected ReplaySubject(OnSubscribeFunc<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, ReplayState<T> state) {
-        super(onSubscribe);
+    protected ReplaySubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, ReplayState<T> state) {
         this.subscriptionManager = subscriptionManager;
         this.state = state;
+        this.observable = Observable.create(onSubscribe);
+    }
+
+    @Override
+    public Observable<T> toObservable() {
+        return observable;
     }
 
     @Override
@@ -128,7 +142,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                state.history.complete(new Notification<T>());
+                state.history.complete(Notification.<T>createOnCompleted());
                 for (SubjectObserver<? super T> o : observers) {
                     if (caughtUp(o)) {
                         o.onCompleted();
@@ -144,7 +158,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                state.history.complete(new Notification<T>(e));
+                state.history.complete(Notification.<T>createOnError(e));
                 for (SubjectObserver<? super T> o : observers) {
                     if (caughtUp(o)) {
                         o.onError(e);

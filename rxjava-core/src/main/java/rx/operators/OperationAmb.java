@@ -136,7 +136,7 @@ public class OperationAmb {
         };
     }
 
-    private static class AmbObserver<T> implements Observer<T> {
+    private static class AmbObserver<T> extends Observer<T> {
 
         private static final int NONE = -1;
 

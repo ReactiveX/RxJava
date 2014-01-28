@@ -18,7 +18,6 @@ package rx.operators;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationMerge.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,12 +36,13 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
-public class OperationMergeTest {
+public class OperatorMergeTest {
 
     @Mock
     Observer<String> stringObserver;
@@ -78,7 +78,7 @@ public class OperationMergeTest {
 
         });
         Observable<String> m = Observable.merge(observableOfObservables);
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(1)).onCompleted();
@@ -91,7 +91,7 @@ public class OperationMergeTest {
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
 
         Observable<String> m = Observable.merge(o1, o2);
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(2)).onNext("hello");
@@ -107,37 +107,11 @@ public class OperationMergeTest {
         listOfObservables.add(o2);
 
         Observable<String> m = Observable.merge(listOfObservables);
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(1)).onCompleted();
         verify(stringObserver, times(2)).onNext("hello");
-    }
-
-    @Test
-    public void testUnSubscribe() {
-        TestObservable tA = new TestObservable();
-        TestObservable tB = new TestObservable();
-
-        Observable<String> m = Observable.merge(Observable.create(tA), Observable.create(tB));
-        Subscription s = m.subscribe(stringObserver);
-
-        tA.sendOnNext("Aone");
-        tB.sendOnNext("Bone");
-        s.unsubscribe();
-        tA.sendOnNext("Atwo");
-        tB.sendOnNext("Btwo");
-        tA.sendOnCompleted();
-        tB.sendOnCompleted();
-
-        verify(stringObserver, never()).onError(any(Throwable.class));
-        verify(stringObserver, times(1)).onNext("Aone");
-        verify(stringObserver, times(1)).onNext("Bone");
-        assertTrue(tA.unsubscribed);
-        assertTrue(tB.unsubscribed);
-        verify(stringObserver, never()).onNext("Atwo");
-        verify(stringObserver, never()).onNext("Btwo");
-        verify(stringObserver, never()).onCompleted();
     }
 
     @Test
@@ -185,7 +159,7 @@ public class OperationMergeTest {
         });
 
         final AtomicInteger count = new AtomicInteger();
-        Observable.create(merge(source)).take(6).toBlockingObservable().forEach(new Action1<Long>() {
+        Observable.merge(source).take(6).toBlockingObservable().forEach(new Action1<Long>() {
 
             @Override
             public void call(Long v) {
@@ -212,7 +186,7 @@ public class OperationMergeTest {
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
         Observable<String> m = Observable.merge(Observable.create(o1), Observable.create(o2));
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         try {
             o1.t.join();
@@ -308,7 +282,7 @@ public class OperationMergeTest {
         final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", "three")); // we expect to lose all of these since o1 is done first and fails
 
         Observable<String> m = Observable.merge(o1, o2);
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
         verify(stringObserver, never()).onCompleted();
@@ -332,7 +306,7 @@ public class OperationMergeTest {
         final Observable<String> o4 = Observable.create(new TestErrorObservable("nine"));// we expect to lose all of these since o2 is done first and fails
 
         Observable<String> m = Observable.merge(o1, o2, o3, o4);
-        m.subscribe(stringObserver);
+        m.subscribe(new TestObserver<String>(stringObserver));
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
         verify(stringObserver, never()).onCompleted();

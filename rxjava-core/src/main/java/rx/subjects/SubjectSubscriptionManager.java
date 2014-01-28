@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable.OnSubscribeFunc;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
@@ -39,10 +39,10 @@ import rx.util.functions.Action1;
      *            Only runs if Subject is in terminal state and the Observer ends up not being registered.
      * @return
      */
-    public OnSubscribeFunc<T> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, final Action1<SubjectObserver<? super T>> onTerminated) {
-        return new OnSubscribeFunc<T>() {
+    public OnSubscribe<T> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, final Action1<SubjectObserver<? super T>> onTerminated) {
+        return new OnSubscribe<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> actualObserver) {
+            public void call(Observer<? super T> actualObserver) {
                 SubjectObserver<T> observer = new SubjectObserver<T>(actualObserver);
                 // invoke onSubscribe logic 
                 if (onSubscribe != null) {
@@ -70,10 +70,8 @@ import rx.util.functions.Action1;
                         }
                         break;
                     } else {
-                        final SafeObservableSubscription subscription = new SafeObservableSubscription();
-                        s = subscription;
                         addedObserver = true;
-                        subscription.wrap(new Subscription() {
+                        s = new Subscription() {
                             @Override
                             public void unsubscribe() {
                                 State<T> current;
@@ -81,13 +79,13 @@ import rx.util.functions.Action1;
                                 do {
                                     current = state.get();
                                     // on unsubscribe remove it from the map of outbound observers to notify
-                                    newState = current.removeObserver(subscription);
+                                    newState = current.removeObserver(this);
                                 } while (!state.compareAndSet(current, newState));
                             }
-                        });
+                        };
 
                         // on subscribe add it to the map of outbound observers to notify
-                        newState = current.addObserver(subscription, observer);
+                        newState = current.addObserver(s, observer);
                     }
                 } while (!state.compareAndSet(current, newState));
 
@@ -98,7 +96,7 @@ import rx.util.functions.Action1;
                     onTerminated.call(observer);
                 }
 
-                return s;
+                actualObserver.add(s);
             }
 
         };
@@ -228,12 +226,13 @@ import rx.util.functions.Action1;
         }
     }
 
-    protected static class SubjectObserver<T> implements Observer<T> {
+    protected static class SubjectObserver<T> extends Observer<T> {
 
         private final Observer<? super T> actual;
         protected volatile boolean caughtUp = false;
 
         SubjectObserver(Observer<? super T> actual) {
+            super(actual);
             this.actual = actual;
         }
 

@@ -24,21 +24,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
+import rx.observers.SafeObserver;
 import rx.operators.SafeObservableSubscription;
-import rx.operators.SafeObserver;
 import rx.util.functions.Action1;
 
 /**
  * Default implementation of a join observer.
  */
-public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinObserver {
+public final class JoinObserver1<T> extends Observer<Notification<T>> implements JoinObserver {
     private Object gate;
     private final Observable<T> source;
     private final Action1<Throwable> onError;
     private final List<ActivePlan0> activePlans;
     private final Queue<Notification<T>> queue;
-    private final SafeObservableSubscription subscription = new SafeObservableSubscription();
-    private volatile boolean done;
     private final AtomicBoolean subscribed = new AtomicBoolean(false);
     private final SafeObserver<Notification<T>> safeObserver;
 
@@ -47,7 +45,9 @@ public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinOb
         this.onError = onError;
         queue = new LinkedList<Notification<T>>();
         activePlans = new ArrayList<ActivePlan0>();
-        safeObserver = new SafeObserver<Notification<T>>(subscription, new InnerObserver());
+        safeObserver = new SafeObserver<Notification<T>>(new InnerObserver());
+        // add this subscription so it gets unsubscribed when the parent does
+        add(safeObserver);
     }
 
     public Queue<Notification<T>> queue() {
@@ -62,7 +62,7 @@ public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinOb
     public void subscribe(Object gate) {
         if (subscribed.compareAndSet(false, true)) {
             this.gate = gate;
-            subscription.wrap(source.materialize().subscribe(this));
+            source.materialize().subscribe(this);
         } else {
             throw new IllegalStateException("Can only be subscribed to once.");
         }
@@ -73,36 +73,6 @@ public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinOb
         queue.remove();
     }
 
-    private final class InnerObserver implements Observer<Notification<T>> {
-
-        @Override
-        public void onNext(Notification<T> args) {
-            synchronized (gate) {
-                if (!done) {
-                    if (args.isOnError()) {
-                        onError.call(args.getThrowable());
-                        return;
-                    }
-                    queue.add(args);
-
-                    // remark: activePlans might change while iterating
-                    for (ActivePlan0 a : new ArrayList<ActivePlan0>(activePlans)) {
-                        a.match();
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            // not expected
-        }
-
-        @Override
-        public void onCompleted() {
-            // not expected or ignored
-        }
-    }
 
     @Override
     public void onNext(Notification<T> args) {
@@ -125,12 +95,36 @@ public final class JoinObserver1<T> implements Observer<Notification<T>>, JoinOb
             unsubscribe();
         }
     }
+    
+    
+    private final class InnerObserver extends Observer<Notification<T>> {
 
-    @Override
-    public void unsubscribe() {
-        if (!done) {
-            done = true;
-            subscription.unsubscribe();
+        @Override
+        public void onNext(Notification<T> args) {
+            synchronized (gate) {
+                if (!isUnsubscribed()) {
+                    if (args.isOnError()) {
+                        onError.call(args.getThrowable());
+                        return;
+                    }
+                    queue.add(args);
+
+                    // remark: activePlans might change while iterating
+                    for (ActivePlan0 a : new ArrayList<ActivePlan0>(activePlans)) {
+                        a.match();
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            // not expected
+        }
+
+        @Override
+        public void onCompleted() {
+            // not expected or ignored
         }
     }
 

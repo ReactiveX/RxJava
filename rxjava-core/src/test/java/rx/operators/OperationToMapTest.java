@@ -29,6 +29,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
@@ -67,7 +68,7 @@ public class OperationToMapTest {
         expected.put(3, "ccc");
         expected.put(4, "dddd");
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(new TestObserver<Object>(objectObserver));
 
         verify(objectObserver, never()).onError(any(Throwable.class));
         verify(objectObserver, times(1)).onNext(expected);
@@ -86,7 +87,7 @@ public class OperationToMapTest {
         expected.put(3, "cccccc");
         expected.put(4, "dddddddd");
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(new TestObserver<Object>(objectObserver));
 
         verify(objectObserver, never()).onError(any(Throwable.class));
         verify(objectObserver, times(1)).onNext(expected);
@@ -114,7 +115,7 @@ public class OperationToMapTest {
         expected.put(3, "ccc");
         expected.put(4, "dddd");
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(new TestObserver<Object>(objectObserver));
 
         verify(objectObserver, never()).onNext(expected);
         verify(objectObserver, never()).onCompleted();
@@ -144,7 +145,7 @@ public class OperationToMapTest {
         expected.put(3, "cccccc");
         expected.put(4, "dddddddd");
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(new TestObserver<Object>(objectObserver));
 
         verify(objectObserver, never()).onNext(expected);
         verify(objectObserver, never()).onCompleted();
@@ -181,7 +182,7 @@ public class OperationToMapTest {
         expected.put(3, "ccc");
         expected.put(4, "dddd");
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(new TestObserver<Object>(objectObserver));
 
         verify(objectObserver, never()).onError(any(Throwable.class));
         verify(objectObserver, times(1)).onNext(expected);
@@ -212,7 +213,7 @@ public class OperationToMapTest {
         expected.put(3, "ccc");
         expected.put(4, "dddd");
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(new TestObserver<Object>(objectObserver));
 
         verify(objectObserver, never()).onNext(expected);
         verify(objectObserver, never()).onCompleted();

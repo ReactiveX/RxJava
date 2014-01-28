@@ -44,8 +44,7 @@ public class OperationSingle {
 
             @Override
             public Subscription onSubscribe(final Observer<? super T> observer) {
-                final SafeObservableSubscription subscription = new SafeObservableSubscription();
-                subscription.wrap(source.subscribe(new Observer<T>() {
+                return source.subscribe(new Observer<T>(observer) {
 
                     private T value;
                     private boolean isEmpty = true;
@@ -85,11 +84,10 @@ public class OperationSingle {
                             hasTooManyElemenets = true;
                             observer.onError(new IllegalArgumentException(
                                     "Sequence contains too many elements"));
-                            subscription.unsubscribe();
+                            unsubscribe();
                         }
                     }
-                }));
-                return subscription;
+                });
             }
         };
     }

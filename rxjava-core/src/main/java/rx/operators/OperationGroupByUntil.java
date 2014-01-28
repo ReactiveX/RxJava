@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
@@ -29,7 +30,6 @@ import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
-import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
 /**
@@ -58,12 +58,12 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
     public Subscription onSubscribe(Observer<? super GroupedObservable<TKey, TResult>> t1) {
         SerialSubscription cancel = new SerialSubscription();
         ResultSink sink = new ResultSink(t1, cancel);
-        cancel.setSubscription(sink.run());
+        cancel.set(sink.run());
         return cancel;
     }
 
     /** The source value sink and group manager. */
-    class ResultSink implements Observer<TSource> {
+    class ResultSink extends Observer<TSource> {
         /** Guarded by gate. */
         protected final Observer<? super GroupedObservable<TKey, TResult>> observer;
         protected final Subscription cancel;
@@ -82,7 +82,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             SerialSubscription toSource = new SerialSubscription();
             group.add(toSource);
 
-            toSource.setSubscription(source.subscribe(this));
+            toSource.set(source.subscribe(this));
 
             return group;
         }
@@ -113,21 +113,21 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             if (newGroup) {
                 Observable<? extends TDuration> duration;
                 try {
-                    duration = durationSelector.call(g);
+                    duration = durationSelector.call(g.toObservable());
                 } catch (Throwable t) {
                     onError(t);
                     return;
                 }
 
                 synchronized (gate) {
-                    observer.onNext(g);
+                    observer.onNext(g.toObservable());
                 }
 
                 SerialSubscription durationHandle = new SerialSubscription();
                 group.add(durationHandle);
 
                 DurationObserver durationObserver = new DurationObserver(key, durationHandle);
-                durationHandle.setSubscription(duration.subscribe(durationObserver));
+                durationHandle.set(duration.subscribe(durationObserver));
 
             }
 
@@ -180,7 +180,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
         }
 
         /** Observe the completion of a group. */
-        class DurationObserver implements Observer<TDuration> {
+        class DurationObserver extends Observer<TDuration> {
             final TKey key;
             final Subscription handle;
 
@@ -208,17 +208,22 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
     }
 
     /** A grouped observable with subject-like behavior. */
-    public static class GroupSubject<K, V> extends GroupedObservable<K, V> implements Observer<V> {
+    public static class GroupSubject<K, V> extends Observer<V> {
         protected final Subject<V, V> publish;
+        private final K key;
 
         public GroupSubject(K key, final Subject<V, V> publish) {
-            super(key, new OnSubscribeFunc<V>() {
+            this.key = key;
+            this.publish = publish;
+        }
+
+        public GroupedObservable<K, V> toObservable() {
+            return new GroupedObservable<K, V>(key, new OnSubscribe<V>() {
                 @Override
-                public Subscription onSubscribe(Observer<? super V> o) {
-                    return publish.subscribe(o);
+                public void call(Observer<? super V> o) {
+                    publish.toObservable().subscribe(o);
                 }
             });
-            this.publish = publish;
         }
 
         @Override

@@ -93,7 +93,7 @@ public class OperationMaterializeTest {
         assertEquals(3, m.toList().toBlockingObservable().toFuture().get().size());
     }
 
-    private static class TestObserver implements Observer<Notification<String>> {
+    private static class TestObserver extends Observer<Notification<String>> {
 
         boolean onCompleted = false;
         boolean onError = false;

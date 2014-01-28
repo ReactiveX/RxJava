@@ -37,7 +37,7 @@ import rx.operators.OperationRefCount;
 
 public abstract class ConnectableObservable<T> extends Observable<T> {
 
-    protected ConnectableObservable(OnSubscribeFunc<T> onSubscribe) {
+    protected ConnectableObservable(OnSubscribe<T> onSubscribe) {
         super(onSubscribe);
     }
 

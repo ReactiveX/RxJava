@@ -24,6 +24,7 @@ import org.junit.Test;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestObserver;
 
 public class OperationDematerializeTest {
 
@@ -33,13 +34,13 @@ public class OperationDematerializeTest {
         Observable<Notification<Integer>> notifications = Observable.from(1, 2).materialize();
         Observable<Integer> dematerialize = notifications.dematerialize();
 
-        Observer<Integer> aObserver = mock(Observer.class);
-        dematerialize.subscribe(aObserver);
+        Observer<Integer> observer = mock(Observer.class);
+        dematerialize.subscribe(new TestObserver<Integer>(observer));
 
-        verify(aObserver, times(1)).onNext(1);
-        verify(aObserver, times(1)).onNext(2);
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(2);
+        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -49,12 +50,12 @@ public class OperationDematerializeTest {
         Observable<Integer> observable = Observable.error(exception);
         Observable<Integer> dematerialize = Observable.create(dematerialize(observable.materialize()));
 
-        Observer<Integer> aObserver = mock(Observer.class);
-        dematerialize.subscribe(aObserver);
+        Observer<Integer> observer = mock(Observer.class);
+        dematerialize.subscribe(new TestObserver<Integer>(observer));
 
-        verify(aObserver, times(1)).onError(exception);
-        verify(aObserver, times(0)).onCompleted();
-        verify(aObserver, times(0)).onNext(any(Integer.class));
+        verify(observer, times(1)).onError(exception);
+        verify(observer, times(0)).onCompleted();
+        verify(observer, times(0)).onNext(any(Integer.class));
     }
 
     @Test
@@ -64,11 +65,11 @@ public class OperationDematerializeTest {
         Observable<Integer> observable = Observable.error(exception);
         Observable<Integer> dematerialize = Observable.create(dematerialize(observable.materialize()));
 
-        Observer<Integer> aObserver = mock(Observer.class);
-        dematerialize.subscribe(aObserver);
+        Observer<Integer> observer = mock(Observer.class);
+        dematerialize.subscribe(new TestObserver<Integer>(observer));
 
-        verify(aObserver, times(1)).onError(exception);
-        verify(aObserver, times(0)).onCompleted();
-        verify(aObserver, times(0)).onNext(any(Integer.class));
+        verify(observer, times(1)).onError(exception);
+        verify(observer, times(0)).onCompleted();
+        verify(observer, times(0)).onNext(any(Integer.class));
     }
 }

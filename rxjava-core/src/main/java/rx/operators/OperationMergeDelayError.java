@@ -24,11 +24,12 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.SynchronizedObserver;
 import rx.subscriptions.CompositeSubscription;
 import rx.util.CompositeException;
 
 /**
- * This behaves like {@link OperationMerge} except that if any of the merged Observables notify of
+ * This behaves like {@link OperatorMerge} except that if any of the merged Observables notify of
  * an error via <code>onError</code>, mergeDelayError will refrain from propagating that error
  * notification until all of the merged Observables have finished emitting items.
  * <p>
@@ -207,7 +208,7 @@ public final class OperationMergeDelayError {
          * 
          * @param <T>
          */
-        private class ParentObserver implements Observer<Observable<? extends T>> {
+        private class ParentObserver extends Observer<Observable<? extends T>> {
             private final Observer<? super T> actualObserver;
 
             public ParentObserver(Observer<? super T> actualObserver) {
@@ -273,7 +274,7 @@ public final class OperationMergeDelayError {
          * Subscribe to each child Observable<T> and forward their sequence of data to the actualObserver
          * 
          */
-        private class ChildObserver implements Observer<T> {
+        private class ChildObserver extends Observer<T> {
 
             private final Observer<? super T> actualObserver;
             private volatile boolean finished = false;

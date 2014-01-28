@@ -19,6 +19,8 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
+import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
@@ -72,25 +74,13 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * @param defaultValue
      *            The value which will be published to any {@link Observer} as long as the {@link BehaviorSubject} has not yet received any events.
      * @return the constructed {@link BehaviorSubject}.
-     * @deprecated Use {@link create()} instead.
-     */
-    public static <T> BehaviorSubject<T> createWithDefaultValue(T defaultValue) {
-        return create(defaultValue);
-    }
-
-    /**
-     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each {@link Observer} that subscribes to it.
-     * 
-     * @param defaultValue
-     *            The value which will be published to any {@link Observer} as long as the {@link BehaviorSubject} has not yet received any events.
-     * @return the constructed {@link BehaviorSubject}.
      */
     public static <T> BehaviorSubject<T> create(T defaultValue) {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
         // set a default value so subscriptions will immediately receive this until a new notification is received
         final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>(new Notification<T>(defaultValue));
 
-        OnSubscribeFunc<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+        OnSubscribe<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
                  * This function executes at beginning of subscription.
                  * 
@@ -131,11 +121,17 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
     private final SubjectSubscriptionManager<T> subscriptionManager;
     final AtomicReference<Notification<T>> lastNotification;
+    private final Observable<T> observable;
 
-    protected BehaviorSubject(OnSubscribeFunc<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
-        super(onSubscribe);
+    protected BehaviorSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
+        this.observable = Observable.create(onSubscribe);
+    }
+
+    @Override
+    public Observable<T> toObservable() {
+        return observable;
     }
 
     @Override
@@ -144,7 +140,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(new Notification<T>());
+                lastNotification.set(Notification.<T>createOnCompleted());
                 for (Observer<? super T> o : observers) {
                     o.onCompleted();
                 }
@@ -158,7 +154,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(new Notification<T>(e));
+                lastNotification.set(Notification.<T>createOnError(e));
                 for (Observer<? super T> o : observers) {
                     o.onError(e);
                 }
@@ -172,7 +168,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         // do not overwrite a terminal notification
         // so new subscribers can get them
         if (lastNotification.get().isOnNext()) {
-            lastNotification.set(new Notification<T>(v));
+            lastNotification.set(Notification.<T>createOnNext(v));
             for (Observer<? super T> o : subscriptionManager.rawSnapshot()) {
                 o.onNext(v);
             }

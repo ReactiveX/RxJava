@@ -3,11 +3,11 @@
 Kotlin has support for SAM (Single Abstract Method) Interfaces as Functions (i.e. Java 8 Lambdas). So you could use Kotlin in RxJava whitout this adaptor
 
 ```kotlin
-Observable.create<String>{ observer ->
-    observer!!.onNext("Hello")
-    observer.onCompleted()
+Observable.create(OnSubscribeFunc<String> {
+    it!!.onNext("Hello")
+    it.onCompleted()
     Subscriptions.empty()
-}!!.subscribe { result ->
+})!!.subscribe { result ->
     a!!.received(result)
 }
 ```
@@ -21,7 +21,7 @@ import rx.lang.kotlin.*
     observer.onNext("Hello")
     observer.onCompleted()
     Subscriptions.empty()!!
-}.asObservable().subscribe { result ->
+}.asObservableFunc().subscribe { result ->
     a!!.received(result)
 }
 ```

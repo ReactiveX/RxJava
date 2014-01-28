@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.operators;
+package rx.observers;
 
 import static org.junit.Assert.*;
 
@@ -166,9 +166,9 @@ public class SafeObserverTest {
 
     @Test
     public void onCompleteSuccessWithUnsubscribeFailure() {
-        SafeObservableSubscription s = null;
+        Observer<String> o = OBSERVER_SUCCESS();
         try {
-            s = new SafeObservableSubscription(Subscriptions.create(new Action0() {
+            o.add(Subscriptions.create(new Action0() {
 
                 @Override
                 public void call() {
@@ -176,12 +176,12 @@ public class SafeObserverTest {
                     throw new SafeObserverTestException("failure from unsubscribe");
                 }
             }));
-            new SafeObserver<String>(s, OBSERVER_SUCCESS()).onCompleted();
+            new SafeObserver<String>(o).onCompleted();
             fail("expects exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
 
-            assertTrue(s.isUnsubscribed());
+            assertTrue(o.isUnsubscribed());
 
             assertTrue(e instanceof SafeObserverTestException);
             assertEquals("failure from unsubscribe", e.getMessage());
@@ -192,9 +192,9 @@ public class SafeObserverTest {
     @Test
     public void onErrorSuccessWithUnsubscribeFailure() {
         AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
-        SafeObservableSubscription s = null;
+        Observer<String> o = OBSERVER_SUCCESS(onError);
         try {
-            s = new SafeObservableSubscription(Subscriptions.create(new Action0() {
+            o.add(Subscriptions.create(new Action0() {
 
                 @Override
                 public void call() {
@@ -202,12 +202,12 @@ public class SafeObserverTest {
                     throw new SafeObserverTestException("failure from unsubscribe");
                 }
             }));
-            new SafeObserver<String>(s, OBSERVER_SUCCESS(onError)).onError(new SafeObserverTestException("failed"));
+            new SafeObserver<String>(o).onError(new SafeObserverTestException("failed"));
             fail("we expect the unsubscribe failure to cause an exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
 
-            assertTrue(s.isUnsubscribed());
+            assertTrue(o.isUnsubscribed());
 
             // we still expect onError to have received something before unsubscribe blew up
             assertNotNull(onError.get());
@@ -222,9 +222,9 @@ public class SafeObserverTest {
 
     @Test
     public void onErrorFailureWithUnsubscribeFailure() {
-        SafeObservableSubscription s = null;
+        Observer<String> o = OBSERVER_ONERROR_FAIL();
         try {
-            s = new SafeObservableSubscription(Subscriptions.create(new Action0() {
+            o.add(Subscriptions.create(new Action0() {
 
                 @Override
                 public void call() {
@@ -232,12 +232,12 @@ public class SafeObserverTest {
                     throw new SafeObserverTestException("failure from unsubscribe");
                 }
             }));
-            new SafeObserver<String>(s, OBSERVER_ONERROR_FAIL()).onError(new SafeObserverTestException("onError failure"));
+            new SafeObserver<String>(o).onError(new SafeObserverTestException("onError failure"));
             fail("expects exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
 
-            assertTrue(s.isUnsubscribed());
+            assertTrue(o.isUnsubscribed());
 
             // assertions for what is expected for the actual failure propagated to onError which then fails
             assertTrue(e instanceof RuntimeException);
@@ -263,9 +263,9 @@ public class SafeObserverTest {
 
     @Test
     public void onErrorNotImplementedFailureWithUnsubscribeFailure() {
-        SafeObservableSubscription s = null;
+        Observer<String> o = OBSERVER_ONERROR_NOTIMPLEMENTED();
         try {
-            s = new SafeObservableSubscription(Subscriptions.create(new Action0() {
+            o.add(Subscriptions.create(new Action0() {
 
                 @Override
                 public void call() {
@@ -273,12 +273,12 @@ public class SafeObserverTest {
                     throw new SafeObserverTestException("failure from unsubscribe");
                 }
             }));
-            new SafeObserver<String>(s, OBSERVER_ONERROR_NOTIMPLEMENTED()).onError(new SafeObserverTestException("error!"));
+            new SafeObserver<String>(o).onError(new SafeObserverTestException("error!"));
             fail("expects exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
 
-            assertTrue(s.isUnsubscribed());
+            assertTrue(o.isUnsubscribed());
 
             // assertions for what is expected for the actual failure propagated to onError which then fails
             assertTrue(e instanceof RuntimeException);

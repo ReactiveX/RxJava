@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
+import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -57,9 +58,9 @@ public class RefCountTests {
         });
         Observable<Integer> refCounted = observable.publish().refCount();
         Observer<Integer> observer = mock(Observer.class);
-        Subscription first = refCounted.subscribe(observer);
+        Subscription first = refCounted.subscribe(new TestObserver<Integer>(observer));
         assertEquals(1, subscriptionCount.get());
-        Subscription second = refCounted.subscribe(observer);
+        Subscription second = refCounted.subscribe(new TestObserver<Integer>(observer));
         assertEquals(1, subscriptionCount.get());
         first.unsubscribe();
         assertEquals(0, unsubscriptionCount.get());

@@ -40,26 +40,40 @@ public class OperationDoOnEach {
 
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
-            final SafeObservableSubscription subscription = new SafeObservableSubscription();
-            return subscription.wrap(sequence.subscribe(new SafeObserver<T>(subscription, new Observer<T>() {
+            return sequence.subscribe(new Observer<T>(observer) {
                 @Override
                 public void onCompleted() {
-                    doOnEachObserver.onCompleted();
+                    try {
+                        doOnEachObserver.onCompleted();
+                    } catch (Throwable e) {
+                        onError(e);
+                        return;
+                    }
                     observer.onCompleted();
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    doOnEachObserver.onError(e);
+                    try {
+                        doOnEachObserver.onError(e);
+                    } catch (Throwable e2) {
+                        observer.onError(e2);
+                        return;
+                    }
                     observer.onError(e);
                 }
 
                 @Override
                 public void onNext(T value) {
-                    doOnEachObserver.onNext(value);
+                    try {
+                        doOnEachObserver.onNext(value);
+                    } catch (Throwable e) {
+                        onError(e);
+                        return;
+                    }
                     observer.onNext(value);
                 }
-            })));
+            });
         }
 
     }

@@ -29,6 +29,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.CompositeSubscription;
 import rx.util.functions.Action0;
@@ -90,7 +91,7 @@ public class OperationAmbTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = (Observer<String>) mock(Observer.class);
-        o.subscribe(observer);
+        o.subscribe(new TestObserver<String>(observer));
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
 
@@ -119,7 +120,7 @@ public class OperationAmbTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = (Observer<String>) mock(Observer.class);
-        o.subscribe(observer);
+        o.subscribe(new TestObserver<String>(observer));
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
 
@@ -146,7 +147,7 @@ public class OperationAmbTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = (Observer<String>) mock(Observer.class);
-        o.subscribe(observer);
+        o.subscribe(new TestObserver<String>(observer));
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
         InOrder inOrder = inOrder(observer);
