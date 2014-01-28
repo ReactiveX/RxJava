@@ -83,6 +83,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                         int lastIndex = replayObserverFromIndex(state.history, 0, o);
 
                         // now that it is caught up add to observers
+                        o.caughtUp = true;
                         state.replayState.put(o, lastIndex);
                     }
                 },

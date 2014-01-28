@@ -144,26 +144,60 @@ public class ReplaySubjectTest {
 
     @Test
     public void testCapacity() {
+        {
+            ReplaySubject<String> subject = ReplaySubject.create(1);
+            @SuppressWarnings("unchecked") Observer<String> aObserver = mock(Observer.class);
+            subject.subscribe(aObserver);
+
+            subject.onNext("one");
+            subject.onNext("two");
+            subject.onNext("three");
+            subject.onCompleted();
+
+            assertCompletedObserver(aObserver);
+
+            Observer<String> anotherObserver = mock(Observer.class);
+            subject.subscribe(anotherObserver);
+
+            verify(anotherObserver, times(0)).onNext("one");
+            verify(anotherObserver, times(0)).onNext("two");
+            verify(anotherObserver, times(1)).onNext("three");
+            verify(anotherObserver, times(1)).onCompleted();
+            verifyNoMoreInteractions(anotherObserver);
+        }
+        {
+            ReplaySubject<String> subject = ReplaySubject.create(1);
+            @SuppressWarnings("unchecked") Observer<String> aObserver = mock(Observer.class);
+            subject.onNext("one");
+
+            subject.asObservable().distinctUntilChanged().subscribe(aObserver);
+
+            subject.onNext("two");
+            subject.onNext("one");
+            subject.onNext("one");
+            verify(aObserver, times(2)).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+        }
+    }
+
+    @Test
+    public void testThatObserverReceivesLatestAndThenSubsequentEvents() {
         ReplaySubject<String> subject = ReplaySubject.create(1);
+
+        subject.onNext("one");
+
         @SuppressWarnings("unchecked")
         Observer<String> aObserver = mock(Observer.class);
         subject.subscribe(aObserver);
-
-        subject.onNext("one");
         subject.onNext("two");
         subject.onNext("three");
-        subject.onCompleted();
 
-        assertCompletedObserver(aObserver);
-
-        Observer<String> anotherObserver = mock(Observer.class);
-        subject.subscribe(anotherObserver);
-
-        verify(anotherObserver, times(0)).onNext("one");
-        verify(anotherObserver, times(0)).onNext("two");
-        verify(anotherObserver, times(1)).onNext("three");
-        verify(anotherObserver, times(1)).onCompleted();
-        verifyNoMoreInteractions(anotherObserver);
+        verify(aObserver, Mockito.never()).onNext("default");
+        verify(aObserver, times(1)).onNext("one");
+        verify(aObserver, times(1)).onNext("two");
+        verify(aObserver, times(1)).onNext("three");
+        verify(aObserver, Mockito.never()).onError(testException);
+        verify(aObserver, Mockito.never()).onCompleted();
     }
 
     private void assertCompletedObserver(Observer<String> aObserver) {
