@@ -39,7 +39,7 @@ public class OperationSumTest {
     @Test
     public void testSumOfAFewInts() throws Throwable {
         Observable<Integer> src = Observable.from(1, 2, 3, 4, 5);
-        sum(src).subscribe(w);
+        sumIntegers(src).subscribe(w);
 
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(15);
@@ -50,7 +50,7 @@ public class OperationSumTest {
     @Test
     public void testEmptySum() throws Throwable {
         Observable<Integer> src = Observable.empty();
-        sum(src).subscribe(w);
+        sumIntegers(src).subscribe(w);
 
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(0);

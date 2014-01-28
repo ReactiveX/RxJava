@@ -15,10 +15,8 @@
  */
 package rx.operators;
 
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
-import rx.Subscription;
+import rx.Observable.Operator;
+import rx.Subscriber;
 import rx.util.functions.Func2;
 
 /**
@@ -36,7 +34,8 @@ import rx.util.functions.Func2;
  */
 public final class OperationScan {
     /**
-     * Applies an accumulator function over an observable sequence and returns each intermediate result with the specified source and accumulator.
+     * Applies an accumulator function over an observable sequence and returns each intermediate
+     * result with the specified source and accumulator.
      * 
      * @param sequence
      *            An observable sequence of elements to project.
@@ -45,124 +44,97 @@ public final class OperationScan {
      * @param accumulator
      *            An accumulator function to be invoked on each element from the sequence.
      * 
-     * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212007%28v=vs.103%29.aspx">Observable.Scan(TSource, TAccumulate) Method (IObservable(TSource), TAccumulate, Func(TAccumulate, TSource,
+     * @return An observable sequence whose elements are the result of accumulating the output from
+     *         the list of Observables.
+     * @see <a
+     *      href="http://msdn.microsoft.com/en-us/library/hh212007%28v=vs.103%29.aspx">Observable.Scan(TSource,
+     *      TAccumulate) Method (IObservable(TSource), TAccumulate, Func(TAccumulate, TSource,
      *      TAccumulate))</a>
      */
-    public static <T, R> OnSubscribeFunc<R> scan(Observable<? extends T> sequence, R initialValue, Func2<R, ? super T, R> accumulator) {
-        return new Accumulator<T, R>(sequence, initialValue, accumulator);
+    public static <T, R> Operator<R, T> scan(final R initialValue, final Func2<R, ? super T, R> accumulator) {
+        return new Operator<R, T>() {
+            @Override
+            public Subscriber<T> call(final Subscriber<? super R> observer) {
+                observer.onNext(initialValue);
+                return new Subscriber<T>(observer) {
+                    private R value = initialValue;
+
+                    @Override
+                    public void onNext(T value) {
+                        try {
+                            this.value = accumulator.call(this.value, value);
+                        } catch (Throwable e) {
+                            observer.onError(e);
+                            observer.unsubscribe();
+                        }
+                        observer.onNext(this.value);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        observer.onError(e);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        observer.onCompleted();
+                    }
+                };
+            }
+        };
     }
 
     /**
-     * Applies an accumulator function over an observable sequence and returns each intermediate result with the specified source and accumulator.
+     * Applies an accumulator function over an observable sequence and returns each intermediate
+     * result with the specified source and accumulator.
      * 
      * @param sequence
      *            An observable sequence of elements to project.
      * @param accumulator
      *            An accumulator function to be invoked on each element from the sequence.
      * 
-     * @return An observable sequence whose elements are the result of accumulating the output from the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx">Observable.Scan(TSource) Method (IObservable(TSource), Func(TSource, TSource, TSource))</a>
+     * @return An observable sequence whose elements are the result of accumulating the output from
+     *         the list of Observables.
+     * @see <a
+     *      href="http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx">Observable.Scan(TSource)
+     *      Method (IObservable(TSource), Func(TSource, TSource, TSource))</a>
      */
-    public static <T> OnSubscribeFunc<T> scan(Observable<? extends T> sequence, Func2<T, T, T> accumulator) {
-        return new AccuWithoutInitialValue<T>(sequence, accumulator);
-    }
+    public static <T> Operator<T, T> scan(final Func2<T, T, T> accumulator) {
+        return new Operator<T, T>() {
+            @Override
+            public Subscriber<T> call(final Subscriber<? super T> observer) {
+                return new Subscriber<T>(observer) {
+                    private boolean first = true;
+                    private T value;
 
-    private static class AccuWithoutInitialValue<T> implements OnSubscribeFunc<T> {
-        private final Observable<? extends T> sequence;
-        private final Func2<T, T, T> accumulatorFunction;
-
-        private AccumulatingObserver<T, T> accumulatingObserver;
-
-        private AccuWithoutInitialValue(Observable<? extends T> sequence, Func2<T, T, T> accumulator) {
-            this.sequence = sequence;
-            this.accumulatorFunction = accumulator;
-        }
-
-        @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
-            return sequence.subscribe(new Observer<T>() {
-
-                // has to be synchronized so that the initial value is always sent only once.
-                @Override
-                public synchronized void onNext(T value) {
-                    if (accumulatingObserver == null) {
-                        observer.onNext(value);
-                        accumulatingObserver = new AccumulatingObserver<T, T>(observer, value, accumulatorFunction);
-                    } else {
-                        accumulatingObserver.onNext(value);
+                    @Override
+                    public void onNext(T value) {
+                        if (first) {
+                            this.value = value;
+                            first = false;
+                        }
+                        else {
+                            try {
+                                this.value = accumulator.call(this.value, value);
+                            } catch (Throwable e) {
+                                observer.onError(e);
+                                observer.unsubscribe();
+                            }
+                        }
+                        observer.onNext(this.value);
                     }
-                }
 
-                @Override
-                public void onError(Throwable e) {
-                    observer.onError(e);
-                }
+                    @Override
+                    public void onError(Throwable e) {
+                        observer.onError(e);
+                    }
 
-                @Override
-                public void onCompleted() {
-                    observer.onCompleted();
-                }
-            });
-        }
-    }
-
-    private static class Accumulator<T, R> implements OnSubscribeFunc<R> {
-        private final Observable<? extends T> sequence;
-        private final R initialValue;
-        private final Func2<R, ? super T, R> accumulatorFunction;
-
-        private Accumulator(Observable<? extends T> sequence, R initialValue, Func2<R, ? super T, R> accumulator) {
-            this.sequence = sequence;
-            this.initialValue = initialValue;
-            this.accumulatorFunction = accumulator;
-        }
-
-        @Override
-        public Subscription onSubscribe(final Observer<? super R> observer) {
-            observer.onNext(initialValue);
-            return sequence.subscribe(new AccumulatingObserver<T, R>(observer, initialValue, accumulatorFunction));
-        }
-    }
-
-    private static class AccumulatingObserver<T, R> implements Observer<T> {
-        private final Observer<? super R> observer;
-        private final Func2<R, ? super T, R> accumulatorFunction;
-
-        private R acc;
-
-        private AccumulatingObserver(Observer<? super R> observer, R initialValue, Func2<R, ? super T, R> accumulator) {
-            this.observer = observer;
-            this.accumulatorFunction = accumulator;
-
-            this.acc = initialValue;
-        }
-
-        /**
-         * We must synchronize this because we can't allow
-         * multiple threads to execute the 'accumulatorFunction' at the same time because
-         * the accumulator code very often will be doing mutation of the 'acc' object such as a non-threadsafe HashMap
-         * 
-         * Because it's synchronized it's using non-atomic variables since everything in this method is single-threaded
-         */
-        @Override
-        public synchronized void onNext(T value) {
-            try {
-                acc = accumulatorFunction.call(acc, value);
-                observer.onNext(acc);
-            } catch (Throwable ex) {
-                observer.onError(ex);
+                    @Override
+                    public void onCompleted() {
+                        observer.onCompleted();
+                    }
+                };
             }
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            observer.onError(e);
-        }
-
-        @Override
-        public void onCompleted() {
-            observer.onCompleted();
-        }
+        };
     }
 }

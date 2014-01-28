@@ -2530,14 +2530,6 @@ public class Observable<T> {
     }
 
     /**
-     * @deprecated use {@link #sumInteger}
-     */
-    @Deprecated
-    public final static Observable<Integer> sum(Observable<Integer> source) {
-        return OperationSum.sum(source);
-    }
-
-    /**
      * Returns an Observable that emits the sum of all the Doubles emitted by the source Observable.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.png">
@@ -2583,7 +2575,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public final static Observable<Integer> sumInteger(Observable<Integer> source) {
-        return OperationSum.sum(source);
+        return OperationSum.sumIntegers(source);
     }
 
     /**
@@ -5519,7 +5511,7 @@ public class Observable<T> {
          * It should use last() not takeLast(1) since it needs to emit an error if the sequence is
          * empty.
          */
-        return create(OperationScan.scan(this, accumulator)).last();
+        return scan(accumulator).last();
     }
 
     /**
@@ -5547,7 +5539,7 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public final <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator) {
-        return create(OperationScan.scan(this, initialValue, accumulator)).takeLast(1);
+        return scan(initialValue, accumulator).takeLast(1);
     }
 
     /**
@@ -6148,7 +6140,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665.aspx">MSDN: Observable.Scan</a>
      */
     public final Observable<T> scan(Func2<T, T, T> accumulator) {
-        return create(OperationScan.scan(this, accumulator));
+        return lift(OperationScan.scan(accumulator));
     }
 
     /**
@@ -6175,7 +6167,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665.aspx">MSDN: Observable.Scan</a>
      */
     public final <R> Observable<R> scan(R initialValue, Func2<R, ? super T, R> accumulator) {
-        return create(OperationScan.scan(this, initialValue, accumulator));
+        return lift(OperationScan.scan(initialValue, accumulator));
     }
 
     /**
@@ -7079,7 +7071,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public final Observable<Double> sumDouble(Func1<? super T, Double> valueExtractor) {
-        return create(new OperationSum.SumDoubleExtractor<T>(this, valueExtractor));
+        return OperationSum.sumAtLeastOneDoubles(map(valueExtractor));
     }
 
     /**
@@ -7096,7 +7088,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public final Observable<Float> sumFloat(Func1<? super T, Float> valueExtractor) {
-        return create(new OperationSum.SumFloatExtractor<T>(this, valueExtractor));
+        return OperationSum.sumAtLeastOneFloats(map(valueExtractor));
     }
 
     /**
@@ -7113,7 +7105,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public final Observable<Integer> sumInteger(Func1<? super T, Integer> valueExtractor) {
-        return create(new OperationSum.SumIntegerExtractor<T>(this, valueExtractor));
+        return OperationSum.sumAtLeastOneIntegers(map(valueExtractor));
     }
 
     /**
@@ -7130,7 +7122,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public final Observable<Long> sumLong(Func1<? super T, Long> valueExtractor) {
-        return create(new OperationSum.SumLongExtractor<T>(this, valueExtractor));
+        return OperationSum.sumAtLeastOneLongs(map(valueExtractor));
     }
 
     /**

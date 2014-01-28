@@ -52,7 +52,7 @@ public class ReduceTests {
                     }
                 };
 
-        Observable<Movie> reduceResult = Observable.create(OperationScan.scan(horrorMovies, chooseSecondMovie)).takeLast(1);
+        Observable<Movie> reduceResult = horrorMovies.lift(OperationScan.scan(chooseSecondMovie)).takeLast(1);
 
         Observable<Movie> reduceResult2 = horrorMovies.reduce(chooseSecondMovie);
     }
