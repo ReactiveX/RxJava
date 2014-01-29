@@ -18,7 +18,7 @@ package rx.observers;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
 import rx.plugins.RxJavaPlugins;
@@ -58,12 +58,12 @@ import rx.util.OnErrorNotImplementedException;
  * 
  * @param <T>
  */
-public class SafeObserver<T> extends Observer<T> {
+public class SafeObserver<T> extends Subscriber<T> {
 
-    private final Observer<? super T> actual;
+    private final Subscriber<? super T> actual;
     private final AtomicBoolean isFinished = new AtomicBoolean(false);
 
-    public SafeObserver(Observer<? super T> actual) {
+    public SafeObserver(Subscriber<? super T> actual) {
         super(actual);
         this.actual = actual;
     }

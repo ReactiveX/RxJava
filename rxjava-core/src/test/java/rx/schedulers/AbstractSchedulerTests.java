@@ -33,7 +33,7 @@ import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.BooleanSubscription;
@@ -60,7 +60,7 @@ public abstract class AbstractSchedulerTests {
         int value = Observable.create(new OnSubscribeFunc<Integer>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Integer> o) {
+            public Subscription onSubscribe(final Subscriber<? super Integer> o) {
                 final BooleanSubscription s = BooleanSubscription.create();
                 Thread t = new Thread(new Runnable() {
 
@@ -397,7 +397,7 @@ public abstract class AbstractSchedulerTests {
 
         Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super Integer> observer) {
+            public Subscription onSubscribe(final Subscriber<? super Integer> observer) {
                 return scheduler.schedule(0, new Func2<Scheduler, Integer, Subscription>() {
                     @Override
                     public Subscription call(Scheduler scheduler, Integer i) {
@@ -471,7 +471,7 @@ public abstract class AbstractSchedulerTests {
         Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Subscriber<? super String> observer) {
                 for (int i = 0; i < count; i++) {
                     final int v = i;
                     new Thread(new Runnable() {
@@ -533,7 +533,7 @@ public abstract class AbstractSchedulerTests {
                         return Observable.create(new OnSubscribeFunc<String>() {
 
                             @Override
-                            public Subscription onSubscribe(final Observer<? super String> observer) {
+                            public Subscription onSubscribe(final Subscriber<? super String> observer) {
                                 observer.onNext("value_after_map-" + v);
                                 observer.onCompleted();
                                 return Subscriptions.empty();
@@ -561,7 +561,7 @@ public abstract class AbstractSchedulerTests {
      * 
      * @param <T>
      */
-    private static class ConcurrentObserverValidator<T> extends Observer<T> {
+    private static class ConcurrentObserverValidator<T> extends Subscriber<T> {
 
         final AtomicInteger concurrentCounter = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();

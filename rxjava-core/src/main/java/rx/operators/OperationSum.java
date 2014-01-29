@@ -16,7 +16,7 @@
 package rx.operators;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -80,17 +80,17 @@ public final class OperationSum {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super Integer> t1) {
+        public Subscription onSubscribe(Subscriber<? super Integer> t1) {
             return source.subscribe(new SumObserver(t1));
         }
 
         /** Computes the average. */
-        private final class SumObserver extends Observer<T> {
-            final Observer<? super Integer> observer;
+        private final class SumObserver extends Subscriber<T> {
+            final Subscriber<? super Integer> observer;
             int sum;
             boolean hasValue;
 
-            public SumObserver(Observer<? super Integer> observer) {
+            public SumObserver(Subscriber<? super Integer> observer) {
                 this.observer = observer;
             }
 
@@ -140,17 +140,17 @@ public final class OperationSum {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super Long> t1) {
+        public Subscription onSubscribe(Subscriber<? super Long> t1) {
             return source.subscribe(new SumObserver(t1));
         }
 
         /** Computes the average. */
-        private final class SumObserver extends Observer<T> {
-            final Observer<? super Long> observer;
+        private final class SumObserver extends Subscriber<T> {
+            final Subscriber<? super Long> observer;
             long sum;
             boolean hasValue;
 
-            public SumObserver(Observer<? super Long> observer) {
+            public SumObserver(Subscriber<? super Long> observer) {
                 this.observer = observer;
             }
 
@@ -200,17 +200,17 @@ public final class OperationSum {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super Float> t1) {
+        public Subscription onSubscribe(Subscriber<? super Float> t1) {
             return source.subscribe(new SumObserver(t1));
         }
 
         /** Computes the average. */
-        private final class SumObserver extends Observer<T> {
-            final Observer<? super Float> observer;
+        private final class SumObserver extends Subscriber<T> {
+            final Subscriber<? super Float> observer;
             float sum;
             boolean hasValue;
 
-            public SumObserver(Observer<? super Float> observer) {
+            public SumObserver(Subscriber<? super Float> observer) {
                 this.observer = observer;
             }
 
@@ -260,17 +260,17 @@ public final class OperationSum {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super Double> t1) {
+        public Subscription onSubscribe(Subscriber<? super Double> t1) {
             return source.subscribe(new SumObserver(t1));
         }
 
         /** Computes the average. */
-        private final class SumObserver extends Observer<T> {
-            final Observer<? super Double> observer;
+        private final class SumObserver extends Subscriber<T> {
+            final Subscriber<? super Double> observer;
             double sum;
             boolean hasValue;
 
-            public SumObserver(Observer<? super Double> observer) {
+            public SumObserver(Subscriber<? super Double> observer) {
                 this.observer = observer;
             }
 

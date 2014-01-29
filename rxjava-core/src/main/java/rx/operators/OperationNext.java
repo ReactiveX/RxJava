@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Notification;
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.util.Exceptions;
 
 /**
@@ -126,7 +126,7 @@ public final class OperationNext {
         }
     }
 
-    private static class NextObserver<T> extends Observer<Notification<? extends T>> {
+    private static class NextObserver<T> extends Subscriber<Notification<? extends T>> {
         private final BlockingQueue<Notification<? extends T>> buf = new ArrayBlockingQueue<Notification<? extends T>>(1);
         private final AtomicBoolean waiting = new AtomicBoolean(false);
 

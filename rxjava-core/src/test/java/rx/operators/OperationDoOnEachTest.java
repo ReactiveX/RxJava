@@ -24,7 +24,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
@@ -32,9 +32,9 @@ import rx.util.functions.Func1;
 public class OperationDoOnEachTest {
 
     @Mock
-    Observer<String> subscribedObserver;
+    Subscriber<String> subscribedObserver;
     @Mock
-    Observer<String> sideEffectObserver;
+    Subscriber<String> sideEffectObserver;
 
     @Before
     public void before() {

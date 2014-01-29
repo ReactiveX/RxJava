@@ -32,7 +32,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observables.GroupedObservable;
 import rx.observers.TestObserver;
 import rx.util.functions.Action1;
@@ -41,7 +41,7 @@ import rx.util.functions.Functions;
 
 public class OperationGroupByUntilTest {
     @Mock
-    Observer<Object> observer;
+    Subscriber<Object> observer;
 
     <T, R> Func1<T, R> just(final R value) {
         return new Func1<T, R>() {
@@ -295,7 +295,7 @@ public class OperationGroupByUntilTest {
 
         Observable<GroupedObservable<Integer, Integer>> m = source.groupByUntil(identity, dbl, duration);
 
-        m.subscribe(new Observer<GroupedObservable<Integer, Integer>>() {
+        m.subscribe(new Subscriber<GroupedObservable<Integer, Integer>>() {
             @Override
             public void onNext(GroupedObservable<Integer, Integer> t1) {
                 inner.set(t1);

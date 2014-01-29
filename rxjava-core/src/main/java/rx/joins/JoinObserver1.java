@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Notification;
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.SafeObserver;
 import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action1;
@@ -31,7 +31,7 @@ import rx.util.functions.Action1;
 /**
  * Default implementation of a join observer.
  */
-public final class JoinObserver1<T> extends Observer<Notification<T>> implements JoinObserver {
+public final class JoinObserver1<T> extends Subscriber<Notification<T>> implements JoinObserver {
     private Object gate;
     private final Observable<T> source;
     private final Action1<Throwable> onError;
@@ -97,7 +97,7 @@ public final class JoinObserver1<T> extends Observer<Notification<T>> implements
     }
     
     
-    private final class InnerObserver extends Observer<Notification<T>> {
+    private final class InnerObserver extends Subscriber<Notification<T>> {
 
         @Override
         public void onNext(Notification<T> args) {

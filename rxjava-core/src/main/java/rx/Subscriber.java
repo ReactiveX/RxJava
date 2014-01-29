@@ -28,22 +28,22 @@ import rx.subscriptions.CompositeSubscription;
  * 
  * @param <T>
  */
-public abstract class Observer<T> implements Subscription {
+public abstract class Subscriber<T> implements Subscription {
 
     private final CompositeSubscription cs;
 
-    protected Observer(CompositeSubscription cs) {
+    protected Subscriber(CompositeSubscription cs) {
         if (cs == null) {
             throw new IllegalArgumentException("The CompositeSubscription can not be null");
         }
         this.cs = cs;
     }
 
-    protected Observer() {
+    protected Subscriber() {
         this(new CompositeSubscription());
     }
 
-    protected Observer(Observer<?> op) {
+    protected Subscriber(Subscriber<?> op) {
         this(op.cs);
     }
 

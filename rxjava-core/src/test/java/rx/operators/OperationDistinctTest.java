@@ -28,16 +28,16 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
 public class OperationDistinctTest {
 
     @Mock
-    Observer<String> w;
+    Subscriber<String> w;
     @Mock
-    Observer<String> w2;
+    Subscriber<String> w2;
 
     // nulls lead to exceptions
     final Func1<String, String> TO_UPPER_WITH_EXCEPTION = new Func1<String, String>() {

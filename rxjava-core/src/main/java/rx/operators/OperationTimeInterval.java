@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -38,23 +38,23 @@ public class OperationTimeInterval {
         return new OnSubscribeFunc<TimeInterval<T>>() {
             @Override
             public Subscription onSubscribe(
-                    Observer<? super TimeInterval<T>> observer) {
+                    Subscriber<? super TimeInterval<T>> observer) {
                 return source.subscribe(new TimeIntervalObserver<T>(observer,
                         scheduler));
             }
         };
     }
 
-    private static class TimeIntervalObserver<T> extends Observer<T> {
+    private static class TimeIntervalObserver<T> extends Subscriber<T> {
 
-        private final Observer<? super TimeInterval<T>> observer;
+        private final Subscriber<? super TimeInterval<T>> observer;
         /**
          * Only used to compute time intervals.
          */
         private final Scheduler scheduler;
         private long lastTimestamp;
 
-        public TimeIntervalObserver(Observer<? super TimeInterval<T>> observer,
+        public TimeIntervalObserver(Subscriber<? super TimeInterval<T>> observer,
                 Scheduler scheduler) {
             this.observer = observer;
             this.scheduler = scheduler;

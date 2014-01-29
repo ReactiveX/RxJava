@@ -22,21 +22,21 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Action0;
 
 public class OperationFinallyTest {
 
     private Action0 aAction0;
-    private Observer<String> observer;
+    private Subscriber<String> observer;
 
     @SuppressWarnings("unchecked")
     // mocking has to be unchecked, unfortunately
     @Before
     public void before() {
         aAction0 = mock(Action0.class);
-        observer = mock(Observer.class);
+        observer = mock(Subscriber.class);
     }
 
     private void checkActionCalled(Observable<String> input) {

@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
@@ -41,7 +41,7 @@ public class OperationFilterTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
         verify(observer, Mockito.never()).onNext("one");
         verify(observer, times(1)).onNext("two");

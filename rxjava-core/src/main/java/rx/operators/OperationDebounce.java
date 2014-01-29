@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.observers.SynchronizedObserver;
@@ -72,7 +72,7 @@ public final class OperationDebounce {
     public static <T> OnSubscribeFunc<T> debounce(final Observable<T> items, final long timeout, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
+            public Subscription onSubscribe(Subscriber<? super T> observer) {
                 return new Debounce<T>(items, timeout, unit, scheduler).onSubscribe(observer);
             }
         };
@@ -93,21 +93,21 @@ public final class OperationDebounce {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription onSubscribe(Subscriber<? super T> observer) {
             return items.subscribe(new DebounceObserver<T>(observer, timeout, unit, scheduler));
         }
     }
 
-    private static class DebounceObserver<T> extends Observer<T> {
+    private static class DebounceObserver<T> extends Subscriber<T> {
 
-        private final Observer<? super T> observer;
+        private final Subscriber<? super T> observer;
         private final long timeout;
         private final TimeUnit unit;
         private final Scheduler scheduler;
 
         private final AtomicReference<Subscription> lastScheduledNotification = new AtomicReference<Subscription>();
 
-        public DebounceObserver(Observer<? super T> observer, long timeout, TimeUnit unit, Scheduler scheduler) {
+        public DebounceObserver(Subscriber<? super T> observer, long timeout, TimeUnit unit, Scheduler scheduler) {
             // we need to synchronize the observer since the on* events can be coming from different
             // threads and are thus non-deterministic and could be interleaved
             this.observer = new SynchronizedObserver<T>(observer);
@@ -177,7 +177,7 @@ public final class OperationDebounce {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription onSubscribe(Subscriber<? super T> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
             csub.add(source.subscribe(new SourceObserver<T, U>(t1, debounceSelector, csub)));
@@ -186,8 +186,8 @@ public final class OperationDebounce {
         }
 
         /** Observe the source. */
-        private static final class SourceObserver<T, U> extends Observer<T> {
-            final Observer<? super T> observer;
+        private static final class SourceObserver<T, U> extends Subscriber<T> {
+            final Subscriber<? super T> observer;
             final Func1<? super T, ? extends Observable<U>> debounceSelector;
             final CompositeSubscription cancel;
             final SerialSubscription ssub = new SerialSubscription();
@@ -197,7 +197,7 @@ public final class OperationDebounce {
             final Object guard;
 
             public SourceObserver(
-                    Observer<? super T> observer,
+                    Subscriber<? super T> observer,
                     Func1<? super T, ? extends Observable<U>> debounceSelector,
                     CompositeSubscription cancel) {
                 this.observer = observer;
@@ -274,7 +274,7 @@ public final class OperationDebounce {
         /**
          * The debounce observer.
          */
-        private static final class DebounceObserver<T, U> extends Observer<U> {
+        private static final class DebounceObserver<T, U> extends Subscriber<U> {
             final SourceObserver<T, U> parent;
             final Subscription cancel;
             final T value;

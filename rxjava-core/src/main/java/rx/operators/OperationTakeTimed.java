@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -54,7 +54,7 @@ public final class OperationTakeTimed {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
+            public Subscription onSubscribe(Subscriber<? super T> observer) {
                 return new Take<T>(items, num).onSubscribe(observer);
             }
 
@@ -83,9 +83,9 @@ public final class OperationTakeTimed {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription onSubscribe(Subscriber<? super T> observer) {
             if (num < 1) {
-                items.subscribe(new Observer<T>()
+                items.subscribe(new Subscriber<T>()
                 {
                     @Override
                     public void onCompleted()
@@ -109,13 +109,13 @@ public final class OperationTakeTimed {
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
-        private class ItemObserver extends Observer<T> {
-            private final Observer<? super T> observer;
+        private class ItemObserver extends Subscriber<T> {
+            private final Subscriber<? super T> observer;
 
             private final AtomicInteger counter = new AtomicInteger();
             private volatile boolean hasEmitedError = false;
 
-            public ItemObserver(Observer<? super T> observer) {
+            public ItemObserver(Subscriber<? super T> observer) {
                 this.observer = observer;
             }
 
@@ -188,7 +188,7 @@ public final class OperationTakeTimed {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription onSubscribe(Subscriber<? super T> t1) {
 
             SafeObservableSubscription timer = new SafeObservableSubscription();
             SafeObservableSubscription data = new SafeObservableSubscription();
@@ -210,15 +210,15 @@ public final class OperationTakeTimed {
          * @param <T>
          *            the observed value type
          */
-        private static final class SourceObserver<T> extends Observer<T> implements Action0 {
-            final Observer<? super T> observer;
+        private static final class SourceObserver<T> extends Subscriber<T> implements Action0 {
+            final Subscriber<? super T> observer;
             final Subscription cancel;
             final AtomicInteger state = new AtomicInteger();
             static final int ACTIVE = 0;
             static final int NEXT = 1;
             static final int DONE = 2;
 
-            public SourceObserver(Observer<? super T> observer,
+            public SourceObserver(Subscriber<? super T> observer,
                     Subscription cancel) {
                 this.observer = observer;
                 this.cancel = cancel;

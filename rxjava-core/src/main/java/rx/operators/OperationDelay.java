@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
@@ -71,7 +71,7 @@ public final class OperationDelay {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> t1) {
+        public Subscription onSubscribe(final Subscriber<? super T> t1) {
             final SerialSubscription ssub = new SerialSubscription();
 
             ssub.setSubscription(scheduler.schedule(new Action0() {
@@ -121,7 +121,7 @@ public final class OperationDelay {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription onSubscribe(Subscriber<? super T> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
             SerialSubscription sosub = new SerialSubscription();
@@ -146,7 +146,7 @@ public final class OperationDelay {
         }
 
         /** Subscribe delay observer. */
-        private static final class SubscribeDelay<T, U, V> extends Observer<U> {
+        private static final class SubscribeDelay<T, U, V> extends Subscriber<U> {
             final Observable<? extends T> source;
             final SourceObserver<T, V> so;
             final CompositeSubscription csub;
@@ -186,8 +186,8 @@ public final class OperationDelay {
         }
 
         /** The source observer. */
-        private static final class SourceObserver<T, U> extends Observer<T> {
-            final Observer<? super T> observer;
+        private static final class SourceObserver<T, U> extends Subscriber<T> {
+            final Subscriber<? super T> observer;
             final Func1<? super T, ? extends Observable<U>> itemDelay;
             final CompositeSubscription csub;
             final SerialSubscription self;
@@ -196,7 +196,7 @@ public final class OperationDelay {
             boolean done;
             int wip;
 
-            public SourceObserver(Observer<? super T> observer,
+            public SourceObserver(Subscriber<? super T> observer,
                     Func1<? super T, ? extends Observable<U>> itemDelay,
                     CompositeSubscription csub,
                     SerialSubscription self) {
@@ -274,7 +274,7 @@ public final class OperationDelay {
         /**
          * Delay observer.
          */
-        private static final class DelayObserver<T, U> extends Observer<U> {
+        private static final class DelayObserver<T, U> extends Subscriber<U> {
             final T value;
             final SourceObserver<T, U> parent;
             final Subscription token;

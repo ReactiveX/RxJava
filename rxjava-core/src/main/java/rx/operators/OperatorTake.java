@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import rx.Observer;
+import rx.Subscriber;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -38,7 +38,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
     }
 
     @Override
-    public Observer<? super T> call(final Observer<? super T> o) {
+    public Subscriber<? super T> call(final Subscriber<? super T> o) {
         CompositeSubscription parent = new CompositeSubscription();
         if (limit == 0) {
             o.onCompleted();
@@ -50,7 +50,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
          * 
          * Thus, we only unsubscribe UPWARDS to the parent and an onComplete DOWNSTREAM.
          */
-        return new Observer<T>(parent) {
+        return new Subscriber<T>(parent) {
 
             int count = 0;
             boolean completed = false;

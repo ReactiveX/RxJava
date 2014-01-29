@@ -21,7 +21,7 @@ import static rx.operators.OperationAny.*;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
@@ -33,7 +33,7 @@ public class OperationAnyTest {
         Observable<Boolean> observable = Observable.create(any(w));
 
         @SuppressWarnings("unchecked")
-        Observer<Boolean> observer = mock(Observer.class);
+        Subscriber<Boolean> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Boolean>(observer));
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
@@ -47,7 +47,7 @@ public class OperationAnyTest {
         Observable<Boolean> observable = Observable.create(isEmpty(w));
 
         @SuppressWarnings("unchecked")
-        Observer<Boolean> observer = mock(Observer.class);
+        Subscriber<Boolean> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Boolean>(observer));
         verify(observer, never()).onNext(true);
         verify(observer, times(1)).onNext(false);
@@ -61,7 +61,7 @@ public class OperationAnyTest {
         Observable<Boolean> observable = Observable.create(any(w));
 
         @SuppressWarnings("unchecked")
-        Observer<Boolean> observer = mock(Observer.class);
+        Subscriber<Boolean> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Boolean>(observer));
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
@@ -75,7 +75,7 @@ public class OperationAnyTest {
         Observable<Boolean> observable = Observable.create(isEmpty(w));
 
         @SuppressWarnings("unchecked")
-        Observer<Boolean> observer = mock(Observer.class);
+        Subscriber<Boolean> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Boolean>(observer));
         verify(observer, never()).onNext(true);
         verify(observer, times(1)).onNext(false);
@@ -89,7 +89,7 @@ public class OperationAnyTest {
         Observable<Boolean> observable = Observable.create(any(w));
 
         @SuppressWarnings("unchecked")
-        Observer<Boolean> observer = mock(Observer.class);
+        Subscriber<Boolean> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Boolean>(observer));
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
@@ -103,7 +103,7 @@ public class OperationAnyTest {
         Observable<Boolean> observable = Observable.create(isEmpty(w));
 
         @SuppressWarnings("unchecked")
-        Observer<Boolean> observer = mock(Observer.class);
+        Subscriber<Boolean> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Boolean>(observer));
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
@@ -124,7 +124,7 @@ public class OperationAnyTest {
                 }));
 
         @SuppressWarnings("unchecked")
-        Observer<Boolean> observer = mock(Observer.class);
+        Subscriber<Boolean> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Boolean>(observer));
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
@@ -145,7 +145,7 @@ public class OperationAnyTest {
                 }));
 
         @SuppressWarnings("unchecked")
-        Observer<Boolean> observer = mock(Observer.class);
+        Subscriber<Boolean> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Boolean>(observer));
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
@@ -166,7 +166,7 @@ public class OperationAnyTest {
                 }));
 
         @SuppressWarnings("unchecked")
-        Observer<Boolean> observer = mock(Observer.class);
+        Subscriber<Boolean> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Boolean>(observer));
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
@@ -188,7 +188,7 @@ public class OperationAnyTest {
                 }));
 
         @SuppressWarnings("unchecked")
-        Observer<Boolean> observer = mock(Observer.class);
+        Subscriber<Boolean> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Boolean>(observer));
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);

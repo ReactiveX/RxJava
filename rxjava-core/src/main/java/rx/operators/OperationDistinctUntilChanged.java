@@ -19,7 +19,7 @@ import java.util.Comparator;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -107,8 +107,8 @@ public final class OperationDistinctUntilChanged {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
-            return source.subscribe(new Observer<T>(observer) {
+        public Subscription onSubscribe(final Subscriber<? super T> observer) {
+            return source.subscribe(new Subscriber<T>(observer) {
                 private U lastEmittedKey;
                 private boolean hasEmitted;
 

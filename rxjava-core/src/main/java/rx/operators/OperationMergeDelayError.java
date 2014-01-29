@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.SynchronizedObserver;
 import rx.subscriptions.CompositeSubscription;
@@ -61,7 +61,7 @@ public final class OperationMergeDelayError {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
+            public Subscription onSubscribe(Subscriber<? super T> observer) {
                 return new MergeDelayErrorObservable<T>(sequences).onSubscribe(observer);
             }
         };
@@ -72,7 +72,7 @@ public final class OperationMergeDelayError {
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<? extends T>> observer) {
+            public Subscription onSubscribe(Subscriber<? super Observable<? extends T>> observer) {
                 for (Observable<? extends T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
@@ -102,7 +102,7 @@ public final class OperationMergeDelayError {
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<? extends T>> observer) {
+            public Subscription onSubscribe(Subscriber<? super Observable<? extends T>> observer) {
                 for (Observable<? extends T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
@@ -152,7 +152,7 @@ public final class OperationMergeDelayError {
             this.sequences = sequences;
         }
 
-        public Subscription onSubscribe(Observer<? super T> actualObserver) {
+        public Subscription onSubscribe(Subscriber<? super T> actualObserver) {
             CompositeSubscription completeSubscription = new CompositeSubscription();
 
             /**
@@ -208,10 +208,10 @@ public final class OperationMergeDelayError {
          * 
          * @param <T>
          */
-        private class ParentObserver extends Observer<Observable<? extends T>> {
-            private final Observer<? super T> actualObserver;
+        private class ParentObserver extends Subscriber<Observable<? extends T>> {
+            private final Subscriber<? super T> actualObserver;
 
-            public ParentObserver(Observer<? super T> actualObserver) {
+            public ParentObserver(Subscriber<? super T> actualObserver) {
                 this.actualObserver = actualObserver;
             }
 
@@ -274,12 +274,12 @@ public final class OperationMergeDelayError {
          * Subscribe to each child Observable<T> and forward their sequence of data to the actualObserver
          * 
          */
-        private class ChildObserver extends Observer<T> {
+        private class ChildObserver extends Subscriber<T> {
 
-            private final Observer<? super T> actualObserver;
+            private final Subscriber<? super T> actualObserver;
             private volatile boolean finished = false;
 
-            public ChildObserver(Observer<? super T> actualObserver) {
+            public ChildObserver(Subscriber<? super T> actualObserver) {
                 this.actualObserver = actualObserver;
             }
 

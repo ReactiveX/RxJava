@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -68,9 +68,9 @@ public final class OperationSample {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription onSubscribe(final Subscriber<? super T> observer) {
             Observable<Long> clock = Observable.create(OperationInterval.interval(period, unit, scheduler));
-            final Subscription clockSubscription = clock.subscribe(new Observer<Long>() {
+            final Subscription clockSubscription = clock.subscribe(new Subscriber<Long>() {
                 @Override
                 public void onCompleted() { /* the clock never completes */
                 }
@@ -87,7 +87,7 @@ public final class OperationSample {
                 }
             });
 
-            final Subscription sourceSubscription = source.subscribe(new Observer<T>() {
+            final Subscription sourceSubscription = source.subscribe(new Subscriber<T>() {
                 @Override
                 public void onCompleted() {
                     clockSubscription.unsubscribe();
@@ -134,20 +134,20 @@ public final class OperationSample {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription onSubscribe(Subscriber<? super T> t1) {
             return new ResultManager(t1).init();
         }
 
         /** Observe source values. */
-        class ResultManager extends Observer<T> {
-            final Observer<? super T> observer;
+        class ResultManager extends Subscriber<T> {
+            final Subscriber<? super T> observer;
             final CompositeSubscription cancel;
             T value;
             boolean valueTaken = true;
             boolean done;
             final Object guard;
 
-            public ResultManager(Observer<? super T> observer) {
+            public ResultManager(Subscriber<? super T> observer) {
                 this.observer = observer;
                 cancel = new CompositeSubscription();
                 guard = new Object();
@@ -191,7 +191,7 @@ public final class OperationSample {
             }
 
             /** Take the latest value, but only once. */
-            class Sampler extends Observer<U> {
+            class Sampler extends Subscriber<U> {
                 @Override
                 public void onNext(U args) {
                     synchronized (guard) {

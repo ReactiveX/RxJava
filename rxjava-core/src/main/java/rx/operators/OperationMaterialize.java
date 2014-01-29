@@ -18,7 +18,7 @@ package rx.operators;
 import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 
 /**
@@ -53,8 +53,8 @@ public final class OperationMaterialize {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super Notification<T>> observer) {
-            return sequence.subscribe(new Observer<T>(observer) {
+        public Subscription onSubscribe(final Subscriber<? super Notification<T>> observer) {
+            return sequence.subscribe(new Subscriber<T>(observer) {
 
                 @Override
                 public void onCompleted() {

@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
@@ -38,7 +38,7 @@ public class OperationMinMaxTest {
         Observable<Integer> observable = min(Observable.from(2, 3, 1, 4));
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<Integer>(observer));
         InOrder inOrder = inOrder(observer);
@@ -52,7 +52,7 @@ public class OperationMinMaxTest {
         Observable<Integer> observable = min(Observable.<Integer> empty());
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<Integer>(observer));
         InOrder inOrder = inOrder(observer);
@@ -72,7 +72,7 @@ public class OperationMinMaxTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<Integer>(observer));
         InOrder inOrder = inOrder(observer);
@@ -92,7 +92,7 @@ public class OperationMinMaxTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<Integer>(observer));
         InOrder inOrder = inOrder(observer);
@@ -113,7 +113,7 @@ public class OperationMinMaxTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<List<String>> observer = (Observer<List<String>>) mock(Observer.class);
+        Subscriber<List<String>> observer = (Subscriber<List<String>>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<List<String>>(observer));
         InOrder inOrder = inOrder(observer);
@@ -133,7 +133,7 @@ public class OperationMinMaxTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<List<String>> observer = (Observer<List<String>>) mock(Observer.class);
+        Subscriber<List<String>> observer = (Subscriber<List<String>>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<List<String>>(observer));
         InOrder inOrder = inOrder(observer);
@@ -159,7 +159,7 @@ public class OperationMinMaxTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<List<String>> observer = (Observer<List<String>>) mock(Observer.class);
+        Subscriber<List<String>> observer = (Subscriber<List<String>>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<List<String>>(observer));
         InOrder inOrder = inOrder(observer);
@@ -184,7 +184,7 @@ public class OperationMinMaxTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<List<String>> observer = (Observer<List<String>>) mock(Observer.class);
+        Subscriber<List<String>> observer = (Subscriber<List<String>>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<List<String>>(observer));
         InOrder inOrder = inOrder(observer);
@@ -198,7 +198,7 @@ public class OperationMinMaxTest {
         Observable<Integer> observable = max(Observable.from(2, 3, 1, 4));
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<Integer>(observer));
         InOrder inOrder = inOrder(observer);
@@ -212,7 +212,7 @@ public class OperationMinMaxTest {
         Observable<Integer> observable = max(Observable.<Integer> empty());
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<Integer>(observer));
         InOrder inOrder = inOrder(observer);
@@ -232,7 +232,7 @@ public class OperationMinMaxTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<Integer>(observer));
         InOrder inOrder = inOrder(observer);
@@ -252,7 +252,7 @@ public class OperationMinMaxTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<Integer>(observer));
         InOrder inOrder = inOrder(observer);
@@ -273,7 +273,7 @@ public class OperationMinMaxTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<List<String>> observer = (Observer<List<String>>) mock(Observer.class);
+        Subscriber<List<String>> observer = (Subscriber<List<String>>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<List<String>>(observer));
         InOrder inOrder = inOrder(observer);
@@ -293,7 +293,7 @@ public class OperationMinMaxTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<List<String>> observer = (Observer<List<String>>) mock(Observer.class);
+        Subscriber<List<String>> observer = (Subscriber<List<String>>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<List<String>>(observer));
         InOrder inOrder = inOrder(observer);
@@ -319,7 +319,7 @@ public class OperationMinMaxTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<List<String>> observer = (Observer<List<String>>) mock(Observer.class);
+        Subscriber<List<String>> observer = (Subscriber<List<String>>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<List<String>>(observer));
         InOrder inOrder = inOrder(observer);
@@ -344,7 +344,7 @@ public class OperationMinMaxTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<List<String>> observer = (Observer<List<String>>) mock(Observer.class);
+        Subscriber<List<String>> observer = (Subscriber<List<String>>) mock(Subscriber.class);
 
         observable.subscribe(new TestObserver<List<String>>(observer));
         InOrder inOrder = inOrder(observer);

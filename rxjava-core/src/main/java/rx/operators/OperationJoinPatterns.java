@@ -23,7 +23,7 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.joins.ActivePlan0;
 import rx.joins.JoinObserver;
@@ -83,12 +83,12 @@ public class OperationJoinPatterns {
         }
         return new OnSubscribeFunc<R>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super R> t1) {
+            public Subscription onSubscribe(final Subscriber<? super R> t1) {
                 final Map<Object, JoinObserver> externalSubscriptions = new HashMap<Object, JoinObserver>();
                 final Object gate = new Object();
                 final List<ActivePlan0> activePlans = new ArrayList<ActivePlan0>();
 
-                final Observer<R> out = new Observer<R>() {
+                final Subscriber<R> out = new Subscriber<R>() {
                     @Override
                     public void onNext(R args) {
                         t1.onNext(args);

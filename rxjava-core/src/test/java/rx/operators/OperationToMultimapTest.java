@@ -33,7 +33,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.operators.OperationToMultimap.DefaultMultimapCollectionFactory;
 import rx.operators.OperationToMultimap.DefaultToMultimapFactory;
@@ -43,7 +43,7 @@ import rx.util.functions.Functions;
 
 public class OperationToMultimapTest {
     @Mock
-    Observer<Object> objectObserver;
+    Subscriber<Object> objectObserver;
 
     @Before
     public void before() {

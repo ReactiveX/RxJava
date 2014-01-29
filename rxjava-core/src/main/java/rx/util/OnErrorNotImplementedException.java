@@ -15,10 +15,10 @@
  */
 package rx.util;
 
-import rx.Observer;
+import rx.Subscriber;
 
 /**
- * Used for re-throwing {@link Observer#onError(Throwable)} when an implementation doesn't exist.
+ * Used for re-throwing {@link Subscriber#onError(Throwable)} when an implementation doesn't exist.
  * 
  * https://github.com/Netflix/RxJava/issues/198
  * 

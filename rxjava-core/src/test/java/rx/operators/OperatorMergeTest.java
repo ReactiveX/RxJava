@@ -34,7 +34,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
@@ -45,7 +45,7 @@ import rx.util.functions.Action1;
 public class OperatorMergeTest {
 
     @Mock
-    Observer<String> stringObserver;
+    Subscriber<String> stringObserver;
 
     @Before
     public void before() {
@@ -60,7 +60,7 @@ public class OperatorMergeTest {
         Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+            public Subscription onSubscribe(Subscriber<? super Observable<String>> observer) {
                 // simulate what would happen in an observable
                 observer.onNext(o1);
                 observer.onNext(o2);
@@ -123,7 +123,7 @@ public class OperatorMergeTest {
         Observable<Observable<Long>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<Long>>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Observable<Long>> observer) {
+            public Subscription onSubscribe(final Subscriber<? super Observable<Long>> observer) {
                 // verbose on purpose so I can track the inside of it
                 final Subscription s = Subscriptions.create(new Action0() {
 
@@ -212,7 +212,7 @@ public class OperatorMergeTest {
         final AtomicInteger totalCounter = new AtomicInteger();
 
         Observable<String> m = Observable.merge(Observable.create(o1), Observable.create(o2));
-        m.subscribe(new Observer<String>() {
+        m.subscribe(new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -324,7 +324,7 @@ public class OperatorMergeTest {
     private static class TestSynchronousObservable implements Observable.OnSubscribeFunc<String> {
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> observer) {
+        public Subscription onSubscribe(Subscriber<? super String> observer) {
 
             observer.onNext("hello");
             observer.onCompleted();
@@ -345,7 +345,7 @@ public class OperatorMergeTest {
         final CountDownLatch onNextBeingSent = new CountDownLatch(1);
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription onSubscribe(final Subscriber<? super String> observer) {
             t = new Thread(new Runnable() {
 
                 @Override
@@ -376,7 +376,7 @@ public class OperatorMergeTest {
      */
     private static class TestObservable implements Observable.OnSubscribeFunc<String> {
 
-        Observer<? super String> observer = null;
+        Subscriber<? super String> observer = null;
         volatile boolean unsubscribed = false;
         Subscription s = new Subscription() {
 
@@ -405,7 +405,7 @@ public class OperatorMergeTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription onSubscribe(final Subscriber<? super String> observer) {
             this.observer = observer;
             return s;
         }
@@ -420,7 +420,7 @@ public class OperatorMergeTest {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> observer) {
+        public Subscription onSubscribe(Subscriber<? super String> observer) {
 
             for (String s : valuesToReturn) {
                 if (s == null) {
@@ -506,7 +506,7 @@ public class OperatorMergeTest {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> t1) {
+        public Subscription onSubscribe(Subscriber<? super String> t1) {
             if (subscriptionCount.incrementAndGet() > maxConcurrent) {
                 failed = true;
             }

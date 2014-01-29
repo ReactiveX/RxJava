@@ -27,14 +27,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 
 public class OperationTimerTest {
     @Mock
-    Observer<Object> observer;
+    Subscriber<Object> observer;
     TestScheduler s;
 
     @Before

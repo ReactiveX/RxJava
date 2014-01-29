@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
@@ -35,23 +35,23 @@ import rx.util.functions.Action0;
 
 public class OperationSampleTest {
     private TestScheduler scheduler;
-    private Observer<Long> observer;
-    private Observer<Object> observer2;
+    private Subscriber<Long> observer;
+    private Subscriber<Object> observer2;
 
     @Before
     @SuppressWarnings("unchecked")
     // due to mocking
     public void before() {
         scheduler = new TestScheduler();
-        observer = mock(Observer.class);
-        observer2 = mock(Observer.class);
+        observer = mock(Subscriber.class);
+        observer2 = mock(Subscriber.class);
     }
 
     @Test
     public void testSample() {
         Observable<Long> source = Observable.create(new Observable.OnSubscribeFunc<Long>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super Long> observer1) {
+            public Subscription onSubscribe(final Subscriber<? super Long> observer1) {
                 scheduler.schedule(new Action0() {
                     @Override
                     public void call() {

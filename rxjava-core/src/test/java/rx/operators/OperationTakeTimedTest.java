@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.operators.OperationSkipTest.CustomException;
 import rx.schedulers.TestScheduler;
@@ -41,7 +41,7 @@ public class OperationTakeTimedTest {
         Observable<Integer> result = source.toObservable().take(1, TimeUnit.SECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         result.subscribe(new TestObserver<Object>(o));
 
@@ -73,7 +73,7 @@ public class OperationTakeTimedTest {
         Observable<Integer> result = source.toObservable().take(1, TimeUnit.SECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         result.subscribe(new TestObserver<Object>(o));
 
@@ -106,7 +106,7 @@ public class OperationTakeTimedTest {
         Observable<Integer> result = source.toObservable().take(1, TimeUnit.SECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         result.subscribe(new TestObserver<Object>(o));
 

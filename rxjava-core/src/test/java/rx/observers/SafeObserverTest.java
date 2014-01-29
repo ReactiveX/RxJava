@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
-import rx.Observer;
+import rx.Subscriber;
 import rx.subscriptions.Subscriptions;
 import rx.util.CompositeException;
 import rx.util.OnErrorNotImplementedException;
@@ -166,7 +166,7 @@ public class SafeObserverTest {
 
     @Test
     public void onCompleteSuccessWithUnsubscribeFailure() {
-        Observer<String> o = OBSERVER_SUCCESS();
+        Subscriber<String> o = OBSERVER_SUCCESS();
         try {
             o.add(Subscriptions.create(new Action0() {
 
@@ -192,7 +192,7 @@ public class SafeObserverTest {
     @Test
     public void onErrorSuccessWithUnsubscribeFailure() {
         AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
-        Observer<String> o = OBSERVER_SUCCESS(onError);
+        Subscriber<String> o = OBSERVER_SUCCESS(onError);
         try {
             o.add(Subscriptions.create(new Action0() {
 
@@ -222,7 +222,7 @@ public class SafeObserverTest {
 
     @Test
     public void onErrorFailureWithUnsubscribeFailure() {
-        Observer<String> o = OBSERVER_ONERROR_FAIL();
+        Subscriber<String> o = OBSERVER_ONERROR_FAIL();
         try {
             o.add(Subscriptions.create(new Action0() {
 
@@ -263,7 +263,7 @@ public class SafeObserverTest {
 
     @Test
     public void onErrorNotImplementedFailureWithUnsubscribeFailure() {
-        Observer<String> o = OBSERVER_ONERROR_NOTIMPLEMENTED();
+        Subscriber<String> o = OBSERVER_ONERROR_NOTIMPLEMENTED();
         try {
             o.add(Subscriptions.create(new Action0() {
 
@@ -298,8 +298,8 @@ public class SafeObserverTest {
         }
     }
 
-    private static Observer<String> OBSERVER_SUCCESS() {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_SUCCESS() {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -319,8 +319,8 @@ public class SafeObserverTest {
 
     }
 
-    private static Observer<String> OBSERVER_SUCCESS(final AtomicReference<Throwable> onError) {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_SUCCESS(final AtomicReference<Throwable> onError) {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -340,8 +340,8 @@ public class SafeObserverTest {
 
     }
 
-    private static Observer<String> OBSERVER_ONNEXT_FAIL(final AtomicReference<Throwable> onError) {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_ONNEXT_FAIL(final AtomicReference<Throwable> onError) {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -361,8 +361,8 @@ public class SafeObserverTest {
 
     }
 
-    private static Observer<String> OBSERVER_ONNEXT_ONERROR_FAIL() {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_ONNEXT_ONERROR_FAIL() {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -382,8 +382,8 @@ public class SafeObserverTest {
         };
     }
 
-    private static Observer<String> OBSERVER_ONERROR_FAIL() {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_ONERROR_FAIL() {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -403,8 +403,8 @@ public class SafeObserverTest {
         };
     }
 
-    private static Observer<String> OBSERVER_ONERROR_NOTIMPLEMENTED() {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_ONERROR_NOTIMPLEMENTED() {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -424,8 +424,8 @@ public class SafeObserverTest {
         };
     }
 
-    private static Observer<String> OBSERVER_ONCOMPLETED_FAIL(final AtomicReference<Throwable> onError) {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_ONCOMPLETED_FAIL(final AtomicReference<Throwable> onError) {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {

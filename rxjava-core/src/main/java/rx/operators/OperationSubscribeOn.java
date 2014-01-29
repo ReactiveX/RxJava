@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.util.functions.Action0;
@@ -44,7 +44,7 @@ public class OperationSubscribeOn {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription onSubscribe(final Subscriber<? super T> observer) {
             return scheduler.schedule(null, new Func2<Scheduler, T, Subscription>() {
                 @Override
                 public Subscription call(Scheduler s, T t) {

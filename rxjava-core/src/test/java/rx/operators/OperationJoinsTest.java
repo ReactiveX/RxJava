@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.joins.Plan0;
 import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
@@ -39,7 +39,7 @@ import rx.util.functions.Functions;
 
 public class OperationJoinsTest {
     @Mock
-    Observer<Integer> observer;
+    Subscriber<Integer> observer;
 
     Func2<Integer, Integer, Integer> add2 = new Func2<Integer, Integer, Integer>() {
         @Override

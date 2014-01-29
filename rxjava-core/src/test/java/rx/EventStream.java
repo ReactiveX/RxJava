@@ -33,7 +33,7 @@ public class EventStream {
         return Observable.create(new OnSubscribeFunc<Event>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Event> observer) {
+            public Subscription onSubscribe(final Subscriber<? super Event> observer) {
                 final BooleanSubscription s = new BooleanSubscription();
                 // run on a background thread inside the OnSubscribeFunc so unsubscribe works
                 Schedulers.newThread().schedule(new Action0() {

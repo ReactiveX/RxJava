@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -52,7 +52,7 @@ public final class OperationSkip {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
+            public Subscription onSubscribe(Subscriber<? super T> observer) {
                 return new Skip<T>(items, num).onSubscribe(observer);
             }
 
@@ -75,19 +75,19 @@ public final class OperationSkip {
             this.items = items;
         }
 
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription onSubscribe(Subscriber<? super T> observer) {
             return items.subscribe(new ItemObserver(observer));
         }
 
         /**
          * Used to subscribe to the 'items' Observable sequence and forward to the actualObserver up to 'num' count.
          */
-        private class ItemObserver extends Observer<T> {
+        private class ItemObserver extends Subscriber<T> {
 
             private AtomicInteger counter = new AtomicInteger();
-            private final Observer<? super T> observer;
+            private final Subscriber<? super T> observer;
 
-            public ItemObserver(Observer<? super T> observer) {
+            public ItemObserver(Subscriber<? super T> observer) {
                 this.observer = observer;
             }
 
@@ -133,7 +133,7 @@ public final class OperationSkip {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription onSubscribe(Subscriber<? super T> t1) {
 
             SafeObservableSubscription timer = new SafeObservableSubscription();
             SafeObservableSubscription data = new SafeObservableSubscription();
@@ -155,12 +155,12 @@ public final class OperationSkip {
          * @param <T>
          *            the observed value type
          */
-        private static final class SourceObserver<T> extends Observer<T> implements Action0 {
+        private static final class SourceObserver<T> extends Subscriber<T> implements Action0 {
             final AtomicBoolean gate;
-            final Observer<? super T> observer;
+            final Subscriber<? super T> observer;
             final Subscription cancel;
 
-            public SourceObserver(Observer<? super T> observer,
+            public SourceObserver(Subscriber<? super T> observer,
                     Subscription cancel) {
                 this.gate = new AtomicBoolean();
                 this.observer = observer;

@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.util.Timestamped;
 
@@ -36,8 +36,8 @@ public final class OperatorTimestamp<T> implements Operator<Timestamped<T>, T> {
      * @return a sequence of timestamped values created by adding timestamps to each item in the input sequence.
      */
     @Override
-    public Observer<? super T> call(final Observer<? super Timestamped<T>> o) {
-        return new Observer<T>(o) {
+    public Subscriber<? super T> call(final Subscriber<? super Timestamped<T>> o) {
+        return new Subscriber<T>(o) {
 
             @Override
             public void onCompleted() {

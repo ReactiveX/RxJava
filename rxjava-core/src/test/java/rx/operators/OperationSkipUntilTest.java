@@ -24,13 +24,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 
 public class OperationSkipUntilTest {
     @Mock
-    Observer<Object> observer;
+    Subscriber<Object> observer;
 
     @Before
     public void before() {

@@ -24,7 +24,7 @@ import java.util.List;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
@@ -34,7 +34,7 @@ public class OperationFlatMapTest {
     @Test
     public void testNormal() {
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
 
@@ -68,7 +68,7 @@ public class OperationFlatMapTest {
     @Test
     public void testCollectionFunctionThrows() {
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         Func1<Integer, List<Integer>> func = new Func1<Integer, List<Integer>>() {
             @Override
@@ -96,7 +96,7 @@ public class OperationFlatMapTest {
     @Test
     public void testResultFunctionThrows() {
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
 
@@ -126,7 +126,7 @@ public class OperationFlatMapTest {
     @Test
     public void testMergeError() {
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         Func1<Integer, Observable<Integer>> func = new Func1<Integer, Observable<Integer>>() {
             @Override
@@ -180,7 +180,7 @@ public class OperationFlatMapTest {
         Observable<Integer> source = Observable.from(Arrays.asList(10, 20, 30));
 
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         source.mergeMap(just(onNext), just(onError), just0(onCompleted)).subscribe(new TestObserver<Object>(o));
 
@@ -206,7 +206,7 @@ public class OperationFlatMapTest {
                 );
 
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         source.mergeMap(just(onNext), just(onError), just0(onCompleted)).subscribe(new TestObserver<Object>(o));
 
@@ -246,7 +246,7 @@ public class OperationFlatMapTest {
         Observable<Integer> source = Observable.from(Arrays.asList(10, 20, 30));
 
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         source.mergeMap(funcThrow(1, onError), just(onError), just0(onCompleted)).subscribe(new TestObserver<Object>(o));
 
@@ -264,7 +264,7 @@ public class OperationFlatMapTest {
         Observable<Integer> source = Observable.error(new OperationReduceTest.CustomException());
 
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         source.mergeMap(just(onNext), funcThrow((Throwable) null, onError), just0(onCompleted)).subscribe(new TestObserver<Object>(o));
 
@@ -282,7 +282,7 @@ public class OperationFlatMapTest {
         Observable<Integer> source = Observable.from(Arrays.<Integer> asList());
 
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         source.mergeMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(new TestObserver<Object>(o));
 
@@ -300,7 +300,7 @@ public class OperationFlatMapTest {
         Observable<Integer> source = Observable.from(Arrays.asList(10, 20, 30));
 
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         source.mergeMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(new TestObserver<Object>(o));
 

@@ -27,7 +27,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.util.functions.Func1;
@@ -36,9 +36,9 @@ import rx.util.functions.Func2;
 public class OperatorMapTest {
 
     @Mock
-    Observer<String> stringObserver;
+    Subscriber<String> stringObserver;
     @Mock
-    Observer<String> stringObserver2;
+    Subscriber<String> stringObserver2;
 
     final static Func2<String, Integer, String> APPEND_INDEX = new Func2<String, Integer, String>() {
         @Override

@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
@@ -35,20 +35,20 @@ import rx.util.functions.Action0;
 public class OperationThrottleFirstTest {
 
     private TestScheduler scheduler;
-    private Observer<String> observer;
+    private Subscriber<String> observer;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() {
         scheduler = new TestScheduler();
-        observer = mock(Observer.class);
+        observer = mock(Subscriber.class);
     }
 
     @Test
     public void testThrottlingWithCompleted() {
         Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription onSubscribe(Subscriber<? super String> observer) {
                 publishNext(observer, 100, "one");    // publish as it's first
                 publishNext(observer, 300, "two");    // skip as it's last within the first 400
                 publishNext(observer, 900, "three");   // publish
@@ -77,7 +77,7 @@ public class OperationThrottleFirstTest {
     public void testThrottlingWithError() {
         Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription onSubscribe(Subscriber<? super String> observer) {
                 Exception error = new TestException();
                 publishNext(observer, 100, "one");    // Should be published since it is first
                 publishNext(observer, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
@@ -98,7 +98,7 @@ public class OperationThrottleFirstTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    private <T> void publishCompleted(final Observer<T> observer, long delay) {
+    private <T> void publishCompleted(final Subscriber<T> observer, long delay) {
         scheduler.schedule(new Action0() {
             @Override
             public void call() {
@@ -107,7 +107,7 @@ public class OperationThrottleFirstTest {
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishError(final Observer<T> observer, long delay, final Exception error) {
+    private <T> void publishError(final Subscriber<T> observer, long delay, final Exception error) {
         scheduler.schedule(new Action0() {
             @Override
             public void call() {
@@ -116,7 +116,7 @@ public class OperationThrottleFirstTest {
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishNext(final Observer<T> observer, long delay, final T value) {
+    private <T> void publishNext(final Subscriber<T> observer, long delay, final T value) {
         scheduler.schedule(new Action0() {
             @Override
             public void call() {

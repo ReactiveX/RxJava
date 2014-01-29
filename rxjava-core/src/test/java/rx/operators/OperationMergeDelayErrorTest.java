@@ -29,7 +29,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.util.CompositeException;
@@ -37,7 +37,7 @@ import rx.util.CompositeException;
 public class OperationMergeDelayErrorTest {
 
     @Mock
-    Observer<String> stringObserver;
+    Subscriber<String> stringObserver;
 
     @Before
     public void before() {
@@ -220,7 +220,7 @@ public class OperationMergeDelayErrorTest {
         Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+            public Subscription onSubscribe(Subscriber<? super Observable<String>> observer) {
                 // simulate what would happen in an observable
                 observer.onNext(o1);
                 observer.onNext(o2);
@@ -326,7 +326,7 @@ public class OperationMergeDelayErrorTest {
     private static class TestSynchronousObservable implements Observable.OnSubscribeFunc<String> {
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> observer) {
+        public Subscription onSubscribe(Subscriber<? super String> observer) {
 
             observer.onNext("hello");
             observer.onCompleted();
@@ -346,7 +346,7 @@ public class OperationMergeDelayErrorTest {
         Thread t;
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription onSubscribe(final Subscriber<? super String> observer) {
             t = new Thread(new Runnable() {
 
                 @Override
@@ -374,7 +374,7 @@ public class OperationMergeDelayErrorTest {
      */
     private static class TestObservable implements Observable.OnSubscribeFunc<String> {
 
-        Observer<? super String> observer = null;
+        Subscriber<? super String> observer = null;
         volatile boolean unsubscribed = false;
         Subscription s = new Subscription() {
 
@@ -403,7 +403,7 @@ public class OperationMergeDelayErrorTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription onSubscribe(final Subscriber<? super String> observer) {
             this.observer = observer;
             return s;
         }
@@ -418,7 +418,7 @@ public class OperationMergeDelayErrorTest {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> observer) {
+        public Subscription onSubscribe(Subscriber<? super String> observer) {
             boolean errorThrown = false;
             for (String s : valuesToReturn) {
                 if (s == null) {
@@ -457,7 +457,7 @@ public class OperationMergeDelayErrorTest {
         Thread t;
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription onSubscribe(final Subscriber<? super String> observer) {
             t = new Thread(new Runnable() {
 
                 @Override
@@ -494,7 +494,7 @@ public class OperationMergeDelayErrorTest {
         }
     }
 
-    private static class CaptureObserver extends Observer<String> {
+    private static class CaptureObserver extends Subscriber<String> {
         volatile Throwable e;
 
         @Override

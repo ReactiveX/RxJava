@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.util.Exceptions;
 
 /**
@@ -48,7 +48,7 @@ public final class OperationLatest {
     }
 
     /** Observer of source, iterator for output. */
-    static final class LatestObserverIterator<T> extends Observer<Notification<? extends T>> implements Iterator<T> {
+    static final class LatestObserverIterator<T> extends Subscriber<Notification<? extends T>> implements Iterator<T> {
         final Semaphore notify = new Semaphore(0);
         // observer's notification
         final AtomicReference<Notification<? extends T>> reference = new AtomicReference<Notification<? extends T>>();

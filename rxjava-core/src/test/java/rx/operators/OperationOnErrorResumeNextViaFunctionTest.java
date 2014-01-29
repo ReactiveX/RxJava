@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.subscriptions.Subscriptions;
@@ -40,7 +40,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
         Observable<String> w = Observable.create(new Observable.OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription onSubscribe(Subscriber<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new Throwable("injected failure"));
                 return Subscriptions.empty();
@@ -59,7 +59,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
         Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(w, resume));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
 
         verify(observer, Mockito.never()).onError(any(Throwable.class));
@@ -89,7 +89,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
         Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(Observable.create(w), resume));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
 
         try {
@@ -126,7 +126,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
         Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(Observable.create(w), resume));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
 
         try {
@@ -155,7 +155,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription onSubscribe(final Subscriber<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

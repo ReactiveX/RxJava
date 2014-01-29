@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
@@ -119,7 +119,7 @@ public class OperationAmb {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super T> observer) {
+            public Subscription onSubscribe(final Subscriber<? super T> observer) {
                 AtomicInteger choice = new AtomicInteger(AmbObserver.NONE);
                 int index = 0;
                 CompositeSubscription parentSubscription = new CompositeSubscription();
@@ -136,17 +136,17 @@ public class OperationAmb {
         };
     }
 
-    private static class AmbObserver<T> extends Observer<T> {
+    private static class AmbObserver<T> extends Subscriber<T> {
 
         private static final int NONE = -1;
 
         private Subscription subscription;
-        private Observer<? super T> observer;
+        private Subscriber<? super T> observer;
         private int index;
         private AtomicInteger choice;
 
         private AmbObserver(Subscription subscription,
-                Observer<? super T> observer, int index, AtomicInteger choice) {
+                Subscriber<? super T> observer, int index, AtomicInteger choice) {
             this.subscription = subscription;
             this.observer = observer;
             this.choice = choice;

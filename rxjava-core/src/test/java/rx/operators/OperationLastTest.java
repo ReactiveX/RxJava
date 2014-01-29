@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
@@ -58,7 +58,7 @@ public class OperationLastTest {
         Observable<Integer> observable = Observable.from(1, 2, 3).last();
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -72,7 +72,7 @@ public class OperationLastTest {
         Observable<Integer> observable = Observable.from(1).last();
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -86,7 +86,7 @@ public class OperationLastTest {
         Observable<Integer> observable = Observable.<Integer> empty().last();
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -107,7 +107,7 @@ public class OperationLastTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -128,7 +128,7 @@ public class OperationLastTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -148,7 +148,7 @@ public class OperationLastTest {
                     }
                 });
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -163,7 +163,7 @@ public class OperationLastTest {
                 .lastOrDefault(4);
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -177,7 +177,7 @@ public class OperationLastTest {
         Observable<Integer> observable = Observable.from(1).lastOrDefault(2);
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -192,7 +192,7 @@ public class OperationLastTest {
                 .lastOrDefault(1);
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -213,7 +213,7 @@ public class OperationLastTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -234,7 +234,7 @@ public class OperationLastTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -255,7 +255,7 @@ public class OperationLastTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);

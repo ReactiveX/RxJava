@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.SynchronizedObserver;
 
@@ -85,7 +85,7 @@ public final class OperationSynchronize<T> {
         private SynchronizedObserver<T> atomicObserver;
         private Object lock;
 
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription onSubscribe(Subscriber<? super T> observer) {
             SafeObservableSubscription subscription = new SafeObservableSubscription();
             if (lock == null) {
                 atomicObserver = new SynchronizedObserver<T>(observer, subscription);

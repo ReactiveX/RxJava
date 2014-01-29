@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestObserver;
@@ -34,16 +34,16 @@ import rx.schedulers.TestScheduler;
 public class OperationIntervalTest {
 
     private TestScheduler scheduler;
-    private Observer<Long> observer;
-    private Observer<Long> observer2;
+    private Subscriber<Long> observer;
+    private Subscriber<Long> observer2;
 
     @Before
     @SuppressWarnings("unchecked")
     // due to mocking
     public void before() {
         scheduler = new TestScheduler();
-        observer = mock(Observer.class);
-        observer2 = mock(Observer.class);
+        observer = mock(Subscriber.class);
+        observer2 = mock(Subscriber.class);
     }
 
     @Test

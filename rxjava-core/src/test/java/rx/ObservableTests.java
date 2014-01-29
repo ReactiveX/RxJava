@@ -48,7 +48,7 @@ import rx.util.functions.Func2;
 public class ObservableTests {
 
     @Mock
-    Observer<Integer> w;
+    Subscriber<Integer> w;
 
     private static final Func1<Integer, Boolean> IS_EVEN = new Func1<Integer, Boolean>() {
         @Override
@@ -105,7 +105,7 @@ public class ObservableTests {
         Observable<String> observable = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> Observer) {
+            public Subscription onSubscribe(Subscriber<? super String> Observer) {
                 Observer.onNext("one");
                 Observer.onNext("two");
                 Observer.onNext("three");
@@ -116,7 +116,7 @@ public class ObservableTests {
         });
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
@@ -151,7 +151,7 @@ public class ObservableTests {
     public void testCountError() {
         Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> obsv) {
+            public Subscription onSubscribe(Subscriber<? super String> obsv) {
                 obsv.onError(new RuntimeException());
                 return Subscriptions.empty();
             }
@@ -296,12 +296,12 @@ public class ObservableTests {
     @Test
     public void testOnSubscribeFails() {
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         final RuntimeException re = new RuntimeException("bad impl");
         Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> t1) {
+            public Subscription onSubscribe(Subscriber<? super String> t1) {
                 throw re;
             }
 
@@ -318,7 +318,7 @@ public class ObservableTests {
         Observable<Integer> chained = obs.materialize().dematerialize();
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Integer> observer = mock(Subscriber.class);
         chained.subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onNext(1);
@@ -341,7 +341,7 @@ public class ObservableTests {
         Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Subscriber<? super String> observer) {
                 final BooleanSubscription s = new BooleanSubscription();
                 new Thread(new Runnable() {
 
@@ -362,7 +362,7 @@ public class ObservableTests {
                 }).start();
                 return s;
             }
-        }).subscribe(new Observer<String>() {
+        }).subscribe(new Subscriber<String>() {
             @Override
             public void onCompleted() {
                 System.out.println("completed");
@@ -407,7 +407,7 @@ public class ObservableTests {
         Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription onSubscribe(Subscriber<? super String> observer) {
                 observer.onNext("1");
                 observer.onNext("2");
                 observer.onNext("three");
@@ -415,7 +415,7 @@ public class ObservableTests {
                 observer.onCompleted();
                 return Subscriptions.empty();
             }
-        }).subscribe(new Observer<String>() {
+        }).subscribe(new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -458,12 +458,12 @@ public class ObservableTests {
         Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription onSubscribe(Subscriber<? super String> observer) {
                 observer.onNext("1");
                 observer.onNext("2");
                 throw new NumberFormatException();
             }
-        }).subscribe(new Observer<String>() {
+        }).subscribe(new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -497,7 +497,7 @@ public class ObservableTests {
         ConnectableObservable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Subscriber<? super String> observer) {
                 final BooleanSubscription subscription = new BooleanSubscription();
                 new Thread(new Runnable() {
 
@@ -550,7 +550,7 @@ public class ObservableTests {
         final AtomicInteger count = new AtomicInteger();
         ConnectableObservable<String> connectable = Observable.create(new OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Subscriber<? super String> observer) {
                 count.incrementAndGet();
                 final BooleanSubscription subscription = new BooleanSubscription();
                 new Thread(new Runnable() {
@@ -594,7 +594,7 @@ public class ObservableTests {
         ConnectableObservable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Subscriber<? super String> observer) {
                 final BooleanSubscription subscription = new BooleanSubscription();
                 new Thread(new Runnable() {
 
@@ -651,7 +651,7 @@ public class ObservableTests {
         Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Subscriber<? super String> observer) {
                 final BooleanSubscription subscription = new BooleanSubscription();
                 new Thread(new Runnable() {
 
@@ -739,7 +739,7 @@ public class ObservableTests {
         Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Subscriber<? super String> observer) {
                 new Thread(new Runnable() {
 
                     @Override
@@ -773,7 +773,7 @@ public class ObservableTests {
     public void testTakeWithErrorInObserver() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        Observable.from("1", "2", "three", "4").take(3).subscribe(new Observer<String>() {
+        Observable.from("1", "2", "three", "4").take(3).subscribe(new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -808,7 +808,7 @@ public class ObservableTests {
         Observable<String> observable = Observable.from(1, "abc", false, 2L).ofType(String.class);
 
         @SuppressWarnings("unchecked")
-        Observer<Object> observer = mock(Observer.class);
+        Subscriber<Object> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Object>(observer));
         verify(observer, never()).onNext(1);
         verify(observer, times(1)).onNext("abc");
@@ -830,7 +830,7 @@ public class ObservableTests {
         Observable<List> observable = Observable.<Object> from(l1, l2, "123").ofType(List.class);
 
         @SuppressWarnings("unchecked")
-        Observer<Object> observer = mock(Observer.class);
+        Subscriber<Object> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Object>(observer));
         verify(observer, times(1)).onNext(l1);
         verify(observer, times(1)).onNext(l2);
@@ -845,7 +845,7 @@ public class ObservableTests {
         Observable<Boolean> observable = Observable.from("a", "b", null).contains("b");
 
         @SuppressWarnings("unchecked")
-        Observer<Object> observer = mock(Observer.class);
+        Subscriber<Object> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Object>(observer));
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
@@ -859,7 +859,7 @@ public class ObservableTests {
         Observable<Boolean> observable = Observable.from("a", "b", null).contains("c");
 
         @SuppressWarnings("unchecked")
-        Observer<Object> observer = mock(Observer.class);
+        Subscriber<Object> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Object>(observer));
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
@@ -873,7 +873,7 @@ public class ObservableTests {
         Observable<Boolean> observable = Observable.from("a", "b", null).contains(null);
 
         @SuppressWarnings("unchecked")
-        Observer<Object> observer = mock(Observer.class);
+        Subscriber<Object> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Object>(observer));
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
@@ -887,7 +887,7 @@ public class ObservableTests {
         Observable<Boolean> observable = Observable.<String> empty().contains("a");
 
         @SuppressWarnings("unchecked")
-        Observer<Object> observer = mock(Observer.class);
+        Subscriber<Object> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Object>(observer));
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
@@ -901,7 +901,7 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.from(1, 2, 3).ignoreElements();
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Integer> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
         verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onError(any(Throwable.class));
@@ -914,7 +914,7 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.from(Arrays.asList(1, 2), scheduler);
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Integer> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
@@ -932,7 +932,7 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.from(3, 4).startWith(Arrays.asList(1, 2), scheduler);
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Integer> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
@@ -952,7 +952,7 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.range(3, 4, scheduler);
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Integer> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);

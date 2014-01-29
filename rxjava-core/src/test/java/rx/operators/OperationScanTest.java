@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Func2;
 
@@ -38,7 +38,7 @@ public class OperationScanTest {
     @Test
     public void testScanIntegersWithInitialValue() {
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
 
         Observable<Integer> observable = Observable.from(1, 2, 3);
 
@@ -65,7 +65,7 @@ public class OperationScanTest {
     @Test
     public void testScanIntegersWithoutInitialValue() {
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Integer> observer = mock(Subscriber.class);
 
         Observable<Integer> observable = Observable.from(1, 2, 3);
 
@@ -92,7 +92,7 @@ public class OperationScanTest {
     @Test
     public void testScanIntegersWithoutInitialValueAndOnlyOneValue() {
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Integer> observer = mock(Subscriber.class);
 
         Observable<Integer> observable = Observable.from(1);
 

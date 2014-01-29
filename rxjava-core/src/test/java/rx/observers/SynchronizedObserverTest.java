@@ -33,14 +33,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
 
 public class SynchronizedObserverTest {
 
     @Mock
-    Observer<String> observer;
+    Subscriber<String> observer;
 
     @Before
     public void before() {
@@ -360,10 +360,10 @@ public class SynchronizedObserverTest {
      */
     public static class OnNextThread implements Runnable {
 
-        private final Observer<String> Observer;
+        private final Subscriber<String> Observer;
         private final int numStringsToSend;
 
-        OnNextThread(Observer<String> Observer, int numStringsToSend) {
+        OnNextThread(Subscriber<String> Observer, int numStringsToSend) {
             this.Observer = Observer;
             this.numStringsToSend = numStringsToSend;
         }
@@ -381,11 +381,11 @@ public class SynchronizedObserverTest {
      */
     public static class CompletionThread implements Runnable {
 
-        private final Observer<String> Observer;
+        private final Subscriber<String> Observer;
         private final TestConcurrencyObserverEvent event;
         private final Future<?>[] waitOnThese;
 
-        CompletionThread(Observer<String> Observer, TestConcurrencyObserverEvent event, Future<?>... waitOnThese) {
+        CompletionThread(Subscriber<String> Observer, TestConcurrencyObserverEvent event, Future<?>... waitOnThese) {
             this.Observer = Observer;
             this.event = event;
             this.waitOnThese = waitOnThese;
@@ -420,7 +420,7 @@ public class SynchronizedObserverTest {
         onCompleted, onError, onNext
     }
 
-    private static class TestConcurrencyObserver extends Observer<String> {
+    private static class TestConcurrencyObserver extends Subscriber<String> {
 
         /**
          * used to store the order and number of events received
@@ -524,7 +524,7 @@ public class SynchronizedObserverTest {
 
         }
 
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription onSubscribe(final Subscriber<? super String> observer) {
             System.out.println("TestSingleThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -578,7 +578,7 @@ public class SynchronizedObserverTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription onSubscribe(final Subscriber<? super String> observer) {
             System.out.println("TestMultiThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -645,7 +645,7 @@ public class SynchronizedObserverTest {
         }
     }
 
-    private static class BusyObserver extends Observer<String> {
+    private static class BusyObserver extends Subscriber<String> {
         volatile boolean onCompleted = false;
         volatile boolean onError = false;
         AtomicInteger onNextCount = new AtomicInteger();

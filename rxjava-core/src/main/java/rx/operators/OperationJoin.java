@@ -20,7 +20,7 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
@@ -51,7 +51,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
     }
 
     @Override
-    public Subscription onSubscribe(Observer<? super R> t1) {
+    public Subscription onSubscribe(Subscriber<? super R> t1) {
         SerialSubscription cancel = new SerialSubscription();
         ResultSink result = new ResultSink(t1, cancel);
         cancel.setSubscription(result.run());
@@ -68,10 +68,10 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
         boolean rightDone;
         int rightId;
         final Map<Integer, TRight> rightMap = new HashMap<Integer, TRight>();
-        final Observer<? super R> observer;
+        final Subscriber<? super R> observer;
         final Subscription cancel;
 
-        public ResultSink(Observer<? super R> observer, Subscription cancel) {
+        public ResultSink(Subscriber<? super R> observer, Subscription cancel) {
             this.observer = observer;
             this.cancel = cancel;
         }
@@ -90,7 +90,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
         }
 
         /** Observes the left values. */
-        class LeftObserver extends Observer<TLeft> {
+        class LeftObserver extends Subscriber<TLeft> {
             final Subscription self;
 
             public LeftObserver(Subscription self) {
@@ -165,7 +165,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
             }
 
             /** Observes the left duration. */
-            class LeftDurationObserver extends Observer<TLeftDuration> {
+            class LeftDurationObserver extends Subscriber<TLeftDuration> {
                 final int id;
                 final Subscription handle;
 
@@ -193,7 +193,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
         }
 
         /** Observes the right values. */
-        class RightObserver extends Observer<TRight> {
+        class RightObserver extends Subscriber<TRight> {
             final Subscription self;
 
             public RightObserver(Subscription self) {
@@ -268,7 +268,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
             }
 
             /** Observe the right duration. */
-            class RightDurationObserver extends Observer<TRightDuration> {
+            class RightDurationObserver extends Subscriber<TRightDuration> {
                 final int id;
                 final Subscription handle;
 

@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Func2;
 
@@ -37,7 +37,7 @@ public class OperatorToObservableSortedListTest {
         Observable<List<Integer>> observable = w.lift(new OperatorToObservableSortedList<Integer>());
 
         @SuppressWarnings("unchecked")
-        Observer<List<Integer>> observer = mock(Observer.class);
+        Subscriber<List<Integer>> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<List<Integer>>(observer));
         verify(observer, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
         verify(observer, Mockito.never()).onError(any(Throwable.class));
@@ -57,7 +57,7 @@ public class OperatorToObservableSortedListTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Observer<List<Integer>> observer = mock(Observer.class);
+        Subscriber<List<Integer>> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<List<Integer>>(observer));
         verify(observer, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
         verify(observer, Mockito.never()).onError(any(Throwable.class));

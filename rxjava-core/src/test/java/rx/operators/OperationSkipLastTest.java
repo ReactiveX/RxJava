@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.schedulers.TestScheduler;
 import rx.observers.TestObserver;
 import rx.operators.OperationSkipTest.CustomException;
@@ -39,7 +39,7 @@ public class OperationSkipLastTest {
         Observable<String> observable = Observable.create(skipLast(w, 2));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
         verify(observer, never()).onNext(any(String.class));
         verify(observer, never()).onError(any(Throwable.class));
@@ -52,7 +52,7 @@ public class OperationSkipLastTest {
         Observable<String> observable = Observable.create(skipLast(w, 2));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         InOrder inOrder = inOrder(observer);
         observable.subscribe(new TestObserver<String>(observer));
         inOrder.verify(observer, never()).onNext("two");
@@ -68,7 +68,7 @@ public class OperationSkipLastTest {
         Observable<String> observable = Observable.create(skipLast(w, 2));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
         verify(observer, never()).onNext(any(String.class));
         verify(observer, never()).onError(any(Throwable.class));
@@ -81,7 +81,7 @@ public class OperationSkipLastTest {
         Observable<String> observable = Observable.create(skipLast(w, 0));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
@@ -95,7 +95,7 @@ public class OperationSkipLastTest {
         Observable<String> observable = Observable.create(skipLast(w, 1));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext(null);
@@ -110,7 +110,7 @@ public class OperationSkipLastTest {
         Observable<String> observable = Observable.create(skipLast(w, -1));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
         verify(observer, never()).onNext(any(String.class));
         verify(observer, times(1)).onError(
@@ -126,7 +126,7 @@ public class OperationSkipLastTest {
 
         Observable<Integer> result = source.toObservable().skipLast(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         result.subscribe(new TestObserver<Object>(o));
 
@@ -164,7 +164,7 @@ public class OperationSkipLastTest {
 
         Observable<Integer> result = source.toObservable().skipLast(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         result.subscribe(new TestObserver<Object>(o));
 
@@ -189,7 +189,7 @@ public class OperationSkipLastTest {
 
         Observable<Integer> result = source.toObservable().skipLast(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         result.subscribe(new TestObserver<Object>(o));
 

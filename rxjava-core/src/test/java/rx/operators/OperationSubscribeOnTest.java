@@ -22,7 +22,7 @@ import static rx.operators.OperationSubscribeOn.*;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.observers.TestObserver;
@@ -40,7 +40,7 @@ public class OperationSubscribeOnTest {
 
         Scheduler scheduler = spy(OperatorTester.forwardingScheduler(Schedulers.immediate()));
 
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Integer> observer = mock(Subscriber.class);
         Subscription subscription = Observable.create(subscribeOn(w, scheduler)).subscribe(new TestObserver<Integer>(observer));
 
         verify(scheduler, times(1)).schedule(isNull(), any(Func2.class));

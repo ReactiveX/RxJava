@@ -24,7 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.util.functions.Func2;
@@ -142,7 +142,7 @@ public class OperationCombineLatest {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super R> t1) {
+        public Subscription onSubscribe(Subscriber<? super R> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
             Collector collector = new Collector(t1, csub, sources.size());
@@ -170,7 +170,7 @@ public class OperationCombineLatest {
          * The collector that combines the latest values from many sources.
          */
         final class Collector {
-            final Observer<? super R> observer;
+            final Subscriber<? super R> observer;
             final Subscription cancel;
             final Lock lock;
             final Object[] values;
@@ -183,7 +183,7 @@ public class OperationCombineLatest {
             /** Number of completed source observers. */
             int completedCount;
 
-            public Collector(Observer<? super R> observer, Subscription cancel, int count) {
+            public Collector(Subscriber<? super R> observer, Subscription cancel, int count) {
                 this.observer = observer;
                 this.cancel = cancel;
                 this.values = new Object[count];
@@ -275,7 +275,7 @@ public class OperationCombineLatest {
         /**
          * Observes a specific source and communicates with the collector.
          */
-        final class SourceObserver extends Observer<T> {
+        final class SourceObserver extends Subscriber<T> {
             final SafeObservableSubscription self;
             final Collector collector;
             final int index;

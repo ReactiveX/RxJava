@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -62,7 +62,7 @@ public final class OperationThrottleFirst {
     public static <T> OnSubscribeFunc<T> throttleFirst(final Observable<T> items, final long windowDuration, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
+            public Subscription onSubscribe(Subscriber<? super T> observer) {
 
                 final AtomicLong lastOnNext = new AtomicLong(0);
                 final long timeInMilliseconds = unit.toMillis(windowDuration);

@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
@@ -37,20 +37,20 @@ import rx.util.functions.Func1;
 public class OperationDebounceTest {
 
     private TestScheduler scheduler;
-    private Observer<String> observer;
+    private Subscriber<String> observer;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() {
         scheduler = new TestScheduler();
-        observer = mock(Observer.class);
+        observer = mock(Subscriber.class);
     }
 
     @Test
     public void testDebounceWithCompleted() {
         Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription onSubscribe(Subscriber<? super String> observer) {
                 publishNext(observer, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
                 publishNext(observer, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
                 publishNext(observer, 900, "three");   // Should be skipped since onCompleted will arrive before the timeout expires.
@@ -77,7 +77,7 @@ public class OperationDebounceTest {
     public void testDebounceNeverEmits() {
         Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription onSubscribe(Subscriber<? super String> observer) {
                 // all should be skipped since they are happening faster than the 200ms timeout
                 publishNext(observer, 100, "a");    // Should be skipped
                 publishNext(observer, 200, "b");    // Should be skipped
@@ -108,7 +108,7 @@ public class OperationDebounceTest {
     public void testDebounceWithError() {
         Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription onSubscribe(Subscriber<? super String> observer) {
                 Exception error = new TestException();
                 publishNext(observer, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
                 publishNext(observer, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.
@@ -131,7 +131,7 @@ public class OperationDebounceTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    private <T> void publishCompleted(final Observer<T> observer, long delay) {
+    private <T> void publishCompleted(final Subscriber<T> observer, long delay) {
         scheduler.schedule(new Action0() {
             @Override
             public void call() {
@@ -140,7 +140,7 @@ public class OperationDebounceTest {
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishError(final Observer<T> observer, long delay, final Exception error) {
+    private <T> void publishError(final Subscriber<T> observer, long delay, final Exception error) {
         scheduler.schedule(new Action0() {
             @Override
             public void call() {
@@ -149,7 +149,7 @@ public class OperationDebounceTest {
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishNext(final Observer<T> observer, final long delay, final T value) {
+    private <T> void publishNext(final Subscriber<T> observer, final long delay, final T value) {
         scheduler.schedule(new Action0() {
             @Override
             public void call() {
@@ -175,7 +175,7 @@ public class OperationDebounceTest {
         };
 
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
         InOrder inOrder = inOrder(o);
 
         source.toObservable().debounce(debounceSel).subscribe(new TestObserver<Object>(o));
@@ -212,7 +212,7 @@ public class OperationDebounceTest {
         };
 
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         source.toObservable().debounce(debounceSel).subscribe(new TestObserver<Object>(o));
 
@@ -235,7 +235,7 @@ public class OperationDebounceTest {
         };
 
         @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         source.toObservable().debounce(debounceSel).subscribe(new TestObserver<Object>(o));
 

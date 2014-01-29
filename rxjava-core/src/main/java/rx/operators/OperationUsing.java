@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.SafeObserver;
 import rx.subscriptions.CompositeSubscription;
@@ -35,7 +35,7 @@ public class OperationUsing {
             final Func1<RESOURCE, Observable<T>> observableFactory) {
         return new OnSubscribeFunc<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
+            public Subscription onSubscribe(Subscriber<? super T> observer) {
                 Subscription resourceSubscription = Subscriptions.empty();
                 try {
                     RESOURCE resource = resourceFactory.call();

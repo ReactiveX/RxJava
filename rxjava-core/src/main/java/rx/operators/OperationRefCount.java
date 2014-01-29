@@ -16,7 +16,7 @@
 package rx.operators;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.Subscriptions;
@@ -42,7 +42,7 @@ public final class OperationRefCount<T> {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public Subscription onSubscribe(Subscriber<? super T> observer) {
             final Subscription subscription = innerConnectableObservable.subscribe(observer);
             synchronized (gate) {
                 if (count++ == 0) {

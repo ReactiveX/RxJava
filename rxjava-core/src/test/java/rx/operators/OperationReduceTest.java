@@ -25,7 +25,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -33,7 +33,7 @@ import rx.util.functions.Functions;
 
 public class OperationReduceTest {
     @Mock
-    Observer<Object> observer;
+    Subscriber<Object> observer;
 
     @Before
     public void before() {

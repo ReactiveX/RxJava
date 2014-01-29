@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.operators.OperationReduceTest.CustomException;
@@ -46,7 +46,7 @@ public class OperationZipTest {
     PublishSubject<String> s2;
     Observable<String> zipped;
 
-    Observer<String> observer;
+    Subscriber<String> observer;
     InOrder inOrder;
 
     @Before
@@ -63,7 +63,7 @@ public class OperationZipTest {
         s2 = PublishSubject.create();
         zipped = Observable.zip(s1.toObservable(), s2.toObservable(), concat2Strings);
 
-        observer = mock(Observer.class);
+        observer = mock(Subscriber.class);
         inOrder = inOrder(observer);
 
         zipped.subscribe(new TestObserver<String>(observer));
@@ -76,7 +76,7 @@ public class OperationZipTest {
         //Func3<String, Integer, int[], String>
 
         /* define a Observer to receive aggregated events */
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
 
         @SuppressWarnings("rawtypes")
         Collection ws = java.util.Collections.singleton(Observable.from("one", "two"));
@@ -92,7 +92,7 @@ public class OperationZipTest {
     /* mock calls don't do generics */
     @Test
     public void testZippingDifferentLengthObservableSequences1() {
-        Observer<String> w = mock(Observer.class);
+        Subscriber<String> w = mock(Subscriber.class);
 
         TestObservable w1 = new TestObservable();
         TestObservable w2 = new TestObservable();
@@ -126,7 +126,7 @@ public class OperationZipTest {
     @Test
     public void testZippingDifferentLengthObservableSequences2() {
         @SuppressWarnings("unchecked")
-        Observer<String> w = mock(Observer.class);
+        Subscriber<String> w = mock(Subscriber.class);
 
         TestObservable w1 = new TestObservable();
         TestObservable w2 = new TestObservable();
@@ -185,7 +185,7 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
 
         Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
@@ -222,7 +222,7 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
 
         Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
@@ -252,7 +252,7 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<Integer> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
 
         Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
@@ -283,7 +283,7 @@ public class OperationZipTest {
         PublishSubject<Integer> r2 = PublishSubject.create();
         PublishSubject<List<Integer>> r3 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
 
         Observable.zip(r1.toObservable(), r2.toObservable(), r3.toObservable(), zipr3).subscribe(new TestObserver<String>(observer));
 
@@ -304,7 +304,7 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
 
         Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
@@ -341,7 +341,7 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
 
         Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
@@ -370,7 +370,7 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
 
         Subscription subscription = Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
@@ -399,7 +399,7 @@ public class OperationZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
 
         Observable.zip(r1.toObservable(), r2.toObservable(), zipr2).subscribe(new TestObserver<String>(observer));
 
@@ -429,7 +429,7 @@ public class OperationZipTest {
         Func2<String, Integer, String> zipr = getConcatStringIntegerZipr();
 
         /* define a Observer to receive aggregated events */
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
 
         Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2, 3, 4), zipr));
         w.subscribe(new TestObserver<String>(observer));
@@ -448,7 +448,7 @@ public class OperationZipTest {
         Func3<String, Integer, int[], String> zipr = getConcatStringIntegerIntArrayZipr();
 
         /* define a Observer to receive aggregated events */
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
 
         Observable<String> w = Observable.create(zip(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), zipr));
         w.subscribe(new TestObserver<String>(observer));
@@ -464,7 +464,7 @@ public class OperationZipTest {
         Func2<Integer, Integer, Integer> zipr = getDivideZipr();
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Integer> observer = mock(Subscriber.class);
 
         Observable<Integer> w = Observable.create(zip(Observable.from(10, 20, 30), Observable.from(0, 1, 2), zipr));
         w.subscribe(new TestObserver<Integer>(observer));
@@ -478,7 +478,7 @@ public class OperationZipTest {
         PublishSubject<String> oB = PublishSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> obs = mock(Observer.class);
+        Subscriber<String> obs = mock(Subscriber.class);
 
         Observable<String> o = Observable.create(zip(oA.toObservable(), oB.toObservable(), getConcat2Strings()));
         o.subscribe(new TestObserver<String>(obs));
@@ -529,7 +529,7 @@ public class OperationZipTest {
         PublishSubject<String> oB = PublishSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> obs = mock(Observer.class);
+        Subscriber<String> obs = mock(Subscriber.class);
 
         Observable<String> o = Observable.create(zip(oA.toObservable(), oB.toObservable(), getConcat2Strings()));
         o.subscribe(new TestObserver<String>(obs));
@@ -666,10 +666,10 @@ public class OperationZipTest {
 
     private static class TestObservable implements Observable.OnSubscribeFunc<String> {
 
-        Observer<? super String> observer;
+        Subscriber<? super String> observer;
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> Observer) {
+        public Subscription onSubscribe(Subscriber<? super String> Observer) {
             // just store the variable where it can be accessed so we can manually trigger it
             this.observer = Observer;
             return Subscriptions.empty();
@@ -765,7 +765,7 @@ public class OperationZipTest {
     public void testZipIterableSameSize() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> o = mock(Observer.class);
+        Subscriber<String> o = mock(Subscriber.class);
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
@@ -790,7 +790,7 @@ public class OperationZipTest {
     public void testZipIterableEmptyFirstSize() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> o = mock(Observer.class);
+        Subscriber<String> o = mock(Subscriber.class);
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
@@ -810,7 +810,7 @@ public class OperationZipTest {
     public void testZipIterableEmptySecond() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> o = mock(Observer.class);
+        Subscriber<String> o = mock(Subscriber.class);
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = Arrays.asList();
@@ -832,7 +832,7 @@ public class OperationZipTest {
     public void testZipIterableFirstShorter() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> o = mock(Observer.class);
+        Subscriber<String> o = mock(Subscriber.class);
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
@@ -855,7 +855,7 @@ public class OperationZipTest {
     public void testZipIterableSecondShorter() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> o = mock(Observer.class);
+        Subscriber<String> o = mock(Subscriber.class);
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = Arrays.asList("1", "2");
@@ -879,7 +879,7 @@ public class OperationZipTest {
     public void testZipIterableFirstThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> o = mock(Observer.class);
+        Subscriber<String> o = mock(Subscriber.class);
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
@@ -902,7 +902,7 @@ public class OperationZipTest {
     public void testZipIterableIteratorThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> o = mock(Observer.class);
+        Subscriber<String> o = mock(Subscriber.class);
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = new Iterable<String>() {
@@ -929,7 +929,7 @@ public class OperationZipTest {
     public void testZipIterableHasNextThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> o = mock(Observer.class);
+        Subscriber<String> o = mock(Subscriber.class);
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = new Iterable<String>() {
@@ -979,7 +979,7 @@ public class OperationZipTest {
     public void testZipIterableNextThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
-        Observer<String> o = mock(Observer.class);
+        Subscriber<String> o = mock(Subscriber.class);
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = new Iterable<String>() {
@@ -1032,7 +1032,7 @@ public class OperationZipTest {
         // we need to wrap "mock(Observer.class)" with an observer instance
         // which is in the package "rx.operators".
         @SuppressWarnings("unchecked")
-        final Observer<Integer> observer = mock(Observer.class);
+        final Subscriber<Integer> observer = mock(Subscriber.class);
 
         Observable.zip(Observable.from(1),
                 Observable.from(1), new Func2<Integer, Integer, Integer>() {
@@ -1040,7 +1040,7 @@ public class OperationZipTest {
                     public Integer call(Integer a, Integer b) {
                         return a + b;
                     }
-                }).subscribe(new Observer<Integer>() {
+                }).subscribe(new Subscriber<Integer>() {
 
             @Override
             public void onCompleted() {

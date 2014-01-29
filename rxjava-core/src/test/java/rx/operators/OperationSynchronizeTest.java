@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 
@@ -38,7 +38,7 @@ public class OperationSynchronizeTest {
         Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
         @SuppressWarnings("unchecked")
-        Observer<String> w = mock(Observer.class);
+        Subscriber<String> w = mock(Subscriber.class);
         Subscription ws = st.subscribe(new TestObserver<String>(w));
 
         System.out.println("ws: " + ws);
@@ -60,7 +60,7 @@ public class OperationSynchronizeTest {
         Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
         @SuppressWarnings("unchecked")
-        Observer<String> w = mock(Observer.class);
+        Subscriber<String> w = mock(Subscriber.class);
         Subscription ws = st.subscribe(new TestObserver<String>(w));
 
         t.sendOnNext("one");
@@ -80,7 +80,7 @@ public class OperationSynchronizeTest {
         Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
         @SuppressWarnings("unchecked")
-        Observer<String> w = mock(Observer.class);
+        Subscriber<String> w = mock(Subscriber.class);
         Subscription ws = st.subscribe(new TestObserver<String>(w));
 
         t.sendOnNext("one");
@@ -100,7 +100,7 @@ public class OperationSynchronizeTest {
         Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
         @SuppressWarnings("unchecked")
-        Observer<String> w = mock(Observer.class);
+        Subscriber<String> w = mock(Subscriber.class);
         @SuppressWarnings("unused")
         Subscription ws = st.subscribe(new TestObserver<String>(w));
 
@@ -122,7 +122,7 @@ public class OperationSynchronizeTest {
         Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
         @SuppressWarnings("unchecked")
-        Observer<String> w = mock(Observer.class);
+        Subscriber<String> w = mock(Subscriber.class);
         @SuppressWarnings("unused")
         Subscription ws = st.subscribe(new TestObserver<String>(w));
 
@@ -144,7 +144,7 @@ public class OperationSynchronizeTest {
         Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
         @SuppressWarnings("unchecked")
-        Observer<String> w = mock(Observer.class);
+        Subscriber<String> w = mock(Subscriber.class);
         @SuppressWarnings("unused")
         Subscription ws = st.subscribe(new TestObserver<String>(w));
 
@@ -167,7 +167,7 @@ public class OperationSynchronizeTest {
         Observable<String> st = Observable.create(synchronize(Observable.create(t)));
 
         @SuppressWarnings("unchecked")
-        Observer<String> w = mock(Observer.class);
+        Subscriber<String> w = mock(Subscriber.class);
         @SuppressWarnings("unused")
         Subscription ws = st.subscribe(new TestObserver<String>(w));
 
@@ -185,7 +185,7 @@ public class OperationSynchronizeTest {
      */
     private static class TestObservable implements Observable.OnSubscribeFunc<String> {
 
-        Observer<? super String> observer = null;
+        Subscriber<? super String> observer = null;
 
         public TestObservable(Subscription s) {
         }
@@ -206,7 +206,7 @@ public class OperationSynchronizeTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription onSubscribe(final Subscriber<? super String> observer) {
             this.observer = observer;
             return new Subscription() {
 

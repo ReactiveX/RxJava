@@ -30,7 +30,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
@@ -46,7 +46,7 @@ public class OperationObserveOnTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testObserveOn() {
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Integer> observer = mock(Subscriber.class);
         Observable.create(observeOn(Observable.from(1, 2, 3), Schedulers.immediate())).subscribe(new TestObserver<Integer>(observer));
 
         verify(observer, times(1)).onNext(1);
@@ -60,7 +60,7 @@ public class OperationObserveOnTest {
     public void testOrdering() throws InterruptedException {
         Observable<String> obs = Observable.from("one", null, "two", "three", "four");
 
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
 
         InOrder inOrder = inOrder(observer);
 
@@ -95,7 +95,7 @@ public class OperationObserveOnTest {
         System.out.println("Main Thread: " + Thread.currentThread().getName());
         Observable<String> obs = Observable.from("one", null, "two", "three", "four");
 
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         final String parentThreadName = Thread.currentThread().getName();
 
         final CountDownLatch completedLatch = new CountDownLatch(1);
@@ -149,9 +149,9 @@ public class OperationObserveOnTest {
         Observable<Integer> o2 = o.observeOn(scheduler);
 
         @SuppressWarnings("unchecked")
-        Observer<Object> observer1 = mock(Observer.class);
+        Subscriber<Object> observer1 = mock(Subscriber.class);
         @SuppressWarnings("unchecked")
-        Observer<Object> observer2 = mock(Observer.class);
+        Subscriber<Object> observer2 = mock(Subscriber.class);
 
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);
@@ -187,9 +187,9 @@ public class OperationObserveOnTest {
         Observable<Integer> o2 = o.observeOn(scheduler2);
 
         @SuppressWarnings("unchecked")
-        Observer<Object> observer1 = mock(Observer.class);
+        Subscriber<Object> observer1 = mock(Subscriber.class);
         @SuppressWarnings("unchecked")
-        Observer<Object> observer2 = mock(Observer.class);
+        Subscriber<Object> observer2 = mock(Subscriber.class);
 
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);

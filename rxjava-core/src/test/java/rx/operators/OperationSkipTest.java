@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.schedulers.TestScheduler;
 import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
@@ -38,7 +38,7 @@ public class OperationSkipTest {
         Observable<String> skip = Observable.create(skip(w, 2));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         skip.subscribe(new TestObserver<String>(observer));
         verify(observer, never()).onNext("one");
         verify(observer, never()).onNext("two");
@@ -53,7 +53,7 @@ public class OperationSkipTest {
         Observable<String> skip = Observable.create(skip(w, 1));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         skip.subscribe(new TestObserver<String>(observer));
         verify(observer, never()).onNext("one");
         verify(observer, times(1)).onNext("two");
@@ -70,7 +70,7 @@ public class OperationSkipTest {
 
         Observable<Integer> result = source.toObservable().skip(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         result.subscribe(new TestObserver<Object>(o));
 
@@ -107,7 +107,7 @@ public class OperationSkipTest {
 
         Observable<Integer> result = source.toObservable().skip(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         result.subscribe(new TestObserver<Object>(o));
 
@@ -137,7 +137,7 @@ public class OperationSkipTest {
 
         Observable<Integer> result = source.toObservable().skip(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         result.subscribe(new TestObserver<Object>(o));
 
@@ -164,7 +164,7 @@ public class OperationSkipTest {
 
         Observable<Integer> result = source.toObservable().skip(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> o = mock(Subscriber.class);
 
         result.subscribe(new TestObserver<Object>(o));
 

@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -31,7 +31,7 @@ import rx.util.functions.Func2;
 public class OperationSkipWhileTest {
 
     @SuppressWarnings("unchecked")
-    Observer<Integer> w = mock(Observer.class);
+    Subscriber<Integer> w = mock(Subscriber.class);
 
     private static final Func1<Integer, Boolean> LESS_THAN_FIVE = new Func1<Integer, Boolean>() {
         @Override

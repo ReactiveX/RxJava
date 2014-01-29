@@ -25,7 +25,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.util.Timestamped;
@@ -69,12 +69,12 @@ public class OperationSkipLast {
             this.source = source;
         }
 
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription onSubscribe(final Subscriber<? super T> observer) {
             if (count < 0) {
                 throw new IndexOutOfBoundsException(
                         "count could not be negative");
             }
-            return source.subscribe(new Observer<T>(observer) {
+            return source.subscribe(new Subscriber<T>(observer) {
 
                 private final ReentrantLock lock = new ReentrantLock();
 
@@ -147,18 +147,18 @@ public class OperationSkipLast {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription onSubscribe(Subscriber<? super T> t1) {
             return source.subscribe(new SourceObserver<T>(t1, timeInMillis, scheduler));
         }
 
         /** Observes the source. */
-        private static final class SourceObserver<T> extends Observer<T> {
-            final Observer<? super T> observer;
+        private static final class SourceObserver<T> extends Subscriber<T> {
+            final Subscriber<? super T> observer;
             final long timeInMillis;
             final Scheduler scheduler;
             List<Timestamped<T>> buffer = new ArrayList<Timestamped<T>>();
 
-            public SourceObserver(Observer<? super T> observer,
+            public SourceObserver(Subscriber<? super T> observer,
                     long timeInMillis, Scheduler scheduler) {
                 this.observer = observer;
                 this.timeInMillis = timeInMillis;

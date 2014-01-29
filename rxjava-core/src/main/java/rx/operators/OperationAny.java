@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
@@ -79,8 +79,8 @@ public final class OperationAny {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super Boolean> observer) {
-            return source.subscribe(new Observer<T>(observer) {
+        public Subscription onSubscribe(final Subscriber<? super Boolean> observer) {
+            return source.subscribe(new Subscriber<T>(observer) {
 
                 private final AtomicBoolean hasEmitted = new AtomicBoolean(false);
 

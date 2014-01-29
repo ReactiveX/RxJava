@@ -15,7 +15,7 @@
  */
 package rx.observers;
 
-import rx.Observer;
+import rx.Subscriber;
 import rx.operators.SafeObservableSubscription;
 
 /**
@@ -30,7 +30,7 @@ import rx.operators.SafeObservableSubscription;
  * 
  * @param <T>
  */
-public final class SynchronizedObserver<T> extends Observer<T> {
+public final class SynchronizedObserver<T> extends Subscriber<T> {
 
     /**
      * Intrinsic synchronized locking with double-check short-circuiting was chosen after testing several other implementations.
@@ -46,19 +46,19 @@ public final class SynchronizedObserver<T> extends Observer<T> {
      * // TODO composing of this class should rarely happen now with updated design so this decision should be revisited
      */
 
-    private final Observer<? super T> observer;
+    private final Subscriber<? super T> observer;
     private final SafeObservableSubscription subscription;
     private volatile boolean finishRequested = false;
     private volatile boolean finished = false;
     private volatile Object lock;
 
-    public SynchronizedObserver(Observer<? super T> Observer, SafeObservableSubscription subscription) {
+    public SynchronizedObserver(Subscriber<? super T> Observer, SafeObservableSubscription subscription) {
         this.observer = Observer;
         this.subscription = subscription;
         this.lock = this;
     }
 
-    public SynchronizedObserver(Observer<? super T> Observer, SafeObservableSubscription subscription, Object lock) {
+    public SynchronizedObserver(Subscriber<? super T> Observer, SafeObservableSubscription subscription, Object lock) {
         this.observer = Observer;
         this.subscription = subscription;
         this.lock = lock;
@@ -69,7 +69,7 @@ public final class SynchronizedObserver<T> extends Observer<T> {
      * 
      * @param Observer
      */
-    public SynchronizedObserver(Observer<? super T> Observer) {
+    public SynchronizedObserver(Subscriber<? super T> Observer) {
         this(Observer, new SafeObservableSubscription());
     }
 

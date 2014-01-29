@@ -27,7 +27,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
@@ -37,7 +37,7 @@ import rx.util.functions.Func1;
 public class BlockingObservableTest {
 
     @Mock
-    Observer<Integer> w;
+    Subscriber<Integer> w;
 
     @Before
     public void before() {
@@ -262,7 +262,7 @@ public class BlockingObservableTest {
         BlockingObservable<String> obs = BlockingObservable.from(Observable.create(new Observable.OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public Subscription onSubscribe(Subscriber<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new TestException());
                 return Subscriptions.empty();
@@ -285,7 +285,7 @@ public class BlockingObservableTest {
             BlockingObservable.from(Observable.create(new Observable.OnSubscribeFunc<String>() {
 
                 @Override
-                public Subscription onSubscribe(final Observer<? super String> observer) {
+                public Subscription onSubscribe(final Subscriber<? super String> observer) {
                     final BooleanSubscription subscription = new BooleanSubscription();
                     new Thread(new Runnable() {
 

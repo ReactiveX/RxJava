@@ -21,12 +21,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
+import rx.Subscriber;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
 
 /**
- * Subject that, once and {@link Observer} has subscribed, publishes all subsequent events to the subscriber.
+ * Subject that, once and {@link Subscriber} has subscribed, publishes all subsequent events to the subscriber.
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.PublishSubject.png">
  * <p>
@@ -108,7 +108,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
                 lastNotification.set(Notification.<T>createOnCompleted());
-                for (Observer<? super T> o : observers) {
+                for (Subscriber<? super T> o : observers) {
                     o.onCompleted();
                 }
             }
@@ -122,7 +122,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
                 lastNotification.set(Notification.<T>createOnError(e));
-                for (Observer<? super T> o : observers) {
+                for (Subscriber<? super T> o : observers) {
                     o.onError(e);
                 }
             }
@@ -132,7 +132,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
     @Override
     public void onNext(T v) {
-        for (Observer<? super T> o : subscriptionManager.rawSnapshot()) {
+        for (Subscriber<? super T> o : subscriptionManager.rawSnapshot()) {
             o.onNext(v);
         }
     }

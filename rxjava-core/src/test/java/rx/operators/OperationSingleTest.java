@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
@@ -33,7 +33,7 @@ public class OperationSingleTest {
         Observable<Integer> observable = Observable.from(1).single();
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -47,7 +47,7 @@ public class OperationSingleTest {
         Observable<Integer> observable = Observable.from(1, 2).single();
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -61,7 +61,7 @@ public class OperationSingleTest {
         Observable<Integer> observable = Observable.<Integer> empty().single();
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -82,7 +82,7 @@ public class OperationSingleTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -103,7 +103,7 @@ public class OperationSingleTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -123,7 +123,7 @@ public class OperationSingleTest {
                     }
                 });
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -137,7 +137,7 @@ public class OperationSingleTest {
         Observable<Integer> observable = Observable.from(1).singleOrDefault(2);
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -152,7 +152,7 @@ public class OperationSingleTest {
                 3);
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -167,7 +167,7 @@ public class OperationSingleTest {
                 .singleOrDefault(1);
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -188,7 +188,7 @@ public class OperationSingleTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -209,7 +209,7 @@ public class OperationSingleTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -230,7 +230,7 @@ public class OperationSingleTest {
                 });
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        Subscriber<Integer> observer = (Subscriber<Integer>) mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
 
         InOrder inOrder = inOrder(observer);

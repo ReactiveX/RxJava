@@ -16,9 +16,9 @@
 package rx.subjects;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 
-public abstract class Subject<T, R> extends Observer<T> {
+public abstract class Subject<T, R> extends Subscriber<T> {
 
     public abstract Observable<R> toObservable();
 

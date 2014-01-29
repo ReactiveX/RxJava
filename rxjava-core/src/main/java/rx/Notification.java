@@ -142,7 +142,7 @@ public class Notification<T> {
         return getKind() == Kind.OnNext;
     }
 
-    public void accept(Observer<? super T> observer) {
+    public void accept(Subscriber<? super T> observer) {
         if (isOnNext()) {
             observer.onNext(getValue());
         } else if (isOnCompleted()) {

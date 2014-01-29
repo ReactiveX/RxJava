@@ -21,7 +21,7 @@ import static rx.operators.OperationDefaultIfEmpty.*;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 
 public class OperationDefaultIfEmptyTest {
@@ -33,7 +33,7 @@ public class OperationDefaultIfEmptyTest {
                 source, 10));
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Integer> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
         verify(observer, never()).onNext(10);
         verify(observer, times(1)).onNext(1);
@@ -51,7 +51,7 @@ public class OperationDefaultIfEmptyTest {
                 source, 10));
 
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Integer> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Integer>(observer));
         verify(observer, times(1)).onNext(10);
         verify(observer, never()).onError(

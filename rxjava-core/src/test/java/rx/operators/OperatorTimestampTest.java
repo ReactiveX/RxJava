@@ -27,7 +27,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
@@ -35,7 +35,7 @@ import rx.util.Timestamped;
 
 public class OperatorTimestampTest {
     @Mock
-    Observer<Object> observer;
+    Subscriber<Object> observer;
 
     @Before
     public void before() {

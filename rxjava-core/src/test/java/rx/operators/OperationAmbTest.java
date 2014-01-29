@@ -27,7 +27,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
@@ -49,7 +49,7 @@ public class OperationAmbTest {
 
             @Override
             public Subscription onSubscribe(
-                    final Observer<? super String> observer) {
+                    final Subscriber<? super String> observer) {
                 CompositeSubscription parentSubscription = new CompositeSubscription();
                 long delay = interval;
                 for (final String value : values) {
@@ -90,7 +90,7 @@ public class OperationAmbTest {
                 observable2, observable3));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Subscriber<String> observer = (Subscriber<String>) mock(Subscriber.class);
         o.subscribe(new TestObserver<String>(observer));
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
@@ -119,7 +119,7 @@ public class OperationAmbTest {
                 observable2, observable3));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Subscriber<String> observer = (Subscriber<String>) mock(Subscriber.class);
         o.subscribe(new TestObserver<String>(observer));
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
@@ -146,7 +146,7 @@ public class OperationAmbTest {
                 observable2, observable3));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Subscriber<String> observer = (Subscriber<String>) mock(Subscriber.class);
         o.subscribe(new TestObserver<String>(observer));
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);

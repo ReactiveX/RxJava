@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -74,7 +74,7 @@ public final class OperationTimeout {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public Subscription onSubscribe(final Subscriber<? super T> observer) {
             final AtomicBoolean terminated = new AtomicBoolean(false);
             final AtomicLong actual = new AtomicLong(0L);  // Required to handle race between onNext and timeout
             final SerialSubscription serial = new SerialSubscription();
@@ -107,7 +107,7 @@ public final class OperationTimeout {
                 }
             };
             SafeObservableSubscription subscription = new SafeObservableSubscription();
-            composite.add(subscription.wrap(source.subscribe(new Observer<T>() {
+            composite.add(subscription.wrap(source.subscribe(new Subscriber<T>() {
                 @Override
                 public void onNext(T value) {
                     boolean onNextWins = false;
@@ -177,7 +177,7 @@ public final class OperationTimeout {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public Subscription onSubscribe(Subscriber<? super T> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
             SourceObserver<T, V> so = new SourceObserver<T, V>(t1, valueTimeout, other, csub);
@@ -197,8 +197,8 @@ public final class OperationTimeout {
         }
 
         /** Observe the source. */
-        private static final class SourceObserver<T, V> extends Observer<T> implements TimeoutCallback {
-            final Observer<? super T> observer;
+        private static final class SourceObserver<T, V> extends Subscriber<T> implements TimeoutCallback {
+            final Subscriber<? super T> observer;
             final Func1<? super T, ? extends Observable<V>> valueTimeout;
             final Observable<? extends T> other;
             final CompositeSubscription cancel;
@@ -207,7 +207,7 @@ public final class OperationTimeout {
             final SerialSubscription tsub;
             final TimeoutObserver<V> to;
 
-            public SourceObserver(Observer<? super T> observer, Func1<? super T, ? extends Observable<V>> valueTimeout, Observable<? extends T> other, CompositeSubscription cancel) {
+            public SourceObserver(Subscriber<? super T> observer, Func1<? super T, ? extends Observable<V>> valueTimeout, Observable<? extends T> other, CompositeSubscription cancel) {
                 this.observer = observer;
                 this.valueTimeout = valueTimeout;
                 this.other = other;
@@ -292,7 +292,7 @@ public final class OperationTimeout {
         }
 
         /** Observe the timeout. */
-        private static final class TimeoutObserver<V> extends Observer<V> {
+        private static final class TimeoutObserver<V> extends Subscriber<V> {
             final TimeoutCallback parent;
 
             public TimeoutObserver(TimeoutCallback parent) {

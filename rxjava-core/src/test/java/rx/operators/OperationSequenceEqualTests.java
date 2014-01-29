@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.util.functions.Func2;
 
@@ -132,7 +132,7 @@ public class OperationSequenceEqualTests {
 
     private void verifyResult(Observable<Boolean> observable, boolean result) {
         @SuppressWarnings("unchecked")
-        Observer<Boolean> observer = mock(Observer.class);
+        Subscriber<Boolean> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Boolean>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -143,7 +143,7 @@ public class OperationSequenceEqualTests {
 
     private void verifyError(Observable<Boolean> observable) {
         @SuppressWarnings("unchecked")
-        Observer<Boolean> observer = mock(Observer.class);
+        Subscriber<Boolean> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<Boolean>(observer));
 
         InOrder inOrder = inOrder(observer);

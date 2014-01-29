@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
@@ -42,8 +42,8 @@ public final class OperationFilter<T> {
             this.predicate = predicate;
         }
 
-        public Subscription onSubscribe(final Observer<? super T> observer) {
-            return that.subscribe(new Observer<T>(observer) {
+        public Subscription onSubscribe(final Subscriber<? super T> observer) {
+            return that.subscribe(new Subscriber<T>(observer) {
                 public void onNext(T value) {
                     try {
                         if (predicate.call(value)) {

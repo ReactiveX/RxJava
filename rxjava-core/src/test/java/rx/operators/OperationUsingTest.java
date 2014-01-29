@@ -24,7 +24,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.subscriptions.Subscriptions;
@@ -65,7 +65,7 @@ public class OperationUsingTest {
         };
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Subscriber<String> observer = (Subscriber<String>) mock(Subscriber.class);
         Observable<String> observable = Observable.create(using(
                 resourceFactory, observableFactory));
         observable.subscribe(new TestObserver<String>(observer));
@@ -115,7 +115,7 @@ public class OperationUsingTest {
         };
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Subscriber<String> observer = (Subscriber<String>) mock(Subscriber.class);
         Observable<String> observable = Observable.create(using(
                 resourceFactory, observableFactory));
         observable.subscribe(new TestObserver<String>(observer));
@@ -196,7 +196,7 @@ public class OperationUsingTest {
             public Observable<Integer> call(Subscription subscription) {
                 return Observable.create(new OnSubscribeFunc<Integer>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super Integer> t1) {
+                    public Subscription onSubscribe(Subscriber<? super Integer> t1) {
                         throw new TestException();
                     }
                 });

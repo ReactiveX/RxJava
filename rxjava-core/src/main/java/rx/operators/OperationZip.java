@@ -26,7 +26,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
@@ -142,7 +142,7 @@ public final class OperationZip {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super U> observer) {
+        public Subscription onSubscribe(final Subscriber<? super U> observer) {
 
             final CompositeSubscription composite = new CompositeSubscription();
 
@@ -150,7 +150,7 @@ public final class OperationZip {
 
             final List<ItemObserver<T>> all = new ArrayList<ItemObserver<T>>();
 
-            Observer<List<T>> o2 = new Observer<List<T>>(observer) {
+            Subscriber<List<T>> o2 = new Subscriber<List<T>>(observer) {
                 boolean done;
                 @Override
                 public void onCompleted() {
@@ -198,7 +198,7 @@ public final class OperationZip {
          * @param <T>
          *            the element type
          */
-        private static final class ItemObserver<T> extends Observer<T> {
+        private static final class ItemObserver<T> extends Subscriber<T> {
             /** Reader-writer lock. */
             protected final ReadWriteLock rwLock;
             /** The queue. */
@@ -214,7 +214,7 @@ public final class OperationZip {
             /** The source. */
             protected final Observable<? extends T> source;
             /** The observer. */
-            protected final Observer<? super List<T>> observer;
+            protected final Subscriber<? super List<T>> observer;
 
             /**
              * Constructor.
@@ -234,7 +234,7 @@ public final class OperationZip {
                     ReadWriteLock rwLock,
                     List<ItemObserver<T>> all,
                     Observable<? extends T> source,
-                    Observer<? super List<T>> observer,
+                    Subscriber<? super List<T>> observer,
                     Subscription cancel) {
                 this.rwLock = rwLock;
                 this.all = all;
@@ -353,7 +353,7 @@ public final class OperationZip {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super R> t1) {
+        public Subscription onSubscribe(Subscriber<? super R> t1) {
 
             Iterator<? extends U> it;
             boolean first;
@@ -378,13 +378,13 @@ public final class OperationZip {
         }
 
         /** Observe the source. */
-        private static final class SourceObserver<T, U, R> extends Observer<T> {
-            final Observer<? super R> observer;
+        private static final class SourceObserver<T, U, R> extends Subscriber<T> {
+            final Subscriber<? super R> observer;
             final Iterator<? extends U> other;
             final Func2<? super T, ? super U, ? extends R> zipFunction;
             final Subscription cancel;
 
-            public SourceObserver(Observer<? super R> observer, Iterator<? extends U> other,
+            public SourceObserver(Subscriber<? super R> observer, Iterator<? extends U> other,
                     Func2<? super T, ? super U, ? extends R> zipFunction, Subscription cancel) {
                 this.observer = observer;
                 this.other = other;

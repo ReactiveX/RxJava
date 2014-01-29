@@ -17,7 +17,7 @@
 package rx.operators;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -40,14 +40,14 @@ public class OperationRepeat<T> implements Observable.OnSubscribeFunc<T> {
     }
 
     @Override
-    public Subscription onSubscribe(final Observer<? super T> observer) {
+    public Subscription onSubscribe(final Subscriber<? super T> observer) {
         final CompositeSubscription compositeSubscription = new CompositeSubscription();
         final MultipleAssignmentSubscription innerSubscription = new MultipleAssignmentSubscription();
         compositeSubscription.add(innerSubscription);
         compositeSubscription.add(scheduler.schedule(new Action1<Action0>() {
             @Override
             public void call(final Action0 self) {
-                innerSubscription.set(source.subscribe(new Observer<T>(observer) {
+                innerSubscription.set(source.subscribe(new Subscriber<T>(observer) {
 
                     @Override
                     public void onCompleted() {

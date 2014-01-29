@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable.OnSubscribe;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
 import rx.subscriptions.Subscriptions;
@@ -42,7 +42,7 @@ import rx.util.functions.Action1;
     public OnSubscribe<T> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, final Action1<SubjectObserver<? super T>> onTerminated) {
         return new OnSubscribe<T>() {
             @Override
-            public void call(Observer<? super T> actualObserver) {
+            public void call(Subscriber<? super T> actualObserver) {
                 SubjectObserver<T> observer = new SubjectObserver<T>(actualObserver);
                 // invoke onSubscribe logic 
                 if (onSubscribe != null) {
@@ -226,12 +226,12 @@ import rx.util.functions.Action1;
         }
     }
 
-    protected static class SubjectObserver<T> extends Observer<T> {
+    protected static class SubjectObserver<T> extends Subscriber<T> {
 
-        private final Observer<? super T> actual;
+        private final Subscriber<? super T> actual;
         protected volatile boolean caughtUp = false;
 
-        SubjectObserver(Observer<? super T> actual) {
+        SubjectObserver(Subscriber<? super T> actual) {
             super(actual);
             this.actual = actual;
         }

@@ -31,7 +31,7 @@ public class ThrottleWithTimeoutTests {
     @Test
     public void testThrottle() {
         @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Integer> observer = mock(Subscriber.class);
         TestScheduler s = new TestScheduler();
         PublishSubject<Integer> o = PublishSubject.create();
         o.toObservable().throttleWithTimeout(500, TimeUnit.MILLISECONDS, s).subscribe(new TestObserver<Integer>(observer));

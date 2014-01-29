@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.subscriptions.Subscriptions;
@@ -35,7 +35,7 @@ public class OperationRetryTest {
     @Test
     public void testOriginFails() {
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(2));
         origin.subscribe(new TestObserver<String>(observer));
 
@@ -51,7 +51,7 @@ public class OperationRetryTest {
         int NUM_RETRIES = 1;
         int NUM_FAILURES = 2;
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
         Observable.create(retry(origin, NUM_RETRIES)).subscribe(new TestObserver<String>(observer));
 
@@ -71,7 +71,7 @@ public class OperationRetryTest {
         int NUM_RETRIES = 3;
         int NUM_FAILURES = 2;
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
         Observable.create(retry(origin, NUM_RETRIES)).subscribe(new TestObserver<String>(observer));
 
@@ -91,7 +91,7 @@ public class OperationRetryTest {
     public void testInfiniteRetry() {
         int NUM_FAILURES = 20;
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
         Observable.create(retry(origin)).subscribe(new TestObserver<String>(observer));
 
@@ -117,7 +117,7 @@ public class OperationRetryTest {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> o) {
+        public Subscription onSubscribe(Subscriber<? super String> o) {
             o.onNext("beginningEveryTime");
             if (count.incrementAndGet() <= numFailures) {
                 o.onError(new RuntimeException("forced failure: " + count.get()));

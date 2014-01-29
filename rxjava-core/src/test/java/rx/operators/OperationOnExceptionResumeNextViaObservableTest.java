@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.util.functions.Func1;
@@ -41,7 +41,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
         Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
 
         try {
@@ -70,7 +70,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
         Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
 
         try {
@@ -99,7 +99,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
         Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
 
         try {
@@ -128,7 +128,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
         Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
 
         try {
@@ -170,7 +170,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
         Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Subscriber<String> observer = mock(Subscriber.class);
         observable.subscribe(new TestObserver<String>(observer));
 
         try {
@@ -203,7 +203,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public Subscription onSubscribe(final Subscriber<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

@@ -26,7 +26,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
@@ -37,7 +37,7 @@ public class OperationTimeIntervalTest {
     private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
 
     @Mock
-    private Observer<TimeInterval<Integer>> observer;
+    private Subscriber<TimeInterval<Integer>> observer;
 
     private TestScheduler testScheduler;
     private PublishSubject<Integer> subject;

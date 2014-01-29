@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 
 /**
@@ -43,8 +43,8 @@ public class OperationSingle {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super T> observer) {
-                return source.subscribe(new Observer<T>(observer) {
+            public Subscription onSubscribe(final Subscriber<? super T> observer) {
+                return source.subscribe(new Subscriber<T>(observer) {
 
                     private T value;
                     private boolean isEmpty = true;

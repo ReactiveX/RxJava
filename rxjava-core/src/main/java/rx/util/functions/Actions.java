@@ -15,7 +15,7 @@
  */
 package rx.util.functions;
 
-import rx.Observer;
+import rx.Subscriber;
 
 /**
  * Utility class for the Action interfaces.
@@ -34,7 +34,7 @@ public final class Actions {
      *            the observer to use
      * @return an action which calls the observer's onNext method.
      */
-    public static <T> Action1<T> onNextFrom(final Observer<T> observer) {
+    public static <T> Action1<T> onNextFrom(final Subscriber<T> observer) {
         return new Action1<T>() {
             @Override
             public void call(T t1) {
@@ -52,7 +52,7 @@ public final class Actions {
      *            the observer to use
      * @return an action which calls the observer's onError method.
      */
-    public static <T> Action1<Throwable> onErrorFrom(final Observer<T> observer) {
+    public static <T> Action1<Throwable> onErrorFrom(final Subscriber<T> observer) {
         return new Action1<Throwable>() {
             @Override
             public void call(Throwable t1) {
@@ -70,7 +70,7 @@ public final class Actions {
      *            the observer to use
      * @return an action which calls the observer's onCompleted method.
      */
-    public static <T> Action0 onCompletedFrom(final Observer<T> observer) {
+    public static <T> Action0 onCompletedFrom(final Subscriber<T> observer) {
         return new Action0() {
             @Override
             public void call() {

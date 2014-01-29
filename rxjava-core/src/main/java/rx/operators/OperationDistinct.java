@@ -23,7 +23,7 @@ import java.util.Set;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -96,8 +96,8 @@ public final class OperationDistinct {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
-            return source.subscribe(new Observer<T>(observer) {
+        public Subscription onSubscribe(final Subscriber<? super T> observer) {
+            return source.subscribe(new Subscriber<T>(observer) {
                 private final Set<U> emittedKeys = new HashSet<U>();
 
                 @Override
@@ -134,8 +134,8 @@ public final class OperationDistinct {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
-            return source.subscribe(new Observer<T>(observer) {
+        public Subscription onSubscribe(final Subscriber<? super T> observer) {
+            return source.subscribe(new Subscriber<T>(observer) {
 
                 // due to the totally arbitrary equality comparator, we can't use anything more efficient than lists here 
                 private final List<U> emittedKeys = new ArrayList<U>();

@@ -24,12 +24,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
+import rx.Subscriber;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
 
 /**
- * Subject that retains all events and will replay them to an {@link Observer} that subscribes.
+ * Subject that retains all events and will replay them to an {@link Subscriber} that subscribes.
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.ReplaySubject.png">
  * <p>
@@ -98,11 +98,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         // single-producer, multi-consumer
         final History<T> history;
         // each Observer is tracked here for what events they have received
-        final ConcurrentHashMap<Observer<? super T>, Integer> replayState;
+        final ConcurrentHashMap<Subscriber<? super T>, Integer> replayState;
 
         public ReplayState(int initialCapacity) {
             history = new History<T>(initialCapacity);
-            replayState = new ConcurrentHashMap<Observer<? super T>, Integer>();
+            replayState = new ConcurrentHashMap<Subscriber<? super T>, Integer>();
         }
     }
 

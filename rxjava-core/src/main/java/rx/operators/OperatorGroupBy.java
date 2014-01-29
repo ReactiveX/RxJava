@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable.OnSubscribe;
-import rx.Observer;
+import rx.Subscriber;
 import rx.observables.GroupedObservable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -43,10 +43,10 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
     }
 
     @Override
-    public Observer<? super T> call(final Observer<? super GroupedObservable<K, T>> childObserver) {
+    public Subscriber<? super T> call(final Subscriber<? super GroupedObservable<K, T>> childObserver) {
         // a new CompositeSubscription to decouple the subscription as the inner subscriptions need a separate lifecycle
         // and will unsubscribe on this parent if they are all unsubscribed
-        return new Observer<T>(new CompositeSubscription()) {
+        return new Subscriber<T>(new CompositeSubscription()) {
             private final Map<K, PublishSubject<T>> groups = new HashMap<K, PublishSubject<T>>();
             private final AtomicInteger completionCounter = new AtomicInteger(0);
 
@@ -86,7 +86,7 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
                         GroupedObservable<K, T> go = new GroupedObservable<K, T>(key, new OnSubscribe<T>() {
 
                             @Override
-                            public void call(final Observer<? super T> o) {
+                            public void call(final Subscriber<? super T> o) {
                                 // number of children we have running
                                 completionCounter.incrementAndGet();
                                 o.add(Subscriptions.create(new Action0() {
@@ -97,7 +97,7 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
                                     }
 
                                 }));
-                                _gps.toObservable().subscribe(new Observer<T>(o) {
+                                _gps.toObservable().subscribe(new Subscriber<T>(o) {
 
                                     @Override
                                     public void onCompleted() {

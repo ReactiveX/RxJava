@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
@@ -88,8 +88,8 @@ public class OperationTakeUntil {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super Notification<T>> notificationObserver) {
-            return sequence.subscribe(new Observer<T>() {
+        public Subscription onSubscribe(final Subscriber<? super Notification<T>> notificationObserver) {
+            return sequence.subscribe(new Subscriber<T>() {
                 @Override
                 public void onCompleted() {
                     notificationObserver.onNext(Notification.<T> halt());
@@ -116,8 +116,8 @@ public class OperationTakeUntil {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super Notification<T>> notificationObserver) {
-            return sequence.subscribe(new Observer<E>() {
+        public Subscription onSubscribe(final Subscriber<? super Notification<T>> notificationObserver) {
+            return sequence.subscribe(new Subscriber<E>() {
                 @Override
                 public void onCompleted() {
                     // Ignore

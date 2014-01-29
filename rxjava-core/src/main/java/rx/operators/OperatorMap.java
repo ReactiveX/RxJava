@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import rx.Observer;
+import rx.Subscriber;
 import rx.util.functions.Func1;
 
 /**
@@ -33,8 +33,8 @@ public final class OperatorMap<T, R> implements Operator<R, T> {
     }
 
     @Override
-    public Observer<? super T> call(final Observer<? super R> o) {
-        return new Observer<T>(o) {
+    public Subscriber<? super T> call(final Subscriber<? super R> o) {
+        return new Subscriber<T>(o) {
 
             @Override
             public void onCompleted() {
