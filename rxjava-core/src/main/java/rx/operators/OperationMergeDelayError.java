@@ -25,6 +25,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.SynchronizedObserver;
+import rx.observers.SynchronizedSubscriber;
 import rx.subscriptions.CompositeSubscription;
 import rx.util.CompositeException;
 
@@ -164,7 +165,7 @@ public final class OperationMergeDelayError {
              */
             SafeObservableSubscription subscription = new SafeObservableSubscription(ourSubscription);
             completeSubscription.add(subscription);
-            SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(actualObserver, subscription);
+            SynchronizedSubscriber<T> synchronizedObserver = new SynchronizedSubscriber<T>(actualObserver, subscription);
 
             /**
              * Subscribe to the parent Observable to get to the children Observables

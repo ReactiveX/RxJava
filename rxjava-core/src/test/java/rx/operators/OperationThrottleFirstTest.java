@@ -25,9 +25,9 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -35,13 +35,13 @@ import rx.util.functions.Action0;
 public class OperationThrottleFirstTest {
 
     private TestScheduler scheduler;
-    private Subscriber<String> observer;
+    private Observer<String> observer;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() {
         scheduler = new TestScheduler();
-        observer = mock(Subscriber.class);
+        observer = mock(Observer.class);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class OperationThrottleFirstTest {
         });
 
         Observable<String> sampled = Observable.create(OperationThrottleFirst.throttleFirst(source, 400, TimeUnit.MILLISECONDS, scheduler));
-        sampled.subscribe(new TestObserver<String>(observer));
+        sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
 
@@ -88,7 +88,7 @@ public class OperationThrottleFirstTest {
         });
 
         Observable<String> sampled = Observable.create(OperationThrottleFirst.throttleFirst(source, 400, TimeUnit.MILLISECONDS, scheduler));
-        sampled.subscribe(new TestObserver<String>(observer));
+        sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
 

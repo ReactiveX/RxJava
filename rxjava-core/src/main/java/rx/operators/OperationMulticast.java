@@ -20,7 +20,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
-import rx.observers.SafeObserver;
+import rx.observers.SafeSubscriber;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;

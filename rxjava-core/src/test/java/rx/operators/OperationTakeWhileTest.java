@@ -23,9 +23,9 @@ import static rx.operators.OperationTakeWhile.*;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
@@ -45,8 +45,8 @@ public class OperationTakeWhileTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        take.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        take.subscribe(observer);
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(2);
         verify(observer, never()).onNext(3);
@@ -65,8 +65,8 @@ public class OperationTakeWhileTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        take.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        take.subscribe(observer);
 
         s.onNext(1);
         s.onNext(2);
@@ -95,8 +95,8 @@ public class OperationTakeWhileTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        take.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        take.subscribe(observer);
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, never()).onNext("three");
@@ -129,14 +129,14 @@ public class OperationTakeWhileTest {
         final RuntimeException testException = new RuntimeException("test exception");
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<String> take = Observable.create(takeWhile(Observable.create(source), new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 throw testException;
             }
         }));
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
 
         // wait for the Observable to complete
         try {
@@ -156,14 +156,14 @@ public class OperationTakeWhileTest {
         TestObservable w = new TestObservable(s, "one", "two", "three");
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<String> take = Observable.create(takeWhileWithIndex(Observable.create(w), new Func2<String, Integer, Boolean>() {
             @Override
             public Boolean call(String s, Integer index) {
                 return index < 1;
             }
         }));
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
 
         // wait for the Observable to complete
         try {

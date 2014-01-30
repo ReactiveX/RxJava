@@ -26,8 +26,8 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
 import rx.subscriptions.Subscriptions;

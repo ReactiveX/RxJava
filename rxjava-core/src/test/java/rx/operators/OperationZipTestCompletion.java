@@ -22,8 +22,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
-import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 import rx.util.functions.Func2;
 
@@ -39,7 +39,7 @@ public class OperationZipTestCompletion {
     PublishSubject<String> s2;
     Observable<String> zipped;
 
-    Subscriber<String> observer;
+    Observer<String> observer;
     InOrder inOrder;
 
     @Before
@@ -56,10 +56,10 @@ public class OperationZipTestCompletion {
         s2 = PublishSubject.create();
         zipped = Observable.zip(s1.toObservable(), s2.toObservable(), concat2Strings);
 
-        observer = mock(Subscriber.class);
+        observer = mock(Observer.class);
         inOrder = inOrder(observer);
 
-        zipped.subscribe(new TestObserver<String>(observer));
+        zipped.subscribe(observer);
     }
 
     @Test

@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Notification;
 import rx.Observable;
 import rx.Subscriber;
-import rx.observers.SafeObserver;
+import rx.observers.SafeSubscriber;
 import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action1;
 
@@ -38,14 +38,14 @@ public final class JoinObserver1<T> extends Subscriber<Notification<T>> implemen
     private final List<ActivePlan0> activePlans;
     private final Queue<Notification<T>> queue;
     private final AtomicBoolean subscribed = new AtomicBoolean(false);
-    private final SafeObserver<Notification<T>> safeObserver;
+    private final SafeSubscriber<Notification<T>> safeObserver;
 
     public JoinObserver1(Observable<T> source, Action1<Throwable> onError) {
         this.source = source;
         this.onError = onError;
         queue = new LinkedList<Notification<T>>();
         activePlans = new ArrayList<ActivePlan0>();
-        safeObserver = new SafeObserver<Notification<T>>(new InnerObserver());
+        safeObserver = new SafeSubscriber<Notification<T>>(new InnerObserver());
         // add this subscription so it gets unsubscribed when the parent does
         add(safeObserver);
     }

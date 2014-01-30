@@ -19,10 +19,9 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
-import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
@@ -36,8 +35,8 @@ public class OperationMulticastTest {
                 PublishSubject.<String> create());
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        multicasted.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        multicasted.subscribe(observer);
 
         source.onNext("one");
         source.onNext("two");
@@ -64,8 +63,8 @@ public class OperationMulticastTest {
                 PublishSubject.<String> create());
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        multicasted.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        multicasted.subscribe(observer);
 
         source.onNext("one");
 
@@ -89,8 +88,8 @@ public class OperationMulticastTest {
                 PublishSubject.<String> create());
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        multicasted.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        multicasted.subscribe(observer);
 
         source.onNext("one");
 

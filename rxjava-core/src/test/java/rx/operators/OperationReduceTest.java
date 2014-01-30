@@ -25,15 +25,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 import rx.util.functions.Functions;
 
 public class OperationReduceTest {
     @Mock
-    Subscriber<Object> observer;
+    Observer<Object> observer;
 
     @Before
     public void before() {
@@ -52,7 +51,7 @@ public class OperationReduceTest {
 
         Observable<Integer> result = Observable.from(1, 2, 3, 4, 5).reduce(0, sum).map(Functions.<Integer> identity());
 
-        result.subscribe(new TestObserver<Object>(observer));
+        result.subscribe(observer);
 
         verify(observer).onNext(1 + 2 + 3 + 4 + 5);
         verify(observer).onCompleted();
@@ -68,7 +67,7 @@ public class OperationReduceTest {
                 Observable.<Integer> error(new CustomException()))
                 .reduce(0, sum).map(Functions.<Integer> identity());
 
-        result.subscribe(new TestObserver<Object>(observer));
+        result.subscribe(observer);
 
         verify(observer, never()).onNext(any());
         verify(observer, never()).onCompleted();
@@ -87,7 +86,7 @@ public class OperationReduceTest {
         Observable<Integer> result = Observable.from(1, 2, 3, 4, 5)
                 .reduce(0, sumErr).map(Functions.<Integer> identity());
 
-        result.subscribe(new TestObserver<Object>(observer));
+        result.subscribe(observer);
 
         verify(observer, never()).onNext(any());
         verify(observer, never()).onCompleted();
@@ -108,7 +107,7 @@ public class OperationReduceTest {
         Observable<Integer> result = Observable.from(1, 2, 3, 4, 5)
                 .reduce(0, sum).map(error);
 
-        result.subscribe(new TestObserver<Object>(observer));
+        result.subscribe(observer);
 
         verify(observer, never()).onNext(any());
         verify(observer, never()).onCompleted();

@@ -21,8 +21,7 @@ import static rx.operators.OperationDefaultIfEmpty.*;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 
 public class OperationDefaultIfEmptyTest {
 
@@ -33,8 +32,8 @@ public class OperationDefaultIfEmptyTest {
                 source, 10));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, never()).onNext(10);
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(2);
@@ -51,8 +50,8 @@ public class OperationDefaultIfEmptyTest {
                 source, 10));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, times(1)).onNext(10);
         verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));

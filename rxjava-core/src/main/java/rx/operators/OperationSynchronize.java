@@ -19,7 +19,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.SynchronizedObserver;
+import rx.observers.SynchronizedSubscriber;
 
 /**
  * Wraps an Observable in another Observable that ensures that the resulting Observable is
@@ -82,18 +82,17 @@ public final class OperationSynchronize<T> {
         }
 
         private Observable<? extends T> innerObservable;
-        private SynchronizedObserver<T> atomicObserver;
+        private SynchronizedSubscriber<T> atomicObserver;
         private Object lock;
 
         public Subscription onSubscribe(Subscriber<? super T> observer) {
-            SafeObservableSubscription subscription = new SafeObservableSubscription();
             if (lock == null) {
-                atomicObserver = new SynchronizedObserver<T>(observer, subscription);
+                atomicObserver = new SynchronizedSubscriber<T>(observer);
             }
             else {
-                atomicObserver = new SynchronizedObserver<T>(observer, subscription, lock);
+                atomicObserver = new SynchronizedSubscriber<T>(observer, lock);
             }
-            return subscription.wrap(innerObservable.subscribe(atomicObserver));
+            return innerObservable.subscribe(atomicObserver);
         }
 
     }

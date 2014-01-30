@@ -1,6 +1,6 @@
 package rx.observers;
 
-import rx.Subscriber;
+import rx.Observer;
 import rx.util.OnErrorNotImplementedException;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -10,8 +10,8 @@ public class Observers {
     /**
      * Create an empty Observer that ignores all events.
      */
-    public static final <T> Subscriber<T> create() {
-        return new Subscriber<T>() {
+    public static final <T> Observer<T> create() {
+        return new Observer<T>() {
 
             @Override
             public final void onCompleted() {
@@ -34,12 +34,12 @@ public class Observers {
     /**
      * Create an Observer that receives `onNext` and ignores `onError` and `onCompleted`.
      */
-    public static final <T> Subscriber<T> create(final Action1<? super T> onNext) {
+    public static final <T> Observer<T> create(final Action1<? super T> onNext) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
 
-        return new Subscriber<T>() {
+        return new Observer<T>() {
 
             @Override
             public final void onCompleted() {
@@ -63,7 +63,7 @@ public class Observers {
      * Create an Observer that receives `onNext` and `onError` and ignores `onCompleted`.
      * 
      */
-    public static final <T> Subscriber<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError) {
+    public static final <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -71,7 +71,7 @@ public class Observers {
             throw new IllegalArgumentException("onError can not be null");
         }
 
-        return new Subscriber<T>() {
+        return new Observer<T>() {
 
             @Override
             public final void onCompleted() {
@@ -95,7 +95,7 @@ public class Observers {
      * Create an Observer that receives `onNext`, `onError` and `onCompleted`.
      * 
      */
-    public static final <T> Subscriber<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
+    public static final <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -106,7 +106,7 @@ public class Observers {
             throw new IllegalArgumentException("onComplete can not be null");
         }
 
-        return new Subscriber<T>() {
+        return new Observer<T>() {
 
             @Override
             public final void onCompleted() {

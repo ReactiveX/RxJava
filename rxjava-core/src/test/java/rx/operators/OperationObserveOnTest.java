@@ -30,8 +30,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.util.functions.Action0;
@@ -46,8 +45,8 @@ public class OperationObserveOnTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testObserveOn() {
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        Observable.create(observeOn(Observable.from(1, 2, 3), Schedulers.immediate())).subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        Observable.create(observeOn(Observable.from(1, 2, 3), Schedulers.immediate())).subscribe(observer);
 
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(2);
@@ -60,7 +59,7 @@ public class OperationObserveOnTest {
     public void testOrdering() throws InterruptedException {
         Observable<String> obs = Observable.from("one", null, "two", "three", "four");
 
-        Subscriber<String> observer = mock(Subscriber.class);
+        Observer<String> observer = mock(Observer.class);
 
         InOrder inOrder = inOrder(observer);
 
@@ -74,7 +73,7 @@ public class OperationObserveOnTest {
             }
         }).when(observer).onCompleted();
 
-        obs.observeOn(Schedulers.computation()).subscribe(new TestObserver<String>(observer));
+        obs.observeOn(Schedulers.computation()).subscribe(observer);
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
@@ -95,7 +94,7 @@ public class OperationObserveOnTest {
         System.out.println("Main Thread: " + Thread.currentThread().getName());
         Observable<String> obs = Observable.from("one", null, "two", "three", "four");
 
-        Subscriber<String> observer = mock(Subscriber.class);
+        Observer<String> observer = mock(Observer.class);
         final String parentThreadName = Thread.currentThread().getName();
 
         final CountDownLatch completedLatch = new CountDownLatch(1);
@@ -130,7 +129,7 @@ public class OperationObserveOnTest {
                 completedLatch.countDown();
 
             }
-        }).subscribe(new TestObserver<String>(observer));
+        }).subscribe(observer);
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
@@ -149,15 +148,15 @@ public class OperationObserveOnTest {
         Observable<Integer> o2 = o.observeOn(scheduler);
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> observer1 = mock(Subscriber.class);
+        Observer<Object> observer1 = mock(Observer.class);
         @SuppressWarnings("unchecked")
-        Subscriber<Object> observer2 = mock(Subscriber.class);
+        Observer<Object> observer2 = mock(Observer.class);
 
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);
 
-        o2.subscribe(new TestObserver<Object>(observer1));
-        o2.subscribe(new TestObserver<Object>(observer2));
+        o2.subscribe(observer1);
+        o2.subscribe(observer2);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -187,15 +186,15 @@ public class OperationObserveOnTest {
         Observable<Integer> o2 = o.observeOn(scheduler2);
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> observer1 = mock(Subscriber.class);
+        Observer<Object> observer1 = mock(Observer.class);
         @SuppressWarnings("unchecked")
-        Subscriber<Object> observer2 = mock(Subscriber.class);
+        Observer<Object> observer2 = mock(Observer.class);
 
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);
 
-        o1.subscribe(new TestObserver<Object>(observer1));
-        o2.subscribe(new TestObserver<Object>(observer2));
+        o1.subscribe(observer1);
+        o2.subscribe(observer2);
 
         scheduler1.advanceTimeBy(1, TimeUnit.SECONDS);
         scheduler2.advanceTimeBy(1, TimeUnit.SECONDS);

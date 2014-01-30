@@ -24,8 +24,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 import rx.subjects.PublishSubject;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
@@ -53,10 +52,10 @@ public class OperationTimeoutTest {
         Observable<Integer> other = Observable.from(Arrays.asList(100));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> o = mock(Subscriber.class);
+        Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(new TestObserver<Object>(o));
+        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
 
         source.onNext(1);
         source.onNext(2);
@@ -94,10 +93,10 @@ public class OperationTimeoutTest {
         Observable<Integer> other = Observable.from(Arrays.asList(100));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> o = mock(Subscriber.class);
+        Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(new TestObserver<Object>(o));
+        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
         
         timeout.onNext(1);
         
@@ -129,9 +128,9 @@ public class OperationTimeoutTest {
         Observable<Integer> other = Observable.from(Arrays.asList(100));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> o = mock(Subscriber.class);
+        Observer<Object> o = mock(Observer.class);
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(new TestObserver<Object>(o));
+        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
 
         verify(o).onError(any(OperationReduceTest.CustomException.class));
         verify(o, never()).onNext(any());
@@ -161,10 +160,10 @@ public class OperationTimeoutTest {
         Observable<Integer> other = Observable.from(Arrays.asList(100));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> o = mock(Subscriber.class);
+        Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(new TestObserver<Object>(o));
+        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
 
         source.onNext(1);
 
@@ -196,9 +195,9 @@ public class OperationTimeoutTest {
         Observable<Integer> other = Observable.from(Arrays.asList(100));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> o = mock(Subscriber.class);
+        Observer<Object> o = mock(Observer.class);
 
-        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(new TestObserver<Object>(o));
+        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
 
         verify(o).onError(any(OperationReduceTest.CustomException.class));
         verify(o, never()).onNext(any());
@@ -228,10 +227,10 @@ public class OperationTimeoutTest {
         Observable<Integer> other = Observable.from(Arrays.asList(100));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> o = mock(Subscriber.class);
+        Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(new TestObserver<Object>(o));
+        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
 
         source.onNext(1);
 

@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.MockitoAnnotations;
 
-import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -49,8 +48,8 @@ public class TimeoutTests {
     @Test
     public void shouldNotTimeoutIfOnNextWithinTimeout() {
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        Subscription subscription = withTimeout.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
         verify(observer).onNext("One");
@@ -62,8 +61,8 @@ public class TimeoutTests {
     @Test
     public void shouldNotTimeoutIfSecondOnNextWithinTimeout() {
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        Subscription subscription = withTimeout.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -77,8 +76,8 @@ public class TimeoutTests {
     @Test
     public void shouldTimeoutIfOnNextNotWithinTimeout() {
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        Subscription subscription = withTimeout.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(TIMEOUT + 1, TimeUnit.SECONDS);
         verify(observer).onError(any(TimeoutException.class));
         subscription.unsubscribe();
@@ -87,8 +86,8 @@ public class TimeoutTests {
     @Test
     public void shouldTimeoutIfSecondOnNextNotWithinTimeout() {
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        Subscription subscription = withTimeout.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
         verify(observer).onNext("One");
@@ -100,8 +99,8 @@ public class TimeoutTests {
     @Test
     public void shouldCompleteIfUnderlyingComletes() {
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        Subscription subscription = withTimeout.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onCompleted();
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -113,8 +112,8 @@ public class TimeoutTests {
     @Test
     public void shouldErrorIfUnderlyingErrors() {
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        Subscription subscription = withTimeout.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onError(new UnsupportedOperationException());
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -128,8 +127,8 @@ public class TimeoutTests {
         Observable<String> source = underlyingSubject.toObservable().timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        Subscription subscription = source.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = source.subscribe(observer);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
@@ -151,8 +150,8 @@ public class TimeoutTests {
         Observable<String> source = underlyingSubject.toObservable().timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        Subscription subscription = source.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = source.subscribe(observer);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
@@ -174,8 +173,8 @@ public class TimeoutTests {
         Observable<String> source = underlyingSubject.toObservable().timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        Subscription subscription = source.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = source.subscribe(observer);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
@@ -197,8 +196,8 @@ public class TimeoutTests {
         Observable<String> source = underlyingSubject.toObservable().timeout(TIMEOUT, TIME_UNIT, other.toObservable(), testScheduler);
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        Subscription subscription = source.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = source.subscribe(observer);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");

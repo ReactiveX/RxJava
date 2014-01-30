@@ -29,7 +29,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.subjects.PublishSubject;
 
-public class TestObserverTest {
+public class TestSubscriberTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -37,7 +37,7 @@ public class TestObserverTest {
     @Test
     public void testAssert() {
         Observable<Integer> oi = Observable.from(Arrays.asList(1, 2));
-        TestObserver<Integer> o = new TestObserver<Integer>();
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
         o.assertReceivedOnNext(Arrays.asList(1, 2));
@@ -48,7 +48,7 @@ public class TestObserverTest {
     @Test
     public void testAssertNotMatchCount() {
         Observable<Integer> oi = Observable.from(Arrays.asList(1, 2));
-        TestObserver<Integer> o = new TestObserver<Integer>();
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
         thrown.expect(AssertionError.class);
@@ -62,7 +62,7 @@ public class TestObserverTest {
     @Test
     public void testAssertNotMatchValue() {
         Observable<Integer> oi = Observable.from(Arrays.asList(1, 2));
-        TestObserver<Integer> o = new TestObserver<Integer>();
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
         thrown.expect(AssertionError.class);
@@ -76,7 +76,7 @@ public class TestObserverTest {
     @Test
     public void testAssertTerminalEventNotReceived() {
         PublishSubject<Integer> p = PublishSubject.create();
-        TestObserver<Integer> o = new TestObserver<Integer>();
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         p.toObservable().subscribe(o);
 
         p.onNext(1);
@@ -95,7 +95,7 @@ public class TestObserverTest {
         Observable<Integer> oi = Observable.from(Arrays.asList(1, 2));
         @SuppressWarnings("unchecked")
         Observer<Integer> mockObserver = mock(Observer.class);
-        oi.subscribe(new TestObserver<Integer>(mockObserver));
+        oi.subscribe(new TestSubscriber<Integer>(mockObserver));
 
         InOrder inOrder = inOrder(mockObserver);
         inOrder.verify(mockObserver, times(1)).onNext(1);
@@ -109,7 +109,7 @@ public class TestObserverTest {
         Observable<Integer> oi = Observable.from(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(2);
         @SuppressWarnings("unchecked")
         Observer<Integer> mockObserver = mock(Observer.class);
-        oi.subscribe(new TestObserver<Integer>(mockObserver));
+        oi.subscribe(new TestSubscriber<Integer>(mockObserver));
 
         InOrder inOrder = inOrder(mockObserver);
         inOrder.verify(mockObserver, times(1)).onNext(1);

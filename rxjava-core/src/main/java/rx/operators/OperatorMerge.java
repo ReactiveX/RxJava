@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.observers.SynchronizedObserver;
+import rx.observers.SynchronizedSubscriber;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -53,7 +53,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<T>> {
         // Concurrent* since we'll be accessing them from the inner Observers which can be on other threads
         final ConcurrentLinkedQueue<Observable<T>> pending = new ConcurrentLinkedQueue<Observable<T>>();
 
-        final Subscriber<T> o = new SynchronizedObserver<T>(outerOperation);
+        final Subscriber<T> o = new SynchronizedSubscriber<T>(outerOperation);
         return new Subscriber<Observable<T>>(outerOperation) {
 
             @Override

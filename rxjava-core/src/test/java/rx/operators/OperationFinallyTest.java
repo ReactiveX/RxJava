@@ -22,25 +22,25 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
-import rx.observers.TestObserver;
 import rx.util.functions.Action0;
 
 public class OperationFinallyTest {
 
     private Action0 aAction0;
-    private Subscriber<String> observer;
+    private Observer<String> observer;
 
     @SuppressWarnings("unchecked")
     // mocking has to be unchecked, unfortunately
     @Before
     public void before() {
         aAction0 = mock(Action0.class);
-        observer = mock(Subscriber.class);
+        observer = mock(Observer.class);
     }
 
     private void checkActionCalled(Observable<String> input) {
-        Observable.create(finallyDo(input, aAction0)).subscribe(new TestObserver<String>(observer));
+        Observable.create(finallyDo(input, aAction0)).subscribe(observer);
         verify(aAction0, times(1)).call();
     }
 

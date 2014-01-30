@@ -26,8 +26,7 @@ import java.util.concurrent.ExecutionException;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 
 public class OperationElementAtTest {
 
@@ -37,8 +36,8 @@ public class OperationElementAtTest {
         Observable<Integer> observable = Observable.create(elementAt(w, 1));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, never()).onNext(1);
         verify(observer, times(1)).onNext(2);
         verify(observer, never()).onError(
@@ -85,8 +84,8 @@ public class OperationElementAtTest {
                 .create(elementAtOrDefault(w, 1, 0));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, never()).onNext(1);
         verify(observer, times(1)).onNext(2);
         verify(observer, never()).onError(any(Throwable.class));
@@ -101,8 +100,8 @@ public class OperationElementAtTest {
                 .create(elementAtOrDefault(w, 2, 0));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, never()).onNext(1);
         verify(observer, never()).onNext(2);
         verify(observer, times(1)).onNext(0);

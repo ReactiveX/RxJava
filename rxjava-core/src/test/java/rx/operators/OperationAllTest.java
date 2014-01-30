@@ -21,8 +21,7 @@ import static rx.operators.OperationAll.*;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 import rx.util.functions.Func1;
 
 public class OperationAllTest {
@@ -32,13 +31,13 @@ public class OperationAllTest {
     public void testAll() {
         Observable<String> obs = Observable.from("one", "two", "six");
 
-        Subscriber<Boolean> observer = mock(Subscriber.class);
+        Observer<Boolean> observer = mock(Observer.class);
         Observable.create(all(obs, new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(new TestObserver<Boolean>(observer));
+        })).subscribe(observer);
 
         verify(observer).onNext(true);
         verify(observer).onCompleted();
@@ -50,13 +49,13 @@ public class OperationAllTest {
     public void testNotAll() {
         Observable<String> obs = Observable.from("one", "two", "three", "six");
 
-        Subscriber<Boolean> observer = mock(Subscriber.class);
+        Observer<Boolean> observer = mock(Observer.class);
         Observable.create(all(obs, new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(new TestObserver<Boolean>(observer));
+        })).subscribe(observer);
 
         verify(observer).onNext(false);
         verify(observer).onCompleted();
@@ -68,13 +67,13 @@ public class OperationAllTest {
     public void testEmpty() {
         Observable<String> obs = Observable.empty();
 
-        Subscriber<Boolean> observer = mock(Subscriber.class);
+        Observer<Boolean> observer = mock(Observer.class);
         Observable.create(all(obs, new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(new TestObserver<Boolean>(observer));
+        })).subscribe(observer);
 
         verify(observer).onNext(true);
         verify(observer).onCompleted();
@@ -87,13 +86,13 @@ public class OperationAllTest {
         Throwable error = new Throwable();
         Observable<String> obs = Observable.error(error);
 
-        Subscriber<Boolean> observer = mock(Subscriber.class);
+        Observer<Boolean> observer = mock(Observer.class);
         Observable.create(all(obs, new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(new TestObserver<Boolean>(observer));
+        })).subscribe(observer);
 
         verify(observer).onError(error);
         verifyNoMoreInteractions(observer);

@@ -24,8 +24,7 @@ import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 import rx.util.functions.Func2;
 
 public class OperationScanTest {
@@ -38,7 +37,7 @@ public class OperationScanTest {
     @Test
     public void testScanIntegersWithInitialValue() {
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
+        Observer<String> observer = mock(Observer.class);
 
         Observable<Integer> observable = Observable.from(1, 2, 3);
 
@@ -50,7 +49,7 @@ public class OperationScanTest {
             }
 
         }));
-        m.subscribe(new TestObserver<String>(observer));
+        m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext("");
@@ -65,7 +64,7 @@ public class OperationScanTest {
     @Test
     public void testScanIntegersWithoutInitialValue() {
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
+        Observer<Integer> observer = mock(Observer.class);
 
         Observable<Integer> observable = Observable.from(1, 2, 3);
 
@@ -77,7 +76,7 @@ public class OperationScanTest {
             }
 
         }));
-        m.subscribe(new TestObserver<Integer>(observer));
+        m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, never()).onNext(0);
@@ -92,7 +91,7 @@ public class OperationScanTest {
     @Test
     public void testScanIntegersWithoutInitialValueAndOnlyOneValue() {
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
+        Observer<Integer> observer = mock(Observer.class);
 
         Observable<Integer> observable = Observable.from(1);
 
@@ -104,7 +103,7 @@ public class OperationScanTest {
             }
 
         }));
-        m.subscribe(new TestObserver<Integer>(observer));
+        m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, never()).onNext(0);

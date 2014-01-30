@@ -20,27 +20,27 @@ import java.util.Collections;
 import java.util.List;
 
 import rx.Notification;
-import rx.Subscriber;
+import rx.Observer;
 
 /**
  * Observer usable for unit testing to perform assertions, inspect received events or wrap a mocked Observer.
  */
-public class TestObserver<T> extends Subscriber<T> {
+public class TestObserver<T> implements Observer<T> {
 
-    private final Subscriber<Object> EMPTY = new EmptyObserver<Object>();
+    private final Observer<Object> EMPTY = new EmptyObserver<Object>();
 
-    private final Subscriber<T> delegate;
+    private final Observer<T> delegate;
     private final ArrayList<T> onNextEvents = new ArrayList<T>();
     private final ArrayList<Throwable> onErrorEvents = new ArrayList<Throwable>();
     private final ArrayList<Notification<T>> onCompletedEvents = new ArrayList<Notification<T>>();
 
-    public TestObserver(Subscriber<T> delegate) {
+    public TestObserver(Observer<T> delegate) {
         this.delegate = delegate;
     }
 
     @SuppressWarnings("unchecked")
     public TestObserver() {
-        this.delegate = (Subscriber<T>) EMPTY;
+        this.delegate = (Observer<T>) EMPTY;
     }
 
     @Override

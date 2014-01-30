@@ -36,7 +36,6 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable.OnSubscribeFunc;
 import rx.observables.ConnectableObservable;
-import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
@@ -48,7 +47,7 @@ import rx.util.functions.Func2;
 public class ObservableTests {
 
     @Mock
-    Subscriber<Integer> w;
+    Observer<Integer> w;
 
     private static final Func1<Integer, Boolean> IS_EVEN = new Func1<Integer, Boolean>() {
         @Override
@@ -116,8 +115,8 @@ public class ObservableTests {
         });
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
@@ -128,7 +127,7 @@ public class ObservableTests {
     @Test
     public void testCountAFewItems() {
         Observable<String> observable = Observable.from("a", "b", "c", "d");
-        observable.count().subscribe(new TestObserver<Integer>(w));
+        observable.count().subscribe(w);
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(4);
@@ -139,7 +138,7 @@ public class ObservableTests {
     @Test
     public void testCountZeroItems() {
         Observable<String> observable = Observable.empty();
-        observable.count().subscribe(new TestObserver<Integer>(w));
+        observable.count().subscribe(w);
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(0);
@@ -156,7 +155,7 @@ public class ObservableTests {
                 return Subscriptions.empty();
             }
         });
-        o.count().subscribe(new TestObserver<Integer>(w));
+        o.count().subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onCompleted();
         verify(w, times(1)).onError(any(RuntimeException.class));
@@ -164,7 +163,7 @@ public class ObservableTests {
 
     public void testTakeFirstWithPredicateOfSome() {
         Observable<Integer> observable = Observable.from(1, 3, 5, 4, 6, 3);
-        observable.takeFirst(IS_EVEN).subscribe(new TestObserver<Integer>(w));
+        observable.takeFirst(IS_EVEN).subscribe(w);
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(4);
         verify(w, times(1)).onCompleted();
@@ -174,7 +173,7 @@ public class ObservableTests {
     @Test
     public void testTakeFirstWithPredicateOfNoneMatchingThePredicate() {
         Observable<Integer> observable = Observable.from(1, 3, 5, 7, 9, 7, 5, 3, 1);
-        observable.takeFirst(IS_EVEN).subscribe(new TestObserver<Integer>(w));
+        observable.takeFirst(IS_EVEN).subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, times(1)).onCompleted();
         verify(w, never()).onError(any(Throwable.class));
@@ -183,7 +182,7 @@ public class ObservableTests {
     @Test
     public void testTakeFirstOfSome() {
         Observable<Integer> observable = Observable.from(1, 2, 3);
-        observable.takeFirst().subscribe(new TestObserver<Integer>(w));
+        observable.takeFirst().subscribe(w);
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(1);
         verify(w, times(1)).onCompleted();
@@ -193,7 +192,7 @@ public class ObservableTests {
     @Test
     public void testTakeFirstOfNone() {
         Observable<Integer> observable = Observable.empty();
-        observable.takeFirst().subscribe(new TestObserver<Integer>(w));
+        observable.takeFirst().subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, times(1)).onCompleted();
         verify(w, never()).onError(any(Throwable.class));
@@ -202,7 +201,7 @@ public class ObservableTests {
     @Test
     public void testFirstOfNone() {
         Observable<Integer> observable = Observable.empty();
-        observable.first().subscribe(new TestObserver<Integer>(w));
+        observable.first().subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onCompleted();
         verify(w, times(1)).onError(isA(IllegalArgumentException.class));
@@ -211,7 +210,7 @@ public class ObservableTests {
     @Test
     public void testFirstWithPredicateOfNoneMatchingThePredicate() {
         Observable<Integer> observable = Observable.from(1, 3, 5, 7, 9, 7, 5, 3, 1);
-        observable.first(IS_EVEN).subscribe(new TestObserver<Integer>(w));
+        observable.first(IS_EVEN).subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onCompleted();
         verify(w, times(1)).onError(isA(IllegalArgumentException.class));
@@ -227,7 +226,7 @@ public class ObservableTests {
                 return t1 + t2;
             }
 
-        }).subscribe(new TestObserver<Integer>(w));
+        }).subscribe(w);
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(10);
@@ -287,7 +286,7 @@ public class ObservableTests {
                 return t1 + t2;
             }
 
-        }).subscribe(new TestObserver<Integer>(w));
+        }).subscribe(w);
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(60);
@@ -296,7 +295,7 @@ public class ObservableTests {
     @Test
     public void testOnSubscribeFails() {
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
+        Observer<String> observer = mock(Observer.class);
         final RuntimeException re = new RuntimeException("bad impl");
         Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
@@ -306,7 +305,7 @@ public class ObservableTests {
             }
 
         });
-        o.subscribe(new TestObserver<String>(observer));
+        o.subscribe(observer);
         verify(observer, times(0)).onNext(anyString());
         verify(observer, times(0)).onCompleted();
         verify(observer, times(1)).onError(re);
@@ -318,8 +317,8 @@ public class ObservableTests {
         Observable<Integer> chained = obs.materialize().dematerialize();
 
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        chained.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        chained.subscribe(observer);
 
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onCompleted();
@@ -808,8 +807,8 @@ public class ObservableTests {
         Observable<String> observable = Observable.from(1, "abc", false, 2L).ofType(String.class);
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Object>(observer));
+        Observer<Object> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, never()).onNext(1);
         verify(observer, times(1)).onNext("abc");
         verify(observer, never()).onNext(false);
@@ -830,8 +829,8 @@ public class ObservableTests {
         Observable<List> observable = Observable.<Object> from(l1, l2, "123").ofType(List.class);
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Object>(observer));
+        Observer<Object> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, times(1)).onNext(l1);
         verify(observer, times(1)).onNext(l2);
         verify(observer, never()).onNext("123");
@@ -845,8 +844,8 @@ public class ObservableTests {
         Observable<Boolean> observable = Observable.from("a", "b", null).contains("b");
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Object>(observer));
+        Observer<Object> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
         verify(observer, never()).onError(
@@ -859,8 +858,8 @@ public class ObservableTests {
         Observable<Boolean> observable = Observable.from("a", "b", null).contains("c");
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Object>(observer));
+        Observer<Object> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(
@@ -873,8 +872,8 @@ public class ObservableTests {
         Observable<Boolean> observable = Observable.from("a", "b", null).contains(null);
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Object>(observer));
+        Observer<Object> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
         verify(observer, never()).onError(
@@ -887,8 +886,8 @@ public class ObservableTests {
         Observable<Boolean> observable = Observable.<String> empty().contains("a");
 
         @SuppressWarnings("unchecked")
-        Subscriber<Object> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Object>(observer));
+        Observer<Object> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(
@@ -901,8 +900,8 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.from(1, 2, 3).ignoreElements();
 
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
@@ -914,8 +913,8 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.from(Arrays.asList(1, 2), scheduler);
 
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(observer);
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
 
@@ -932,8 +931,8 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.from(3, 4).startWith(Arrays.asList(1, 2), scheduler);
 
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(observer);
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
 
@@ -952,8 +951,8 @@ public class ObservableTests {
         Observable<Integer> observable = Observable.range(3, 4, scheduler);
 
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        observable.subscribe(observer);
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
 

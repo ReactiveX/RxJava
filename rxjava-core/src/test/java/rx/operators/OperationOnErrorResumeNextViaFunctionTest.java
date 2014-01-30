@@ -26,9 +26,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
@@ -59,8 +59,8 @@ public class OperationOnErrorResumeNextViaFunctionTest {
         Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(w, resume));
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
 
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
@@ -89,8 +89,8 @@ public class OperationOnErrorResumeNextViaFunctionTest {
         Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(Observable.create(w), resume));
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
 
         try {
             w.t.join();
@@ -126,8 +126,8 @@ public class OperationOnErrorResumeNextViaFunctionTest {
         Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(Observable.create(w), resume));
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
 
         try {
             w.t.join();

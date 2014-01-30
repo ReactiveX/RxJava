@@ -26,8 +26,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
-import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
@@ -35,7 +35,7 @@ import rx.util.functions.Func2;
 
 public class OperationGroupJoinTest {
     @Mock
-    Subscriber<Object> observer;
+    Observer<Object> observer;
 
     Func2<Integer, Integer, Integer> add = new Func2<Integer, Integer, Integer>() {
         @Override
@@ -89,7 +89,7 @@ public class OperationGroupJoinTest {
                 just(Observable.never()),
                 just(Observable.never()), add2));
 
-        m.subscribe(new TestObserver<Object>(observer));
+        m.subscribe(observer);
 
         source1.onNext(1);
         source1.onNext(2);
@@ -218,7 +218,7 @@ public class OperationGroupJoinTest {
                 just(Observable.never()),
                 just(Observable.never()), add2);
 
-        m.subscribe(new TestObserver<Object>(observer));
+        m.subscribe(observer);
 
         source2.onNext(1);
         source1.onError(new RuntimeException("Forced failure"));
@@ -237,7 +237,7 @@ public class OperationGroupJoinTest {
                 just(Observable.never()),
                 just(Observable.never()), add2);
 
-        m.subscribe(new TestObserver<Object>(observer));
+        m.subscribe(observer);
 
         source1.onNext(1);
         source2.onError(new RuntimeException("Forced failure"));
@@ -257,7 +257,7 @@ public class OperationGroupJoinTest {
         Observable<Observable<Integer>> m = source1.toObservable().groupJoin(source2.toObservable(),
                 just(duration1),
                 just(Observable.never()), add2);
-        m.subscribe(new TestObserver<Object>(observer));
+        m.subscribe(observer);
 
         source1.onNext(1);
 
@@ -276,7 +276,7 @@ public class OperationGroupJoinTest {
         Observable<Observable<Integer>> m = source1.toObservable().groupJoin(source2.toObservable(),
                 just(Observable.never()),
                 just(duration1), add2);
-        m.subscribe(new TestObserver<Object>(observer));
+        m.subscribe(observer);
 
         source2.onNext(1);
 
@@ -300,7 +300,7 @@ public class OperationGroupJoinTest {
         Observable<Observable<Integer>> m = source1.toObservable().groupJoin(source2.toObservable(),
                 fail,
                 just(Observable.never()), add2);
-        m.subscribe(new TestObserver<Object>(observer));
+        m.subscribe(observer);
 
         source1.onNext(1);
 
@@ -324,7 +324,7 @@ public class OperationGroupJoinTest {
         Observable<Observable<Integer>> m = source1.toObservable().groupJoin(source2.toObservable(),
                 just(Observable.never()),
                 fail, add2);
-        m.subscribe(new TestObserver<Object>(observer));
+        m.subscribe(observer);
 
         source2.onNext(1);
 
@@ -348,7 +348,7 @@ public class OperationGroupJoinTest {
         Observable<Integer> m = source1.toObservable().groupJoin(source2.toObservable(),
                 just(Observable.never()),
                 just(Observable.never()), fail);
-        m.subscribe(new TestObserver<Object>(observer));
+        m.subscribe(observer);
 
         source1.onNext(1);
         source2.onNext(2);

@@ -15,6 +15,7 @@
  */
 package rx.observers;
 
+import rx.Observer;
 import rx.Subscriber;
 import rx.operators.SafeObservableSubscription;
 
@@ -30,7 +31,7 @@ import rx.operators.SafeObservableSubscription;
  * 
  * @param <T>
  */
-public final class SynchronizedObserver<T> extends Subscriber<T> {
+public final class SynchronizedObserver<T> implements Observer<T> {
 
     /**
      * Intrinsic synchronized locking with double-check short-circuiting was chosen after testing several other implementations.
@@ -52,15 +53,21 @@ public final class SynchronizedObserver<T> extends Subscriber<T> {
     private volatile boolean finished = false;
     private volatile Object lock;
 
-    public SynchronizedObserver(Subscriber<? super T> Observer, SafeObservableSubscription subscription) {
-        this.observer = Observer;
+    public SynchronizedObserver(Subscriber<? super T> subscriber, SafeObservableSubscription subscription) {
+        this.observer = subscriber;
         this.subscription = subscription;
         this.lock = this;
     }
 
-    public SynchronizedObserver(Subscriber<? super T> Observer, SafeObservableSubscription subscription, Object lock) {
-        this.observer = Observer;
+    public SynchronizedObserver(Subscriber<? super T> subscriber, SafeObservableSubscription subscription, Object lock) {
+        this.observer = subscriber;
         this.subscription = subscription;
+        this.lock = lock;
+    }
+    
+    public SynchronizedObserver(Subscriber<? super T> subscriber, Object lock) {
+        this.observer = subscriber;
+        this.subscription = new SafeObservableSubscription(subscriber);
         this.lock = lock;
     }
 
@@ -69,8 +76,8 @@ public final class SynchronizedObserver<T> extends Subscriber<T> {
      * 
      * @param Observer
      */
-    public SynchronizedObserver(Subscriber<? super T> Observer) {
-        this(Observer, new SafeObservableSubscription());
+    public SynchronizedObserver(Subscriber<? super T> subscriber) {
+        this(subscriber, new SafeObservableSubscription());
     }
 
     public void onNext(T arg) {

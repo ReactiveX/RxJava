@@ -21,8 +21,9 @@ import java.util.concurrent.Future;
 
 import org.junit.Test;
 
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestSubscriber;
 import rx.operators.OperationToObservableFuture.ToObservableFuture;
 
 public class OperationToObservableFutureTest {
@@ -33,9 +34,9 @@ public class OperationToObservableFutureTest {
         Object value = new Object();
         when(future.get()).thenReturn(value);
         ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
-        Subscriber<Object> o = mock(Subscriber.class);
+        Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = ob.onSubscribe(o);
+        Subscription sub = ob.onSubscribe(new TestSubscriber<Object>(o));
         sub.unsubscribe();
 
         verify(o, times(1)).onNext(value);
@@ -50,9 +51,9 @@ public class OperationToObservableFutureTest {
         RuntimeException e = new RuntimeException();
         when(future.get()).thenThrow(e);
         ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
-        Subscriber<Object> o = mock(Subscriber.class);
+        Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = ob.onSubscribe(o);
+        Subscription sub = ob.onSubscribe(new TestSubscriber<Object>(o));
         sub.unsubscribe();
 
         verify(o, never()).onNext(null);

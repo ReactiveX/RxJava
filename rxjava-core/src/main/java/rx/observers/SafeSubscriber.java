@@ -58,12 +58,12 @@ import rx.util.OnErrorNotImplementedException;
  * 
  * @param <T>
  */
-public class SafeObserver<T> extends Subscriber<T> {
+public class SafeSubscriber<T> extends Subscriber<T> {
 
     private final Subscriber<? super T> actual;
     private final AtomicBoolean isFinished = new AtomicBoolean(false);
 
-    public SafeObserver(Subscriber<? super T> actual) {
+    public SafeSubscriber(Subscriber<? super T> actual) {
         super(actual);
         this.actual = actual;
     }

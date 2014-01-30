@@ -27,9 +27,9 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.CompositeSubscription;
 import rx.util.functions.Action0;
@@ -90,8 +90,8 @@ public class OperationAmbTest {
                 observable2, observable3));
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = (Subscriber<String>) mock(Subscriber.class);
-        o.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
 
@@ -119,8 +119,8 @@ public class OperationAmbTest {
                 observable2, observable3));
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = (Subscriber<String>) mock(Subscriber.class);
-        o.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
 
@@ -146,8 +146,8 @@ public class OperationAmbTest {
                 observable2, observable3));
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = (Subscriber<String>) mock(Subscriber.class);
-        o.subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
         InOrder inOrder = inOrder(observer);

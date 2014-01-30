@@ -26,9 +26,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Subscriber;
+import rx.Observer;
 import rx.observables.ConnectableObservable;
-import rx.observers.TestObserver;
 import rx.operators.OperationReplay.VirtualBoundedList;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
@@ -95,10 +94,10 @@ public class OperationReplayTest {
         co.connect();
 
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
 
             source.onNext(1);
             source.onNext(2);
@@ -118,10 +117,10 @@ public class OperationReplayTest {
         }
 
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
 
             inOrder.verify(observer1, times(1)).onNext(2);
             inOrder.verify(observer1, times(1)).onNext(3);
@@ -142,10 +141,10 @@ public class OperationReplayTest {
         co.connect();
 
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
 
             source.onNext(1);
             scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
@@ -166,10 +165,10 @@ public class OperationReplayTest {
 
         }
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
             inOrder.verify(observer1, times(1)).onNext(3);
 
             inOrder.verify(observer1, times(1)).onCompleted();
@@ -203,10 +202,10 @@ public class OperationReplayTest {
         Observable<Integer> co = source.toObservable().replay(selector);
 
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
 
             source.onNext(1);
             source.onNext(2);
@@ -226,10 +225,10 @@ public class OperationReplayTest {
         }
 
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
 
             inOrder.verify(observer1, times(1)).onCompleted();
             inOrder.verifyNoMoreInteractions();
@@ -265,10 +264,10 @@ public class OperationReplayTest {
         Observable<Integer> co = source.toObservable().replay(selector, 3);
 
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
 
             source.onNext(1);
             source.onNext(2);
@@ -288,10 +287,10 @@ public class OperationReplayTest {
         }
 
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
 
             inOrder.verify(observer1, times(1)).onCompleted();
             inOrder.verifyNoMoreInteractions();
@@ -327,10 +326,10 @@ public class OperationReplayTest {
         Observable<Integer> co = source.toObservable().replay(selector, 100, TimeUnit.MILLISECONDS, scheduler);
 
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
 
             source.onNext(1);
             scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
@@ -351,10 +350,10 @@ public class OperationReplayTest {
 
         }
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
 
             inOrder.verify(observer1, times(1)).onCompleted();
             inOrder.verifyNoMoreInteractions();
@@ -370,10 +369,10 @@ public class OperationReplayTest {
         co.connect();
 
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
 
             source.onNext(1);
             source.onNext(2);
@@ -394,10 +393,10 @@ public class OperationReplayTest {
         }
 
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
 
             inOrder.verify(observer1, times(1)).onNext(2);
             inOrder.verify(observer1, times(1)).onNext(3);
@@ -418,10 +417,10 @@ public class OperationReplayTest {
         co.connect();
 
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
 
             source.onNext(1);
             scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
@@ -442,10 +441,10 @@ public class OperationReplayTest {
 
         }
         {
-            Subscriber<Object> observer1 = mock(Subscriber.class);
+            Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(new TestObserver<Object>(observer1));
+            co.subscribe(observer1);
             inOrder.verify(observer1, times(1)).onNext(3);
 
             inOrder.verify(observer1, times(1)).onError(any(RuntimeException.class));

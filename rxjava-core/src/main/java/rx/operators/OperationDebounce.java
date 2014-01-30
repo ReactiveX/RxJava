@@ -20,10 +20,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.SynchronizedObserver;
+import rx.observers.SynchronizedSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
@@ -110,7 +110,7 @@ public final class OperationDebounce {
         public DebounceObserver(Subscriber<? super T> observer, long timeout, TimeUnit unit, Scheduler scheduler) {
             // we need to synchronize the observer since the on* events can be coming from different
             // threads and are thus non-deterministic and could be interleaved
-            this.observer = new SynchronizedObserver<T>(observer);
+            this.observer = new SynchronizedSubscriber<T>(observer);
             this.timeout = timeout;
             this.unit = unit;
             this.scheduler = scheduler;

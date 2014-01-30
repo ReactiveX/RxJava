@@ -20,8 +20,7 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 import rx.util.functions.Func0;
 
 public class OperationDeferTest {
@@ -40,8 +39,8 @@ public class OperationDeferTest {
 
         verifyZeroInteractions(factory);
 
-        Subscriber<String> firstObserver = mock(Subscriber.class);
-        deferred.subscribe(new TestObserver<String>(firstObserver));
+        Observer<String> firstObserver = mock(Observer.class);
+        deferred.subscribe(firstObserver);
 
         verify(factory, times(1)).call();
         verify(firstObserver, times(1)).onNext("one");
@@ -50,8 +49,8 @@ public class OperationDeferTest {
         verify(firstObserver, times(0)).onNext("four");
         verify(firstObserver, times(1)).onCompleted();
 
-        Subscriber<String> secondObserver = mock(Subscriber.class);
-        deferred.subscribe(new TestObserver<String>(secondObserver));
+        Observer<String> secondObserver = mock(Observer.class);
+        deferred.subscribe(secondObserver);
 
         verify(factory, times(2)).call();
         verify(secondObserver, times(0)).onNext("one");

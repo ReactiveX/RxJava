@@ -26,8 +26,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.util.TimeInterval;
@@ -37,7 +36,7 @@ public class OperationTimeIntervalTest {
     private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
 
     @Mock
-    private Subscriber<TimeInterval<Integer>> observer;
+    private Observer<TimeInterval<Integer>> observer;
 
     private TestScheduler testScheduler;
     private PublishSubject<Integer> subject;
@@ -54,7 +53,7 @@ public class OperationTimeIntervalTest {
     @Test
     public void testTimeInterval() {
         InOrder inOrder = inOrder(observer);
-        observable.subscribe(new TestObserver<TimeInterval<Integer>>(observer));
+        observable.subscribe(observer);
 
         testScheduler.advanceTimeBy(1000, TIME_UNIT);
         subject.onNext(1);

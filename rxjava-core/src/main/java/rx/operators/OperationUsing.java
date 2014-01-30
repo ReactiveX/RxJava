@@ -19,7 +19,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.SafeObserver;
+import rx.observers.SafeSubscriber;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func0;
@@ -44,7 +44,7 @@ public class OperationUsing {
                     }
                     Observable<T> observable = observableFactory.call(resource);
                     // Use SafeObserver to guarantee resourceSubscription will be unsubscribed.
-                    return new CompositeSubscription(observable.subscribe(new SafeObserver<T>(observer)), resourceSubscription);
+                    return new CompositeSubscription(observable.subscribe(new SafeSubscriber<T>(observer)), resourceSubscription);
                 } catch (Throwable e) {
                     resourceSubscription.unsubscribe();
                     return Observable.<T> error(e).subscribe(observer);

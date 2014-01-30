@@ -46,7 +46,7 @@ public class SafeObserverTest {
     public void onNextFailureSafe() {
         AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
         try {
-            new SafeObserver<String>(OBSERVER_ONNEXT_FAIL(onError)).onNext("one");
+            new SafeSubscriber<String>(OBSERVER_ONNEXT_FAIL(onError)).onNext("one");
             assertNotNull(onError.get());
             assertTrue(onError.get() instanceof SafeObserverTestException);
             assertEquals("onNextFail", onError.get().getMessage());
@@ -72,7 +72,7 @@ public class SafeObserverTest {
     public void onCompletedFailureSafe() {
         AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
         try {
-            new SafeObserver<String>(OBSERVER_ONCOMPLETED_FAIL(onError)).onCompleted();
+            new SafeSubscriber<String>(OBSERVER_ONCOMPLETED_FAIL(onError)).onCompleted();
             assertNotNull(onError.get());
             assertTrue(onError.get() instanceof SafeObserverTestException);
             assertEquals("onCompletedFail", onError.get().getMessage());
@@ -95,7 +95,7 @@ public class SafeObserverTest {
     @Test
     public void onErrorFailureSafe() {
         try {
-            new SafeObserver<String>(OBSERVER_ONERROR_FAIL()).onError(new SafeObserverTestException("error!"));
+            new SafeSubscriber<String>(OBSERVER_ONERROR_FAIL()).onError(new SafeObserverTestException("error!"));
             fail("expects exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,7 +119,7 @@ public class SafeObserverTest {
     @Test
     public void onErrorNotImplementedFailureSafe() {
         try {
-            new SafeObserver<String>(OBSERVER_ONERROR_NOTIMPLEMENTED()).onError(new SafeObserverTestException("error!"));
+            new SafeSubscriber<String>(OBSERVER_ONERROR_NOTIMPLEMENTED()).onError(new SafeObserverTestException("error!"));
             fail("expects exception to be thrown");
         } catch (Exception e) {
             assertTrue(e instanceof OnErrorNotImplementedException);
@@ -143,7 +143,7 @@ public class SafeObserverTest {
     @Test
     public void onNextOnErrorFailureSafe() {
         try {
-            new SafeObserver<String>(OBSERVER_ONNEXT_ONERROR_FAIL()).onNext("one");
+            new SafeSubscriber<String>(OBSERVER_ONNEXT_ONERROR_FAIL()).onNext("one");
             fail("expects exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
@@ -176,7 +176,7 @@ public class SafeObserverTest {
                     throw new SafeObserverTestException("failure from unsubscribe");
                 }
             }));
-            new SafeObserver<String>(o).onCompleted();
+            new SafeSubscriber<String>(o).onCompleted();
             fail("expects exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
@@ -202,7 +202,7 @@ public class SafeObserverTest {
                     throw new SafeObserverTestException("failure from unsubscribe");
                 }
             }));
-            new SafeObserver<String>(o).onError(new SafeObserverTestException("failed"));
+            new SafeSubscriber<String>(o).onError(new SafeObserverTestException("failed"));
             fail("we expect the unsubscribe failure to cause an exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
@@ -232,7 +232,7 @@ public class SafeObserverTest {
                     throw new SafeObserverTestException("failure from unsubscribe");
                 }
             }));
-            new SafeObserver<String>(o).onError(new SafeObserverTestException("onError failure"));
+            new SafeSubscriber<String>(o).onError(new SafeObserverTestException("onError failure"));
             fail("expects exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
@@ -273,7 +273,7 @@ public class SafeObserverTest {
                     throw new SafeObserverTestException("failure from unsubscribe");
                 }
             }));
-            new SafeObserver<String>(o).onError(new SafeObserverTestException("error!"));
+            new SafeSubscriber<String>(o).onError(new SafeObserverTestException("error!"));
             fail("expects exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();

@@ -33,8 +33,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 import rx.operators.OperationToMultimap.DefaultMultimapCollectionFactory;
 import rx.operators.OperationToMultimap.DefaultToMultimapFactory;
 import rx.util.functions.Func0;
@@ -43,7 +42,7 @@ import rx.util.functions.Functions;
 
 public class OperationToMultimapTest {
     @Mock
-    Subscriber<Object> objectObserver;
+    Observer<Object> objectObserver;
 
     @Before
     public void before() {
@@ -73,7 +72,7 @@ public class OperationToMultimapTest {
         expected.put(1, Arrays.asList("a", "b"));
         expected.put(2, Arrays.asList("cc", "dd"));
 
-        mapped.subscribe(new TestObserver<Object>(objectObserver));
+        mapped.subscribe(objectObserver);
 
         verify(objectObserver, never()).onError(any(Throwable.class));
         verify(objectObserver, times(1)).onNext(expected);
@@ -90,7 +89,7 @@ public class OperationToMultimapTest {
         expected.put(1, Arrays.asList("aa", "bb"));
         expected.put(2, Arrays.asList("cccc", "dddd"));
 
-        mapped.subscribe(new TestObserver<Object>(objectObserver));
+        mapped.subscribe(objectObserver);
 
         verify(objectObserver, never()).onError(any(Throwable.class));
         verify(objectObserver, times(1)).onNext(expected);
@@ -122,7 +121,7 @@ public class OperationToMultimapTest {
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, Arrays.asList("eee", "fff"));
 
-        mapped.subscribe(new TestObserver<Object>(objectObserver));
+        mapped.subscribe(objectObserver);
 
         verify(objectObserver, never()).onError(any(Throwable.class));
         verify(objectObserver, times(1)).onNext(expected);
@@ -154,7 +153,7 @@ public class OperationToMultimapTest {
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, new HashSet<String>(Arrays.asList("eee")));
 
-        mapped.subscribe(new TestObserver<Object>(objectObserver));
+        mapped.subscribe(objectObserver);
 
         verify(objectObserver, never()).onError(any(Throwable.class));
         verify(objectObserver, times(1)).onNext(expected);
@@ -181,7 +180,7 @@ public class OperationToMultimapTest {
         expected.put(1, Arrays.asList("a", "b"));
         expected.put(2, Arrays.asList("cc", "dd"));
 
-        mapped.subscribe(new TestObserver<Object>(objectObserver));
+        mapped.subscribe(objectObserver);
 
         verify(objectObserver, times(1)).onError(any(Throwable.class));
         verify(objectObserver, never()).onNext(expected);
@@ -208,7 +207,7 @@ public class OperationToMultimapTest {
         expected.put(1, Arrays.asList("aa", "bb"));
         expected.put(2, Arrays.asList("cccc", "dddd"));
 
-        mapped.subscribe(new TestObserver<Object>(objectObserver));
+        mapped.subscribe(objectObserver);
 
         verify(objectObserver, times(1)).onError(any(Throwable.class));
         verify(objectObserver, never()).onNext(expected);
@@ -233,7 +232,7 @@ public class OperationToMultimapTest {
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, Arrays.asList("eee", "fff"));
 
-        mapped.subscribe(new TestObserver<Object>(objectObserver));
+        mapped.subscribe(objectObserver);
 
         verify(objectObserver, times(1)).onError(any(Throwable.class));
         verify(objectObserver, never()).onNext(expected);
@@ -264,7 +263,7 @@ public class OperationToMultimapTest {
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, Collections.singleton("eee"));
 
-        mapped.subscribe(new TestObserver<Object>(objectObserver));
+        mapped.subscribe(objectObserver);
 
         verify(objectObserver, times(1)).onError(any(Throwable.class));
         verify(objectObserver, never()).onNext(expected);

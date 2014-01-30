@@ -33,8 +33,8 @@ import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;

@@ -27,15 +27,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.util.Timestamped;
 
 public class OperatorTimestampTest {
     @Mock
-    Subscriber<Object> observer;
+    Observer<Object> observer;
 
     @Before
     public void before() {
@@ -48,7 +47,7 @@ public class OperatorTimestampTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
         Observable<Timestamped<Integer>> m = source.toObservable().timestamp(scheduler);
-        m.subscribe(new TestObserver<Object>(observer));
+        m.subscribe(observer);
 
         source.onNext(1);
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
@@ -72,7 +71,7 @@ public class OperatorTimestampTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
         Observable<Timestamped<Integer>> m = source.toObservable().timestamp(scheduler);
-        m.subscribe(new TestObserver<Object>(observer));
+        m.subscribe(observer);
 
         source.onNext(1);
         source.onNext(2);

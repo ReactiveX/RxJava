@@ -21,8 +21,7 @@ import static rx.operators.OperationAny.*;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 import rx.util.functions.Func1;
 
 public class OperationAnyTest {
@@ -33,8 +32,8 @@ public class OperationAnyTest {
         Observable<Boolean> observable = Observable.create(any(w));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Boolean> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Boolean>(observer));
+        Observer<Boolean> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -47,8 +46,8 @@ public class OperationAnyTest {
         Observable<Boolean> observable = Observable.create(isEmpty(w));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Boolean> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Boolean>(observer));
+        Observer<Boolean> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, never()).onNext(true);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -61,8 +60,8 @@ public class OperationAnyTest {
         Observable<Boolean> observable = Observable.create(any(w));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Boolean> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Boolean>(observer));
+        Observer<Boolean> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -75,8 +74,8 @@ public class OperationAnyTest {
         Observable<Boolean> observable = Observable.create(isEmpty(w));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Boolean> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Boolean>(observer));
+        Observer<Boolean> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, never()).onNext(true);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -89,8 +88,8 @@ public class OperationAnyTest {
         Observable<Boolean> observable = Observable.create(any(w));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Boolean> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Boolean>(observer));
+        Observer<Boolean> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -103,8 +102,8 @@ public class OperationAnyTest {
         Observable<Boolean> observable = Observable.create(isEmpty(w));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Boolean> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Boolean>(observer));
+        Observer<Boolean> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -124,8 +123,8 @@ public class OperationAnyTest {
                 }));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Boolean> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Boolean>(observer));
+        Observer<Boolean> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -145,8 +144,8 @@ public class OperationAnyTest {
                 }));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Boolean> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Boolean>(observer));
+        Observer<Boolean> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -166,8 +165,8 @@ public class OperationAnyTest {
                 }));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Boolean> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Boolean>(observer));
+        Observer<Boolean> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -188,8 +187,8 @@ public class OperationAnyTest {
                 }));
 
         @SuppressWarnings("unchecked")
-        Subscriber<Boolean> observer = mock(Subscriber.class);
-        observable.subscribe(new TestObserver<Boolean>(observer));
+        Observer<Boolean> observer = mock(Observer.class);
+        observable.subscribe(observer);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));

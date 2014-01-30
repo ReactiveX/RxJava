@@ -25,9 +25,9 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.subscriptions.Subscriptions;
 
 public class OperationRetryTest {
@@ -35,9 +35,9 @@ public class OperationRetryTest {
     @Test
     public void testOriginFails() {
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(2));
-        origin.subscribe(new TestObserver<String>(observer));
+        origin.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext("beginningEveryTime");
@@ -51,9 +51,9 @@ public class OperationRetryTest {
         int NUM_RETRIES = 1;
         int NUM_FAILURES = 2;
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        Observable.create(retry(origin, NUM_RETRIES)).subscribe(new TestObserver<String>(observer));
+        Observable.create(retry(origin, NUM_RETRIES)).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 2 attempts (first time fail, second time (1st retry) fail)
@@ -71,9 +71,9 @@ public class OperationRetryTest {
         int NUM_RETRIES = 3;
         int NUM_FAILURES = 2;
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        Observable.create(retry(origin, NUM_RETRIES)).subscribe(new TestObserver<String>(observer));
+        Observable.create(retry(origin, NUM_RETRIES)).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -91,9 +91,9 @@ public class OperationRetryTest {
     public void testInfiniteRetry() {
         int NUM_FAILURES = 20;
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        Observable.create(retry(origin)).subscribe(new TestObserver<String>(observer));
+        Observable.create(retry(origin)).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts

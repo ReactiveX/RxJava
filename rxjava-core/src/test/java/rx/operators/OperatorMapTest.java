@@ -27,8 +27,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 import rx.schedulers.Schedulers;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -36,9 +35,9 @@ import rx.util.functions.Func2;
 public class OperatorMapTest {
 
     @Mock
-    Subscriber<String> stringObserver;
+    Observer<String> stringObserver;
     @Mock
-    Subscriber<String> stringObserver2;
+    Observer<String> stringObserver2;
 
     final static Func2<String, Integer, String> APPEND_INDEX = new Func2<String, Integer, String>() {
         @Override
@@ -66,7 +65,7 @@ public class OperatorMapTest {
             }
 
         }));
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(1)).onNext("OneFirst");
@@ -106,7 +105,7 @@ public class OperatorMapTest {
             }
 
         });
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(1)).onNext("OneFirst");
@@ -142,7 +141,7 @@ public class OperatorMapTest {
             }
 
         });
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(1)).onNext("OneFirst");
@@ -166,7 +165,7 @@ public class OperatorMapTest {
             }
         }));
 
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
         verify(stringObserver, times(1)).onNext("one");
         verify(stringObserver, never()).onNext("two");
         verify(stringObserver, never()).onNext("three");

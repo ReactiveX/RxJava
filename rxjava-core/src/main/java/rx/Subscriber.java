@@ -20,15 +20,15 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Provides a mechanism for receiving push-based notifications.
  * <p>
- * After an Observer calls an {@link Observable}'s <code>Observable.subscribe</code> method, the {@link Observable} calls the 
- * Observer's <code>onNext</code> method to provide notifications. A well-behaved {@link Observable} will call an Observer's 
+ * After an Observer calls an {@link Observable}'s <code>Observable.subscribe</code> method, the {@link Observable} calls the
+ * Observer's <code>onNext</code> method to provide notifications. A well-behaved {@link Observable} will call an Observer's
  * <code>onCompleted</code> closure exactly once or the Observer's <code>onError</code> closure exactly once.
  * <p>
  * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
  * 
  * @param <T>
  */
-public abstract class Subscriber<T> implements Subscription {
+public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
     private final CompositeSubscription cs;
 
@@ -47,32 +47,26 @@ public abstract class Subscriber<T> implements Subscription {
         this(op.cs);
     }
 
-    /**
-     * Notifies the Observer that the {@link Observable} has finished sending push-based notifications.
-     * <p>
-     * The {@link Observable} will not call this closure if it calls <code>onError</code>.
-     */
-    public abstract void onCompleted();
+    public static <T> Subscriber<T> from(final Observer<? super T> o) {
+        return new Subscriber<T>() {
 
-    /**
-     * Notifies the Observer that the {@link Observable} has experienced an error condition.
-     * <p>
-     * If the {@link Observable} calls this closure, it will not thereafter call <code>onNext</code> or <code>onCompleted</code>.
-     * 
-     * @param e
-     */
-    public abstract void onError(Throwable e);
+            @Override
+            public void onCompleted() {
+                o.onCompleted();
+            }
 
-    /**
-     * Provides the Observer with new data.
-     * <p>
-     * The {@link Observable} calls this closure 1 or more times, unless it calls <code>onError</code> in which case this closure may never be called.
-     * <p>
-     * The {@link Observable} will not call this closure again after it calls either <code>onCompleted</code> or <code>onError</code>.
-     * 
-     * @param args
-     */
-    public abstract void onNext(T t);
+            @Override
+            public void onError(Throwable e) {
+                o.onError(e);
+            }
+
+            @Override
+            public void onNext(T t) {
+                o.onNext(t);
+            }
+
+        };
+    }
 
     /**
      * Used to register an unsubscribe callback.

@@ -26,9 +26,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.util.functions.Action1;
 
 public class AsyncSubjectTest {
@@ -40,8 +39,8 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        subject.toObservable().subscribe(observer);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -57,8 +56,8 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        subject.toObservable().subscribe(observer);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -75,8 +74,8 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        subject.toObservable().subscribe(observer);
 
         subject.onNext(null);
         subject.onCompleted();
@@ -91,14 +90,14 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
+        Observer<String> observer = mock(Observer.class);
 
         subject.onNext("one");
         subject.onNext("two");
         subject.onNext("three");
         subject.onCompleted();
 
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        subject.toObservable().subscribe(observer);
 
         verify(observer, times(1)).onNext("three");
         verify(observer, Mockito.never()).onError(any(Throwable.class));
@@ -110,7 +109,7 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
+        Observer<String> observer = mock(Observer.class);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -119,7 +118,7 @@ public class AsyncSubjectTest {
         RuntimeException re = new RuntimeException("failed");
         subject.onError(re);
 
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        subject.toObservable().subscribe(observer);
 
         verify(observer, times(1)).onError(re);
         verify(observer, Mockito.never()).onNext(any(String.class));
@@ -131,8 +130,8 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        subject.toObservable().subscribe(observer);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -152,8 +151,8 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        Subscription subscription = subject.toObservable().subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        Subscription subscription = subject.toObservable().subscribe(observer);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -177,8 +176,8 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = mock(Subscriber.class);
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        Observer<String> observer = mock(Observer.class);
+        subject.toObservable().subscribe(observer);
 
         subject.onCompleted();
 

@@ -23,8 +23,7 @@ import org.junit.Test;
 
 import rx.Notification;
 import rx.Observable;
-import rx.Subscriber;
-import rx.observers.TestObserver;
+import rx.Observer;
 
 public class OperationDematerializeTest {
 
@@ -34,8 +33,8 @@ public class OperationDematerializeTest {
         Observable<Notification<Integer>> notifications = Observable.from(1, 2).materialize();
         Observable<Integer> dematerialize = notifications.dematerialize();
 
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        dematerialize.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        dematerialize.subscribe(observer);
 
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(2);
@@ -50,8 +49,8 @@ public class OperationDematerializeTest {
         Observable<Integer> observable = Observable.error(exception);
         Observable<Integer> dematerialize = Observable.create(dematerialize(observable.materialize()));
 
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        dematerialize.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        dematerialize.subscribe(observer);
 
         verify(observer, times(1)).onError(exception);
         verify(observer, times(0)).onCompleted();
@@ -65,8 +64,8 @@ public class OperationDematerializeTest {
         Observable<Integer> observable = Observable.error(exception);
         Observable<Integer> dematerialize = Observable.create(dematerialize(observable.materialize()));
 
-        Subscriber<Integer> observer = mock(Subscriber.class);
-        dematerialize.subscribe(new TestObserver<Integer>(observer));
+        Observer<Integer> observer = mock(Observer.class);
+        dematerialize.subscribe(observer);
 
         verify(observer, times(1)).onError(exception);
         verify(observer, times(0)).onCompleted();

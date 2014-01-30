@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -31,10 +30,10 @@ public class ThrottleWithTimeoutTests {
     @Test
     public void testThrottle() {
         @SuppressWarnings("unchecked")
-        Subscriber<Integer> observer = mock(Subscriber.class);
+        Observer<Integer> observer = mock(Observer.class);
         TestScheduler s = new TestScheduler();
         PublishSubject<Integer> o = PublishSubject.create();
-        o.toObservable().throttleWithTimeout(500, TimeUnit.MILLISECONDS, s).subscribe(new TestObserver<Integer>(observer));
+        o.toObservable().throttleWithTimeout(500, TimeUnit.MILLISECONDS, s).subscribe(observer);
 
         // send events with simulated time increments
         s.advanceTimeTo(0, TimeUnit.MILLISECONDS);

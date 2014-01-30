@@ -28,9 +28,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
@@ -334,18 +334,18 @@ public class OperationWindowTest {
         PublishSubject<Integer> boundary = PublishSubject.create();
 
         @SuppressWarnings("unchecked")
-        final Subscriber<Object> o = mock(Subscriber.class);
+        final Observer<Object> o = mock(Observer.class);
 
-        final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
+        final List<Observer<Object>> values = new ArrayList<Observer<Object>>();
 
         Subscriber<Observable<Integer>> wo = new Subscriber<Observable<Integer>>() {
             @Override
             public void onNext(Observable<Integer> args) {
                 @SuppressWarnings("unchecked")
-                final Subscriber<Object> mo = mock(Subscriber.class);
+                final Observer<Object> mo = mock(Observer.class);
                 values.add(mo);
 
-                args.subscribe(new TestObserver<Object>(mo));
+                args.subscribe(mo);
             }
 
             @Override
@@ -359,7 +359,7 @@ public class OperationWindowTest {
             }
         };
 
-        source.toObservable().window(boundary.toObservable()).subscribe(new TestObserver<Observable<Integer>>(wo));
+        source.toObservable().window(boundary.toObservable()).subscribe(wo);
 
         int n = 30;
         for (int i = 0; i < n; i++) {
@@ -373,7 +373,7 @@ public class OperationWindowTest {
         assertEquals(n / 3, values.size());
 
         int j = 0;
-        for (Subscriber<Object> mo : values) {
+        for (Observer<Object> mo : values) {
             for (int i = 0; i < 3; i++) {
                 verify(mo).onNext(j + i);
             }
@@ -392,18 +392,18 @@ public class OperationWindowTest {
         PublishSubject<Integer> boundary = PublishSubject.create();
 
         @SuppressWarnings("unchecked")
-        final Subscriber<Object> o = mock(Subscriber.class);
+        final Observer<Object> o = mock(Observer.class);
 
-        final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
+        final List<Observer<Object>> values = new ArrayList<Observer<Object>>();
 
         Subscriber<Observable<Integer>> wo = new Subscriber<Observable<Integer>>() {
             @Override
             public void onNext(Observable<Integer> args) {
                 @SuppressWarnings("unchecked")
-                final Subscriber<Object> mo = mock(Subscriber.class);
+                final Observer<Object> mo = mock(Observer.class);
                 values.add(mo);
 
-                args.subscribe(new TestObserver<Object>(mo));
+                args.subscribe(mo);
             }
 
             @Override
@@ -417,7 +417,7 @@ public class OperationWindowTest {
             }
         };
 
-        source.toObservable().window(boundary.toObservable()).subscribe(new TestObserver<Observable<Integer>>(wo));
+        source.toObservable().window(boundary.toObservable()).subscribe(wo);
 
         int n = 30;
         for (int i = 0; i < n; i++) {
@@ -431,7 +431,7 @@ public class OperationWindowTest {
         assertEquals(n / 3, values.size());
 
         int j = 0;
-        for (Subscriber<Object> mo : values) {
+        for (Observer<Object> mo : values) {
             for (int i = 0; i < 3; i++) {
                 verify(mo).onNext(j + i);
             }
@@ -450,18 +450,18 @@ public class OperationWindowTest {
         PublishSubject<Integer> boundary = PublishSubject.create();
 
         @SuppressWarnings("unchecked")
-        final Subscriber<Object> o = mock(Subscriber.class);
+        final Observer<Object> o = mock(Observer.class);
 
-        final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
+        final List<Observer<Object>> values = new ArrayList<Observer<Object>>();
 
         Subscriber<Observable<Integer>> wo = new Subscriber<Observable<Integer>>() {
             @Override
             public void onNext(Observable<Integer> args) {
                 @SuppressWarnings("unchecked")
-                final Subscriber<Object> mo = mock(Subscriber.class);
+                final Observer<Object> mo = mock(Observer.class);
                 values.add(mo);
 
-                args.subscribe(new TestObserver<Object>(mo));
+                args.subscribe(mo);
             }
 
             @Override
@@ -475,7 +475,7 @@ public class OperationWindowTest {
             }
         };
 
-        source.toObservable().window(boundary.toObservable()).subscribe(new TestObserver<Observable<Integer>>(wo));
+        source.toObservable().window(boundary.toObservable()).subscribe(wo);
 
         source.onNext(0);
         source.onNext(1);
@@ -485,7 +485,7 @@ public class OperationWindowTest {
 
         assertEquals(1, values.size());
 
-        Subscriber<Object> mo = values.get(0);
+        Observer<Object> mo = values.get(0);
 
         verify(mo).onNext(0);
         verify(mo).onNext(1);
@@ -502,18 +502,18 @@ public class OperationWindowTest {
         PublishSubject<Integer> boundary = PublishSubject.create();
 
         @SuppressWarnings("unchecked")
-        final Subscriber<Object> o = mock(Subscriber.class);
+        final Observer<Object> o = mock(Observer.class);
 
-        final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
+        final List<Observer<Object>> values = new ArrayList<Observer<Object>>();
 
         Subscriber<Observable<Integer>> wo = new Subscriber<Observable<Integer>>() {
             @Override
             public void onNext(Observable<Integer> args) {
                 @SuppressWarnings("unchecked")
-                final Subscriber<Object> mo = mock(Subscriber.class);
+                final Observer<Object> mo = mock(Observer.class);
                 values.add(mo);
 
-                args.subscribe(new TestObserver<Object>(mo));
+                args.subscribe(mo);
             }
 
             @Override
@@ -527,7 +527,7 @@ public class OperationWindowTest {
             }
         };
 
-        source.toObservable().window(boundary.toObservable()).subscribe(new TestObserver<Observable<Integer>>(wo));
+        source.toObservable().window(boundary.toObservable()).subscribe(wo);
 
         source.onNext(0);
         source.onNext(1);
@@ -537,7 +537,7 @@ public class OperationWindowTest {
 
         assertEquals(1, values.size());
 
-        Subscriber<Object> mo = values.get(0);
+        Observer<Object> mo = values.get(0);
 
         verify(mo).onNext(0);
         verify(mo).onNext(1);

@@ -21,7 +21,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.SafeObserver;
+import rx.observers.SafeSubscriber;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -109,7 +109,7 @@ public final class OperationTakeWhile {
                 // Using AtomicObserver because the unsubscribe, onCompleted, onError and error handling behavior
                 // needs "isFinished" logic to not send duplicated events
                 // The 'testTakeWhile1' and 'testTakeWhile2' tests fail without this.
-                this.observer = new SafeObserver<T>(observer);
+                this.observer = new SafeSubscriber<T>(observer);
             }
 
             @Override

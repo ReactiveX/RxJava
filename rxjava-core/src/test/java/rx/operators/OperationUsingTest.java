@@ -24,9 +24,9 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Func0;
@@ -65,10 +65,10 @@ public class OperationUsingTest {
         };
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = (Subscriber<String>) mock(Subscriber.class);
+        Observer<String> observer = (Observer<String>) mock(Observer.class);
         Observable<String> observable = Observable.create(using(
                 resourceFactory, observableFactory));
-        observable.subscribe(new TestObserver<String>(observer));
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext("Hello");
@@ -115,11 +115,11 @@ public class OperationUsingTest {
         };
 
         @SuppressWarnings("unchecked")
-        Subscriber<String> observer = (Subscriber<String>) mock(Subscriber.class);
+        Observer<String> observer = (Observer<String>) mock(Observer.class);
         Observable<String> observable = Observable.create(using(
                 resourceFactory, observableFactory));
-        observable.subscribe(new TestObserver<String>(observer));
-        observable.subscribe(new TestObserver<String>(observer));
+        observable.subscribe(observer);
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
 
