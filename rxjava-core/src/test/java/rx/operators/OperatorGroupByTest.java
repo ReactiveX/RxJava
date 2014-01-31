@@ -31,6 +31,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
@@ -163,7 +164,7 @@ public class OperatorGroupByTest {
         Observable<Event> es = Observable.create(new Observable.OnSubscribeFunc<Event>() {
 
             @Override
-            public Subscription onSubscribe(final Subscriber<? super Event> observer) {
+            public Subscription onSubscribe(final Observer<? super Event> observer) {
                 System.out.println("*** Subscribing to EventStream ***");
                 subscribeCounter.incrementAndGet();
                 new Thread(new Runnable() {

@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
@@ -61,7 +61,7 @@ public class OperationToFutureTest {
         Observable<String> obs = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super String> observer) {
+            public Subscription onSubscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new TestException());
                 return Subscriptions.empty();

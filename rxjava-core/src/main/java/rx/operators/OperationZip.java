@@ -150,7 +150,7 @@ public final class OperationZip {
 
             final List<ItemObserver<T>> all = new ArrayList<ItemObserver<T>>();
 
-            Observer<List<T>> o2 = new Observer<List<T>>(observer) {
+            Observer<List<T>> o2 = new Observer<List<T>>() {
                 boolean done;
                 @Override
                 public void onCompleted() {
@@ -198,7 +198,7 @@ public final class OperationZip {
          * @param <T>
          *            the element type
          */
-        private static final class ItemObserver<T> implements Observer<T> {
+        private static final class ItemObserver<T> implements Observer<T>, Subscription {
             /** Reader-writer lock. */
             protected final ReadWriteLock rwLock;
             /** The queue. */
@@ -241,7 +241,6 @@ public final class OperationZip {
                 this.source = source;
                 this.observer = observer;
                 this.cancel = cancel;
-                add(toSource);
             }
 
             @Override
@@ -289,6 +288,11 @@ public final class OperationZip {
             /** Connect to the source observable. */
             public void connect() {
                 toSource.set(source.subscribe(this));
+            }
+
+            @Override
+            public void unsubscribe() {
+                toSource.unsubscribe();
             }
 
             private void runCollector() {

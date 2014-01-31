@@ -20,10 +20,8 @@ import java.util.Map;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.MultipleAssignmentSubscription;
-import rx.subscriptions.SerialSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func0;
 

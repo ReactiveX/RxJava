@@ -29,7 +29,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.observables.BlockingObservable;
 import rx.schedulers.Schedulers;
@@ -241,7 +241,7 @@ public class OperationNextTest {
         final Observable<Integer> obs = Observable.create(new Observable.OnSubscribeFunc<Integer>() {
 
             @Override
-            public Subscription onSubscribe(final Subscriber<? super Integer> o) {
+            public Subscription onSubscribe(final Observer<? super Integer> o) {
                 new Thread(new Runnable() {
 
                     @Override

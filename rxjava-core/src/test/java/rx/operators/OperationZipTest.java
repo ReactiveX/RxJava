@@ -30,7 +30,6 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.operators.OperationReduceTest.CustomException;
 import rx.subjects.PublishSubject;
@@ -666,10 +665,10 @@ public class OperationZipTest {
 
     private static class TestObservable implements Observable.OnSubscribeFunc<String> {
 
-        Subscriber<? super String> observer;
+        Observer<? super String> observer;
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super String> Observer) {
+        public Subscription onSubscribe(Observer<? super String> Observer) {
             // just store the variable where it can be accessed so we can manually trigger it
             this.observer = Observer;
             return Subscriptions.empty();
@@ -1040,7 +1039,7 @@ public class OperationZipTest {
                     public Integer call(Integer a, Integer b) {
                         return a + b;
                     }
-                }).subscribe(new Subscriber<Integer>() {
+                }).subscribe(new Observer<Integer>() {
 
             @Override
             public void onCompleted() {

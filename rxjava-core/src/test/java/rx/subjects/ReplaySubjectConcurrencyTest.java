@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -57,7 +58,7 @@ public class ReplaySubjectConcurrencyTest {
                 Observable.create(new OnSubscribeFunc<Long>() {
 
                     @Override
-                    public Subscription onSubscribe(Subscriber<? super Long> o) {
+                    public Subscription onSubscribe(Observer<? super Long> o) {
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
                             o.onNext(l);
@@ -167,7 +168,7 @@ public class ReplaySubjectConcurrencyTest {
                 Observable.create(new OnSubscribeFunc<Long>() {
 
                     @Override
-                    public Subscription onSubscribe(Subscriber<? super Long> o) {
+                    public Subscription onSubscribe(Observer<? super Long> o) {
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
                             o.onNext(l);

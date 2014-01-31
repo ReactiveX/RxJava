@@ -18,7 +18,7 @@ package rx.joins;
 import java.util.Map;
 
 import rx.Observable;
-import rx.Subscriber;
+import rx.Observer;
 import rx.util.functions.Action1;
 
 /**
@@ -26,7 +26,7 @@ import rx.util.functions.Action1;
  */
 public abstract class Plan0<R> {
     public abstract ActivePlan0 activate(Map<Object, JoinObserver> externalSubscriptions,
-            Subscriber<R> observer, Action1<ActivePlan0> deactivate);
+            Observer<R> observer, Action1<ActivePlan0> deactivate);
 
     @SuppressWarnings("unchecked")
     public static <T> JoinObserver1<T> createObserver(

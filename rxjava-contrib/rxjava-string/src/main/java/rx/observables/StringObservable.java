@@ -27,9 +27,9 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.Observable.OnSubscribeFunc;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 

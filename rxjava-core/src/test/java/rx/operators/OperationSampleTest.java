@@ -26,7 +26,6 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
@@ -51,7 +50,7 @@ public class OperationSampleTest {
     public void testSample() {
         Observable<Long> source = Observable.create(new Observable.OnSubscribeFunc<Long>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super Long> observer1) {
+            public Subscription onSubscribe(final Observer<? super Long> observer1) {
                 scheduler.schedule(new Action0() {
                     @Override
                     public void call() {

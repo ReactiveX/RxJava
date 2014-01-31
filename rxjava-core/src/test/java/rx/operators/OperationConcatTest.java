@@ -32,7 +32,6 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
@@ -90,7 +89,7 @@ public class OperationConcatTest {
         Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super Observable<String>> observer) {
+            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
                 // simulate what would happen in an observable
                 observer.onNext(odds);
                 observer.onNext(even);
@@ -162,7 +161,7 @@ public class OperationConcatTest {
         Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
 
             @Override
-            public Subscription onSubscribe(final Subscriber<? super Observable<String>> observer) {
+            public Subscription onSubscribe(final Observer<? super Observable<String>> observer) {
                 final BooleanSubscription s = new BooleanSubscription();
                 parent.set(new Thread(new Runnable() {
 
@@ -343,7 +342,7 @@ public class OperationConcatTest {
         Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super Observable<String>> observer) {
+            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
                 // simulate what would happen in an observable
                 observer.onNext(Observable.create(w1));
                 observer.onNext(Observable.create(w2));
@@ -515,7 +514,7 @@ public class OperationConcatTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             t = new Thread(new Runnable() {
 
                 @Override

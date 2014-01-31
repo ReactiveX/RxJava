@@ -15,7 +15,7 @@
  */
 package rx.android.observables;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,12 +29,9 @@ import org.robolectric.annotation.Config;
 import rx.Observable;
 import rx.Observer;
 import rx.observers.TestObserver;
-import rx.operators.OperationObserveFromAndroidComponent;
 import android.app.Activity;
 import android.app.Fragment;
-import android.os.Build;
 import android.support.v4.app.FragmentActivity;
-import rx.android.observables.AndroidObservable;
 
 
 @RunWith(RobolectricTestRunner.class)

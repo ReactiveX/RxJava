@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import rx.Observer;
 import rx.Subscription;
-import rx.observers.TestSubscriber;
+import rx.observers.TestObserver;
 import rx.operators.OperationToObservableFuture.ToObservableFuture;
 
 public class OperationToObservableFutureTest {
@@ -36,7 +36,7 @@ public class OperationToObservableFutureTest {
         ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
         Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = ob.onSubscribe(new TestSubscriber<Object>(o));
+        Subscription sub = ob.onSubscribe(new TestObserver<Object>(o));
         sub.unsubscribe();
 
         verify(o, times(1)).onNext(value);
@@ -53,7 +53,7 @@ public class OperationToObservableFutureTest {
         ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
         Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = ob.onSubscribe(new TestSubscriber<Object>(o));
+        Subscription sub = ob.onSubscribe(new TestObserver<Object>(o));
         sub.unsubscribe();
 
         verify(o, never()).onNext(null);

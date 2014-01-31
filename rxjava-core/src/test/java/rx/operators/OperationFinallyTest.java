@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.util.functions.Action0;
 
 public class OperationFinallyTest {

@@ -16,6 +16,8 @@
 package rx.observables;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -24,7 +26,6 @@ import java.nio.charset.MalformedInputException;
 
 import org.junit.Test;
 
-import static org.mockito.Mockito.*;
 import rx.Observable;
 import rx.Observer;
 import rx.observers.TestObserver;

@@ -112,7 +112,7 @@ public class OperatorTakeTest {
     public void testTakeDoesntLeakErrors() {
         Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super String> observer) {
+            public Subscription onSubscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new Throwable("test failed"));
                 return Subscriptions.empty();
@@ -137,7 +137,7 @@ public class OperatorTakeTest {
         final AtomicBoolean unSubscribed = new AtomicBoolean(false);
         Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super String> observer) {
+            public Subscription onSubscribe(Observer<? super String> observer) {
                 subscribed.set(true);
                 observer.onError(new Throwable("test failed"));
                 return new Subscription() {
@@ -217,7 +217,7 @@ public class OperatorTakeTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super String> observer) {
+        public Subscription onSubscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

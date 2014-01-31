@@ -30,6 +30,7 @@ import rx.Observable.OnSubscribe;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
@@ -66,7 +67,7 @@ public final class OperationReplay {
         SubjectWrapper<T> s = new SubjectWrapper<T>(new OnSubscribe<T>() {
 
             @Override
-            public void call(Observer<? super T> o) {
+            public void call(Subscriber<? super T> o) {
                 // TODO HACK between OnSubscribeFunc and Action1
                 subscriberOf(observedOn).onSubscribe(o);
             }
@@ -729,7 +730,7 @@ public final class OperationReplay {
             super(new OnSubscribe<TResult>() {
 
                 @Override
-                public void call(Observer<? super TResult> sub) {
+                public void call(Subscriber<? super TResult> sub) {
                     onSubscribe.onSubscribe(sub);
                 }
 

@@ -28,7 +28,6 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.CompositeSubscription;
@@ -49,7 +48,7 @@ public class OperationAmbTest {
 
             @Override
             public Subscription onSubscribe(
-                    final Subscriber<? super String> observer) {
+                    final Observer<? super String> observer) {
                 CompositeSubscription parentSubscription = new CompositeSubscription();
                 long delay = interval;
                 for (final String value : values) {

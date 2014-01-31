@@ -15,14 +15,13 @@
  */
 package rx.android.schedulers;
 
-import android.os.Handler;
+import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Func2;
-
-import java.util.concurrent.TimeUnit;
+import android.os.Handler;
 
 /**
  * Schedules actions to run on an Android Handler thread.

@@ -40,7 +40,6 @@ import org.robolectric.annotation.Config;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.TestObserver;

@@ -23,7 +23,6 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.subjects.PublishSubject;
 import rx.util.functions.Func2;
 

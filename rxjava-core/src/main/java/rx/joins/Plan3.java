@@ -18,7 +18,7 @@ package rx.joins;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Subscriber;
+import rx.Observer;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Action3;
@@ -39,7 +39,7 @@ public class Plan3<T1, T2, T3, R> extends Plan0<R> {
 
     @Override
     public ActivePlan0 activate(Map<Object, JoinObserver> externalSubscriptions,
-            final Subscriber<R> observer, final Action1<ActivePlan0> deactivate) {
+            final Observer<R> observer, final Action1<ActivePlan0> deactivate) {
         Action1<Throwable> onError = Actions.onErrorFrom(observer);
 
         final JoinObserver1<T1> firstJoinObserver = createObserver(externalSubscriptions, expression.first(), onError);

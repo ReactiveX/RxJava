@@ -45,7 +45,7 @@ public class RefCountTests {
         final AtomicInteger unsubscriptionCount = new AtomicInteger();
         Observable<Integer> observable = Observable.create(new Observable.OnSubscribeFunc<Integer>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super Integer> observer) {
+            public Subscription onSubscribe(Observer<? super Integer> observer) {
                 subscriptionCount.incrementAndGet();
                 return Subscriptions.create(new Action0() {
                     @Override

@@ -25,7 +25,6 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -196,7 +195,7 @@ public class OperationUsingTest {
             public Observable<Integer> call(Subscription subscription) {
                 return Observable.create(new OnSubscribeFunc<Integer>() {
                     @Override
-                    public Subscription onSubscribe(Subscriber<? super Integer> t1) {
+                    public Subscription onSubscribe(Observer<? super Integer> t1) {
                         throw new TestException();
                     }
                 });

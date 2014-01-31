@@ -16,6 +16,9 @@
 
 package rx.util.async.operators;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import static org.mockito.Mockito.*;
 import rx.Observable;
 import rx.Observer;
 import rx.observers.TestObserver;

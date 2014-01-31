@@ -65,18 +65,6 @@ public final class SynchronizedObserver<T> implements Observer<T> {
         this.lock = lock;
     }
 
-    public SynchronizedObserver(Subscriber<? super T> subscriber, Object lock) {
-        this.observer = subscriber;
-        this.subscription = new SafeObservableSubscription(subscriber);
-        this.lock = lock;
-    }
-
-    public SynchronizedObserver(Subscriber<? super T> subscriber) {
-        this.observer = subscriber;
-        this.subscription = new SafeObservableSubscription(subscriber);
-        this.lock = this;
-    }
-
     /**
      * Used when synchronizing an Observer without access to the subscription.
      * 

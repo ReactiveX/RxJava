@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
@@ -217,7 +218,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
 
         Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super Integer> observer) {
+            public Subscription onSubscribe(final Observer<? super Integer> observer) {
 
                 return getScheduler().schedule(null, new Func2<Scheduler, Void, Subscription>() {
                     @Override

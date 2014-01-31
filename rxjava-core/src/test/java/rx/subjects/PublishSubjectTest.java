@@ -28,7 +28,6 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;

@@ -17,7 +17,6 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import android.app.Activity;

@@ -24,7 +24,6 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.util.functions.Func1;
 
 public class OperationLastTest {

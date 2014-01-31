@@ -15,11 +15,11 @@
  */
 package rx.lang.jruby;
 
-import org.jruby.RubyProc;
 import org.jruby.Ruby;
+import org.jruby.RubyProc;
+import org.jruby.javasupport.JavaUtil;
 import org.jruby.runtime.ThreadContext;
 import org.jruby.runtime.builtin.IRubyObject;
-import org.jruby.javasupport.JavaUtil;
 
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;

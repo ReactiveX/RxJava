@@ -115,7 +115,7 @@ public class ConcatTests {
         Observable<Movie> o1 = Observable.create(new OnSubscribeFunc<Movie>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super Movie> o) {
+            public Subscription onSubscribe(Observer<? super Movie> o) {
                 o.onNext(new HorrorMovie());
                 o.onNext(new Movie());
                 //                o.onNext(new Media()); // correctly doesn't compile

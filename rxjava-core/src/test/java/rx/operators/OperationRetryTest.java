@@ -26,7 +26,6 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
@@ -117,7 +116,7 @@ public class OperationRetryTest {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super String> o) {
+        public Subscription onSubscribe(Observer<? super String> o) {
             o.onNext("beginningEveryTime");
             if (count.incrementAndGet() <= numFailures) {
                 o.onError(new RuntimeException("forced failure: " + count.get()));

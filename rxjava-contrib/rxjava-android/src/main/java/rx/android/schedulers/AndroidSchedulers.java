@@ -15,9 +15,9 @@
  */
 package rx.android.schedulers;
 
+import rx.Scheduler;
 import android.os.Handler;
 import android.os.Looper;
-import rx.Scheduler;
 
 /**
  * Schedulers that have Android specific functionality

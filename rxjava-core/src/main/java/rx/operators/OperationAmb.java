@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
@@ -137,7 +136,7 @@ public class OperationAmb {
         };
     }
 
-    private static class AmbObserver<T> extends Subscriber<T> {
+    private static class AmbObserver<T> implements Observer<T> {
 
         private static final int NONE = -1;
 

@@ -24,7 +24,6 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 
 public class OperationSynchronizeTest {
@@ -186,7 +185,7 @@ public class OperationSynchronizeTest {
      */
     private static class TestObservable implements Observable.OnSubscribeFunc<String> {
 
-        Subscriber<? super String> observer = null;
+        Observer<? super String> observer = null;
 
         public TestObservable(Subscription s) {
         }
@@ -207,7 +206,7 @@ public class OperationSynchronizeTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super String> observer) {
+        public Subscription onSubscribe(final Observer<? super String> observer) {
             this.observer = observer;
             return new Subscription() {
 

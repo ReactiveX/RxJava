@@ -86,13 +86,14 @@ public final class OperationSynchronize<T> {
         private Object lock;
 
         public Subscription onSubscribe(Observer<? super T> observer) {
+            SafeObservableSubscription subscription = new SafeObservableSubscription();
             if (lock == null) {
-                atomicObserver = new SynchronizedObserver<T>(observer);
+                atomicObserver = new SynchronizedObserver<T>(observer, subscription);
             }
             else {
-                atomicObserver = new SynchronizedObserver<T>(observer, lock);
+                atomicObserver = new SynchronizedObserver<T>(observer, subscription, lock);
             }
-            return innerObservable.subscribe(atomicObserver);
+            return subscription.wrap(innerObservable.subscribe(atomicObserver));
         }
 
     }

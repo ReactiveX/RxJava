@@ -25,7 +25,6 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
@@ -112,7 +111,7 @@ public class OperationOnErrorResumeNextViaObservableTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super String> observer) {
+        public Subscription onSubscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

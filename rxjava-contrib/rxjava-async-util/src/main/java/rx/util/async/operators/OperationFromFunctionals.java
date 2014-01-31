@@ -19,7 +19,6 @@ import java.util.concurrent.Callable;
 
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;

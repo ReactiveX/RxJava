@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 
 public class OperationTakeUntilTest {
@@ -91,9 +90,11 @@ public class OperationTakeUntilTest {
         source.sendOnNext("one");
         source.sendOnNext("two");
         source.sendOnError(error);
+        source.sendOnNext("three");
 
         verify(result, times(1)).onNext("one");
         verify(result, times(1)).onNext("two");
+        verify(result, times(0)).onNext("three");
         verify(result, times(1)).onError(error);
         verify(sSource, times(1)).unsubscribe();
         verify(sOther, times(1)).unsubscribe();
@@ -115,9 +116,11 @@ public class OperationTakeUntilTest {
         source.sendOnNext("one");
         source.sendOnNext("two");
         other.sendOnError(error);
+        source.sendOnNext("three");
 
         verify(result, times(1)).onNext("one");
         verify(result, times(1)).onNext("two");
+        verify(result, times(0)).onNext("three");
         verify(result, times(1)).onError(error);
         verify(result, times(0)).onCompleted();
         verify(sSource, times(1)).unsubscribe();
@@ -125,6 +128,9 @@ public class OperationTakeUntilTest {
 
     }
 
+    /**
+     * If the 'other' onCompletes then we unsubscribe from the source and onComplete
+     */
     @Test
     @SuppressWarnings("unchecked")
     public void testTakeUntilOtherCompleted() {
@@ -139,18 +145,20 @@ public class OperationTakeUntilTest {
         source.sendOnNext("one");
         source.sendOnNext("two");
         other.sendOnCompleted();
+        source.sendOnNext("three");
 
         verify(result, times(1)).onNext("one");
         verify(result, times(1)).onNext("two");
-        verify(result, times(0)).onCompleted();
-        verify(sSource, times(0)).unsubscribe();
-        verify(sOther, times(0)).unsubscribe();
+        verify(result, times(0)).onNext("three");
+        verify(result, times(1)).onCompleted();
+        verify(sSource, times(1)).unsubscribe();
+        verify(sOther, times(1)).unsubscribe(); // unsubscribed since SafeSubscriber unsubscribes after onComplete
 
     }
 
     private static class TestObservable implements Observable.OnSubscribeFunc<String> {
 
-        Subscriber<? super String> observer = null;
+        Observer<? super String> observer = null;
         Subscription s;
 
         public TestObservable(Subscription s) {
@@ -173,7 +181,7 @@ public class OperationTakeUntilTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super String> observer) {
+        public Subscription onSubscribe(final Observer<? super String> observer) {
             this.observer = observer;
             return s;
         }

@@ -49,7 +49,7 @@ import rx.operators.OperationDelay;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
-import rx.operators.OperationDoOnEach;
+import rx.operators.OperatorDoOnEach;
 import rx.operators.OperationElementAt;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
@@ -4245,7 +4245,7 @@ public class Observable<T> {
 
         };
 
-        return create(OperationDoOnEach.doOnEach(this, observer));
+        return lift(new OperatorDoOnEach<T>(observer));
     }
 
     /**
@@ -4278,7 +4278,7 @@ public class Observable<T> {
 
         };
 
-        return create(OperationDoOnEach.doOnEach(this, observer));
+        return lift(new OperatorDoOnEach<T>(observer));
     }
 
     /**
@@ -4293,7 +4293,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229307.aspx">MSDN: Observable.Do</a>
      */
     public final Observable<T> doOnEach(Observer<? super T> observer) {
-        return create(OperationDoOnEach.doOnEach(this, observer));
+        return lift(new OperatorDoOnEach<T>(observer));
     }
 
     /**
@@ -4324,7 +4324,7 @@ public class Observable<T> {
 
         };
 
-        return create(OperationDoOnEach.doOnEach(this, observer));
+        return lift(new OperatorDoOnEach<T>(observer));
     }
 
     /**
@@ -4355,7 +4355,7 @@ public class Observable<T> {
 
         };
 
-        return create(OperationDoOnEach.doOnEach(this, observer));
+        return lift(new OperatorDoOnEach<T>(observer));
     }
 
     /**

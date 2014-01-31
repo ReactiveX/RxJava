@@ -210,7 +210,7 @@ public final class OperationTakeTimed {
          * @param <T>
          *            the observed value type
          */
-        private static final class SourceObserver<T> implements Observer<T> implements Action0 {
+        private static final class SourceObserver<T> implements Observer<T>, Action0 {
             final Observer<? super T> observer;
             final Subscription cancel;
             final AtomicInteger state = new AtomicInteger();

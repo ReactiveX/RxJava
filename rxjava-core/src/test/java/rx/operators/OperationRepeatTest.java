@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
@@ -37,7 +37,7 @@ public class OperationRepeatTest {
         int value = Observable.create(new OnSubscribeFunc<Integer>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super Integer> o) {
+            public Subscription onSubscribe(Observer<? super Integer> o) {
                 o.onNext(count.incrementAndGet());
                 o.onCompleted();
                 return Subscriptions.empty();

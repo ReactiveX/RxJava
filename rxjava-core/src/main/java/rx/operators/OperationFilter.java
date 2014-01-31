@@ -43,7 +43,8 @@ public final class OperationFilter<T> {
         }
 
         public Subscription onSubscribe(final Observer<? super T> observer) {
-            return that.subscribe(new Observer<T>(observer) {
+            final SafeObservableSubscription subscription = new SafeObservableSubscription();
+            return subscription.wrap(that.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     try {
                         if (predicate.call(value)) {
@@ -51,7 +52,8 @@ public final class OperationFilter<T> {
                         }
                     } catch (Throwable ex) {
                         observer.onError(ex);
-                        unsubscribe();
+                        // this will work if the sequence is asynchronous, it will have no effect on a synchronous observable
+                        subscription.unsubscribe();
                     }
                 }
 
@@ -62,7 +64,7 @@ public final class OperationFilter<T> {
                 public void onCompleted() {
                     observer.onCompleted();
                 }
-            });
+            }));
         }
 
     }

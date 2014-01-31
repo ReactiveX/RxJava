@@ -27,7 +27,6 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
@@ -40,7 +39,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
         Observable<String> w = Observable.create(new Observable.OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super String> observer) {
+            public Subscription onSubscribe(Observer<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new Throwable("injected failure"));
                 return Subscriptions.empty();
@@ -155,7 +154,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super String> observer) {
+        public Subscription onSubscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

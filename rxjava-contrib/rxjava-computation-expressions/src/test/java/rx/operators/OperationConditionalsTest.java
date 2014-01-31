@@ -15,7 +15,6 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
@@ -37,7 +36,6 @@ import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
-import rx.util.functions.Action1;
 import rx.util.functions.Func0;
 
 public class OperationConditionalsTest {

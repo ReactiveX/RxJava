@@ -21,6 +21,8 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 import rx.util.functions.Functions;
 
@@ -106,7 +108,7 @@ public final class OperationDistinctUntilChanged {
 
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
-            return source.subscribe(new Observer<T>(observer) {
+            final Subscription sourceSub = source.subscribe(new Observer<T>() {
                 private U lastEmittedKey;
                 private boolean hasEmitted;
 
@@ -131,6 +133,13 @@ public final class OperationDistinctUntilChanged {
                     } else if (equalityComparator.compare(lastKey, nextKey) != 0) {
                         observer.onNext(next);
                     }
+                }
+            });
+
+            return Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    sourceSub.unsubscribe();
                 }
             });
         }

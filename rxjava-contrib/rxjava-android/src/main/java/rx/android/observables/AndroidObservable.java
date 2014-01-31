@@ -16,13 +16,10 @@
 package rx.android.observables;
 
 import rx.Observable;
-import rx.Observer;
 import rx.operators.OperationObserveFromAndroidComponent;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Build;
-import android.support.v4.app.FragmentActivity;
 
 
 public final class AndroidObservable {

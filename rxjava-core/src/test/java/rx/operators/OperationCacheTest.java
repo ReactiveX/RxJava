@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.BooleanSubscription;
 import rx.util.functions.Action1;
@@ -38,7 +38,7 @@ public class OperationCacheTest {
         Observable<String> o = Observable.create(cache(Observable.create(new Observable.OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(final Subscriber<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 final BooleanSubscription subscription = new BooleanSubscription();
                 new Thread(new Runnable() {
 

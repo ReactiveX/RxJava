@@ -29,7 +29,6 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
@@ -127,7 +126,7 @@ public class OperationWindowTest {
 
         Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super String> observer) {
+            public Subscription onSubscribe(Observer<? super String> observer) {
                 push(observer, "one", 10);
                 push(observer, "two", 90);
                 push(observer, "three", 110);
@@ -161,7 +160,7 @@ public class OperationWindowTest {
 
         Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super String> observer) {
+            public Subscription onSubscribe(Observer<? super String> observer) {
                 push(observer, "one", 98);
                 push(observer, "two", 99);
                 push(observer, "three", 100);
@@ -191,7 +190,7 @@ public class OperationWindowTest {
 
         Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super String> observer) {
+            public Subscription onSubscribe(Observer<? super String> observer) {
                 push(observer, "one", 10);
                 push(observer, "two", 60);
                 push(observer, "three", 110);
@@ -204,7 +203,7 @@ public class OperationWindowTest {
 
         Observable<Object> openings = Observable.create(new Observable.OnSubscribeFunc<Object>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super Object> observer) {
+            public Subscription onSubscribe(Observer<? super Object> observer) {
                 push(observer, new Object(), 50);
                 push(observer, new Object(), 200);
                 complete(observer, 250);
@@ -217,7 +216,7 @@ public class OperationWindowTest {
             public Observable<Object> call(Object opening) {
                 return Observable.create(new Observable.OnSubscribeFunc<Object>() {
                     @Override
-                    public Subscription onSubscribe(Subscriber<? super Object> observer) {
+                    public Subscription onSubscribe(Observer<? super Object> observer) {
                         push(observer, new Object(), 100);
                         complete(observer, 101);
                         return Subscriptions.empty();
@@ -242,7 +241,7 @@ public class OperationWindowTest {
 
         Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super String> observer) {
+            public Subscription onSubscribe(Observer<? super String> observer) {
                 push(observer, "one", 10);
                 push(observer, "two", 60);
                 push(observer, "three", 110);
@@ -258,7 +257,7 @@ public class OperationWindowTest {
             public Observable<Object> call() {
                 return Observable.create(new Observable.OnSubscribeFunc<Object>() {
                     @Override
-                    public Subscription onSubscribe(Subscriber<? super Object> observer) {
+                    public Subscription onSubscribe(Observer<? super Object> observer) {
                         push(observer, new Object(), 100);
                         complete(observer, 101);
                         return Subscriptions.empty();
@@ -285,7 +284,7 @@ public class OperationWindowTest {
         return list;
     }
 
-    private <T> void push(final Subscriber<T> observer, final T value, int delay) {
+    private <T> void push(final Observer<T> observer, final T value, int delay) {
         scheduler.schedule(new Action0() {
             @Override
             public void call() {
@@ -294,7 +293,7 @@ public class OperationWindowTest {
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private void complete(final Subscriber<?> observer, int delay) {
+    private void complete(final Observer<?> observer, int delay) {
         scheduler.schedule(new Action0() {
             @Override
             public void call() {
@@ -307,7 +306,7 @@ public class OperationWindowTest {
         return new Action1<Observable<String>>() {
             @Override
             public void call(Observable<String> stringObservable) {
-                stringObservable.subscribe(new Subscriber<String>() {
+                stringObservable.subscribe(new Observer<String>() {
                     @Override
                     public void onCompleted() {
                         lists.add(new ArrayList<String>(list));
@@ -338,7 +337,7 @@ public class OperationWindowTest {
 
         final List<Observer<Object>> values = new ArrayList<Observer<Object>>();
 
-        Subscriber<Observable<Integer>> wo = new Subscriber<Observable<Integer>>() {
+        Observer<Observable<Integer>> wo = new Observer<Observable<Integer>>() {
             @Override
             public void onNext(Observable<Integer> args) {
                 @SuppressWarnings("unchecked")
@@ -396,7 +395,7 @@ public class OperationWindowTest {
 
         final List<Observer<Object>> values = new ArrayList<Observer<Object>>();
 
-        Subscriber<Observable<Integer>> wo = new Subscriber<Observable<Integer>>() {
+        Observer<Observable<Integer>> wo = new Observer<Observable<Integer>>() {
             @Override
             public void onNext(Observable<Integer> args) {
                 @SuppressWarnings("unchecked")
@@ -454,7 +453,7 @@ public class OperationWindowTest {
 
         final List<Observer<Object>> values = new ArrayList<Observer<Object>>();
 
-        Subscriber<Observable<Integer>> wo = new Subscriber<Observable<Integer>>() {
+        Observer<Observable<Integer>> wo = new Observer<Observable<Integer>>() {
             @Override
             public void onNext(Observable<Integer> args) {
                 @SuppressWarnings("unchecked")
@@ -506,7 +505,7 @@ public class OperationWindowTest {
 
         final List<Observer<Object>> values = new ArrayList<Observer<Object>>();
 
-        Subscriber<Observable<Integer>> wo = new Subscriber<Observable<Integer>>() {
+        Observer<Observable<Integer>> wo = new Observer<Observable<Integer>>() {
             @Override
             public void onNext(Observable<Integer> args) {
                 @SuppressWarnings("unchecked")

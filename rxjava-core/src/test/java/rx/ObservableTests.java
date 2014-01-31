@@ -104,7 +104,7 @@ public class ObservableTests {
         Observable<String> observable = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super String> Observer) {
+            public Subscription onSubscribe(Observer<? super String> Observer) {
                 Observer.onNext("one");
                 Observer.onNext("two");
                 Observer.onNext("three");
@@ -150,7 +150,7 @@ public class ObservableTests {
     public void testCountError() {
         Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super String> obsv) {
+            public Subscription onSubscribe(Observer<? super String> obsv) {
                 obsv.onError(new RuntimeException());
                 return Subscriptions.empty();
             }
@@ -300,7 +300,7 @@ public class ObservableTests {
         Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super String> t1) {
+            public Subscription onSubscribe(Observer<? super String> t1) {
                 throw re;
             }
 
@@ -340,7 +340,7 @@ public class ObservableTests {
         Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(final Subscriber<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 final BooleanSubscription s = new BooleanSubscription();
                 new Thread(new Runnable() {
 
@@ -406,7 +406,7 @@ public class ObservableTests {
         Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super String> observer) {
+            public Subscription onSubscribe(Observer<? super String> observer) {
                 observer.onNext("1");
                 observer.onNext("2");
                 observer.onNext("three");
@@ -457,7 +457,7 @@ public class ObservableTests {
         Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super String> observer) {
+            public Subscription onSubscribe(Observer<? super String> observer) {
                 observer.onNext("1");
                 observer.onNext("2");
                 throw new NumberFormatException();
@@ -496,7 +496,7 @@ public class ObservableTests {
         ConnectableObservable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(final Subscriber<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 final BooleanSubscription subscription = new BooleanSubscription();
                 new Thread(new Runnable() {
 
@@ -549,7 +549,7 @@ public class ObservableTests {
         final AtomicInteger count = new AtomicInteger();
         ConnectableObservable<String> connectable = Observable.create(new OnSubscribeFunc<String>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 count.incrementAndGet();
                 final BooleanSubscription subscription = new BooleanSubscription();
                 new Thread(new Runnable() {
@@ -593,7 +593,7 @@ public class ObservableTests {
         ConnectableObservable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(final Subscriber<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 final BooleanSubscription subscription = new BooleanSubscription();
                 new Thread(new Runnable() {
 
@@ -650,7 +650,7 @@ public class ObservableTests {
         Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(final Subscriber<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 final BooleanSubscription subscription = new BooleanSubscription();
                 new Thread(new Runnable() {
 
@@ -738,7 +738,7 @@ public class ObservableTests {
         Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(final Subscriber<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 new Thread(new Runnable() {
 
                     @Override

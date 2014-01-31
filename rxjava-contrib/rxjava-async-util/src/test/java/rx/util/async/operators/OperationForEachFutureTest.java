@@ -30,6 +30,8 @@
   */
 package rx.util.async.operators;
 
+import static org.junit.Assert.*;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,9 +39,9 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+
 import org.junit.Test;
+
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.util.async.Async;

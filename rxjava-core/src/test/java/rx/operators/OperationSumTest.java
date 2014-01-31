@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.util.functions.Func1;
 
 public class OperationSumTest {

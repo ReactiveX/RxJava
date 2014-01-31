@@ -24,6 +24,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observables.GroupedObservable;
 import rx.subjects.PublishSubject;
@@ -220,7 +221,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
         public GroupedObservable<K, V> toObservable() {
             return new GroupedObservable<K, V>(key, new OnSubscribe<V>() {
                 @Override
-                public void call(Observer<? super V> o) {
+                public void call(Subscriber<? super V> o) {
                     publish.subscribe(o);
                 }
             });

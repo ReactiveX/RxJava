@@ -27,7 +27,6 @@ import org.mockito.Matchers;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
@@ -308,10 +307,10 @@ public class OperationCombineLatestTest {
 
     private static class TestObservable implements Observable.OnSubscribeFunc<String> {
 
-        Subscriber<? super String> observer;
+        Observer<? super String> observer;
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super String> observer) {
+        public Subscription onSubscribe(Observer<? super String> observer) {
             // just store the variable where it can be accessed so we can manually trigger it
             this.observer = observer;
             return Subscriptions.empty();

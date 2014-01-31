@@ -28,7 +28,7 @@ import rx.Observer;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
-public class OperationDoOnEachTest {
+public class OperatorDoOnEachTest {
 
     @Mock
     Observer<String> subscribedObserver;

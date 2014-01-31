@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import rx.Notification;
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 
@@ -127,7 +128,7 @@ public class OperationMaterializeTest {
         volatile Thread t;
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super String> observer) {
+        public Subscription onSubscribe(final Observer<? super String> observer) {
             t = new Thread(new Runnable() {
 
                 @Override

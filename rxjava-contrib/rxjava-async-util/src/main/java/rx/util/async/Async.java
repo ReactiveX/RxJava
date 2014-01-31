@@ -18,6 +18,7 @@ package rx.util.async;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+
 import rx.Observable;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
