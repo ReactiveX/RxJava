@@ -47,7 +47,7 @@ public class OperationTimeIntervalTest {
         MockitoAnnotations.initMocks(this);
         testScheduler = new TestScheduler();
         subject = PublishSubject.create();
-        observable = subject.toObservable().timeInterval(testScheduler);
+        observable = subject.timeInterval(testScheduler);
     }
 
     @Test

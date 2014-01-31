@@ -386,7 +386,7 @@ public final class OperationWindow extends ChunkedOperation {
 
             final SourceObserver<T> so = new SourceObserver<T>(t1, csub);
             try {
-                t1.onNext(so.subject.toObservable());
+                t1.onNext(so.subject);
             } catch (Throwable t) {
                 t1.onError(t);
                 return Subscriptions.empty();
@@ -470,7 +470,7 @@ public final class OperationWindow extends ChunkedOperation {
                         s.onCompleted();
 
                         subject = create();
-                        observer.onNext(subject.toObservable());
+                        observer.onNext(subject);
                     }
                 } catch (Throwable t) {
                     onError(t);

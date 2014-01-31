@@ -22,6 +22,7 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.subjects.PublishSubject;
@@ -72,7 +73,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
         final Object guard = new Object();
         int leftIds;
         int rightIds;
-        final Map<Integer, Subscriber<T2>> leftMap = new HashMap<Integer, Subscriber<T2>>();
+        final Map<Integer, Observer<T2>> leftMap = new HashMap<Integer, Observer<T2>>();
         final Map<Integer, T2> rightMap = new HashMap<Integer, T2>();
         boolean leftDone;
         boolean rightDone;
@@ -101,10 +102,10 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
         }
 
         void groupsOnCompleted() {
-            List<Subscriber<T2>> list = new ArrayList<Subscriber<T2>>(leftMap.values());
+            List<Observer<T2>> list = new ArrayList<Observer<T2>>(leftMap.values());
             leftMap.clear();
             rightMap.clear();
-            for (Subscriber<T2> o : list) {
+            for (Observer<T2> o : list) {
                 o.onCompleted();
             }
         }
@@ -127,7 +128,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
                         leftMap.put(id, subj);
                     }
 
-                    Observable<T2> window = Observable.create(new WindowObservableFunc<T2>(subj.toObservable(), cancel));
+                    Observable<T2> window = Observable.create(new WindowObservableFunc<T2>(subj, cancel));
 
                     Observable<D1> duration = leftDuration.call(args);
 
@@ -164,7 +165,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
             @Override
             public void onError(Throwable e) {
                 synchronized (guard) {
-                    for (Subscriber<T2> o : leftMap.values()) {
+                    for (Observer<T2> o : leftMap.values()) {
                         o.onError(e);
                     }
                     observer.onError(e);
@@ -197,7 +198,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
                     sduration.setSubscription(duration.subscribe(new RightDurationObserver(id, sduration)));
 
                     synchronized (guard) {
-                        for (Subscriber<T2> o : leftMap.values()) {
+                        for (Observer<T2> o : leftMap.values()) {
                             o.onNext(args);
                         }
                     }
@@ -222,7 +223,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
             @Override
             public void onError(Throwable e) {
                 synchronized (guard) {
-                    for (Subscriber<T2> o : leftMap.values()) {
+                    for (Observer<T2> o : leftMap.values()) {
                         o.onError(e);
                     }
 
@@ -236,9 +237,9 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
         class LeftDurationObserver extends Subscriber<D1> {
             final int id;
             final Subscription sduration;
-            final Subscriber<T2> gr;
+            final Observer<T2> gr;
 
-            public LeftDurationObserver(int id, Subscription sduration, Subscriber<T2> gr) {
+            public LeftDurationObserver(int id, Subscription sduration, Observer<T2> gr) {
                 this.id = id;
                 this.sduration = sduration;
                 this.gr = gr;

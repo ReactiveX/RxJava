@@ -19,14 +19,12 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
-import rx.Observable;
-import rx.Observable.OnSubscribe;
-import rx.Subscriber;
+import rx.Observer;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
 
 /**
- * Subject that publishes only the last event to each {@link Subscriber} that has subscribed when the
+ * Subject that publishes only the last event to each {@link Observer} that has subscribed when the
  * sequence completes.
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.AsyncSubject.png">
@@ -89,7 +87,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
         return new AsyncSubject<T>(onSubscribe, subscriptionManager, lastNotification);
     }
 
-    protected static <T> void emitValueToObserver(Notification<T> n, Subscriber<? super T> o) {
+    protected static <T> void emitValueToObserver(Notification<T> n, Observer<? super T> o) {
         n.accept(o);
         if (n.isOnNext()) {
             o.onCompleted();
@@ -98,17 +96,11 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     private final SubjectSubscriptionManager<T> subscriptionManager;
     final AtomicReference<Notification<T>> lastNotification;
-    private final Observable<T> observable;
 
     protected AsyncSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
+        super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
-        this.observable = Observable.create(onSubscribe);
-    }
-
-    @Override
-    public Observable<T> toObservable() {
-        return observable;
     }
 
     @Override
@@ -117,7 +109,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                for (Subscriber<? super T> o : observers) {
+                for (Observer<? super T> o : observers) {
                     emitValueToObserver(lastNotification.get(), o);
                 }
             }
@@ -130,8 +122,8 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(Notification.<T>createOnError(e));
-                for (Subscriber<? super T> o : observers) {
+                lastNotification.set(new Notification<T>(e));
+                for (Observer<? super T> o : observers) {
                     emitValueToObserver(lastNotification.get(), o);
                 }
             }
@@ -141,7 +133,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     @Override
     public void onNext(T v) {
-        lastNotification.set(Notification.<T>createOnNext(v));
+        lastNotification.set(new Notification<T>(v));
     }
 
 }

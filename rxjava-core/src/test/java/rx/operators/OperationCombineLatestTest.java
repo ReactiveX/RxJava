@@ -331,7 +331,7 @@ public class OperationCombineLatestTest {
         PublishSubject<Integer> a = PublishSubject.create();
         PublishSubject<Integer> b = PublishSubject.create();
 
-        Observable<Integer> source = Observable.combineLatest(a.toObservable(), b.toObservable(), or);
+        Observable<Integer> source = Observable.combineLatest(a, b, or);
 
         Observer<Object> observer = mock(Observer.class);
 
@@ -376,7 +376,7 @@ public class OperationCombineLatestTest {
         PublishSubject<Integer> a = PublishSubject.create();
         PublishSubject<Integer> b = PublishSubject.create();
 
-        Observable<Integer> source = Observable.combineLatest(a.toObservable(), b.toObservable(), or);
+        Observable<Integer> source = Observable.combineLatest(a, b, or);
 
         Observer<Object> observer1 = mock(Observer.class);
         Observer<Object> observer2 = mock(Observer.class);
@@ -432,7 +432,7 @@ public class OperationCombineLatestTest {
         PublishSubject<Integer> a = PublishSubject.create();
         PublishSubject<Integer> b = PublishSubject.create();
 
-        Observable<Integer> source = Observable.combineLatest(a.toObservable(), b.toObservable(), or);
+        Observable<Integer> source = Observable.combineLatest(a, b, or);
 
         Observer<Object> observer = mock(Observer.class);
 
@@ -455,7 +455,7 @@ public class OperationCombineLatestTest {
         PublishSubject<Integer> a = PublishSubject.create();
         PublishSubject<Integer> b = PublishSubject.create();
 
-        Observable<Integer> source = Observable.combineLatest(a.toObservable(), b.toObservable(), or);
+        Observable<Integer> source = Observable.combineLatest(a, b, or);
 
         Observer<Object> observer = mock(Observer.class);
 

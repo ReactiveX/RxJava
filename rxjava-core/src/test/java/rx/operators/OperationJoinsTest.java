@@ -368,9 +368,9 @@ public class OperationJoinsTest {
         PublishSubject<Integer> zs = PublishSubject.create();
 
         Observable<Integer> m = Observable.when(
-                xs.toObservable().and(ys.toObservable()).then(add2), // 1+4=5, 2+5=7, 3+6=9
-                xs.toObservable().and(zs.toObservable()).then(mul2), // 1*7=7, 2*8=16, 3*9=27
-                ys.toObservable().and(zs.toObservable()).then(sub2)  // 4-7=-3, 5-8=-3, 6-9=-3
+                xs.and(ys).then(add2), // 1+4=5, 2+5=7, 3+6=9
+                xs.and(zs).then(mul2), // 1*7=7, 2*8=16, 3*9=27
+                ys.and(zs).then(sub2)  // 4-7=-3, 5-8=-3, 6-9=-3
                 );
 
         TestSubscriber<Integer> to = new TestSubscriber<Integer>(observer);

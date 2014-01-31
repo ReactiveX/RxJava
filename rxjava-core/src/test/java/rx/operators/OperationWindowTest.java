@@ -359,7 +359,7 @@ public class OperationWindowTest {
             }
         };
 
-        source.toObservable().window(boundary.toObservable()).subscribe(wo);
+        source.window(boundary).subscribe(wo);
 
         int n = 30;
         for (int i = 0; i < n; i++) {
@@ -417,7 +417,7 @@ public class OperationWindowTest {
             }
         };
 
-        source.toObservable().window(boundary.toObservable()).subscribe(wo);
+        source.window(boundary).subscribe(wo);
 
         int n = 30;
         for (int i = 0; i < n; i++) {
@@ -475,7 +475,7 @@ public class OperationWindowTest {
             }
         };
 
-        source.toObservable().window(boundary.toObservable()).subscribe(wo);
+        source.window(boundary).subscribe(wo);
 
         source.onNext(0);
         source.onNext(1);
@@ -527,7 +527,7 @@ public class OperationWindowTest {
             }
         };
 
-        source.toObservable().window(boundary.toObservable()).subscribe(wo);
+        source.window(boundary).subscribe(wo);
 
         source.onNext(0);
         source.onNext(1);

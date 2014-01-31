@@ -221,7 +221,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             return new GroupedObservable<K, V>(key, new OnSubscribe<V>() {
                 @Override
                 public void call(Subscriber<? super V> o) {
-                    publish.toObservable().subscribe(o);
+                    publish.subscribe(o);
                 }
             });
         }

@@ -33,7 +33,7 @@ public class ThrottleLastTests {
         Observer<Integer> observer = mock(Observer.class);
         TestScheduler s = new TestScheduler();
         PublishSubject<Integer> o = PublishSubject.create();
-        o.toObservable().throttleLast(500, TimeUnit.MILLISECONDS, s).subscribe(observer);
+        o.throttleLast(500, TimeUnit.MILLISECONDS, s).subscribe(observer);
 
         // send events with simulated time increments
         s.advanceTimeTo(0, TimeUnit.MILLISECONDS);

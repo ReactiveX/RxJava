@@ -16,10 +16,10 @@
 package rx.subjects;
 
 import rx.Observable;
-import rx.Subscriber;
+import rx.Observer;
 
-public abstract class Subject<T, R> extends Subscriber<T> {
-
-    public abstract Observable<R> toObservable();
-
+public abstract class Subject<T, R> extends Observable<R> implements Observer<T> {
+    protected Subject(OnSubscribe<R> onSubscribe) {
+        super(onSubscribe);
+    }
 }

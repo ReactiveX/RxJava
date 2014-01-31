@@ -41,7 +41,7 @@ public class OperationSkipUntilTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().skipUntil(other.toObservable());
+        Observable<Integer> m = source.skipUntil(other);
         m.subscribe(observer);
 
         source.onNext(0);
@@ -65,7 +65,7 @@ public class OperationSkipUntilTest {
     public void otherNeverFires() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().skipUntil(Observable.never());
+        Observable<Integer> m = source.skipUntil(Observable.never());
 
         m.subscribe(observer);
 
@@ -85,7 +85,7 @@ public class OperationSkipUntilTest {
     public void otherEmpty() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().skipUntil(Observable.empty());
+        Observable<Integer> m = source.skipUntil(Observable.empty());
 
         m.subscribe(observer);
 
@@ -99,7 +99,7 @@ public class OperationSkipUntilTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().skipUntil(other.toObservable());
+        Observable<Integer> m = source.skipUntil(other);
         m.subscribe(observer);
 
         source.onNext(0);
@@ -125,7 +125,7 @@ public class OperationSkipUntilTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().skipUntil(other.toObservable());
+        Observable<Integer> m = source.skipUntil(other);
         m.subscribe(observer);
 
         source.onNext(0);
@@ -147,7 +147,7 @@ public class OperationSkipUntilTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().skipUntil(other.toObservable());
+        Observable<Integer> m = source.skipUntil(other);
         m.subscribe(observer);
 
         source.onNext(0);

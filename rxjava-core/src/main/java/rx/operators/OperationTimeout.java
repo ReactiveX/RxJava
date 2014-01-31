@@ -22,8 +22,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -107,7 +108,7 @@ public final class OperationTimeout {
                 }
             };
             SafeObservableSubscription subscription = new SafeObservableSubscription();
-            composite.add(subscription.wrap(source.subscribe(new Subscriber<T>() {
+            composite.add(subscription.wrap(source.subscribe(new Observer<T>() {
                 @Override
                 public void onNext(T value) {
                     boolean onNextWins = false;
@@ -197,8 +198,8 @@ public final class OperationTimeout {
         }
 
         /** Observe the source. */
-        private static final class SourceObserver<T, V> extends Subscriber<T> implements TimeoutCallback {
-            final Subscriber<? super T> observer;
+        private static final class SourceObserver<T, V> implements Observer<T>, TimeoutCallback {
+            final Observer<? super T> observer;
             final Func1<? super T, ? extends Observable<V>> valueTimeout;
             final Observable<? extends T> other;
             final CompositeSubscription cancel;
@@ -207,7 +208,7 @@ public final class OperationTimeout {
             final SerialSubscription tsub;
             final TimeoutObserver<V> to;
 
-            public SourceObserver(Subscriber<? super T> observer, Func1<? super T, ? extends Observable<V>> valueTimeout, Observable<? extends T> other, CompositeSubscription cancel) {
+            public SourceObserver(Observer<? super T> observer, Func1<? super T, ? extends Observable<V>> valueTimeout, Observable<? extends T> other, CompositeSubscription cancel) {
                 this.observer = observer;
                 this.valueTimeout = valueTimeout;
                 this.other = other;
@@ -292,7 +293,7 @@ public final class OperationTimeout {
         }
 
         /** Observe the timeout. */
-        private static final class TimeoutObserver<V> extends Subscriber<V> {
+        private static final class TimeoutObserver<V> implements Observer<V> {
             final TimeoutCallback parent;
 
             public TimeoutObserver(TimeoutCallback parent) {

@@ -44,7 +44,7 @@ public class OperationMulticast {
             super(new OnSubscribe<R>() {
                 @Override
                 public void call(Subscriber<? super R> observer) {
-                    subject.toObservable().subscribe(observer);
+                    subject.subscribe(observer);
                 }
             });
             this.source = source;

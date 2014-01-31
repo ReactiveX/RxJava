@@ -77,7 +77,7 @@ public class TestSubscriberTest {
     public void testAssertTerminalEventNotReceived() {
         PublishSubject<Integer> p = PublishSubject.create();
         TestSubscriber<Integer> o = new TestSubscriber<Integer>();
-        p.toObservable().subscribe(o);
+        p.subscribe(o);
 
         p.onNext(1);
         p.onNext(2);

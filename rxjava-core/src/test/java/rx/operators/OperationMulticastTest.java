@@ -31,7 +31,7 @@ public class OperationMulticastTest {
     public void testMulticast() {
         Subject<String, String> source = PublishSubject.create();
 
-        ConnectableObservable<String> multicasted = OperationMulticast.multicast(source.toObservable(),
+        ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
                 PublishSubject.<String> create());
 
         @SuppressWarnings("unchecked")
@@ -59,7 +59,7 @@ public class OperationMulticastTest {
     public void testMulticastConnectTwice() {
         Subject<String, String> source = PublishSubject.create();
 
-        ConnectableObservable<String> multicasted = OperationMulticast.multicast(source.toObservable(),
+        ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
                 PublishSubject.<String> create());
 
         @SuppressWarnings("unchecked")
@@ -84,7 +84,7 @@ public class OperationMulticastTest {
     public void testMulticastDisconnect() {
         Subject<String, String> source = PublishSubject.create();
 
-        ConnectableObservable<String> multicasted = OperationMulticast.multicast(source.toObservable(),
+        ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
                 PublishSubject.<String> create());
 
         @SuppressWarnings("unchecked")

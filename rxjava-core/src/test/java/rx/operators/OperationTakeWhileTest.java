@@ -57,7 +57,7 @@ public class OperationTakeWhileTest {
     @Test
     public void testTakeWhileOnSubject1() {
         Subject<Integer, Integer> s = PublishSubject.create();
-        Observable<Integer> take = Observable.create(takeWhile(s.toObservable(), new Func1<Integer, Boolean>() {
+        Observable<Integer> take = Observable.create(takeWhile(s, new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer input) {
                 return input < 3;

@@ -67,7 +67,7 @@ public class OperationSkipTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.toObservable().skip(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.skip(1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
@@ -104,7 +104,7 @@ public class OperationSkipTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.toObservable().skip(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.skip(1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
@@ -134,7 +134,7 @@ public class OperationSkipTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.toObservable().skip(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.skip(1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
@@ -161,7 +161,7 @@ public class OperationSkipTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.toObservable().skip(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.skip(1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 

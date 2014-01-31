@@ -36,7 +36,7 @@ public class OperationMostRecentTest {
     public void testMostRecent() {
         Subject<String, String> s = PublishSubject.create();
 
-        Iterator<String> it = mostRecent(s.toObservable(), "default").iterator();
+        Iterator<String> it = mostRecent(s, "default").iterator();
 
         assertTrue(it.hasNext());
         assertEquals("default", it.next());
@@ -61,7 +61,7 @@ public class OperationMostRecentTest {
     public void testMostRecentWithException() {
         Subject<String, String> s = PublishSubject.create();
 
-        Iterator<String> it = mostRecent(s.toObservable(), "default").iterator();
+        Iterator<String> it = mostRecent(s, "default").iterator();
 
         assertTrue(it.hasNext());
         assertEquals("default", it.next());

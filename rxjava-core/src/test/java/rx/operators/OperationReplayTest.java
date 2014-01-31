@@ -90,7 +90,7 @@ public class OperationReplayTest {
     public void testBufferedReplay() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        ConnectableObservable<Integer> co = source.toObservable().replay(3);
+        ConnectableObservable<Integer> co = source.replay(3);
         co.connect();
 
         {
@@ -137,7 +137,7 @@ public class OperationReplayTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        ConnectableObservable<Integer> co = source.toObservable().replay(100, TimeUnit.MILLISECONDS, scheduler);
+        ConnectableObservable<Integer> co = source.replay(100, TimeUnit.MILLISECONDS, scheduler);
         co.connect();
 
         {
@@ -199,7 +199,7 @@ public class OperationReplayTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> co = source.toObservable().replay(selector);
+        Observable<Integer> co = source.replay(selector);
 
         {
             Observer<Object> observer1 = mock(Observer.class);
@@ -261,7 +261,7 @@ public class OperationReplayTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> co = source.toObservable().replay(selector, 3);
+        Observable<Integer> co = source.replay(selector, 3);
 
         {
             Observer<Object> observer1 = mock(Observer.class);
@@ -323,7 +323,7 @@ public class OperationReplayTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> co = source.toObservable().replay(selector, 100, TimeUnit.MILLISECONDS, scheduler);
+        Observable<Integer> co = source.replay(selector, 100, TimeUnit.MILLISECONDS, scheduler);
 
         {
             Observer<Object> observer1 = mock(Observer.class);
@@ -365,7 +365,7 @@ public class OperationReplayTest {
     public void testBufferedReplayError() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        ConnectableObservable<Integer> co = source.toObservable().replay(3);
+        ConnectableObservable<Integer> co = source.replay(3);
         co.connect();
 
         {
@@ -413,7 +413,7 @@ public class OperationReplayTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        ConnectableObservable<Integer> co = source.toObservable().replay(100, TimeUnit.MILLISECONDS, scheduler);
+        ConnectableObservable<Integer> co = source.replay(100, TimeUnit.MILLISECONDS, scheduler);
         co.connect();
 
         {

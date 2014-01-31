@@ -46,7 +46,7 @@ public class OperatorTimestampTest {
         TestScheduler scheduler = new TestScheduler();
 
         PublishSubject<Integer> source = PublishSubject.create();
-        Observable<Timestamped<Integer>> m = source.toObservable().timestamp(scheduler);
+        Observable<Timestamped<Integer>> m = source.timestamp(scheduler);
         m.subscribe(observer);
 
         source.onNext(1);
@@ -70,7 +70,7 @@ public class OperatorTimestampTest {
         TestScheduler scheduler = new TestScheduler();
 
         PublishSubject<Integer> source = PublishSubject.create();
-        Observable<Timestamped<Integer>> m = source.toObservable().timestamp(scheduler);
+        Observable<Timestamped<Integer>> m = source.timestamp(scheduler);
         m.subscribe(observer);
 
         source.onNext(1);

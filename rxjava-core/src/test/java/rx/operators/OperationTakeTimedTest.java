@@ -37,7 +37,7 @@ public class OperationTakeTimedTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.toObservable().take(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
@@ -69,7 +69,7 @@ public class OperationTakeTimedTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.toObservable().take(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
@@ -102,7 +102,7 @@ public class OperationTakeTimedTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.toObservable().take(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);

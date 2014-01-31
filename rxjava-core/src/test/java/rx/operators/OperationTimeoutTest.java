@@ -38,14 +38,14 @@ public class OperationTimeoutTest {
         Func1<Integer, Observable<Integer>> timeoutFunc = new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t1) {
-                return timeout.toObservable();
+                return timeout;
             }
         };
 
         Func0<Observable<Integer>> firstTimeoutFunc = new Func0<Observable<Integer>>() {
             @Override
             public Observable<Integer> call() {
-                return timeout.toObservable();
+                return timeout;
             }
         };
 
@@ -55,7 +55,7 @@ public class OperationTimeoutTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
 
         source.onNext(1);
         source.onNext(2);
@@ -79,14 +79,14 @@ public class OperationTimeoutTest {
         Func1<Integer, Observable<Integer>> timeoutFunc = new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t1) {
-                return timeout.toObservable();
+                return timeout;
             }
         };
 
         Func0<Observable<Integer>> firstTimeoutFunc = new Func0<Observable<Integer>>() {
             @Override
             public Observable<Integer> call() {
-                return timeout.toObservable();
+                return timeout;
             }
         };
 
@@ -114,7 +114,7 @@ public class OperationTimeoutTest {
         Func1<Integer, Observable<Integer>> timeoutFunc = new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t1) {
-                return timeout.toObservable();
+                return timeout;
             }
         };
 
@@ -153,7 +153,7 @@ public class OperationTimeoutTest {
         Func0<Observable<Integer>> firstTimeoutFunc = new Func0<Observable<Integer>>() {
             @Override
             public Observable<Integer> call() {
-                return timeout.toObservable();
+                return timeout;
             }
         };
 
@@ -163,7 +163,7 @@ public class OperationTimeoutTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
 
         source.onNext(1);
 
@@ -181,7 +181,7 @@ public class OperationTimeoutTest {
         Func1<Integer, Observable<Integer>> timeoutFunc = new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t1) {
-                return timeout.toObservable();
+                return timeout;
             }
         };
 
@@ -197,7 +197,7 @@ public class OperationTimeoutTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
 
         verify(o).onError(any(OperationReduceTest.CustomException.class));
         verify(o, never()).onNext(any());
@@ -220,7 +220,7 @@ public class OperationTimeoutTest {
         Func0<Observable<Integer>> firstTimeoutFunc = new Func0<Observable<Integer>>() {
             @Override
             public Observable<Integer> call() {
-                return timeout.toObservable();
+                return timeout;
             }
         };
 
@@ -230,7 +230,7 @@ public class OperationTimeoutTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.toObservable().timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
 
         source.onNext(1);
 
