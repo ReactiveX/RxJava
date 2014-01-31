@@ -26,7 +26,6 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -39,7 +38,7 @@ public class OperationTakeLastTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
         verify(observer, never()).onNext(any(String.class));
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
@@ -53,7 +52,7 @@ public class OperationTakeLastTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         InOrder inOrder = inOrder(observer);
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
         inOrder.verify(observer, times(1)).onNext("two");
         inOrder.verify(observer, times(1)).onNext("three");
         verify(observer, never()).onNext("one");
@@ -68,7 +67,7 @@ public class OperationTakeLastTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
         verify(observer, times(1)).onNext("one");
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
@@ -81,7 +80,7 @@ public class OperationTakeLastTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
         verify(observer, never()).onNext("one");
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
@@ -94,7 +93,7 @@ public class OperationTakeLastTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
         verify(observer, never()).onNext("one");
         verify(observer, times(1)).onNext(null);
         verify(observer, times(1)).onNext("three");
@@ -109,7 +108,7 @@ public class OperationTakeLastTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
         verify(observer, never()).onNext("one");
         verify(observer, times(1)).onError(
                 any(IndexOutOfBoundsException.class));
@@ -122,13 +121,13 @@ public class OperationTakeLastTest {
 
         PublishSubject<Object> source = PublishSubject.create();
 
-        Observable<Object> result = source.toObservable().takeLast(1, TimeUnit.SECONDS, scheduler);
+        Observable<Object> result = source.takeLast(1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
         InOrder inOrder = inOrder(o);
 
-        result.subscribe(new TestObserver<Object>(o));
+        result.subscribe(o);
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
@@ -157,13 +156,13 @@ public class OperationTakeLastTest {
 
         PublishSubject<Object> source = PublishSubject.create();
 
-        Observable<Object> result = source.toObservable().takeLast(1, TimeUnit.SECONDS, scheduler);
+        Observable<Object> result = source.takeLast(1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
         InOrder inOrder = inOrder(o);
 
-        result.subscribe(new TestObserver<Object>(o));
+        result.subscribe(o);
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
@@ -189,13 +188,13 @@ public class OperationTakeLastTest {
 
         PublishSubject<Object> source = PublishSubject.create();
 
-        Observable<Object> result = source.toObservable().takeLast(2, 1, TimeUnit.SECONDS, scheduler);
+        Observable<Object> result = source.takeLast(2, 1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
         InOrder inOrder = inOrder(o);
 
-        result.subscribe(new TestObserver<Object>(o));
+        result.subscribe(o);
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
@@ -226,13 +225,13 @@ public class OperationTakeLastTest {
 
         PublishSubject<Object> source = PublishSubject.create();
 
-        Observable<Object> result = source.toObservable().takeLast(1, TimeUnit.SECONDS, scheduler);
+        Observable<Object> result = source.takeLast(1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
         InOrder inOrder = inOrder(o);
 
-        result.subscribe(new TestObserver<Object>(o));
+        result.subscribe(o);
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
@@ -258,13 +257,13 @@ public class OperationTakeLastTest {
 
         PublishSubject<Object> source = PublishSubject.create();
 
-        Observable<Object> result = source.toObservable().takeLast(0, 1, TimeUnit.SECONDS, scheduler);
+        Observable<Object> result = source.takeLast(0, 1, TimeUnit.SECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
 
         InOrder inOrder = inOrder(o);
 
-        result.subscribe(new TestObserver<Object>(o));
+        result.subscribe(o);
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);

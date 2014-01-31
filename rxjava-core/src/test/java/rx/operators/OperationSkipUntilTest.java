@@ -25,7 +25,6 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
-import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 
 public class OperationSkipUntilTest {
@@ -42,8 +41,8 @@ public class OperationSkipUntilTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().skipUntil(other.toObservable());
-        m.subscribe(new TestObserver<Object>(observer));
+        Observable<Integer> m = source.skipUntil(other);
+        m.subscribe(observer);
 
         source.onNext(0);
         source.onNext(1);
@@ -66,9 +65,9 @@ public class OperationSkipUntilTest {
     public void otherNeverFires() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().skipUntil(Observable.never());
+        Observable<Integer> m = source.skipUntil(Observable.never());
 
-        m.subscribe(new TestObserver<Object>(observer));
+        m.subscribe(observer);
 
         source.onNext(0);
         source.onNext(1);
@@ -86,9 +85,9 @@ public class OperationSkipUntilTest {
     public void otherEmpty() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().skipUntil(Observable.empty());
+        Observable<Integer> m = source.skipUntil(Observable.empty());
 
-        m.subscribe(new TestObserver<Object>(observer));
+        m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, never()).onNext(any());
@@ -100,8 +99,8 @@ public class OperationSkipUntilTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().skipUntil(other.toObservable());
-        m.subscribe(new TestObserver<Object>(observer));
+        Observable<Integer> m = source.skipUntil(other);
+        m.subscribe(observer);
 
         source.onNext(0);
         source.onNext(1);
@@ -126,8 +125,8 @@ public class OperationSkipUntilTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().skipUntil(other.toObservable());
-        m.subscribe(new TestObserver<Object>(observer));
+        Observable<Integer> m = source.skipUntil(other);
+        m.subscribe(observer);
 
         source.onNext(0);
         source.onNext(1);
@@ -148,8 +147,8 @@ public class OperationSkipUntilTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().skipUntil(other.toObservable());
-        m.subscribe(new TestObserver<Object>(observer));
+        Observable<Integer> m = source.skipUntil(other);
+        m.subscribe(observer);
 
         source.onNext(0);
         source.onNext(1);

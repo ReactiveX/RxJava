@@ -143,7 +143,7 @@ public class OperationLatestTest {
     @Test(timeout = 1000)
     public void testFasterSource() {
         PublishSubject<Integer> source = PublishSubject.create();
-        BlockingObservable<Integer> blocker = source.toObservable().toBlockingObservable();
+        BlockingObservable<Integer> blocker = source.toBlockingObservable();
 
         Iterable<Integer> iter = blocker.latest();
         Iterator<Integer> it = iter.iterator();

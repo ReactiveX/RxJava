@@ -28,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
@@ -37,7 +38,7 @@ import rx.util.functions.Func1;
 public class BlockingObservableTest {
 
     @Mock
-    Observer<Integer> w;
+    Subscriber<Integer> w;
 
     @Before
     public void before() {

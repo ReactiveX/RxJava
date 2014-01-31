@@ -27,6 +27,7 @@ import org.junit.Test;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 
 public class OperationMaterializeTest {
@@ -93,7 +94,7 @@ public class OperationMaterializeTest {
         assertEquals(3, m.toList().toBlockingObservable().toFuture().get().size());
     }
 
-    private static class TestObserver extends Observer<Notification<String>> {
+    private static class TestObserver extends Subscriber<Notification<String>> {
 
         boolean onCompleted = false;
         boolean onError = false;

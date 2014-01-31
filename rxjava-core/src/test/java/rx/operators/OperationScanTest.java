@@ -25,7 +25,6 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
-import rx.observers.TestObserver;
 import rx.util.functions.Func2;
 
 public class OperationScanTest {
@@ -50,7 +49,7 @@ public class OperationScanTest {
             }
 
         }));
-        m.subscribe(new TestObserver<String>(observer));
+        m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onNext("");
@@ -77,7 +76,7 @@ public class OperationScanTest {
             }
 
         }));
-        m.subscribe(new TestObserver<Integer>(observer));
+        m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, never()).onNext(0);
@@ -104,7 +103,7 @@ public class OperationScanTest {
             }
 
         }));
-        m.subscribe(new TestObserver<Integer>(observer));
+        m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, never()).onNext(0);

@@ -28,7 +28,6 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
@@ -60,7 +59,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        observable.subscribe(observer);
 
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
@@ -90,7 +89,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        observable.subscribe(observer);
 
         try {
             w.t.join();
@@ -127,7 +126,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        observable.subscribe(observer);
 
         try {
             w.t.join();

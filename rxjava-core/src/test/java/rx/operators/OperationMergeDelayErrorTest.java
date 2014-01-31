@@ -31,7 +31,6 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.util.CompositeException;
 
 public class OperationMergeDelayErrorTest {
@@ -51,7 +50,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(o1, o2));
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
         verify(stringObserver, never()).onCompleted();
@@ -72,7 +71,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(o1, o2, o3, o4));
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
         verify(stringObserver, never()).onCompleted();
@@ -96,7 +95,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(o1, o2, o3, o4));
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
         verify(stringObserver, never()).onCompleted();
@@ -120,7 +119,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(o1, o2, o3, o4));
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
         verify(stringObserver, never()).onCompleted();
@@ -145,7 +144,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(Observable.create(o1), Observable.create(o2), Observable.create(o3), Observable.create(o4)));
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         try {
             o1.t.join();
@@ -176,7 +175,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(o1, o2));
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(CompositeException.class));
         verify(stringObserver, never()).onCompleted();
@@ -238,7 +237,7 @@ public class OperationMergeDelayErrorTest {
 
         });
         Observable<String> m = Observable.create(mergeDelayError(observableOfObservables));
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(1)).onCompleted();
@@ -252,7 +251,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(o1, o2));
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(2)).onNext("hello");
@@ -268,7 +267,7 @@ public class OperationMergeDelayErrorTest {
         listOfObservables.add(o2);
 
         Observable<String> m = Observable.create(mergeDelayError(listOfObservables));
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(1)).onCompleted();
@@ -282,7 +281,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(Observable.create(tA), Observable.create(tB)));
-        Subscription s = m.subscribe(new TestObserver<String>(stringObserver));
+        Subscription s = m.subscribe(stringObserver);
 
         tA.sendOnNext("Aone");
         tB.sendOnNext("Bone");
@@ -309,7 +308,7 @@ public class OperationMergeDelayErrorTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> m = Observable.create(mergeDelayError(Observable.create(o1), Observable.create(o2)));
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         try {
             o1.t.join();
@@ -494,7 +493,7 @@ public class OperationMergeDelayErrorTest {
         }
     }
 
-    private static class CaptureObserver extends Observer<String> {
+    private static class CaptureObserver implements Observer<String> {
         volatile Throwable e;
 
         @Override

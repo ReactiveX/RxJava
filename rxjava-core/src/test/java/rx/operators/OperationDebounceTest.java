@@ -27,7 +27,6 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
@@ -61,7 +60,7 @@ public class OperationDebounceTest {
         });
 
         Observable<String> sampled = Observable.create(OperationDebounce.debounce(source, 400, TimeUnit.MILLISECONDS, scheduler));
-        sampled.subscribe(new TestObserver<String>(observer));
+        sampled.subscribe(observer);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
         InOrder inOrder = inOrder(observer);
@@ -94,7 +93,7 @@ public class OperationDebounceTest {
         });
 
         Observable<String> sampled = Observable.create(OperationDebounce.debounce(source, 200, TimeUnit.MILLISECONDS, scheduler));
-        sampled.subscribe(new TestObserver<String>(observer));
+        sampled.subscribe(observer);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
         InOrder inOrder = inOrder(observer);
@@ -119,7 +118,7 @@ public class OperationDebounceTest {
         });
 
         Observable<String> sampled = Observable.create(OperationDebounce.debounce(source, 400, TimeUnit.MILLISECONDS, scheduler));
-        sampled.subscribe(new TestObserver<String>(observer));
+        sampled.subscribe(observer);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
         InOrder inOrder = inOrder(observer);
@@ -170,7 +169,7 @@ public class OperationDebounceTest {
 
             @Override
             public Observable<Integer> call(Integer t1) {
-                return debouncer.toObservable();
+                return debouncer;
             }
         };
 
@@ -178,7 +177,7 @@ public class OperationDebounceTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        source.toObservable().debounce(debounceSel).subscribe(new TestObserver<Object>(o));
+        source.debounce(debounceSel).subscribe(o);
 
         source.onNext(1);
         debouncer.onNext(1);
@@ -214,7 +213,7 @@ public class OperationDebounceTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.toObservable().debounce(debounceSel).subscribe(new TestObserver<Object>(o));
+        source.debounce(debounceSel).subscribe(o);
 
         source.onNext(1);
 
@@ -237,7 +236,7 @@ public class OperationDebounceTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        source.toObservable().debounce(debounceSel).subscribe(new TestObserver<Object>(o));
+        source.debounce(debounceSel).subscribe(o);
 
         source.onNext(1);
 

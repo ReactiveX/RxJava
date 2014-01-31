@@ -35,7 +35,7 @@ public class ErrorHandlingTests {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> caughtError = new AtomicReference<Throwable>();
         Observable<Long> o = Observable.interval(50, TimeUnit.MILLISECONDS);
-        Observer<Long> observer = new Observer<Long>() {
+        Subscriber<Long> observer = new Subscriber<Long>() {
 
             @Override
             public void onCompleted() {
@@ -70,7 +70,7 @@ public class ErrorHandlingTests {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> caughtError = new AtomicReference<Throwable>();
         Observable<Long> o = Observable.interval(50, TimeUnit.MILLISECONDS);
-        Observer<Long> observer = new Observer<Long>() {
+        Subscriber<Long> observer = new Subscriber<Long>() {
 
             @Override
             public void onCompleted() {

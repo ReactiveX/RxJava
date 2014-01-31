@@ -48,7 +48,7 @@ public final class OperationLatest {
     }
 
     /** Observer of source, iterator for output. */
-    static final class LatestObserverIterator<T> extends Observer<Notification<? extends T>> implements Iterator<T> {
+    static final class LatestObserverIterator<T> implements Observer<Notification<? extends T>>, Iterator<T> {
         final Semaphore notify = new Semaphore(0);
         // observer's notification
         final AtomicReference<Notification<? extends T>> reference = new AtomicReference<Notification<? extends T>>();

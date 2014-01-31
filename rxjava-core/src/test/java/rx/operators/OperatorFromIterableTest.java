@@ -25,7 +25,6 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.observers.TestObserver;
 
 public class OperatorFromIterableTest {
 
@@ -35,7 +34,7 @@ public class OperatorFromIterableTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        observable.subscribe(observer);
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
@@ -49,7 +48,7 @@ public class OperatorFromIterableTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        observable.subscribe(observer);
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");

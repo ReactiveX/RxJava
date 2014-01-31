@@ -32,7 +32,7 @@ import rx.joins.Plan0;
 import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
-import rx.observers.SafeObserver;
+import rx.observers.SafeSubscriber;
 import rx.operators.OperationAll;
 import rx.operators.OperationAmb;
 import rx.operators.OperationAny;
@@ -49,7 +49,7 @@ import rx.operators.OperationDelay;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
-import rx.operators.OperationDoOnEach;
+import rx.operators.OperatorDoOnEach;
 import rx.operators.OperationElementAt;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
@@ -85,6 +85,7 @@ import rx.operators.OperationSum;
 import rx.operators.OperationSwitch;
 import rx.operators.OperationSynchronize;
 import rx.operators.OperationTakeLast;
+import rx.operators.OperationTakeTimed;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
@@ -104,11 +105,9 @@ import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
 import rx.operators.OperatorParallel;
 import rx.operators.OperatorTake;
-import rx.operators.OperationTakeTimed;
 import rx.operators.OperatorTimestamp;
 import rx.operators.OperatorToObservableList;
 import rx.operators.OperatorToObservableSortedList;
-import rx.operators.SafeObservableSubscription;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
 import rx.schedulers.Schedulers;
@@ -167,7 +166,7 @@ public class Observable<T> {
      * constructor, unless you specifically have a need for inheritance.
      * 
      * @param onSubscribe
-     *            {@link OnSubscribeFunc} to be executed when {@link #subscribe(Observer)} is called
+     *            {@link OnSubscribeFunc} to be executed when {@link #subscribe(Subscriber)} is called
      */
     protected Observable(OnSubscribe<T> f) {
         this.f = f;
@@ -176,12 +175,12 @@ public class Observable<T> {
     private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     /**
-     * Returns an Observable that will execute the specified function when an {@link Observer} subscribes to it.
+     * Returns an Observable that will execute the specified function when an {@link Subscriber} subscribes to it.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png">
      * <p>
      * Write the function you pass to {@code create} so that it behaves as an Observable: It should
-     * invoke the Observer's {@link Observer#onNext onNext}, {@link Observer#onError onError}, and {@link Observer#onCompleted onCompleted} methods appropriately.
+     * invoke the Observer's {@link Subscriber#onNext onNext}, {@link Subscriber#onError onError}, and {@link Subscriber#onCompleted onCompleted} methods appropriately.
      * <p>
      * A well-formed Observable must invoke either the Observer's {@code onCompleted} method
      * exactly once or its {@code onError} method exactly once.
@@ -194,7 +193,7 @@ public class Observable<T> {
      * @param func
      *            a function that accepts an {@code Observer<T>}, invokes its {@code onNext}, {@code onError}, and {@code onCompleted} methods as appropriate, and returns a {@link Subscription} that
      *            allows the Observer to cancel the subscription
-     * @return an Observable that, when an {@link Observer} subscribes to it, will execute the
+     * @return an Observable that, when an {@link Subscriber} subscribes to it, will execute the
      *         specified function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-create">RxJava Wiki: create()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.create.aspx">MSDN: Observable.Create</a>
@@ -203,7 +202,7 @@ public class Observable<T> {
         return new Observable<T>(f);
     }
 
-    public static interface OnSubscribe<T> extends Action1<Observer<? super T>> {
+    public static interface OnSubscribe<T> extends Action1<Subscriber<? super T>> {
 
     }
 
@@ -211,7 +210,7 @@ public class Observable<T> {
         return new Observable<T>(new OnSubscribe<T>() {
 
             @Override
-            public void call(Observer<? super T> observer) {
+            public void call(Subscriber<? super T> observer) {
                 Subscription s = f.onSubscribe(observer);
                 if (s != null && s != observer) {
                     observer.add(s);
@@ -238,11 +237,11 @@ public class Observable<T> {
      * @param bind
      * @return an Observable that emits values that are the result of applying the bind function to the values of the current Observable
      */
-    public <R> Observable<R> lift(final Func1<Observer<? super R>, Observer<? super T>> bind) {
+    public <R> Observable<R> lift(final Func1<Subscriber<? super R>, Subscriber<? super T>> bind) {
         return new Observable<R>(new OnSubscribe<R>() {
 
             @Override
-            public void call(Observer<? super R> o) {
+            public void call(Subscriber<? super R> o) {
                 subscribe(bind.call(o));
             }
         });
@@ -4264,7 +4263,7 @@ public class Observable<T> {
 
         };
 
-        return create(OperationDoOnEach.doOnEach(this, observer));
+        return lift(new OperatorDoOnEach<T>(observer));
     }
 
     /**
@@ -4297,7 +4296,7 @@ public class Observable<T> {
 
         };
 
-        return create(OperationDoOnEach.doOnEach(this, observer));
+        return lift(new OperatorDoOnEach<T>(observer));
     }
 
     /**
@@ -4312,7 +4311,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229307.aspx">MSDN: Observable.Do</a>
      */
     public final Observable<T> doOnEach(Observer<? super T> observer) {
-        return create(OperationDoOnEach.doOnEach(this, observer));
+        return lift(new OperatorDoOnEach<T>(observer));
     }
 
     /**
@@ -4343,7 +4342,7 @@ public class Observable<T> {
 
         };
 
-        return create(OperationDoOnEach.doOnEach(this, observer));
+        return lift(new OperatorDoOnEach<T>(observer));
     }
 
     /**
@@ -4374,7 +4373,7 @@ public class Observable<T> {
 
         };
 
-        return create(OperationDoOnEach.doOnEach(this, observer));
+        return lift(new OperatorDoOnEach<T>(observer));
     }
 
     /**
@@ -5341,8 +5340,8 @@ public class Observable<T> {
      * See https://github.com/Netflix/RxJava/issues/216 for a discussion on "Guideline 6.4: Protect
      * calls to user code from within an Observer"
      */
-    private Subscription protectivelyWrapAndSubscribe(Observer<? super T> o) {
-        return subscribe(new SafeObserver<T>(o));
+    private Subscription protectivelyWrapAndSubscribe(Subscriber<? super T> o) {
+        return subscribe(new SafeSubscriber<T>(o));
     }
 
     /**
@@ -6649,7 +6648,7 @@ public class Observable<T> {
      *         items before the Observable has finished sending them
      */
     public final Subscription subscribe() {
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
+        return protectivelyWrapAndSubscribe(new Subscriber<T>() {
 
             @Override
             public final void onCompleted() {
@@ -6689,7 +6688,7 @@ public class Observable<T> {
          * 
          * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an Observer"
          */
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
+        return protectivelyWrapAndSubscribe(new Subscriber<T>() {
 
             @Override
             public final void onCompleted() {
@@ -6735,7 +6734,7 @@ public class Observable<T> {
          * See https://github.com/Netflix/RxJava/issues/216 for discussion on
          * "Guideline 6.4: Protect calls to user code from within an Observer"
          */
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
+        return protectivelyWrapAndSubscribe(new Subscriber<T>() {
 
             @Override
             public final void onCompleted() {
@@ -6785,7 +6784,7 @@ public class Observable<T> {
          * 
          * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an Observer"
          */
-        return protectivelyWrapAndSubscribe(new Observer<T>() {
+        return protectivelyWrapAndSubscribe(new Subscriber<T>() {
 
             @Override
             public final void onCompleted() {
@@ -6859,6 +6858,31 @@ public class Observable<T> {
         return subscribeOn(scheduler).subscribe(onNext);
     }
 
+    public final Subscription subscribe(final Observer<? super T> observer, Scheduler scheduler) {
+        return subscribeOn(scheduler).subscribe(observer);
+    }
+    
+    public final Subscription subscribe(final Observer<? super T> observer) {
+        return subscribe(new Subscriber<T>() {
+
+            @Override
+            public void onCompleted() {
+                observer.onCompleted();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                observer.onError(e);
+            }
+
+            @Override
+            public void onNext(T t) {
+                observer.onNext(t);
+            }
+
+        });
+    }
+
     /**
      * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
      * items and notifications from the Observable.
@@ -6884,7 +6908,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if the {@link Observer} provided as the argument to {@code subscribe()} is {@code null}
      */
-    public final Subscription subscribe(Observer<? super T> observer) {
+    public final Subscription subscribe(Subscriber<? super T> observer) {
         // allow the hook to intercept and/or decorate
         OnSubscribe<T> onSubscribeFunction = hook.onSubscribeStart(this, f);
         // validate and proceed
@@ -6902,7 +6926,7 @@ public class Observable<T> {
             if (isInternalImplementation(observer)) {
                 onSubscribeFunction.call(observer);
             } else {
-                onSubscribeFunction.call(new SafeObserver<T>(observer));
+                onSubscribeFunction.call(new SafeSubscriber<T>(observer));
             }
             return hook.onSubscribeReturn(this, observer);
         } catch (OnErrorNotImplementedException e) {
@@ -6953,7 +6977,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if an argument to {@code subscribe()} is {@code null}
      */
-    public final Subscription subscribe(Observer<? super T> observer, Scheduler scheduler) {
+    public final Subscription subscribe(Subscriber<? super T> observer, Scheduler scheduler) {
         return subscribeOn(scheduler).subscribe(observer);
     }
 
@@ -8416,7 +8440,7 @@ public class Observable<T> {
             super(new OnSubscribe<T>() {
 
                 @Override
-                public void call(Observer<? super T> observer) {
+                public void call(Subscriber<? super T> observer) {
                     // do nothing
                 }
 
@@ -8443,7 +8467,7 @@ public class Observable<T> {
                  * @return a reference to the subscription
                  */
                 @Override
-                public void call(Observer<? super T> observer) {
+                public void call(Subscriber<? super T> observer) {
                     observer.onError(exception);
                 }
 
@@ -8472,7 +8496,7 @@ public class Observable<T> {
             return true;
         }
         // prevent double-wrapping (yeah it happens)
-        if (o instanceof SafeObserver) {
+        if (o instanceof SafeSubscriber) {
             return true;
         }
 

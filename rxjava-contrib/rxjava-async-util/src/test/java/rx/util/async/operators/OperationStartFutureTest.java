@@ -15,16 +15,20 @@
  */
 package rx.util.async.operators;
 
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import static org.junit.Assert.fail;
+
 import org.junit.Test;
 import org.mockito.InOrder;
-import static org.mockito.Mockito.*;
+
 import rx.Observable;
 import rx.Observer;
 import rx.schedulers.Schedulers;
@@ -39,7 +43,7 @@ public class OperationStartFutureTest {
      * on terminal conditions.
      * @param <T> 
      */
-    static class MockHelper<T> extends Observer<T> {
+    static class MockHelper<T> implements Observer<T> {
         final Observer<? super T> observer;
         final CountDownLatch latch;
 

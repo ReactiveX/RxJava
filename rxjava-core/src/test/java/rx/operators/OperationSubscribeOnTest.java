@@ -25,7 +25,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.test.OperatorTester;
 import rx.util.functions.Action0;
@@ -41,7 +40,7 @@ public class OperationSubscribeOnTest {
         Scheduler scheduler = spy(OperatorTester.forwardingScheduler(Schedulers.immediate()));
 
         Observer<Integer> observer = mock(Observer.class);
-        Subscription subscription = Observable.create(subscribeOn(w, scheduler)).subscribe(new TestObserver<Integer>(observer));
+        Subscription subscription = Observable.create(subscribeOn(w, scheduler)).subscribe(observer);
 
         verify(scheduler, times(1)).schedule(isNull(), any(Func2.class));
         subscription.unsubscribe();

@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.observers.TestObserver;
 import rx.util.functions.Action0;
 
 public class OperationFinallyTest {
@@ -40,7 +39,7 @@ public class OperationFinallyTest {
     }
 
     private void checkActionCalled(Observable<String> input) {
-        Observable.create(finallyDo(input, aAction0)).subscribe(new TestObserver<String>(observer));
+        Observable.create(finallyDo(input, aAction0)).subscribe(observer);
         verify(aAction0, times(1)).call();
     }
 

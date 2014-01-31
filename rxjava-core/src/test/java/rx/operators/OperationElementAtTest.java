@@ -27,7 +27,6 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.observers.TestObserver;
 
 public class OperationElementAtTest {
 
@@ -38,7 +37,7 @@ public class OperationElementAtTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
         verify(observer, never()).onNext(1);
         verify(observer, times(1)).onNext(2);
         verify(observer, never()).onError(
@@ -86,7 +85,7 @@ public class OperationElementAtTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
         verify(observer, never()).onNext(1);
         verify(observer, times(1)).onNext(2);
         verify(observer, never()).onError(any(Throwable.class));
@@ -102,7 +101,7 @@ public class OperationElementAtTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
         verify(observer, never()).onNext(1);
         verify(observer, never()).onNext(2);
         verify(observer, times(1)).onNext(0);

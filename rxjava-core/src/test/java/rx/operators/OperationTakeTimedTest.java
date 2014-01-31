@@ -25,7 +25,6 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.observers.TestObserver;
 import rx.operators.OperationSkipTest.CustomException;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
@@ -38,12 +37,12 @@ public class OperationTakeTimedTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.toObservable().take(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        result.subscribe(new TestObserver<Object>(o));
+        result.subscribe(o);
 
         source.onNext(1);
         source.onNext(2);
@@ -70,12 +69,12 @@ public class OperationTakeTimedTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.toObservable().take(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        result.subscribe(new TestObserver<Object>(o));
+        result.subscribe(o);
 
         source.onNext(1);
         source.onNext(2);
@@ -103,12 +102,12 @@ public class OperationTakeTimedTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.toObservable().take(1, TimeUnit.SECONDS, scheduler);
+        Observable<Integer> result = source.take(1, TimeUnit.SECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        result.subscribe(new TestObserver<Object>(o));
+        result.subscribe(o);
 
         source.onNext(1);
         source.onNext(2);

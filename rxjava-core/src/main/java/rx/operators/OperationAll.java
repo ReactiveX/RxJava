@@ -52,7 +52,7 @@ public class OperationAll {
 
         }
 
-        private class AllObserver extends Observer<T> {
+        private class AllObserver implements Observer<T> {
             private final Observer<? super Boolean> underlying;
 
             private final AtomicBoolean status = new AtomicBoolean(true);

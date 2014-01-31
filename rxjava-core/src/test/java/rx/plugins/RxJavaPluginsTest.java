@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 
 public class RxJavaPluginsTest {
 
@@ -112,7 +112,7 @@ public class RxJavaPluginsTest {
         RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
 
         RuntimeException re = new RuntimeException("test onError");
-        Observable.error(re).subscribe(new Observer<Object>() {
+        Observable.error(re).subscribe(new Subscriber<Object>() {
 
             @Override
             public void onCompleted() {

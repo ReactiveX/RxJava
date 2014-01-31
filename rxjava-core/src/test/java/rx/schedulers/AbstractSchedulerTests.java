@@ -35,6 +35,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
@@ -561,7 +562,7 @@ public abstract class AbstractSchedulerTests {
      * 
      * @param <T>
      */
-    private static class ConcurrentObserverValidator<T> extends Observer<T> {
+    private static class ConcurrentObserverValidator<T> extends Subscriber<T> {
 
         final AtomicInteger concurrentCounter = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();

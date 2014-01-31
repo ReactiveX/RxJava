@@ -22,7 +22,6 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.MultipleAssignmentSubscription;
-import rx.subscriptions.SerialSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func0;
 
@@ -244,7 +243,7 @@ public final class OperationConditionals {
         }
 
         /** Observe the source. */
-        final class SourceObserver extends Observer<T> {
+        final class SourceObserver implements Observer<T> {
             final MultipleAssignmentSubscription cancel;
             final Observer<? super T> observer;
 

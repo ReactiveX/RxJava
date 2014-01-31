@@ -29,10 +29,9 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
@@ -45,7 +44,7 @@ public class OperatorTakeTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, never()).onNext("three");
@@ -60,7 +59,7 @@ public class OperatorTakeTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
         verify(observer, times(1)).onNext("one");
         verify(observer, never()).onNext("two");
         verify(observer, never()).onNext("three");
@@ -87,7 +86,7 @@ public class OperatorTakeTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
-        w.subscribe(new TestObserver<Integer>(observer));
+        w.subscribe(observer);
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(any(IllegalArgumentException.class));
         inOrder.verifyNoMoreInteractions();
@@ -103,7 +102,7 @@ public class OperatorTakeTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
-        w.subscribe(new TestObserver<Integer>(observer));
+        w.subscribe(observer);
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(any(IllegalArgumentException.class));
         inOrder.verifyNoMoreInteractions();
@@ -123,7 +122,7 @@ public class OperatorTakeTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
 
-        source.lift(new OperatorTake<String>(1)).subscribe(new TestObserver<String>(observer));
+        source.lift(new OperatorTake<String>(1)).subscribe(observer);
 
         verify(observer, times(1)).onNext("one");
         // even though onError is called we take(1) so shouldn't see it
@@ -153,7 +152,7 @@ public class OperatorTakeTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
 
-        source.lift(new OperatorTake<String>(0)).subscribe(new TestObserver<String>(observer));
+        source.lift(new OperatorTake<String>(0)).subscribe(observer);
         assertTrue("source subscribed", subscribed.get());
         assertTrue("source unsubscribed", unSubscribed.get());
 
@@ -173,7 +172,7 @@ public class OperatorTakeTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> take = w.lift(new OperatorTake<String>(1));
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
 
         // wait for the Observable to complete
         try {
@@ -247,7 +246,7 @@ public class OperatorTakeTest {
     private static Observable<Long> INFINITE_OBSERVABLE = Observable.create(new OnSubscribe<Long>() {
 
         @Override
-        public void call(Observer<? super Long> op) {
+        public void call(Subscriber<? super Long> op) {
             long l = 1;
             while (!op.isUnsubscribed()) {
                 op.onNext(l++);

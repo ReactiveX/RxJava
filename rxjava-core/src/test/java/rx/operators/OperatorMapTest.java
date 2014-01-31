@@ -28,7 +28,6 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
-import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -66,7 +65,7 @@ public class OperatorMapTest {
             }
 
         }));
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(1)).onNext("OneFirst");
@@ -106,7 +105,7 @@ public class OperatorMapTest {
             }
 
         });
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(1)).onNext("OneFirst");
@@ -142,7 +141,7 @@ public class OperatorMapTest {
             }
 
         });
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(1)).onNext("OneFirst");
@@ -166,7 +165,7 @@ public class OperatorMapTest {
             }
         }));
 
-        m.subscribe(new TestObserver<String>(stringObserver));
+        m.subscribe(stringObserver);
         verify(stringObserver, times(1)).onNext("one");
         verify(stringObserver, never()).onNext("two");
         verify(stringObserver, never()).onNext("three");

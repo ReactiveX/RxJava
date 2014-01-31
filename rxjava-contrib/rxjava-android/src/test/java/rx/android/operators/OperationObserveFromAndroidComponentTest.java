@@ -43,6 +43,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.TestObserver;
+import rx.observers.TestSubscriber;
 import rx.operators.OperationObserveFromAndroidComponent;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -149,8 +150,8 @@ public class OperationObserveFromAndroidComponentTest {
     public void itDropsOnNextOnCompletedSequenceIfTargetComponentIsGone() throws Throwable {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        final Observable.OnSubscribeFunc<Integer> operator = newOnSubscribeFragmentInstance(source.toObservable(), mockFragment);
-        operator.onSubscribe(mockObserver);
+        final Observable.OnSubscribeFunc<Integer> operator = newOnSubscribeFragmentInstance(source, mockFragment);
+        operator.onSubscribe(new TestSubscriber<Integer>(mockObserver));
 
         source.onNext(1);
         releaseComponentRef(operator);
@@ -167,8 +168,8 @@ public class OperationObserveFromAndroidComponentTest {
     public void itDropsOnErrorIfTargetComponentIsGone() throws Throwable {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        final Observable.OnSubscribeFunc<Integer> operator = newOnSubscribeFragmentInstance(source.toObservable(), mockFragment);
-        operator.onSubscribe(mockObserver);
+        final Observable.OnSubscribeFunc<Integer> operator = newOnSubscribeFragmentInstance(source, mockFragment);
+        operator.onSubscribe(new TestSubscriber<Integer>(mockObserver));
 
         source.onNext(1);
         releaseComponentRef(operator);
@@ -203,7 +204,7 @@ public class OperationObserveFromAndroidComponentTest {
     @Test
     public void itDoesNotForwardOnNextOnCompletedSequenceIfFragmentIsDetached() {
         PublishSubject<Integer> source = PublishSubject.create();
-        OperationObserveFromAndroidComponent.observeFromAndroidComponent(source.toObservable(), mockFragment).subscribe(new TestObserver<Integer>(mockObserver));
+        OperationObserveFromAndroidComponent.observeFromAndroidComponent(source, mockFragment).subscribe(new TestObserver<Integer>(mockObserver));
 
         source.onNext(1);
 
@@ -219,7 +220,7 @@ public class OperationObserveFromAndroidComponentTest {
     @Test
     public void itDoesNotForwardOnErrorIfFragmentIsDetached() {
         PublishSubject<Integer> source = PublishSubject.create();
-        OperationObserveFromAndroidComponent.observeFromAndroidComponent(source.toObservable(), mockFragment).subscribe(new TestObserver<Integer>(mockObserver));
+        OperationObserveFromAndroidComponent.observeFromAndroidComponent(source, mockFragment).subscribe(new TestObserver<Integer>(mockObserver));
 
         source.onNext(1);
 

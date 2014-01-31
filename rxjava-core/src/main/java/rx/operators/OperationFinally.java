@@ -71,7 +71,7 @@ public final class OperationFinally {
             return sequence.subscribe(new FinallyObserver(observer));
         }
 
-        private class FinallyObserver extends Observer<T> {
+        private class FinallyObserver implements Observer<T> {
             private final Observer<? super T> observer;
 
             FinallyObserver(Observer<? super T> observer) {

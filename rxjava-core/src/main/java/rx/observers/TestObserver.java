@@ -25,7 +25,7 @@ import rx.Observer;
 /**
  * Observer usable for unit testing to perform assertions, inspect received events or wrap a mocked Observer.
  */
-public class TestObserver<T> extends Observer<T> {
+public class TestObserver<T> implements Observer<T> {
 
     private final Observer<Object> EMPTY = new EmptyObserver<Object>();
 

@@ -25,7 +25,6 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
@@ -46,7 +45,7 @@ public class OperationTakeWhileTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
-        take.subscribe(new TestObserver<Integer>(observer));
+        take.subscribe(observer);
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(2);
         verify(observer, never()).onNext(3);
@@ -57,7 +56,7 @@ public class OperationTakeWhileTest {
     @Test
     public void testTakeWhileOnSubject1() {
         Subject<Integer, Integer> s = PublishSubject.create();
-        Observable<Integer> take = Observable.create(takeWhile(s.toObservable(), new Func1<Integer, Boolean>() {
+        Observable<Integer> take = Observable.create(takeWhile(s, new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer input) {
                 return input < 3;
@@ -66,7 +65,7 @@ public class OperationTakeWhileTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
-        take.subscribe(new TestObserver<Integer>(observer));
+        take.subscribe(observer);
 
         s.onNext(1);
         s.onNext(2);
@@ -96,7 +95,7 @@ public class OperationTakeWhileTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, never()).onNext("three");
@@ -136,7 +135,7 @@ public class OperationTakeWhileTest {
                 throw testException;
             }
         }));
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
 
         // wait for the Observable to complete
         try {
@@ -163,7 +162,7 @@ public class OperationTakeWhileTest {
                 return index < 1;
             }
         }));
-        take.subscribe(new TestObserver<String>(observer));
+        take.subscribe(observer);
 
         // wait for the Observable to complete
         try {

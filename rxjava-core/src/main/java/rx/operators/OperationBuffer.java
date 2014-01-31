@@ -444,7 +444,7 @@ public final class OperationBuffer extends ChunkedOperation {
         /**
          * Observes the source.
          */
-        private static final class SourceObserver<T> extends Observer<T> {
+        private static final class SourceObserver<T> implements Observer<T> {
             final Observer<? super List<T>> observer;
             /** The buffer, if null, that indicates a terminal state. */
             List<T> buffer;
@@ -514,7 +514,7 @@ public final class OperationBuffer extends ChunkedOperation {
         /**
          * Observes the boundary.
          */
-        private static final class BoundaryObserver<T> extends Observer<T> {
+        private static final class BoundaryObserver<T> implements Observer<T> {
             final SourceObserver so;
 
             public BoundaryObserver(SourceObserver so) {

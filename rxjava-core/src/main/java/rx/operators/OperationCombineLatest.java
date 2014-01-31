@@ -275,7 +275,7 @@ public class OperationCombineLatest {
         /**
          * Observes a specific source and communicates with the collector.
          */
-        final class SourceObserver extends Observer<T> {
+        final class SourceObserver implements Observer<T> {
             final SafeObservableSubscription self;
             final Collector collector;
             final int index;

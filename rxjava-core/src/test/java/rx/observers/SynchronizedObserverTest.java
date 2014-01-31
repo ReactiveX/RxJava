@@ -34,13 +34,14 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
 
 public class SynchronizedObserverTest {
 
     @Mock
-    Observer<String> observer;
+    Subscriber<String> observer;
 
     @Before
     public void before() {
@@ -420,7 +421,7 @@ public class SynchronizedObserverTest {
         onCompleted, onError, onNext
     }
 
-    private static class TestConcurrencyObserver extends Observer<String> {
+    private static class TestConcurrencyObserver extends Subscriber<String> {
 
         /**
          * used to store the order and number of events received
@@ -645,7 +646,7 @@ public class SynchronizedObserverTest {
         }
     }
 
-    private static class BusyObserver extends Observer<String> {
+    private static class BusyObserver extends Subscriber<String> {
         volatile boolean onCompleted = false;
         volatile boolean onError = false;
         AtomicInteger onNextCount = new AtomicInteger();

@@ -120,7 +120,7 @@ public class OperationTakeUntil {
             return sequence.subscribe(new Observer<E>() {
                 @Override
                 public void onCompleted() {
-                    // Ignore
+                    notificationObserver.onNext(Notification.<T> halt());
                 }
 
                 @Override

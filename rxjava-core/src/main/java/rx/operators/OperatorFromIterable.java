@@ -16,7 +16,7 @@
 package rx.operators;
 
 import rx.Observable.OnSubscribe;
-import rx.Observer;
+import rx.Subscriber;
 
 /**
  * Converts an Iterable sequence into an Observable.
@@ -35,7 +35,7 @@ public final class OperatorFromIterable<T> implements OnSubscribe<T> {
     }
 
     @Override
-    public void call(Observer<? super T> o) {
+    public void call(Subscriber<? super T> o) {
         for (T i : is) {
             if (o.isUnsubscribed()) {
                 return;

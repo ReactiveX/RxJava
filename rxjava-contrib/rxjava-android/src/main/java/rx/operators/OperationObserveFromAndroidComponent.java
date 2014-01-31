@@ -19,16 +19,9 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.PublishSubject;
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Looper;
 import android.util.Log;
-
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 public class OperationObserveFromAndroidComponent {
 

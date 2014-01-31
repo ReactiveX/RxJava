@@ -19,8 +19,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
-import rx.Observer;
-import rx.observers.SynchronizedObserver;
+import rx.Subscriber;
+import rx.observers.SynchronizedSubscriber;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -46,15 +46,15 @@ public final class OperatorMerge<T> implements Operator<T, Observable<T>> {
     }
 
     @Override
-    public Observer<Observable<T>> call(final Observer<? super T> outerOperation) {
+    public Subscriber<Observable<T>> call(final Subscriber<? super T> outerOperation) {
 
         final AtomicInteger completionCounter = new AtomicInteger(1);
         final AtomicInteger concurrentCounter = new AtomicInteger(1);
         // Concurrent* since we'll be accessing them from the inner Observers which can be on other threads
         final ConcurrentLinkedQueue<Observable<T>> pending = new ConcurrentLinkedQueue<Observable<T>>();
 
-        final Observer<T> o = new SynchronizedObserver<T>(outerOperation);
-        return new Observer<Observable<T>>(outerOperation) {
+        final Subscriber<T> o = new SynchronizedSubscriber<T>(outerOperation);
+        return new Subscriber<Observable<T>>(outerOperation) {
 
             @Override
             public void onCompleted() {
@@ -106,7 +106,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<T>> {
                 }
             }
 
-            final class InnerObserver extends Observer<T> {
+            final class InnerObserver extends Subscriber<T> {
 
                 public InnerObserver(CompositeSubscription cs) {
                     super(cs);

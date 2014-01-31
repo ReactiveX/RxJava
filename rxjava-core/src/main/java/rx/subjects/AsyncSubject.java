@@ -19,8 +19,6 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
-import rx.Observable;
-import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
@@ -98,17 +96,11 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     private final SubjectSubscriptionManager<T> subscriptionManager;
     final AtomicReference<Notification<T>> lastNotification;
-    private final Observable<T> observable;
 
     protected AsyncSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
+        super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
-        this.observable = Observable.create(onSubscribe);
-    }
-
-    @Override
-    public Observable<T> toObservable() {
-        return observable;
     }
 
     @Override
@@ -130,7 +122,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(Notification.<T>createOnError(e));
+                lastNotification.set(new Notification<T>(e));
                 for (Observer<? super T> o : observers) {
                     emitValueToObserver(lastNotification.get(), o);
                 }
@@ -141,7 +133,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     @Override
     public void onNext(T v) {
-        lastNotification.set(Notification.<T>createOnNext(v));
+        lastNotification.set(new Notification<T>(v));
     }
 
 }

@@ -163,7 +163,7 @@ public class OperationToMultimap {
         /**
          * Observer that collects the source values of Ts into a multimap.
          */
-        public static class ToMultimapObserver<T, K, V> extends Observer<T> {
+        public static class ToMultimapObserver<T, K, V> implements Observer<T> {
             private final Func1<? super T, ? extends K> keySelector;
             private final Func1<? super T, ? extends V> valueSelector;
             private final Func1<? super K, ? extends Collection<V>> collectionFactory;

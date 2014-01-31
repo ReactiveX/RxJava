@@ -109,7 +109,7 @@ public final class OperationTakeTimed {
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
-        private class ItemObserver extends Observer<T> {
+        private class ItemObserver implements Observer<T> {
             private final Observer<? super T> observer;
 
             private final AtomicInteger counter = new AtomicInteger();
@@ -210,7 +210,7 @@ public final class OperationTakeTimed {
          * @param <T>
          *            the observed value type
          */
-        private static final class SourceObserver<T> extends Observer<T> implements Action0 {
+        private static final class SourceObserver<T> implements Observer<T>, Action0 {
             final Observer<? super T> observer;
             final Subscription cancel;
             final AtomicInteger state = new AtomicInteger();

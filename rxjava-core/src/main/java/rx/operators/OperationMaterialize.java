@@ -54,23 +54,23 @@ public final class OperationMaterialize {
 
         @Override
         public Subscription onSubscribe(final Observer<? super Notification<T>> observer) {
-            return sequence.subscribe(new Observer<T>(observer) {
+            return sequence.subscribe(new Observer<T>() {
 
                 @Override
                 public void onCompleted() {
-                    observer.onNext(Notification.<T>createOnCompleted());
+                    observer.onNext(new Notification<T>());
                     observer.onCompleted();
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    observer.onNext(Notification.<T>createOnError(e));
+                    observer.onNext(new Notification<T>(e));
                     observer.onCompleted();
                 }
 
                 @Override
                 public void onNext(T value) {
-                    observer.onNext(Notification.createOnNext(value));
+                    observer.onNext(new Notification<T>(value));
                 }
 
             });

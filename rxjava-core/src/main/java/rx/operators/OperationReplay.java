@@ -30,6 +30,7 @@ import rx.Observable.OnSubscribe;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
@@ -62,11 +63,11 @@ public final class OperationReplay {
      * propagated through the given wrapped subject.
      */
     public static <T> Subject<T, T> createScheduledSubject(Subject<T, T> subject, Scheduler scheduler) {
-        final Observable<T> observedOn = subject.toObservable().observeOn(scheduler);
+        final Observable<T> observedOn = subject.observeOn(scheduler);
         SubjectWrapper<T> s = new SubjectWrapper<T>(new OnSubscribe<T>() {
 
             @Override
-            public void call(Observer<? super T> o) {
+            public void call(Subscriber<? super T> o) {
                 // TODO HACK between OnSubscribeFunc and Action1
                 subscriberOf(observedOn).onSubscribe(o);
             }
@@ -198,16 +199,10 @@ public final class OperationReplay {
     public static final class SubjectWrapper<T> extends Subject<T, T> {
         /** The wrapped subject. */
         final Subject<T, T> subject;
-        private final OnSubscribe<T> func;
 
         public SubjectWrapper(OnSubscribe<T> func, Subject<T, T> subject) {
-            this.func = func;
+            super(func);
             this.subject = subject;
-        }
-
-        @Override
-        public Observable<T> toObservable() {
-            return Observable.create(func);
         }
 
         @Override
@@ -727,13 +722,19 @@ public final class OperationReplay {
         protected final ReplayState<TIntermediate, TResult> state;
         /** The result selector. */
         protected final Func1<? super TInput, ? extends TIntermediate> intermediateSelector;
-        private final OnSubscribeFunc<TResult> onSubscribe;
 
         private CustomReplaySubject(
                 final OnSubscribeFunc<TResult> onSubscribe,
                 ReplayState<TIntermediate, TResult> state,
                 Func1<? super TInput, ? extends TIntermediate> intermediateSelector) {
-            this.onSubscribe = onSubscribe;
+            super(new OnSubscribe<TResult>() {
+
+                @Override
+                public void call(Subscriber<? super TResult> sub) {
+                    onSubscribe.onSubscribe(sub);
+                }
+
+            });
             this.state = state;
             this.intermediateSelector = intermediateSelector;
         }
@@ -792,11 +793,6 @@ public final class OperationReplay {
             for (ReplayState.Replayer rp : state.replayers()) {
                 rp.replayTill(s);
             }
-        }
-
-        @Override
-        public Observable<TResult> toObservable() {
-            return Observable.create(onSubscribe);
         }
     }
 

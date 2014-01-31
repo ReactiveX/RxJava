@@ -45,7 +45,7 @@ public class OperationTimeInterval {
         };
     }
 
-    private static class TimeIntervalObserver<T> extends Observer<T> {
+    private static class TimeIntervalObserver<T> implements Observer<T> {
 
         private final Observer<? super TimeInterval<T>> observer;
         /**

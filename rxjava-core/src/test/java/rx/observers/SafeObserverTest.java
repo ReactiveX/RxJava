@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
-import rx.Observer;
+import rx.Subscriber;
 import rx.subscriptions.Subscriptions;
 import rx.util.CompositeException;
 import rx.util.OnErrorNotImplementedException;
@@ -46,7 +46,7 @@ public class SafeObserverTest {
     public void onNextFailureSafe() {
         AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
         try {
-            new SafeObserver<String>(OBSERVER_ONNEXT_FAIL(onError)).onNext("one");
+            new SafeSubscriber<String>(OBSERVER_ONNEXT_FAIL(onError)).onNext("one");
             assertNotNull(onError.get());
             assertTrue(onError.get() instanceof SafeObserverTestException);
             assertEquals("onNextFail", onError.get().getMessage());
@@ -72,7 +72,7 @@ public class SafeObserverTest {
     public void onCompletedFailureSafe() {
         AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
         try {
-            new SafeObserver<String>(OBSERVER_ONCOMPLETED_FAIL(onError)).onCompleted();
+            new SafeSubscriber<String>(OBSERVER_ONCOMPLETED_FAIL(onError)).onCompleted();
             assertNotNull(onError.get());
             assertTrue(onError.get() instanceof SafeObserverTestException);
             assertEquals("onCompletedFail", onError.get().getMessage());
@@ -95,7 +95,7 @@ public class SafeObserverTest {
     @Test
     public void onErrorFailureSafe() {
         try {
-            new SafeObserver<String>(OBSERVER_ONERROR_FAIL()).onError(new SafeObserverTestException("error!"));
+            new SafeSubscriber<String>(OBSERVER_ONERROR_FAIL()).onError(new SafeObserverTestException("error!"));
             fail("expects exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,7 +119,7 @@ public class SafeObserverTest {
     @Test
     public void onErrorNotImplementedFailureSafe() {
         try {
-            new SafeObserver<String>(OBSERVER_ONERROR_NOTIMPLEMENTED()).onError(new SafeObserverTestException("error!"));
+            new SafeSubscriber<String>(OBSERVER_ONERROR_NOTIMPLEMENTED()).onError(new SafeObserverTestException("error!"));
             fail("expects exception to be thrown");
         } catch (Exception e) {
             assertTrue(e instanceof OnErrorNotImplementedException);
@@ -143,7 +143,7 @@ public class SafeObserverTest {
     @Test
     public void onNextOnErrorFailureSafe() {
         try {
-            new SafeObserver<String>(OBSERVER_ONNEXT_ONERROR_FAIL()).onNext("one");
+            new SafeSubscriber<String>(OBSERVER_ONNEXT_ONERROR_FAIL()).onNext("one");
             fail("expects exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
@@ -166,7 +166,7 @@ public class SafeObserverTest {
 
     @Test
     public void onCompleteSuccessWithUnsubscribeFailure() {
-        Observer<String> o = OBSERVER_SUCCESS();
+        Subscriber<String> o = OBSERVER_SUCCESS();
         try {
             o.add(Subscriptions.create(new Action0() {
 
@@ -176,7 +176,7 @@ public class SafeObserverTest {
                     throw new SafeObserverTestException("failure from unsubscribe");
                 }
             }));
-            new SafeObserver<String>(o).onCompleted();
+            new SafeSubscriber<String>(o).onCompleted();
             fail("expects exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
@@ -192,7 +192,7 @@ public class SafeObserverTest {
     @Test
     public void onErrorSuccessWithUnsubscribeFailure() {
         AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
-        Observer<String> o = OBSERVER_SUCCESS(onError);
+        Subscriber<String> o = OBSERVER_SUCCESS(onError);
         try {
             o.add(Subscriptions.create(new Action0() {
 
@@ -202,7 +202,7 @@ public class SafeObserverTest {
                     throw new SafeObserverTestException("failure from unsubscribe");
                 }
             }));
-            new SafeObserver<String>(o).onError(new SafeObserverTestException("failed"));
+            new SafeSubscriber<String>(o).onError(new SafeObserverTestException("failed"));
             fail("we expect the unsubscribe failure to cause an exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
@@ -222,7 +222,7 @@ public class SafeObserverTest {
 
     @Test
     public void onErrorFailureWithUnsubscribeFailure() {
-        Observer<String> o = OBSERVER_ONERROR_FAIL();
+        Subscriber<String> o = OBSERVER_ONERROR_FAIL();
         try {
             o.add(Subscriptions.create(new Action0() {
 
@@ -232,7 +232,7 @@ public class SafeObserverTest {
                     throw new SafeObserverTestException("failure from unsubscribe");
                 }
             }));
-            new SafeObserver<String>(o).onError(new SafeObserverTestException("onError failure"));
+            new SafeSubscriber<String>(o).onError(new SafeObserverTestException("onError failure"));
             fail("expects exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
@@ -263,7 +263,7 @@ public class SafeObserverTest {
 
     @Test
     public void onErrorNotImplementedFailureWithUnsubscribeFailure() {
-        Observer<String> o = OBSERVER_ONERROR_NOTIMPLEMENTED();
+        Subscriber<String> o = OBSERVER_ONERROR_NOTIMPLEMENTED();
         try {
             o.add(Subscriptions.create(new Action0() {
 
@@ -273,7 +273,7 @@ public class SafeObserverTest {
                     throw new SafeObserverTestException("failure from unsubscribe");
                 }
             }));
-            new SafeObserver<String>(o).onError(new SafeObserverTestException("error!"));
+            new SafeSubscriber<String>(o).onError(new SafeObserverTestException("error!"));
             fail("expects exception to be thrown");
         } catch (Exception e) {
             e.printStackTrace();
@@ -298,8 +298,8 @@ public class SafeObserverTest {
         }
     }
 
-    private static Observer<String> OBSERVER_SUCCESS() {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_SUCCESS() {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -319,8 +319,8 @@ public class SafeObserverTest {
 
     }
 
-    private static Observer<String> OBSERVER_SUCCESS(final AtomicReference<Throwable> onError) {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_SUCCESS(final AtomicReference<Throwable> onError) {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -340,8 +340,8 @@ public class SafeObserverTest {
 
     }
 
-    private static Observer<String> OBSERVER_ONNEXT_FAIL(final AtomicReference<Throwable> onError) {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_ONNEXT_FAIL(final AtomicReference<Throwable> onError) {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -361,8 +361,8 @@ public class SafeObserverTest {
 
     }
 
-    private static Observer<String> OBSERVER_ONNEXT_ONERROR_FAIL() {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_ONNEXT_ONERROR_FAIL() {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -382,8 +382,8 @@ public class SafeObserverTest {
         };
     }
 
-    private static Observer<String> OBSERVER_ONERROR_FAIL() {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_ONERROR_FAIL() {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -403,8 +403,8 @@ public class SafeObserverTest {
         };
     }
 
-    private static Observer<String> OBSERVER_ONERROR_NOTIMPLEMENTED() {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_ONERROR_NOTIMPLEMENTED() {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -424,8 +424,8 @@ public class SafeObserverTest {
         };
     }
 
-    private static Observer<String> OBSERVER_ONCOMPLETED_FAIL(final AtomicReference<Throwable> onError) {
-        return new Observer<String>() {
+    private static Subscriber<String> OBSERVER_ONCOMPLETED_FAIL(final AtomicReference<Throwable> onError) {
+        return new Subscriber<String>() {
 
             @Override
             public void onCompleted() {

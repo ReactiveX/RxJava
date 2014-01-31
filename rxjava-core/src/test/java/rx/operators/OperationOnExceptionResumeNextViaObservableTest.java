@@ -26,7 +26,6 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
 public class OperationOnExceptionResumeNextViaObservableTest {
@@ -42,7 +41,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -71,7 +70,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -100,7 +99,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -129,7 +128,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -171,7 +170,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        observable.subscribe(new TestObserver<String>(observer));
+        observable.subscribe(observer);
 
         try {
             // if the thread gets started (which it shouldn't if it's working correctly)

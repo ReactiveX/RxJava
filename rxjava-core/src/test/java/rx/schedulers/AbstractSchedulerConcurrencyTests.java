@@ -28,6 +28,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
 import rx.subscriptions.Subscriptions;
@@ -65,7 +66,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                 })
                 .subscribeOn(getScheduler())
                 .observeOn(getScheduler())
-                .subscribe(new Observer<Long>() {
+                .subscribe(new Subscriber<Long>() {
                     @Override
                     public void onCompleted() {
                         System.out.println("--- completed");
@@ -244,7 +245,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
 
         final AtomicInteger count = new AtomicInteger();
         final AtomicBoolean completed = new AtomicBoolean(false);
-        Subscription subscribe = obs.subscribe(new Observer<Integer>() {
+        Subscription subscribe = obs.subscribe(new Subscriber<Integer>() {
             @Override
             public void onCompleted() {
                 System.out.println("Completed");

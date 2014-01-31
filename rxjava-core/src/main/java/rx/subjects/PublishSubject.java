@@ -19,9 +19,8 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
-import rx.Observable;
-import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Subscriber;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.util.functions.Action1;
 
@@ -88,17 +87,11 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
     private final SubjectSubscriptionManager<T> subscriptionManager;
     final AtomicReference<Notification<T>> lastNotification;
-    private final Observable<T> observable;
 
     protected PublishSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
+        super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
-        this.observable = Observable.create(onSubscribe);
-    }
-
-    @Override
-    public Observable<T> toObservable() {
-        return observable;
     }
 
     @Override
@@ -107,7 +100,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(Notification.<T>createOnCompleted());
+                lastNotification.set(new Notification<T>());
                 for (Observer<? super T> o : observers) {
                     o.onCompleted();
                 }
@@ -121,7 +114,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(Notification.<T>createOnError(e));
+                lastNotification.set(new Notification<T>(e));
                 for (Observer<? super T> o : observers) {
                     o.onError(e);
                 }

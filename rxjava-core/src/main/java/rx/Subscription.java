@@ -18,7 +18,7 @@ package rx;
 import rx.subscriptions.Subscriptions;
 
 /**
- * Subscription returns from {@link Observable#subscribe(Observer)} to allow unsubscribing.
+ * Subscription returns from {@link Observable#subscribe(Subscriber)} to allow unsubscribing.
  * <p>
  * See utilities in {@link Subscriptions} and implementations in the {@code rx.subscriptions} package.
  * <p>
@@ -27,9 +27,9 @@ import rx.subscriptions.Subscriptions;
 public interface Subscription {
 
     /**
-     * Stop receiving notifications on the {@link Observer} that was registered when this Subscription was received.
+     * Stop receiving notifications on the {@link Subscriber} that was registered when this Subscription was received.
      * <p>
-     * This allows unregistering an {@link Observer} before it has finished receiving all events (ie. before onCompleted is called).
+     * This allows unregistering an {@link Subscriber} before it has finished receiving all events (ie. before onCompleted is called).
      */
     public void unsubscribe();
 

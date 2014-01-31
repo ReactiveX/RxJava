@@ -18,9 +18,9 @@ package rx.operators;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
-import rx.observers.SafeObserver;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
@@ -43,8 +43,8 @@ public class OperationMulticast {
         public MulticastConnectableObservable(Observable<? extends T> source, final Subject<? super T, ? extends R> subject) {
             super(new OnSubscribe<R>() {
                 @Override
-                public void call(Observer<? super R> observer) {
-                    subject.toObservable().subscribe(observer);
+                public void call(Subscriber<? super R> observer) {
+                    subject.subscribe(observer);
                 }
             });
             this.source = source;
@@ -137,7 +137,8 @@ public class OperationMulticast {
 
             CompositeSubscription csub = new CompositeSubscription();
 
-            csub.add(observable.subscribe(t1));
+            csub.add(observable.subscribe(new SafeObserver<TResult>(
+                    new SafeObservableSubscription(csub), t1)));
             csub.add(connectable.connect());
 
             return csub;

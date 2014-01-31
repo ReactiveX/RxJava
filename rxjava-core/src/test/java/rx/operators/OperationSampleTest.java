@@ -27,7 +27,6 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
@@ -76,7 +75,7 @@ public class OperationSampleTest {
         });
 
         Observable<Long> sampled = Observable.create(OperationSample.sample(source, 400L, TimeUnit.MILLISECONDS, scheduler));
-        sampled.subscribe(new TestObserver<Long>(observer));
+        sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
 
@@ -115,8 +114,8 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
-        m.subscribe(new TestObserver<Object>(observer2));
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
 
         source.onNext(1);
         source.onNext(2);
@@ -141,8 +140,8 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
-        m.subscribe(new TestObserver<Object>(observer2));
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
 
         source.onNext(1);
         source.onNext(2);
@@ -171,8 +170,8 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
-        m.subscribe(new TestObserver<Object>(observer2));
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
 
         source.onNext(1);
         source.onNext(2);
@@ -195,8 +194,8 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
-        m.subscribe(new TestObserver<Object>(observer2));
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
 
         source.onNext(1);
         source.onNext(2);
@@ -220,8 +219,8 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
-        m.subscribe(new TestObserver<Object>(observer2));
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
 
         source.onCompleted();
         sampler.onNext(1);
@@ -237,8 +236,8 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
-        m.subscribe(new TestObserver<Object>(observer2));
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
 
         source.onNext(1);
         source.onError(new RuntimeException("Forced failure!"));
@@ -255,8 +254,8 @@ public class OperationSampleTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
 
-        Observable<Integer> m = source.toObservable().sample(sampler.toObservable());
-        m.subscribe(new TestObserver<Object>(observer2));
+        Observable<Integer> m = source.sample(sampler);
+        m.subscribe(observer2);
 
         source.onNext(1);
         sampler.onNext(1);

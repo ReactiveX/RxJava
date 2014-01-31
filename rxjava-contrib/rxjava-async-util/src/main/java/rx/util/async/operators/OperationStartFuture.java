@@ -31,9 +31,8 @@
 package rx.util.async.operators;
 
 import java.util.concurrent.Future;
+
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
 import rx.Scheduler;
 import rx.util.functions.Func0;
 

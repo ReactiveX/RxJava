@@ -21,9 +21,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.SafeObserver;
+import rx.observers.SafeSubscriber;
 import rx.operators.OperationLatest;
 import rx.operators.OperationMostRecent;
 import rx.operators.OperationNext;
@@ -66,14 +66,14 @@ public class BlockingObservable<T> {
     }
 
     /**
-     * Used for protecting against errors being thrown from {@link Observer} implementations and ensuring onNext/onError/onCompleted contract
+     * Used for protecting against errors being thrown from {@link Subscriber} implementations and ensuring onNext/onError/onCompleted contract
      * compliance.
      * <p>
      * See https://github.com/Netflix/RxJava/issues/216 for discussion on
      * "Guideline 6.4: Protect calls to user code from within an operator"
      */
-    private Subscription protectivelyWrapAndSubscribe(Observer<? super T> observer) {
-        return o.subscribe(new SafeObserver<T>(observer));
+    private Subscription protectivelyWrapAndSubscribe(Subscriber<? super T> observer) {
+        return o.subscribe(new SafeSubscriber<T>(observer));
     }
 
     /**
@@ -82,8 +82,8 @@ public class BlockingObservable<T> {
      * <p>
      * NOTE: This will block even if the Observable is asynchronous.
      * <p>
-     * This is similar to {@link Observable#subscribe(Observer)}, but it blocks.
-     * Because it blocks it does not need the {@link Observer#onCompleted()} or {@link Observer#onError(Throwable)} methods.
+     * This is similar to {@link Observable#subscribe(Subscriber)}, but it blocks.
+     * Because it blocks it does not need the {@link Subscriber#onCompleted()} or {@link Subscriber#onError(Throwable)} methods.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
      * 
@@ -103,7 +103,7 @@ public class BlockingObservable<T> {
          * See https://github.com/Netflix/RxJava/issues/216 for discussion on
          * "Guideline 6.4: Protect calls to user code from within an operator"
          */
-        protectivelyWrapAndSubscribe(new Observer<T>() {
+        protectivelyWrapAndSubscribe(new Subscriber<T>() {
             @Override
             public void onCompleted() {
                 latch.countDown();

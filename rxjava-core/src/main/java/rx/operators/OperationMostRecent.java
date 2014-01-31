@@ -74,7 +74,7 @@ public final class OperationMostRecent {
         }
     }
 
-    private static class MostRecentObserver<T> extends Observer<T> {
+    private static class MostRecentObserver<T> implements Observer<T> {
         private final AtomicBoolean completed = new AtomicBoolean(false);
         private final AtomicReference<T> value;
         private final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();

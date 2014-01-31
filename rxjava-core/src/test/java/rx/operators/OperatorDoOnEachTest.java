@@ -25,11 +25,10 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
-import rx.observers.TestObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
-public class OperationDoOnEachTest {
+public class OperatorDoOnEachTest {
 
     @Mock
     Observer<String> subscribedObserver;
@@ -46,7 +45,7 @@ public class OperationDoOnEachTest {
         Observable<String> base = Observable.from("a", "b", "c");
         Observable<String> doOnEach = base.doOnEach(sideEffectObserver);
 
-        doOnEach.subscribe(new TestObserver<String>(subscribedObserver));
+        doOnEach.subscribe(subscribedObserver);
 
         // ensure the leaf observer is still getting called
         verify(subscribedObserver, never()).onError(any(Throwable.class));
@@ -76,9 +75,9 @@ public class OperationDoOnEachTest {
             }
         });
 
-        Observable<String> doOnEach = errs.doOnEach(new TestObserver<String>(sideEffectObserver));
+        Observable<String> doOnEach = errs.doOnEach(sideEffectObserver);
 
-        doOnEach.subscribe(new TestObserver<String>(subscribedObserver));
+        doOnEach.subscribe(subscribedObserver);
         verify(subscribedObserver, times(1)).onNext("one");
         verify(subscribedObserver, never()).onNext("two");
         verify(subscribedObserver, never()).onNext("three");
@@ -104,7 +103,7 @@ public class OperationDoOnEachTest {
             }
         });
 
-        doOnEach.subscribe(new TestObserver<String>(subscribedObserver));
+        doOnEach.subscribe(subscribedObserver);
         verify(subscribedObserver, times(1)).onNext("one");
         verify(subscribedObserver, times(1)).onNext("two");
         verify(subscribedObserver, never()).onNext("three");

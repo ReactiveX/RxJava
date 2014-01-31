@@ -31,7 +31,6 @@ import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observer;
-import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.util.functions.Action0;
@@ -47,7 +46,7 @@ public class OperationObserveOnTest {
     @SuppressWarnings("unchecked")
     public void testObserveOn() {
         Observer<Integer> observer = mock(Observer.class);
-        Observable.create(observeOn(Observable.from(1, 2, 3), Schedulers.immediate())).subscribe(new TestObserver<Integer>(observer));
+        Observable.create(observeOn(Observable.from(1, 2, 3), Schedulers.immediate())).subscribe(observer);
 
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(2);
@@ -74,7 +73,7 @@ public class OperationObserveOnTest {
             }
         }).when(observer).onCompleted();
 
-        obs.observeOn(Schedulers.computation()).subscribe(new TestObserver<String>(observer));
+        obs.observeOn(Schedulers.computation()).subscribe(observer);
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
@@ -130,7 +129,7 @@ public class OperationObserveOnTest {
                 completedLatch.countDown();
 
             }
-        }).subscribe(new TestObserver<String>(observer));
+        }).subscribe(observer);
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
@@ -156,8 +155,8 @@ public class OperationObserveOnTest {
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);
 
-        o2.subscribe(new TestObserver<Object>(observer1));
-        o2.subscribe(new TestObserver<Object>(observer2));
+        o2.subscribe(observer1);
+        o2.subscribe(observer2);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -194,8 +193,8 @@ public class OperationObserveOnTest {
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);
 
-        o1.subscribe(new TestObserver<Object>(observer1));
-        o2.subscribe(new TestObserver<Object>(observer2));
+        o1.subscribe(observer1);
+        o2.subscribe(observer2);
 
         scheduler1.advanceTimeBy(1, TimeUnit.SECONDS);
         scheduler2.advanceTimeBy(1, TimeUnit.SECONDS);

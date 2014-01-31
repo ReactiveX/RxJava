@@ -26,7 +26,6 @@ import org.mockito.Mock;
 
 import rx.Observable;
 import rx.Observer;
-import rx.observers.TestObserver;
 import rx.util.functions.Func1;
 
 public class OperationFirstOrDefaultTest {
@@ -49,7 +48,7 @@ public class OperationFirstOrDefaultTest {
     @Test
     public void testFirstOrElseOfNone() {
         Observable<String> src = Observable.empty();
-        src.firstOrDefault("default").subscribe(new TestObserver<String>(w));
+        src.firstOrDefault("default").subscribe(w);
 
         verify(w, times(1)).onNext(anyString());
         verify(w, times(1)).onNext("default");
@@ -60,7 +59,7 @@ public class OperationFirstOrDefaultTest {
     @Test
     public void testFirstOrElseOfSome() {
         Observable<String> src = Observable.from("a", "b", "c");
-        src.firstOrDefault("default").subscribe(new TestObserver<String>(w));
+        src.firstOrDefault("default").subscribe(w);
 
         verify(w, times(1)).onNext(anyString());
         verify(w, times(1)).onNext("a");
@@ -71,7 +70,7 @@ public class OperationFirstOrDefaultTest {
     @Test
     public void testFirstOrElseWithPredicateOfNoneMatchingThePredicate() {
         Observable<String> src = Observable.from("a", "b", "c");
-        src.firstOrDefault("default", IS_D).subscribe(new TestObserver<String>(w));
+        src.firstOrDefault("default", IS_D).subscribe(w);
 
         verify(w, times(1)).onNext(anyString());
         verify(w, times(1)).onNext("default");
@@ -82,7 +81,7 @@ public class OperationFirstOrDefaultTest {
     @Test
     public void testFirstOrElseWithPredicateOfSome() {
         Observable<String> src = Observable.from("a", "b", "c", "d", "e", "f");
-        src.firstOrDefault("default", IS_D).subscribe(new TestObserver<String>(w));
+        src.firstOrDefault("default", IS_D).subscribe(w);
 
         verify(w, times(1)).onNext(anyString());
         verify(w, times(1)).onNext("d");
@@ -96,7 +95,7 @@ public class OperationFirstOrDefaultTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext(1);
@@ -110,7 +109,7 @@ public class OperationFirstOrDefaultTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext(1);
@@ -124,7 +123,7 @@ public class OperationFirstOrDefaultTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(
@@ -145,7 +144,7 @@ public class OperationFirstOrDefaultTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext(2);
@@ -166,7 +165,7 @@ public class OperationFirstOrDefaultTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext(2);
@@ -186,7 +185,7 @@ public class OperationFirstOrDefaultTest {
                 });
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(
@@ -201,7 +200,7 @@ public class OperationFirstOrDefaultTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext(1);
@@ -215,7 +214,7 @@ public class OperationFirstOrDefaultTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext(1);
@@ -230,7 +229,7 @@ public class OperationFirstOrDefaultTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext(1);
@@ -251,7 +250,7 @@ public class OperationFirstOrDefaultTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext(2);
@@ -272,7 +271,7 @@ public class OperationFirstOrDefaultTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext(2);
@@ -293,7 +292,7 @@ public class OperationFirstOrDefaultTest {
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(new TestObserver<Integer>(observer));
+        observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onNext(2);

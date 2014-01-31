@@ -54,7 +54,7 @@ public final class OperationDematerialize {
 
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
-            return sequence.subscribe(new Observer<Notification<? extends T>>(observer) {
+            return sequence.subscribe(new Observer<Notification<? extends T>>() {
                 @Override
                 public void onCompleted() {
                 }

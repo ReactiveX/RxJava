@@ -28,7 +28,6 @@ import org.mockito.Mockito;
 
 import rx.Observer;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.util.functions.Action1;
 
 public class AsyncSubjectTest {
@@ -41,7 +40,7 @@ public class AsyncSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        subject.subscribe(observer);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -58,7 +57,7 @@ public class AsyncSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        subject.subscribe(observer);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -76,7 +75,7 @@ public class AsyncSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        subject.subscribe(observer);
 
         subject.onNext(null);
         subject.onCompleted();
@@ -98,7 +97,7 @@ public class AsyncSubjectTest {
         subject.onNext("three");
         subject.onCompleted();
 
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        subject.subscribe(observer);
 
         verify(observer, times(1)).onNext("three");
         verify(observer, Mockito.never()).onError(any(Throwable.class));
@@ -119,7 +118,7 @@ public class AsyncSubjectTest {
         RuntimeException re = new RuntimeException("failed");
         subject.onError(re);
 
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        subject.subscribe(observer);
 
         verify(observer, times(1)).onError(re);
         verify(observer, Mockito.never()).onNext(any(String.class));
@@ -132,7 +131,7 @@ public class AsyncSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        subject.subscribe(observer);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -153,7 +152,7 @@ public class AsyncSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Subscription subscription = subject.toObservable().subscribe(new TestObserver<String>(observer));
+        Subscription subscription = subject.subscribe(observer);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -178,7 +177,7 @@ public class AsyncSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        subject.subscribe(observer);
 
         subject.onCompleted();
 
@@ -204,7 +203,7 @@ public class AsyncSubjectTest {
             final AsyncSubject<String> subject = AsyncSubject.create();
             final AtomicReference<String> value1 = new AtomicReference<String>();
 
-            subject.toObservable().subscribe(new Action1<String>() {
+            subject.subscribe(new Action1<String>() {
 
                 @Override
                 public void call(String t1) {
@@ -270,7 +269,7 @@ public class AsyncSubjectTest {
         public void run() {
             try {
                 // a timeout exception will happen if we don't get a terminal state 
-                String v = subject.toObservable().timeout(2000, TimeUnit.MILLISECONDS).toBlockingObservable().single();
+                String v = subject.timeout(2000, TimeUnit.MILLISECONDS).toBlockingObservable().single();
                 value.set(v);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -27,7 +27,6 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
-import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.util.TimeInterval;
@@ -48,13 +47,13 @@ public class OperationTimeIntervalTest {
         MockitoAnnotations.initMocks(this);
         testScheduler = new TestScheduler();
         subject = PublishSubject.create();
-        observable = subject.toObservable().timeInterval(testScheduler);
+        observable = subject.timeInterval(testScheduler);
     }
 
     @Test
     public void testTimeInterval() {
         InOrder inOrder = inOrder(observer);
-        observable.subscribe(new TestObserver<TimeInterval<Integer>>(observer));
+        observable.subscribe(observer);
 
         testScheduler.advanceTimeBy(1000, TIME_UNIT);
         subject.onNext(1);

@@ -70,7 +70,7 @@ public class OperationNextTest {
     @Test
     public void testNext() {
         Subject<String, String> obs = PublishSubject.create();
-        Iterator<String> it = next(obs.toObservable()).iterator();
+        Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());
         assertEquals("one", it.next());
@@ -99,7 +99,7 @@ public class OperationNextTest {
     @Test
     public void testNextWithError() {
         Subject<String, String> obs = PublishSubject.create();
-        Iterator<String> it = next(obs.toObservable()).iterator();
+        Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());
         assertEquals("one", it.next());
@@ -138,7 +138,7 @@ public class OperationNextTest {
     @Test
     public void testOnError() throws Throwable {
         Subject<String, String> obs = PublishSubject.create();
-        Iterator<String> it = next(obs.toObservable()).iterator();
+        Iterator<String> it = next(obs).iterator();
 
         obs.onError(new TestException());
         try {
@@ -154,7 +154,7 @@ public class OperationNextTest {
     @Test
     public void testOnErrorInNewThread() {
         Subject<String, String> obs = PublishSubject.create();
-        Iterator<String> it = next(obs.toObservable()).iterator();
+        Iterator<String> it = next(obs).iterator();
 
         fireOnErrorInNewThread(obs);
 
@@ -185,7 +185,7 @@ public class OperationNextTest {
     @Test
     public void testNextWithOnlyUsingNextMethod() {
         Subject<String, String> obs = PublishSubject.create();
-        Iterator<String> it = next(obs.toObservable()).iterator();
+        Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
         assertEquals("one", it.next());
 
@@ -203,7 +203,7 @@ public class OperationNextTest {
     @Test
     public void testNextWithCallingHasNextMultipleTimes() {
         Subject<String, String> obs = PublishSubject.create();
-        Iterator<String> it = next(obs.toObservable()).iterator();
+        Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());
         assertTrue(it.hasNext());

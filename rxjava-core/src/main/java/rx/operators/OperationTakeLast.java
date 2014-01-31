@@ -64,7 +64,7 @@ public final class OperationTakeLast {
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
-        private class ItemObserver extends Observer<T> {
+        private class ItemObserver implements Observer<T> {
 
             /**
              * Store the last count elements until now.
@@ -162,7 +162,7 @@ public final class OperationTakeLast {
     }
 
     /** Observes source values and keeps the most recent items. */
-    static final class TakeLastTimedObserver<T> extends Observer<T> {
+    static final class TakeLastTimedObserver<T> implements Observer<T> {
         final Observer<? super T> observer;
         final Subscription cancel;
         final long ageMillis;

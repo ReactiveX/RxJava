@@ -2,10 +2,11 @@ package rx.observers;
 
 import rx.Observer;
 
+
 /**
  * Observer that does nothing... including swallowing errors.
  */
-public class EmptyObserver<T> extends Observer<T> {
+public class EmptyObserver<T> implements Observer<T> {
 
     @Override
     public void onCompleted() {

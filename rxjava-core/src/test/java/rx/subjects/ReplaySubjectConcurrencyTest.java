@@ -29,6 +29,7 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
@@ -71,7 +72,7 @@ public class ReplaySubjectConcurrencyTest {
         });
         source.start();
 
-        long v = replay.toObservable().toBlockingObservable().last();
+        long v = replay.toBlockingObservable().last();
         assertEquals(10000, v);
 
         // it's been played through once so now it will all be replays
@@ -80,7 +81,7 @@ public class ReplaySubjectConcurrencyTest {
 
             @Override
             public void run() {
-                Observer<Long> slow = new Observer<Long>() {
+                Subscriber<Long> slow = new Subscriber<Long>() {
 
                     @Override
                     public void onCompleted() {
@@ -106,7 +107,7 @@ public class ReplaySubjectConcurrencyTest {
                         }
                     }
                 };
-                replay.toObservable().subscribe(slow);
+                replay.subscribe(slow);
                 try {
                     slowLatch.await();
                 } catch (InterruptedException e1) {
@@ -121,7 +122,7 @@ public class ReplaySubjectConcurrencyTest {
             @Override
             public void run() {
                 final CountDownLatch fastLatch = new CountDownLatch(1);
-                Observer<Long> fast = new Observer<Long>() {
+                Subscriber<Long> fast = new Subscriber<Long>() {
 
                     @Override
                     public void onCompleted() {
@@ -140,7 +141,7 @@ public class ReplaySubjectConcurrencyTest {
                         }
                     }
                 };
-                replay.toObservable().subscribe(fast);
+                replay.subscribe(fast);
                 try {
                     fastLatch.await();
                 } catch (InterruptedException e1) {
@@ -199,7 +200,7 @@ public class ReplaySubjectConcurrencyTest {
 
                 @Override
                 public void run() {
-                    List<Long> values = replay.toObservable().toList().toBlockingObservable().last();
+                    List<Long> values = replay.toList().toBlockingObservable().last();
                     listOfListsOfValues.add(values);
                     System.out.println("Finished thread: " + count);
                 }
@@ -250,7 +251,7 @@ public class ReplaySubjectConcurrencyTest {
             final ReplaySubject<String> subject = ReplaySubject.create();
             final AtomicReference<String> value1 = new AtomicReference<String>();
 
-            subject.toObservable().subscribe(new Action1<String>() {
+            subject.subscribe(new Action1<String>() {
 
                 @Override
                 public void call(String t1) {
@@ -316,7 +317,7 @@ public class ReplaySubjectConcurrencyTest {
         public void run() {
             try {
                 // a timeout exception will happen if we don't get a terminal state 
-                String v = subject.toObservable().timeout(2000, TimeUnit.MILLISECONDS).toBlockingObservable().single();
+                String v = subject.timeout(2000, TimeUnit.MILLISECONDS).toBlockingObservable().single();
                 value.set(v);
             } catch (Exception e) {
                 e.printStackTrace();

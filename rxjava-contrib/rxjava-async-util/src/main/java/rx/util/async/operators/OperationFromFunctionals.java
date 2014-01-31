@@ -16,6 +16,7 @@
 package rx.util.async.operators;
 
 import java.util.concurrent.Callable;
+
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;

@@ -23,7 +23,6 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.observers.TestObserver;
 
 public class OperationTakeUntilTest {
 
@@ -37,7 +36,7 @@ public class OperationTakeUntilTest {
 
         Observer<String> result = mock(Observer.class);
         Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
-        stringObservable.subscribe(new TestObserver<String>(result));
+        stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
         other.sendOnNext("three");
@@ -64,7 +63,7 @@ public class OperationTakeUntilTest {
 
         Observer<String> result = mock(Observer.class);
         Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
-        stringObservable.subscribe(new TestObserver<String>(result));
+        stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
         source.sendOnCompleted();
@@ -87,13 +86,15 @@ public class OperationTakeUntilTest {
 
         Observer<String> result = mock(Observer.class);
         Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
-        stringObservable.subscribe(new TestObserver<String>(result));
+        stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
         source.sendOnError(error);
+        source.sendOnNext("three");
 
         verify(result, times(1)).onNext("one");
         verify(result, times(1)).onNext("two");
+        verify(result, times(0)).onNext("three");
         verify(result, times(1)).onError(error);
         verify(sSource, times(1)).unsubscribe();
         verify(sOther, times(1)).unsubscribe();
@@ -111,13 +112,15 @@ public class OperationTakeUntilTest {
 
         Observer<String> result = mock(Observer.class);
         Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
-        stringObservable.subscribe(new TestObserver<String>(result));
+        stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
         other.sendOnError(error);
+        source.sendOnNext("three");
 
         verify(result, times(1)).onNext("one");
         verify(result, times(1)).onNext("two");
+        verify(result, times(0)).onNext("three");
         verify(result, times(1)).onError(error);
         verify(result, times(0)).onCompleted();
         verify(sSource, times(1)).unsubscribe();
@@ -125,6 +128,9 @@ public class OperationTakeUntilTest {
 
     }
 
+    /**
+     * If the 'other' onCompletes then we unsubscribe from the source and onComplete
+     */
     @Test
     @SuppressWarnings("unchecked")
     public void testTakeUntilOtherCompleted() {
@@ -135,16 +141,18 @@ public class OperationTakeUntilTest {
 
         Observer<String> result = mock(Observer.class);
         Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
-        stringObservable.subscribe(new TestObserver<String>(result));
+        stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
         other.sendOnCompleted();
+        source.sendOnNext("three");
 
         verify(result, times(1)).onNext("one");
         verify(result, times(1)).onNext("two");
-        verify(result, times(0)).onCompleted();
-        verify(sSource, times(0)).unsubscribe();
-        verify(sOther, times(0)).unsubscribe();
+        verify(result, times(0)).onNext("three");
+        verify(result, times(1)).onCompleted();
+        verify(sSource, times(1)).unsubscribe();
+        verify(sOther, times(1)).unsubscribe(); // unsubscribed since SafeSubscriber unsubscribes after onComplete
 
     }
 

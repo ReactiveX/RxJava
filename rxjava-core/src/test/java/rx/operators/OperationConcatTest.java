@@ -33,7 +33,6 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 
@@ -52,7 +51,7 @@ public class OperationConcatTest {
 
         @SuppressWarnings("unchecked")
         Observable<String> concat = Observable.create(concat(odds, even));
-        concat.subscribe(new TestObserver<String>(observer));
+        concat.subscribe(observer);
 
         verify(observer, times(7)).onNext(anyString());
     }
@@ -71,7 +70,7 @@ public class OperationConcatTest {
         list.add(odds);
         list.add(even);
         Observable<String> concat = Observable.create(concat(list));
-        concat.subscribe(new TestObserver<String>(observer));
+        concat.subscribe(observer);
 
         verify(observer, times(7)).onNext(anyString());
     }
@@ -109,7 +108,7 @@ public class OperationConcatTest {
         });
         Observable<String> concat = Observable.create(concat(observableOfObservables));
 
-        concat.subscribe(new TestObserver<String>(observer));
+        concat.subscribe(observer);
 
         verify(observer, times(7)).onNext(anyString());
     }
@@ -125,7 +124,7 @@ public class OperationConcatTest {
         TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
         TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
 
-        Observable.concat(Observable.create(o1), Observable.create(o2)).subscribe(new TestObserver<String>(observer));
+        Observable.concat(Observable.create(o1), Observable.create(o2)).subscribe(observer);
 
         try {
             // wait for async observables to complete
@@ -205,7 +204,7 @@ public class OperationConcatTest {
             }
         });
 
-        Observable.create(concat(observableOfObservables)).subscribe(new TestObserver<String>(observer));
+        Observable.create(concat(observableOfObservables)).subscribe(observer);
 
         // wait for parent to start
         parentHasStarted.await();
@@ -267,7 +266,7 @@ public class OperationConcatTest {
         TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(callOnce, okToContinue, odds, even);
         Observable.OnSubscribeFunc<String> concatF = concat(Observable.create(observableOfObservables));
         Observable<String> concat = Observable.create(concatF);
-        concat.subscribe(new TestObserver<String>(observer));
+        concat.subscribe(observer);
         try {
             //Block main thread to allow observables to serve up o1.
             callOnce.await();
@@ -309,7 +308,7 @@ public class OperationConcatTest {
 
         Observable<String> concat = Observable.create(concatF);
 
-        concat.take(50).subscribe(new TestObserver<String>(observer));
+        concat.take(50).subscribe(observer);
 
         //Wait for the thread to start up.
         try {
@@ -360,7 +359,7 @@ public class OperationConcatTest {
 
         });
         Observable<String> concat = Observable.create(concat(observableOfObservables));
-        concat.subscribe(new TestObserver<String>(observer));
+        concat.subscribe(observer);
 
         verify(observer, times(0)).onCompleted();
 
@@ -403,7 +402,7 @@ public class OperationConcatTest {
 
         try {
             // Subscribe
-            Subscription s1 = concat.subscribe(new TestObserver<String>(observer));
+            Subscription s1 = concat.subscribe(observer);
             //Block main thread to allow observable "w1" to complete and observable "w2" to call onNext once.
             callOnce.await();
             // Unsubcribe
@@ -446,7 +445,7 @@ public class OperationConcatTest {
 
         Observable<String> concat = Observable.create(concatF);
 
-        Subscription s1 = concat.subscribe(new TestObserver<String>(observer));
+        Subscription s1 = concat.subscribe(observer);
 
         try {
             //Block main thread to allow observable "w1" to complete and observable "w2" to call onNext exactly once.
@@ -564,8 +563,8 @@ public class OperationConcatTest {
         Observable<Long> timer = Observable.interval(500, TimeUnit.MILLISECONDS, s).take(2);
         Observable<Long> o = Observable.concat(timer, timer);
 
-        o.subscribe(new TestObserver<Object>(o1));
-        o.subscribe(new TestObserver<Object>(o2));
+        o.subscribe(o1);
+        o.subscribe(o2);
 
         InOrder inOrder1 = inOrder(o1);
         InOrder inOrder2 = inOrder(o2);

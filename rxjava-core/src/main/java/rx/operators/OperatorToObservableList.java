@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observer;
+import rx.Subscriber;
 
 /**
  * Returns an Observable that emits a single item, a list composed of all the items emitted by the
@@ -37,8 +37,8 @@ import rx.Observer;
 public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
 
     @Override
-    public Observer<? super T> call(final Observer<? super List<T>> o) {
-        return new Observer<T>(o) {
+    public Subscriber<? super T> call(final Subscriber<? super List<T>> o) {
+        return new Subscriber<T>(o) {
 
             final List<T> list = new ArrayList<T>();
 

@@ -29,7 +29,6 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.observers.TestObserver;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
@@ -41,7 +40,7 @@ public class PublishSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        subject.subscribe(observer);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -50,7 +49,7 @@ public class PublishSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> anotherObserver = mock(Observer.class);
-        subject.toObservable().subscribe(new TestObserver<String>(anotherObserver));
+        subject.subscribe(anotherObserver);
 
         subject.onNext("four");
         subject.onCompleted();
@@ -70,8 +69,8 @@ public class PublishSubjectTest {
         @SuppressWarnings("unchecked")
         Observer<Object> observerC = mock(Observer.class);
 
-        Subscription a = channel.toObservable().subscribe(new TestObserver<Object>(observerA));
-        Subscription b = channel.toObservable().subscribe(new TestObserver<Object>(observerB));
+        Subscription a = channel.subscribe(observerA);
+        Subscription b = channel.subscribe(observerB);
 
         InOrder inOrderA = inOrder(observerA);
         InOrder inOrderB = inOrder(observerB);
@@ -93,7 +92,7 @@ public class PublishSubjectTest {
 
         inOrderB.verify(observerB).onCompleted();
 
-        Subscription c = channel.toObservable().subscribe(new TestObserver<Object>(observerC));
+        Subscription c = channel.subscribe(observerC);
 
         inOrderC.verify(observerC).onCompleted();
 
@@ -117,7 +116,7 @@ public class PublishSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        subject.subscribe(observer);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -126,7 +125,7 @@ public class PublishSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> anotherObserver = mock(Observer.class);
-        subject.toObservable().subscribe(new TestObserver<String>(anotherObserver));
+        subject.subscribe(anotherObserver);
 
         subject.onNext("four");
         subject.onError(new Throwable());
@@ -150,7 +149,7 @@ public class PublishSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        subject.toObservable().subscribe(new TestObserver<String>(observer));
+        subject.subscribe(observer);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -159,7 +158,7 @@ public class PublishSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> anotherObserver = mock(Observer.class);
-        subject.toObservable().subscribe(new TestObserver<String>(anotherObserver));
+        subject.subscribe(anotherObserver);
 
         subject.onNext("three");
         subject.onCompleted();
@@ -182,7 +181,7 @@ public class PublishSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Subscription subscription = subject.toObservable().subscribe(new TestObserver<String>(observer));
+        Subscription subscription = subject.subscribe(observer);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -192,7 +191,7 @@ public class PublishSubjectTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> anotherObserver = mock(Observer.class);
-        subject.toObservable().subscribe(new TestObserver<String>(anotherObserver));
+        subject.subscribe(anotherObserver);
 
         subject.onNext("three");
         subject.onCompleted();
@@ -219,14 +218,14 @@ public class PublishSubjectTest {
 
         final ArrayList<String> list = new ArrayList<String>();
 
-        s.toObservable().flatMap(new Func1<Integer, Observable<String>>() {
+        s.flatMap(new Func1<Integer, Observable<String>>() {
 
             @Override
             public Observable<String> call(final Integer v) {
                 countParent.incrementAndGet();
 
                 // then subscribe to subject again (it will not receive the previous value)
-                return s.toObservable().map(new Func1<Integer, String>() {
+                return s.map(new Func1<Integer, String>() {
 
                     @Override
                     public String call(Integer v2) {
@@ -268,7 +267,7 @@ public class PublishSubjectTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         Observer<Integer> o1 = mock(Observer.class);
-        Subscription s1 = ps.toObservable().subscribe(new TestObserver<Integer>(o1));
+        Subscription s1 = ps.subscribe(o1);
 
         // emit
         ps.onNext(1);
@@ -285,7 +284,7 @@ public class PublishSubjectTest {
         ps.onNext(2);
 
         Observer<Integer> o2 = mock(Observer.class);
-        Subscription s2 = ps.toObservable().subscribe(new TestObserver<Integer>(o2));
+        Subscription s2 = ps.subscribe(o2);
 
         // emit
         ps.onNext(3);

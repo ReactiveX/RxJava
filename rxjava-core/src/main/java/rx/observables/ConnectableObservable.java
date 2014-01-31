@@ -16,14 +16,14 @@
 package rx.observables;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.operators.OperationRefCount;
 
 /**
  * A ConnectableObservable resembles an ordinary {@link Observable}, except that it does not begin
  * emitting items when it is subscribed to, but only when its {@link #connect} method is called. In
- * this way you can wait for all intended {@link Observer}s to {@link Observable#subscribe} to the
+ * this way you can wait for all intended {@link Subscriber}s to {@link Observable#subscribe} to the
  * Observable before the Observable begins emitting items.
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/publishConnect.png">
@@ -43,7 +43,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
 
     /**
      * Call a ConnectableObservable's connect() method to instruct it to begin emitting the
-     * items from its underlying {@link Observable} to its {@link Observer}s.
+     * items from its underlying {@link Observable} to its {@link Subscriber}s.
      */
     public abstract Subscription connect();
 

@@ -16,8 +16,8 @@
 package rx.operators;
 
 import rx.Observable;
-import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.observables.GroupedObservable;
 import rx.util.functions.Func1;
 
@@ -35,9 +35,9 @@ public final class OperatorParallel<T, R> implements Operator<R, T> {
     }
 
     @Override
-    public Observer<? super T> call(Observer<? super R> op) {
+    public Subscriber<? super T> call(Subscriber<? super R> op) {
 
-        Func1<Observer<? super GroupedObservable<Integer, T>>, Observer<? super T>> groupBy =
+        Func1<Subscriber<? super GroupedObservable<Integer, T>>, Subscriber<? super T>> groupBy =
                 new OperatorGroupBy<Integer, T>(new Func1<T, Integer>() {
 
                     int i = 0;
@@ -49,7 +49,7 @@ public final class OperatorParallel<T, R> implements Operator<R, T> {
 
                 });
 
-        Func1<Observer<? super Observable<R>>, Observer<? super GroupedObservable<Integer, T>>> map =
+        Func1<Subscriber<? super Observable<R>>, Subscriber<? super GroupedObservable<Integer, T>>> map =
                 new OperatorMap<GroupedObservable<Integer, T>, Observable<R>>(
                         new Func1<GroupedObservable<Integer, T>, Observable<R>>() {
 

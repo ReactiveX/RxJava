@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import rx.Observer;
+import rx.Subscriber;
 import rx.util.functions.Func2;
 
 /**
@@ -45,8 +45,8 @@ public final class OperatorToObservableSortedList<T> implements Operator<List<T>
     }
 
     @Override
-    public Observer<? super T> call(final Observer<? super List<T>> o) {
-        return new Observer<T>(o) {
+    public Subscriber<? super T> call(final Subscriber<? super List<T>> o) {
+        return new Subscriber<T>(o) {
 
             final List<T> list = new ArrayList<T>();
 

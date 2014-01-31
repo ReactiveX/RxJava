@@ -80,7 +80,8 @@ public final class OperationAny {
 
         @Override
         public Subscription onSubscribe(final Observer<? super Boolean> observer) {
-            return source.subscribe(new Observer<T>(observer) {
+            final SafeObservableSubscription subscription = new SafeObservableSubscription();
+            return subscription.wrap(source.subscribe(new Observer<T>() {
 
                 private final AtomicBoolean hasEmitted = new AtomicBoolean(false);
 
@@ -92,12 +93,16 @@ public final class OperationAny {
                                     && hasEmitted.getAndSet(true) == false) {
                                 observer.onNext(!returnOnEmpty);
                                 observer.onCompleted();
-                                unsubscribe();
+                                // this will work if the sequence is asynchronous, it
+                                // will have no effect on a synchronous observable
+                                subscription.unsubscribe();
                             }
                         }
                     } catch (Throwable ex) {
                         observer.onError(ex);
-                        unsubscribe();
+                        // this will work if the sequence is asynchronous, it
+                        // will have no effect on a synchronous observable
+                        subscription.unsubscribe();
                     }
 
                 }
@@ -114,7 +119,7 @@ public final class OperationAny {
                         observer.onCompleted();
                     }
                 }
-            });
+            }));
         }
 
     }
