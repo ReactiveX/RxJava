@@ -222,7 +222,7 @@ public class Observable<T> {
 
     public static interface OnSubscribeFunc<T> extends Function {
 
-        public Subscription onSubscribe(Subscriber<? super T> op);
+        public Subscription onSubscribe(Observer<? super T> op);
 
     }
 

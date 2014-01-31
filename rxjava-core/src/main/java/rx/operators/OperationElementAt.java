@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 
 /**
@@ -86,9 +86,9 @@ public class OperationElementAt {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
-            return subscription.wrap(source.subscribe(new Subscriber<T>() {
+            return subscription.wrap(source.subscribe(new Observer<T>() {
 
                 private AtomicInteger counter = new AtomicInteger();
 

@@ -20,10 +20,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
+import rx.Observer;
 import rx.Scheduler;
-import rx.Subscriber;
 import rx.Subscription;
-import rx.observers.SynchronizedSubscriber;
+import rx.observers.SynchronizedObserver;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
@@ -72,7 +72,7 @@ public final class OperationDebounce {
     public static <T> OnSubscribeFunc<T> debounce(final Observable<T> items, final long timeout, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<T>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 return new Debounce<T>(items, timeout, unit, scheduler).onSubscribe(observer);
             }
         };
@@ -93,24 +93,24 @@ public final class OperationDebounce {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             return items.subscribe(new DebounceObserver<T>(observer, timeout, unit, scheduler));
         }
     }
 
-    private static class DebounceObserver<T> extends Subscriber<T> {
+    private static class DebounceObserver<T> implements Observer<T> {
 
-        private final Subscriber<? super T> observer;
+        private final Observer<? super T> observer;
         private final long timeout;
         private final TimeUnit unit;
         private final Scheduler scheduler;
 
         private final AtomicReference<Subscription> lastScheduledNotification = new AtomicReference<Subscription>();
 
-        public DebounceObserver(Subscriber<? super T> observer, long timeout, TimeUnit unit, Scheduler scheduler) {
+        public DebounceObserver(Observer<? super T> observer, long timeout, TimeUnit unit, Scheduler scheduler) {
             // we need to synchronize the observer since the on* events can be coming from different
             // threads and are thus non-deterministic and could be interleaved
-            this.observer = new SynchronizedSubscriber<T>(observer);
+            this.observer = new SynchronizedObserver<T>(observer);
             this.timeout = timeout;
             this.unit = unit;
             this.scheduler = scheduler;
@@ -177,7 +177,7 @@ public final class OperationDebounce {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super T> t1) {
+        public Subscription onSubscribe(Observer<? super T> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
             csub.add(source.subscribe(new SourceObserver<T, U>(t1, debounceSelector, csub)));
@@ -186,8 +186,8 @@ public final class OperationDebounce {
         }
 
         /** Observe the source. */
-        private static final class SourceObserver<T, U> extends Subscriber<T> {
-            final Subscriber<? super T> observer;
+        private static final class SourceObserver<T, U> implements Observer<T> {
+            final Observer<? super T> observer;
             final Func1<? super T, ? extends Observable<U>> debounceSelector;
             final CompositeSubscription cancel;
             final SerialSubscription ssub = new SerialSubscription();
@@ -197,7 +197,7 @@ public final class OperationDebounce {
             final Object guard;
 
             public SourceObserver(
-                    Subscriber<? super T> observer,
+                    Observer<? super T> observer,
                     Func1<? super T, ? extends Observable<U>> debounceSelector,
                     CompositeSubscription cancel) {
                 this.observer = observer;
@@ -274,7 +274,7 @@ public final class OperationDebounce {
         /**
          * The debounce observer.
          */
-        private static final class DebounceObserver<T, U> extends Subscriber<U> {
+        private static final class DebounceObserver<T, U> implements Observer<U> {
             final SourceObserver<T, U> parent;
             final Subscription cancel;
             final T value;

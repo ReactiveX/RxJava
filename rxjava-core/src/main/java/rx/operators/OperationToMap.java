@@ -21,7 +21,7 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func0;
@@ -108,7 +108,7 @@ public class OperationToMap {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super Map<K, V>> t1) {
+        public Subscription onSubscribe(Observer<? super Map<K, V>> t1) {
             Map<K, V> map;
             try {
                 map = mapFactory.call();
@@ -124,7 +124,7 @@ public class OperationToMap {
          * Observer that collects the source values of T into
          * a map.
          */
-        public static class ToMapObserver<K, V, T> extends Subscriber<T> {
+        public static class ToMapObserver<K, V, T> implements Observer<T> {
             /** The map. */
             Map<K, V> map;
             /** Key extractor. */
@@ -132,10 +132,10 @@ public class OperationToMap {
             /** Value extractor. */
             private final Func1<? super T, ? extends V> valueSelector;
             /** The observer who is receiving the completed map. */
-            private final Subscriber<? super Map<K, V>> t1;
+            private final Observer<? super Map<K, V>> t1;
 
             public ToMapObserver(
-                    Subscriber<? super Map<K, V>> t1,
+                    Observer<? super Map<K, V>> t1,
                     Func1<? super T, ? extends K> keySelector,
                     Func1<? super T, ? extends V> valueSelector,
                     Map<K, V> map) {

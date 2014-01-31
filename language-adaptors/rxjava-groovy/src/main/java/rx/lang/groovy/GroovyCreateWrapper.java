@@ -17,7 +17,7 @@ package rx.lang.groovy;
 
 import groovy.lang.Closure;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 
 public class GroovyCreateWrapper<T> implements OnSubscribe<T> {
@@ -29,7 +29,7 @@ public class GroovyCreateWrapper<T> implements OnSubscribe<T> {
     }
 
     @Override
-    public void call(Observer<? super T> op) {
+    public void call(Subscriber<? super T> op) {
         Object o = closure.call(op);
         /*
          * If the new signature is being used, we will get NULL back.

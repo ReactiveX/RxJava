@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
@@ -43,7 +43,7 @@ public final class OperationSwitch {
     public static <T> OnSubscribeFunc<T> switchDo(final Observable<? extends Observable<? extends T>> sequences) {
         return new OnSubscribeFunc<T>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 return new Switch<T>(sequences).onSubscribe(observer);
             }
         };
@@ -58,7 +58,7 @@ public final class OperationSwitch {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             SafeObservableSubscription parent;
             parent = new SafeObservableSubscription();
 
@@ -70,17 +70,17 @@ public final class OperationSwitch {
         }
     }
 
-    private static class SwitchObserver<T> extends Subscriber<Observable<? extends T>> {
+    private static class SwitchObserver<T> implements Observer<Observable<? extends T>> {
 
         private final Object gate;
-        private final Subscriber<? super T> observer;
+        private final Observer<? super T> observer;
         private final SafeObservableSubscription parent;
         private final SerialSubscription child;
         private long latest;
         private boolean stopped;
         private boolean hasLatest;
 
-        public SwitchObserver(Subscriber<? super T> observer, SafeObservableSubscription parent,
+        public SwitchObserver(Observer<? super T> observer, SafeObservableSubscription parent,
                 SerialSubscription child) {
             this.observer = observer;
             this.parent = parent;
@@ -97,7 +97,7 @@ public final class OperationSwitch {
             }
 
             final SafeObservableSubscription sub = new SafeObservableSubscription();
-            sub.wrap(args.subscribe(new Subscriber<T>() {
+            sub.wrap(args.subscribe(new Observer<T>() {
                 @Override
                 public void onNext(T args) {
                     synchronized (gate) {

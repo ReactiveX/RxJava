@@ -18,7 +18,6 @@ package rx.operators;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.util.functions.Action0;
@@ -48,7 +47,7 @@ public final class OperationTimer {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super Long> t1) {
+        public Subscription onSubscribe(final Observer<? super Long> t1) {
             return scheduler.schedule(new Action0() {
                 @Override
                 public void call() {
@@ -77,7 +76,7 @@ public final class OperationTimer {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super Long> t1) {
+        public Subscription onSubscribe(final Observer<? super Long> t1) {
             return scheduler.schedulePeriodically(new Action0() {
                 long count;
 

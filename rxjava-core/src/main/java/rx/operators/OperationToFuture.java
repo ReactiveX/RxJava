@@ -23,7 +23,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 
 /**
@@ -51,7 +51,7 @@ public class OperationToFuture {
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
-        final Subscription s = that.subscribe(new Subscriber<T>() {
+        final Subscription s = that.subscribe(new Observer<T>() {
 
             @Override
             public void onCompleted() {

@@ -19,9 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
-import rx.observers.SafeSubscriber;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -58,7 +57,7 @@ public final class OperationTakeWhile {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 return new TakeWhile<T>(items, predicate).onSubscribe(observer);
             }
 
@@ -95,21 +94,21 @@ public final class OperationTakeWhile {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             return items.subscribe(new ItemObserver(observer));
         }
 
-        private class ItemObserver extends Subscriber<T> {
-            private final Subscriber<? super T> observer;
+        private class ItemObserver implements Observer<T> {
+            private final Observer<? super T> observer;
 
             private final AtomicInteger counter = new AtomicInteger();
 
-            public ItemObserver(Subscriber<? super T> observer) {
+            public ItemObserver(Observer<? super T> observer) {
                 super(observer);
                 // Using AtomicObserver because the unsubscribe, onCompleted, onError and error handling behavior
                 // needs "isFinished" logic to not send duplicated events
                 // The 'testTakeWhile1' and 'testTakeWhile2' tests fail without this.
-                this.observer = new SafeSubscriber<T>(observer);
+                this.observer = new SafeObserver<T>(observer);
             }
 
             @Override

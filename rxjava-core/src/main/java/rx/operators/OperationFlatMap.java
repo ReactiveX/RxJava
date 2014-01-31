@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
@@ -99,7 +99,7 @@ public final class OperationFlatMap {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super R> t1) {
+        public Subscription onSubscribe(Observer<? super R> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
             csub.add(source.subscribe(new SourceObserver<T, U, R>(t1, collectionSelector, resultSelector, csub)));
@@ -108,8 +108,8 @@ public final class OperationFlatMap {
         }
 
         /** Observes the source, starts the collections and projects the result. */
-        private static final class SourceObserver<T, U, R> extends Subscriber<T> {
-            final Subscriber<? super R> observer;
+        private static final class SourceObserver<T, U, R> implements Observer<T> {
+            final Observer<? super R> observer;
             final Func1<? super T, ? extends Observable<? extends U>> collectionSelector;
             final Func2<? super T, ? super U, ? extends R> resultSelector;
             final CompositeSubscription csub;
@@ -118,7 +118,7 @@ public final class OperationFlatMap {
             final Object guard;
             boolean done;
 
-            public SourceObserver(Subscriber<? super R> observer, Func1<? super T, ? extends Observable<? extends U>> collectionSelector, Func2<? super T, ? super U, ? extends R> resultSelector, CompositeSubscription csub) {
+            public SourceObserver(Observer<? super R> observer, Func1<? super T, ? extends Observable<? extends U>> collectionSelector, Func2<? super T, ? super U, ? extends R> resultSelector, CompositeSubscription csub) {
                 this.observer = observer;
                 this.collectionSelector = collectionSelector;
                 this.resultSelector = resultSelector;
@@ -193,7 +193,7 @@ public final class OperationFlatMap {
         }
 
         /** Observe a collection and call emit with the pair of the key and the value. */
-        private static final class CollectionObserver<T, U, R> extends Subscriber<U> {
+        private static final class CollectionObserver<T, U, R> implements Observer<U> {
             final SourceObserver<T, U, R> so;
             final Subscription cancel;
             final T value;
@@ -255,7 +255,7 @@ public final class OperationFlatMap {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super R> t1) {
+        public Subscription onSubscribe(Observer<? super R> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
             csub.add(source.subscribe(new SourceObserver<T, R>(t1, onNext, onError, onCompleted, csub)));
@@ -271,8 +271,8 @@ public final class OperationFlatMap {
          * @param <R>
          *            the result value type
          */
-        private static final class SourceObserver<T, R> extends Subscriber<T> {
-            final Subscriber<? super R> observer;
+        private static final class SourceObserver<T, R> implements Observer<T> {
+            final Observer<? super R> observer;
             final Func1<? super T, ? extends Observable<? extends R>> onNext;
             final Func1<? super Throwable, ? extends Observable<? extends R>> onError;
             final Func0<? extends Observable<? extends R>> onCompleted;
@@ -281,7 +281,7 @@ public final class OperationFlatMap {
             volatile boolean done;
             final Object guard;
 
-            public SourceObserver(Subscriber<? super R> observer, Func1<? super T, ? extends Observable<? extends R>> onNext, Func1<? super Throwable, ? extends Observable<? extends R>> onError, Func0<? extends Observable<? extends R>> onCompleted, CompositeSubscription csub) {
+            public SourceObserver(Observer<? super R> observer, Func1<? super T, ? extends Observable<? extends R>> onNext, Func1<? super Throwable, ? extends Observable<? extends R>> onError, Func0<? extends Observable<? extends R>> onCompleted, CompositeSubscription csub) {
                 this.observer = observer;
                 this.onNext = onNext;
                 this.onError = onError;
@@ -359,7 +359,7 @@ public final class OperationFlatMap {
         }
 
         /** Observes the collections. */
-        private static final class CollectionObserver<T, R> extends Subscriber<R> {
+        private static final class CollectionObserver<T, R> implements Observer<R> {
             final SourceObserver<T, R> parent;
             final Subscription cancel;
 

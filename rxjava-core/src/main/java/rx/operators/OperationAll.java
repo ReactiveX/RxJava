@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
 
@@ -47,17 +47,17 @@ public class OperationAll {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super Boolean> observer) {
+        public Subscription onSubscribe(final Observer<? super Boolean> observer) {
             return subscription.wrap(sequence.subscribe(new AllObserver(observer)));
 
         }
 
-        private class AllObserver extends Subscriber<T> {
-            private final Subscriber<? super Boolean> underlying;
+        private class AllObserver implements Observer<T> {
+            private final Observer<? super Boolean> underlying;
 
             private final AtomicBoolean status = new AtomicBoolean(true);
 
-            public AllObserver(Subscriber<? super Boolean> underlying) {
+            public AllObserver(Observer<? super Boolean> underlying) {
                 this.underlying = underlying;
             }
 

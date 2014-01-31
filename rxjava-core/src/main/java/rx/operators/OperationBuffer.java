@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -48,7 +48,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * emitted, and a new buffer is created to replace it. A new {@link Observable} will be constructed using the
      * provided {@link Func0} object, which will determine when this new buffer is emitted. When the source {@link Observable} completes or produces an error, the current buffer is emitted, and the
      * event is propagated
-     * to all subscribed {@link Subscriber}s.</p>
+     * to all subscribed {@link Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
      * exactly one buffer actively storing values.</p>
@@ -65,7 +65,7 @@ public final class OperationBuffer extends ChunkedOperation {
         return new OnSubscribeFunc<List<T>>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super List<T>> observer) {
+            public Subscription onSubscribe(Observer<? super List<T>> observer) {
                 NonOverlappingChunks<T, List<T>> buffers = new NonOverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new ObservableBasedSingleChunkCreator<T, List<T>, TClosing>(buffers, bufferClosingSelector);
                 return new CompositeSubscription(
@@ -84,7 +84,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * This creates a new buffer which will then start recording values which are produced by the "source" {@link Observable}. Additionally the "bufferClosingSelector" will be used to construct an
      * {@link Observable} which can produce values. When it does so it will close this (and only this) newly created
      * buffer. When the source {@link Observable} completes or produces an error, all chunks are emitted, and the
-     * event is propagated to all subscribed {@link Subscriber}s.</p>
+     * event is propagated to all subscribed {@link Observer}s.</p>
      * 
      * <p>Note that when using this operation <strong>multiple overlapping chunks</strong>
      * could be active at any one point.</p>
@@ -103,7 +103,7 @@ public final class OperationBuffer extends ChunkedOperation {
     public static <T, TOpening, TClosing> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final Observable<? extends TOpening> bufferOpenings, final Func1<? super TOpening, ? extends Observable<? extends TClosing>> bufferClosingSelector) {
         return new OnSubscribeFunc<List<T>>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super List<T>> observer) {
+            public Subscription onSubscribe(final Observer<? super List<T>> observer) {
                 OverlappingChunks<T, List<T>> buffers = new OverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new ObservableBasedMultiChunkCreator<T, List<T>, TOpening, TClosing>(buffers, bufferOpenings, bufferClosingSelector);
                 return new CompositeSubscription(
@@ -118,7 +118,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * values from the specified {@link Observable} source and stores them in a buffer until the buffer contains
      * a specified number of elements. The buffer is then emitted, and a new buffer is created to replace it.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
      * exactly one buffer actively storing values.</p>
@@ -139,7 +139,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * values from the specified {@link Observable} source and stores them in all active chunks until the buffer
      * contains a specified number of elements. The buffer is then emitted. Chunks are created after a certain
      * amount of values have been received. When the source {@link Observable} completes or produces an error, the
-     * currently active chunks are emitted, and the event is propagated to all subscribed {@link Subscriber}s.</p>
+     * currently active chunks are emitted, and the event is propagated to all subscribed {@link Observer}s.</p>
      * 
      * <p>Note that this operation can produce <strong>non-connected, connected non-overlapping, or overlapping
      * chunks</strong> depending on the input parameters.</p>
@@ -160,7 +160,7 @@ public final class OperationBuffer extends ChunkedOperation {
     public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final int count, final int skip) {
         return new OnSubscribeFunc<List<T>>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super List<T>> observer) {
+            public Subscription onSubscribe(final Observer<? super List<T>> observer) {
                 Chunks<T, List<T>> chunks = new SizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), count);
                 ChunkCreator creator = new SkippingChunkCreator<T, List<T>>(chunks, skip);
                 return new CompositeSubscription(
@@ -175,7 +175,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * values from the specified {@link Observable} source and stores them in a buffer. Periodically the buffer
      * is emitted and replaced with a new buffer. How often this is done depends on the specified timespan.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
      * exactly one buffer actively storing values.</p>
@@ -198,7 +198,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * values from the specified {@link Observable} source and stores them in a buffer. Periodically the buffer
      * is emitted and replaced with a new buffer. How often this is done depends on the specified timespan.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
      * exactly one buffer actively storing values.</p>
@@ -217,7 +217,7 @@ public final class OperationBuffer extends ChunkedOperation {
     public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final long timespan, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<List<T>>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super List<T>> observer) {
+            public Subscription onSubscribe(final Observer<? super List<T>> observer) {
                 NonOverlappingChunks<T, List<T>> buffers = new NonOverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new TimeBasedChunkCreator<T, List<T>>(buffers, timespan, unit, scheduler);
                 return new CompositeSubscription(
@@ -233,7 +233,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * is emitted and replaced with a new buffer. How often this is done depends on the specified timespan.
      * Additionally the buffer is automatically emitted once it reaches a specified number of elements.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
      * exactly one buffer actively storing values.</p>
@@ -259,7 +259,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * is emitted and replaced with a new buffer. How often this is done depends on the specified timespan.
      * Additionally the buffer is automatically emitted once it reaches a specified number of elements.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
      * exactly one buffer actively storing values.</p>
@@ -280,7 +280,7 @@ public final class OperationBuffer extends ChunkedOperation {
     public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final long timespan, final TimeUnit unit, final int count, final Scheduler scheduler) {
         return new OnSubscribeFunc<List<T>>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super List<T>> observer) {
+            public Subscription onSubscribe(final Observer<? super List<T>> observer) {
                 TimeAndSizeBasedChunks<T, List<T>> chunks = new TimeAndSizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), count, timespan, unit, scheduler);
                 ChunkCreator creator = new SingleChunkCreator<T, List<T>>(chunks);
                 return new CompositeSubscription(
@@ -297,7 +297,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * is emitted and replaced with a new buffer. How often this is done depends on the specified timespan.
      * The creation of chunks is also periodical. How often this is done depends on the specified timeshift.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link Observer}s.</p>
      * 
      * <p>Note that this operation can produce <strong>non-connected, or overlapping chunks</strong> depending
      * on the input parameters.</p>
@@ -323,7 +323,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * is emitted and replaced with a new buffer. How often this is done depends on the specified timespan.
      * The creation of chunks is also periodical. How often this is done depends on the specified timeshift.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link Observer}s.</p>
      * 
      * <p>Note that this operation can produce <strong>non-connected, or overlapping chunks</strong> depending
      * on the input parameters.</p>
@@ -344,7 +344,7 @@ public final class OperationBuffer extends ChunkedOperation {
     public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final long timespan, final long timeshift, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<List<T>>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super List<T>> observer) {
+            public Subscription onSubscribe(final Observer<? super List<T>> observer) {
                 TimeBasedChunks<T, List<T>> buffers = new TimeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), timespan, unit, scheduler);
                 ChunkCreator creator = new TimeBasedChunkCreator<T, List<T>>(buffers, timeshift, unit, scheduler);
                 return new CompositeSubscription(
@@ -431,7 +431,7 @@ public final class OperationBuffer extends ChunkedOperation {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super List<T>> t1) {
+        public Subscription onSubscribe(Observer<? super List<T>> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
             SourceObserver<T> so = new SourceObserver<T>(t1, initialCapacity, csub);
@@ -444,15 +444,15 @@ public final class OperationBuffer extends ChunkedOperation {
         /**
          * Observes the source.
          */
-        private static final class SourceObserver<T> extends Subscriber<T> {
-            final Subscriber<? super List<T>> observer;
+        private static final class SourceObserver<T> implements Observer<T> {
+            final Observer<? super List<T>> observer;
             /** The buffer, if null, that indicates a terminal state. */
             List<T> buffer;
             final int initialCapacity;
             final Object guard;
             final Subscription cancel;
 
-            public SourceObserver(Subscriber<? super List<T>> observer, int initialCapacity, Subscription cancel) {
+            public SourceObserver(Observer<? super List<T>> observer, int initialCapacity, Subscription cancel) {
                 this.observer = observer;
                 this.initialCapacity = initialCapacity;
                 this.guard = new Object();
@@ -514,7 +514,7 @@ public final class OperationBuffer extends ChunkedOperation {
         /**
          * Observes the boundary.
          */
-        private static final class BoundaryObserver<T> extends Subscriber<T> {
+        private static final class BoundaryObserver<T> implements Observer<T> {
             final SourceObserver so;
 
             public BoundaryObserver(SourceObserver so) {

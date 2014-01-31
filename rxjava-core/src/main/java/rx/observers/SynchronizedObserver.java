@@ -47,28 +47,34 @@ public final class SynchronizedObserver<T> implements Observer<T> {
      * // TODO composing of this class should rarely happen now with updated design so this decision should be revisited
      */
 
-    private final Subscriber<? super T> observer;
+    private final Observer<? super T> observer;
     private final SafeObservableSubscription subscription;
     private volatile boolean finishRequested = false;
     private volatile boolean finished = false;
     private volatile Object lock;
 
-    public SynchronizedObserver(Subscriber<? super T> subscriber, SafeObservableSubscription subscription) {
+    public SynchronizedObserver(Observer<? super T> subscriber, SafeObservableSubscription subscription) {
         this.observer = subscriber;
         this.subscription = subscription;
         this.lock = this;
     }
 
-    public SynchronizedObserver(Subscriber<? super T> subscriber, SafeObservableSubscription subscription, Object lock) {
+    public SynchronizedObserver(Observer<? super T> subscriber, SafeObservableSubscription subscription, Object lock) {
         this.observer = subscriber;
         this.subscription = subscription;
         this.lock = lock;
     }
-    
+
     public SynchronizedObserver(Subscriber<? super T> subscriber, Object lock) {
         this.observer = subscriber;
         this.subscription = new SafeObservableSubscription(subscriber);
         this.lock = lock;
+    }
+
+    public SynchronizedObserver(Subscriber<? super T> subscriber) {
+        this.observer = subscriber;
+        this.subscription = new SafeObservableSubscription(subscriber);
+        this.lock = this;
     }
 
     /**
@@ -76,7 +82,7 @@ public final class SynchronizedObserver<T> implements Observer<T> {
      * 
      * @param Observer
      */
-    public SynchronizedObserver(Subscriber<? super T> subscriber) {
+    public SynchronizedObserver(Observer<? super T> subscriber) {
         this(subscriber, new SafeObservableSubscription());
     }
 

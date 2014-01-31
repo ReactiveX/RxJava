@@ -22,10 +22,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.observers.SynchronizedObserver;
-import rx.observers.SynchronizedSubscriber;
 import rx.subscriptions.CompositeSubscription;
 import rx.util.CompositeException;
 
@@ -62,7 +61,7 @@ public final class OperationMergeDelayError {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 return new MergeDelayErrorObservable<T>(sequences).onSubscribe(observer);
             }
         };
@@ -73,7 +72,7 @@ public final class OperationMergeDelayError {
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super Observable<? extends T>> observer) {
+            public Subscription onSubscribe(Observer<? super Observable<? extends T>> observer) {
                 for (Observable<? extends T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
@@ -103,7 +102,7 @@ public final class OperationMergeDelayError {
             private volatile boolean unsubscribed = false;
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super Observable<? extends T>> observer) {
+            public Subscription onSubscribe(Observer<? super Observable<? extends T>> observer) {
                 for (Observable<? extends T> o : sequences) {
                     if (!unsubscribed) {
                         observer.onNext(o);
@@ -153,7 +152,7 @@ public final class OperationMergeDelayError {
             this.sequences = sequences;
         }
 
-        public Subscription onSubscribe(Subscriber<? super T> actualObserver) {
+        public Subscription onSubscribe(Observer<? super T> actualObserver) {
             CompositeSubscription completeSubscription = new CompositeSubscription();
 
             /**
@@ -165,7 +164,7 @@ public final class OperationMergeDelayError {
              */
             SafeObservableSubscription subscription = new SafeObservableSubscription(ourSubscription);
             completeSubscription.add(subscription);
-            SynchronizedSubscriber<T> synchronizedObserver = new SynchronizedSubscriber<T>(actualObserver, subscription);
+            SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(actualObserver, subscription);
 
             /**
              * Subscribe to the parent Observable to get to the children Observables
@@ -209,10 +208,10 @@ public final class OperationMergeDelayError {
          * 
          * @param <T>
          */
-        private class ParentObserver extends Subscriber<Observable<? extends T>> {
-            private final Subscriber<? super T> actualObserver;
+        private class ParentObserver implements Observer<Observable<? extends T>> {
+            private final Observer<? super T> actualObserver;
 
-            public ParentObserver(Subscriber<? super T> actualObserver) {
+            public ParentObserver(Observer<? super T> actualObserver) {
                 this.actualObserver = actualObserver;
             }
 
@@ -275,12 +274,12 @@ public final class OperationMergeDelayError {
          * Subscribe to each child Observable<T> and forward their sequence of data to the actualObserver
          * 
          */
-        private class ChildObserver extends Subscriber<T> {
+        private class ChildObserver implements Observer<T> {
 
-            private final Subscriber<? super T> actualObserver;
+            private final Observer<? super T> actualObserver;
             private volatile boolean finished = false;
 
-            public ChildObserver(Subscriber<? super T> actualObserver) {
+            public ChildObserver(Observer<? super T> actualObserver) {
                 this.actualObserver = actualObserver;
             }
 

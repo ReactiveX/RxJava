@@ -24,7 +24,6 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -75,7 +74,7 @@ public final class OperationTimeout {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             final AtomicBoolean terminated = new AtomicBoolean(false);
             final AtomicLong actual = new AtomicLong(0L);  // Required to handle race between onNext and timeout
             final SerialSubscription serial = new SerialSubscription();
@@ -178,7 +177,7 @@ public final class OperationTimeout {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super T> t1) {
+        public Subscription onSubscribe(Observer<? super T> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
             SourceObserver<T, V> so = new SourceObserver<T, V>(t1, valueTimeout, other, csub);

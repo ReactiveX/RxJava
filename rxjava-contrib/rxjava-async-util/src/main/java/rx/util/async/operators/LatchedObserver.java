@@ -18,6 +18,7 @@ package rx.util.async.operators;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import rx.Observer;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -28,7 +29,7 @@ import rx.util.functions.Action2;
  * a terminal state has been reached.
  * @param <T> the observed value type
  */
-abstract class LatchedObserver<T> extends Observer<T> {
+abstract class LatchedObserver<T> implements Observer<T> {
     /** The CountDownLatch to count-down on a terminal state. */
     protected final CountDownLatch latch;
     /** Contains the error. */

@@ -16,8 +16,8 @@
 package rx.operators;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.observables.GroupedObservable;
 import rx.util.functions.Func1;
 

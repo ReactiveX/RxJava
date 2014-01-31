@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 
 /**
@@ -54,8 +54,8 @@ public class OperationDefaultIfEmpty {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super T> observer) {
-            return source.subscribe(new Subscriber<T>(observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
+            return source.subscribe(new Observer<T>(observer) {
 
                 private volatile boolean hasEmitted = false;
 

@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.SerialSubscription;
 
@@ -39,17 +39,17 @@ public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
     }
 
     @Override
-    public Subscription onSubscribe(Subscriber<? super T> t1) {
+    public Subscription onSubscribe(Observer<? super T> t1) {
         return new ResultManager(t1).init();
     }
 
     /** Manage the source and other observers. */
-    private class ResultManager extends Subscriber<T>  {
-        final Subscriber<? super T> observer;
+    private class ResultManager implements Observer<T>  {
+        final Observer<? super T> observer;
         final Object guard = new Object();
         final AtomicBoolean running = new AtomicBoolean();
 
-        public ResultManager(Subscriber<? super T> observer) {
+        public ResultManager(Observer<? super T> observer) {
             this.observer = observer;
         }
 
@@ -91,7 +91,7 @@ public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
         }
 
         /** Observe the other stream. */
-        private class OtherObserver extends Subscriber<U> {
+        private class OtherObserver implements Observer<U> {
             final Subscription self;
 
             public OtherObserver(Subscription self) {

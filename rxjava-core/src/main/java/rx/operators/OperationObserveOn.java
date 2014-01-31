@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.schedulers.CurrentThreadScheduler;
@@ -53,7 +53,7 @@ public class OperationObserveOn {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             if (scheduler instanceof ImmediateScheduler) {
                 // do nothing if we request ImmediateScheduler so we don't invoke overhead
                 return source.subscribe(observer);
@@ -67,14 +67,14 @@ public class OperationObserveOn {
 
         /** Observe through individual queue per observer. */
         private class Observation {
-            final Subscriber<? super T> observer;
+            final Observer<? super T> observer;
             final CompositeSubscription compositeSubscription = new CompositeSubscription();
             final MultipleAssignmentSubscription recursiveSubscription = new MultipleAssignmentSubscription();
             final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
             final AtomicLong counter = new AtomicLong(0);
             private volatile Scheduler recursiveScheduler;
 
-            public Observation(Subscriber<? super T> observer) {
+            public Observation(Observer<? super T> observer) {
                 this.observer = observer;
             }
 

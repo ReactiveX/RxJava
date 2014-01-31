@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func2;
 
@@ -80,8 +80,8 @@ public final class OperationScan {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super T> observer) {
-            return sequence.subscribe(new Subscriber<T>(observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
+            return sequence.subscribe(new Observer<T>(observer) {
 
                 // has to be synchronized so that the initial value is always sent only once.
                 @Override
@@ -119,19 +119,19 @@ public final class OperationScan {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super R> observer) {
+        public Subscription onSubscribe(final Observer<? super R> observer) {
             observer.onNext(initialValue);
             return sequence.subscribe(new AccumulatingObserver<T, R>(observer, initialValue, accumulatorFunction));
         }
     }
 
-    private static class AccumulatingObserver<T, R> extends Subscriber<T> {
-        private final Subscriber<? super R> observer;
+    private static class AccumulatingObserver<T, R> implements Observer<T> {
+        private final Observer<? super R> observer;
         private final Func2<R, ? super T, R> accumulatorFunction;
 
         private R acc;
 
-        private AccumulatingObserver(Subscriber<? super R> observer, R initialValue, Func2<R, ? super T, R> accumulator) {
+        private AccumulatingObserver(Observer<? super R> observer, R initialValue, Func2<R, ? super T, R> accumulator) {
             super(observer);
             this.observer = observer;
             this.accumulatorFunction = accumulator;

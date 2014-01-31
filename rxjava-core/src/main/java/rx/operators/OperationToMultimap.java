@@ -23,7 +23,7 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func0;
@@ -147,7 +147,7 @@ public class OperationToMultimap {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super Map<K, Collection<V>>> t1) {
+        public Subscription onSubscribe(Observer<? super Map<K, Collection<V>>> t1) {
             Map<K, Collection<V>> map;
             try {
                 map = mapFactory.call();
@@ -163,15 +163,15 @@ public class OperationToMultimap {
         /**
          * Observer that collects the source values of Ts into a multimap.
          */
-        public static class ToMultimapObserver<T, K, V> extends Subscriber<T> {
+        public static class ToMultimapObserver<T, K, V> implements Observer<T> {
             private final Func1<? super T, ? extends K> keySelector;
             private final Func1<? super T, ? extends V> valueSelector;
             private final Func1<? super K, ? extends Collection<V>> collectionFactory;
             private Map<K, Collection<V>> map;
-            private Subscriber<? super Map<K, Collection<V>>> t1;
+            private Observer<? super Map<K, Collection<V>>> t1;
 
             public ToMultimapObserver(
-                    Subscriber<? super Map<K, Collection<V>>> t1,
+                    Observer<? super Map<K, Collection<V>>> t1,
                     Func1<? super T, ? extends K> keySelector,
                     Func1<? super T, ? extends V> valueSelector,
                     Map<K, Collection<V>> map,

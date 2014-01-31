@@ -15,8 +15,8 @@
  */
 package rx.operators;
 
-import rx.Subscriber;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.util.Timestamped;
 
 /**

@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.util.CompositeException;
 import rx.util.functions.Func1;
@@ -60,12 +60,12 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
             this.originalSequence = originalSequence;
         }
 
-        public Subscription onSubscribe(final Subscriber<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
             final AtomicReference<SafeObservableSubscription> subscriptionRef = new AtomicReference<SafeObservableSubscription>(new SafeObservableSubscription());
 
             // subscribe to the original Observable and remember the subscription
-            subscriptionRef.get().wrap(new SafeObservableSubscription(originalSequence.subscribe(new Subscriber<T>() {
+            subscriptionRef.get().wrap(new SafeObservableSubscription(originalSequence.subscribe(new Observer<T>() {
                 public void onNext(T value) {
                     // forward the successful calls
                     observer.onNext(value);

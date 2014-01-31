@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -45,7 +45,7 @@ public final class OperationInterval {
         // wrapped in order to work with multiple subscribers
         return new OnSubscribeFunc<Long>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super Long> observer) {
+            public Subscription onSubscribe(Observer<? super Long> observer) {
                 return new Interval(interval, unit, scheduler).onSubscribe(observer);
             }
         };
@@ -65,7 +65,7 @@ public final class OperationInterval {
         }
 
         @Override
-        public Subscription onSubscribe(final Subscriber<? super Long> observer) {
+        public Subscription onSubscribe(final Observer<? super Long> observer) {
             final Subscription wrapped = scheduler.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {

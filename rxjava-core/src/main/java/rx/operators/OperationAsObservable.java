@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 
 /**
@@ -34,7 +34,7 @@ public final class OperationAsObservable<T> implements OnSubscribeFunc<T> {
     }
 
     @Override
-    public Subscription onSubscribe(Subscriber<? super T> t1) {
+    public Subscription onSubscribe(Observer<? super T> t1) {
         return source.subscribe(t1);
     }
 }

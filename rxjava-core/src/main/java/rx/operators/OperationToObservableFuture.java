@@ -19,7 +19,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
@@ -53,7 +53,7 @@ public class OperationToObservableFuture {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             try {
                 T value = (time == null) ? (T) that.get() : (T) that.get(time, unit);
 

@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 
 /**
@@ -53,7 +53,7 @@ public final class OperationConcat {
     public static <T> OnSubscribeFunc<T> concat(final Observable<? extends Observable<? extends T>> sequences) {
         return new OnSubscribeFunc<T>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super T> t1) {
+            public Subscription onSubscribe(Observer<? super T> t1) {
                 return new Concat<T>(sequences).onSubscribe(t1);
             }
         };
@@ -67,13 +67,13 @@ public final class OperationConcat {
             this.sequences = sequences;
         }
 
-        public Subscription onSubscribe(final Subscriber<? super T> observer) {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
             final AtomicBoolean completedOrErred = new AtomicBoolean(false);
             final AtomicBoolean allSequencesReceived = new AtomicBoolean(false);
             final Queue<Observable<? extends T>> nextSequences = new ConcurrentLinkedQueue<Observable<? extends T>>();
             final SafeObservableSubscription outerSubscription = new SafeObservableSubscription();
 
-            final Subscriber<T> reusableObserver = new Subscriber<T>() {
+            final Observer<T> reusableObserver = new Observer<T>() {
                 @Override
                 public void onNext(T item) {
                     observer.onNext(item);
@@ -108,7 +108,7 @@ public final class OperationConcat {
                 }
             };
 
-            outerSubscription.wrap(sequences.subscribe(new Subscriber<Observable<? extends T>>() {
+            outerSubscription.wrap(sequences.subscribe(new Observer<Observable<? extends T>>() {
                 @Override
                 public void onNext(Observable<? extends T> nextSequence) {
                     synchronized (nextSequences) {

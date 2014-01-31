@@ -25,6 +25,7 @@ import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.apache.http.consumers.ResponseConsumerDelegate;
 import rx.subscriptions.CompositeSubscription;

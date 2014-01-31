@@ -31,6 +31,7 @@ import org.apache.http.protocol.HttpContext;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.apache.http.ObservableHttpResponse;
 import rx.subjects.PublishSubject;
@@ -85,7 +86,7 @@ class ResponseConsumerEventStream extends AsyncByteConsumer<HttpResponse> implem
 
             @Override
             public Subscription onSubscribe(Observer<? super byte[]> observer) {
-                parentSubscription.add(contentSubject.toObservable().subscribe(observer));
+                parentSubscription.add(contentSubject.subscribe(observer));
                 return parentSubscription;
             }
         });

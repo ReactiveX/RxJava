@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -68,20 +68,20 @@ public class OperationRetry {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             MultipleAssignmentSubscription rescursiveSubscription = new MultipleAssignmentSubscription();
             subscription.add(Schedulers.currentThread().schedule(rescursiveSubscription, attemptSubscription(observer)));
             subscription.add(rescursiveSubscription);
             return subscription;
         }
 
-        private Func2<Scheduler, MultipleAssignmentSubscription, Subscription> attemptSubscription(final Subscriber<? super T> observer) {
+        private Func2<Scheduler, MultipleAssignmentSubscription, Subscription> attemptSubscription(final Observer<? super T> observer) {
             return new Func2<Scheduler, MultipleAssignmentSubscription, Subscription>() {
 
                 @Override
                 public Subscription call(final Scheduler scheduler, final MultipleAssignmentSubscription rescursiveSubscription) {
                     attempts.incrementAndGet();
-                    return source.subscribe(new Subscriber<T>() {
+                    return source.subscribe(new Observer<T>() {
 
                         @Override
                         public void onCompleted() {

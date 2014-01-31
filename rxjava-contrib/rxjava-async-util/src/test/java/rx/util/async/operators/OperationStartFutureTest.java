@@ -39,7 +39,7 @@ public class OperationStartFutureTest {
      * on terminal conditions.
      * @param <T> 
      */
-    static class MockHelper<T> extends Observer<T> {
+    static class MockHelper<T> implements Observer<T> {
         final Observer<? super T> observer;
         final CountDownLatch latch;
 

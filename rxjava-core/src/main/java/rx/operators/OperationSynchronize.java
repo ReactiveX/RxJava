@@ -17,9 +17,9 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
-import rx.observers.SynchronizedSubscriber;
+import rx.observers.SynchronizedObserver;
 
 /**
  * Wraps an Observable in another Observable that ensures that the resulting Observable is
@@ -82,15 +82,15 @@ public final class OperationSynchronize<T> {
         }
 
         private Observable<? extends T> innerObservable;
-        private SynchronizedSubscriber<T> atomicObserver;
+        private SynchronizedObserver<T> atomicObserver;
         private Object lock;
 
-        public Subscription onSubscribe(Subscriber<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             if (lock == null) {
-                atomicObserver = new SynchronizedSubscriber<T>(observer);
+                atomicObserver = new SynchronizedObserver<T>(observer);
             }
             else {
-                atomicObserver = new SynchronizedSubscriber<T>(observer, lock);
+                atomicObserver = new SynchronizedObserver<T>(observer, lock);
             }
             return innerObservable.subscribe(atomicObserver);
         }

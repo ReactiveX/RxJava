@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -48,7 +48,7 @@ public final class OperationWindow extends ChunkedOperation {
      * emitted, and a new window is created to replace it. A new {@link rx.Observable} will be constructed using the
      * provided {@link rx.util.functions.Func0} object, which will determine when this new window is emitted. When the source {@link rx.Observable} completes or produces an error, the current window
      * is emitted, and the event is propagated
-     * to all subscribed {@link rx.Subscriber}s.</p>
+     * to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping windows</strong>. At all times there is
      * exactly one window actively storing values.</p>
@@ -64,7 +64,7 @@ public final class OperationWindow extends ChunkedOperation {
     public static <T, TClosing> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final Func0<? extends Observable<? extends TClosing>> windowClosingSelector) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super Observable<T>> observer) {
+            public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 NonOverlappingChunks<T, Observable<T>> windows = new NonOverlappingChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker());
                 ChunkCreator creator = new ObservableBasedSingleChunkCreator<T, Observable<T>, TClosing>(windows, windowClosingSelector);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
@@ -82,7 +82,7 @@ public final class OperationWindow extends ChunkedOperation {
      * This creates a new window which will then start recording values which are produced by the "source" {@link rx.Observable}. Additionally the "windowClosingSelector" will be used to construct an
      * {@link rx.Observable} which can produce values. When it does so it will close this (and only this) newly created
      * window. When the source {@link rx.Observable} completes or produces an error, all windows are emitted, and the
-     * event is propagated to all subscribed {@link rx.Subscriber}s.</p>
+     * event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that when using this operation <strong>multiple overlapping windows</strong>
      * could be active at any one point.</p>
@@ -101,7 +101,7 @@ public final class OperationWindow extends ChunkedOperation {
     public static <T, TOpening, TClosing> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final Observable<? extends TOpening> windowOpenings, final Func1<? super TOpening, ? extends Observable<? extends TClosing>> windowClosingSelector) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super Observable<T>> observer) {
+            public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 OverlappingChunks<T, Observable<T>> windows = new OverlappingChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker());
                 ChunkCreator creator = new ObservableBasedMultiChunkCreator<T, Observable<T>, TOpening, TClosing>(windows, windowOpenings, windowClosingSelector);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
@@ -114,7 +114,7 @@ public final class OperationWindow extends ChunkedOperation {
      * values from the specified {@link rx.Observable} source and stores them in a window until the window contains
      * a specified number of elements. The window is then emitted, and a new window is created to replace it.
      * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
-     * the event is propagated to all subscribed {@link rx.Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping windows</strong>. At all times there is
      * exactly one window actively storing values.</p>
@@ -135,7 +135,7 @@ public final class OperationWindow extends ChunkedOperation {
      * values from the specified {@link rx.Observable} source and stores them in all active windows until the window
      * contains a specified number of elements. The window is then emitted. windows are created after a certain
      * amount of values have been received. When the source {@link rx.Observable} completes or produces an error, the
-     * currently active windows are emitted, and the event is propagated to all subscribed {@link rx.Subscriber}s.</p>
+     * currently active windows are emitted, and the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation can produce <strong>non-connected, connected non-overlapping, or overlapping
      * windows</strong> depending on the input parameters.</p>
@@ -156,7 +156,7 @@ public final class OperationWindow extends ChunkedOperation {
     public static <T> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final int count, final int skip) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super Observable<T>> observer) {
+            public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 Chunks<T, Observable<T>> chunks = new SizeBasedChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker(), count);
                 ChunkCreator creator = new SkippingChunkCreator<T, Observable<T>>(chunks, skip);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(chunks, observer, creator));
@@ -169,7 +169,7 @@ public final class OperationWindow extends ChunkedOperation {
      * values from the specified {@link rx.Observable} source and stores them in a window. Periodically the window
      * is emitted and replaced with a new window. How often this is done depends on the specified timespan.
      * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
-     * the event is propagated to all subscribed {@link rx.Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping windows</strong>. At all times there is
      * exactly one window actively storing values.</p>
@@ -192,7 +192,7 @@ public final class OperationWindow extends ChunkedOperation {
      * values from the specified {@link rx.Observable} source and stores them in a window. Periodically the window
      * is emitted and replaced with a new window. How often this is done depends on the specified timespan.
      * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
-     * the event is propagated to all subscribed {@link rx.Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping windows</strong>. At all times there is
      * exactly one window actively storing values.</p>
@@ -211,7 +211,7 @@ public final class OperationWindow extends ChunkedOperation {
     public static <T> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final long timespan, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super Observable<T>> observer) {
+            public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 NonOverlappingChunks<T, Observable<T>> windows = new NonOverlappingChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker());
                 ChunkCreator creator = new TimeBasedChunkCreator<T, Observable<T>>(windows, timespan, unit, scheduler);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
@@ -225,7 +225,7 @@ public final class OperationWindow extends ChunkedOperation {
      * is emitted and replaced with a new window. How often this is done depends on the specified timespan.
      * Additionally the window is automatically emitted once it reaches a specified number of elements.
      * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
-     * the event is propagated to all subscribed {@link rx.Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping windows</strong>. At all times there is
      * exactly one window actively storing values.</p>
@@ -251,7 +251,7 @@ public final class OperationWindow extends ChunkedOperation {
      * is emitted and replaced with a new window. How often this is done depends on the specified timespan.
      * Additionally the window is automatically emitted once it reaches a specified number of elements.
      * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
-     * the event is propagated to all subscribed {@link rx.Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation only produces <strong>non-overlapping windows</strong>. At all times there is
      * exactly one window actively storing values.</p>
@@ -272,7 +272,7 @@ public final class OperationWindow extends ChunkedOperation {
     public static <T> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final long timespan, final TimeUnit unit, final int count, final Scheduler scheduler) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super Observable<T>> observer) {
+            public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 Chunks<T, Observable<T>> chunks = new TimeAndSizeBasedChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker(), count, timespan, unit, scheduler);
                 ChunkCreator creator = new SingleChunkCreator<T, Observable<T>>(chunks);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(chunks, observer, creator));
@@ -286,7 +286,7 @@ public final class OperationWindow extends ChunkedOperation {
      * is emitted and replaced with a new window. How often this is done depends on the specified timespan.
      * The creation of windows is also periodical. How often this is done depends on the specified timeshift.
      * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
-     * the event is propagated to all subscribed {@link rx.Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation can produce <strong>non-connected, or overlapping windows</strong> depending
      * on the input parameters.</p>
@@ -312,7 +312,7 @@ public final class OperationWindow extends ChunkedOperation {
      * is emitted and replaced with a new window. How often this is done depends on the specified timespan.
      * The creation of windows is also periodical. How often this is done depends on the specified timeshift.
      * When the source {@link rx.Observable} completes or produces an error, the current window is emitted, and
-     * the event is propagated to all subscribed {@link rx.Subscriber}s.</p>
+     * the event is propagated to all subscribed {@link rx.Observer}s.</p>
      * 
      * <p>Note that this operation can produce <strong>non-connected, or overlapping windows</strong> depending
      * on the input parameters.</p>
@@ -333,7 +333,7 @@ public final class OperationWindow extends ChunkedOperation {
     public static <T> OnSubscribeFunc<Observable<T>> window(final Observable<? extends T> source, final long timespan, final long timeshift, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<Observable<T>>() {
             @Override
-            public Subscription onSubscribe(final Subscriber<? super Observable<T>> observer) {
+            public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 OverlappingChunks<T, Observable<T>> windows = new TimeBasedChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker(), timespan, unit, scheduler);
                 ChunkCreator creator = new TimeBasedChunkCreator<T, Observable<T>>(windows, timeshift, unit, scheduler);
                 return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
@@ -381,7 +381,7 @@ public final class OperationWindow extends ChunkedOperation {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super Observable<T>> t1) {
+        public Subscription onSubscribe(Observer<? super Observable<T>> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
             final SourceObserver<T> so = new SourceObserver<T>(t1, csub);
@@ -403,13 +403,13 @@ public final class OperationWindow extends ChunkedOperation {
         /**
          * Observe the source and emit the values into the current window.
          */
-        private static final class SourceObserver<T> extends Subscriber<T> {
-            final Subscriber<? super Observable<T>> observer;
+        private static final class SourceObserver<T> implements Observer<T> {
+            final Observer<? super Observable<T>> observer;
             final Subscription cancel;
             final Object guard;
             Subject<T, T> subject;
 
-            public SourceObserver(Subscriber<? super Observable<T>> observer, Subscription cancel) {
+            public SourceObserver(Observer<? super Observable<T>> observer, Subscription cancel) {
                 this.observer = observer;
                 this.cancel = cancel;
                 this.guard = new Object();
@@ -481,7 +481,7 @@ public final class OperationWindow extends ChunkedOperation {
         /**
          * Observe the boundary and replace the window on each item.
          */
-        private static final class BoundaryObserver<T, U> extends Subscriber<U> {
+        private static final class BoundaryObserver<T, U> implements Observer<U> {
             final SourceObserver<T> so;
 
             public BoundaryObserver(SourceObserver<T> so) {

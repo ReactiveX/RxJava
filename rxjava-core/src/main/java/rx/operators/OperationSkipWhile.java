@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
@@ -54,14 +54,14 @@ public final class OperationSkipWhile {
             this.predicate = pred;
         }
 
-        public Subscription onSubscribe(Subscriber<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             return source.subscribe(new SkipWhileObserver(observer));
         }
 
-        private class SkipWhileObserver extends Subscriber<T> {
-            private final Subscriber<? super T> observer;
+        private class SkipWhileObserver implements Observer<T> {
+            private final Observer<? super T> observer;
 
-            public SkipWhileObserver(Subscriber<? super T> observer) {
+            public SkipWhileObserver(Observer<? super T> observer) {
                 this.observer = observer;
             }
 

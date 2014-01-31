@@ -28,7 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subjects.Subject;
@@ -66,7 +66,7 @@ public final class OperationReplay {
         SubjectWrapper<T> s = new SubjectWrapper<T>(new OnSubscribe<T>() {
 
             @Override
-            public void call(Subscriber<? super T> o) {
+            public void call(Observer<? super T> o) {
                 // TODO HACK between OnSubscribeFunc and Action1
                 subscriberOf(observedOn).onSubscribe(o);
             }
@@ -149,7 +149,7 @@ public final class OperationReplay {
     public static <T> OnSubscribeFunc<T> subscriberOf(final Observable<T> target) {
         return new OnSubscribeFunc<T>() {
             @Override
-            public Subscription onSubscribe(Subscriber<? super T> t1) {
+            public Subscription onSubscribe(Observer<? super T> t1) {
                 return target.subscribe(t1);
             }
         };
@@ -582,7 +582,7 @@ public final class OperationReplay {
          * @param obs
          * @return
          */
-        Subscription addReplayer(Subscriber<? super TResult> obs) {
+        Subscription addReplayer(Observer<? super TResult> obs) {
             Subscription s = new Subscription() {
                 final AtomicBoolean once = new AtomicBoolean();
 
@@ -602,13 +602,13 @@ public final class OperationReplay {
 
         /** The replayer that holds a value where the given observer is currently at. */
         final class Replayer {
-            protected final Subscriber<? super TResult> wrapped;
+            protected final Observer<? super TResult> wrapped;
             /** Where this replayer was in reading the list. */
             protected int index;
             /** To cancel and unsubscribe this replayer and observer. */
             protected final Subscription cancel;
 
-            protected Replayer(Subscriber<? super TResult> wrapped, Subscription cancel) {
+            protected Replayer(Observer<? super TResult> wrapped, Subscription cancel) {
                 this.wrapped = wrapped;
                 this.cancel = cancel;
             }
@@ -692,9 +692,9 @@ public final class OperationReplay {
      */
     public static final class CustomReplaySubject<TInput, TIntermediate, TResult> extends Subject<TInput, TResult> {
         /**
-         * Return a subject that retains all events and will replay them to an {@link Subscriber} that subscribes.
+         * Return a subject that retains all events and will replay them to an {@link Observer} that subscribes.
          * 
-         * @return a subject that retains all events and will replay them to an {@link Subscriber} that subscribes.
+         * @return a subject that retains all events and will replay them to an {@link Observer} that subscribes.
          */
         public static <T> CustomReplaySubject<T, T, T> create() {
             ReplayState<T, T> state = new ReplayState<T, T>(new VirtualArrayList<T>(), Functions.<T> identity());
@@ -729,7 +729,7 @@ public final class OperationReplay {
             super(new OnSubscribe<TResult>() {
 
                 @Override
-                public void call(Subscriber<? super TResult> sub) {
+                public void call(Observer<? super TResult> sub) {
                     onSubscribe.onSubscribe(sub);
                 }
 
@@ -813,7 +813,7 @@ public final class OperationReplay {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super TResult> t1) {
+        public Subscription onSubscribe(Observer<? super TResult> t1) {
             VirtualList<TIntermediate> values;
             Throwable error;
             state.lock();

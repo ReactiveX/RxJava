@@ -22,7 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
-import rx.Subscriber;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.util.Timestamped;
@@ -39,7 +39,7 @@ public final class OperationTakeLast {
         return new OnSubscribeFunc<T>() {
 
             @Override
-            public Subscription onSubscribe(Subscriber<? super T> observer) {
+            public Subscription onSubscribe(Observer<? super T> observer) {
                 return new TakeLast<T>(items, count).onSubscribe(observer);
             }
 
@@ -56,7 +56,7 @@ public final class OperationTakeLast {
             this.items = items;
         }
 
-        public Subscription onSubscribe(Subscriber<? super T> observer) {
+        public Subscription onSubscribe(Observer<? super T> observer) {
             if (count < 0) {
                 throw new IndexOutOfBoundsException(
                         "count could not be negative");
@@ -64,16 +64,16 @@ public final class OperationTakeLast {
             return subscription.wrap(items.subscribe(new ItemObserver(observer)));
         }
 
-        private class ItemObserver extends Subscriber<T> {
+        private class ItemObserver implements Observer<T> {
 
             /**
              * Store the last count elements until now.
              */
             private Deque<T> deque = new LinkedList<T>();
-            private final Subscriber<? super T> observer;
+            private final Observer<? super T> observer;
             private final ReentrantLock lock = new ReentrantLock();
 
-            public ItemObserver(Subscriber<? super T> observer) {
+            public ItemObserver(Observer<? super T> observer) {
                 this.observer = observer;
             }
 
@@ -154,7 +154,7 @@ public final class OperationTakeLast {
         }
 
         @Override
-        public Subscription onSubscribe(Subscriber<? super T> t1) {
+        public Subscription onSubscribe(Observer<? super T> t1) {
             SafeObservableSubscription sas = new SafeObservableSubscription();
             sas.wrap(source.subscribe(new TakeLastTimedObserver<T>(t1, sas, count, ageMillis, scheduler)));
             return sas;
@@ -162,8 +162,8 @@ public final class OperationTakeLast {
     }
 
     /** Observes source values and keeps the most recent items. */
-    static final class TakeLastTimedObserver<T> extends Subscriber<T> {
-        final Subscriber<? super T> observer;
+    static final class TakeLastTimedObserver<T> implements Observer<T> {
+        final Observer<? super T> observer;
         final Subscription cancel;
         final long ageMillis;
         final Scheduler scheduler;
@@ -172,7 +172,7 @@ public final class OperationTakeLast {
 
         final Deque<Timestamped<T>> buffer = new LinkedList<Timestamped<T>>();
 
-        public TakeLastTimedObserver(Subscriber<? super T> observer, Subscription cancel,
+        public TakeLastTimedObserver(Observer<? super T> observer, Subscription cancel,
                 int count, long ageMillis, Scheduler scheduler) {
             this.observer = observer;
             this.cancel = cancel;

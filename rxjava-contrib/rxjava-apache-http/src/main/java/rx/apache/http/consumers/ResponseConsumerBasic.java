@@ -29,6 +29,7 @@ import org.apache.http.protocol.HttpContext;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.apache.http.ObservableHttpResponse;
 import rx.subscriptions.CompositeSubscription;

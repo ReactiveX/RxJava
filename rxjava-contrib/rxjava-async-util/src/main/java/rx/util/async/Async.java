@@ -605,7 +605,7 @@ public final class Async {
                         subject.onCompleted();
                     }
                 });
-                return subject.toObservable();
+                return subject;
             }
         };
     }
@@ -662,7 +662,7 @@ public final class Async {
                         subject.onCompleted();
                     }
                 });
-                return subject.toObservable();
+                return subject;
             }
         };
     }
@@ -721,7 +721,7 @@ public final class Async {
                         subject.onCompleted();
                     }
                 });
-                return subject.toObservable();
+                return subject;
             }
         };
     }
@@ -782,7 +782,7 @@ public final class Async {
                         subject.onCompleted();
                     }
                 });
-                return subject.toObservable();
+                return subject;
             }
         };
     }
@@ -845,7 +845,7 @@ public final class Async {
                         subject.onCompleted();
                     }
                 });
-                return subject.toObservable();
+                return subject;
             }
         };
     }
@@ -910,7 +910,7 @@ public final class Async {
                         subject.onCompleted();
                     }
                 });
-                return subject.toObservable();
+                return subject;
             }
         };
     }
@@ -977,7 +977,7 @@ public final class Async {
                         subject.onCompleted();
                     }
                 });
-                return subject.toObservable();
+                return subject;
             }
         };
     }
@@ -1046,7 +1046,7 @@ public final class Async {
                         subject.onCompleted();
                     }
                 });
-                return subject.toObservable();
+                return subject;
             }
         };
     }
@@ -1117,7 +1117,7 @@ public final class Async {
                         subject.onCompleted();
                     }
                 });
-                return subject.toObservable();
+                return subject;
             }
         };
     }
@@ -1190,7 +1190,7 @@ public final class Async {
                         subject.onCompleted();
                     }
                 });
-                return subject.toObservable();
+                return subject;
             }
         };
     }
@@ -1243,7 +1243,7 @@ public final class Async {
                         subject.onCompleted();
                     }
                 });
-                return subject.toObservable();
+                return subject;
             }
         };
     }
