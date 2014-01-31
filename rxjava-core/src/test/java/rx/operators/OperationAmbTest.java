@@ -28,10 +28,11 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Scheduler.Inner;
 import rx.Subscription;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.CompositeSubscription;
-import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 
 public class OperationAmbTest {
 
@@ -47,23 +48,21 @@ public class OperationAmbTest {
         return Observable.create(new OnSubscribeFunc<String>() {
 
             @Override
-            public Subscription onSubscribe(
-                    final Observer<? super String> observer) {
+            public Subscription onSubscribe(final Observer<? super String> observer) {
                 CompositeSubscription parentSubscription = new CompositeSubscription();
                 long delay = interval;
                 for (final String value : values) {
-                    parentSubscription.add(scheduler.schedule(
-                            new Action0() {
-                                @Override
-                                public void call() {
-                                    observer.onNext(value);
-                                }
-                            }, delay, TimeUnit.MILLISECONDS));
+                    parentSubscription.add(scheduler.schedule(new Action1<Inner>() {
+                        @Override
+                        public void call(Inner inner) {
+                            observer.onNext(value);
+                        }
+                    }, delay, TimeUnit.MILLISECONDS));
                     delay += interval;
                 }
-                parentSubscription.add(scheduler.schedule(new Action0() {
+                parentSubscription.add(scheduler.schedule(new Action1<Inner>() {
                     @Override
-                    public void call() {
+                    public void call(Inner inner) {
                         if (e == null) {
                             observer.onCompleted();
                         } else {

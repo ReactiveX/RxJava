@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Netflix, Inc.
+ * Copyright 2013 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Func2;
+import rx.util.functions.Action1;
 
 /**
  * Schedules work on a new thread.
@@ -37,6 +36,13 @@ public class NewThreadScheduler extends Scheduler {
 
     private final static NewThreadScheduler INSTANCE = new NewThreadScheduler();
     private final static AtomicLong count = new AtomicLong();
+    private final static ThreadFactory THREAD_FACTORY = new ThreadFactory() {
+
+        @Override
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "RxNewThreadScheduler-" + count.incrementAndGet());
+        }
+    };
 
     public static NewThreadScheduler getInstance() {
         return INSTANCE;
@@ -46,127 +52,101 @@ public class NewThreadScheduler extends Scheduler {
 
     }
 
-    private static class EventLoopScheduler extends Scheduler {
+    @Override
+    public Subscription schedule(Action1<Scheduler.Inner> action) {
+        EventLoopScheduler innerScheduler = new EventLoopScheduler();
+        innerScheduler.schedule(action);
+        return innerScheduler.innerSubscription;
+    }
+
+    @Override
+    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
+        EventLoopScheduler innerScheduler = new EventLoopScheduler();
+        innerScheduler.schedule(action, delayTime, unit);
+        return innerScheduler.innerSubscription;
+    }
+
+    private class EventLoopScheduler extends Scheduler.Inner implements Subscription {
+        private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final ExecutorService executor;
-        private final MultipleAssignmentSubscription childSubscription = new MultipleAssignmentSubscription();
+        private final Inner _inner = this;
 
         private EventLoopScheduler() {
-            executor = Executors.newFixedThreadPool(1, new ThreadFactory() {
-
-                @Override
-                public Thread newThread(Runnable r) {
-                    Thread t = new Thread(r, "RxNewThreadScheduler-" + count.incrementAndGet());
-                    t.setDaemon(true);
-                    return t;
-                }
-            });
+            executor = Executors.newSingleThreadExecutor(THREAD_FACTORY);
         }
 
         @Override
-        public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
-            if (childSubscription.isUnsubscribed()) {
-                return childSubscription;
+        public void schedule(final Action1<Scheduler.Inner> action) {
+            if (innerSubscription.isUnsubscribed()) {
+                // don't schedule, we are unsubscribed
+                return;
             }
 
-            CompositeSubscription s = new CompositeSubscription();
-            final DiscardableAction<T> discardableAction = new DiscardableAction<T>(state, action);
-            s.add(discardableAction);
-
-            final Scheduler _scheduler = this;
-            s.add(Subscriptions.from(executor.submit(new Runnable() {
+            final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
+            Subscription s = Subscriptions.from(executor.submit(new Runnable() {
 
                 @Override
                 public void run() {
-                    discardableAction.call(_scheduler);
+                    try {
+                        if (innerSubscription.isUnsubscribed()) {
+                            return;
+                        }
+                        action.call(_inner);
+                    } finally {
+                        // remove the subscription now that we're completed
+                        Subscription s = sf.get();
+                        if (s != null) {
+                            innerSubscription.remove(s);
+                        }
+                    }
                 }
-            })));
+            }));
 
-            // replace the EventLoopScheduler child subscription with this one
-            childSubscription.set(s);
-            /*
-             * If `schedule` is run concurrently instead of recursively then we'd lose subscriptions as the `childSubscription`
-             * only remembers the last one scheduled. However, the parent subscription will shutdown the entire EventLoopScheduler
-             * and the ExecutorService which will terminate all outstanding tasks so this childSubscription is actually somewhat
-             * superfluous for stopping and cleanup ... though childSubscription does ensure exactness as can be seen by
-             * the `testUnSubscribeForScheduler()` unit test which fails if the `childSubscription` does not exist.
-             */
-
-            return childSubscription;
+            sf.set(s);
+            innerSubscription.add(s);
         }
 
         @Override
-        public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, final long delayTime, final TimeUnit unit) {
-            if (childSubscription.isUnsubscribed()) {
-                return childSubscription;
-            }
-
+        public void schedule(final Action1<Inner> action, long delayTime, TimeUnit unit) {
+            final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
             // we will use the system scheduler since it doesn't make sense to launch a new Thread and then sleep
             // we will instead schedule the event then launch the thread after the delay has passed
-            final Scheduler _scheduler = this;
-            final CompositeSubscription subscription = new CompositeSubscription();
             ScheduledFuture<?> f = GenericScheduledExecutorService.getInstance().schedule(new Runnable() {
 
                 @Override
                 public void run() {
-                    if (!subscription.isUnsubscribed()) {
-                        // when the delay has passed we now do the work on the actual scheduler
-                        Subscription s = _scheduler.schedule(state, action);
-                        // add the subscription to the CompositeSubscription so it is unsubscribed
-                        subscription.add(s);
+                    try {
+                        if (innerSubscription.isUnsubscribed()) {
+                            return;
+                        }
+                        // now that the delay is past schedule the work to be done for real on the UI thread
+                        schedule(action);
+                    } finally {
+                        // remove the subscription now that we're completed
+                        Subscription s = sf.get();
+                        if (s != null) {
+                            innerSubscription.remove(s);
+                        }
                     }
                 }
             }, delayTime, unit);
 
             // add the ScheduledFuture as a subscription so we can cancel the scheduled action if an unsubscribe happens
-            subscription.add(Subscriptions.from(f));
-
-            return subscription;
+            Subscription s = Subscriptions.from(f);
+            sf.set(s);
+            innerSubscription.add(s);
         }
 
-        private void shutdownNow() {
-            executor.shutdownNow();
+        @Override
+        public void unsubscribe() {
+            innerSubscription.unsubscribe();
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return innerSubscription.isUnsubscribed();
         }
 
     }
 
-    @Override
-    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
-        final EventLoopScheduler s = new EventLoopScheduler();
-        CompositeSubscription cs = new CompositeSubscription();
-        cs.add(s.schedule(state, action));
-        cs.add(Subscriptions.create(new Action0() {
-
-            @Override
-            public void call() {
-                // shutdown the executor, all tasks queued to run and clean up resources
-                s.shutdownNow();
-            }
-        }));
-        return cs;
-    }
-
-    @Override
-    public <T> Subscription schedule(final T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delay, TimeUnit unit) {
-        // we will use the system scheduler since it doesn't make sense to launch a new Thread and then sleep
-        // we will instead schedule the event then launch the thread after the delay has passed
-        final Scheduler _scheduler = this;
-        final CompositeSubscription subscription = new CompositeSubscription();
-        ScheduledFuture<?> f = GenericScheduledExecutorService.getInstance().schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                if (!subscription.isUnsubscribed()) {
-                    // when the delay has passed we now do the work on the actual scheduler
-                    Subscription s = _scheduler.schedule(state, action);
-                    // add the subscription to the CompositeSubscription so it is unsubscribed
-                    subscription.add(s);
-                }
-            }
-        }, delay, unit);
-
-        // add the ScheduledFuture as a subscription so we can cancel the scheduled action if an unsubscribe happens
-        subscription.add(Subscriptions.from(f));
-
-        return subscription;
-    }
 }

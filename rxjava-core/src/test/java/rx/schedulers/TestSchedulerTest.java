@@ -26,8 +26,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import rx.Scheduler.Inner;
 import rx.Subscription;
-import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
@@ -40,9 +40,9 @@ public class TestSchedulerTest {
         final Func1<Long, Void> calledOp = mock(Func1.class);
 
         final TestScheduler scheduler = new TestScheduler();
-        Subscription subscription = scheduler.schedulePeriodically(new Action0() {
+        Subscription subscription = scheduler.schedulePeriodically(new Action1<Inner>() {
             @Override
-            public void call() {
+            public void call(Inner inner) {
                 System.out.println(scheduler.now());
                 calledOp.call(scheduler.now());
             }
@@ -74,18 +74,18 @@ public class TestSchedulerTest {
     }
 
     @Test
-    public final void testRecursion() {
+    public final void testImmediateUnsubscribes() {
         TestScheduler s = new TestScheduler();
 
         final AtomicInteger counter = new AtomicInteger(0);
 
-        Subscription subscription = s.schedule(new Action1<Action0>() {
+        Subscription subscription = s.schedule(new Action1<Inner>() {
 
             @Override
-            public void call(Action0 self) {
+            public void call(Inner inner) {
                 counter.incrementAndGet();
                 System.out.println("counter: " + counter.get());
-                self.call();
+                inner.schedule(this);
             }
 
         });

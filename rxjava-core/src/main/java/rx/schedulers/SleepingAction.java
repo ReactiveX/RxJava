@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Netflix, Inc.
+ * Copyright 2013 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,25 @@
 package rx.schedulers;
 
 import rx.Scheduler;
-import rx.Subscription;
-import rx.util.functions.Func2;
+import rx.Scheduler.Inner;
+import rx.util.functions.Action1;
 
-/* package */class SleepingAction<T> implements Func2<Scheduler, T, Subscription> {
-    private final Func2<? super Scheduler, ? super T, ? extends Subscription> underlying;
+/* package */class SleepingAction implements Action1<Scheduler.Inner> {
+    private final Action1<Scheduler.Inner> underlying;
     private final Scheduler scheduler;
     private final long execTime;
 
-    public SleepingAction(Func2<? super Scheduler, ? super T, ? extends Subscription> underlying, Scheduler scheduler, long execTime) {
+    public SleepingAction(Action1<Scheduler.Inner> underlying, Scheduler scheduler, long execTime) {
         this.underlying = underlying;
         this.scheduler = scheduler;
         this.execTime = execTime;
     }
 
     @Override
-    public Subscription call(Scheduler s, T state) {
+    public void call(Inner s) {
+        if (s.isUnsubscribed()) {
+            return;
+        }
         if (execTime > scheduler.now()) {
             long delay = execTime - scheduler.now();
             if (delay > 0) {
@@ -44,6 +47,10 @@ import rx.util.functions.Func2;
             }
         }
 
-        return underlying.call(s, state);
+        // after waking up check the subscription
+        if (s.isUnsubscribed()) {
+            return;
+        }
+        underlying.call(s);
     }
 }

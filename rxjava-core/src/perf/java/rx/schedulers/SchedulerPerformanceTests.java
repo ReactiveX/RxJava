@@ -37,11 +37,11 @@ public class SchedulerPerformanceTests {
                 public void call() {
                     spt.singleResponse(Schedulers.immediate());
                     //                    spt.singleResponse(Schedulers.currentThread());
-                    //                    spt.singleResponse(Schedulers.threadPoolForComputation());
+                    //                    spt.singleResponse(Schedulers.computation());
 
                     //                    spt.arrayResponse(Schedulers.immediate());
                     //                                        spt.arrayResponse(Schedulers.currentThread());
-                    //                    spt.arrayResponse(Schedulers.threadPoolForComputation());
+                    //                    spt.arrayResponse(Schedulers.computation());
                 }
             });
         } catch (Exception e) {

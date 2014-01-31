@@ -41,7 +41,7 @@ public final class OperationSample {
      * Samples the observable sequence at each interval.
      */
     public static <T> OnSubscribeFunc<T> sample(final Observable<? extends T> source, long period, TimeUnit unit) {
-        return new Sample<T>(source, period, unit, Schedulers.threadPoolForComputation());
+        return new Sample<T>(source, period, unit, Schedulers.computation());
     }
 
     /**

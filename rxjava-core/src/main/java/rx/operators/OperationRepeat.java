@@ -19,6 +19,7 @@ package rx.operators;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.MultipleAssignmentSubscription;
@@ -44,27 +45,35 @@ public class OperationRepeat<T> implements Observable.OnSubscribeFunc<T> {
         final CompositeSubscription compositeSubscription = new CompositeSubscription();
         final MultipleAssignmentSubscription innerSubscription = new MultipleAssignmentSubscription();
         compositeSubscription.add(innerSubscription);
-        compositeSubscription.add(scheduler.schedule(new Action1<Action0>() {
+        compositeSubscription.add(scheduler.schedule(new Action1<Inner>() {
+
             @Override
-            public void call(final Action0 self) {
-                innerSubscription.set(source.subscribe(new Observer<T>() {
-
+            public void call(Inner inner) {
+                inner.schedule(new Action1<Inner>() {
                     @Override
-                    public void onCompleted() {
-                        self.call();
-                    }
+                    public void call(final Inner inner) {
+                        final Action1<Inner> _self = this;
+                        innerSubscription.set(source.subscribe(new Observer<T>() {
 
-                    @Override
-                    public void onError(Throwable error) {
-                        observer.onError(error);
-                    }
+                            @Override
+                            public void onCompleted() {
+                                inner.schedule(_self);
+                            }
 
-                    @Override
-                    public void onNext(T value) {
-                        observer.onNext(value);
+                            @Override
+                            public void onError(Throwable error) {
+                                observer.onError(error);
+                            }
+
+                            @Override
+                            public void onNext(T value) {
+                                observer.onNext(value);
+                            }
+                        }));
                     }
-                }));
+                });
             }
+
         }));
         return compositeSubscription;
     }

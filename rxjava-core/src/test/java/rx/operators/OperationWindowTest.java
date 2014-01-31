@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Scheduler.Inner;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
@@ -285,18 +286,18 @@ public class OperationWindowTest {
     }
 
     private <T> void push(final Observer<T> observer, final T value, int delay) {
-        scheduler.schedule(new Action0() {
+        scheduler.schedule(new Action1<Inner>() {
             @Override
-            public void call() {
+            public void call(Inner inner) {
                 observer.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
     private void complete(final Observer<?> observer, int delay) {
-        scheduler.schedule(new Action0() {
+        scheduler.schedule(new Action1<Inner>() {
             @Override
-            public void call() {
+            public void call(Inner inner) {
                 observer.onCompleted();
             }
         }, delay, TimeUnit.MILLISECONDS);

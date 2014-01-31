@@ -21,12 +21,14 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
@@ -74,11 +76,11 @@ public final class OperationDelay {
         public Subscription onSubscribe(final Observer<? super T> t1) {
             final SerialSubscription ssub = new SerialSubscription();
 
-            ssub.setSubscription(scheduler.schedule(new Action0() {
+            ssub.set(scheduler.schedule(new Action1<Inner>() {
                 @Override
-                public void call() {
+                public void call(Inner inner) {
                     if (!ssub.isUnsubscribed()) {
-                        ssub.setSubscription(source.subscribe(t1));
+                        ssub.set(source.subscribe(t1));
                     }
                 }
             }, time, unit));

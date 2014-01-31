@@ -20,8 +20,10 @@ import java.util.concurrent.TimeUnit;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscription;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 
 /**
  * Operation Timer with several overloads.
@@ -49,9 +51,9 @@ public final class OperationTimer {
 
         @Override
         public Subscription onSubscribe(final Observer<? super Long> t1) {
-            return scheduler.schedule(new Action0() {
+            return scheduler.schedule(new Action1<Inner>() {
                 @Override
-                public void call() {
+                public void call(Inner inner) {
                     t1.onNext(0L);
                     t1.onCompleted();
                 }
@@ -78,16 +80,14 @@ public final class OperationTimer {
 
         @Override
         public Subscription onSubscribe(final Observer<? super Long> t1) {
-            return scheduler.schedulePeriodically(new Action0() {
+            return scheduler.schedulePeriodically(new Action1<Inner>() {
                 long count;
 
                 @Override
-                public void call() {
+                public void call(Inner inner) {
                     t1.onNext(count++);
                 }
-            },
-                    initialDelay, period, unit
-                    );
+            }, initialDelay, period, unit);
         }
     }
 }
