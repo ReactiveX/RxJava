@@ -6840,6 +6840,10 @@ public class Observable<T> {
         return subscribeOn(scheduler).subscribe(onNext);
     }
 
+    public final Subscription subscribe(final Observer<? super T> observer, Scheduler scheduler) {
+        return subscribeOn(scheduler).subscribe(observer);
+    }
+    
     public final Subscription subscribe(final Observer<? super T> observer) {
         return subscribe(new Subscriber<T>() {
 

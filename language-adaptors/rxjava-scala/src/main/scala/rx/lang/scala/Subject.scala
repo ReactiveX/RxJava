@@ -21,7 +21,7 @@ package rx.lang.scala
 trait Subject[T] extends Observable[T] with Observer[T] {
   private [scala] val asJavaSubject: rx.subjects.Subject[_ >: T, _<: T]
 
-  val asJavaObservable: rx.Observable[_ <: T] = asJavaSubject.toObservable()
+  val asJavaObservable: rx.Observable[_ <: T] = asJavaSubject
 
   override val asJavaObserver: rx.Observer[_ >: T] = asJavaSubject
   override def onNext(value: T): Unit = { asJavaObserver.onNext(value)}
