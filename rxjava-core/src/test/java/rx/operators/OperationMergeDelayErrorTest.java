@@ -31,6 +31,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.CompositeException;
 
 public class OperationMergeDelayErrorTest {
@@ -225,14 +226,7 @@ public class OperationMergeDelayErrorTest {
                 observer.onNext(o2);
                 observer.onCompleted();
 
-                return new Subscription() {
-
-                    @Override
-                    public void unsubscribe() {
-                        // unregister ... will never be called here since we are executing synchronously
-                    }
-
-                };
+                return Subscriptions.empty();
             }
 
         });
@@ -330,14 +324,7 @@ public class OperationMergeDelayErrorTest {
             observer.onNext("hello");
             observer.onCompleted();
 
-            return new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-                    // unregister ... will never be called here since we are executing synchronously
-                }
-
-            };
+            return Subscriptions.empty();
         }
     }
 
@@ -357,14 +344,7 @@ public class OperationMergeDelayErrorTest {
             });
             t.start();
 
-            return new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-
-                }
-
-            };
+            return Subscriptions.empty();
         }
     }
 
@@ -381,6 +361,11 @@ public class OperationMergeDelayErrorTest {
             public void unsubscribe() {
                 unsubscribed = true;
 
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return unsubscribed;
             }
 
         };
@@ -434,14 +419,7 @@ public class OperationMergeDelayErrorTest {
                 observer.onCompleted();
             }
 
-            return new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-                    // unregister ... will never be called here since we are executing synchronously
-                }
-
-            };
+            return Subscriptions.empty();
         }
     }
 
@@ -482,14 +460,7 @@ public class OperationMergeDelayErrorTest {
             });
             t.start();
 
-            return new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-
-                }
-
-            };
+            return Subscriptions.empty();
         }
     }
 

@@ -216,6 +216,11 @@ public class OperationSynchronizeTest {
                     System.out.println("==> SynchronizeTest unsubscribe that does nothing!");
                 }
 
+                @Override
+                public boolean isUnsubscribed() {
+                    return false;
+                }
+
             };
         }
 

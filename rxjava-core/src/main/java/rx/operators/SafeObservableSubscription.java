@@ -33,6 +33,11 @@ public final class SafeObservableSubscription implements Subscription {
         public void unsubscribe()
         {
         }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return true;
+        }
     };
     private final AtomicReference<Subscription> actualSubscription = new AtomicReference<Subscription>();
 

@@ -156,6 +156,7 @@ public class ChunkedOperation {
         private final long maxTime;
         private final TimeUnit unit;
         private final int maxSize;
+        private volatile boolean unsubscribed = false;
 
         public TimeAndSizeBasedChunks(Observer<? super C> observer, Func0<? extends Chunk<T, C>> chunkMaker, int maxSize, long maxTime, TimeUnit unit, Scheduler scheduler) {
             super(observer, chunkMaker);
@@ -210,9 +211,15 @@ public class ChunkedOperation {
 
         @Override
         public void unsubscribe() {
+            unsubscribed = true;
             for (Subscription s : subscriptions.values()) {
                 s.unsubscribe();
             }
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return unsubscribed;
         }
     }
 
@@ -232,6 +239,7 @@ public class ChunkedOperation {
         private final Scheduler scheduler;
         private final long time;
         private final TimeUnit unit;
+        private volatile boolean unsubscribed = false;
 
         public TimeBasedChunks(Observer<? super C> observer, Func0<? extends Chunk<T, C>> chunkMaker, long time, TimeUnit unit, Scheduler scheduler) {
             super(observer, chunkMaker);
@@ -260,9 +268,15 @@ public class ChunkedOperation {
 
         @Override
         public void unsubscribe() {
+            unsubscribed = true;
             for (Subscription s : subscriptions.values()) {
                 s.unsubscribe();
             }
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return unsubscribed;
         }
 
     }

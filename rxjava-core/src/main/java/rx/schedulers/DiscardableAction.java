@@ -54,4 +54,9 @@ import rx.util.functions.Func2;
         wrapper.unsubscribe();
     }
 
+    @Override
+    public boolean isUnsubscribed() {
+        return wrapper.isUnsubscribed();
+    }
+
 }

@@ -32,5 +32,7 @@ public interface Subscription {
      * This allows unregistering an {@link Subscriber} before it has finished receiving all events (ie. before onCompleted is called).
      */
     public void unsubscribe();
+    
+    public boolean isUnsubscribed();
 
 }

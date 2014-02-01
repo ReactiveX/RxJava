@@ -393,6 +393,11 @@ public final class OperationBuffer extends ChunkedOperation {
                 cc0.stop();
             }
         }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return done.get();
+        }
     }
 
     /**

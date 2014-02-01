@@ -25,6 +25,8 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.Observable.OnSubscribe;
 import rx.operators.SafeObservableSubscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
 /* package */class SubjectSubscriptionManager<T> {
@@ -71,9 +73,10 @@ import rx.util.functions.Action1;
                         final SafeObservableSubscription subscription = new SafeObservableSubscription();
                         actualOperator.add(subscription); // add to parent if the Subject itself is unsubscribed
                         addedObserver = true;
-                        subscription.wrap(new Subscription() {
+                        subscription.wrap(Subscriptions.create(new Action0() {
+
                             @Override
-                            public void unsubscribe() {
+                            public void call() {
                                 State<T> current;
                                 State<T> newState;
                                 do {
@@ -82,7 +85,7 @@ import rx.util.functions.Action1;
                                     newState = current.removeObserver(subscription);
                                 } while (!state.compareAndSet(current, newState));
                             }
-                        });
+                        }));
 
                         // on subscribe add it to the map of outbound observers to notify
                         newState = current.addObserver(subscription, observer);

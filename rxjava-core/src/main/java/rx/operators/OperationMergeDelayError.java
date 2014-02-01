@@ -25,8 +25,11 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.observers.SynchronizedObserver;
+import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.CompositeException;
+import rx.util.functions.Action0;
 
 /**
  * This behaves like {@link OperatorMerge} except that if any of the merged Observables notify of
@@ -69,29 +72,22 @@ public final class OperationMergeDelayError {
 
     public static <T> OnSubscribeFunc<T> mergeDelayError(final Observable<? extends T>... sequences) {
         return mergeDelayError(Observable.create(new OnSubscribeFunc<Observable<? extends T>>() {
-            private volatile boolean unsubscribed = false;
+            private final BooleanSubscription s = new BooleanSubscription();
 
             @Override
             public Subscription onSubscribe(Observer<? super Observable<? extends T>> observer) {
                 for (Observable<? extends T> o : sequences) {
-                    if (!unsubscribed) {
+                    if (!s.isUnsubscribed()) {
                         observer.onNext(o);
                     } else {
                         // break out of the loop if we are unsubscribed
                         break;
                     }
                 }
-                if (!unsubscribed) {
+                if (!s.isUnsubscribed()) {
                     observer.onCompleted();
                 }
-                return new Subscription() {
-
-                    @Override
-                    public void unsubscribe() {
-                        unsubscribed = true;
-                    }
-
-                };
+                return s;
             }
         }));
     }
@@ -99,30 +95,23 @@ public final class OperationMergeDelayError {
     public static <T> OnSubscribeFunc<T> mergeDelayError(final List<? extends Observable<? extends T>> sequences) {
         return mergeDelayError(Observable.create(new OnSubscribeFunc<Observable<? extends T>>() {
 
-            private volatile boolean unsubscribed = false;
+            private final BooleanSubscription s = new BooleanSubscription();
 
             @Override
             public Subscription onSubscribe(Observer<? super Observable<? extends T>> observer) {
                 for (Observable<? extends T> o : sequences) {
-                    if (!unsubscribed) {
+                    if (!s.isUnsubscribed()) {
                         observer.onNext(o);
                     } else {
                         // break out of the loop if we are unsubscribed
                         break;
                     }
                 }
-                if (!unsubscribed) {
+                if (!s.isUnsubscribed()) {
                     observer.onCompleted();
                 }
 
-                return new Subscription() {
-
-                    @Override
-                    public void unsubscribe() {
-                        unsubscribed = true;
-                    }
-
-                };
+                return s;
             }
         }));
     }
@@ -200,6 +189,11 @@ public final class OperationMergeDelayError {
                     // another thread beat us
                     return false;
                 }
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return stopped.get();
             }
         }
 

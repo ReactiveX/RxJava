@@ -29,6 +29,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 public class OperationMaterializeTest {
 
@@ -154,14 +155,7 @@ public class OperationMaterializeTest {
             });
             t.start();
 
-            return new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-
-                }
-
-            };
+            return Subscriptions.empty();
         }
     }
 }

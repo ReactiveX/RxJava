@@ -66,14 +66,7 @@ public class OperatorMergeTest {
                 observer.onNext(o2);
                 observer.onCompleted();
 
-                return new Subscription() {
-
-                    @Override
-                    public void unsubscribe() {
-                        // unregister ... will never be called here since we are executing synchronously
-                    }
-
-                };
+                return Subscriptions.empty();
             }
 
         });
@@ -329,14 +322,7 @@ public class OperatorMergeTest {
             observer.onNext("hello");
             observer.onCompleted();
 
-            return new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-                    // unregister ... will never be called here since we are executing synchronously
-                }
-
-            };
+            return Subscriptions.empty();
         }
     }
 
@@ -360,14 +346,7 @@ public class OperatorMergeTest {
             });
             t.start();
 
-            return new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-
-                }
-
-            };
+            return Subscriptions.empty();
         }
     }
 
@@ -384,6 +363,11 @@ public class OperatorMergeTest {
             public void unsubscribe() {
                 unsubscribed = true;
 
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return unsubscribed;
             }
 
         };
@@ -432,14 +416,7 @@ public class OperatorMergeTest {
             }
             observer.onCompleted();
 
-            return new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-                    // unregister ... will never be called here since we are executing synchronously
-                }
-
-            };
+            return Subscriptions.empty();
         }
     }
 
