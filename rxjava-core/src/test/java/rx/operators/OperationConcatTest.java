@@ -35,6 +35,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
+import rx.subscriptions.Subscriptions;
 
 public class OperationConcatTest {
 
@@ -95,14 +96,7 @@ public class OperationConcatTest {
                 observer.onNext(even);
                 observer.onCompleted();
 
-                return new Subscription() {
-
-                    @Override
-                    public void unsubscribe() {
-                        // unregister ... will never be called here since we are executing synchronously
-                    }
-
-                };
+                return Subscriptions.empty();
             }
 
         });
@@ -348,13 +342,7 @@ public class OperationConcatTest {
                 observer.onNext(Observable.create(w2));
                 observer.onCompleted();
 
-                return new Subscription() {
-
-                    @Override
-                    public void unsubscribe() {
-                    }
-
-                };
+                return Subscriptions.empty();
             }
 
         });
@@ -480,6 +468,11 @@ public class OperationConcatTest {
             @Override
             public void unsubscribe() {
                 subscribed = false;
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return subscribed;
             }
 
         };

@@ -24,6 +24,7 @@ import rx.observables.ConnectableObservable;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
@@ -73,9 +74,9 @@ public class OperationMulticast {
                 }
             }
 
-            return new Subscription() {
+            return Subscriptions.create(new Action0() {
                 @Override
-                public void unsubscribe() {
+                public void call() {
                     synchronized (lock) {
                         if (subscription != null) {
                             subscription.unsubscribe();
@@ -83,7 +84,7 @@ public class OperationMulticast {
                         }
                     }
                 }
-            };
+            });
         }
 
     }

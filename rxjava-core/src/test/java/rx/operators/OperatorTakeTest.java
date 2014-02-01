@@ -145,6 +145,11 @@ public class OperatorTakeTest {
                     public void unsubscribe() {
                         unSubscribed.set(true);
                     }
+
+                    @Override
+                    public boolean isUnsubscribed() {
+                        return unSubscribed.get();
+                    }
                 };
             }
         });

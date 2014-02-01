@@ -243,6 +243,11 @@ public class ExecutorScheduler extends Scheduler {
             childSubscription.unsubscribe();
         }
 
+        @Override
+        public boolean isUnsubscribed() {
+            return childSubscription.isUnsubscribed();
+        }
+
     }
 
 }

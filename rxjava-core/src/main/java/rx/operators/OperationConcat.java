@@ -23,6 +23,8 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 
 /**
  * Returns an Observable that emits the items emitted by two or more Observables, one after the
@@ -153,9 +155,9 @@ public final class OperationConcat {
                 }
             }));
 
-            return new Subscription() {
+            return Subscriptions.create(new Action0() {
                 @Override
-                public void unsubscribe() {
+                public void call() {
                     Subscription q;
                     synchronized (nextSequences) {
                         q = innerSubscription;
@@ -165,7 +167,7 @@ public final class OperationConcat {
                     }
                     outerSubscription.unsubscribe();
                 }
-            };
+            });
         }
     }
 }

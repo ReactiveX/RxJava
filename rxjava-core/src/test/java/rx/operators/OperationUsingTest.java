@@ -102,6 +102,11 @@ public class OperationUsingTest {
                     public void unsubscribe() {
                     }
 
+                    @Override
+                    public boolean isUnsubscribed() {
+                        return false;
+                    }
+
                 };
             }
         };

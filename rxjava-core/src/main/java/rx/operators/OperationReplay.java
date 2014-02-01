@@ -594,6 +594,11 @@ public final class OperationReplay {
                     }
                 }
 
+                @Override
+                public boolean isUnsubscribed() {
+                    return once.get();
+                }
+
             };
             Replayer rp = new Replayer(obs, s);
             replayers.put(s, rp);

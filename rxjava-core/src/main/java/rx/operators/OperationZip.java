@@ -294,6 +294,11 @@ public final class OperationZip {
             public void unsubscribe() {
                 toSource.unsubscribe();
             }
+            
+            @Override
+            public boolean isUnsubscribed() {
+                return toSource.isUnsubscribed();
+            }
 
             private void runCollector() {
                 if (rwLock.writeLock().tryLock()) {
@@ -330,6 +335,7 @@ public final class OperationZip {
                     }
                 }
             }
+
         }
     }
 

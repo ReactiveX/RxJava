@@ -19,6 +19,8 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import android.app.Activity;
 import android.os.Looper;
 import android.util.Log;
@@ -94,14 +96,14 @@ public class OperationObserveFromAndroidComponent {
                     }
                 }
             });
-            return new Subscription() {
+            return Subscriptions.create(new Action0() {
                 @Override
-                public void unsubscribe() {
+                public void call() {
                     log("unsubscribing from source sequence");
                     releaseReferences();
                     sourceSub.unsubscribe();
                 }
-            };
+            });
         }
 
         private void releaseReferences() {

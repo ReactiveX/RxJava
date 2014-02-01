@@ -99,6 +99,11 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
         public void unsubscribe() {
             cancel.unsubscribe();
         }
+        
+        @Override
+        public boolean isUnsubscribed() {
+            return cancel.isUnsubscribed();
+        }
 
         void groupsOnCompleted() {
             List<Observer<T2>> list = new ArrayList<Observer<T2>>(leftMap.values());
@@ -299,6 +304,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
                 onCompleted();
             }
         }
+
     }
 
     /**

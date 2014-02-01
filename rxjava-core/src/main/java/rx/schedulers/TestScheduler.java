@@ -23,6 +23,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import rx.util.functions.Func2;
 
 public class TestScheduler extends Scheduler {
@@ -110,11 +112,12 @@ public class TestScheduler extends Scheduler {
         final TimedAction<T> timedAction = new TimedAction<T>(this, time + unit.toNanos(delayTime), action, state);
         queue.add(timedAction);
 
-        return new Subscription() {
+        return Subscriptions.create(new Action0() {
+
             @Override
-            public void unsubscribe() {
+            public void call() {
                 timedAction.cancel();
             }
-        };
+        });
     }
 }

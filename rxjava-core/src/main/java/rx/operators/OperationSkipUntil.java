@@ -74,6 +74,11 @@ public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
         public void unsubscribe() {
             cancel.unsubscribe();
         }
+        
+        @Override
+        public boolean isUnsubscribed() {
+            return cancel.isUnsubscribed();
+        }
 
         @Override
         public void onNext(T args) {
@@ -123,5 +128,6 @@ public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
             }
 
         }
+
     }
 }

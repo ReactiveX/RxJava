@@ -39,6 +39,11 @@ public class CompositeSubscriptionTest {
             public void unsubscribe() {
                 counter.incrementAndGet();
             }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
+            }
         });
 
         s.add(new Subscription() {
@@ -46,6 +51,11 @@ public class CompositeSubscriptionTest {
             @Override
             public void unsubscribe() {
                 counter.incrementAndGet();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
             }
         });
 
@@ -67,6 +77,11 @@ public class CompositeSubscriptionTest {
                 @Override
                 public void unsubscribe() {
                     counter.incrementAndGet();
+                }
+
+                @Override
+                public boolean isUnsubscribed() {
+                    return false;
                 }
             });
         }
@@ -106,6 +121,11 @@ public class CompositeSubscriptionTest {
             public void unsubscribe() {
                 throw new RuntimeException("failed on first one");
             }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
+            }
         });
 
         s.add(new Subscription() {
@@ -113,6 +133,11 @@ public class CompositeSubscriptionTest {
             @Override
             public void unsubscribe() {
                 counter.incrementAndGet();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
             }
         });
 
@@ -138,6 +163,11 @@ public class CompositeSubscriptionTest {
             public void unsubscribe() {
                 throw new RuntimeException("failed on first one");
             }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
+            }
         });
 
         s.add(new Subscription() {
@@ -146,6 +176,11 @@ public class CompositeSubscriptionTest {
             public void unsubscribe() {
                 throw new RuntimeException("failed on second one too");
             }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
+            }
         });
 
         s.add(new Subscription() {
@@ -153,6 +188,11 @@ public class CompositeSubscriptionTest {
             @Override
             public void unsubscribe() {
                 counter.incrementAndGet();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
             }
         });
 
@@ -220,6 +260,11 @@ public class CompositeSubscriptionTest {
             public void unsubscribe() {
                 counter.incrementAndGet();
             }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
+            }
         });
 
         s.unsubscribe();
@@ -243,6 +288,11 @@ public class CompositeSubscriptionTest {
             @Override
             public void unsubscribe() {
                 counter.incrementAndGet();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
             }
         });
 

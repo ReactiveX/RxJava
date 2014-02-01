@@ -131,5 +131,10 @@ public final class RefCountSubscription implements Subscription {
                 unsubscribeActualIfApplicable(newState);
             }
         }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return innerDone.get();
+        }
     };
 }

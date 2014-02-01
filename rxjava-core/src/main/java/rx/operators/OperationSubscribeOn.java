@@ -57,6 +57,7 @@ public class OperationSubscribeOn {
     private static class ScheduledSubscription implements Subscription {
         private final Subscription underlying;
         private final Scheduler scheduler;
+        private volatile boolean unsubscribed = false;
 
         private ScheduledSubscription(Subscription underlying, Scheduler scheduler) {
             this.underlying = underlying;
@@ -65,12 +66,18 @@ public class OperationSubscribeOn {
 
         @Override
         public void unsubscribe() {
+            unsubscribed = true;
             scheduler.schedule(new Action0() {
                 @Override
                 public void call() {
                     underlying.unsubscribe();
                 }
             });
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return unsubscribed;
         }
     }
 }

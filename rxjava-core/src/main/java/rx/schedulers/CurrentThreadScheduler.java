@@ -135,6 +135,11 @@ public class CurrentThreadScheduler extends Scheduler {
             childSubscription.unsubscribe();
         }
 
+        @Override
+        public boolean isUnsubscribed() {
+            return childSubscription.isUnsubscribed();
+        }
+
     }
 
     /**

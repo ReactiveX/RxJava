@@ -22,7 +22,9 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 import rx.util.CompositeException;
+import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
 /**
@@ -107,15 +109,15 @@ public final class OperationOnErrorReturn<T> {
                 }
             }));
 
-            return new Subscription() {
-                public void unsubscribe() {
+            return Subscriptions.create(new Action0() {
+                public void call() {
                     // this will get either the original, or the resumeSequence one and unsubscribe on it
                     Subscription s = subscriptionRef.getAndSet(null);
                     if (s != null) {
                         s.unsubscribe();
                     }
                 }
-            };
+            });
         }
     }
 }

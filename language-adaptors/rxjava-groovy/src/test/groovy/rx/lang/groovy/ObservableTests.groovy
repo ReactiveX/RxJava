@@ -530,12 +530,7 @@ def class ObservableTests {
             observer.onNext("hello_" + count);
             observer.onCompleted();
 
-            return new Subscription() {
-
-                public void unsubscribe() {
-                    // unregister ... will never be called here since we are executing synchronously
-                }
-            };
+            return Subscriptions.empty();
         }
     }
 }
