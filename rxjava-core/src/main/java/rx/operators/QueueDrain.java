@@ -20,7 +20,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.util.functions.Action0;
 
 /**
@@ -69,14 +70,16 @@ public final class QueueDrain implements Runnable, Action0 {
      * The method ensures that only one thread is actively draining the
      * queue on the given scheduler.
      * @param scheduler the scheduler where the draining should happen
-     * @return the subscription the cancel the scheduled draining, does not
-     * affect the main subscription from the constructor.
+     * @param cs the composite subscription to track the schedule
      */
-    public Subscription tryDrainAsync(Scheduler scheduler) {
+    public void tryDrainAsync(Scheduler scheduler, final CompositeSubscription cs) {
         if (wip.incrementAndGet() > 1 || k.isUnsubscribed()) {
-            return Subscriptions.empty();
+            return;
         }
-        return scheduler.schedule(new Action0() {
+        // add tracking subscription only if schedule is run to avoid overfilling cs
+        final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
+        cs.add(mas);
+        mas.set(scheduler.schedule(new Action0() {
             @Override
             public void call() {
                 if (!k.isUnsubscribed()) {
@@ -84,8 +87,9 @@ public final class QueueDrain implements Runnable, Action0 {
                         queue.poll().call();
                     } while (wip.decrementAndGet() > 0 && !k.isUnsubscribed());
                 }
+                cs.remove(mas);
             }
-        });
+        }));
     }
     @Override
     public void run() {

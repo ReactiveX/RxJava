@@ -19,7 +19,6 @@ import rx.Notification;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.util.functions.Action0;
 
 /**
@@ -35,22 +34,17 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> t1) {
         final QueueDrain qd = new QueueDrain(t1);
-        final CompositeSubscription k = new CompositeSubscription();
-        t1.add(k);
+        final CompositeSubscription csub = new CompositeSubscription();
         return new Subscriber<T>(t1) {
             /** Dispatch the notification value. */
             void run(final Notification<T> nt) {
-                final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
-                k.add(mas);
                 qd.enqueue(new Action0() {
                     @Override
                     public void call() {
-                        k.remove(mas);
                         nt.accept(t1);
                     }
                 });
-                mas.set(qd.tryDrainAsync(scheduler));
-//                mas.set(scheduler.schedule(qd));
+                qd.tryDrainAsync(scheduler, csub);
             }
             @Override
             public void onNext(final T args) {
