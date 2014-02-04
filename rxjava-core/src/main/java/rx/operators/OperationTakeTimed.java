@@ -22,10 +22,12 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 
 /**
  * Returns an Observable that emits the first <code>num</code> items emitted by the source
@@ -41,7 +43,7 @@ import rx.util.functions.Action0;
 public final class OperationTakeTimed {
 
     //TODO this has not been migrated to use bind yet
-    
+
     /**
      * Returns a specified number of contiguous values from the start of an observable sequence.
      * 
@@ -195,7 +197,7 @@ public final class OperationTakeTimed {
 
             CompositeSubscription csub = new CompositeSubscription(timer, data);
 
-            SourceObserver<T> so = new SourceObserver<T>(t1, csub);
+            final SourceObserver<T> so = new SourceObserver<T>(t1, csub);
             data.wrap(source.subscribe(so));
             if (!data.isUnsubscribed()) {
                 timer.wrap(scheduler.schedule(so, time, unit));
@@ -210,7 +212,7 @@ public final class OperationTakeTimed {
          * @param <T>
          *            the observed value type
          */
-        private static final class SourceObserver<T> implements Observer<T>, Action0 {
+        private static final class SourceObserver<T> implements Observer<T>, Action1<Inner> {
             final Observer<? super T> observer;
             final Subscription cancel;
             final AtomicInteger state = new AtomicInteger();
@@ -281,7 +283,7 @@ public final class OperationTakeTimed {
             }
 
             @Override
-            public void call() {
+            public void call(Inner inner) {
                 onCompleted();
             }
 

@@ -5301,7 +5301,7 @@ public class Observable<T> {
     }
 
     /**
-     * Perform work on the source {@code Observable<T>} in parallel by sharding it on a {@link Schedulers#threadPoolForComputation()} {@link Scheduler}, and return the resulting {@code Observable<R>}.
+     * Perform work on the source {@code Observable<T>} in parallel by sharding it on a {@link Schedulers#computation()} {@link Scheduler}, and return the resulting {@code Observable<R>}.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallel.png">
      * 

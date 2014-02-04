@@ -27,7 +27,9 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscription;
+import rx.util.functions.Action1;
 import rx.util.functions.Func2;
 import android.os.Handler;
 
@@ -38,12 +40,11 @@ public class HandlerThreadSchedulerTest {
     @Test
     public void shouldScheduleImmediateActionOnHandlerThread() {
         final Handler handler = mock(Handler.class);
-        final Object state = new Object();
         @SuppressWarnings("unchecked")
-        final Func2<Scheduler, Object, Subscription> action = mock(Func2.class);
+        final Action1<Inner> action = mock(Action1.class);
 
         Scheduler scheduler = new HandlerThreadScheduler(handler);
-        scheduler.schedule(state, action);
+        scheduler.schedule(action);
 
         // verify that we post to the given Handler
         ArgumentCaptor<Runnable> runnable = ArgumentCaptor.forClass(Runnable.class);
@@ -51,18 +52,17 @@ public class HandlerThreadSchedulerTest {
 
         // verify that the given handler delegates to our action
         runnable.getValue().run();
-        verify(action).call(scheduler, state);
+        verify(action).call(any(Inner.class));
     }
 
     @Test
     public void shouldScheduleDelayedActionOnHandlerThread() {
         final Handler handler = mock(Handler.class);
-        final Object state = new Object();
         @SuppressWarnings("unchecked")
-        final Func2<Scheduler, Object, Subscription> action = mock(Func2.class);
+        final Action1<Inner> action = mock(Action1.class);
 
         Scheduler scheduler = new HandlerThreadScheduler(handler);
-        scheduler.schedule(state, action, 1L, TimeUnit.SECONDS);
+        scheduler.schedule(action, 1L, TimeUnit.SECONDS);
 
         // verify that we post to the given Handler
         ArgumentCaptor<Runnable> runnable = ArgumentCaptor.forClass(Runnable.class);
@@ -70,6 +70,6 @@ public class HandlerThreadSchedulerTest {
 
         // verify that the given handler delegates to our action
         runnable.getValue().run();
-        verify(action).call(scheduler, state);
+        verify(action).call(any(Inner.class));
     }
 }

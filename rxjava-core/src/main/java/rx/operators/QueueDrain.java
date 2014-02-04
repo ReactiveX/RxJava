@@ -23,6 +23,7 @@ import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 
 /**
  * Action queue ensuring that only a single drain caller succeeds at a time.
@@ -79,9 +80,9 @@ public final class QueueDrain implements Runnable, Action0 {
         // add tracking subscription only if schedule is run to avoid overfilling cs
         final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
         cs.add(mas);
-        mas.set(scheduler.schedule(new Action0() {
+        mas.set(scheduler.schedule(new Action1<Scheduler.Inner>() {
             @Override
-            public void call() {
+            public void call(Scheduler.Inner o) {
                 if (!isUnsubscribed()) {
                     do {
                         queue.poll().call();

@@ -19,14 +19,12 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Func2;
+import rx.subscriptions.BooleanSubscription;
+import rx.util.functions.Action1;
 
 public class TestScheduler extends Scheduler {
     private final Queue<TimedAction<?>> queue = new PriorityQueue<TimedAction<?>>(11, new CompareActionsByTime());
@@ -34,21 +32,14 @@ public class TestScheduler extends Scheduler {
     private static class TimedAction<T> {
         private final long id;
         private final long time;
-        private final Func2<? super Scheduler, ? super T, ? extends Subscription> action;
-        private final T state;
-        private final TestScheduler scheduler;
-        private final AtomicBoolean isCancelled = new AtomicBoolean(false);
+        private final Action1<Inner> action;
+        private final Inner scheduler;
 
-        private TimedAction(TestScheduler scheduler, long id, long time, Func2<? super Scheduler, ? super T, ? extends Subscription> action, T state) {
+        private TimedAction(Inner scheduler, long id, long time, Action1<Inner> action) {
             this.id = id;
             this.time = time;
             this.action = action;
-            this.state = state;
             this.scheduler = scheduler;
-        }
-
-        public void cancel() {
-            isCancelled.set(true);
         }
 
         @Override
@@ -97,42 +88,69 @@ public class TestScheduler extends Scheduler {
         triggerActions(time);
     }
 
-    @SuppressWarnings("unchecked")
     private void triggerActions(long targetTimeInNanos) {
         while (!queue.isEmpty()) {
-            TimedAction<?> current = queue.peek();
+            TimedAction current = queue.peek();
             if (current.time > targetTimeInNanos) {
                 break;
             }
             time = current.time;
             queue.remove();
 
-            // Only execute if the TimedAction has not yet been cancelled
-            if (!current.isCancelled.get()) {
-                // because the queue can have wildcards we have to ignore the type T for the state
-                ((Func2<Scheduler, Object, Subscription>) current.action).call(current.scheduler, current.state);
+            // Only execute if not unsubscribed
+            if (!current.scheduler.isUnsubscribed()) {
+                current.action.call(current.scheduler);
             }
         }
         time = targetTimeInNanos;
     }
 
     @Override
-    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
-        return schedule(state, action, 0, TimeUnit.MILLISECONDS);
+    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
+        long id = ids.incrementAndGet();
+        InnerTestScheduler inner = new InnerTestScheduler();
+        final TimedAction timedAction = new TimedAction(inner, id, time + unit.toNanos(delayTime), action);
+        queue.add(timedAction);
+        return inner;
     }
 
     @Override
-    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
+    public Subscription schedule(Action1<Inner> action) {
         long id = ids.incrementAndGet();
-        final TimedAction<T> timedAction = new TimedAction<T>(this, id, time + unit.toNanos(delayTime), action, state);
+        InnerTestScheduler inner = new InnerTestScheduler();
+        final TimedAction timedAction = new TimedAction(inner, id, 0, action);
         queue.add(timedAction);
-
-        return Subscriptions.create(new Action0() {
-
-            @Override
-            public void call() {
-                timedAction.cancel();
-            }
-        });
+        return inner;
     }
+
+    private final class InnerTestScheduler extends Inner {
+
+        private BooleanSubscription s = new BooleanSubscription();
+
+        @Override
+        public void unsubscribe() {
+            s.unsubscribe();
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return s.isUnsubscribed();
+        }
+
+        @Override
+        public void schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
+            long id = ids.incrementAndGet();
+            final TimedAction timedAction = new TimedAction(this, id, time + unit.toNanos(delayTime), action);
+            queue.add(timedAction);
+        }
+
+        @Override
+        public void schedule(Action1<Inner> action) {
+            long id = ids.incrementAndGet();
+            final TimedAction timedAction = new TimedAction(this, id, 0, action);
+            queue.add(timedAction);
+        }
+
+    }
+
 }

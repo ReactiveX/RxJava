@@ -47,12 +47,23 @@ public class Schedulers {
     /**
      * {@link Scheduler} that queues work on the current thread to be executed after the current work completes.
      * 
-     * @return {@link CurrentThreadScheduler} instance
+     * @return {@link TrampolineScheduler} instance
+     * @deprecated Use trampoline() instead
      */
+    @Deprecated
     public static Scheduler currentThread() {
-        return CurrentThreadScheduler.getInstance();
+        return TrampolineScheduler.getInstance();
     }
 
+    /**
+     * {@link Scheduler} that queues work on the current thread to be executed after the current work completes.
+     * 
+     * @return {@link TrampolineScheduler} instance
+     */
+    public static Scheduler trampoline() {
+        return TrampolineScheduler.getInstance();
+    }
+    
     /**
      * {@link Scheduler} that creates a new {@link Thread} for each unit of work.
      * 

@@ -28,14 +28,13 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.operators.SafeObservableSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
-import rx.util.functions.Func2;
 
 /**
  * Base tests for schedulers that involve threads (concurrency).
@@ -53,10 +52,9 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     public final void testUnSubscribeForScheduler() throws InterruptedException {
         final AtomicInteger countReceived = new AtomicInteger();
         final AtomicInteger countGenerated = new AtomicInteger();
-        final SafeObservableSubscription s = new SafeObservableSubscription();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        s.wrap(Observable.interval(50, TimeUnit.MILLISECONDS)
+        Observable.interval(50, TimeUnit.MILLISECONDS)
                 .map(new Func1<Long, Long>() {
                     @Override
                     public Long call(Long aLong) {
@@ -80,12 +78,12 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                     @Override
                     public void onNext(Long args) {
                         if (countReceived.incrementAndGet() == 2) {
-                            s.unsubscribe();
+                            unsubscribe();
                             latch.countDown();
                         }
                         System.out.println("==> Received " + args);
                     }
-                }));
+                });
 
         latch.await(1000, TimeUnit.MILLISECONDS);
 
@@ -96,30 +94,113 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     }
 
     @Test
-    public void testUnsubscribeRecursiveScheduleWithStateAndFunc2() throws InterruptedException {
+    public void testUnsubscribeRecursiveScheduleFromOutside() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
         final AtomicInteger counter = new AtomicInteger();
-        Subscription s = getScheduler().schedule(1L, new Func2<Scheduler, Long, Subscription>() {
+        Subscription s = getScheduler().schedule(new Action1<Inner>() {
 
             @Override
-            public Subscription call(Scheduler innerScheduler, Long i) {
-                System.out.println("Run: " + i);
-                if (i == 10) {
-                    latch.countDown();
-                    try {
-                        // wait for unsubscribe to finish so we are not racing it
-                        unsubscribeLatch.await();
-                    } catch (InterruptedException e) {
-                        // we expect the countDown if unsubscribe is not working
-                        // or to be interrupted if unsubscribe is successful since 
-                        // the unsubscribe will interrupt it as it is calling Future.cancel(true)
-                        // so we will ignore the stacktrace
-                    }
-                }
+            public void call(final Inner inner) {
+                inner.schedule(new Action1<Inner>() {
 
-                counter.incrementAndGet();
-                return innerScheduler.schedule(i + 1, this);
+                    int i = 0;
+
+                    @Override
+                    public void call(Inner s) {
+                        System.out.println("Run: " + i++);
+                        if (i == 10) {
+                            latch.countDown();
+                            try {
+                                // wait for unsubscribe to finish so we are not racing it
+                                unsubscribeLatch.await();
+                            } catch (InterruptedException e) {
+                                // we expect the countDown if unsubscribe is not working
+                                // or to be interrupted if unsubscribe is successful since 
+                                // the unsubscribe will interrupt it as it is calling Future.cancel(true)
+                                // so we will ignore the stacktrace
+                            }
+                        }
+
+                        counter.incrementAndGet();
+                        inner.schedule(this);
+                    }
+                });
+            }
+
+        });
+
+        latch.await();
+        s.unsubscribe();
+        unsubscribeLatch.countDown();
+        Thread.sleep(200); // let time pass to see if the scheduler is still doing work
+        assertEquals(10, counter.get());
+    }
+
+    @Test
+    public void testUnsubscribeRecursiveScheduleFromInside() throws InterruptedException {
+        final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
+        final AtomicInteger counter = new AtomicInteger();
+        getScheduler().schedule(new Action1<Inner>() {
+
+            @Override
+            public void call(Inner inner) {
+                inner.schedule(new Action1<Inner>() {
+
+                    int i = 0;
+
+                    @Override
+                    public void call(Inner inner) {
+                        System.out.println("Run: " + i++);
+                        if (i == 10) {
+                            inner.unsubscribe();
+                        }
+
+                        counter.incrementAndGet();
+                        inner.schedule(this);
+                    }
+                });
+            }
+
+        });
+
+        unsubscribeLatch.countDown();
+        Thread.sleep(200); // let time pass to see if the scheduler is still doing work
+        assertEquals(10, counter.get());
+    }
+
+    @Test
+    public void testUnsubscribeRecursiveScheduleWithDelay() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
+        final AtomicInteger counter = new AtomicInteger();
+        Subscription s = getScheduler().schedule(new Action1<Inner>() {
+
+            @Override
+            public void call(final Inner innerScheduler) {
+                innerScheduler.schedule(new Action1<Inner>() {
+
+                    long i = 1L;
+
+                    @Override
+                    public void call(Inner s) {
+                        if (i++ == 10) {
+                            latch.countDown();
+                            try {
+                                // wait for unsubscribe to finish so we are not racing it
+                                unsubscribeLatch.await();
+                            } catch (InterruptedException e) {
+                                // we expect the countDown if unsubscribe is not working
+                                // or to be interrupted if unsubscribe is successful since 
+                                // the unsubscribe will interrupt it as it is calling Future.cancel(true)
+                                // so we will ignore the stacktrace
+                            }
+                        }
+
+                        counter.incrementAndGet();
+                        innerScheduler.schedule(this, 10, TimeUnit.MILLISECONDS);
+                    }
+                }, 10, TimeUnit.MILLISECONDS);
             }
         });
 
@@ -131,76 +212,20 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     }
 
     @Test
-    public void testUnsubscribeRecursiveScheduleWithStateAndFunc2AndDelay() throws InterruptedException {
+    public void recursionFromOuterActionAndUnsubscribeInside() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
-        final AtomicInteger counter = new AtomicInteger();
-        Subscription s = getScheduler().schedule(1L, new Func2<Scheduler, Long, Subscription>() {
+        getScheduler().schedule(new Action1<Inner>() {
+
+            int i = 0;
 
             @Override
-            public Subscription call(Scheduler innerScheduler, Long i) {
-                if (i == 10) {
-                    latch.countDown();
-                    try {
-                        // wait for unsubscribe to finish so we are not racing it
-                        unsubscribeLatch.await();
-                    } catch (InterruptedException e) {
-                        // we expect the countDown if unsubscribe is not working
-                        // or to be interrupted if unsubscribe is successful since 
-                        // the unsubscribe will interrupt it as it is calling Future.cancel(true)
-                        // so we will ignore the stacktrace
-                    }
-                }
-
-                counter.incrementAndGet();
-                return innerScheduler.schedule(i + 1, this, 10, TimeUnit.MILLISECONDS);
-            }
-        }, 10, TimeUnit.MILLISECONDS);
-
-        latch.await();
-        s.unsubscribe();
-        unsubscribeLatch.countDown();
-        Thread.sleep(200); // let time pass to see if the scheduler is still doing work
-        assertEquals(10, counter.get());
-    }
-
-    @Test
-    public void recursionUsingFunc2() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        getScheduler().schedule(1L, new Func2<Scheduler, Long, Subscription>() {
-
-            @Override
-            public Subscription call(Scheduler innerScheduler, Long i) {
-                if (i % 100000 == 0) {
-                    System.out.println(i + "  Total Memory: " + Runtime.getRuntime().totalMemory() + "  Free: " + Runtime.getRuntime().freeMemory());
-                }
-                if (i < 1000000L) {
-                    return innerScheduler.schedule(i + 1, this);
-                } else {
-                    latch.countDown();
-                    return Subscriptions.empty();
-                }
-            }
-        });
-
-        latch.await();
-    }
-
-    @Test
-    public void recursionUsingAction0() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        getScheduler().schedule(new Action1<Action0>() {
-
-            private long i = 0;
-
-            @Override
-            public void call(Action0 self) {
+            public void call(Inner inner) {
                 i++;
                 if (i % 100000 == 0) {
                     System.out.println(i + "  Total Memory: " + Runtime.getRuntime().totalMemory() + "  Free: " + Runtime.getRuntime().freeMemory());
                 }
                 if (i < 1000000L) {
-                    self.call();
+                    inner.schedule(this);
                 } else {
                     latch.countDown();
                 }
@@ -211,7 +236,31 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     }
 
     @Test
-    public void testRecursiveScheduler2() throws InterruptedException {
+    public void testRecursion() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        getScheduler().schedule(new Action1<Inner>() {
+
+            private long i = 0;
+
+            @Override
+            public void call(Inner inner) {
+                i++;
+                if (i % 100000 == 0) {
+                    System.out.println(i + "  Total Memory: " + Runtime.getRuntime().totalMemory() + "  Free: " + Runtime.getRuntime().freeMemory());
+                }
+                if (i < 1000000L) {
+                    inner.schedule(this);
+                } else {
+                    latch.countDown();
+                }
+            }
+        });
+
+        latch.await();
+    }
+
+    @Test
+    public void testRecursionAndOuterUnsubscribe() throws InterruptedException {
         // use latches instead of Thread.sleep
         final CountDownLatch latch = new CountDownLatch(10);
         final CountDownLatch completionLatch = new CountDownLatch(1);
@@ -220,26 +269,28 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
             @Override
             public Subscription onSubscribe(final Observer<? super Integer> observer) {
 
-                return getScheduler().schedule(null, new Func2<Scheduler, Void, Subscription>() {
+                final Subscription s = getScheduler().schedule(new Action1<Inner>() {
                     @Override
-                    public Subscription call(Scheduler scheduler, Void v) {
+                    public void call(Inner inner) {
                         observer.onNext(42);
                         latch.countDown();
 
                         // this will recursively schedule this task for execution again
-                        scheduler.schedule(null, this);
-
-                        return Subscriptions.create(new Action0() {
-
-                            @Override
-                            public void call() {
-                                observer.onCompleted();
-                                completionLatch.countDown();
-                            }
-
-                        });
+                        inner.schedule(this);
                     }
                 });
+
+                return Subscriptions.create(new Action0() {
+
+                    @Override
+                    public void call() {
+                        s.unsubscribe();
+                        observer.onCompleted();
+                        completionLatch.countDown();
+                    }
+
+                });
+
             }
         });
 

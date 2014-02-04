@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Netflix, Inc.
+ * Copyright 2013 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.util.functions.Func2;
+import rx.subscriptions.BooleanSubscription;
+import rx.util.functions.Action1;
 
 /**
  * Executes work immediately on the current thread.
@@ -35,15 +36,47 @@ public final class ImmediateScheduler extends Scheduler {
     }
 
     @Override
-    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
-        return action.call(this, state);
+    public Subscription schedule(Action1<Scheduler.Inner> action) {
+        InnerImmediateScheduler inner = new InnerImmediateScheduler();
+        inner.schedule(action);
+        return inner.innerSubscription;
     }
 
     @Override
-    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long dueTime, TimeUnit unit) {
-        // since we are executing immediately on this thread we must cause this thread to sleep
-        long execTime = now() + unit.toMillis(dueTime);
-
-        return schedule(state, new SleepingAction<T>(action, this, execTime));
+    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
+        InnerImmediateScheduler inner = new InnerImmediateScheduler();
+        inner.schedule(action, delayTime, unit);
+        return inner.innerSubscription;
     }
+
+    
+    private class InnerImmediateScheduler extends Scheduler.Inner implements Subscription {
+
+        final BooleanSubscription innerSubscription = new BooleanSubscription();
+
+        @Override
+        public void schedule(Action1<Scheduler.Inner> action, long delayTime, TimeUnit unit) {
+            // since we are executing immediately on this thread we must cause this thread to sleep
+            long execTime = now() + unit.toMillis(delayTime);
+
+            schedule(new SleepingAction(action, ImmediateScheduler.this, execTime));
+        }
+
+        @Override
+        public void schedule(Action1<Scheduler.Inner> action) {
+            action.call(this);
+        }
+
+        @Override
+        public void unsubscribe() {
+            innerSubscription.unsubscribe();
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return innerSubscription.isUnsubscribed();
+        }
+
+    }
+
 }

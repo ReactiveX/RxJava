@@ -22,12 +22,14 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscription;
 import rx.observers.SynchronizedObserver;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
 /**
@@ -51,7 +53,7 @@ public final class OperationDebounce {
      * @return A {@link Func1} which performs the throttle operation.
      */
     public static <T> OnSubscribeFunc<T> debounce(Observable<T> items, long timeout, TimeUnit unit) {
-        return debounce(items, timeout, unit, Schedulers.threadPoolForComputation());
+        return debounce(items, timeout, unit, Schedulers.computation());
     }
 
     /**
@@ -140,14 +142,15 @@ public final class OperationDebounce {
 
         @Override
         public void onNext(final T v) {
-            Subscription previousSubscription = lastScheduledNotification.getAndSet(scheduler.schedule(new Action0() {
+            Subscription previousSubscription = lastScheduledNotification.getAndSet(scheduler.schedule(new Action1<Inner>() {
 
                 @Override
-                public void call() {
+                public void call(Inner inner) {
                     observer.onNext(v);
                 }
 
             }, timeout, unit));
+
             // cancel previous if not already executed
             if (previousSubscription != null) {
                 previousSubscription.unsubscribe();

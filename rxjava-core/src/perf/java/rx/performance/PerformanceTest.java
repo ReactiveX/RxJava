@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.util.functions.Func1;
 
 public class PerformanceTest {
@@ -226,7 +226,7 @@ public class PerformanceTest {
 
     }
 
-    private static final class TestObserver extends Observer<Integer> {
+    private static final class TestObserver extends Subscriber<Integer> {
         private final AtomicInteger onNextSum;
         private final AtomicLong aggregateTime;
         private final long start;
@@ -256,7 +256,7 @@ public class PerformanceTest {
         }
     }
 
-    private static final class TestStringObserver extends Observer<String> {
+    private static final class TestStringObserver extends Subscriber<String> {
         private final AtomicInteger onNextSum;
         private final long start;
 

@@ -20,10 +20,12 @@ import java.util.concurrent.TimeUnit;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 
 /**
  * Returns an observable sequence that produces a value after each period.
@@ -35,7 +37,7 @@ public final class OperationInterval {
      * Creates an event each time interval.
      */
     public static OnSubscribeFunc<Long> interval(long interval, TimeUnit unit) {
-        return interval(interval, unit, Schedulers.threadPoolForComputation());
+        return interval(interval, unit, Schedulers.computation());
     }
 
     /**
@@ -66,9 +68,9 @@ public final class OperationInterval {
 
         @Override
         public Subscription onSubscribe(final Observer<? super Long> observer) {
-            final Subscription wrapped = scheduler.schedulePeriodically(new Action0() {
+            final Subscription wrapped = scheduler.schedulePeriodically(new Action1<Inner>() {
                 @Override
-                public void call() {
+                public void call(Inner inner) {
                     observer.onNext(currentValue);
                     currentValue++;
                 }

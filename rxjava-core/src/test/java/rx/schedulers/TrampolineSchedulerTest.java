@@ -24,11 +24,11 @@ import rx.Scheduler;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
-public class CurrentThreadSchedulerTest extends AbstractSchedulerTests {
+public class TrampolineSchedulerTest extends AbstractSchedulerTests {
 
     @Override
     protected Scheduler getScheduler() {
-        return CurrentThreadScheduler.getInstance();
+        return TrampolineScheduler.getInstance();
     }
 
     @Test

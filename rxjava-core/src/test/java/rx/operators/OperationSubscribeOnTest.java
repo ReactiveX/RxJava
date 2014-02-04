@@ -27,8 +27,7 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.test.OperatorTester;
-import rx.util.functions.Action0;
-import rx.util.functions.Func2;
+import rx.util.functions.Action1;
 
 public class OperationSubscribeOnTest {
 
@@ -42,9 +41,9 @@ public class OperationSubscribeOnTest {
         Observer<Integer> observer = mock(Observer.class);
         Subscription subscription = Observable.create(subscribeOn(w, scheduler)).subscribe(observer);
 
-        verify(scheduler, times(1)).schedule(isNull(), any(Func2.class));
+        verify(scheduler, times(1)).schedule(any(Action1.class));
         subscription.unsubscribe();
-        verify(scheduler, times(1)).schedule(any(Action0.class));
+        verify(scheduler, times(1)).schedule(any(Action1.class));
         verifyNoMoreInteractions(scheduler);
 
         verify(observer, times(1)).onNext(1);
