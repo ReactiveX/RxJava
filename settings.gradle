@@ -3,7 +3,7 @@ include 'rxjava-core', \
 'language-adaptors:rxjava-groovy', \
 'language-adaptors:rxjava-clojure', \
 'language-adaptors:rxjava-jruby', \
-'language-adaptors:rxjava-scala', \
+//'language-adaptors:rxjava-scala', \
 //'language-adaptors:rxjava-kotlin', \
 'rxjava-contrib:rxjava-swing', \
 'rxjava-contrib:rxjava-android', \
