@@ -18,8 +18,8 @@ package rx.schedulers;
 import java.util.Arrays;
 
 import rx.Observable;
-import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.util.functions.Action0;
 
 public class SchedulerPerformanceTests {
@@ -152,7 +152,7 @@ public class SchedulerPerformanceTests {
         return o.sum;
     }
 
-    private static class LongObserver extends Observer<Long> {
+    private static class LongObserver extends Subscriber<Long> {
 
         long sum = 0;
 

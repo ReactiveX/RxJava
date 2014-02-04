@@ -19,11 +19,9 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
 import rx.util.functions.Action1;
-import rx.util.functions.Func2;
 
 /**
  * Used for manual testing of memory leaks with recursive schedulers.
@@ -40,6 +38,8 @@ public class TestRecursionMemoryUsage {
 
         usingFunc2(Schedulers.computation());
         usingAction0(Schedulers.computation());
+        
+        System.exit(0);
     }
 
     protected static void usingFunc2(final Scheduler scheduler) {
@@ -48,10 +48,11 @@ public class TestRecursionMemoryUsage {
 
             @Override
             public Subscription onSubscribe(final Observer<? super Long> o) {
-                return scheduler.schedule(0L, new Func2<Scheduler, Long, Subscription>() {
+                return scheduler.schedule(new Action1<Inner>() {
+                    long i = 0;
 
                     @Override
-                    public Subscription call(Scheduler innerScheduler, Long i) {
+                    public void call(Inner inner) {
                         i++;
                         if (i % 500000 == 0) {
                             System.out.println(i + "  Total Memory: " + Runtime.getRuntime().totalMemory() + "  Free: " + Runtime.getRuntime().freeMemory());
@@ -59,10 +60,10 @@ public class TestRecursionMemoryUsage {
                         }
                         if (i == 100000000L) {
                             o.onCompleted();
-                            return Subscriptions.empty();
+                            return;
                         }
 
-                        return innerScheduler.schedule(i, this);
+                        inner.schedule(this);
                     }
                 });
             }
@@ -75,12 +76,12 @@ public class TestRecursionMemoryUsage {
 
             @Override
             public Subscription onSubscribe(final Observer<? super Long> o) {
-                return scheduler.schedule(new Action1<Action0>() {
+                return scheduler.schedule(new Action1<Inner>() {
 
                     private long i = 0;
 
                     @Override
-                    public void call(Action0 self) {
+                    public void call(Inner inner) {
                         i++;
                         if (i % 500000 == 0) {
                             System.out.println(i + "  Total Memory: " + Runtime.getRuntime().totalMemory() + "  Free: " + Runtime.getRuntime().freeMemory());
@@ -90,7 +91,7 @@ public class TestRecursionMemoryUsage {
                             o.onCompleted();
                             return;
                         }
-                        self.call();
+                        inner.schedule(this);
                     }
                 });
             }
