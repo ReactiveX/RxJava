@@ -50,7 +50,7 @@ public final class QueueDrain implements Runnable, Action0 {
      * @param action the action to enqueue, not null
      */
     public void enqueue(Action0 action) {
-        if (!k.isUnsubscribed()) {
+        if (!isUnsubscribed()) {
             queue.add(action);
         }
     }
@@ -58,12 +58,12 @@ public final class QueueDrain implements Runnable, Action0 {
      * Try draining the queue and executing the actions in it.
      */
     public void tryDrain() {
-        if (wip.incrementAndGet() > 1 || k.isUnsubscribed()) {
+        if (wip.incrementAndGet() > 1 || isUnsubscribed()) {
             return;
         }
         do {
             queue.poll().call();
-        } while (wip.decrementAndGet() > 0 && !k.isUnsubscribed());
+        } while (wip.decrementAndGet() > 0 && !isUnsubscribed());
     }
     /**
      * Try draining the queue on the given scheduler.
@@ -73,7 +73,7 @@ public final class QueueDrain implements Runnable, Action0 {
      * @param cs the composite subscription to track the schedule
      */
     public void tryDrainAsync(Scheduler scheduler, final CompositeSubscription cs) {
-        if (wip.incrementAndGet() > 1 || k.isUnsubscribed()) {
+        if (wip.incrementAndGet() > 1 || isUnsubscribed()) {
             return;
         }
         // add tracking subscription only if schedule is run to avoid overfilling cs
@@ -82,14 +82,18 @@ public final class QueueDrain implements Runnable, Action0 {
         mas.set(scheduler.schedule(new Action0() {
             @Override
             public void call() {
-                if (!k.isUnsubscribed()) {
+                if (!isUnsubscribed()) {
                     do {
                         queue.poll().call();
-                    } while (wip.decrementAndGet() > 0 && !k.isUnsubscribed());
+                    } while (wip.decrementAndGet() > 0 && !isUnsubscribed());
                 }
                 cs.remove(mas);
             }
         }));
+    }
+    /** Check for unsubscription status. */
+    private boolean isUnsubscribed() {
+        return k.isUnsubscribed();
     }
     @Override
     public void run() {

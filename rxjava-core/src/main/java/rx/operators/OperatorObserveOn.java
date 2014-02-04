@@ -35,12 +35,14 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> t1) {
         final QueueDrain qd = new QueueDrain(t1);
         final CompositeSubscription csub = new CompositeSubscription();
+        t1.add(csub);
         return new Subscriber<T>(t1) {
             /** Dispatch the notification value. */
             void run(final Notification<T> nt) {
                 qd.enqueue(new Action0() {
                     @Override
                     public void call() {
+                        System.out.println(Thread.currentThread().getName() + " | " + nt);
                         nt.accept(t1);
                     }
                 });

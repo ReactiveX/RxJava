@@ -49,7 +49,7 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
         return new Subscriber<T>(new CompositeSubscription()) {
             private final Map<K, PublishSubject<T>> groups = new HashMap<K, PublishSubject<T>>();
             private final AtomicInteger completionCounter = new AtomicInteger(0);
-
+            private boolean once;
             @Override
             public void onCompleted() {
                 // if we receive onCompleted from our parent we onComplete children
@@ -59,7 +59,10 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
 
                 if (completionCounter.get() == 0) {
                     // special case if no children are running (such as an empty sequence, or just getting the groups and not subscribing)
-                    childObserver.onCompleted();
+                    if (!once) {
+                        once = true;
+                        childObserver.onCompleted();
+                    }
                 }
             }
 
@@ -135,7 +138,10 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
                     for (PublishSubject<T> ps : groups.values()) {
                         ps.onCompleted();
                     }
-                    childObserver.onCompleted();
+                    if (!once) {
+                        once = true;
+                        childObserver.onCompleted();
+                    }
                 }
             }
 
