@@ -20,9 +20,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import rx.Observable.OnSubscribeFunc;
+import rx.Scheduler.Inner;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.BooleanSubscription;
-import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 
 /**
  * Utility for retrieving a mock eventstream for testing.
@@ -34,27 +34,31 @@ public class EventStream {
 
             @Override
             public Subscription onSubscribe(final Observer<? super Event> observer) {
-                final BooleanSubscription s = new BooleanSubscription();
                 // run on a background thread inside the OnSubscribeFunc so unsubscribe works
-                Schedulers.newThread().schedule(new Action0() {
+                return Schedulers.newThread().schedule(new Action1<Inner>() {
 
                     @Override
-                    public void call() {
-                        while (!(s.isUnsubscribed() || Thread.currentThread().isInterrupted())) {
-                            observer.onNext(randomEvent(type, numInstances));
-                            try {
-                                // slow it down somewhat
-                                Thread.sleep(50);
-                            } catch (InterruptedException e) {
-                                observer.onError(e);
+                    public void call(Inner inner) {
+                        inner.schedule(new Action1<Inner>() {
+
+                            @Override
+                            public void call(Inner inner) {
+                                while (!(inner.isUnsubscribed() || Thread.currentThread().isInterrupted())) {
+                                    observer.onNext(randomEvent(type, numInstances));
+                                    try {
+                                        // slow it down somewhat
+                                        Thread.sleep(50);
+                                    } catch (InterruptedException e) {
+                                        observer.onError(e);
+                                    }
+                                }
+                                observer.onCompleted();
                             }
-                        }
-                        observer.onCompleted();
+
+                        });
                     }
 
                 });
-
-                return s;
             }
         });
     }

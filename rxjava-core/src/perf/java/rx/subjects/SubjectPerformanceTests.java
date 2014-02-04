@@ -15,7 +15,7 @@
  */
 package rx.subjects;
 
-import rx.Observer;
+import rx.Subscriber;
 import rx.util.functions.Action0;
 
 public class SubjectPerformanceTests {
@@ -127,7 +127,7 @@ public class SubjectPerformanceTests {
     public long unboundedReplaySubject() {
         ReplaySubject<Long> s = ReplaySubject.create();
         LongObserver o = new LongObserver();
-        s.toObservable().subscribe(o);
+        s.subscribe(o);
         for (long l = 0; l < REPETITIONS; l++) {
             s.onNext(l);
         }
@@ -135,7 +135,7 @@ public class SubjectPerformanceTests {
         return o.sum;
     }
 
-    private static class LongObserver extends Observer<Long> {
+    private static class LongObserver extends Subscriber<Long> {
 
         long sum = 0;
 

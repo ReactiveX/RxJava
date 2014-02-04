@@ -24,12 +24,14 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
@@ -43,11 +45,11 @@ import rx.util.functions.Func1;
 public final class OperationTimeout {
 
     public static <T> OnSubscribeFunc<T> timeout(Observable<? extends T> source, long timeout, TimeUnit timeUnit) {
-        return new Timeout<T>(source, timeout, timeUnit, null, Schedulers.threadPoolForComputation());
+        return new Timeout<T>(source, timeout, timeUnit, null, Schedulers.computation());
     }
 
     public static <T> OnSubscribeFunc<T> timeout(Observable<? extends T> sequence, long timeout, TimeUnit timeUnit, Observable<? extends T> other) {
-        return new Timeout<T>(sequence, timeout, timeUnit, other, Schedulers.threadPoolForComputation());
+        return new Timeout<T>(sequence, timeout, timeUnit, other, Schedulers.computation());
     }
 
     public static <T> OnSubscribeFunc<T> timeout(Observable<? extends T> source, long timeout, TimeUnit timeUnit, Scheduler scheduler) {
@@ -84,9 +86,9 @@ public final class OperationTimeout {
                 @Override
                 public Subscription call() {
                     final long expected = actual.get();
-                    return scheduler.schedule(new Action0() {
+                    return scheduler.schedule(new Action1<Inner>() {
                         @Override
-                        public void call() {
+                        public void call(Inner inner) {
                             boolean timeoutWins = false;
                             synchronized (gate) {
                                 if (expected == actual.get() && !terminated.getAndSet(true)) {
@@ -98,7 +100,7 @@ public final class OperationTimeout {
                                     observer.onError(new TimeoutException());
                                 }
                                 else {
-                                    serial.setSubscription(other.subscribe(observer));
+                                    serial.set(other.subscribe(observer));
                                 }
                             }
 

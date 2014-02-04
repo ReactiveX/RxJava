@@ -26,11 +26,13 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Scheduler.Inner;
 import rx.Subscription;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 
 public class OperationSampleTest {
     private TestScheduler scheduler;
@@ -51,21 +53,21 @@ public class OperationSampleTest {
         Observable<Long> source = Observable.create(new Observable.OnSubscribeFunc<Long>() {
             @Override
             public Subscription onSubscribe(final Observer<? super Long> observer1) {
-                scheduler.schedule(new Action0() {
+                scheduler.schedule(new Action1<Inner>() {
                     @Override
-                    public void call() {
+                    public void call(Inner inner) {
                         observer1.onNext(1L);
                     }
                 }, 1, TimeUnit.SECONDS);
-                scheduler.schedule(new Action0() {
+                scheduler.schedule(new Action1<Inner>() {
                     @Override
-                    public void call() {
+                    public void call(Inner inner) {
                         observer1.onNext(2L);
                     }
                 }, 2, TimeUnit.SECONDS);
-                scheduler.schedule(new Action0() {
+                scheduler.schedule(new Action1<Inner>() {
                     @Override
-                    public void call() {
+                    public void call(Inner inner) {
                         observer1.onCompleted();
                     }
                 }, 3, TimeUnit.SECONDS);

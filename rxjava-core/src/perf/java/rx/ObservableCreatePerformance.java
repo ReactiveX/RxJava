@@ -60,7 +60,7 @@ public class ObservableCreatePerformance extends AbstractPerformanceTester {
         Observable<Long> s = Observable.create(new OnSubscribe<Long>() {
 
             @Override
-            public void call(Observer<? super Long> o) {
+            public void call(Subscriber<? super Long> o) {
                 o.onNext(1L);
                 o.onCompleted();
             }

@@ -453,7 +453,7 @@ public class OperatorMergeTest {
                         subscriptionCount, maxConcurrent);
                 scos.add(sco);
                 os.add(Observable.create(sco).subscribeOn(
-                        Schedulers.threadPoolForComputation()));
+                        Schedulers.computation()));
             }
 
             Iterator<String> iter = Observable.merge(os, maxConcurrent)

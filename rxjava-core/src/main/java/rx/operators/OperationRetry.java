@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,12 +36,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
-import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.MultipleAssignmentSubscription;
-import rx.util.functions.Func2;
+import rx.util.functions.Action1;
 
 public class OperationRetry {
 
@@ -60,7 +58,6 @@ public class OperationRetry {
         private final Observable<T> source;
         private final int retryCount;
         private final AtomicInteger attempts = new AtomicInteger(0);
-        private final CompositeSubscription subscription = new CompositeSubscription();
 
         public Retry(Observable<T> source, int retryCount) {
             this.source = source;
@@ -68,20 +65,14 @@ public class OperationRetry {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
-            MultipleAssignmentSubscription rescursiveSubscription = new MultipleAssignmentSubscription();
-            subscription.add(Schedulers.currentThread().schedule(rescursiveSubscription, attemptSubscription(observer)));
-            subscription.add(rescursiveSubscription);
-            return subscription;
-        }
-
-        private Func2<Scheduler, MultipleAssignmentSubscription, Subscription> attemptSubscription(final Observer<? super T> observer) {
-            return new Func2<Scheduler, MultipleAssignmentSubscription, Subscription>() {
+        public Subscription onSubscribe(final Observer<? super T> observer) {
+            return Schedulers.trampoline().schedule(new Action1<Inner>() {
 
                 @Override
-                public Subscription call(final Scheduler scheduler, final MultipleAssignmentSubscription rescursiveSubscription) {
+                public void call(final Inner inner) {
+                    final Action1<Inner> _self = this;
                     attempts.incrementAndGet();
-                    return source.subscribe(new Observer<T>() {
+                    source.subscribe(new Observer<T>() {
 
                         @Override
                         public void onCompleted() {
@@ -90,10 +81,9 @@ public class OperationRetry {
 
                         @Override
                         public void onError(Throwable e) {
-                            if ((retryCount == INFINITE_RETRY || attempts.get() <= retryCount) && !subscription.isUnsubscribed()) {
+                            if ((retryCount == INFINITE_RETRY || attempts.get() <= retryCount) && !inner.isUnsubscribed()) {
                                 // retry again
-                                // add the new subscription and schedule a retry recursively
-                                rescursiveSubscription.setSubscription(scheduler.schedule(rescursiveSubscription, attemptSubscription(observer)));
+                                inner.schedule(_self);
                             } else {
                                 // give up and pass the failure
                                 observer.onError(e);
@@ -104,11 +94,10 @@ public class OperationRetry {
                         public void onNext(T v) {
                             observer.onNext(v);
                         }
+
                     });
-
                 }
-
-            };
+            });
         }
 
     }

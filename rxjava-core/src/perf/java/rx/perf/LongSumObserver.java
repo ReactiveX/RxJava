@@ -1,8 +1,8 @@
 package rx.perf;
 
-import rx.Observer;
+import rx.Subscriber;
 
-public class LongSumObserver extends Observer<Long> {
+public class LongSumObserver extends Subscriber<Long> {
 
     public long sum = 0;
 

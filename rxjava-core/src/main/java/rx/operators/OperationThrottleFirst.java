@@ -43,7 +43,7 @@ public final class OperationThrottleFirst {
      * @return A {@link Func1} which performs the throttle operation.
      */
     public static <T> OnSubscribeFunc<T> throttleFirst(Observable<T> items, long windowDuration, TimeUnit unit) {
-        return throttleFirst(items, windowDuration, unit, Schedulers.threadPoolForComputation());
+        return throttleFirst(items, windowDuration, unit, Schedulers.computation());
     }
 
     /**

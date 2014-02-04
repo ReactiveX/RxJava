@@ -16,6 +16,7 @@
 
 package rx.util.async.operators;
 
+import rx.Scheduler.Inner;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
@@ -65,14 +66,14 @@ public final class Functionals {
      * @param run the Runnable to run when the Action0 is called
      * @return the Action0 wrapping the Runnable
      */
-    public static Action0 fromRunnable(Runnable run) {
+    public static Action1<Inner> fromRunnable(Runnable run) {
         if (run == null) {
             throw new NullPointerException("run");
         }
         return new ActionWrappingRunnable(run);
     }
-    /** An Action0 which wraps and calls a Runnable. */
-    private static final class ActionWrappingRunnable implements Action0 {
+    /** An Action1 which wraps and calls a Runnable. */
+    private static final class ActionWrappingRunnable implements Action1<Inner> {
         final Runnable run;
 
         public ActionWrappingRunnable(Runnable run) {
@@ -80,7 +81,7 @@ public final class Functionals {
         }
 
         @Override
-        public void call() {
+        public void call(Inner inner) {
             run.run();
         }
         

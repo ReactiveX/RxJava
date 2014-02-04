@@ -24,18 +24,16 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Scheduler;
-import rx.Subscription;
-import rx.util.functions.Action0;
+import rx.Scheduler.Inner;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
-import rx.util.functions.Func2;
 
 public class ExecutorSchedulerTests extends AbstractSchedulerConcurrencyTests {
 
     @Override
     protected Scheduler getScheduler() {
         // this is an implementation of ExecutorScheduler
-        return Schedulers.threadPoolForComputation();
+        return Schedulers.computation();
     }
 
     @Test
@@ -43,39 +41,34 @@ public class ExecutorSchedulerTests extends AbstractSchedulerConcurrencyTests {
 
         final int NUM = 1000000;
         final CountDownLatch latch = new CountDownLatch(1);
-        HashMap<String, Integer> statefulMap = new HashMap<String, Integer>();
-        Schedulers.threadPoolForComputation().schedule(statefulMap,
-                new Func2<Scheduler, HashMap<String, Integer>, Subscription>() {
+        final HashMap<String, Integer> map = new HashMap<String, Integer>();
+        
+        Schedulers.computation().schedule(new Action1<Inner>() {
 
-                    @Override
-                    public Subscription call(Scheduler innerScheduler, final HashMap<String, Integer> statefulMap) {
-                        return innerScheduler.schedule(new Action1<Action0>() {
+            private HashMap<String, Integer> statefulMap = map;
+            int nonThreadSafeCounter = 0;
 
-                            int nonThreadSafeCounter = 0;
-
-                            @Override
-                            public void call(Action0 self) {
-                                Integer i = statefulMap.get("a");
-                                if (i == null) {
-                                    i = 1;
-                                    statefulMap.put("a", i);
-                                    statefulMap.put("b", i);
-                                } else {
-                                    i++;
-                                    statefulMap.put("a", i);
-                                    statefulMap.put("b", i);
-                                }
-                                nonThreadSafeCounter++;
-                                statefulMap.put("nonThreadSafeCounter", nonThreadSafeCounter);
-                                if (i < NUM) {
-                                    self.call();
-                                } else {
-                                    latch.countDown();
-                                }
-                            }
-                        });
-                    }
-                });
+            @Override
+            public void call(Inner inner) {
+                Integer i = statefulMap.get("a");
+                if (i == null) {
+                    i = 1;
+                    statefulMap.put("a", i);
+                    statefulMap.put("b", i);
+                } else {
+                    i++;
+                    statefulMap.put("a", i);
+                    statefulMap.put("b", i);
+                }
+                nonThreadSafeCounter++;
+                statefulMap.put("nonThreadSafeCounter", nonThreadSafeCounter);
+                if (i < NUM) {
+                    inner.schedule(this);
+                } else {
+                    latch.countDown();
+                }
+            }
+        });
 
         try {
             latch.await();
@@ -83,13 +76,13 @@ public class ExecutorSchedulerTests extends AbstractSchedulerConcurrencyTests {
             e.printStackTrace();
         }
 
-        System.out.println("Count A: " + statefulMap.get("a"));
-        System.out.println("Count B: " + statefulMap.get("b"));
-        System.out.println("nonThreadSafeCounter: " + statefulMap.get("nonThreadSafeCounter"));
+        System.out.println("Count A: " + map.get("a"));
+        System.out.println("Count B: " + map.get("b"));
+        System.out.println("nonThreadSafeCounter: " + map.get("nonThreadSafeCounter"));
 
-        assertEquals(NUM, statefulMap.get("a").intValue());
-        assertEquals(NUM, statefulMap.get("b").intValue());
-        assertEquals(NUM, statefulMap.get("nonThreadSafeCounter").intValue());
+        assertEquals(NUM, map.get("a").intValue());
+        assertEquals(NUM, map.get("b").intValue());
+        assertEquals(NUM, map.get("nonThreadSafeCounter").intValue());
     }
 
     @Test
@@ -107,7 +100,7 @@ public class ExecutorSchedulerTests extends AbstractSchedulerConcurrencyTests {
             }
         });
 
-        o.subscribeOn(Schedulers.threadPoolForComputation()).toBlockingObservable().forEach(new Action1<String>() {
+        o.subscribeOn(Schedulers.computation()).toBlockingObservable().forEach(new Action1<String>() {
 
             @Override
             public void call(String t) {
@@ -146,7 +139,7 @@ public class ExecutorSchedulerTests extends AbstractSchedulerConcurrencyTests {
 
         Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
         Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).subscribeOn(Schedulers.threadPoolForComputation()).map(new Func1<Integer, String>() {
+        Observable<String> o = Observable.<Integer> merge(o1, o2).subscribeOn(Schedulers.computation()).map(new Func1<Integer, String>() {
 
             @Override
             public String call(Integer t) {

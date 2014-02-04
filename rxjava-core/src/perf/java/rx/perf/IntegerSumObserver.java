@@ -1,8 +1,8 @@
 package rx.perf;
 
-import rx.Observer;
+import rx.Subscriber;
 
-public class IntegerSumObserver extends Observer<Integer> {
+public class IntegerSumObserver extends Subscriber<Integer> {
 
     public int sum = 0;
 

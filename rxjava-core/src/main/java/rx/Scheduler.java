@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Netflix, Inc.
+ * Copyright 2013 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,9 @@
  */
 package rx;
 
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.MultipleAssignmentSubscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
 import rx.util.functions.Action1;
-import rx.util.functions.Func2;
 
 /**
  * Represents an object that schedules units of work.
@@ -48,30 +41,24 @@ import rx.util.functions.Func2;
 public abstract class Scheduler {
 
     /**
-     * Schedules a cancelable action to be executed.
+     * Schedules an Action on a new Scheduler instance (typically another thread) for execution.
      * 
-     * @param state
-     *            State to pass into the action.
      * @param action
      *            Action to schedule.
      * @return a subscription to be able to unsubscribe from action.
      */
-    public abstract <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action);
+
+    public abstract Subscription schedule(Action1<Scheduler.Inner> action);
 
     /**
-     * Schedules a cancelable action to be executed in delayTime.
+     * Schedules an Action on a new Scheduler instance (typically another thread) for execution at some point in the future.
      * 
-     * @param state
-     *            State to pass into the action.
      * @param action
-     *            Action to schedule.
      * @param delayTime
-     *            Time the action is to be delayed before executing.
      * @param unit
-     *            Time unit of the delay time.
-     * @return a subscription to be able to unsubscribe from action.
+     * @return
      */
-    public abstract <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit);
+    public abstract Subscription schedule(final Action1<Scheduler.Inner> action, final long delayTime, final TimeUnit unit);
 
     /**
      * Schedules a cancelable action to be executed periodically.
@@ -90,159 +77,47 @@ public abstract class Scheduler {
      *            The time unit the interval above is given in.
      * @return A subscription to be able to unsubscribe from action.
      */
-    public <T> Subscription schedulePeriodically(T state, final Func2<? super Scheduler, ? super T, ? extends Subscription> action, long initialDelay, long period, TimeUnit unit) {
+    public Subscription schedulePeriodically(final Action1<Scheduler.Inner> action, long initialDelay, long period, TimeUnit unit) {
         final long periodInNanos = unit.toNanos(period);
-        final AtomicBoolean complete = new AtomicBoolean();
 
-        final Func2<Scheduler, T, Subscription> recursiveAction = new Func2<Scheduler, T, Subscription>() {
+        final Action1<Scheduler.Inner> recursiveAction = new Action1<Scheduler.Inner>() {
             @Override
-            public Subscription call(Scheduler scheduler, T state0) {
-                if (!complete.get()) {
+            public void call(Inner inner) {
+                if (!inner.isUnsubscribed()) {
                     long startedAt = now();
-                    final Subscription sub1 = action.call(scheduler, state0);
+                    action.call(inner);
                     long timeTakenByActionInNanos = TimeUnit.MILLISECONDS.toNanos(now() - startedAt);
-                    final Subscription sub2 = schedule(state0, this, periodInNanos - timeTakenByActionInNanos, TimeUnit.NANOSECONDS);
-                    return Subscriptions.create(new Action0() {
-                        @Override
-                        public void call() {
-                            sub1.unsubscribe();
-                            sub2.unsubscribe();
-                        }
-                    });
+                    inner.schedule(this, periodInNanos - timeTakenByActionInNanos, TimeUnit.NANOSECONDS);
                 }
-                return Subscriptions.empty();
             }
         };
-        final Subscription sub = schedule(state, recursiveAction, initialDelay, unit);
-        return Subscriptions.create(new Action0() {
-            @Override
-            public void call() {
-                complete.set(true);
-                sub.unsubscribe();
-            }
-        });
+        return schedule(recursiveAction, initialDelay, unit);
     }
 
-    /**
-     * Schedules a cancelable action to be executed at dueTime.
-     * 
-     * @param state
-     *            State to pass into the action.
-     * @param action
-     *            Action to schedule.
-     * @param dueTime
-     *            Time the action is to be executed. If in the past it will be executed immediately.
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, Date dueTime) {
-        long scheduledTime = dueTime.getTime();
-        long timeInFuture = scheduledTime - now();
-        if (timeInFuture <= 0) {
-            return schedule(state, action);
-        } else {
-            return schedule(state, action, timeInFuture, TimeUnit.MILLISECONDS);
+    public abstract static class Inner implements Subscription {
+
+        /**
+         * Schedules an action to be executed in delayTime.
+         * 
+         * @param delayTime
+         *            Time the action is to be delayed before executing.
+         * @param unit
+         *            Time unit of the delay time.
+         */
+        public abstract void schedule(Action1<Scheduler.Inner> action, long delayTime, TimeUnit unit);
+
+        /**
+         * Schedules a cancelable action to be executed in delayTime.
+         * 
+         */
+        public abstract void schedule(Action1<Scheduler.Inner> action);
+
+        /**
+         * @return the scheduler's notion of current absolute time in milliseconds.
+         */
+        public long now() {
+            return System.currentTimeMillis();
         }
-    }
-
-    /**
-     * Schedules an action and receives back an action for recursive execution.
-     * 
-     * @param action
-     *            action
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    public Subscription schedule(final Action1<Action0> action) {
-        final CompositeSubscription parentSubscription = new CompositeSubscription();
-        final MultipleAssignmentSubscription childSubscription = new MultipleAssignmentSubscription();
-        parentSubscription.add(childSubscription);
-
-        final Func2<Scheduler, Func2, Subscription> parentAction = new Func2<Scheduler, Func2, Subscription>() {
-
-            @Override
-            public Subscription call(final Scheduler scheduler, final Func2 parentAction) {
-                action.call(new Action0() {
-
-                    @Override
-                    public void call() {
-                        if (!parentSubscription.isUnsubscribed()) {
-                            childSubscription.set(scheduler.schedule(parentAction, parentAction));
-                        }
-                    }
-
-                });
-                return childSubscription;
-            }
-        };
-
-        parentSubscription.add(schedule(parentAction, parentAction));
-
-        return parentSubscription;
-    }
-
-    /**
-     * Schedules an action to be executed.
-     * 
-     * @param action
-     *            action
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    public Subscription schedule(final Action0 action) {
-        return schedule(null, new Func2<Scheduler, Void, Subscription>() {
-
-            @Override
-            public Subscription call(Scheduler scheduler, Void state) {
-                action.call();
-                return Subscriptions.empty();
-            }
-        });
-    }
-
-    /**
-     * Schedules an action to be executed in delayTime.
-     * 
-     * @param action
-     *            action
-     * @return a subscription to be able to unsubscribe from action.
-     */
-    public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
-        return schedule(null, new Func2<Scheduler, Void, Subscription>() {
-
-            @Override
-            public Subscription call(Scheduler scheduler, Void state) {
-                action.call();
-                return Subscriptions.empty();
-            }
-        }, delayTime, unit);
-    }
-
-    /**
-     * Schedules an action to be executed periodically.
-     * 
-     * @param action
-     *            The action to execute periodically.
-     * @param initialDelay
-     *            Time to wait before executing the action for the first time.
-     * @param period
-     *            The time interval to wait each time in between executing the action.
-     * @param unit
-     *            The time unit the interval above is given in.
-     * @return A subscription to be able to unsubscribe from action.
-     */
-    public Subscription schedulePeriodically(final Action0 action, long initialDelay, long period, TimeUnit unit) {
-        return schedulePeriodically(null, new Func2<Scheduler, Void, Subscription>() {
-            @Override
-            public Subscription call(Scheduler scheduler, Void state) {
-                action.call();
-                return Subscriptions.empty();
-            }
-        }, initialDelay, period, unit);
-    }
-
-    /**
-     * @return the scheduler's notion of current absolute time in milliseconds.
-     */
-    public long now() {
-        return System.currentTimeMillis();
     }
 
     /**
@@ -255,4 +130,12 @@ public abstract class Scheduler {
     public int degreeOfParallelism() {
         return Runtime.getRuntime().availableProcessors();
     }
+
+    /**
+     * @return the scheduler's notion of current absolute time in milliseconds.
+     */
+    public long now() {
+        return System.currentTimeMillis();
+    }
+
 }

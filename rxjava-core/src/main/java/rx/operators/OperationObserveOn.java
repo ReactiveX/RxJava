@@ -23,14 +23,12 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscription;
-import rx.schedulers.CurrentThreadScheduler;
 import rx.schedulers.ImmediateScheduler;
+import rx.schedulers.TrampolineScheduler;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.MultipleAssignmentSubscription;
-import rx.util.functions.Action0;
 import rx.util.functions.Action1;
-import rx.util.functions.Func2;
 
 /**
  * Asynchronously notify Observers on the specified Scheduler.
@@ -57,7 +55,7 @@ public class OperationObserveOn {
             if (scheduler instanceof ImmediateScheduler) {
                 // do nothing if we request ImmediateScheduler so we don't invoke overhead
                 return source.subscribe(observer);
-            } else if (scheduler instanceof CurrentThreadScheduler) {
+            } else if (scheduler instanceof TrampolineScheduler) {
                 // do nothing if we request CurrentThreadScheduler so we don't invoke overhead
                 return source.subscribe(observer);
             } else {
@@ -69,10 +67,9 @@ public class OperationObserveOn {
         private class Observation {
             final Observer<? super T> observer;
             final CompositeSubscription compositeSubscription = new CompositeSubscription();
-            final MultipleAssignmentSubscription recursiveSubscription = new MultipleAssignmentSubscription();
             final ConcurrentLinkedQueue<Notification<? extends T>> queue = new ConcurrentLinkedQueue<Notification<? extends T>>();
             final AtomicLong counter = new AtomicLong(0);
-            private volatile Scheduler recursiveScheduler;
+            private volatile Scheduler.Inner recursiveScheduler;
 
             public Observation(Observer<? super T> observer) {
                 this.observer = observer;
@@ -91,15 +88,16 @@ public class OperationObserveOn {
                     if (counter.getAndIncrement() == 0) {
                         if (recursiveScheduler == null) {
                             // compositeSubscription for the outer scheduler, recursive for inner
-                            compositeSubscription.add(scheduler.schedule(null, new Func2<Scheduler, T, Subscription>() {
+                            compositeSubscription.add(scheduler.schedule(new Action1<Inner>() {
+
                                 @Override
-                                public Subscription call(Scheduler innerScheduler, T state) {
+                                public void call(Inner inner) {
                                     // record innerScheduler so 'processQueue' can use it for all subsequent executions
-                                    recursiveScheduler = innerScheduler;
+                                    recursiveScheduler = inner;
                                     // once we have the innerScheduler we can start doing real work
                                     processQueue();
-                                    return recursiveSubscription;
                                 }
+
                             }));
                         } else {
                             processQueue();
@@ -108,9 +106,9 @@ public class OperationObserveOn {
                 }
 
                 void processQueue() {
-                    recursiveSubscription.set(recursiveScheduler.schedule(new Action1<Action0>() {
+                    recursiveScheduler.schedule(new Action1<Inner>() {
                         @Override
-                        public void call(Action0 self) {
+                        public void call(Inner inner) {
                             Notification<? extends T> not = queue.poll();
                             if (not != null) {
                                 not.accept(observer);
@@ -119,10 +117,10 @@ public class OperationObserveOn {
                             // decrement count and if we still have work to do
                             // recursively schedule ourselves to process again
                             if (counter.decrementAndGet() > 0) {
-                                self.call();
+                                inner.schedule(this);
                             }
                         }
-                    }));
+                    });
                 }
             }
         }
