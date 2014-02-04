@@ -31,6 +31,7 @@ public class CompositeExceptionTest {
     private final CompositeException compositeEx;
 
     public CompositeExceptionTest() {
+        ex1.initCause(ex2);
         List<Throwable> throwables = new ArrayList<Throwable>();
         throwables.add(ex1);
         throwables.add(ex2);
@@ -66,5 +67,13 @@ public class CompositeExceptionTest {
     public void testAttachCallingThreadStackAddCompositeToItself() {
         CompositeException.attachCallingThreadStack(compositeEx, compositeEx);
         assertEquals(CompositeException.CompositeExceptionCausalChain.MESSAGE, compositeEx.getCause().getMessage());
+    }
+
+    @Test
+    public void testAttachCallingThreadStackAddExceptionsToEachOther() {
+        CompositeException.attachCallingThreadStack(ex1, ex2);
+        CompositeException.attachCallingThreadStack(ex2, ex1);
+        assertEquals("Ex2", ex1.getCause().getMessage());
+        assertEquals("Ex1", ex2.getCause().getMessage());
     }
 }
