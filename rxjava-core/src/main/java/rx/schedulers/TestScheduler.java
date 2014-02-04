@@ -20,6 +20,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Scheduler;
 import rx.Subscription;
@@ -29,16 +30,17 @@ import rx.util.functions.Func2;
 
 public class TestScheduler extends Scheduler {
     private final Queue<TimedAction<?>> queue = new PriorityQueue<TimedAction<?>>(11, new CompareActionsByTime());
-
+    private final AtomicLong ids = new AtomicLong();
     private static class TimedAction<T> {
-
+        private final long id;
         private final long time;
         private final Func2<? super Scheduler, ? super T, ? extends Subscription> action;
         private final T state;
         private final TestScheduler scheduler;
         private final AtomicBoolean isCancelled = new AtomicBoolean(false);
 
-        private TimedAction(TestScheduler scheduler, long time, Func2<? super Scheduler, ? super T, ? extends Subscription> action, T state) {
+        private TimedAction(TestScheduler scheduler, long id, long time, Func2<? super Scheduler, ? super T, ? extends Subscription> action, T state) {
+            this.id = id;
             this.time = time;
             this.action = action;
             this.state = state;
@@ -58,7 +60,19 @@ public class TestScheduler extends Scheduler {
     private static class CompareActionsByTime implements Comparator<TimedAction<?>> {
         @Override
         public int compare(TimedAction<?> action1, TimedAction<?> action2) {
-            return Long.valueOf(action1.time).compareTo(Long.valueOf(action2.time));
+            if (action1.time < action2.time) {
+                return -1;
+            } else
+            if (action2.time > action2.time) {
+                return 1;
+            } else
+            if (action1.id < action2.id) {
+                return -1;
+            } else
+            if (action1.id > action2.id) {
+                return 1;
+            }
+            return 0;
         }
     }
 
@@ -109,7 +123,8 @@ public class TestScheduler extends Scheduler {
 
     @Override
     public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
-        final TimedAction<T> timedAction = new TimedAction<T>(this, time + unit.toNanos(delayTime), action, state);
+        long id = ids.getAndIncrement();
+        final TimedAction<T> timedAction = new TimedAction<T>(this, id, time + unit.toNanos(delayTime), action, state);
         queue.add(timedAction);
 
         return Subscriptions.create(new Action0() {
