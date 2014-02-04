@@ -63,7 +63,7 @@ public class TestScheduler extends Scheduler {
             if (action1.time < action2.time) {
                 return -1;
             } else
-            if (action2.time > action2.time) {
+            if (action1.time > action2.time) {
                 return 1;
             } else
             if (action1.id < action2.id) {
@@ -123,7 +123,7 @@ public class TestScheduler extends Scheduler {
 
     @Override
     public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long delayTime, TimeUnit unit) {
-        long id = ids.getAndIncrement();
+        long id = ids.incrementAndGet();
         final TimedAction<T> timedAction = new TimedAction<T>(this, id, time + unit.toNanos(delayTime), action, state);
         queue.add(timedAction);
 
