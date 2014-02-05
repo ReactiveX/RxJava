@@ -49,7 +49,6 @@ import rx.operators.OperationDelay;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
-import rx.operators.OperatorDoOnEach;
 import rx.operators.OperationElementAt;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
@@ -63,13 +62,11 @@ import rx.operators.OperationMaterialize;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMinMax;
 import rx.operators.OperationMulticast;
-import rx.operators.OperationObserveOn;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallelMerge;
-import rx.operators.OperatorRepeat;
 import rx.operators.OperationReplay;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
@@ -96,18 +93,21 @@ import rx.operators.OperationToMultimap;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
-import rx.operators.OperatorSubscribeOn;
-import rx.operators.OperatorZip;
 import rx.operators.OperatorCast;
+import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorFromIterable;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
+import rx.operators.OperatorObserveOn;
 import rx.operators.OperatorParallel;
+import rx.operators.OperatorRepeat;
+import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorTake;
 import rx.operators.OperatorTimestamp;
 import rx.operators.OperatorToObservableList;
 import rx.operators.OperatorToObservableSortedList;
+import rx.operators.OperatorZip;
 import rx.operators.OperatorZipIterable;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
@@ -5151,7 +5151,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-observeon">RxJava Wiki: observeOn()</a>
      */
     public final Observable<T> observeOn(Scheduler scheduler) {
-        return create(OperationObserveOn.observeOn(this, scheduler));
+        return lift(new OperatorObserveOn<T>(scheduler));
     }
 
     /**
