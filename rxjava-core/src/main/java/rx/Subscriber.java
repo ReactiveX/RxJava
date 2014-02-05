@@ -47,27 +47,6 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         this(op.cs);
     }
 
-    public static <T> Subscriber<T> from(final Observer<? super T> o) {
-        return new Subscriber<T>() {
-
-            @Override
-            public void onCompleted() {
-                o.onCompleted();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                o.onError(e);
-            }
-
-            @Override
-            public void onNext(T t) {
-                o.onNext(t);
-            }
-
-        };
-    }
-
     /**
      * Used to register an unsubscribe callback.
      */
