@@ -26,7 +26,7 @@ import rx.Subscriber;
  */
 public class TestSubscriber<T> extends Subscriber<T> {
 
-    private final Subscriber<Object> EMPTY = Subscriber.from(new EmptyObserver<Object>());
+    private final Subscriber<Object> EMPTY = Subscribers.create();
 
     private final TestObserver<T> testObserver;
 

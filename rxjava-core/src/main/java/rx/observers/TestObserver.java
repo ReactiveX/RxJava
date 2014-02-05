@@ -16,6 +16,7 @@
 package rx.observers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -71,6 +72,14 @@ public class TestObserver<T> implements Observer<T> {
 
     public List<T> getOnNextEvents() {
         return Collections.unmodifiableList(onNextEvents);
+    }
+
+    public List<Object> getEvents() {
+        ArrayList<Object> events = new ArrayList<Object>();
+        events.add(onNextEvents);
+        events.add(onErrorEvents);
+        events.add(onCompletedEvents);
+        return Collections.unmodifiableList(events);
     }
 
     public void assertReceivedOnNext(List<T> items) {

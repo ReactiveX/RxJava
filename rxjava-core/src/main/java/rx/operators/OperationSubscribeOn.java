@@ -84,7 +84,7 @@ public class OperationSubscribeOn {
                 public void call(Inner inner) {
                     underlying.unsubscribe();
                     // tear down this subscription as well now that we're done
-                    inner.unsubscribe();
+//                    inner.unsubscribe();
                 }
             });
         }

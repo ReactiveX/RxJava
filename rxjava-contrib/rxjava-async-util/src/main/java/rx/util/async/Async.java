@@ -20,10 +20,16 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 import rx.Observable;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subjects.AsyncSubject;
+import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
+import rx.subscriptions.SerialSubscription;
 import rx.util.async.operators.Functionals;
 import rx.util.async.operators.OperationDeferFuture;
 import rx.util.async.operators.OperationForEachFuture;
@@ -1710,5 +1716,55 @@ public final class Async {
      */
     public static <R> Observable<R> fromRunnable(final Runnable run, final R result, Scheduler scheduler) {
         return Observable.create(OperationFromFunctionals.fromRunnable(run, result)).subscribeOn(scheduler);
+    }
+    /**
+     * Runs the provided action on the given scheduler and allows propagation
+     * of multiple events to the observers of the returned StoppableObservable.
+     * The action is immediately executed and unobserved values will be lost.
+     * @param <T> the output value type
+     * @param scheduler the scheduler where the action is executed
+     * @param action the action to execute, receives an Observer where the events can be pumped
+     *               and a Subscription which lets check for cancellation condition.
+     * @return an Observable which provides a Subscription interface to cancel the action
+     */
+    public static <T> StoppableObservable<T> runAsync(Scheduler scheduler, 
+            final Action2<? super Observer<? super T>, ? super Subscription> action) {
+        return runAsync(scheduler, PublishSubject.<T>create(), action);
+    }
+    /**
+     * Runs the provided action on the given scheduler and allows propagation
+     * of multiple events to the observers of the returned StoppableObservable.
+     * The action is immediately executed and unobserved values might be lost,
+     * depending on the subject type used.
+     * @param <T> the output value of the action
+     * @param <U> the output type of the observable sequence
+     * @param scheduler the scheduler where the action is executed
+     * @param subject the subject to use to distribute values emitted by the action
+     * @param action the action to execute, receives an Observer where the events can be pumped
+     *               and a Subscription which lets check for cancellation condition.
+     * @return an Observable which provides a Subscription interface to cancel the action
+     */
+    public static <T, U> StoppableObservable<U> runAsync(Scheduler scheduler,
+            final Subject<T, U> subject, 
+            final Action2<? super Observer<? super T>, ? super Subscription> action) {
+        final SerialSubscription csub = new SerialSubscription();
+        
+        StoppableObservable<U> co = new StoppableObservable<U>(new Observable.OnSubscribe<U>() {
+            @Override
+            public void call(Subscriber<? super U> t1) {
+                subject.subscribe(t1);
+            }
+        }, csub);
+        
+        csub.set(scheduler.schedule(new Action1<Inner>() {
+            @Override
+            public void call(Inner t1) {
+                if (!csub.isUnsubscribed()) {
+                    action.call(subject, csub);
+                }
+            }
+        }));
+        
+        return co;
     }
 }

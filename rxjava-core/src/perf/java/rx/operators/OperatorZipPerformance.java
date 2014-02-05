@@ -3,6 +3,7 @@ package rx.operators;
 import rx.Observable;
 import rx.perf.AbstractPerformanceTester;
 import rx.perf.IntegerSumObserver;
+import rx.perf.LongSumObserver;
 import rx.util.functions.Action0;
 import rx.util.functions.Func2;
 
@@ -17,7 +18,7 @@ public class OperatorZipPerformance extends AbstractPerformanceTester {
                 @Override
                 public void call() {
                     spt.timeZipAandBwithSingleItems();
-                    //                                        spt.timeZipAandBwith100Items();
+                    //                    spt.timeZipAandBwith100Items();
                 }
             });
         } catch (Exception e) {
@@ -42,6 +43,14 @@ public class OperatorZipPerformance extends AbstractPerformanceTester {
      * Run: 12 - 1,196,630 ops/sec
      * Run: 13 - 1,206,332 ops/sec
      * Run: 14 - 1,206,169 ops/sec
+     * 
+     * ... after v0.17 work (new implementation):
+     * 
+     * Run: 10 - 1,668,248 ops/sec
+     * Run: 11 - 1,673,052 ops/sec
+     * Run: 12 - 1,672,479 ops/sec
+     * Run: 13 - 1,675,018 ops/sec
+     * Run: 14 - 1,668,830 ops/sec
      */
     public long timeZipAandBwithSingleItems() {
 
@@ -56,12 +65,13 @@ public class OperatorZipPerformance extends AbstractPerformanceTester {
 
         });
 
-        IntegerSumObserver o = new IntegerSumObserver();
-
+        int sum = 0;
         for (long l = 0; l < REPETITIONS; l++) {
-            s.subscribe(o);
+            IntegerSumObserver so = new IntegerSumObserver();
+            s.subscribe(so);
+            sum += so.sum;
         }
-        return o.sum;
+        return sum;
     }
 
     /**
@@ -77,6 +87,11 @@ public class OperatorZipPerformance extends AbstractPerformanceTester {
      * Run: 0 - 40,048 ops/sec
      * Run: 1 - 40,165 ops/sec
      * 
+     * ... after v0.17 work (new implementation):
+     * 
+     * Run: 0 - 63,079 ops/sec
+     * Run: 1 - 63,505 ops/sec
+     * 
      */
     public long timeZipAandBwith100Items() {
 
@@ -91,11 +106,12 @@ public class OperatorZipPerformance extends AbstractPerformanceTester {
 
         });
 
-        IntegerSumObserver o = new IntegerSumObserver();
-
+        int sum = 0;
         for (long l = 0; l < REPETITIONS; l++) {
-            s.subscribe(o);
+            IntegerSumObserver so = new IntegerSumObserver();
+            s.subscribe(so);
+            sum += so.sum;
         }
-        return o.sum;
+        return sum;
     }
 }
