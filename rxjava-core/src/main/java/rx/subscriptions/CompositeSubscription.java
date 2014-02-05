@@ -17,7 +17,6 @@ package rx.subscriptions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -34,7 +33,15 @@ public final class CompositeSubscription implements Subscription {
 
     private final AtomicReference<State> state = new AtomicReference<State>();
 
-    private static final State CLEAR_STATE = new State(false, new Subscription[0]);
+    /** Empty initial state. */
+    private static final State CLEAR_STATE;
+    /** Unsubscribed empty state. */
+    private static final State CLEAR_STATE_UNSUBSCRIBED;
+    static {
+        Subscription[] s0 = new Subscription[0];
+        CLEAR_STATE = new State(false, s0);
+        CLEAR_STATE_UNSUBSCRIBED = new State(true, s0);
+    }
 
     private static final class State {
         final boolean isUnsubscribed;
@@ -46,7 +53,7 @@ public final class CompositeSubscription implements Subscription {
         }
 
         State unsubscribe() {
-            return new State(true, subscriptions);
+            return CLEAR_STATE_UNSUBSCRIBED;
         }
 
         State add(Subscription s) {
@@ -66,7 +73,7 @@ public final class CompositeSubscription implements Subscription {
         }
 
         State clear() {
-            return new State(isUnsubscribed, new Subscription[0]);
+            return isUnsubscribed ? CLEAR_STATE_UNSUBSCRIBED : CLEAR_STATE;
         }
     }
 
@@ -78,6 +85,7 @@ public final class CompositeSubscription implements Subscription {
         state.set(new State(false, subscriptions));
     }
 
+    @Override
     public boolean isUnsubscribed() {
         return state.get().isUnsubscribed;
     }
