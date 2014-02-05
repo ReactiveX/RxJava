@@ -16,8 +16,8 @@
 
 package rx.util.async;
 
+import java.util.concurrent.CountDownLatch;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
@@ -35,6 +35,7 @@ import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
@@ -818,4 +819,47 @@ public class AsyncTest {
         verify(func, times(1)).call();
     }
 
+    @Test
+    public void testRunAsync() throws InterruptedException {
+        final CountDownLatch cdl = new CountDownLatch(1);
+        final CountDownLatch cdl2 = new CountDownLatch(1);
+        Action2<Observer<? super Integer>, Subscription> action = new Action2<Observer<? super Integer>, Subscription>() {
+            @Override
+            public void call(Observer<? super Integer> t1, Subscription t2) {
+                try {
+                    cdl.await();
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                for (int i = 0; i < 10 && !t2.isUnsubscribed(); i++) {
+                    t1.onNext(i);
+                }
+                t1.onCompleted();
+                cdl2.countDown();
+            }
+        };
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        StoppableObservable<Integer> so = Async.<Integer>runAsync(Schedulers.io(), action);
+        
+        so.subscribe(o);
+        
+        cdl.countDown();
+        
+        if (!cdl2.await(2, TimeUnit.SECONDS)) {
+            fail("Didn't complete");
+        }
+        
+        for (int i = 0; i < 10; i++) {
+            inOrder.verify(o).onNext(i);
+        }
+        inOrder.verify(o).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onError(any(Throwable.class));
+        
+    }
 }
