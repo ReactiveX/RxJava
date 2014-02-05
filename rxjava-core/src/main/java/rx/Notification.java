@@ -26,6 +26,8 @@ public class Notification<T> {
     private final Throwable throwable;
     private final T value;
 
+    private static final Notification<Void> ON_COMPLETED = new Notification<Void>(Kind.OnCompleted, null, null);
+
     public static <T> Notification<T> createOnNext(T t) {
         return new Notification<T>(Kind.OnNext, t, null);
     }
@@ -34,12 +36,14 @@ public class Notification<T> {
         return new Notification<T>(Kind.OnError, null, e);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Notification<T> createOnCompleted() {
-        return new Notification<T>(Kind.OnCompleted, null, null);
+        return (Notification<T>) ON_COMPLETED;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Notification<T> createOnCompleted(Class<T> type) {
-        return new Notification<T>(Kind.OnCompleted, null, null);
+        return (Notification<T>) ON_COMPLETED;
     }
 
     private Notification(Kind kind, T value, Throwable e) {
