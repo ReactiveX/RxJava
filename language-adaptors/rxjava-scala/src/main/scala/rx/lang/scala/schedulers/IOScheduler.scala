@@ -17,15 +17,23 @@ package rx.lang.scala.schedulers
 
 import rx.lang.scala.Scheduler
 
-object CurrentThreadScheduler {
-
+object IOScheduler {
   /**
-   * Returns a [[rx.lang.scala.Scheduler]] that queues work on the current thread to be executed after the current work completes.
+   * {@link Scheduler} intended for IO-bound work.
+   * <p>
+   * The implementation is backed by an {@link Executor} thread-pool that will grow as needed.
+   * <p>
+   * This can be used for asynchronously performing blocking IO.
+   * <p>
+   * Do not perform computational work on this scheduler. Use {@link ComputationScheduler()} instead.
+   *
+   * @return { @link ExecutorScheduler} for IO-bound work.
    */
-  def apply(): CurrentThreadScheduler =  {
-    new CurrentThreadScheduler(rx.schedulers.Schedulers.currentThread())
+  def apply(): IOScheduler = {
+    new IOScheduler(rx.schedulers.Schedulers.io)
   }
 }
 
-class CurrentThreadScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
+class IOScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
   extends Scheduler {}
+

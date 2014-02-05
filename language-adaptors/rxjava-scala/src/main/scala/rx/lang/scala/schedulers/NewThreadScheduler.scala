@@ -27,5 +27,4 @@ object NewThreadScheduler {
   }
 }
 
-class NewThreadScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
-  extends Scheduler {}
+class NewThreadScheduler private[scala] (val asJavaScheduler: rx.Scheduler) extends Scheduler {}

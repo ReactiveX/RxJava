@@ -19,6 +19,7 @@ package rx.lang.scala
 import rx.util.functions.FuncN
 import rx.Observable.OnSubscribeFunc
 import rx.lang.scala.observables.ConnectableObservable
+import scala.concurrent.duration
 
 
 /**
@@ -2342,15 +2343,51 @@ object Observable {
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/interval.png">
    *
-   * @param duration
+   * @param period
    *            duration between two consecutive numbers
    * @param scheduler
    *            the scheduler to use
    * @return An Observable that emits a number each time interval.
    */
-  def interval(duration: Duration, scheduler: Scheduler): Observable[Long] = {
-    toScalaObservable[java.lang.Long](rx.Observable.interval(duration.length, duration.unit, scheduler)).map(_.longValue())
+  def interval(period: Duration, scheduler: Scheduler): Observable[Long] = {
+    toScalaObservable[java.lang.Long](rx.Observable.interval(period.length, period.unit, scheduler)).map(_.longValue())
+  }
+
+  /**
+   * Return an Observable that emits a 0L after the {@code initialDelay} and ever increasing
+   * numbers after each {@code period} of time thereafter, on a specified Scheduler.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.ps.png">
+   *
+   * @param initialDelay
+   * the initial delay time to wait before emitting the first value of 0L
+   * @param period
+   * the period of time between emissions of the subsequent numbers
+   * @return an Observable that emits a 0L after the { @code initialDelay} and ever increasing
+   *                                                         numbers after each { @code period} of time thereafter, while running on the given { @code scheduler}
+   */
+  def timer(initialDelay: Duration, period: Duration): Observable[Long] = {
+    toScalaObservable[java.lang.Long](rx.Observable.timer(initialDelay.toNanos, period.toNanos, duration.NANOSECONDS)).map(_.longValue())
     /*XXX*/
+  }
+
+  /**
+   * Return an Observable that emits a 0L after the {@code initialDelay} and ever increasing
+   * numbers after each {@code period} of time thereafter, on a specified Scheduler.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.ps.png">
+   *
+   * @param initialDelay
+   * the initial delay time to wait before emitting the first value of 0L
+   * @param period
+   * the period of time between emissions of the subsequent numbers
+   * @param scheduler
+     * the scheduler on which the waiting happens and items are emitted
+   * @return an Observable that emits a 0L after the { @code initialDelay} and ever increasing
+   *                                                         numbers after each { @code period} of time thereafter, while running on the given { @code scheduler}
+   */
+  def timer(initialDelay: Duration, period: Duration, scheduler: Scheduler): Observable[Long] = {
+    toScalaObservable[java.lang.Long](rx.Observable.timer(initialDelay.toNanos, period.toNanos, duration.NANOSECONDS, scheduler)).map(_.longValue())
   }
 
 }

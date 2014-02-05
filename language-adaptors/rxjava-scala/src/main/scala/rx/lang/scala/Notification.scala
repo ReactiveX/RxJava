@@ -98,7 +98,7 @@ object Notification {
      * The item passed to the onNext method.
      */
     def apply[T](value: T): Notification[T] = {
-      Notification(new rx.Notification[T](value))
+      Notification(rx.Notification.createOnNext[T](value))
     }
 
     /**
@@ -128,7 +128,7 @@ object Notification {
      * The exception passed to the onNext method.
      */
     def apply[T](error: Throwable): Notification[T] = {
-      Notification(new rx.Notification[T](error))
+      Notification(rx.Notification.createOnError[T](error))
     }
 
     /**
@@ -156,7 +156,7 @@ object Notification {
      * Constructor for onCompleted notifications.
      */
     def apply[T](): Notification[T] = {
-      Notification(new rx.Notification())
+      Notification(rx.Notification.createOnCompleted[T]())
     }
 
     /**
