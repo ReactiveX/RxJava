@@ -18,7 +18,6 @@ package rx.operators;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
@@ -131,6 +130,9 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         final FuncN<? extends R> zipFunction;
         final CompositeSubscription childSubscription = new CompositeSubscription();
 
+        static Object NULL_SENTINEL = new Object();
+        static Object COMPLETE_SENTINEL = new Object();
+
         @SuppressWarnings("rawtypes")
         public Zip(Observable[] os, final Subscriber<? super R> observer, FuncN<? extends R> zipFunction) {
             this.os = os;
@@ -170,13 +172,16 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                     boolean allHaveValues = true;
                     for (int i = 0; i < observers.length; i++) {
                         vs[i] = ((InnerObserver) observers[i]).items.peek();
-                        if (vs[i] instanceof Notification) {
+                        if (vs[i] == NULL_SENTINEL) {
+                            // special handling for null
+                            vs[i] = null;
+                        } else if (vs[i] == COMPLETE_SENTINEL) {
+                            // special handling for onComplete
                             observer.onCompleted();
                             // we need to unsubscribe from all children since children are independently subscribed
                             childSubscription.unsubscribe();
                             return;
-                        }
-                        if (vs[i] == null) {
+                        } else if (vs[i] == null) {
                             allHaveValues = false;
                             // we continue as there may be an onCompleted on one of the others
                             continue;
@@ -189,7 +194,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                         for (int i = 0; i < observers.length; i++) {
                             ((InnerObserver) observers[i]).items.poll();
                             // eagerly check if the next item on this queue is an onComplete
-                            if (((InnerObserver) observers[i]).items.peek() instanceof Notification) {
+                            if (((InnerObserver) observers[i]).items.peek() == COMPLETE_SENTINEL) {
                                 // it is an onComplete so shut down
                                 observer.onCompleted();
                                 // we need to unsubscribe from all children since children are independently subscribed
@@ -213,7 +218,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
             @SuppressWarnings("unchecked")
             @Override
             public void onCompleted() {
-                items.add(Notification.createOnCompleted());
+                items.add(COMPLETE_SENTINEL);
                 tick();
             }
 
@@ -226,8 +231,11 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
             @SuppressWarnings("unchecked")
             @Override
             public void onNext(Object t) {
-                // TODO use a placeholder for NULL, such as Notification<T>(null)
-                items.add(t);
+                if (t == null) {
+                    items.add(NULL_SENTINEL);
+                } else {
+                    items.add(t);
+                }
                 tick();
             }
         };

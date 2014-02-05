@@ -22,7 +22,6 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -32,12 +31,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.operators.OperationReduceTest.CustomException;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
@@ -926,6 +925,65 @@ public class OperatorZipTest {
         assertEquals("1-1", list.get(0));
         assertEquals("2-2", list.get(1));
         assertEquals("5-5", list.get(4));
+    }
+
+    @Test
+    public void testEmitNull() {
+        Observable<Integer> oi = Observable.from(1, null, 3);
+        Observable<String> os = Observable.from("a", "b", null);
+        Observable<String> o = Observable.zip(oi, os, new Func2<Integer, String, String>() {
+
+            @Override
+            public String call(Integer t1, String t2) {
+                return t1 + "-" + t2;
+            }
+
+        });
+
+        final ArrayList<String> list = new ArrayList<String>();
+        o.subscribe(new Action1<String>() {
+
+            @Override
+            public void call(String s) {
+                System.out.println(s);
+                list.add(s);
+            }
+        });
+
+        assertEquals(3, list.size());
+        assertEquals("1-a", list.get(0));
+        assertEquals("null-b", list.get(1));
+        assertEquals("3-null", list.get(2));
+    }
+
+    @Test
+    public void testEmitMaterializedNotifications() {
+        Observable<Notification<Integer>> oi = Observable.from(1, 2, 3).materialize();
+        Observable<Notification<String>> os = Observable.from("a", "b", "c").materialize();
+        Observable<String> o = Observable.zip(oi, os, new Func2<Notification<Integer>, Notification<String>, String>() {
+
+            @Override
+            public String call(Notification<Integer> t1, Notification<String> t2) {
+                return t1.getKind() + "_" + t1.getValue() + "-" + t2.getKind() + "_" + t2.getValue();
+            }
+
+        });
+
+        final ArrayList<String> list = new ArrayList<String>();
+        o.subscribe(new Action1<String>() {
+
+            @Override
+            public void call(String s) {
+                System.out.println(s);
+                list.add(s);
+            }
+        });
+
+        assertEquals(4, list.size());
+        assertEquals("OnNext_1-OnNext_a", list.get(0));
+        assertEquals("OnNext_2-OnNext_b", list.get(1));
+        assertEquals("OnNext_3-OnNext_c", list.get(2));
+        assertEquals("OnCompleted_null-OnCompleted_null", list.get(3));
     }
 
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
