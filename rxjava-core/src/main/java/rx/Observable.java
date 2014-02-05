@@ -162,11 +162,11 @@ public class Observable<T> {
     /**
      * Observable with Function to execute when subscribed to.
      * <p>
-     * <em>Note:</em> Use {@link #create(OnSubscribeFunc)} to create an Observable, instead of this
+     * <em>Note:</em> Use {@link #create(OnSubscribe)} to create an Observable, instead of this
      * constructor, unless you specifically have a need for inheritance.
      * 
-     * @param onSubscribe
-     *            {@link OnSubscribeFunc} to be executed when {@link #subscribe(Subscriber)} is called
+     * @param f
+     *            {@link OnSubscribe} to be executed when {@link #subscribe(Subscriber)} is called
      */
     protected Observable(OnSubscribe<T> f) {
         this.f = f;
@@ -175,14 +175,16 @@ public class Observable<T> {
     private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     /**
-     * Returns an Observable that will execute the specified function when an {@link Subscriber} subscribes to it.
+     * Returns an Observable that will execute the specified function when a {@link Subscriber}
+     * subscribes to it.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png">
      * <p>
      * Write the function you pass to {@code create} so that it behaves as an Observable: It should
-     * invoke the Observer's {@link Subscriber#onNext onNext}, {@link Subscriber#onError onError}, and {@link Subscriber#onCompleted onCompleted} methods appropriately.
+     * invoke the Subscriber's {@link Subscriber#onNext onNext}, {@link Subscriber#onError onError},
+     * and {@link Subscriber#onCompleted onCompleted} methods appropriately.
      * <p>
-     * A well-formed Observable must invoke either the Observer's {@code onCompleted} method
+     * A well-formed Observable must invoke either the Subscriber's {@code onCompleted} method
      * exactly once or its {@code onError} method exactly once.
      * <p>
      * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a>
@@ -190,10 +192,10 @@ public class Observable<T> {
      * 
      * @param <T>
      *            the type of the items that this Observable emits
-     * @param func
-     *            a function that accepts an {@code Observer<T>}, invokes its {@code onNext}, {@code onError}, and {@code onCompleted} methods as appropriate, and returns a {@link Subscription} that
-     *            allows the Observer to cancel the subscription
-     * @return an Observable that, when an {@link Subscriber} subscribes to it, will execute the
+     * @param f
+     *            a function that accepts an {@code Subscriber<T>}, and invokes its {@code onNext},
+     *            {@code onError}, and {@code onCompleted} methods as appropriate
+     * @return an Observable that, when a {@link Subscriber} subscribes to it, will execute the
      *         specified function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-create">RxJava Wiki: create()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.create.aspx">MSDN: Observable.Create</a>
@@ -202,10 +204,16 @@ public class Observable<T> {
         return new Observable<T>(f);
     }
 
+    /**
+     * 
+     */
     public static interface OnSubscribe<T> extends Action1<Subscriber<? super T>> {
 
     }
 
+    /**
+     * 
+     */
     public final static <T> Observable<T> create(final OnSubscribeFunc<T> f) {
         return new Observable<T>(new OnSubscribe<T>() {
 
@@ -220,6 +228,9 @@ public class Observable<T> {
         });
     }
 
+    /**
+     * 
+     */
     public static interface OnSubscribeFunc<T> extends Function {
 
         public Subscription onSubscribe(Observer<? super T> op);
@@ -1025,7 +1036,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that calls an Observable factory to create its Observable for each new
      * Observer that subscribes. That is, for each subscriber, the actual Observable that subscriber
-     * observs is determined by the factory function.
+     * observes is determined by the factory function.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/defer.png">
      * <p>
@@ -1194,9 +1205,6 @@ public class Observable<T> {
      * sequence.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
-     * <p>
-     * Note: the entire iterable sequence is immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned, it is not possible
-     * to unsubscribe from the sequence before it completes.
      * 
      * @param iterable
      *            the source {@link Iterable} sequence
@@ -1236,10 +1244,6 @@ public class Observable<T> {
      * Converts an item into an Observable that emits that item.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
-     * <p>
-     * Note: the item is immediately emitted each time an {@link Observer} subscribes. Since this
-     * occurs before the {@link Subscription} is returned, it is not possible to unsubscribe from
-     * the sequence before it completes.
      * 
      * @param t1
      *            the item
@@ -1257,10 +1261,6 @@ public class Observable<T> {
      * Converts two items into an Observable that emits those items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
-     * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
-     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
-     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1282,10 +1282,6 @@ public class Observable<T> {
      * Converts three items into an Observable that emits those items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
-     * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
-     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
-     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1309,10 +1305,6 @@ public class Observable<T> {
      * Converts four items into an Observable that emits those items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
-     * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
-     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
-     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1338,10 +1330,6 @@ public class Observable<T> {
      * Converts five items into an Observable that emits those items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
-     * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
-     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
-     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1369,10 +1357,6 @@ public class Observable<T> {
      * Converts six items into an Observable that emits those items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
-     * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
-     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
-     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1402,10 +1386,6 @@ public class Observable<T> {
      * Converts seven items into an Observable that emits those items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
-     * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
-     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
-     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1437,10 +1417,6 @@ public class Observable<T> {
      * Converts eight items into an Observable that emits those items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
-     * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
-     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
-     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1474,10 +1450,6 @@ public class Observable<T> {
      * Converts nine items into an Observable that emits those items.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
-     * <p>
-     * Note: the items will be immediately emitted each time an {@link Observer} subscribes. Since
-     * this occurs before the {@link Subscription} is returned, it is not possible to unsubscribe
-     * from the sequence before it completes.
      * 
      * @param t1
      *            first item
@@ -1551,9 +1523,6 @@ public class Observable<T> {
      * Converts an Array into an Observable that emits the items in the Array.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
-     * <p>
-     * <em>Note:</em> the entire array is immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned, it is not possible
-     * to unsubscribe from the sequence before it completes.
      * 
      * @param items
      *            the source array
@@ -1573,9 +1542,6 @@ public class Observable<T> {
      * scheduler.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
-     * <p>
-     * <em>Note:</em> the entire array is immediately emitted each time an {@link Observer} subscribes. Since this occurs before the {@link Subscription} is returned, it is not
-     * possible to unsubscribe from the sequence before it completes.
      * 
      * @param items
      *            the source array
@@ -3805,12 +3771,15 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/cache.png">
      * <p>
      * This is useful when you want an Observable to cache responses and you can't control the
-     * subscribe/unsubscribe behavior of all the {@link Observer}s.
+     * subscribe/unsubscribe behavior of all the {@link Subscriber}s.
      * <p>
      * When you call {@code cache()}, it does not yet subscribe to the source Observable. This only
-     * happens when {@code subscribe} is called the first time on the Observable returned by {@code cache()}.
+     * happens when {@code subscribe} is called the first time on the Observable returned by
+     * {@code cache()}.
      * <p>
-     * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache()} Observer so be careful not to use this Observer on Observables that emit an
+     *                             <!-- IS THIS NOTE STILL VALID??? -->
+     * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the
+     * {@code cache()} Observer so be careful not to use this Observer on Observables that emit an
      * infinite or very large number of items that will use up memory.
      * 
      * @return an Observable that, when first subscribed to, caches all of its items and
