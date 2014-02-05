@@ -5548,6 +5548,39 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that repeats the sequence of items emitted by the source
+     * Observable at most count times.
+     * 
+     * @param count
+     *            the number of times the source Observable items are repeated,
+     *            a count of 0 will yield an empty sequence.
+     * @return an Observable that repeats the sequence of items emitted by the source
+     *         Observable at most count times.
+     */
+    public final Observable<T> repeat(long count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 expected");
+        }
+        return nest().lift(new OperatorRepeat<T>(count));
+    }
+
+    /**
+     * Returns an Observable that repeats the sequence of items emitted by the source
+     * Observable at most count times on a particular scheduler.
+     * 
+     * @param count
+     *            the number of times the source Observable items are repeated,
+     *            a count of 0 will yield an empty sequence.
+     * @param scheduler
+     *            the scheduler to emit the items on
+     * @return an Observable that repeats the sequence of items emitted by the source
+     *         Observable at most count times on a particular scheduler.
+     */
+    public final Observable<T> repeat(long count, Scheduler scheduler) {
+        return nest().lift(new OperatorRepeat<T>(count, scheduler));
+    }
+
+    /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the underlying
      * Observable that will replay all of its items and notifications to any future {@link Observer}.
      * <p>

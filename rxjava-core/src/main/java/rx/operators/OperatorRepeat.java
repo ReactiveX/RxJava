@@ -20,25 +20,41 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
+import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
 import rx.util.functions.Action1;
 
 public class OperatorRepeat<T> implements Operator<T, Observable<T>> {
 
     private final Scheduler scheduler;
+    private final long count;
+
+    public OperatorRepeat(long count, Scheduler scheduler) {
+        this.scheduler = scheduler;
+        this.count = count;
+    }
 
     public OperatorRepeat(Scheduler scheduler) {
-        this.scheduler = scheduler;
+        this(-1, scheduler);
+    }
 
+    public OperatorRepeat(long count) {
+        this(count, Schedulers.trampoline());
     }
 
     public OperatorRepeat() {
-        this(Schedulers.trampoline());
+        this(-1, Schedulers.trampoline());
     }
 
     @Override
     public Subscriber<? super Observable<T>> call(final Subscriber<? super T> child) {
+        if (count == 0) {
+            child.onCompleted();
+            return Subscribers.empty();
+        }
         return new Subscriber<Observable<T>>(child) {
+
+            int executionCount = 0;
 
             @Override
             public void onCompleted() {
@@ -58,12 +74,16 @@ public class OperatorRepeat<T> implements Operator<T, Observable<T>> {
 
                     @Override
                     public void call(final Inner inner) {
-
+                        executionCount++;
                         t.subscribe(new Subscriber<T>(child) {
 
                             @Override
                             public void onCompleted() {
-                                inner.schedule(self);
+                                if (count == -1 || executionCount < count) {
+                                    inner.schedule(self);
+                                } else {
+                                    child.onCompleted();
+                                }
                             }
 
                             @Override

@@ -16,6 +16,8 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,7 +35,7 @@ import rx.util.functions.Func1;
 
 public class OperatorRepeatTest {
 
-    @Test
+    @Test(timeout = 2000)
     public void testRepetition() {
         int NUM = 10;
         final AtomicInteger count = new AtomicInteger();
@@ -50,14 +52,14 @@ public class OperatorRepeatTest {
         assertEquals(NUM, value);
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRepeatTake() {
         Observable<Integer> xs = Observable.from(1, 2);
         Object[] ys = xs.repeat(Schedulers.newThread()).take(4).toList().toBlockingObservable().last().toArray();
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);
     }
 
-    @Test
+    @Test(timeout = 20000)
     public void testNoStackOverFlow() {
         Observable.from(1).repeat(Schedulers.newThread()).take(100000).toBlockingObservable().last();
     }
@@ -70,7 +72,6 @@ public class OperatorRepeatTest {
 
             @Override
             public void call(Subscriber<? super Integer> sub) {
-                System.out.println("invoked!");
                 counter.incrementAndGet();
                 sub.onNext(1);
                 sub.onNext(2);
@@ -82,7 +83,6 @@ public class OperatorRepeatTest {
 
             @Override
             public Integer call(Integer t1) {
-                System.out.println("t1: " + t1);
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
@@ -97,4 +97,52 @@ public class OperatorRepeatTest {
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);
     }
 
+    @Test(timeout = 2000)
+    public void testRepeatAndTake() {
+        @SuppressWarnings("unchecked")
+                Observer<Object> o = mock(Observer.class);
+        
+        Observable.from(1).repeat().take(10).subscribe(o);
+        
+        verify(o, times(10)).onNext(1);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test(timeout = 2000)
+    public void testRepeatLimited() {
+        @SuppressWarnings("unchecked")
+                Observer<Object> o = mock(Observer.class);
+        
+        Observable.from(1).repeat(10).subscribe(o);
+        
+        verify(o, times(10)).onNext(1);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test(timeout = 2000)
+    public void testRepeatError() {
+        @SuppressWarnings("unchecked")
+                Observer<Object> o = mock(Observer.class);
+        
+        Observable.error(new CustomException()).repeat(10).subscribe(o);
+        
+        verify(o).onError(any(CustomException.class));
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+        
+    }
+    @Test(timeout = 2000)
+    public void testRepeatZero() {
+        @SuppressWarnings("unchecked")
+                Observer<Object> o = mock(Observer.class);
+        
+        Observable.from(1).repeat(0).subscribe(o);
+        
+        verify(o).onCompleted();
+        verify(o, never()).onNext(any());
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    private static class CustomException extends RuntimeException {
+    }
 }
