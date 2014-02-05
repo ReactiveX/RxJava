@@ -15,6 +15,7 @@
  */
 package rx.lang.scala
 
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.{Future, Await}
 import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -121,6 +122,21 @@ class ObservableTests extends JUnitSuite {
     val res = Await.result(f, Duration.Inf)
     assertEquals(6, res)
     assertEquals(6, o.toBlockingObservable.single)
+  }
+
+  @Test def testTimestampWithScheduler() {
+    val c = 10
+    val s = TestScheduler()
+    val o1 = Observable interval (1.milliseconds, s) map (_ + 1)
+    val o2 = o1 timestamp s
+    val l = ListBuffer[(Long, Long)]()
+    o2.subscribe (
+      onNext = (l += _)
+    )
+    s advanceTimeTo c.milliseconds
+    val (l1, l2) = l.toList.unzip
+    assertTrue(l1.size == c)
+    assertEquals(l2, l1)
   }
 
   /*
