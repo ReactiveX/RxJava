@@ -108,6 +108,7 @@ import rx.operators.OperatorTake;
 import rx.operators.OperatorTimestamp;
 import rx.operators.OperatorToObservableList;
 import rx.operators.OperatorToObservableSortedList;
+import rx.operators.OperatorZipIterable;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
 import rx.schedulers.Schedulers;
@@ -8407,9 +8408,7 @@ public class Observable<T> {
      * @return an Observable that pairs up values from the source Observable and the {@code other} Iterable sequence and emits the results of {@code zipFunction} applied to these pairs
      */
     public final <T2, R> Observable<R> zip(Iterable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
-//        return create(OperatorZip.zipIterable(this, other, zipFunction));
-        // TODO fix this
-        return null;
+        return lift(new OperatorZipIterable<T, T2, R>(other, zipFunction));
     }
 
     /**
