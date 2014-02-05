@@ -16,7 +16,6 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -31,6 +30,7 @@ import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
@@ -260,4 +260,17 @@ public class OperatorTakeTest {
         }
 
     });
+    
+    @Test(timeout = 2000)
+    public void testTakeObserveOn() {
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        
+        INFINITE_OBSERVABLE.observeOn(Schedulers.newThread()).take(1).subscribe(o);
+        
+        verify(o).onNext(1L);
+        verify(o, never()).onNext(2L);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
 }

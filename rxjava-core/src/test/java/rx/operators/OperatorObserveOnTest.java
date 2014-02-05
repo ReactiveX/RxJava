@@ -18,7 +18,6 @@ package rx.operators;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationObserveOn.*;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +36,7 @@ import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
-public class OperationObserveOnTest {
+public class OperatorObserveOnTest {
 
     /**
      * This is testing a no-op path since it uses Schedulers.immediate() which will not do scheduling.
@@ -46,7 +45,7 @@ public class OperationObserveOnTest {
     @SuppressWarnings("unchecked")
     public void testObserveOn() {
         Observer<Integer> observer = mock(Observer.class);
-        Observable.create(observeOn(Observable.from(1, 2, 3), Schedulers.immediate())).subscribe(observer);
+        Observable.from(1, 2, 3).observeOn(Schedulers.immediate()).subscribe(observer);
 
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(2);

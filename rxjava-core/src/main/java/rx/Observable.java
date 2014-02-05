@@ -63,13 +63,11 @@ import rx.operators.OperationMaterialize;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMinMax;
 import rx.operators.OperationMulticast;
-import rx.operators.OperationObserveOn;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallelMerge;
-import rx.operators.OperationRepeat;
 import rx.operators.OperationReplay;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
@@ -103,7 +101,9 @@ import rx.operators.OperatorFromIterable;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
+import rx.operators.OperatorObserveOn;
 import rx.operators.OperatorParallel;
+import rx.operators.OperatorRepeat;
 import rx.operators.OperatorTake;
 import rx.operators.OperatorTimestamp;
 import rx.operators.OperatorToObservableList;
@@ -5172,7 +5172,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-observeon">RxJava Wiki: observeOn()</a>
      */
     public final Observable<T> observeOn(Scheduler scheduler) {
-        return create(OperationObserveOn.observeOn(this, scheduler));
+        return lift(new OperatorObserveOn<T>(scheduler));
     }
 
     /**
@@ -5549,7 +5549,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat() {
-        return this.repeat(Schedulers.currentThread());
+        return from(this).lift(new OperatorRepeat<T>(-1));
     }
 
     /**
@@ -5566,9 +5566,38 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat(Scheduler scheduler) {
-        return create(OperationRepeat.repeat(this, scheduler));
+        return repeat().observeOn(scheduler);
     }
 
+    /**
+     * Returns an Observable that repeats the sequence of items emitted by the source
+     * Observable at most count times.
+     * @param count the number of times the source Observable items are repeated,
+     *              a count of 0 will yield an empty sequence.
+     * @return an Observable that repeats the sequence of items emitted by the source
+     * Observable at most count times.
+     */
+    public final Observable<T> repeat(long count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 expected");
+        }
+        return from(this).lift(new OperatorRepeat<T>(count));
+    }
+    
+    /**
+     * Returns an Observable that repeats the sequence of items emitted by the source
+     * Observable at most count times on a particular scheduler.
+     * @param count the number of times the source Observable items are repeated,
+     *              a count of 0 will yield an empty sequence.
+     * @param scheduler
+     *            the scheduler to emit the items on
+     * @return an Observable that repeats the sequence of items emitted by the source
+     * Observable at most count times on a particular scheduler.
+     */
+    public final Observable<T> repeat(long count, Scheduler scheduler) {
+        return repeat(count).observeOn(scheduler);
+    }
+    
     /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the underlying
      * Observable that will replay all of its items and notifications to any future {@link Observer}.
