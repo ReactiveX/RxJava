@@ -57,19 +57,39 @@ public final class CompositeSubscription implements Subscription {
         }
 
         State add(Subscription s) {
-            Subscription[] newSubscriptions = Arrays.copyOf(subscriptions, subscriptions.length + 1);
-            newSubscriptions[newSubscriptions.length - 1] = s;
+            int idx = subscriptions.length;
+            Subscription[] newSubscriptions = new Subscription[idx + 1];
+            System.arraycopy(subscriptions, 0, newSubscriptions, 0, idx);
+            newSubscriptions[idx] = s;
             return new State(isUnsubscribed, newSubscriptions);
         }
 
         State remove(Subscription s) {
-            ArrayList<Subscription> newSubscriptions = new ArrayList<Subscription>(subscriptions.length);
+            if ((subscriptions.length == 1 && subscriptions[0].equals(s)) || subscriptions.length == 0) {
+                return clear();
+            }
+            Subscription[] newSubscriptions = new Subscription[subscriptions.length - 1];
+            int idx = 0;
             for (Subscription _s : subscriptions) {
                 if (!_s.equals(s)) {
-                    newSubscriptions.add(_s);
+                    // was not in this composite
+                    if (idx == subscriptions.length) {
+                        return this;
+                    }
+                    newSubscriptions[idx] = _s;
+                    idx++;
                 }
             }
-            return new State(isUnsubscribed, newSubscriptions.toArray(new Subscription[newSubscriptions.size()]));
+            if (idx == 0) {
+                return clear();
+            }
+            // subscription appeared more than once
+            if (idx < newSubscriptions.length) {
+                Subscription[] newSub2 = new Subscription[idx];
+                System.arraycopy(newSubscriptions, 0, newSub2, 0, idx);
+                return new State(isUnsubscribed, newSub2);
+            }
+            return new State(isUnsubscribed, newSubscriptions);
         }
 
         State clear() {
