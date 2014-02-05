@@ -15,7 +15,7 @@
  */
 package rx.lang.scala.schedulers
 
-import java.util.concurrent.Executor
+import java.util.concurrent.{ScheduledExecutorService, Executor}
 import rx.lang.scala.Scheduler
 
 object ExecutorScheduler {
@@ -28,8 +28,11 @@ object ExecutorScheduler {
   def apply(executor: Executor): ExecutorScheduler =  {
     new ExecutorScheduler(rx.schedulers.Schedulers.executor(executor))
   }
-}
 
+  def apply(executor: ScheduledExecutorService): ExecutorScheduler =  {
+    new ExecutorScheduler(rx.schedulers.Schedulers.executor(executor))
+  }
+}
 
 class ExecutorScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
   extends Scheduler {}

@@ -33,8 +33,11 @@ object JavaConversions {
   implicit def toScalaSubscription(s: rx.Subscription): Subscription = Subscription(s)
 
   implicit def scalaSchedulerToJavaScheduler(s: Scheduler): rx.Scheduler = s.asJavaScheduler
-  
   implicit def javaSchedulerToScalaScheduler(s: rx.Scheduler): Scheduler = Scheduler(s)
+
+  implicit def scalaInnerToJavaInner(s: Inner): rx.Scheduler.Inner = s.asJavaInner
+  implicit def javaInnerToScalaInner(s: rx.Scheduler.Inner): Inner = Inner(s)
+
 
   implicit def toJavaObserver[T](s: Observer[T]): rx.Observer[_ >: T] = s.asJavaObserver
   

@@ -17,13 +17,14 @@ package rx.lang.scala.schedulers
 
 import scala.concurrent.duration.Duration
 import rx.lang.scala.Scheduler
+import rx.schedulers
 
 /**
  * Provides constructors for `TestScheduler`.
  */
 object TestScheduler {
   def apply(): TestScheduler = {
-    new TestScheduler(new rx.schedulers.TestScheduler())
+    new TestScheduler(new schedulers.TestScheduler())
   }
 }
 
