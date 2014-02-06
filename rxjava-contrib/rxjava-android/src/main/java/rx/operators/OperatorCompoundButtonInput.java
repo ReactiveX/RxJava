@@ -15,16 +15,18 @@
  */
 package rx.operators;
 
-import android.view.View;
-import android.widget.CompoundButton;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
+import android.view.View;
+import android.widget.CompoundButton;
 
 public class OperatorCompoundButtonInput implements Observable.OnSubscribe<Boolean> {
     private final boolean emitInitialValue;
@@ -36,7 +38,7 @@ public class OperatorCompoundButtonInput implements Observable.OnSubscribe<Boole
     }
 
     @Override
-    public void call(final Observer<? super Boolean> observer) {
+    public void call(final Subscriber<? super Boolean> observer) {
         final CompositeOnCheckedChangeListener composite = CachedListeners.getFromViewOrCreate(button);
 
         final CompoundButton.OnCheckedChangeListener listener = new CompoundButton.OnCheckedChangeListener() {
@@ -46,12 +48,12 @@ public class OperatorCompoundButtonInput implements Observable.OnSubscribe<Boole
             }
         };
 
-        final Subscription subscription = new Subscription() {
+        final Subscription subscription = Subscriptions.create(new Action0() {
             @Override
-            public void unsubscribe() {
+            public void call() {
                 composite.removeOnCheckedChangeListener(listener);
             }
-        };
+        });
 
         if (emitInitialValue) {
             observer.onNext(button.isChecked());
