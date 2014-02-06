@@ -5550,12 +5550,16 @@ public class Observable<T> {
     /**
      * Returns an Observable that repeats the sequence of items emitted by the source
      * Observable at most count times.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.n.png">
      * 
      * @param count
      *            the number of times the source Observable items are repeated,
-     *            a count of 0 will yield an empty sequence.
+     *            a count of 0 will yield an empty sequence
      * @return an Observable that repeats the sequence of items emitted by the source
-     *         Observable at most count times.
+     *         Observable at most {@code count} times
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat(long count) {
         if (count < 0) {
@@ -5567,14 +5571,18 @@ public class Observable<T> {
     /**
      * Returns an Observable that repeats the sequence of items emitted by the source
      * Observable at most count times on a particular scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.ns.png">
      * 
      * @param count
      *            the number of times the source Observable items are repeated,
      *            a count of 0 will yield an empty sequence.
      * @param scheduler
-     *            the scheduler to emit the items on
+     *            the {@link Scheduler} to emit the items on
      * @return an Observable that repeats the sequence of items emitted by the source
-     *         Observable at most count times on a particular scheduler.
+     *         Observable at most {@code count} times on a particular Scheduler
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat(long count, Scheduler scheduler) {
         return nest().lift(new OperatorRepeat<T>(count, scheduler));
