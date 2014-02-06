@@ -41,7 +41,14 @@ public final class CompositeException extends RuntimeException {
         int count = 0;
         for (Throwable e : errors) {
             count++;
-            attachCallingThreadStack(_cause, e);
+            /*
+            * @mattrjacobs: This is somehow creating recursive Exceptions that contain infinite loops.  This is problematic
+            * whenever any consumer tries to make sense of a stack trace w/o explicitly handling the infinite loop case.
+            * I'm working on fixing up the CompositeException generation in the background, but in the meantime,
+            * commenting out this code is the safe thing to do.
+            * Github Issue #799
+             */
+            //attachCallingThreadStack(_cause, e);
             _exceptions.add(e);
         }
         this.exceptions = Collections.unmodifiableList(_exceptions);
