@@ -123,6 +123,13 @@ class ObservableTests extends JUnitSuite {
     assertEquals(6, o.toBlockingObservable.single)
   }
 
+  @Test def testJoin() {
+     val xs = Observable.items(1,2,3)
+     val ys = Observable.items("a")
+     val zs = xs.join[String,String](ys, x => Observable.never, y => Observable.never, (x,y) => y+x)
+     assertEquals(List("a1", "a2", "a3"),zs.toBlockingObservable.toList)
+  }
+
   /*
  @Test def testHead() {
    val observer = mock(classOf[Observer[Int]])
