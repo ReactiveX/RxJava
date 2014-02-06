@@ -37,7 +37,7 @@ public final class OperatorZipIterable<T1, T2, R> implements Operator<R, T1> {
         try {
             if (!iterator.hasNext()) {
                 subscriber.onCompleted();
-                return Subscribers.create();
+                return Subscribers.empty();
             }
         } catch (Throwable e) {
             subscriber.onError(e);
