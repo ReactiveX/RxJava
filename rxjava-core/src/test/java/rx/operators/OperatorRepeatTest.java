@@ -27,10 +27,12 @@ import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
+import static org.mockito.Mockito.*;
+import rx.operators.OperationReduceTest.CustomException;
 
-public class OperationRepeatTest {
+public class OperatorRepeatTest {
 
-    @Test
+    @Test(timeout = 2000)
     public void testRepetition() {
         int NUM = 10;
         final AtomicInteger count = new AtomicInteger();
@@ -47,16 +49,61 @@ public class OperationRepeatTest {
         assertEquals(NUM, value);
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRepeatTake() {
         Observable<Integer> xs = Observable.from(1, 2);
         Object[] ys = xs.repeat(Schedulers.newThread()).take(4).toList().toBlockingObservable().last().toArray();
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);
     }
 
-    @Test
+    @Test(timeout = 20000)
     public void testNoStackOverFlow() {
         Observable.from(1).repeat(Schedulers.newThread()).take(100000).toBlockingObservable().last();
     }
 
+    @Test(timeout = 2000)
+    public void testRepeatAndTake() {
+        @SuppressWarnings("unchecked")
+                Observer<Object> o = mock(Observer.class);
+        
+        Observable.from(1).repeat().take(10).subscribe(o);
+        
+        verify(o, times(10)).onNext(1);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test(timeout = 2000)
+    public void testRepeatLimited() {
+        @SuppressWarnings("unchecked")
+                Observer<Object> o = mock(Observer.class);
+        
+        Observable.from(1).repeat(10).subscribe(o);
+        
+        verify(o, times(10)).onNext(1);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test(timeout = 2000)
+    public void testRepeatError() {
+        @SuppressWarnings("unchecked")
+                Observer<Object> o = mock(Observer.class);
+        
+        Observable.error(new CustomException()).repeat(10).subscribe(o);
+        
+        verify(o).onError(any(CustomException.class));
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+        
+    }
+    @Test(timeout = 2000)
+    public void testRepeatZero() {
+        @SuppressWarnings("unchecked")
+                Observer<Object> o = mock(Observer.class);
+        
+        Observable.from(1).repeat(0).subscribe(o);
+        
+        verify(o).onCompleted();
+        verify(o, never()).onNext(any());
+        verify(o, never()).onError(any(Throwable.class));
+    }
 }
