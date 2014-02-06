@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class CompositeExceptionTest {
@@ -50,24 +51,28 @@ public class CompositeExceptionTest {
         CompositeException ce = new CompositeException("3 failures with same root cause", Arrays.asList(e1, e2, e3));
     }
 
+    @Ignore
     @Test(timeout = 1000)
     public void testAttachCallingThreadStackParentThenChild() {
         CompositeException.attachCallingThreadStack(ex1, ex2);
         assertEquals("Ex2", ex1.getCause().getMessage());
     }
 
+    @Ignore
     @Test(timeout = 1000)
     public void testAttachCallingThreadStackChildThenParent() {
         CompositeException.attachCallingThreadStack(ex2, ex1);
         assertEquals("Ex1", ex2.getCause().getMessage());
     }
 
+    @Ignore
     @Test(timeout = 1000)
     public void testAttachCallingThreadStackAddComposite() {
         CompositeException.attachCallingThreadStack(ex1, getNewCompositeExceptionWithEx123());
         assertEquals("Ex2", ex1.getCause().getMessage());
     }
 
+    @Ignore
     @Test(timeout = 1000)
     public void testAttachCallingThreadStackAddToComposite() {
         CompositeException compositeEx = getNewCompositeExceptionWithEx123();
@@ -75,6 +80,7 @@ public class CompositeExceptionTest {
         assertEquals(CompositeException.CompositeExceptionCausalChain.MESSAGE, compositeEx.getCause().getMessage());
     }
 
+    @Ignore
     @Test(timeout = 1000)
     public void testAttachCallingThreadStackAddCompositeToItself() {
         CompositeException compositeEx = getNewCompositeExceptionWithEx123();
@@ -82,6 +88,7 @@ public class CompositeExceptionTest {
         assertEquals(CompositeException.CompositeExceptionCausalChain.MESSAGE, compositeEx.getCause().getMessage());
     }
 
+    @Ignore
     @Test(timeout = 1000)
     public void testAttachCallingThreadStackAddExceptionsToEachOther() {
         CompositeException.attachCallingThreadStack(ex1, ex2);

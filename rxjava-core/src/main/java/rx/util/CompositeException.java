@@ -41,7 +41,7 @@ public final class CompositeException extends RuntimeException {
         int count = 0;
         for (Throwable e : errors) {
             count++;
-            attachCallingThreadStack(_cause, e);
+            //attachCallingThreadStack(_cause, e);
             _exceptions.add(e);
         }
         this.exceptions = Collections.unmodifiableList(_exceptions);
