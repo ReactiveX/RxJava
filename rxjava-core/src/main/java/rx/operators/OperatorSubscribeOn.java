@@ -58,44 +58,41 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
                     @Override
                     public void call(final Inner inner) {
-                        if (!inner.isUnsubscribed()) {
-                            final CompositeSubscription cs = new CompositeSubscription();
-                            subscriber.add(Subscriptions.create(new Action0() {
+                        final CompositeSubscription cs = new CompositeSubscription();
+                        subscriber.add(Subscriptions.create(new Action0() {
 
-                                @Override
-                                public void call() {
-                                    scheduler.schedule(new Action1<Inner>() {
+                            @Override
+                            public void call() {
+                                inner.schedule(new Action1<Inner>() {
 
-                                        @Override
-                                        public void call(final Inner inner) {
-                                            cs.unsubscribe();
-                                        }
+                                    @Override
+                                    public void call(final Inner inner) {
+                                        cs.unsubscribe();
+                                    }
 
-                                    });
-                                }
+                                });
+                            }
 
-                            }));
-                            cs.add(subscriber);
-                            o.subscribe(new Subscriber<T>(cs) {
+                        }));
+                        cs.add(subscriber);
+                        o.subscribe(new Subscriber<T>(cs) {
 
-                                @Override
-                                public void onCompleted() {
-                                    subscriber.onCompleted();
-                                }
+                            @Override
+                            public void onCompleted() {
+                                subscriber.onCompleted();
+                            }
 
-                                @Override
-                                public void onError(Throwable e) {
-                                    subscriber.onError(e);
-                                }
+                            @Override
+                            public void onError(Throwable e) {
+                                subscriber.onError(e);
+                            }
 
-                                @Override
-                                public void onNext(T t) {
-                                    subscriber.onNext(t);
-                                }
-                            });
-                        }
+                            @Override
+                            public void onNext(T t) {
+                                subscriber.onNext(t);
+                            }
+                        });
                     }
-
                 });
             }
 

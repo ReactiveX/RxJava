@@ -18,52 +18,24 @@ package rx.operators;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
-import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
-import rx.test.OperatorTester;
 import rx.util.functions.Action0;
-import rx.util.functions.Action1;
 
 public class OperatorSubscribeOnTest {
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testSubscribeOn() {
-        Observable<Integer> w = Observable.from(Arrays.asList(1, 2, 3));
-
-        Scheduler scheduler = spy(OperatorTester.forwardingScheduler(Schedulers
-                .immediate()));
-
-        TestObserver<Integer> observer = new TestObserver<Integer>();
-        w.subscribeOn(scheduler).subscribe(observer);
-
-        InOrder inOrder = inOrder(scheduler);
-        // The first one is for "subscribe", the second one is for
-        // "unsubscribe".
-        inOrder.verify(scheduler, times(2)).schedule(isA(Action1.class));
-        inOrder.verifyNoMoreInteractions();
-
-        observer.assertReceivedOnNext(Arrays.asList(1, 2, 3));
-        observer.assertTerminalEvent();
-    }
 
     private class ThreadSubscription implements Subscription {
         private volatile Thread thread;
@@ -114,15 +86,17 @@ public class OperatorSubscribeOnTest {
         });
 
         TestObserver<Integer> observer = new TestObserver<Integer>();
-        w.subscribeOn(Schedulers.computation()).subscribe(observer);
+        w.subscribeOn(Schedulers.newThread()).subscribe(observer);
 
         Thread unsubscribeThread = subscription.getThread();
 
         assertNotNull(unsubscribeThread);
         assertNotSame(Thread.currentThread(), unsubscribeThread);
 
-        assertNotNull(subscribeThread);
-        assertNotSame(Thread.currentThread(), subscribeThread);
+        assertNotNull(subscribeThread.get());
+        assertNotSame(Thread.currentThread(), subscribeThread.get());
+        // True for Schedulers.newThread()
+        assertTrue(unsubscribeThread == subscribeThread.get());
 
         observer.assertReceivedOnNext(Arrays.asList(1, 2));
         observer.assertTerminalEvent();
