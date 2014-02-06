@@ -5519,7 +5519,7 @@ public class Observable<T> {
      * Returns an Observable that repeats the sequence of items emitted by the source Observable
      * indefinitely.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.o.png">
      * 
      * @return an Observable that emits the items emitted by the source Observable repeatedly and in
      *         sequence
@@ -5534,7 +5534,7 @@ public class Observable<T> {
      * Returns an Observable that repeats the sequence of items emitted by the source Observable
      * indefinitely, on a particular scheduler.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.os.png">
      * 
      * @param scheduler
      *            the scheduler to emit the items on
@@ -5551,7 +5551,7 @@ public class Observable<T> {
      * Returns an Observable that repeats the sequence of items emitted by the source
      * Observable at most count times.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.n.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.on.png">
      * 
      * @param count
      *            the number of times the source Observable items are repeated,
@@ -5572,7 +5572,7 @@ public class Observable<T> {
      * Returns an Observable that repeats the sequence of items emitted by the source
      * Observable at most count times on a particular scheduler.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.ns.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.ons.png">
      * 
      * @param count
      *            the number of times the source Observable items are repeated,
