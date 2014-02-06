@@ -6900,9 +6900,20 @@ public class Observable<T> {
             if (isInternalImplementation(observer)) {
                 onSubscribeFunction.call(observer);
             } else {
-                onSubscribeFunction.call(new SafeSubscriber<T>(observer));
+                // assign to `observer` so we return the protected version
+                observer = new SafeSubscriber<T>(observer);
+                onSubscribeFunction.call(observer);
             }
-            return hook.onSubscribeReturn(this, observer);
+            final Subscription returnSubscription = hook.onSubscribeReturn(this, observer);
+            // we return it inside a Subscription so it can't be cast back to Subscriber
+            return Subscriptions.create(new Action0() {
+
+                @Override
+                public void call() {
+                    returnSubscription.unsubscribe();
+                }
+
+            });
         } catch (OnErrorNotImplementedException e) {
             // special handling when onError is not implemented ... we just rethrow
             throw e;
