@@ -13,13 +13,10 @@ object ComputationScheduler {
    *
    * @return { @link Scheduler} for computation-bound work.
    */
-  def apply(): IOScheduler = {
-    new IOScheduler(rx.schedulers.Schedulers.computation())
+  def apply(): ComputationScheduler = {
+    new ComputationScheduler(rx.schedulers.Schedulers.computation())
   }
 }
 
-/**
- * Created by netflix on 2/5/14.
- */
 class ComputationScheduler private[scala] (val asJavaScheduler: rx.Scheduler)
   extends Scheduler {}
