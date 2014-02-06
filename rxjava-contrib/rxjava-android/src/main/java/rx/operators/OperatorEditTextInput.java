@@ -15,12 +15,14 @@
  */
 package rx.operators;
 
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
 
 public class OperatorEditTextInput implements Observable.OnSubscribe<String> {
     private final EditText input;
@@ -32,20 +34,20 @@ public class OperatorEditTextInput implements Observable.OnSubscribe<String> {
     }
 
     @Override
-    public void call(final Observer<? super String> observer) {
+    public void call(final Subscriber<? super String> observer) {
         final TextWatcher watcher = new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(final Editable editable) {
                 observer.onNext(editable.toString());
             }
         };
-
-        final Subscription subscription = new Subscription() {
+        
+        final Subscription subscription = Subscriptions.create(new Action0() {
             @Override
-            public void unsubscribe() {
+            public void call() {
                 input.removeTextChangedListener(watcher);
             }
-        };
+        });
 
         if (emitInitialValue) {
             observer.onNext(input.getEditableText().toString());

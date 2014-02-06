@@ -15,14 +15,17 @@
  */
 package rx.operators;
 
-import android.view.View;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
+import android.view.View;
 
 public final class OperatorViewClick implements Observable.OnSubscribe<View> {
     private final boolean emitInitialValue;
@@ -34,7 +37,7 @@ public final class OperatorViewClick implements Observable.OnSubscribe<View> {
     }
 
     @Override
-    public void call(final Observer<? super View> observer) {
+    public void call(final Subscriber<? super View> observer) {
         final CompositeOnClickListener composite = CachedListeners.getFromViewOrCreate(view);
 
         final View.OnClickListener listener = new View.OnClickListener() {
@@ -44,12 +47,12 @@ public final class OperatorViewClick implements Observable.OnSubscribe<View> {
             }
         };
 
-        final Subscription subscription = new Subscription() {
+        final Subscription subscription = Subscriptions.create(new Action0() {
             @Override
-            public void unsubscribe() {
+            public void call() {
                 composite.removeOnClickListener(listener);
             }
-        };
+        });
 
         if (emitInitialValue) {
             observer.onNext(view);
