@@ -8,6 +8,30 @@ import rx.util.functions.Action1;
 
 public class Subscribers {
 
+    private static final Subscriber<Object> EMPTY = new Subscriber<Object>() {
+
+        @Override
+        public final void onCompleted() {
+            // do nothing
+        }
+
+        @Override
+        public final void onError(Throwable e) {
+            throw new OnErrorNotImplementedException(e);
+        }
+
+        @Override
+        public final void onNext(Object args) {
+            // do nothing
+        }
+
+    };
+
+    @SuppressWarnings("unchecked")
+    public static <T> Subscriber<T> empty() {
+        return (Subscriber<T>) EMPTY;
+    }
+
     public static <T> Subscriber<T> from(final Observer<? super T> o) {
         return new Subscriber<T>() {
 
@@ -24,30 +48,6 @@ public class Subscribers {
             @Override
             public void onNext(T t) {
                 o.onNext(t);
-            }
-
-        };
-    }
-
-    /**
-     * Create an empty Subscriber that ignores all events.
-     */
-    public static final <T> Subscriber<T> create() {
-        return new Subscriber<T>() {
-
-            @Override
-            public final void onCompleted() {
-                // do nothing
-            }
-
-            @Override
-            public final void onError(Throwable e) {
-                throw new OnErrorNotImplementedException(e);
-            }
-
-            @Override
-            public final void onNext(T args) {
-                // do nothing
             }
 
         };

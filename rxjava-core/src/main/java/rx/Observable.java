@@ -69,7 +69,7 @@ import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallelMerge;
-import rx.operators.OperationRepeat;
+import rx.operators.OperatorRepeat;
 import rx.operators.OperationReplay;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
@@ -1616,7 +1616,7 @@ public class Observable<T> {
     public final static <T> Observable<T> just(T value) {
         return from(Arrays.asList(value));
     }
-
+    
     /**
      * Returns an Observable that emits a single item and then completes, on a specified scheduler.
      * <p>
@@ -2355,6 +2355,15 @@ public class Observable<T> {
         return OperationMinMax.min(source);
     }
 
+    /**
+     * Convert the current Observable<T> into an Observable<Observable<T>>.
+     * 
+     * @return
+     */
+    private final Observable<Observable<T>> nest() {
+        return from(this);
+    }
+    
     /**
      * Returns an Observable that never sends any items or notifications to an {@link Observer}.
      * <p>
@@ -5518,7 +5527,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat() {
-        return this.repeat(Schedulers.currentThread());
+        return nest().lift(new OperatorRepeat<T>());
     }
 
     /**
@@ -5535,7 +5544,40 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat(Scheduler scheduler) {
-        return create(OperationRepeat.repeat(this, scheduler));
+        return nest().lift(new OperatorRepeat<T>(scheduler));
+    }
+
+    /**
+     * Returns an Observable that repeats the sequence of items emitted by the source
+     * Observable at most count times.
+     * 
+     * @param count
+     *            the number of times the source Observable items are repeated,
+     *            a count of 0 will yield an empty sequence.
+     * @return an Observable that repeats the sequence of items emitted by the source
+     *         Observable at most count times.
+     */
+    public final Observable<T> repeat(long count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 expected");
+        }
+        return nest().lift(new OperatorRepeat<T>(count));
+    }
+
+    /**
+     * Returns an Observable that repeats the sequence of items emitted by the source
+     * Observable at most count times on a particular scheduler.
+     * 
+     * @param count
+     *            the number of times the source Observable items are repeated,
+     *            a count of 0 will yield an empty sequence.
+     * @param scheduler
+     *            the scheduler to emit the items on
+     * @return an Observable that repeats the sequence of items emitted by the source
+     *         Observable at most count times on a particular scheduler.
+     */
+    public final Observable<T> repeat(long count, Scheduler scheduler) {
+        return nest().lift(new OperatorRepeat<T>(count, scheduler));
     }
 
     /**
