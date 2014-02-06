@@ -22,11 +22,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Func1;
 
 public class OperationRepeatTest {
 
@@ -57,6 +60,41 @@ public class OperationRepeatTest {
     @Test
     public void testNoStackOverFlow() {
         Observable.from(1).repeat(Schedulers.newThread()).take(100000).toBlockingObservable().last();
+    }
+
+    @Test
+    public void testRepeatTakeWithSubscribeOn() throws InterruptedException {
+
+        final AtomicInteger counter = new AtomicInteger();
+        Observable<Integer> oi = Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> sub) {
+                System.out.println("invoked!");
+                counter.incrementAndGet();
+                sub.onNext(1);
+                sub.onNext(2);
+                sub.onCompleted();
+            }
+        }).subscribeOn(Schedulers.newThread());
+
+        Object[] ys = oi.repeat(Schedulers.newThread()).map(new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t1) {
+                System.out.println("t1: " + t1);
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return t1;
+            }
+
+        }).take(4).toList().toBlockingObservable().last().toArray();
+
+        assertEquals(2, counter.get());
+        assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);
     }
 
 }
