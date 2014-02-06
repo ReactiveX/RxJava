@@ -31,7 +31,7 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Func1;
 
-public class OperationRepeatTest {
+public class OperatorRepeatTest {
 
     @Test
     public void testRepetition() {
