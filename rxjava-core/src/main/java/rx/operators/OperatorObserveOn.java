@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Scheduler;
@@ -24,11 +24,25 @@ import rx.Subscriber;
 import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TestScheduler;
 import rx.schedulers.TrampolineScheduler;
+import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
 /**
- * Asynchronously notify Observers on the specified Scheduler.
+ * Delivers events on the specified Scheduler.
  * <p>
+ * This provides backpressure by blocking the incoming onNext when there is already one in the queue.
+ * <p>
+ * This means that at any given time the max number of "onNext" in flight is 3:
+ * -> 1 being delivered on the Scheduler
+ * -> 1 in the queue waiting for the Scheduler
+ * -> 1 blocking on the queue waiting to deliver it
+ * 
+ * I have chosen to allow 1 in the queue rather than using an Exchanger style process so that the Scheduler
+ * can loop and have something to do each time around to optimize for avoiding rescheduling when it
+ * can instead just loop. I'm avoiding having the Scheduler thread ever block as it could be an event-loop
+ * thus if the queue is empty it exits and next time something is added it will reschedule.
+ * 
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
  */
 public class OperatorObserveOn<T> implements Operator<T, T> {
@@ -73,7 +87,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
         final Subscriber<? super T> observer;
         private volatile Scheduler.Inner recursiveScheduler;
 
-        private final ArrayBlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(1);
+        private final InterruptibleBlockingQueue queue = new InterruptibleBlockingQueue();
         final AtomicLong counter = new AtomicLong(0);
 
         public ObserveOnSubscriber(Subscriber<? super T> observer) {
@@ -93,7 +107,9 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
                 }
                 schedule();
             } catch (InterruptedException e) {
-                onError(e);
+                if (!isUnsubscribed()) {
+                    onError(e);
+                }
             }
         }
 
@@ -125,6 +141,18 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
         protected void schedule() {
             if (counter.getAndIncrement() == 0) {
                 if (recursiveScheduler == null) {
+                    // first time through, register a Subscription
+                    // that can interrupt this thread
+                    add(Subscriptions.create(new Action0() {
+
+                        @Override
+                        public void call() {
+                            // we have to interrupt the parent thread because
+                            // it can be blocked on queue.put
+                            queue.interrupt();
+                        }
+
+                    }));
                     add(scheduler.schedule(new Action1<Inner>() {
 
                         @Override
@@ -165,6 +193,59 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
             } while (counter.decrementAndGet() > 0);
         }
 
+    }
+
+    /**
+     * Same behavior as ArrayBlockingQueue<Object>(1) except that we can interrupt/unsubscribe it.
+     */
+    private class InterruptibleBlockingQueue {
+
+        private final Semaphore semaphore = new Semaphore(1);
+        private volatile Object item;
+        private volatile boolean interrupted = false;
+
+        public Object poll() {
+            if (interrupted) {
+                return null;
+            }
+            if (item == null) {
+                return null;
+            }
+            try {
+                return item;
+            } finally {
+                item = null;
+                semaphore.release();
+            }
+        }
+
+        /**
+         * Add an Object, blocking if an item is already in the queue.
+         * 
+         * @param o
+         * @throws InterruptedException
+         */
+        public void put(Object o) throws InterruptedException {
+            if (interrupted) {
+                throw new InterruptedException("Interrupted by Unsubscribe");
+            }
+            semaphore.acquire();
+            if (interrupted) {
+                throw new InterruptedException("Interrupted by Unsubscribe");
+            }
+            if (o == null) {
+                throw new IllegalArgumentException("Can not put null");
+            }
+            item = o;
+        }
+
+        /**
+         * Used to unsubscribe and interrupt the producer if blocked in put()
+         */
+        public void interrupt() {
+            interrupted = true;
+            semaphore.release();
+        }
     }
 
 }
