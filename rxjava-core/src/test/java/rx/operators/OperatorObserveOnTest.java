@@ -29,10 +29,15 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscription;
+import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
+import rx.schedulers.TrampolineScheduler;
+import rx.subscriptions.BooleanSubscription;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
@@ -303,6 +308,98 @@ public class OperatorObserveOnTest {
                     }
 
                 });
+    }
+
+    @Test
+    public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeNewThread() throws InterruptedException {
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.newThread());
+    }
+
+    @Test
+    public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeIO() throws InterruptedException {
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.io());
+    }
+
+    @Test
+    public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeTrampoline() throws InterruptedException {
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.trampoline());
+    }
+
+    @Test
+    public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeTestScheduler() throws InterruptedException {
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.test());
+    }
+
+    @Test
+    public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeComputation() throws InterruptedException {
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.computation());
+    }
+
+    private final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Scheduler scheduler) throws InterruptedException {
+        final AtomicInteger countEmitted = new AtomicInteger();
+        final AtomicInteger countTaken = new AtomicInteger();
+        int value = Observable.create(new OnSubscribeFunc<Integer>() {
+
+            @Override
+            public Subscription onSubscribe(final Observer<? super Integer> o) {
+                final BooleanSubscription s = BooleanSubscription.create();
+                Thread t = new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        int i = 1;
+                        while (!s.isUnsubscribed() && i <= 100) {
+                            System.out.println("onNext from fast producer [" + Thread.currentThread() + "]: " + i);
+                            o.onNext(i++);
+                        }
+                        o.onCompleted();
+                    }
+                });
+                t.setDaemon(true);
+                t.start();
+                return s;
+            }
+        }).doOnNext(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer i) {
+                countEmitted.incrementAndGet();
+            }
+        }).doOnCompleted(new Action0() {
+
+            @Override
+            public void call() {
+                System.out.println("-------- Done Emitting from Source ---------");
+            }
+        }).observeOn(scheduler).doOnNext(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer i) {
+                System.out.println(">> onNext to slowConsumer  [" + Thread.currentThread() + "] pre-take: " + i);
+                //force it to be slower than the producer
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                countTaken.incrementAndGet();
+            }
+        }).take(10).toBlockingObservable().last();
+
+        if (scheduler instanceof TrampolineScheduler || scheduler instanceof ImmediateScheduler || scheduler instanceof TestScheduler) {
+            // since there is no concurrency it will block and only emit as many as it can process
+            assertEquals(10, countEmitted.get());
+        } else {
+            // the others with concurrency should not emit all 100 ... but 10 + 2 in the pipeline
+            // NOTE: The +2 could change if the implementation of the queue logic changes. See Javadoc at top of class.
+            assertEquals(12, countEmitted.get());
+        }
+        // number received after take (but take will filter any extra)
+        assertEquals(10, value);
+        // so we also want to check the doOnNext after observeOn to see if it got unsubscribed
+        Thread.sleep(200); // let time pass to see if the scheduler is still doing work
+        // we expect only 10 to make it through the observeOn side
+        assertEquals(10, countTaken.get());
     }
 
     private static int randomIntFrom0to100() {
