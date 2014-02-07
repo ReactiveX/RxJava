@@ -38,8 +38,7 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
     }
 
     @Override
-    public Subscriber<? super Observable<T>> call(
-            final Subscriber<? super T> subscriber) {
+    public Subscriber<? super Observable<T>> call(final Subscriber<? super T> subscriber) {
         return new Subscriber<Observable<T>>() {
 
             @Override
