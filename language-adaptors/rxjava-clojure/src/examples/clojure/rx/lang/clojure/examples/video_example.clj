@@ -1,12 +1,12 @@
 ;
 ; Copyright 2013 Netflix, Inc.
-;  
+;
 ; Licensed under the Apache License, Version 2.0 (the "License");
 ; you may not use this file except in compliance with the License.
 ; You may obtain a copy of the License at
 ;
 ; http://www.apache.org/licenses/LICENSE-2.0
-; 
+;
 ; Unless required by applicable law or agreed to in writing, software
 ; distributed under the License is distributed on an "AS IS" BASIS,
 ; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -108,10 +108,10 @@
   "Returns an observable that executes (f observer) in a future, returning a
   subscription that will cancel the future."
   [f]
-  (Observable/create (rx/fn [^Observer observer]
+  (Observable/create (rx/action [^rx.Subscriber s]
                        (println "Starting f")
-                       (let [f (future (f observer))]
-                         (Subscriptions/create (rx/action [] (future-cancel f)))))))
+                       (let [f (future (f s))]
+                         (.add s (Subscriptions/create (rx/action [] (future-cancel f))))))))
 
 (defn ^Observable get-list-of-lists
   "
@@ -120,15 +120,17 @@
   Observable<VideoList> is the \"push\" equivalent to List<VideoList>
   "
   [user-id]
-  (future-observable (fn [^Observer observer]
+  (future-observable (fn [^rx.Subscriber s]
                        (Thread/sleep 180)
                        (dotimes [i 15]
-                         (.onNext observer (video-list i)))
-                       (.onCompleted observer))))
+                         (.onNext s (video-list i)))
+                       (.onCompleted s))))
 
 
-(comment (.subscribe (get-list-of-lists 7777)
-                     (rx/action* println)))
+(comment (-> (get-list-of-lists 7777)
+             .toList
+             .toBlockingObservable
+             .single))
 
 (defn video-list
   [position]
@@ -137,24 +139,28 @@
 
 (defn ^Observable video-list->videos
   [{:keys [position] :as video-list}]
-  (Observable/create (rx/fn [^Observer observer]
+  (Observable/create (rx/action [^rx.Subscriber s]
                        (dotimes [i 50]
-                         (.onNext observer (+ (* position 1000) i)))
-                       (.onCompleted observer)
-                       (Subscriptions/empty))))
+                         (.onNext s (+ (* position 1000) i)))
+                       (.onCompleted s))))
 
-(comment (.subscribe (video-list->videos (video-list 2)) (rx/action* println)))
+(comment (-> (video-list->videos (video-list 2))
+             .toList
+             .toBlockingObservable
+             .single))
 
 (defn ^Observable video->metadata
   [video-id]
-  (Observable/create (rx/fn [^Observer observer]
-                       (.onNext observer {:title (str "video-" video-id "-title")
-                                          :actors ["actor1" "actor2"]
-                                          :duration 5428 })
-                       (.onCompleted observer)
-                       (Subscriptions/empty))))
+  (Observable/create (rx/action [^rx.Subscriber s]
+                                (.onNext s {:title (str "video-" video-id "-title")
+                                            :actors ["actor1" "actor2"]
+                                            :duration 5428 })
+                                (.onCompleted s))))
 
-(comment (.subscribe (video->metadata 10) (rx/action* println)))
+(comment (-> (video->metadata 10)
+             .toList
+             .toBlockingObservable
+             .single))
 
 (defn ^Observable video->bookmark
   [video-id user-id]
@@ -165,7 +171,10 @@
                        (println "onComplete")
                        (.onCompleted observer))))
 
-(comment (.subscribe (video->bookmark 112345 99999) (rx/action* println)))
+(comment (-> (video->bookmark 112345 99999)
+            .toList
+            .toBlockingObservable
+            .single))
 
 (defn ^Observable video->rating
   [video-id user-id]
@@ -178,5 +187,8 @@
                                           :actual-star-rating    (rand-int 5) })
                        (.onCompleted observer))))
 
-(comment (.subscribe (video->rating 234345 8888) (rx/action* println)))
+(comment (-> (video->rating 234345 8888)
+             .toList
+             .toBlockingObservable
+             .single))
 
