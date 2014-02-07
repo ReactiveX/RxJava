@@ -54,8 +54,7 @@ subprojects {
     }
 
     dependencies {
-        perfCompile 'com.google.caliper:caliper:1.0-beta-1'
-        perfRuntime 'com.sun.jersey:jersey-core:1.11'
+        perfCompile 'org.openjdk.jmh:jmh-core:0.2'
     }
 
     tasks.build { 

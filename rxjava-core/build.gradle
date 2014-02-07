@@ -33,13 +33,8 @@ jar {
 }
 
 task time(type:JavaExec) {
-    //sourceSets.metaClass.methods.each { println it }
     classpath = sourceSets.perf.runtimeClasspath
     group 'Application'
     description 'Execute the calipser benchmark timing of Rx'
     main 'rx.operators.ObservableBenchmark'
-    // args '--print-config' // dump the caliper configuration before starting
-    // args '--verbose' // uncomment to have caliper log what it's doing
-    args '--trials=1' // only run the experiments once
-    //args '--time-limit=0' // experiments never timeout
 }

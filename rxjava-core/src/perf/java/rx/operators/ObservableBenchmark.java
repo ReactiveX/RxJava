@@ -3,51 +3,59 @@ package rx.operators;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.util.functions.Func1;
 
-import com.google.caliper.Benchmark;
-import com.google.caliper.runner.CaliperMain;
+public class ObservableBenchmark {
 
-public class ObservableBenchmark extends Benchmark {
-    public void timeBaseline(int reps) {
-        for (int i = 0; i < reps; i++) {
-            observableOfInts.subscribe(newObserver());
-        }
+    @GenerateMicroBenchmark
+    public void timeBaseline() {
+        observableOfInts.subscribe(newObserver());
         awaitAllObservers();
     }
 
-    public int timeMapIterate(long reps) {
+    @GenerateMicroBenchmark
+    public int timeMapIterate() {
         int x = 0;
-        for (int i = 0; i < reps; i++) {
-            for (int j = 0; j < intValues.length; j++) {
-                // use hash code to make sure the JIT doesn't optimize too much and remove all of
-                // our code.
-                x |= ident.call(intValues[j]).hashCode();
-            }
+        for (int j = 0; j < intValues.length; j++) {
+            // use hash code to make sure the JIT doesn't optimize too much and remove all of
+            // our code.
+            x |= ident.call(intValues[j]).hashCode();
         }
         return x;
     }
 
-    public void timeMap(long reps) {
-        timeOperator(reps, new OperatorMap<Integer, Object>(ident));
+    @GenerateMicroBenchmark
+    public void timeMap() {
+        timeOperator(new OperatorMap<Integer, Object>(ident));
     }
 
     /**************************************************************************
      * Below is internal stuff to avoid object allocation and time overhead of anything that isn't
      * being tested.
+     * 
+     * @throws RunnerException
      **************************************************************************/
 
-    public static void main(String[] args) {
-        CaliperMain.main(ObservableBenchmark.class, args);
+    public static void main(String[] args) throws RunnerException {
+        Options opt = new OptionsBuilder()
+                .include(ObservableBenchmark.class.getName()+".*")
+                .forks(1)
+                .build();
+
+        new Runner(opt).run();
     }
 
-    private void timeOperator(long reps, Operator<Object, Integer> op) {
-        for (int i = 0; i < reps; i++) {
-            observableOfInts.lift(op).subscribe(newObserver());
-        }
+    private void timeOperator(Operator<Object, Integer> op) {
+        observableOfInts.lift(op).subscribe(newObserver());
         awaitAllObservers();
     }
 
