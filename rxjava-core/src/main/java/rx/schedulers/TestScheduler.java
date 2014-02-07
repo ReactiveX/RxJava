@@ -19,24 +19,22 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.BooleanSubscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
 import rx.util.functions.Action1;
-import rx.util.functions.Func2;
 
 public class TestScheduler extends Scheduler {
     private final Queue<TimedAction> queue = new PriorityQueue<TimedAction>(11, new CompareActionsByTime());
+    private static long counter = 0;
 
     private static class TimedAction {
 
         private final long time;
         private final Action1<Inner> action;
         private final Inner scheduler;
+        private final long count = counter++; // for differentiating tasks at same time
 
         private TimedAction(Inner scheduler, long time, Action1<Inner> action) {
             this.time = time;
@@ -53,7 +51,11 @@ public class TestScheduler extends Scheduler {
     private static class CompareActionsByTime implements Comparator<TimedAction> {
         @Override
         public int compare(TimedAction action1, TimedAction action2) {
-            return Long.valueOf(action1.time).compareTo(Long.valueOf(action2.time));
+            if (action1.time == action2.time) {
+                return Long.valueOf(action1.count).compareTo(Long.valueOf(action2.count));
+            } else {
+                return Long.valueOf(action1.time).compareTo(Long.valueOf(action2.time));
+            }
         }
     }
 

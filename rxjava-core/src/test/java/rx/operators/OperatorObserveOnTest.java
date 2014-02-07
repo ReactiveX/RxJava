@@ -30,6 +30,7 @@ import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Scheduler;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.util.functions.Action0;
@@ -141,7 +142,7 @@ public class OperatorObserveOnTest {
 
     @Test
     public void observeOnTheSameSchedulerTwice() {
-        TestScheduler scheduler = new TestScheduler();
+        Scheduler scheduler = Schedulers.immediate();
 
         Observable<Integer> o = Observable.from(1, 2, 3);
         Observable<Integer> o2 = o.observeOn(scheduler);
@@ -157,8 +158,6 @@ public class OperatorObserveOnTest {
         o2.subscribe(observer1);
         o2.subscribe(observer2);
 
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-
         inOrder1.verify(observer1, times(1)).onNext(1);
         inOrder1.verify(observer1, times(1)).onNext(2);
         inOrder1.verify(observer1, times(1)).onNext(3);
@@ -172,7 +171,6 @@ public class OperatorObserveOnTest {
         inOrder2.verify(observer2, times(1)).onCompleted();
         verify(observer2, never()).onError(any(Throwable.class));
         inOrder2.verifyNoMoreInteractions();
-
     }
 
     @Test
