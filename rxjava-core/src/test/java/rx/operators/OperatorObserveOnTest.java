@@ -22,6 +22,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -308,6 +309,41 @@ public class OperatorObserveOnTest {
                     }
 
                 });
+    }
+
+    @Test
+    public void testNonBlockingOuterWhileBlockingOnNext() throws InterruptedException {
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicLong completeTime = new AtomicLong();
+        // use subscribeOn to make async, observeOn to move
+        Observable.range(1, 1000).subscribeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(new Observer<Integer>() {
+
+            @Override
+            public void onCompleted() {
+                System.out.println("onCompleted");
+                completeTime.set(System.nanoTime());
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer t) {
+
+            }
+
+        });
+
+        long afterSubscribeTime = System.nanoTime();
+        System.out.println("After subscribe: " + latch.getCount());
+        assertEquals(1, latch.getCount());
+        latch.await();
+        assertTrue(completeTime.get() > afterSubscribeTime);
+        System.out.println("onComplete nanos after subscribe: " + (completeTime.get() - afterSubscribeTime));
     }
 
     @Test
