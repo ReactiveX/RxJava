@@ -7028,7 +7028,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-subscribeon">RxJava Wiki: subscribeOn()</a>
      */
     public final Observable<T> subscribeOn(Scheduler scheduler) {
-        return from(this).lift(new OperatorSubscribeOn<T>(scheduler));
+        return nest().lift(new OperatorSubscribeOn<T>(scheduler));
     }
 
     /**
