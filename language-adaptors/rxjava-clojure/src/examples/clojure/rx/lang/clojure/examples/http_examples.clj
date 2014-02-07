@@ -1,12 +1,12 @@
 ;
 ; Copyright 2013 Netflix, Inc.
-;  
+;
 ; Licensed under the Apache License, Version 2.0 (the "License");
 ; you may not use this file except in compliance with the License.
 ; You may obtain a copy of the License at
 ;
 ; http://www.apache.org/licenses/LICENSE-2.0
-; 
+;
 ; Unless required by applicable law or agreed to in writing, software
 ; distributed under the License is distributed on an "AS IS" BASIS,
 ; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,14 +27,14 @@
 
    return Observable<String> of HTML"
   (Observable/create
-    (rx/fn [observer]
+    (rx/action [observer]
       (let [f (future
                 (doseq [articleName wikipediaArticleNames]
                   (-> observer (.onNext (http/get (str "http://en.wikipedia.org/wiki/" articleName)))))
                 ; after sending response to onnext we complete the sequence
                 (-> observer .onCompleted))]
         ; a subscription that cancels the future if unsubscribed
-        (Subscriptions/create (rx/action [] (future-cancel f)))))))
+        (.add observer (Subscriptions/create (rx/action [] (future-cancel f))))))))
 
 ; To see output
 (comment
@@ -52,7 +52,7 @@
 
    return Observable<String> of HTML"
   (Observable/create
-    (rx/fn [observer]
+    (rx/action [observer]
       (let [f (future
                 (try
                   (doseq [articleName wikipediaArticleNames]
@@ -62,7 +62,7 @@
                 ; after sending response to onNext we complete the sequence
                 (-> observer .onCompleted))]
         ; a subscription that cancels the future if unsubscribed
-        (Subscriptions/create (rx/action [] (future-cancel f)))))))
+        (.add observer (Subscriptions/create (rx/action [] (future-cancel f))))))))
 
 ; To see output
 (comment

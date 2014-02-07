@@ -40,7 +40,9 @@ public class NewThreadScheduler extends Scheduler {
 
         @Override
         public Thread newThread(Runnable r) {
-            return new Thread(r, "RxNewThreadScheduler-" + count.incrementAndGet());
+            Thread t = new Thread(r, "RxNewThreadScheduler-" + count.incrementAndGet());
+            t.setDaemon(true);
+            return t;
         }
     };
 

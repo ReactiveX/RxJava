@@ -109,10 +109,12 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
 
             @Override
             public void onNext(TLeft args) {
-                int id;
+                int id, highRightId;
+
                 synchronized (gate) {
                     id = leftId++;
                     leftMap.put(id, args);
+                    highRightId = rightId;
                 }
                 SerialSubscription md = new SerialSubscription();
                 group.add(md);
@@ -129,16 +131,19 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                 md.setSubscription(duration.subscribe(new LeftDurationObserver(id, md)));
 
                 synchronized (gate) {
-                    for (TRight r : rightMap.values()) {
-                        R result;
-                        try {
-                            result = resultSelector.call(args, r);
-                        } catch (Throwable t) {
-                            observer.onError(t);
-                            cancel.unsubscribe();
-                            return;
+                    for (Map.Entry<Integer, TRight> entry : rightMap.entrySet()) {
+                        if (entry.getKey() < highRightId) {
+                            TRight r = entry.getValue();
+                            R result;
+                            try {
+                                result = resultSelector.call(args, r);
+                            } catch (Throwable t) {
+                                observer.onError(t);
+                                cancel.unsubscribe();
+                                return;
+                            }
+                            observer.onNext(result);
                         }
-                        observer.onNext(result);
                     }
                 }
             }
@@ -212,10 +217,11 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
 
             @Override
             public void onNext(TRight args) {
-                int id = 0;
+                int id = 0, highLeftId;
                 synchronized (gate) {
                     id = rightId++;
                     rightMap.put(id, args);
+                    highLeftId = leftId;
                 }
                 SerialSubscription md = new SerialSubscription();
                 group.add(md);
@@ -232,16 +238,19 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                 md.setSubscription(duration.subscribe(new RightDurationObserver(id, md)));
 
                 synchronized (gate) {
-                    for (TLeft lv : leftMap.values()) {
-                        R result;
-                        try {
-                            result = resultSelector.call(lv, args);
-                        } catch (Throwable t) {
-                            observer.onError(t);
-                            cancel.unsubscribe();
-                            return;
+                    for (Map.Entry<Integer, TLeft> entry : leftMap.entrySet()) {
+                        if (entry.getKey() < highLeftId) {
+                            TLeft lv = entry.getValue();
+                            R result;
+                            try {
+                                result = resultSelector.call(lv, args);
+                            } catch (Throwable t) {
+                                observer.onError(t);
+                                cancel.unsubscribe();
+                                return;
+                            }
+                            observer.onNext(result);
                         }
-                        observer.onNext(result);
                     }
                 }
             }

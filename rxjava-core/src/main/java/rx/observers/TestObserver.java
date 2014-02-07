@@ -28,7 +28,6 @@ import rx.Observer;
  */
 public class TestObserver<T> implements Observer<T> {
 
-    private final Observer<Object> EMPTY = new EmptyObserver<Object>();
 
     private final Observer<T> delegate;
     private final ArrayList<T> onNextEvents = new ArrayList<T>();
@@ -39,9 +38,8 @@ public class TestObserver<T> implements Observer<T> {
         this.delegate = delegate;
     }
 
-    @SuppressWarnings("unchecked")
     public TestObserver() {
-        this.delegate = (Observer<T>) EMPTY;
+        this.delegate = Observers.empty();
     }
 
     @Override

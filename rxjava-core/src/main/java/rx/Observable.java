@@ -69,7 +69,7 @@ import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallelMerge;
-import rx.operators.OperationRepeat;
+import rx.operators.OperatorRepeat;
 import rx.operators.OperationReplay;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
@@ -80,7 +80,6 @@ import rx.operators.OperationSkip;
 import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipUntil;
 import rx.operators.OperationSkipWhile;
-import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSum;
 import rx.operators.OperationSwitch;
 import rx.operators.OperationSynchronize;
@@ -97,6 +96,7 @@ import rx.operators.OperationToMultimap;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
+import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorZip;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorFromIterable;
@@ -1616,7 +1616,7 @@ public class Observable<T> {
     public final static <T> Observable<T> just(T value) {
         return from(Arrays.asList(value));
     }
-
+    
     /**
      * Returns an Observable that emits a single item and then completes, on a specified scheduler.
      * <p>
@@ -2355,6 +2355,15 @@ public class Observable<T> {
         return OperationMinMax.min(source);
     }
 
+    /**
+     * Convert the current Observable<T> into an Observable<Observable<T>>.
+     * 
+     * @return
+     */
+    private final Observable<Observable<T>> nest() {
+        return from(this);
+    }
+    
     /**
      * Returns an Observable that never sends any items or notifications to an {@link Observer}.
      * <p>
@@ -5510,7 +5519,7 @@ public class Observable<T> {
      * Returns an Observable that repeats the sequence of items emitted by the source Observable
      * indefinitely.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.o.png">
      * 
      * @return an Observable that emits the items emitted by the source Observable repeatedly and in
      *         sequence
@@ -5518,14 +5527,14 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat() {
-        return this.repeat(Schedulers.currentThread());
+        return nest().lift(new OperatorRepeat<T>());
     }
 
     /**
      * Returns an Observable that repeats the sequence of items emitted by the source Observable
      * indefinitely, on a particular scheduler.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.os.png">
      * 
      * @param scheduler
      *            the scheduler to emit the items on
@@ -5535,7 +5544,48 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat(Scheduler scheduler) {
-        return create(OperationRepeat.repeat(this, scheduler));
+        return nest().lift(new OperatorRepeat<T>(scheduler));
+    }
+
+    /**
+     * Returns an Observable that repeats the sequence of items emitted by the source
+     * Observable at most count times.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.on.png">
+     * 
+     * @param count
+     *            the number of times the source Observable items are repeated,
+     *            a count of 0 will yield an empty sequence
+     * @return an Observable that repeats the sequence of items emitted by the source
+     *         Observable at most {@code count} times
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+     */
+    public final Observable<T> repeat(long count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 expected");
+        }
+        return nest().lift(new OperatorRepeat<T>(count));
+    }
+
+    /**
+     * Returns an Observable that repeats the sequence of items emitted by the source
+     * Observable at most count times on a particular scheduler.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.ons.png">
+     * 
+     * @param count
+     *            the number of times the source Observable items are repeated,
+     *            a count of 0 will yield an empty sequence.
+     * @param scheduler
+     *            the {@link Scheduler} to emit the items on
+     * @return an Observable that repeats the sequence of items emitted by the source
+     *         Observable at most {@code count} times on a particular Scheduler
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+     */
+    public final Observable<T> repeat(long count, Scheduler scheduler) {
+        return nest().lift(new OperatorRepeat<T>(count, scheduler));
     }
 
     /**
@@ -6900,9 +6950,20 @@ public class Observable<T> {
             if (isInternalImplementation(observer)) {
                 onSubscribeFunction.call(observer);
             } else {
-                onSubscribeFunction.call(new SafeSubscriber<T>(observer));
+                // assign to `observer` so we return the protected version
+                observer = new SafeSubscriber<T>(observer);
+                onSubscribeFunction.call(observer);
             }
-            return hook.onSubscribeReturn(this, observer);
+            final Subscription returnSubscription = hook.onSubscribeReturn(this, observer);
+            // we return it inside a Subscription so it can't be cast back to Subscriber
+            return Subscriptions.create(new Action0() {
+
+                @Override
+                public void call() {
+                    returnSubscription.unsubscribe();
+                }
+
+            });
         } catch (OnErrorNotImplementedException e) {
             // special handling when onError is not implemented ... we just rethrow
             throw e;
@@ -6967,7 +7028,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-subscribeon">RxJava Wiki: subscribeOn()</a>
      */
     public final Observable<T> subscribeOn(Scheduler scheduler) {
-        return create(OperationSubscribeOn.subscribeOn(this, scheduler));
+        return nest().lift(new OperatorSubscribeOn<T>(scheduler));
     }
 
     /**

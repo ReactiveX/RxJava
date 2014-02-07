@@ -70,6 +70,7 @@
   (testing "implements Action0-3"
     (let [calls (atom [])
           a (rx/action* #(swap! calls conj (vec %&)))]
+      (is (instance? rx.Observable$OnSubscribe a))
       (is (instance? rx.util.functions.Action0 a))
       (is (instance? rx.util.functions.Action1 a))
       (is (instance? rx.util.functions.Action2 a))
@@ -114,7 +115,7 @@
 
 (deftest test-basic-usage
 
-  (testing "can create an observable"
+  (testing "can create an observable with old style fn"
     (is (= 99
            (-> (Observable/create (rx/fn [^rx.Observer o]
                                     (.onNext o 99)
@@ -123,6 +124,14 @@
                .toBlockingObservable
                .single))))
 
+  (testing "can create an observable with new-style action"
+    (is (= 99
+           (-> (Observable/create (rx/action [^rx.Subscriber s]
+                                    (when-not (.isUnsubscribed s)
+                                      (.onNext s 99))
+                                    (.onCompleted s)))
+               .toBlockingObservable
+               .single))))
   (testing "can pass rx/fn to map and friends"
     (is (= (+ 1 4 9)
            (-> (Observable/from [1 2 3])

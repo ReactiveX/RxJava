@@ -1,34 +1,35 @@
 package rx.observers;
 
 import rx.Observer;
+import rx.Subscriber;
 import rx.util.OnErrorNotImplementedException;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
 public class Observers {
 
-    /**
-     * Create an empty Observer that ignores all events.
-     */
-    public static final <T> Observer<T> create() {
-        return new Observer<T>() {
+    private static final Observer<Object> EMPTY = new Observer<Object>() {
 
-            @Override
-            public final void onCompleted() {
-                // do nothing
-            }
+        @Override
+        public final void onCompleted() {
+            // do nothing
+        }
 
-            @Override
-            public final void onError(Throwable e) {
-                throw new OnErrorNotImplementedException(e);
-            }
+        @Override
+        public final void onError(Throwable e) {
+            throw new OnErrorNotImplementedException(e);
+        }
 
-            @Override
-            public final void onNext(T args) {
-                // do nothing
-            }
+        @Override
+        public final void onNext(Object args) {
+            // do nothing
+        }
 
-        };
+    };
+
+    @SuppressWarnings("unchecked")
+    public static <T> Observer<T> empty() {
+        return (Observer<T>) EMPTY;
     }
 
     /**

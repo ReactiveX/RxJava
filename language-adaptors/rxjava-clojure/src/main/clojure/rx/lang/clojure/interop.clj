@@ -19,11 +19,18 @@
        (reify
          ; If they want Func1, give them onSubscribe as well so Observable/create can be
          ; used seemlessly with rx/fn.
+         ; TODO remove this when OnSubscriberFunc is removed
          ~@(if (and (= prefix "rx.util.functions.Func")
                     (some #{1} arities))
              `(rx.Observable$OnSubscribeFunc
                 (~'onSubscribe [~'this observer#]
                   (~f-name observer#))))
+
+         ; OnSubscribe is just an Action1, so add it to the list of implemented interfaces
+         ; so an action cab be used with Observable/create
+         ~@(if (and (= prefix "rx.util.functions.Action")
+                    (some #{1} arities))
+             `(rx.Observable$OnSubscribe))
 
          ~@(mapcat (clojure.core/fn [n]
                      (let [ifc-sym  (symbol (str prefix n))
@@ -94,7 +101,8 @@
 
 (defn action*
   "Given function f, returns an object that implements rx.util.functions.Action0-3
-  by delegating to the given function.
+  by delegating to the given function. Also implements rx.Observable$OnSubscribe which
+  is just an Action1.
 
   Example:
 

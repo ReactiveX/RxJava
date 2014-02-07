@@ -26,8 +26,6 @@ import rx.Subscriber;
  */
 public class TestSubscriber<T> extends Subscriber<T> {
 
-    private final Subscriber<Object> EMPTY = Subscribers.create();
-
     private final TestObserver<T> testObserver;
 
     public TestSubscriber(Subscriber<T> delegate) {
@@ -38,9 +36,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
         this.testObserver = new TestObserver<T>(delegate);
     }
 
-    @SuppressWarnings("unchecked")
     public TestSubscriber() {
-        this.testObserver = new TestObserver<T>((Subscriber<T>) EMPTY);
+        this.testObserver = new TestObserver<T>(Subscribers.<T>empty());
     }
 
     @Override

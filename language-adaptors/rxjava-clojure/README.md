@@ -46,6 +46,19 @@ The `rx/action` macro is identical to `rx/fn` except that the object returned im
                 (rx/action [] (println "Sequence complete"))))
 ```
 
+## Using Observable/create
+As of 0.17, `rx.Observable/create` takes an implementation of `rx.Observable$OnSubscribe` which is basically an alias for `rx.util.functions.Action1` that takes an `rx.Subscriber` as its argument. Thus, you can just use `rx/action` when creating new observables:
+
+```clojure
+; A simple observable that emits 0..9 taking unsubscribe into account
+(Observable/create (rx/action [^rx.Subscriber s]
+                     (loop [i 0]
+                       (when (and (< i 10) (.isUnsubscribed s))
+                         (.onNext s i)
+                         (recur (inc i))))
+                     (.onCompleted s)))
+```
+
 # Gotchas
 Here are a few things to keep in mind when using this interop:
 
