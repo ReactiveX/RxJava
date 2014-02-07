@@ -50,3 +50,26 @@ jar {
         instruction 'Fragment-Host', 'com.netflix.rxjava.core'
     }
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Define a task that runs an nrepl server. The port is given with the nreplPort
+// property:
+//    gradlew nrepl -PnreplPort=9999
+// or put the property in ~/.gradle/gradle.properties
+
+def nreplPortValue = (project.hasProperty('nreplPort') && !project.nreplPort.isEmpty()) ? project.nreplPort : '9999'
+configurations { nrepl }
+dependencies { nrepl 'org.clojure:tools.nrepl:0.2.2' }
+task nrepl(type: JavaExec) {
+    classpath configurations.nrepl,
+              project.sourceSets.main.clojure.srcDirs,
+              project.sourceSets.test.clojure.srcDirs,
+              sourceSets.main.runtimeClasspath,
+              sourceSets.test.runtimeClasspath
+
+    main = "clojure.main"
+    args '--eval', "(ns gradle-nrepl (:require [clojure.tools.nrepl.server :refer (start-server stop-server)]))",
+         '--eval', "(println \"Starting nrepl server on port $nreplPortValue\")",
+         '--eval', "(def server (start-server :port $nreplPortValue))"
+}
