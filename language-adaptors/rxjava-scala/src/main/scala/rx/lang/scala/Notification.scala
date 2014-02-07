@@ -41,7 +41,7 @@ sealed trait Notification[+T] {
     this match {
       case Notification.OnNext(value)  => onNext(value)
       case Notification.OnError(error) => onError(error)
-      case Notification.OnCompleted()  => onCompleted()
+      case Notification.OnCompleted  => onCompleted()
     }
   }
 
@@ -58,7 +58,7 @@ sealed trait Notification[+T] {
     this match {
       case Notification.OnNext(value)  => observer.onNext(value)
       case Notification.OnError(error) => observer.onError(error)
-      case Notification.OnCompleted()  => observer.onCompleted()
+      case Notification.OnCompleted  => observer.onCompleted()
     }
   }
 
@@ -82,7 +82,7 @@ object Notification {
 
   private [scala] def apply[T](n: rx.Notification[_ <: T]): Notification[T] = n.getKind match {
     case rx.Notification.Kind.OnNext => new OnNext(n)
-    case rx.Notification.Kind.OnCompleted => new OnCompleted(n)
+    case rx.Notification.Kind.OnCompleted => OnCompleted
     case rx.Notification.Kind.OnError => new OnError(n)
   }
   
@@ -150,26 +150,9 @@ object Notification {
     override def toString = s"OnError($error)"
   }
 
-  object OnCompleted {
-
-    /**
-     * Constructor for onCompleted notifications.
-     */
-    def apply[T](): Notification[T] = {
-      Notification(rx.Notification.createOnCompleted[T]())
-    }
-
-    /**
-     * Extractor for onCompleted notifications.
-     */
-    def unapply[U](notification: Notification[U]): Option[Unit] = notification match {
-      case onCompleted: OnCompleted[U] => Some()
-      case _ => None
-    }
-  }
-
-  class OnCompleted[T] private[scala](val asJavaNotification: rx.Notification[_ <: T]) extends Notification[T] {
-    override def toString = "OnCompleted()"
+  object OnCompleted extends Notification[Nothing] {
+    override def toString = "OnCompleted"
+    val asJavaNotification = rx.Notification.createOnCompleted[Nothing]()
   }
 
 }
