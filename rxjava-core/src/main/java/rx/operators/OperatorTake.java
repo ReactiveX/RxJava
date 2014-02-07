@@ -38,18 +38,22 @@ public final class OperatorTake<T> implements Operator<T, T> {
     }
 
     @Override
-    public Subscriber<? super T> call(final Subscriber<? super T> o) {
-        CompositeSubscription parent = new CompositeSubscription();
+    public Subscriber<? super T> call(final Subscriber<? super T> child) {
+        final CompositeSubscription parent = new CompositeSubscription();
         if (limit == 0) {
-            o.onCompleted();
+            child.onCompleted();
             parent.unsubscribe();
         }
+
         /*
          * We decouple the parent and child subscription so there can be multiple take() in a chain
          * such as for the groupBy Observer use case where you may take(1) on groups and take(20) on the children.
          * 
          * Thus, we only unsubscribe UPWARDS to the parent and an onComplete DOWNSTREAM.
+         * 
+         * However, if we receive an unsubscribe from the child we still want to propagate it upwards so we register 'parent' with 'child'
          */
+        child.add(parent);
         return new Subscriber<T>(parent) {
 
             int count = 0;
@@ -58,24 +62,24 @@ public final class OperatorTake<T> implements Operator<T, T> {
             @Override
             public void onCompleted() {
                 if (!completed) {
-                    o.onCompleted();
+                    child.onCompleted();
                 }
             }
 
             @Override
             public void onError(Throwable e) {
                 if (!completed) {
-                    o.onError(e);
+                    child.onError(e);
                 }
             }
 
             @Override
             public void onNext(T i) {
                 if (!isUnsubscribed()) {
-                    o.onNext(i);
+                    child.onNext(i);
                     if (++count >= limit) {
                         completed = true;
-                        o.onCompleted();
+                        child.onCompleted();
                         unsubscribe();
                     }
                 }
