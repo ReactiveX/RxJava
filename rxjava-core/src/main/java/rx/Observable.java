@@ -80,7 +80,6 @@ import rx.operators.OperationSkip;
 import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipUntil;
 import rx.operators.OperationSkipWhile;
-import rx.operators.OperationSubscribeOn;
 import rx.operators.OperationSum;
 import rx.operators.OperationSwitch;
 import rx.operators.OperationSynchronize;
@@ -97,6 +96,7 @@ import rx.operators.OperationToMultimap;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
+import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorZip;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorFromIterable;
@@ -7028,7 +7028,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-subscribeon">RxJava Wiki: subscribeOn()</a>
      */
     public final Observable<T> subscribeOn(Scheduler scheduler) {
-        return create(OperationSubscribeOn.subscribeOn(this, scheduler));
+        return from(this).lift(new OperatorSubscribeOn<T>(scheduler));
     }
 
     /**
