@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
@@ -208,6 +209,33 @@ public class OperatorTakeTest {
 
         });
         assertEquals(10, count.get());
+    }
+
+    @Test(timeout = 2000)
+    public void testMultiTake() {
+        final AtomicInteger count = new AtomicInteger();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                for (int i = 0; !s.isUnsubscribed(); i++) {
+                    System.out.println("Emit: " + i);
+                    count.incrementAndGet();
+                    s.onNext(i);
+                }
+            }
+
+        }).take(100).take(1).toBlockingObservable().forEach(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t1) {
+                System.out.println("Receive: " + t1);
+
+            }
+
+        });
+
+        assertEquals(1, count.get());
     }
 
     private static class TestObservableFunc implements Observable.OnSubscribeFunc<String> {
