@@ -28,7 +28,9 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.schedulers.Schedulers;
+import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
@@ -244,6 +246,53 @@ public class OperatorMapTest {
             }
 
         }).toBlockingObservable().single();
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void verifyExceptionIsThrownIfThereIsNoExceptionHandler() {
+
+        Observable.OnSubscribe<Object> creator = new Observable.OnSubscribe<Object>() {
+
+            @Override
+            public void call(Subscriber<? super Object> observer) {
+                observer.onNext("a");
+                observer.onNext("b");
+                observer.onNext("c");
+                observer.onCompleted();
+            }
+        };
+
+        Func1<Object, Observable<Object>> manyMapper = new Func1<Object, Observable<Object>>() {
+
+            @Override
+            public Observable<Object> call(Object object) {
+
+                return Observable.from(object);
+            }
+        };
+
+        Func1<Object, Object> mapper = new Func1<Object, Object>() {
+            private int count = 0;
+
+            @Override
+            public Object call(Object object) {
+                ++count;
+                if (count > 2) {
+                    throw new RuntimeException();
+                }
+                return object;
+            }
+        };
+
+        Action1<Object> onNext = new Action1<Object>() {
+
+            @Override
+            public void call(Object object) {
+                System.out.println(object.toString());
+            }
+        };
+
+        Observable.create(creator).flatMap(manyMapper).map(mapper).subscribe(onNext);
     }
 
     private static Map<String, String> getMap(String prefix) {
