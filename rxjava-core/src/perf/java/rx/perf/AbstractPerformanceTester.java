@@ -6,8 +6,14 @@ import rx.util.functions.Action0;
 
 public abstract class AbstractPerformanceTester {
 
-    public static final int REPETITIONS = 5 * 1000 * 1000;
+    public static final long REPETITIONS = 5 * 1000 * 1000;
     public static final int NUM_PRODUCERS = 1;
+
+    private final long repetitions;
+
+    protected AbstractPerformanceTester(long repetitions) {
+        this.repetitions = repetitions;
+    }
 
     public final void runTest(Action0 action) throws InterruptedException {
         for (int runNum = 0; runNum < 15; runNum++) {
@@ -19,7 +25,7 @@ public abstract class AbstractPerformanceTester {
             action.call();
 
             long duration = System.nanoTime() - start;
-            long opsPerSec = (REPETITIONS * NUM_PRODUCERS * 1000L * 1000L * 1000L) / duration;
+            long opsPerSec = (repetitions * NUM_PRODUCERS * 1000L * 1000L * 1000L) / duration;
             System.out.printf("Run: %d - %,d ops/sec \n",
                     Integer.valueOf(runNum),
                     Long.valueOf(opsPerSec));
@@ -39,14 +45,14 @@ public abstract class AbstractPerformanceTester {
      */
     public long baseline() {
         LongSumObserver o = new LongSumObserver();
-        for (long l = 0; l < REPETITIONS; l++) {
+        for (long l = 0; l < repetitions; l++) {
             o.onNext(l);
         }
         o.onCompleted();
         return o.sum;
     }
-    
-    public static Iterable<Long> ITERABLE_OF_REPETITIONS = new Iterable<Long>() {
+
+    public Iterable<Long> ITERABLE_OF_REPETITIONS = new Iterable<Long>() {
 
         @Override
         public Iterator<Long> iterator() {
@@ -55,7 +61,7 @@ public abstract class AbstractPerformanceTester {
 
                 @Override
                 public boolean hasNext() {
-                    return count <= REPETITIONS;
+                    return count <= repetitions;
                 }
 
                 @Override
@@ -71,5 +77,5 @@ public abstract class AbstractPerformanceTester {
             };
         };
     };
-    
+
 }

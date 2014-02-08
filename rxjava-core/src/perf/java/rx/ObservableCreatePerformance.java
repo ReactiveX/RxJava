@@ -7,6 +7,10 @@ import rx.util.functions.Action0;
 
 public class ObservableCreatePerformance extends AbstractPerformanceTester {
 
+    ObservableCreatePerformance() {
+        super(REPETITIONS);
+    }
+
     public static void main(String args[]) {
 
         final ObservableCreatePerformance spt = new ObservableCreatePerformance();

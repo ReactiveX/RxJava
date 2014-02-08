@@ -9,6 +9,10 @@ import rx.util.functions.Action0;
 
 public class OperatorMergePerformance extends AbstractPerformanceTester {
 
+    OperatorMergePerformance() {
+        super(REPETITIONS);
+    }
+    
     public static void main(String args[]) {
 
         final OperatorMergePerformance spt = new OperatorMergePerformance();

@@ -4,6 +4,11 @@ import rx.perf.AbstractPerformanceTester;
 import rx.util.functions.Action0;
 
 public class CompositeSubscriptionAddRemovePerf extends AbstractPerformanceTester {
+
+    CompositeSubscriptionAddRemovePerf() {
+        super(REPETITIONS);
+    }
+
     public static void main(String[] args) {
         final CompositeSubscriptionAddRemovePerf spt = new CompositeSubscriptionAddRemovePerf();
         try {

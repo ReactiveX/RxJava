@@ -3,12 +3,15 @@ package rx.operators;
 import rx.Observable;
 import rx.perf.AbstractPerformanceTester;
 import rx.perf.IntegerSumObserver;
-import rx.perf.LongSumObserver;
 import rx.util.functions.Action0;
 import rx.util.functions.Func2;
 
 public class OperatorZipPerformance extends AbstractPerformanceTester {
 
+    OperatorZipPerformance() {
+        super(REPETITIONS);
+    }
+    
     public static void main(String args[]) {
 
         final OperatorZipPerformance spt = new OperatorZipPerformance();
