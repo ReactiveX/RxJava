@@ -48,9 +48,35 @@ import rx.util.functions.Action1;
 public class OperatorObserveOn<T> implements Operator<T, T> {
 
     private final Scheduler scheduler;
+    private final int bufferSize;
+
+    /**
+     * 
+     * @param scheduler
+     * @param bufferSize
+     *            that will be rounded up to the next power of 2
+     */
+    public OperatorObserveOn(Scheduler scheduler, int bufferSize) {
+        this.scheduler = scheduler;
+        this.bufferSize = roundToNextPowerOfTwoIfNecessary(bufferSize);
+    }
 
     public OperatorObserveOn(Scheduler scheduler) {
-        this.scheduler = scheduler;
+        this(scheduler, 1);
+    }
+
+    private static int roundToNextPowerOfTwoIfNecessary(int num) {
+        if ((num & -num) == num) {
+            return num;
+        } else {
+            int result = 1;
+            while (num != 0)
+            {
+                num >>= 1;
+                result <<= 1;
+            }
+            return result;
+        }
     }
 
     @Override
@@ -87,7 +113,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
         final Subscriber<? super T> observer;
         private volatile Scheduler.Inner recursiveScheduler;
 
-        private final InterruptibleBlockingQueue queue = new InterruptibleBlockingQueue();
+        private final InterruptibleBlockingQueue queue = new InterruptibleBlockingQueue(bufferSize);
         final AtomicLong counter = new AtomicLong(0);
 
         public ObserveOnSubscriber(Subscriber<? super T> observer) {
@@ -101,9 +127,9 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
                 // we want to block for natural back-pressure
                 // so that the producer waits for each value to be consumed
                 if (t == null) {
-                    queue.put(NULL_SENTINEL);
+                    queue.addBlocking(NULL_SENTINEL);
                 } else {
-                    queue.put(t);
+                    queue.addBlocking(t);
                 }
                 schedule();
             } catch (InterruptedException e) {
@@ -118,7 +144,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
             try {
                 // we want to block for natural back-pressure
                 // so that the producer waits for each value to be consumed
-                queue.put(COMPLETE_SENTINEL);
+                queue.addBlocking(COMPLETE_SENTINEL);
                 schedule();
             } catch (InterruptedException e) {
                 onError(e);
@@ -130,7 +156,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
             try {
                 // we want to block for natural back-pressure
                 // so that the producer waits for each value to be consumed
-                queue.put(new ErrorSentinel(e));
+                queue.addBlocking(new ErrorSentinel(e));
                 schedule();
             } catch (InterruptedException e2) {
                 // call directly if we can't schedule
@@ -195,48 +221,23 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
 
     }
 
-    /**
-     * Same behavior as ArrayBlockingQueue<Object>(1) except that we can interrupt/unsubscribe it.
-     */
     private class InterruptibleBlockingQueue {
 
-        private final Semaphore semaphore = new Semaphore(1);
-        private volatile Object item;
+        private final Semaphore semaphore;
         private volatile boolean interrupted = false;
 
-        public Object poll() {
-            if (interrupted) {
-                return null;
-            }
-            if (item == null) {
-                return null;
-            }
-            try {
-                return item;
-            } finally {
-                item = null;
-                semaphore.release();
-            }
-        }
+        private final Object[] buffer;
 
-        /**
-         * Add an Object, blocking if an item is already in the queue.
-         * 
-         * @param o
-         * @throws InterruptedException
-         */
-        public void put(Object o) throws InterruptedException {
-            if (interrupted) {
-                throw new InterruptedException("Interrupted by Unsubscribe");
-            }
-            semaphore.acquire();
-            if (interrupted) {
-                throw new InterruptedException("Interrupted by Unsubscribe");
-            }
-            if (o == null) {
-                throw new IllegalArgumentException("Can not put null");
-            }
-            item = o;
+        private AtomicLong tail = new AtomicLong();
+        private AtomicLong head = new AtomicLong();
+        private final int capacity;
+        private final int mask;
+
+        public InterruptibleBlockingQueue(final int size) {
+            this.semaphore = new Semaphore(size);
+            this.capacity = size;
+            this.mask = size - 1;
+            buffer = new Object[size];
         }
 
         /**
@@ -246,6 +247,63 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
             interrupted = true;
             semaphore.release();
         }
+
+        public void addBlocking(final Object e) throws InterruptedException {
+            if (interrupted) {
+                throw new InterruptedException("Interrupted by Unsubscribe");
+            }
+            semaphore.acquire();
+            if (interrupted) {
+                throw new InterruptedException("Interrupted by Unsubscribe");
+            }
+            if (e == null) {
+                throw new IllegalArgumentException("Can not put null");
+            }
+
+            if (offer(e)) {
+                return;
+            } else {
+                throw new IllegalStateException("Queue is full");
+            }
+        }
+
+        private boolean offer(final Object e) {
+            final long _t = tail.get();
+            if (_t - head.get() == capacity) {
+                // queue is full
+                return false;
+            }
+            int index = (int) (_t & mask);
+            buffer[index] = e;
+            // move the tail forward
+            tail.lazySet(_t + 1);
+
+            return true;
+        }
+
+        public Object poll() {
+            if (interrupted) {
+                return null;
+            }
+            final long _h = head.get();
+            if (tail.get() == _h) {
+                // nothing available
+                return null;
+            }
+            int index = (int) (_h & mask);
+
+            // fetch the item
+            Object v = buffer[index];
+            // allow GC to happen
+            buffer[index] = null;
+            // increment and signal we're done
+            head.lazySet(_h + 1);
+            if (v != null) {
+                semaphore.release();
+            }
+            return v;
+        }
+
     }
 
 }

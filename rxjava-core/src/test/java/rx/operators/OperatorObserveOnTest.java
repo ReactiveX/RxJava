@@ -348,30 +348,35 @@ public class OperatorObserveOnTest {
 
     @Test
     public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeNewThread() throws InterruptedException {
-        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.newThread());
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.newThread(), 1);
+    }
+
+    @Test
+    public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeNewThreadAndBuffer8() throws InterruptedException {
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.newThread(), 8);
     }
 
     @Test
     public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeIO() throws InterruptedException {
-        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.io());
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.io(), 1);
     }
 
     @Test
     public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeTrampoline() throws InterruptedException {
-        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.trampoline());
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.trampoline(), 1);
     }
 
     @Test
     public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeTestScheduler() throws InterruptedException {
-        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.test());
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.test(), 1);
     }
 
     @Test
     public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeComputation() throws InterruptedException {
-        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.computation());
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.computation(), 1);
     }
 
-    private final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Scheduler scheduler) throws InterruptedException {
+    private final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Scheduler scheduler, int bufferSize) throws InterruptedException {
         final AtomicInteger countEmitted = new AtomicInteger();
         final AtomicInteger countTaken = new AtomicInteger();
         int value = Observable.create(new OnSubscribeFunc<Integer>() {
@@ -385,7 +390,7 @@ public class OperatorObserveOnTest {
                     public void run() {
                         int i = 1;
                         while (!s.isUnsubscribed() && i <= 100) {
-                            System.out.println("onNext from fast producer [" + Thread.currentThread() + "]: " + i);
+                            //                            System.out.println("onNext from fast producer [" + Thread.currentThread() + "]: " + i);
                             o.onNext(i++);
                         }
                         o.onCompleted();
@@ -405,13 +410,13 @@ public class OperatorObserveOnTest {
 
             @Override
             public void call() {
-                System.out.println("-------- Done Emitting from Source ---------");
+                //                System.out.println("-------- Done Emitting from Source ---------");
             }
-        }).observeOn(scheduler).doOnNext(new Action1<Integer>() {
+        }).observeOn(scheduler, bufferSize).doOnNext(new Action1<Integer>() {
 
             @Override
             public void call(Integer i) {
-                System.out.println(">> onNext to slowConsumer  [" + Thread.currentThread() + "] pre-take: " + i);
+                //                System.out.println(">> onNext to slowConsumer  [" + Thread.currentThread() + "] pre-take: " + i);
                 //force it to be slower than the producer
                 try {
                     Thread.sleep(10);
@@ -420,7 +425,14 @@ public class OperatorObserveOnTest {
                 }
                 countTaken.incrementAndGet();
             }
-        }).take(10).toBlockingObservable().last();
+        }).take(10).doOnNext(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t) {
+                System.out.println("*********** value: " + t);
+            }
+
+        }).toBlockingObservable().last();
 
         if (scheduler instanceof TrampolineScheduler || scheduler instanceof ImmediateScheduler || scheduler instanceof TestScheduler) {
             // since there is no concurrency it will block and only emit as many as it can process
@@ -428,7 +440,7 @@ public class OperatorObserveOnTest {
         } else {
             // the others with concurrency should not emit all 100 ... but 10 + 2 in the pipeline
             // NOTE: The +2 could change if the implementation of the queue logic changes. See Javadoc at top of class.
-            assertEquals(12, countEmitted.get());
+            assertEquals(11, countEmitted.get(), bufferSize); // can be up to 11 + bufferSize
         }
         // number received after take (but take will filter any extra)
         assertEquals(10, value);
