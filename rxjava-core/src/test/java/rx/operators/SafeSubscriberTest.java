@@ -17,7 +17,6 @@ package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationSynchronize.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -25,71 +24,10 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.SafeSubscriber;
+import rx.observers.TestSubscriber;
 
-public class OperationSynchronizeTest {
-
-    /**
-     * Ensure onCompleted can not be called after an Unsubscribe
-     */
-    @Test
-    public void testOnCompletedAfterUnSubscribe() {
-        TestObservable t = new TestObservable(null);
-        Observable<String> st = Observable.create(synchronize(Observable.create(t)));
-
-        @SuppressWarnings("unchecked")
-        Observer<String> w = mock(Observer.class);
-        Subscription ws = st.subscribe(w);
-
-        System.out.println("ws: " + ws);
-        
-        t.sendOnNext("one");
-        ws.unsubscribe();
-        System.out.println("send onCompleted");
-        t.sendOnCompleted();
-
-        verify(w, times(1)).onNext("one");
-        verify(w, Mockito.never()).onCompleted();
-    }
-
-    /**
-     * Ensure onNext can not be called after an Unsubscribe
-     */
-    @Test
-    public void testOnNextAfterUnSubscribe() {
-        TestObservable t = new TestObservable(null);
-        Observable<String> st = Observable.create(synchronize(Observable.create(t)));
-
-        @SuppressWarnings("unchecked")
-        Observer<String> w = mock(Observer.class);
-        Subscription ws = st.subscribe(w);
-
-        t.sendOnNext("one");
-        ws.unsubscribe();
-        t.sendOnNext("two");
-
-        verify(w, times(1)).onNext("one");
-        verify(w, Mockito.never()).onNext("two");
-    }
-
-    /**
-     * Ensure onError can not be called after an Unsubscribe
-     */
-    @Test
-    public void testOnErrorAfterUnSubscribe() {
-        TestObservable t = new TestObservable(null);
-        Observable<String> st = Observable.create(synchronize(Observable.create(t)));
-
-        @SuppressWarnings("unchecked")
-        Observer<String> w = mock(Observer.class);
-        Subscription ws = st.subscribe(w);
-
-        t.sendOnNext("one");
-        ws.unsubscribe();
-        t.sendOnError(new RuntimeException("bad"));
-
-        verify(w, times(1)).onNext("one");
-        verify(w, Mockito.never()).onError(any(Throwable.class));
-    }
+public class SafeSubscriberTest {
 
     /**
      * Ensure onNext can not be called after onError
@@ -97,12 +35,12 @@ public class OperationSynchronizeTest {
     @Test
     public void testOnNextAfterOnError() {
         TestObservable t = new TestObservable(null);
-        Observable<String> st = Observable.create(synchronize(Observable.create(t)));
+        Observable<String> st = Observable.create(t);
 
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
         @SuppressWarnings("unused")
-        Subscription ws = st.subscribe(w);
+        Subscription ws = st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
 
         t.sendOnNext("one");
         t.sendOnError(new RuntimeException("bad"));
@@ -119,12 +57,12 @@ public class OperationSynchronizeTest {
     @Test
     public void testOnCompletedAfterOnError() {
         TestObservable t = new TestObservable(null);
-        Observable<String> st = Observable.create(synchronize(Observable.create(t)));
+        Observable<String> st = Observable.create(t);
 
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
         @SuppressWarnings("unused")
-        Subscription ws = st.subscribe(w);
+        Subscription ws = st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
 
         t.sendOnNext("one");
         t.sendOnError(new RuntimeException("bad"));
@@ -141,12 +79,12 @@ public class OperationSynchronizeTest {
     @Test
     public void testOnNextAfterOnCompleted() {
         TestObservable t = new TestObservable(null);
-        Observable<String> st = Observable.create(synchronize(Observable.create(t)));
+        Observable<String> st = Observable.create(t);
 
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
         @SuppressWarnings("unused")
-        Subscription ws = st.subscribe(w);
+        Subscription ws = st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
 
         t.sendOnNext("one");
         t.sendOnCompleted();
@@ -164,12 +102,12 @@ public class OperationSynchronizeTest {
     @Test
     public void testOnErrorAfterOnCompleted() {
         TestObservable t = new TestObservable(null);
-        Observable<String> st = Observable.create(synchronize(Observable.create(t)));
+        Observable<String> st = Observable.create(t);
 
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
         @SuppressWarnings("unused")
-        Subscription ws = st.subscribe(w);
+        Subscription ws = st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
 
         t.sendOnNext("one");
         t.sendOnCompleted();

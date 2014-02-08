@@ -118,6 +118,7 @@ import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
+import rx.util.Exceptions;
 import rx.util.OnErrorNotImplementedException;
 import rx.util.Range;
 import rx.util.TimeInterval;
@@ -6964,10 +6965,9 @@ public class Observable<T> {
                 }
 
             });
-        } catch (OnErrorNotImplementedException e) {
-            // special handling when onError is not implemented ... we just rethrow
-            throw e;
         } catch (Throwable e) {
+            // special handling for certain Throwable/Error/Exception types
+            Exceptions.throwIfFatal(e);
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
                 observer.onError(hook.onSubscribeError(this, e));

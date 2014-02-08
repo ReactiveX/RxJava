@@ -151,9 +151,7 @@ public final class OperationMergeDelayError {
              * <p>
              * Bug report: https://github.com/Netflix/RxJava/issues/614
              */
-            SafeObservableSubscription subscription = new SafeObservableSubscription(ourSubscription);
-            completeSubscription.add(subscription);
-            SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(actualObserver, subscription);
+            SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(actualObserver);
 
             /**
              * Subscribe to the parent Observable to get to the children Observables

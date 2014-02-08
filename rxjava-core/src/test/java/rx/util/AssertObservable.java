@@ -100,7 +100,7 @@ public class AssertObservable {
                         message.append(" ").append(expectedNotfication.getValue());
                     if (expectedNotfication.hasThrowable())
                         message.append(" ").append(expectedNotfication.getThrowable());
-                    return new Notification<String>("equals " + message.toString());
+                    return Notification.createOnNext("equals " + message.toString());
                 }
                 else {
                     StringBuilder error = new StringBuilder();
@@ -116,7 +116,7 @@ public class AssertObservable {
                         error.append(" ").append(actualNotification.getThrowable());
                     error.append(">");
 
-                    return new Notification<String>(new AssertionError(error.toString()));
+                    return Notification.createOnError(new AssertionError(error.toString()));
                 }
             }
         };
@@ -131,9 +131,9 @@ public class AssertObservable {
                 fail |= b.isOnError();
 
                 if (fail)
-                    return new Notification<String>(new AssertionError(message));
+                    return Notification.createOnError(new AssertionError(message));
                 else
-                    return new Notification<String>(message);
+                    return Notification.createOnNext(message);
             }
         };
 
@@ -142,9 +142,9 @@ public class AssertObservable {
             public Notification<Void> call(Notification<String> outcome) {
                 if (outcome.isOnError()) {
                     String fullMessage = (message != null ? message + ": " : "") + "Observables are different\n\t" + outcome.getThrowable().getMessage();
-                    return new Notification<Void>(new AssertionError(fullMessage));
+                    return Notification.createOnError(new AssertionError(fullMessage));
                 }
-                return new Notification<Void>();
+                return Notification.createOnCompleted();
             }
         }).dematerialize();
         return outcomeObservable;

@@ -37,6 +37,7 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.operators.SafeObservableSubscription;
+import rx.operators.SafeObserver;
 
 public class SynchronizedObserverTest {
 
@@ -54,8 +55,7 @@ public class SynchronizedObserverTest {
         TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable(s, "one", "two", "three");
         Observable<String> w = Observable.create(onSubscribe);
 
-        SafeObservableSubscription as = new SafeObservableSubscription(s);
-        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(observer, as);
+        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(observer);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
@@ -76,9 +76,8 @@ public class SynchronizedObserverTest {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three");
         Observable<String> w = Observable.create(onSubscribe);
 
-        SafeObservableSubscription as = new SafeObservableSubscription(s);
         BusyObserver busyObserver = new BusyObserver();
-        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as);
+        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
@@ -102,13 +101,12 @@ public class SynchronizedObserverTest {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three");
         Observable<String> w = Observable.create(onSubscribe);
 
-        SafeObservableSubscription as = new SafeObservableSubscription(s);
         BusyObserver busyObserver = new BusyObserver();
 
         Object lock = new Object();
         ExternalBusyThread externalBusyThread = new ExternalBusyThread(busyObserver, lock, 10, 100);
 
-        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as, lock);
+        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, lock);
 
         externalBusyThread.start();
 
@@ -142,9 +140,8 @@ public class SynchronizedObserverTest {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null);
         Observable<String> w = Observable.create(onSubscribe);
 
-        SafeObservableSubscription as = new SafeObservableSubscription(s);
         BusyObserver busyObserver = new BusyObserver();
-        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as);
+        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
@@ -174,13 +171,12 @@ public class SynchronizedObserverTest {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null);
         Observable<String> w = Observable.create(onSubscribe);
 
-        SafeObservableSubscription as = new SafeObservableSubscription(s);
         BusyObserver busyObserver = new BusyObserver();
 
         Object lock = new Object();
         ExternalBusyThread externalBusyThread = new ExternalBusyThread(busyObserver, lock, 10, 100);
 
-        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as, lock);
+        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, lock);
 
         externalBusyThread.start();
 
@@ -220,9 +216,8 @@ public class SynchronizedObserverTest {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
         Observable<String> w = Observable.create(onSubscribe);
 
-        SafeObservableSubscription as = new SafeObservableSubscription(s);
         BusyObserver busyObserver = new BusyObserver();
-        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as);
+        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
@@ -250,13 +245,12 @@ public class SynchronizedObserverTest {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
         Observable<String> w = Observable.create(onSubscribe);
 
-        SafeObservableSubscription as = new SafeObservableSubscription(s);
         BusyObserver busyObserver = new BusyObserver();
 
         Object lock = new Object();
         ExternalBusyThread externalBusyThread = new ExternalBusyThread(busyObserver, lock, 10, 100);
 
-        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, as, lock);
+        SynchronizedObserver<String> aw = new SynchronizedObserver<String>(busyObserver, lock);
 
         externalBusyThread.start();
 
@@ -300,8 +294,8 @@ public class SynchronizedObserverTest {
         ExecutorService tp = Executors.newFixedThreadPool(20);
         try {
             TestConcurrencyObserver tw = new TestConcurrencyObserver();
-            SafeObservableSubscription s = new SafeObservableSubscription();
-            SynchronizedObserver<String> w = new SynchronizedObserver<String>(tw, s);
+            // we need Synchronized + SafeSubscriber to handle synchronization plus life-cycle
+            SynchronizedObserver<String> w = new SynchronizedObserver<String>(new SafeSubscriber<String>(tw));
 
             Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
             Future<?> f2 = tp.submit(new OnNextThread(w, 5000));
