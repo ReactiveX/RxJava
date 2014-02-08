@@ -44,9 +44,20 @@ subprojects {
 		//include /src/examples folder
         examples
 		//include /src/perf folder
-		// perf //-> Not working so commented out
+        perf {
+            java {
+                srcDir 'src/perf/java'
+                compileClasspath += main.output
+                runtimeClasspath += main.output
+            }
+        }
     }
-    
+
+    dependencies {
+        perfCompile 'com.google.caliper:caliper:1.0-beta-1'
+        perfRuntime 'com.sun.jersey:jersey-core:1.11'
+    }
+
     tasks.build { 
 		//include 'examples' in build task
         dependsOn(examplesClasses)
@@ -58,6 +69,7 @@ subprojects {
         classpath {  
             // include 'provided' dependencies on the classpath
             plusConfigurations += configurations.provided
+            plusConfigurations += configurations.perfCompile
             
             downloadSources = true
             downloadJavadoc = true
@@ -68,6 +80,8 @@ subprojects {
         module {
             // include 'provided' dependencies on the classpath
             scopes.PROVIDED.plus += configurations.provided
+            // TODO not sure what to add it to
+            //scopes.PROVIDED.plus += configurations.perfCompile
         }
     }
 }
