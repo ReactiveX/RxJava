@@ -33,6 +33,7 @@ import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
+import rx.operators.OnSubscribeRange;
 import rx.operators.OperationAll;
 import rx.operators.OperationAmb;
 import rx.operators.OperationAny;
@@ -95,7 +96,7 @@ import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorDoOnEach;
-import rx.operators.OperatorFromIterable;
+import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
@@ -120,7 +121,6 @@ import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 import rx.util.Exceptions;
 import rx.util.OnErrorNotImplementedException;
-import rx.util.Range;
 import rx.util.TimeInterval;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
@@ -1217,7 +1217,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Iterable<? extends T> iterable) {
-        return create(new OperatorFromIterable<T>(iterable));
+        return create(new OnSubscribeFromIterable<T>(iterable));
     }
 
     /**
@@ -1239,7 +1239,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
      */
     public final static <T> Observable<T> from(Iterable<? extends T> iterable, Scheduler scheduler) {
-        return create(new OperatorFromIterable<T>(iterable)).subscribeOn(scheduler);
+        return create(new OnSubscribeFromIterable<T>(iterable)).subscribeOn(scheduler);
     }
 
     /**
@@ -2439,7 +2439,10 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229460.aspx">MSDN: Observable.Range</a>
      */
     public final static Observable<Integer> range(int start, int count) {
-        return from(Range.createWithCount(start, count));
+        if ((start + count) > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("start + count can not exceed Integer.MAX_VALUE");
+        }
+        return Observable.create(new OnSubscribeRange(start, start + count));
     }
 
     /**
@@ -2459,7 +2462,10 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211896.aspx">MSDN: Observable.Range</a>
      */
     public final static Observable<Integer> range(int start, int count, Scheduler scheduler) {
-        return from(Range.createWithCount(start, count), scheduler);
+        if ((start + count) > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("start + count can not exceed Integer.MAX_VALUE");
+        }
+        return Observable.create(new OnSubscribeRange(start, start + count)).subscribeOn(scheduler);
     }
 
     /**

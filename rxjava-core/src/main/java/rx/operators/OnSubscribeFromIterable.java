@@ -26,11 +26,11 @@ import rx.Subscriber;
  * You can convert any object that supports the Iterable interface into an Observable that emits
  * each item in the object, with the toObservable operation.
  */
-public final class OperatorFromIterable<T> implements OnSubscribe<T> {
+public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 
     final Iterable<? extends T> is;
 
-    public OperatorFromIterable(Iterable<? extends T> iterable) {
+    public OnSubscribeFromIterable(Iterable<? extends T> iterable) {
         this.is = iterable;
     }
 
