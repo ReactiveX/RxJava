@@ -15,12 +15,16 @@
  */
 package rx.operators;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.util.functions.Action1;
 
 public class OnSubscribeRangeTest {
 
@@ -36,5 +40,28 @@ public class OnSubscribeRangeTest {
         verify(observer, never()).onNext(5);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testRangeUnsubscribe() {
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = mock(Observer.class);
+        final AtomicInteger count = new AtomicInteger();
+        Observable.range(1, 1000).doOnNext(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t1) {
+                count.incrementAndGet();
+            }
+
+        }).take(3).subscribe(observer);
+
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(2);
+        verify(observer, times(1)).onNext(3);
+        verify(observer, never()).onNext(4);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        assertEquals(3, count.get());
     }
 }

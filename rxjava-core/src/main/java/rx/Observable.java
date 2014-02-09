@@ -2439,10 +2439,13 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229460.aspx">MSDN: Observable.Range</a>
      */
     public final static Observable<Integer> range(int start, int count) {
+        if (count < 1) {
+            throw new IllegalArgumentException("Count must be positive");
+        }
         if ((start + count) > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("start + count can not exceed Integer.MAX_VALUE");
         }
-        return Observable.create(new OnSubscribeRange(start, start + count));
+        return Observable.create(new OnSubscribeRange(start, start + (count - 1)));
     }
 
     /**
@@ -2462,10 +2465,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211896.aspx">MSDN: Observable.Range</a>
      */
     public final static Observable<Integer> range(int start, int count, Scheduler scheduler) {
-        if ((start + count) > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("start + count can not exceed Integer.MAX_VALUE");
-        }
-        return Observable.create(new OnSubscribeRange(start, start + count)).subscribeOn(scheduler);
+        return range(start, count).subscribeOn(scheduler);
     }
 
     /**
