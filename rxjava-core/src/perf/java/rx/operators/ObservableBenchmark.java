@@ -12,6 +12,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Subscriber;
 import rx.util.functions.Func1;
 
 public class ObservableBenchmark {
@@ -105,7 +106,7 @@ public class ObservableBenchmark {
 
     private static final Observable<Integer> observableOfInts = Observable.create(new OnSubscribe<Integer>() {
         @Override
-        public void call(Observer<? super Integer> o) {
+        public void call(Subscriber<? super Integer> o) {
             for (int i = 0; i < intValues.length; i++) {
                 if (o.isUnsubscribed())
                     return;
