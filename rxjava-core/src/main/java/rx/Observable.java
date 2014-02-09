@@ -95,7 +95,7 @@ import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorDoOnEach;
-import rx.operators.OperatorFromIterable;
+import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
@@ -1217,7 +1217,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Iterable<? extends T> iterable) {
-        return create(new OperatorFromIterable<T>(iterable));
+        return create(new OnSubscribeFromIterable<T>(iterable));
     }
 
     /**
@@ -1239,7 +1239,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
      */
     public final static <T> Observable<T> from(Iterable<? extends T> iterable, Scheduler scheduler) {
-        return create(new OperatorFromIterable<T>(iterable)).subscribeOn(scheduler);
+        return create(new OnSubscribeFromIterable<T>(iterable)).subscribeOn(scheduler);
     }
 
     /**
