@@ -19,6 +19,7 @@ import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 
 /**
+ * Emit ints from start to end inclusive.
  */
 public final class OnSubscribeRange implements OnSubscribe<Integer> {
 
@@ -32,7 +33,7 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
 
     @Override
     public void call(Subscriber<? super Integer> o) {
-        for (int i = start; i < end; i++) {
+        for (int i = start; i <= end; i++) {
             if (o.isUnsubscribed()) {
                 return;
             }
