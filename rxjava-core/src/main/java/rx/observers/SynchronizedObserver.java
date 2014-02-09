@@ -16,18 +16,11 @@
 package rx.observers;
 
 import rx.Observer;
-import rx.Subscriber;
-import rx.operators.SafeObservableSubscription;
 
 /**
- * A thread-safe Observer for transitioning states in operators.
+ * Synchronize execution to be single-threaded.
  * <p>
- * Execution rules are:
- * <ul>
- * <li>Allow only single-threaded, synchronous, ordered execution of onNext, onCompleted, onError</li>
- * <li>Once an onComplete or onError are performed, no further calls can be executed</li>
- * <li>If unsubscribe is called, this means we call completed() and don't allow any further onNext calls.</li>
- * </ul>
+ * This ONLY does synchronization. It does not involve itself in safety or subscriptions. See SafeSubscriber for that.
  * 
  * @param <T>
  */
@@ -48,76 +41,33 @@ public final class SynchronizedObserver<T> implements Observer<T> {
      */
 
     private final Observer<? super T> observer;
-    private final SafeObservableSubscription subscription;
-    private volatile boolean finishRequested = false;
-    private volatile boolean finished = false;
     private volatile Object lock;
 
-    public SynchronizedObserver(Observer<? super T> subscriber, SafeObservableSubscription subscription) {
+    public SynchronizedObserver(Observer<? super T> subscriber) {
         this.observer = subscriber;
-        this.subscription = subscription;
         this.lock = this;
     }
 
-    public SynchronizedObserver(Observer<? super T> subscriber, SafeObservableSubscription subscription, Object lock) {
+    public SynchronizedObserver(Observer<? super T> subscriber, Object lock) {
         this.observer = subscriber;
-        this.subscription = subscription;
         this.lock = lock;
     }
 
-    /**
-     * Used when synchronizing an Observer without access to the subscription.
-     * 
-     * @param Observer
-     */
-    public SynchronizedObserver(Observer<? super T> subscriber) {
-        this(subscriber, new SafeObservableSubscription());
-    }
-
     public void onNext(T arg) {
-        if (finished || finishRequested || subscription.isUnsubscribed()) {
-            // if we're already stopped, or a finish request has been received, we won't allow further onNext requests
-            return;
-        }
         synchronized (lock) {
-            // check again since this could have changed while waiting
-            if (finished || finishRequested || subscription.isUnsubscribed()) {
-                // if we're already stopped, or a finish request has been received, we won't allow further onNext requests
-                return;
-            }
             observer.onNext(arg);
         }
     }
 
     public void onError(Throwable e) {
-        if (finished || subscription.isUnsubscribed()) {
-            // another thread has already finished us, so we won't proceed
-            return;
-        }
-        finishRequested = true;
         synchronized (lock) {
-            // check again since this could have changed while waiting
-            if (finished || subscription.isUnsubscribed()) {
-                return;
-            }
             observer.onError(e);
-            finished = true;
         }
     }
 
     public void onCompleted() {
-        if (finished || subscription.isUnsubscribed()) {
-            // another thread has already finished us, so we won't proceed
-            return;
-        }
-        finishRequested = true;
         synchronized (lock) {
-            // check again since this could have changed while waiting
-            if (finished || subscription.isUnsubscribed()) {
-                return;
-            }
             observer.onCompleted();
-            finished = true;
         }
     }
 }

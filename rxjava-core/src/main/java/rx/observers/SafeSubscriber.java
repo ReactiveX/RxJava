@@ -19,11 +19,9 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Subscriber;
-import rx.Subscription;
-import rx.operators.SafeObservableSubscription;
 import rx.plugins.RxJavaPlugins;
-import rx.subscriptions.Subscriptions;
 import rx.util.CompositeException;
+import rx.util.Exceptions;
 import rx.util.OnErrorNotImplementedException;
 
 /**
@@ -74,6 +72,9 @@ public class SafeSubscriber<T> extends Subscriber<T> {
             try {
                 actual.onCompleted();
             } catch (Throwable e) {
+                // we handle here instead of another method so we don't add stacks to the frame
+                // which can prevent it from being able to handle StackOverflow
+                Exceptions.throwIfFatal(e);
                 // handle errors if the onCompleted implementation fails, not just if the Observable fails
                 _onError(e);
             } finally {
@@ -85,6 +86,9 @@ public class SafeSubscriber<T> extends Subscriber<T> {
 
     @Override
     public void onError(Throwable e) {
+        // we handle here instead of another method so we don't add stacks to the frame
+        // which can prevent it from being able to handle StackOverflow
+        Exceptions.throwIfFatal(e);
         if (isFinished.compareAndSet(false, true)) {
             _onError(e);
         }
@@ -97,6 +101,9 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                 actual.onNext(args);
             }
         } catch (Throwable e) {
+            // we handle here instead of another method so we don't add stacks to the frame
+            // which can prevent it from being able to handle StackOverflow
+            Exceptions.throwIfFatal(e);
             // handle errors if the onNext implementation fails, not just if the Observable fails
             onError(e);
         }

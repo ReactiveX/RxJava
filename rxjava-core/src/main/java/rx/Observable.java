@@ -27,13 +27,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable.OnSubscribe;
 import rx.joins.Pattern2;
 import rx.joins.Plan0;
 import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
+import rx.operators.OnSubscribeFromIterable;
+import rx.operators.OnSubscribeRange;
 import rx.operators.OperationAll;
 import rx.operators.OperationAmb;
 import rx.operators.OperationAny;
@@ -50,8 +51,6 @@ import rx.operators.OperationDelay;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
-import rx.operators.Operator;
-import rx.operators.OperatorDoOnEach;
 import rx.operators.OperationElementAt;
 import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
@@ -65,13 +64,11 @@ import rx.operators.OperationMaterialize;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMinMax;
 import rx.operators.OperationMulticast;
-import rx.operators.OperationObserveOn;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallelMerge;
-import rx.operators.OperatorRepeat;
 import rx.operators.OperationReplay;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
@@ -98,19 +95,21 @@ import rx.operators.OperationToMultimap;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
-import rx.operators.OperatorSubscribeOn;
-import rx.operators.OperatorZip;
 import rx.operators.Operator;
 import rx.operators.OperatorCast;
-import rx.operators.OperatorFromIterable;
+import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
+import rx.operators.OperatorObserveOn;
 import rx.operators.OperatorParallel;
+import rx.operators.OperatorRepeat;
+import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorTake;
 import rx.operators.OperatorTimestamp;
 import rx.operators.OperatorToObservableList;
 import rx.operators.OperatorToObservableSortedList;
+import rx.operators.OperatorZip;
 import rx.operators.OperatorZipIterable;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
@@ -121,8 +120,8 @@ import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
+import rx.util.Exceptions;
 import rx.util.OnErrorNotImplementedException;
-import rx.util.Range;
 import rx.util.TimeInterval;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;
@@ -1218,7 +1217,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Iterable<? extends T> iterable) {
-        return create(new OperatorFromIterable<T>(iterable));
+        return create(new OnSubscribeFromIterable<T>(iterable));
     }
 
     /**
@@ -1240,7 +1239,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
      */
     public final static <T> Observable<T> from(Iterable<? extends T> iterable, Scheduler scheduler) {
-        return create(new OperatorFromIterable<T>(iterable)).subscribeOn(scheduler);
+        return create(new OnSubscribeFromIterable<T>(iterable)).subscribeOn(scheduler);
     }
 
     /**
@@ -2440,7 +2439,13 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229460.aspx">MSDN: Observable.Range</a>
      */
     public final static Observable<Integer> range(int start, int count) {
-        return from(Range.createWithCount(start, count));
+        if (count < 1) {
+            throw new IllegalArgumentException("Count must be positive");
+        }
+        if ((start + count) > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("start + count can not exceed Integer.MAX_VALUE");
+        }
+        return Observable.create(new OnSubscribeRange(start, start + (count - 1)));
     }
 
     /**
@@ -2460,7 +2465,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211896.aspx">MSDN: Observable.Range</a>
      */
     public final static Observable<Integer> range(int start, int count, Scheduler scheduler) {
-        return from(Range.createWithCount(start, count), scheduler);
+        return range(start, count).subscribeOn(scheduler);
     }
 
     /**
@@ -5140,8 +5145,7 @@ public class Observable<T> {
     }
 
     /**
-     * Modify the source Observable so that it asynchronously notifies {@link Observer}s on the
-     * specified {@link Scheduler}.
+     * Move notifications to the specified {@link Scheduler} one `onNext` at a time.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/observeOn.png">
      * 
@@ -5152,9 +5156,26 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-observeon">RxJava Wiki: observeOn()</a>
      */
     public final Observable<T> observeOn(Scheduler scheduler) {
-        return create(OperationObserveOn.observeOn(this, scheduler));
+        return lift(new OperatorObserveOn<T>(scheduler));
     }
 
+    /**
+     * Move notifications to the specified {@link Scheduler} asynchronously with a buffer of the given size.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/observeOn.png">
+     * 
+     * @param scheduler
+     *            the {@link Scheduler} to notify {@link Observer}s on
+     * @param bufferSize
+     *            that will be rounded up to the next power of 2
+     * @return the source Observable modified so that its {@link Observer}s are notified on the
+     *         specified {@link Scheduler}
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-observeon">RxJava Wiki: observeOn()</a>
+     */
+    public final Observable<T> observeOn(Scheduler scheduler, int bufferSize) {
+        return lift(new OperatorObserveOn<T>(scheduler, bufferSize));
+    }
+    
     /**
      * Filters the items emitted by an Observable, only emitting those of the specified type.
      * <p>
@@ -5297,7 +5318,9 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-parallel">RxJava Wiki: parallel()</a>
      */
     public final <R> Observable<R> parallel(Func1<Observable<T>, Observable<R>> f) {
-        return lift(new OperatorParallel<T, R>(f, Schedulers.computation()));
+        // TODO move this back to Schedulers.computation() again once that is properly using eventloops
+        // see https://github.com/Netflix/RxJava/issues/713 for why this was changed
+        return lift(new OperatorParallel<T, R>(f, Schedulers.newThread()));
     }
 
     /**
@@ -6966,10 +6989,9 @@ public class Observable<T> {
                 }
 
             });
-        } catch (OnErrorNotImplementedException e) {
-            // special handling when onError is not implemented ... we just rethrow
-            throw e;
         } catch (Throwable e) {
+            // special handling for certain Throwable/Error/Exception types
+            Exceptions.throwIfFatal(e);
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
                 observer.onError(hook.onSubscribeError(this, e));

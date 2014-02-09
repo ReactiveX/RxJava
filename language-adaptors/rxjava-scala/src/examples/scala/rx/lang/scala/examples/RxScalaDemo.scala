@@ -404,7 +404,7 @@ class RxScalaDemo extends JUnitSuite {
       import Notification._
       o.materialize.subscribe(n => n match {
         case OnNext(v) => println("Got value " + v)
-        case OnCompleted() => println("Completed")
+        case OnCompleted => println("Completed")
         case OnError(err) => println("Error: " + err.getMessage)
       })
     }
@@ -420,11 +420,19 @@ class RxScalaDemo extends JUnitSuite {
     import Notification._
     List(1, 2, 3).toObservable.materialize.subscribe(n => n match {
       case OnNext(v) => println("Got value " + v)
-      case OnCompleted() => println("Completed")
+      case OnCompleted => println("Completed")
       case OnError(err) => println("Error: " + err.getMessage)
     })
   }
 
+  @Test def notificationSubtyping() {
+    import Notification._
+    val oc1: Notification[Nothing] = OnCompleted
+    val oc2: Notification[Int] = OnCompleted
+    val oc3: rx.Notification[_ <: Int] = oc2.asJavaNotification
+    val oc4: rx.Notification[_ <: Any] = oc2.asJavaNotification
+  }
+  
   @Test def elementAtReplacement() {
     assertEquals("b", List("a", "b", "c").toObservable.drop(1).first.toBlockingObservable.single)
   }

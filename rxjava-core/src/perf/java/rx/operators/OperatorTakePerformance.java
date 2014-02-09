@@ -7,6 +7,10 @@ import rx.util.functions.Action0;
 
 public class OperatorTakePerformance extends AbstractPerformanceTester {
 
+    OperatorTakePerformance() {
+        super(REPETITIONS);
+    }
+    
     public static void main(String args[]) {
 
         final OperatorTakePerformance spt = new OperatorTakePerformance();

@@ -269,33 +269,6 @@ public class OperationMergeDelayErrorTest {
     }
 
     @Test
-    public void testUnSubscribe() {
-        TestObservable tA = new TestObservable();
-        TestObservable tB = new TestObservable();
-
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(mergeDelayError(Observable.create(tA), Observable.create(tB)));
-        Subscription s = m.subscribe(stringObserver);
-
-        tA.sendOnNext("Aone");
-        tB.sendOnNext("Bone");
-        s.unsubscribe();
-        tA.sendOnNext("Atwo");
-        tB.sendOnNext("Btwo");
-        tA.sendOnCompleted();
-        tB.sendOnCompleted();
-
-        verify(stringObserver, never()).onError(any(Throwable.class));
-        verify(stringObserver, times(1)).onNext("Aone");
-        verify(stringObserver, times(1)).onNext("Bone");
-        assertTrue(tA.unsubscribed);
-        assertTrue(tB.unsubscribed);
-        verify(stringObserver, never()).onNext("Atwo");
-        verify(stringObserver, never()).onNext("Btwo");
-        verify(stringObserver, never()).onCompleted();
-    }
-
-    @Test
     public void testMergeArrayWithThreading() {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
         final TestASynchronousObservable o2 = new TestASynchronousObservable();

@@ -8,6 +8,10 @@ import rx.util.functions.Func1;
 
 public class OperatorMapPerformance extends AbstractPerformanceTester {
 
+    OperatorMapPerformance() {
+        super(REPETITIONS);
+    }
+    
     public static void main(String args[]) {
 
         final OperatorMapPerformance spt = new OperatorMapPerformance();

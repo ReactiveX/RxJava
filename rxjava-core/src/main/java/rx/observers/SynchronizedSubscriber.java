@@ -17,7 +17,6 @@ package rx.observers;
 
 import rx.Observer;
 import rx.Subscriber;
-import rx.operators.SafeObservableSubscription;
 
 /**
  * A thread-safe Observer for transitioning states in operators.
@@ -37,9 +36,7 @@ public final class SynchronizedSubscriber<T> extends Subscriber<T> {
 
     public SynchronizedSubscriber(Subscriber<? super T> subscriber, Object lock) {
         super(subscriber);
-        SafeObservableSubscription s = new SafeObservableSubscription();
-        subscriber.add(s);
-        this.observer = new SynchronizedObserver<T>(subscriber, s, lock);
+        this.observer = new SynchronizedObserver<T>(subscriber, lock);
     }
 
     /**

@@ -37,8 +37,8 @@ class NotificationTests extends JUnitSuite {
     val onError = OnError(oops)
       assertEquals(oops, onError match { case OnError(error) => error })
 
-    val onCompleted = OnCompleted()
-      assertEquals((), onCompleted match { case OnCompleted() => () })
+    val onCompleted = OnCompleted
+      assertEquals((), onCompleted match { case OnCompleted => () })
   }
 
   @Test
@@ -51,7 +51,7 @@ class NotificationTests extends JUnitSuite {
     val onError = OnError(oops)
       assertEquals(4711, onError(x=>42, e=>4711,()=>13))
 
-    val onCompleted = OnCompleted()
+    val onCompleted = OnCompleted
       assertEquals(13, onCompleted(x=>42, e=>4711,()=>13))
 
   }
