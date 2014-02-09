@@ -11,6 +11,10 @@ import rx.util.functions.Action0;
 
 public class OperatorFromIterablePerformance extends AbstractPerformanceTester {
 
+    OperatorFromIterablePerformance() {
+        super(REPETITIONS);
+    }
+    
     public static void main(String args[]) {
 
         final OperatorFromIterablePerformance spt = new OperatorFromIterablePerformance();

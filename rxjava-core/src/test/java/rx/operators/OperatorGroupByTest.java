@@ -484,21 +484,16 @@ public class OperatorGroupByTest {
                     @Override
                     public Observable<Integer> call(GroupedObservable<Integer, Integer> group) {
                         if (group.getKey() == 0) {
-                            return group.observeOn(Schedulers.newThread()).map(new Func1<Integer, Integer>() {
+                            return group.delay(100, TimeUnit.MILLISECONDS).map(new Func1<Integer, Integer>() {
 
                                 @Override
                                 public Integer call(Integer t) {
-                                    try {
-                                        Thread.sleep(2);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
                                     return t * 10;
                                 }
 
                             });
                         } else {
-                            return group.observeOn(Schedulers.newThread());
+                            return group;
                         }
                     }
                 })

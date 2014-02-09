@@ -311,7 +311,8 @@ public class ReplaySubjectTest {
         subject.onNext("two");
         assertEquals("two", lastValueForObserver1.get());
 
-        Subscription s2 = subject.observeOn(Schedulers.newThread()).subscribe(observer2);
+        // use subscribeOn to make this async otherwise we deadlock as we are using CountDownLatches
+        Subscription s2 = subject.subscribeOn(Schedulers.newThread()).subscribe(observer2);
 
         System.out.println("before waiting for one");
 
@@ -321,12 +322,23 @@ public class ReplaySubjectTest {
         System.out.println("after waiting for one");
 
         subject.onNext("three");
+        
+        System.out.println("sent three");
+        
         // if subscription blocked existing subscribers then 'makeSlow' would cause this to not be there yet 
         assertEquals("three", lastValueForObserver1.get());
+        
+        System.out.println("about to send onCompleted");
+        
         subject.onCompleted();
 
+        System.out.println("completed subject");
+        
         // release 
         makeSlow.countDown();
+        
+        System.out.println("makeSlow released");
+        
         completed.await();
         // all of them should be emitted with the last being "three"
         assertEquals("three", lastValueForObserver2.get());

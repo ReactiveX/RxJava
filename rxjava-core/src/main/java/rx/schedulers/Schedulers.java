@@ -183,4 +183,8 @@ public class Schedulers {
 
         return result;
     }
+
+    public static TestScheduler test() {
+        return new TestScheduler();
+    }
 }
