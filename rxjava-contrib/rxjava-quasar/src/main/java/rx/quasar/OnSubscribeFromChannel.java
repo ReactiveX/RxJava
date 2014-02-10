@@ -50,7 +50,7 @@ public final class OnSubscribeFromChannel<T> implements OnSubscribe<T> {
                 break;
             } catch (Exception e) {
                 o.onError(e);
-                continue;
+                return;
             }
 
             o.onNext(m);

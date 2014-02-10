@@ -20,6 +20,7 @@ import co.paralleluniverse.fibers.Suspendable;
 import co.paralleluniverse.strands.Strand;
 import co.paralleluniverse.strands.channels.Channel;
 import co.paralleluniverse.strands.channels.Channels;
+import co.paralleluniverse.strands.channels.ReceivePort;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Queue;
@@ -30,6 +31,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
+import rx.subjects.PublishSubject;
 
 public class ChannelObservableTest {
     @Test
@@ -90,5 +92,38 @@ public class ChannelObservableTest {
         assertThat(c.receive(), equalTo("b"));
         assertThat(c.receive(), equalTo("c"));
         assertThat(c.receive(), is(nullValue()));
+    }
+
+    @Test
+    public void testObserverChannel2() throws Exception {
+        ReceivePort<String> c = ChannelObservable.subscribe(10, Channels.OverflowPolicy.BLOCK, Observable.from(Arrays.asList("a", "b", "c")));
+
+        assertThat(c.receive(), equalTo("a"));
+        assertThat(c.receive(), equalTo("b"));
+        assertThat(c.receive(), equalTo("c"));
+        assertThat(c.receive(), is(nullValue()));
+    }
+
+    @Test
+    public void testObserverChannelWithError() throws Exception {
+        PublishSubject<String> o = PublishSubject.create();
+        ReceivePort<String> c = ChannelObservable.subscribe(10, Channels.OverflowPolicy.BLOCK, o);
+
+        o.onNext("a");
+        o.onError(new MyException());
+        o.onNext("c");
+        
+        assertThat(c.receive(), equalTo("a"));
+        try {
+            c.receive();
+            fail();
+        } catch(MyException e) {
+            
+        }
+        assertThat(c.receive(), is(nullValue()));
+    }
+    
+    static class MyException extends RuntimeException {
+        
     }
 }

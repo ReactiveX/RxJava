@@ -29,7 +29,18 @@ and for Ivy:
 <dependency org="com.netflix.rxjava" name="rxjava-quasar" rev="x.y.z" />
 ```
 
-# Sample Usage
+# Usage
 
+As always when using Quasar, the java agent has to be started by adding the following JVM option:
 
+```
+-javaagent:path-to-quasar-jar.jar
+```
+
+Alternatively, you can use AOT instrumentation (see [the Quasar documentation](http://docs.paralleluniverse.co/quasar/#instrumentation)).
+
+Or, if you're running in Tomcat, you can use the Quasar class loader (see [the Comsat documentation](http://docs.paralleluniverse.co/comsat/#enabling-comsat)).
+
+`Observer`, `Function` or `Action` method implementations can call fiber-blocking operations when using the `NewFiberScheduler` if the method is annotated with `@Suspendable`.
+(rx-core `Observer`s, `Function`s or `Action`s that manipulate, transform or delegate to other `Observer`s, `Function`s or `Action`s are automatically instrumented).
 
