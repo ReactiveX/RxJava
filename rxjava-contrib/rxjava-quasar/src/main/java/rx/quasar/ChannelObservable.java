@@ -22,6 +22,7 @@ import co.paralleluniverse.strands.channels.SendPort;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
+import rx.util.OnErrorNotImplementedException;
 
 /**
  *
@@ -97,6 +98,7 @@ public class ChannelObservable {
 
             @Override
             public void onError(Throwable e) {
+                throw new OnErrorNotImplementedException(e);
             }
         };
     }

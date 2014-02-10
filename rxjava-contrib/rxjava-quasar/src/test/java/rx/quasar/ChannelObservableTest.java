@@ -22,44 +22,38 @@ import co.paralleluniverse.strands.channels.Channel;
 import co.paralleluniverse.strands.channels.Channels;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
+import rx.Observable;
 import rx.Observer;
 
 public class ChannelObservableTest {
-    private static final int BUFFER_SIZE = 0;
-    private static final Channels.OverflowPolicy OVERFLOW_POLICY = Channels.OverflowPolicy.BLOCK;
-
     @Test
     public void testObservableFromChannel() throws Exception {
-        final Channel<String> c = Channels.newChannel(BUFFER_SIZE, OVERFLOW_POLICY);
+        final Channel<String> c = Channels.newChannel(0);
+
+        System.out.println("===== " + c);
 
         final Queue<String> result = new ConcurrentLinkedQueue<String>();
         final AtomicBoolean completed = new AtomicBoolean();
-        
-        ChannelObservable.from(c).subscribeOn(NewFiberScheduler.getDefaultInstance()).subscribe(new Observer<String>() {
+
+        ChannelObservable.from(c, NewFiberScheduler.getDefaultInstance()).subscribe(new Observer<String>() {
             @Override
             @Suspendable
             public void onNext(String t) {
-//                try {
+                try {
                     System.out.println("GOT: " + t);
                     assertTrue(Strand.isCurrentFiber());
-                    System.out.println("GOT2: " + t);
-                    //Strand.sleep(100);
-                    System.out.println("GOT3: " + t);
+                    Strand.sleep(100);
                     result.add(t);
-                    System.out.println("GOT4: " + t);
-//                } catch(InterruptedException e) {
-//                    
-//                } catch (SuspendExecution e) {
-//                    System.err.println("WHA????? " + e);
-//                    throw new AssertionError(e);
-//                }
+                } catch (InterruptedException e) {
+                } catch (SuspendExecution e) {
+                    throw new AssertionError(e);
+                }
             }
 
             @Override
@@ -69,18 +63,32 @@ public class ChannelObservableTest {
 
             @Override
             public void onError(Throwable e) {
-                
+
             }
         });
-        
+
         c.send("a");
         c.send("b");
         c.send("c");
         c.close();
-        
+
         Thread.sleep(500);
-        
+
         assertThat(new ArrayList<String>(result), equalTo(Arrays.asList("a", "b", "c")));
         assertThat(completed.get(), is(true));
+    }
+
+    @Test
+    public void testObserverChannel() throws Exception {
+        final Channel<String> c = Channels.newChannel(10); // must use a buffer, otherwise will block on subscribe
+
+        System.out.println("===== " + c);
+
+        Observable.from(Arrays.asList("a", "b", "c")).subscribe(ChannelObservable.to(c));
+
+        assertThat(c.receive(), equalTo("a"));
+        assertThat(c.receive(), equalTo("b"));
+        assertThat(c.receive(), equalTo("c"));
+        assertThat(c.receive(), is(nullValue()));
     }
 }
