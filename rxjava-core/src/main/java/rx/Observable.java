@@ -33,6 +33,7 @@ import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
+import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationAll;
 import rx.operators.OperationAmb;
@@ -94,9 +95,9 @@ import rx.operators.OperationToMultimap;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
+import rx.operators.Operator;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorDoOnEach;
-import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
@@ -252,10 +253,9 @@ public class Observable<T> {
      */
     public <R> Observable<R> lift(final Func1<Subscriber<? super R>, Subscriber<? super T>> bind) {
         return new Observable<R>(new OnSubscribe<R>() {
-
             @Override
             public void call(Subscriber<? super R> o) {
-                subscribe(bind.call(o));
+                subscribe(hook.onLift((Operator<R, T>) bind).call(o));
             }
         });
     }
