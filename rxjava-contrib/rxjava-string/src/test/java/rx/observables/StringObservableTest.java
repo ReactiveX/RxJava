@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.MalformedInputException;
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -110,6 +111,7 @@ public class StringObservableTest {
     public void testSplitOnCollon() {
         testSplit("boo:and:foo", ":", 0, "boo", "and", "foo");
     }
+
     @Test
     public void testSplitOnOh() {
         testSplit("boo:and:foo", "o", 0, "b", "", ":and:f");
@@ -120,96 +122,101 @@ public class StringObservableTest {
         for (int i = 0; i < str.length(); i++) {
             String a = str.substring(0, i);
             String b = str.substring(i, str.length());
-            testSplit(a+"|"+b, regex, limit, Observable.from(a, b), parts);
+            testSplit(a + "|" + b, regex, limit, Observable.from(a, b), parts);
         }
     }
 
     public void testSplit(String message, String regex, int limit, Observable<String> src, String... parts) {
         Observable<String> act = StringObservable.split(src, regex);
         Observable<String> exp = Observable.from(parts);
-        AssertObservable.assertObservableEqualsBlocking("when input is "+message+" and limit = "+ limit, exp, act);
+        AssertObservable.assertObservableEqualsBlocking("when input is " + message + " and limit = " + limit, exp, act);
     }
-    
+
     @Test
     public void testJoinMixed() {
-        Observable<Object> source = Observable.<Object>from("a", 1, "c");
-        
+        Observable<Object> source = Observable.<Object> from(Arrays.asList("a", 1, "c"));
+
         Observable<String> result = StringObservable.join(source, ", ");
-        
+
         Observer<Object> observer = mock(Observer.class);
-        
+
         result.subscribe(new TestObserver<Object>(observer));
-        
+
         verify(observer, times(1)).onNext("a, 1, c");
         verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testJoinWithEmptyString() {
         Observable<String> source = Observable.from("", "b", "c");
-        
+
         Observable<String> result = StringObservable.join(source, ", ");
-        
+
         Observer<Object> observer = mock(Observer.class);
-        
+
         result.subscribe(new TestObserver<Object>(observer));
-        
+
         verify(observer, times(1)).onNext(", b, c");
         verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testJoinWithNull() {
         Observable<String> source = Observable.from("a", null, "c");
-        
+
         Observable<String> result = StringObservable.join(source, ", ");
-        
+
         Observer<Object> observer = mock(Observer.class);
-        
+
         result.subscribe(new TestObserver<Object>(observer));
-        
+
         verify(observer, times(1)).onNext("a, null, c");
         verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testJoinSingle() {
         Observable<String> source = Observable.from("a");
-        
+
         Observable<String> result = StringObservable.join(source, ", ");
-        
+
         Observer<Object> observer = mock(Observer.class);
-        
+
         result.subscribe(new TestObserver<Object>(observer));
-        
+
         verify(observer, times(1)).onNext("a");
         verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testJoinEmpty() {
         Observable<String> source = Observable.empty();
-        
+
         Observable<String> result = StringObservable.join(source, ", ");
-        
+
         Observer<Object> observer = mock(Observer.class);
-        
+
         result.subscribe(new TestObserver<Object>(observer));
-        
+
         verify(observer, times(1)).onNext("");
         verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testJoinThrows() {
-        Observable<String> source = Observable.concat(Observable.just("a"), Observable.<String>error(new RuntimeException("Forced failure")));
-        
+        Observable<String> source = Observable.concat(Observable.just("a"), Observable.<String> error(new RuntimeException("Forced failure")));
+
         Observable<String> result = StringObservable.join(source, ", ");
-        
+
         Observer<Object> observer = mock(Observer.class);
-        
+
         result.subscribe(new TestObserver<Object>(observer));
-        
+
         verify(observer, never()).onNext("a");
         verify(observer, never()).onCompleted();
         verify(observer, times(1)).onError(any(Throwable.class));
