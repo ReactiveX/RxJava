@@ -10,4 +10,5 @@ include 'rxjava-core', \
 'rxjava-contrib:rxjava-apache-http', \
 'rxjava-contrib:rxjava-string', \
 'rxjava-contrib:rxjava-async-util', \
-'rxjava-contrib:rxjava-computation-expressions'
+'rxjava-contrib:rxjava-computation-expressions',\
+'rxjava-contrib:rxjava-quasar'
