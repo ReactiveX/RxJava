@@ -33,7 +33,7 @@ import kotlin.concurrent.thread
 /**
  * This class contains tests using the extension functions provided by the language adaptor.
  */
-public class ExtensionTests:KotlinTests() {
+public class ExtensionTests : KotlinTests() {
 
 
     [Test]
@@ -262,7 +262,7 @@ public class ExtensionTests:KotlinTests() {
     val funOnSubscribe: (Int, Observer<in String>) -> Subscription = { counter, observer ->
         observer.onNext("hello_$counter")
         observer.onCompleted()
-        Subscription { }
+        Subscriptions.empty()!!
     }
 
     val asyncObservable: (Observer<in Int>) -> Subscription = { observer ->

@@ -4,7 +4,7 @@ include 'rxjava-core', \
 'language-adaptors:rxjava-clojure', \
 'language-adaptors:rxjava-jruby', \
 'language-adaptors:rxjava-scala', \
-//'language-adaptors:rxjava-kotlin', \
+'language-adaptors:rxjava-kotlin', \
 'rxjava-contrib:rxjava-swing', \
 'rxjava-contrib:rxjava-android', \
 'rxjava-contrib:rxjava-apache-http', \

@@ -347,7 +347,7 @@ public class BasicKotlinTests:KotlinTests() {
         override fun onSubscribe(op: Observer<in String>?): Subscription? {
             op!!.onNext("hello_$count")
             op.onCompleted()
-            return Subscription { }
+            return Subscriptions.empty()!!
         }
 
     }
