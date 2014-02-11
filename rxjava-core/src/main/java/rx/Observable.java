@@ -33,6 +33,7 @@ import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
+import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationAll;
 import rx.operators.OperationAmb;
@@ -51,7 +52,6 @@ import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
 import rx.operators.OperationElementAt;
-import rx.operators.OperatorFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFlatMap;
 import rx.operators.OperationGroupByUntil;
@@ -96,11 +96,11 @@ import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorDoOnEach;
-import rx.operators.OnSubscribeFromIterable;
+import rx.operators.OperatorFilter;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
-import rx.operators.OperatorMergeMaxConcurrent;
+import rx.operators.OperationMergeMaxConcurrent;
 import rx.operators.OperatorObserveOn;
 import rx.operators.OperatorParallel;
 import rx.operators.OperatorRepeat;
@@ -1792,7 +1792,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211914.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source, int maxConcurrent) {
-        return source.lift(new OperatorMergeMaxConcurrent(maxConcurrent)); // any idea how to get these generics working?!
+        return Observable.create(OperationMergeMaxConcurrent.merge(source, maxConcurrent));
     }
 
     /**

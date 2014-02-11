@@ -34,7 +34,7 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
-public class OperatorMergeMaxConcurrentTest {
+public class OperationMergeMaxConcurrentTest {
 
     @Mock
     Observer<String> stringObserver;
@@ -65,7 +65,7 @@ public class OperatorMergeMaxConcurrentTest {
     @Test
     public void testMaxConcurrent() {
         for (int times = 0; times < 100; times++) {
-            int observableCount = 10;
+            int observableCount = 100;
             // Test maxConcurrent from 2 to 12
             int maxConcurrent = 2 + (times % 10);
             AtomicInteger subscriptionCount = new AtomicInteger(0);
@@ -75,7 +75,7 @@ public class OperatorMergeMaxConcurrentTest {
             for (int i = 0; i < observableCount; i++) {
                 SubscriptionCheckObservable sco = new SubscriptionCheckObservable(subscriptionCount, maxConcurrent);
                 scos.add(sco);
-                os.add(Observable.create(sco).subscribeOn(Schedulers.computation()));
+                os.add(Observable.create(sco));
             }
 
             Iterator<String> iter = Observable.merge(os, maxConcurrent).toBlockingObservable().toIterable().iterator();
@@ -83,6 +83,7 @@ public class OperatorMergeMaxConcurrentTest {
             while (iter.hasNext()) {
                 actual.add(iter.next());
             }
+            //            System.out.println("actual: " + actual);
             assertEquals(5 * observableCount, actual.size());
             for (SubscriptionCheckObservable sco : scos) {
                 assertFalse(sco.failed);
@@ -90,33 +91,39 @@ public class OperatorMergeMaxConcurrentTest {
         }
     }
 
-    private static class SubscriptionCheckObservable implements
-            Observable.OnSubscribeFunc<String> {
+    private static class SubscriptionCheckObservable implements Observable.OnSubscribeFunc<String> {
 
         private final AtomicInteger subscriptionCount;
         private final int maxConcurrent;
         volatile boolean failed = false;
 
-        SubscriptionCheckObservable(AtomicInteger subscriptionCount,
-                int maxConcurrent) {
+        SubscriptionCheckObservable(AtomicInteger subscriptionCount, int maxConcurrent) {
             this.subscriptionCount = subscriptionCount;
             this.maxConcurrent = maxConcurrent;
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> t1) {
-            if (subscriptionCount.incrementAndGet() > maxConcurrent) {
-                failed = true;
-            }
-            t1.onNext("one");
-            t1.onNext("two");
-            t1.onNext("three");
-            t1.onNext("four");
-            t1.onNext("five");
-            // We could not decrement subscriptionCount in the unsubscribe method
-            // as "unsubscribe" is not guaranteed to be called before the next "subscribe".
-            subscriptionCount.decrementAndGet();
-            t1.onCompleted();
+        public Subscription onSubscribe(final Observer<? super String> t1) {
+            new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (subscriptionCount.incrementAndGet() > maxConcurrent) {
+                        failed = true;
+                    }
+                    t1.onNext("one");
+                    t1.onNext("two");
+                    t1.onNext("three");
+                    t1.onNext("four");
+                    t1.onNext("five");
+                    // We could not decrement subscriptionCount in the unsubscribe method
+                    // as "unsubscribe" is not guaranteed to be called before the next "subscribe".
+                    subscriptionCount.decrementAndGet();
+                    t1.onCompleted();
+                }
+
+            }).start();
+
             return Subscriptions.empty();
         }
 
