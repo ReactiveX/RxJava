@@ -22,11 +22,13 @@ import java.util.concurrent.Future;
 import org.junit.Test;
 
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
+import rx.observers.Subscribers;
 import rx.observers.TestObserver;
-import rx.operators.OperationToObservableFuture.ToObservableFuture;
+import rx.operators.OperatorToObservableFuture.ToObservableFuture;
 
-public class OperationToObservableFutureTest {
+public class OperatorToObservableFutureTest {
 
     @Test
     public void testSuccess() throws Exception {
@@ -36,7 +38,8 @@ public class OperationToObservableFutureTest {
         ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
         Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = ob.onSubscribe(new TestObserver<Object>(o));
+        Subscriber<Object> sub = Subscribers.from(new TestObserver<Object>(o));
+        ob.call(sub);
         sub.unsubscribe();
 
         verify(o, times(1)).onNext(value);
@@ -53,7 +56,8 @@ public class OperationToObservableFutureTest {
         ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
         Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = ob.onSubscribe(new TestObserver<Object>(o));
+        Subscriber<Object> sub = Subscribers.from(new TestObserver<Object>(o));
+        ob.call(sub);
         sub.unsubscribe();
 
         verify(o, never()).onNext(null);
