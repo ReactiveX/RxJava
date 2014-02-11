@@ -15,7 +15,6 @@
  */
 package rx.operators;
 
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Scheduler;
@@ -25,6 +24,7 @@ import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TestScheduler;
 import rx.schedulers.TrampolineScheduler;
 import rx.subscriptions.Subscriptions;
+import rx.util.InterruptibleBlockingQueue;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
@@ -94,7 +94,6 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
         } else {
             return new ObserveOnSubscriber(child);
         }
-
     }
 
     private static Object NULL_SENTINEL = new Object();
@@ -217,91 +216,6 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
                     }
                 }
             } while (counter.decrementAndGet() > 0);
-        }
-
-    }
-
-    private class InterruptibleBlockingQueue {
-
-        private final Semaphore semaphore;
-        private volatile boolean interrupted = false;
-
-        private final Object[] buffer;
-
-        private AtomicLong tail = new AtomicLong();
-        private AtomicLong head = new AtomicLong();
-        private final int capacity;
-        private final int mask;
-
-        public InterruptibleBlockingQueue(final int size) {
-            this.semaphore = new Semaphore(size);
-            this.capacity = size;
-            this.mask = size - 1;
-            buffer = new Object[size];
-        }
-
-        /**
-         * Used to unsubscribe and interrupt the producer if blocked in put()
-         */
-        public void interrupt() {
-            interrupted = true;
-            semaphore.release();
-        }
-
-        public void addBlocking(final Object e) throws InterruptedException {
-            if (interrupted) {
-                throw new InterruptedException("Interrupted by Unsubscribe");
-            }
-            semaphore.acquire();
-            if (interrupted) {
-                throw new InterruptedException("Interrupted by Unsubscribe");
-            }
-            if (e == null) {
-                throw new IllegalArgumentException("Can not put null");
-            }
-
-            if (offer(e)) {
-                return;
-            } else {
-                throw new IllegalStateException("Queue is full");
-            }
-        }
-
-        private boolean offer(final Object e) {
-            final long _t = tail.get();
-            if (_t - head.get() == capacity) {
-                // queue is full
-                return false;
-            }
-            int index = (int) (_t & mask);
-            buffer[index] = e;
-            // move the tail forward
-            tail.lazySet(_t + 1);
-
-            return true;
-        }
-
-        public Object poll() {
-            if (interrupted) {
-                return null;
-            }
-            final long _h = head.get();
-            if (tail.get() == _h) {
-                // nothing available
-                return null;
-            }
-            int index = (int) (_h & mask);
-
-            // fetch the item
-            Object v = buffer[index];
-            // allow GC to happen
-            buffer[index] = null;
-            // increment and signal we're done
-            head.lazySet(_h + 1);
-            if (v != null) {
-                semaphore.release();
-            }
-            return v;
         }
 
     }
