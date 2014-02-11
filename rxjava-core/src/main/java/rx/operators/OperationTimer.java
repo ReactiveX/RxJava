@@ -87,7 +87,7 @@ public final class OperationTimer {
                 public void call(Inner inner) {
                     t1.onNext(count++);
                 }
-            }, initialDelay, period, unit);
+            }, initialDelay, unit, period, unit);
         }
     }
 }

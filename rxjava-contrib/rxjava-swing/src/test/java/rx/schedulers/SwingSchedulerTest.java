@@ -49,16 +49,16 @@ public final class SwingSchedulerTest {
         final Action1<Inner> action = mock(Action1.class);
 
         exception.expect(IllegalArgumentException.class);
-        scheduler.schedulePeriodically(action, -1L, 100L, TimeUnit.SECONDS);
+        scheduler.schedulePeriodically(action, -1L, TimeUnit.SECONDS, 100L, TimeUnit.SECONDS);
 
         exception.expect(IllegalArgumentException.class);
-        scheduler.schedulePeriodically(action, 100L, -1L, TimeUnit.SECONDS);
+        scheduler.schedulePeriodically(action, 100L, TimeUnit.SECONDS, -1L, TimeUnit.SECONDS);
 
         exception.expect(IllegalArgumentException.class);
-        scheduler.schedulePeriodically(action, 1L + Integer.MAX_VALUE, 100L, TimeUnit.MILLISECONDS);
+        scheduler.schedulePeriodically(action, 1L + Integer.MAX_VALUE, TimeUnit.MILLISECONDS, 100L, TimeUnit.MILLISECONDS);
 
         exception.expect(IllegalArgumentException.class);
-        scheduler.schedulePeriodically(action, 100L, 1L + Integer.MAX_VALUE / 1000, TimeUnit.SECONDS);
+        scheduler.schedulePeriodically(action, 100L, TimeUnit.SECONDS, 1L + Integer.MAX_VALUE / 1000, TimeUnit.SECONDS);
     }
 
     @Test
@@ -80,7 +80,7 @@ public final class SwingSchedulerTest {
             }
         };
 
-        Subscription sub = scheduler.schedulePeriodically(action, 50, 200, TimeUnit.MILLISECONDS);
+        Subscription sub = scheduler.schedulePeriodically(action, 50, TimeUnit.MILLISECONDS, 200, TimeUnit.MILLISECONDS);
 
         if (!latch.await(5000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting for tasks to execute");

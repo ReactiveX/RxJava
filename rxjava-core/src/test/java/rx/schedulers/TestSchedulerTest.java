@@ -46,7 +46,7 @@ public class TestSchedulerTest {
                 System.out.println(scheduler.now());
                 calledOp.call(scheduler.now());
             }
-        }, 1, 2, TimeUnit.SECONDS);
+        }, 1, TimeUnit.SECONDS, 2, TimeUnit.SECONDS);
 
         verify(calledOp, never()).call(anyLong());
 

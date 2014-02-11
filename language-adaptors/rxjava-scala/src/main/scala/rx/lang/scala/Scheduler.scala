@@ -69,6 +69,7 @@ trait Scheduler {
          override def call(inner: rx.Scheduler.Inner): Unit = action(javaInnerToScalaInner(inner))
        },
        initialDelay.toNanos,
+       duration.NANOSECONDS,
        period.toNanos,
        duration.NANOSECONDS
      )
