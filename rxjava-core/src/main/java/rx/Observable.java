@@ -51,7 +51,7 @@ import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
 import rx.operators.OperationElementAt;
-import rx.operators.OperationFilter;
+import rx.operators.OperatorFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFlatMap;
 import rx.operators.OperationGroupByUntil;
@@ -4440,7 +4440,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-filter-or-where">RxJava Wiki: filter()</a>
      */
     public final Observable<T> filter(Func1<? super T, Boolean> predicate) {
-        return create(OperationFilter.filter(this, predicate));
+        return lift(new OperatorFilter<T>(predicate));
     }
 
     /**
