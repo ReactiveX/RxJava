@@ -28,6 +28,10 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.util.Exceptions;
 import rx.util.OnErrorNotImplementedException;
+import rx.util.functions.Action2;
+import rx.util.functions.Actions;
+import rx.util.functions.Func1;
+import rx.util.functions.Functions;
 
 /**
  * This class contains static methods that connect {@link Observable}s and {@link Channel}s.
@@ -122,6 +126,21 @@ public final class ChannelObservable {
     public final static <T> ReceivePort<T> subscribe(int bufferSize, Channels.OverflowPolicy policy, Observable<T> o) {
         final ChannelWithErrors<T> channel = new ChannelWithErrors<T>(Channels.newChannel(bufferSize, policy));
 
+        System.out.println(Functions.fromFunc(new Func1<String, String>() {
+
+            @Override
+            public String call(String t1) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        }));
+        System.out.println(Actions.toFunc(new Action2<String, String>() {
+
+            @Override
+            public void call(String t1, String t2) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        }));
+        
         o.subscribe(new Observer<T>() {
             @Override
             @Suspendable
@@ -145,45 +164,6 @@ public final class ChannelObservable {
                 channel.error(e);
             }
         });
-        return channel.receivePort();
-    }
-
-    /**
-     * Creates a {@link ReceivePort} subscribed to an {@link Observable}.
-     * <p>
-     * @param <T>        the type of messages emitted by the observable and received on the channel.
-     * @param bufferSize the channel's buffer size
-     * @param policy     the channel's {@link Channels.OverflowPolicy OverflowPolicy}
-     * @param o          the observable
-     * @param scheduler  the scheduler used to emit the observable's events
-     * @return A new channel with the given buffer size and overflow policy that will receive all events emitted by the observable.
-     */
-    public final static <T> ReceivePort<T> subscribe(int bufferSize, Channels.OverflowPolicy policy, Observable<T> o, Scheduler scheduler) {
-        final ChannelWithErrors<T> channel = new ChannelWithErrors<T>(Channels.newChannel(bufferSize, policy));
-
-        o.subscribe(new Observer<T>() {
-            @Override
-            @Suspendable
-            public void onNext(T t) {
-                try {
-                    channel.sendPort().send(t);
-                } catch (InterruptedException ex) {
-                    Strand.interrupted();
-                } catch (SuspendExecution ex) {
-                    throw new AssertionError(ex);
-                }
-            }
-
-            @Override
-            public void onCompleted() {
-                channel.sendPort().close();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                channel.error(e);
-            }
-        }, scheduler);
         return channel.receivePort();
     }
 
