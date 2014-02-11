@@ -15,13 +15,11 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -31,6 +29,7 @@ import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -102,7 +101,7 @@ public class OperatorSubscribeOnTest {
         observer.assertTerminalEvent();
     }
 
-    @Test
+    @Test(timeout = 1000)
     public void testIssue813() throws InterruptedException {
         // https://github.com/Netflix/RxJava/issues/813
         final CountDownLatch latch = new CountDownLatch(1);
@@ -143,5 +142,37 @@ public class OperatorSubscribeOnTest {
         doneLatch.await();
         assertEquals(0, observer.getOnErrorEvents().size());
         assertEquals(1, observer.getOnCompletedEvents().size());
+    }
+
+    @Test
+    public void testSynchronousSubscribeOnThread() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(1, 10).subscribeOn(Schedulers.newThread()).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    }
+
+    @Test
+    public void testInfiniteStream() {
+        final AtomicInteger counter = new AtomicInteger();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                for (int i = 1; !s.isUnsubscribed(); i++) {
+                    s.onNext(i);
+                    counter.incrementAndGet();
+                }
+            }
+
+        }).subscribeOn(Schedulers.newThread()).take(10).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        assertEquals(10, counter.get());
+        System.out.println("Executed on thread: " + ts.getLastSeenThread());
+        assertTrue(ts.getLastSeenThread().getName().startsWith("RxNewThreadScheduler"));
     }
 }
