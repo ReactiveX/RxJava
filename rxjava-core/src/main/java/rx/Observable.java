@@ -33,6 +33,7 @@ import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
+import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationAll;
 import rx.operators.OperationAmb;
@@ -51,7 +52,6 @@ import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
 import rx.operators.OperationElementAt;
-import rx.operators.OperationFilter;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFlatMap;
 import rx.operators.OperationGroupByUntil;
@@ -96,10 +96,11 @@ import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorDoOnEach;
-import rx.operators.OnSubscribeFromIterable;
+import rx.operators.OperatorFilter;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
+import rx.operators.OperationMergeMaxConcurrent;
 import rx.operators.OperatorObserveOn;
 import rx.operators.OperatorParallel;
 import rx.operators.OperatorRepeat;
@@ -1791,7 +1792,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211914.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source, int maxConcurrent) {
-        return source.lift(new OperatorMerge(maxConcurrent)); // any idea how to get these generics working?!
+        return Observable.create(OperationMergeMaxConcurrent.merge(source, maxConcurrent));
     }
 
     /**
@@ -2361,7 +2362,7 @@ public class Observable<T> {
      * 
      * @return
      */
-    private final Observable<Observable<T>> nest() {
+    public final Observable<Observable<T>> nest() {
         return from(this);
     }
     
@@ -2439,8 +2440,8 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229460.aspx">MSDN: Observable.Range</a>
      */
     public final static Observable<Integer> range(int start, int count) {
-        if (count < 1) {
-            throw new IllegalArgumentException("Count must be positive");
+        if (count < 0) {
+            throw new IllegalArgumentException("Count can not be negative");
         }
         if ((start + count) > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("start + count can not exceed Integer.MAX_VALUE");
@@ -4440,7 +4441,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-filter-or-where">RxJava Wiki: filter()</a>
      */
     public final Observable<T> filter(Func1<? super T, Boolean> predicate) {
-        return create(OperationFilter.filter(this, predicate));
+        return lift(new OperatorFilter<T>(predicate));
     }
 
     /**

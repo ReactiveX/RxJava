@@ -17,12 +17,14 @@ package rx.operators;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.observables.GroupedObservable;
 import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -47,18 +49,20 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
         // a new CompositeSubscription to decouple the subscription as the inner subscriptions need a separate lifecycle
         // and will unsubscribe on this parent if they are all unsubscribed
         return new Subscriber<T>(new CompositeSubscription()) {
-            private final Map<K, PublishSubject<T>> groups = new HashMap<K, PublishSubject<T>>();
+            private final Map<K, Subject<T, T>> groups = new HashMap<K, Subject<T, T>>();
             private final AtomicInteger completionCounter = new AtomicInteger(0);
+            private final AtomicBoolean completed = new AtomicBoolean(false);
 
             @Override
             public void onCompleted() {
+                completed.set(true);
                 // if we receive onCompleted from our parent we onComplete children
-                for (PublishSubject<T> ps : groups.values()) {
+                for (Subject<T, T> ps : groups.values()) {
                     ps.onCompleted();
                 }
 
+                // special case for empty (no groups emitted)
                 if (completionCounter.get() == 0) {
-                    // special case if no children are running (such as an empty sequence, or just getting the groups and not subscribing)
                     childObserver.onCompleted();
                 }
             }
@@ -73,7 +77,7 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
             public void onNext(T t) {
                 try {
                     final K key = keySelector.call(t);
-                    PublishSubject<T> gps = groups.get(key);
+                    Subject<T, T> gps = groups.get(key);
                     if (gps == null) {
                         // this group doesn't exist
                         if (childObserver.isUnsubscribed()) {
@@ -81,7 +85,7 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
                             return;
                         }
                         gps = PublishSubject.create();
-                        final PublishSubject<T> _gps = gps;
+                        final Subject<T, T> _gps = gps;
 
                         GroupedObservable<K, T> go = new GroupedObservable<K, T>(key, new OnSubscribe<T>() {
 
@@ -130,9 +134,12 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
             }
 
             private void completeInner() {
-                if (completionCounter.decrementAndGet() == 0) {
-                    unsubscribe();
-                    for (PublishSubject<T> ps : groups.values()) {
+                if (completionCounter.decrementAndGet() == 0 && (completed.get() || childObserver.isUnsubscribed())) {
+                    if (childObserver.isUnsubscribed()) {
+                        // if the entire groupBy has been unsubscribed and children are completed we will propagate the unsubscribe up.
+                        unsubscribe();
+                    }
+                    for (Subject<T, T> ps : groups.values()) {
                         ps.onCompleted();
                     }
                     childObserver.onCompleted();

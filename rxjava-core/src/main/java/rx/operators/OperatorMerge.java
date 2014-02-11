@@ -15,13 +15,11 @@
  */
 package rx.operators;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.observers.SynchronizedSubscriber;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Flattens a list of Observables into one Observable sequence, without any transformation.
@@ -32,33 +30,22 @@ import rx.subscriptions.CompositeSubscription;
  * Observable, by using the merge operation.
  */
 public final class OperatorMerge<T> implements Operator<T, Observable<T>> {
-    private final int maxConcurrent;
-
-    public OperatorMerge() {
-        maxConcurrent = Integer.MAX_VALUE;
-    }
-
-    public OperatorMerge(int maxConcurrent) {
-        if (maxConcurrent <= 0) {
-            throw new IllegalArgumentException("maxConcurrent must be positive");
-        }
-        this.maxConcurrent = maxConcurrent;
-    }
 
     @Override
     public Subscriber<Observable<T>> call(final Subscriber<? super T> outerOperation) {
 
-        final AtomicInteger completionCounter = new AtomicInteger(1);
-        final AtomicInteger concurrentCounter = new AtomicInteger(1);
-        // Concurrent* since we'll be accessing them from the inner Observers which can be on other threads
-        final ConcurrentLinkedQueue<Observable<T>> pending = new ConcurrentLinkedQueue<Observable<T>>();
-
         final Subscriber<T> o = new SynchronizedSubscriber<T>(outerOperation);
         return new Subscriber<Observable<T>>(outerOperation) {
 
+            private volatile boolean completed = false;
+            private final AtomicInteger runningCount = new AtomicInteger();
+
             @Override
             public void onCompleted() {
-                complete();
+                completed = true;
+                if (runningCount.get() == 0) {
+                    o.onCompleted();
+                }
             }
 
             @Override
@@ -68,53 +55,21 @@ public final class OperatorMerge<T> implements Operator<T, Observable<T>> {
 
             @Override
             public void onNext(Observable<T> innerObservable) {
-                // track so we send onComplete only when all have finished
-                completionCounter.incrementAndGet();
-                // check concurrency
-                if (concurrentCounter.incrementAndGet() > maxConcurrent) {
-                    pending.add(innerObservable);
-                    concurrentCounter.decrementAndGet();
-                } else {
-                    // we are able to proceed
-                    CompositeSubscription innerSubscription = new CompositeSubscription();
-                    outerOperation.add(innerSubscription);
-                    innerObservable.subscribe(new InnerObserver(innerSubscription));
-                }
-            }
-
-            private void complete() {
-                if (completionCounter.decrementAndGet() == 0) {
-                    o.onCompleted();
-                    return;
-                } else {
-                    // not all are completed and some may still need to run
-                    concurrentCounter.decrementAndGet();
-                }
-
-                // do work-stealing on whatever thread we're on and subscribe to pending observables
-                if (concurrentCounter.incrementAndGet() > maxConcurrent) {
-                    // still not space to run
-                    concurrentCounter.decrementAndGet();
-                } else {
-                    // we can run
-                    Observable<? extends T> outstandingObservable = pending.poll();
-                    if (outstandingObservable != null) {
-                        CompositeSubscription innerSubscription = new CompositeSubscription();
-                        outerOperation.add(innerSubscription);
-                        outstandingObservable.subscribe(new InnerObserver(innerSubscription));
-                    }
-                }
+                runningCount.incrementAndGet();
+                innerObservable.subscribe(new InnerObserver());
             }
 
             final class InnerObserver extends Subscriber<T> {
 
-                public InnerObserver(CompositeSubscription cs) {
-                    super(cs);
+                public InnerObserver() {
+                    super(o);
                 }
 
                 @Override
                 public void onCompleted() {
-                    complete();
+                    if (runningCount.decrementAndGet() == 0 && completed) {
+                        o.onCompleted();
+                    }
                 }
 
                 @Override
@@ -132,5 +87,4 @@ public final class OperatorMerge<T> implements Operator<T, Observable<T>> {
         };
 
     }
-
 }

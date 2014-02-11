@@ -17,7 +17,6 @@ package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationFilter.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -26,18 +25,18 @@ import rx.Observable;
 import rx.Observer;
 import rx.util.functions.Func1;
 
-public class OperationFilterTest {
+public class OperatorFilterTest {
 
     @Test
     public void testFilter() {
         Observable<String> w = Observable.from("one", "two", "three");
-        Observable<String> observable = Observable.create(filter(w, new Func1<String, Boolean>() {
+        Observable<String> observable = w.filter(new Func1<String, Boolean>() {
 
             @Override
             public Boolean call(String t1) {
                 return t1.equals("two");
             }
-        }));
+        });
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);

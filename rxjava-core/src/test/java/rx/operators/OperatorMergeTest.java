@@ -20,8 +20,6 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +35,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -350,51 +347,6 @@ public class OperatorMergeTest {
         }
     }
 
-    /**
-     * A Observable that doesn't do the right thing on UnSubscribe/Error/etc in that it will keep sending events down the pipe regardless of what happens.
-     */
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
-
-        Observer<? super String> observer = null;
-        volatile boolean unsubscribed = false;
-        Subscription s = new Subscription() {
-
-            @Override
-            public void unsubscribe() {
-                unsubscribed = true;
-
-            }
-
-            @Override
-            public boolean isUnsubscribed() {
-                return unsubscribed;
-            }
-
-        };
-
-        /* used to simulate subscription */
-        public void sendOnCompleted() {
-            observer.onCompleted();
-        }
-
-        /* used to simulate subscription */
-        public void sendOnNext(String value) {
-            observer.onNext(value);
-        }
-
-        /* used to simulate subscription */
-        @SuppressWarnings("unused")
-        public void sendOnError(Throwable e) {
-            observer.onError(e);
-        }
-
-        @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
-            this.observer = observer;
-            return s;
-        }
-    }
-
     private static class TestErrorObservable implements Observable.OnSubscribeFunc<String> {
 
         String[] valuesToReturn;
@@ -420,84 +372,4 @@ public class OperatorMergeTest {
         }
     }
 
-    @Test
-    public void testWhenMaxConcurrentIsOne() {
-        for (int i = 0; i < 100; i++) {
-            List<Observable<String>> os = new ArrayList<Observable<String>>();
-            os.add(Observable.from("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
-            os.add(Observable.from("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
-            os.add(Observable.from("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
-
-            List<String> expected = Arrays.asList("one", "two", "three", "four", "five", "one", "two", "three", "four", "five", "one", "two", "three", "four", "five");
-            Iterator<String> iter = Observable.merge(os, 1).toBlockingObservable().toIterable().iterator();
-            List<String> actual = new ArrayList<String>();
-            while (iter.hasNext()) {
-                actual.add(iter.next());
-            }
-            assertEquals(expected, actual);
-        }
-    }
-
-    @Test
-    public void testMaxConcurrent() {
-        for (int times = 0; times < 100; times++) {
-            int observableCount = 100;
-            // Test maxConcurrent from 2 to 12
-            int maxConcurrent = 2 + (times % 10);
-            AtomicInteger subscriptionCount = new AtomicInteger(0);
-
-            List<Observable<String>> os = new ArrayList<Observable<String>>();
-            List<SubscriptionCheckObservable> scos = new ArrayList<SubscriptionCheckObservable>();
-            for (int i = 0; i < observableCount; i++) {
-                SubscriptionCheckObservable sco = new SubscriptionCheckObservable(
-                        subscriptionCount, maxConcurrent);
-                scos.add(sco);
-                os.add(Observable.create(sco).subscribeOn(
-                        Schedulers.computation()));
-            }
-
-            Iterator<String> iter = Observable.merge(os, maxConcurrent)
-                    .toBlockingObservable().toIterable().iterator();
-            List<String> actual = new ArrayList<String>();
-            while (iter.hasNext()) {
-                actual.add(iter.next());
-            }
-            assertEquals(5 * observableCount, actual.size());
-            for (SubscriptionCheckObservable sco : scos) {
-                assertFalse(sco.failed);
-            }
-        }
-    }
-
-    private static class SubscriptionCheckObservable implements
-            Observable.OnSubscribeFunc<String> {
-
-        private final AtomicInteger subscriptionCount;
-        private final int maxConcurrent;
-        volatile boolean failed = false;
-
-        SubscriptionCheckObservable(AtomicInteger subscriptionCount,
-                int maxConcurrent) {
-            this.subscriptionCount = subscriptionCount;
-            this.maxConcurrent = maxConcurrent;
-        }
-
-        @Override
-        public Subscription onSubscribe(Observer<? super String> t1) {
-            if (subscriptionCount.incrementAndGet() > maxConcurrent) {
-                failed = true;
-            }
-            t1.onNext("one");
-            t1.onNext("two");
-            t1.onNext("three");
-            t1.onNext("four");
-            t1.onNext("five");
-            // We could not decrement subscriptionCount in the unsubscribe method
-            // as "unsubscribe" is not guaranteed to be called before the next "subscribe".
-            subscriptionCount.decrementAndGet();
-            t1.onCompleted();
-            return Subscriptions.empty();
-        }
-
-    }
 }
