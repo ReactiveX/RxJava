@@ -2440,8 +2440,8 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229460.aspx">MSDN: Observable.Range</a>
      */
     public final static Observable<Integer> range(int start, int count) {
-        if (count < 1) {
-            throw new IllegalArgumentException("Count must be positive");
+        if (count < 0) {
+            throw new IllegalArgumentException("Count can not be negative");
         }
         if ((start + count) > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("start + count can not exceed Integer.MAX_VALUE");
