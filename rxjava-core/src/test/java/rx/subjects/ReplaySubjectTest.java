@@ -16,10 +16,12 @@
 package rx.subjects;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -27,9 +29,12 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import rx.Observer;
+import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
+import rx.util.functions.Action1;
 
 public class ReplaySubjectTest {
 
@@ -247,7 +252,7 @@ public class ReplaySubjectTest {
         verify(observer, Mockito.never()).onCompleted();
     }
 
-    @Test(timeout = 2000)
+    @Test(timeout = 3000)
     public void testNewSubscriberDoesntBlockExisting() throws InterruptedException {
 
         final AtomicReference<String> lastValueForObserver1 = new AtomicReference<String>();
@@ -271,9 +276,23 @@ public class ReplaySubjectTest {
 
         };
 
+        ScheduledExecutorService es0 = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setDaemon(true);
+                return t;
+            }
+            
+        });
+        
+        final Scheduler s0 = Schedulers.executor(es0);
+        
         final AtomicReference<String> lastValueForObserver2 = new AtomicReference<String>();
         final CountDownLatch oneReceived = new CountDownLatch(1);
         final CountDownLatch makeSlow = new CountDownLatch(1);
+        final CountDownLatch completed0 = new CountDownLatch(1);
         final CountDownLatch completed = new CountDownLatch(1);
         Subscriber<String> observer2 = new Subscriber<String>() {
 
@@ -288,17 +307,27 @@ public class ReplaySubjectTest {
             }
 
             @Override
-            public void onNext(String v) {
+            public void onNext(final String v) {
                 System.out.println("observer2: " + v);
                 if (v.equals("one")) {
                     oneReceived.countDown();
                 } else {
-                    try {
-                        makeSlow.await();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    lastValueForObserver2.set(v);
+                    s0.schedule(new Action1<Inner>() {
+
+                        @Override
+                        public void call(Inner t1) {
+                            try {
+                                makeSlow.await();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            lastValueForObserver2.set(v);
+                            if ("three".equals(v)) {
+                                completed0.countDown();
+                            }
+                        }
+                        
+                    });
                 }
             }
 
@@ -340,6 +369,7 @@ public class ReplaySubjectTest {
         System.out.println("makeSlow released");
         
         completed.await();
+        completed0.await();
         // all of them should be emitted with the last being "three"
         assertEquals("three", lastValueForObserver2.get());
 
