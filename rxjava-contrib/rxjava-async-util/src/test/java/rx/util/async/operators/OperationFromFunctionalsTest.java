@@ -62,7 +62,7 @@ public class OperationFromFunctionalsTest {
             inOrder.verifyNoMoreInteractions();
         }
     }
-    @Test
+    @Test(timeout = 2000)
     public void testFromAction() {
         final AtomicInteger value = new AtomicInteger();
         
@@ -97,7 +97,7 @@ public class OperationFromFunctionalsTest {
             Assert.assertEquals(2, value.get());
         }
     }
-    @Test
+    @Test(timeout = 2000)
     public void testFromActionThrows() {
         Action0 action = new Action0() {
             @Override
@@ -110,7 +110,7 @@ public class OperationFromFunctionalsTest {
         
         testRunShouldThrow(source, RuntimeException.class);
     }
-    @Test
+    @Test(timeout = 2000)
     public void testFromFunc0() {
         Func0<Integer> func = new Func0<Integer>() {
             @Override
@@ -140,7 +140,7 @@ public class OperationFromFunctionalsTest {
         }
     }
     
-    @Test
+    @Test(timeout = 2000)
     public void testFromFunc0Throws() {
         Func0<Integer> func = new Func0<Integer>() {
             @Override
@@ -153,7 +153,7 @@ public class OperationFromFunctionalsTest {
         
         testRunShouldThrow(source, RuntimeException.class);
     }
-    @Test
+    @Test(timeout = 2000)
     public void testFromRunnable() {
         final AtomicInteger value = new AtomicInteger();
         
@@ -188,7 +188,7 @@ public class OperationFromFunctionalsTest {
             Assert.assertEquals(2, value.get());
         }
     }
-    @Test
+    @Test(timeout = 2000)
     public void testFromRunnableThrows() {
         Runnable action = new Runnable() {
             @Override
@@ -201,7 +201,7 @@ public class OperationFromFunctionalsTest {
         
         testRunShouldThrow(source, RuntimeException.class);
     }
-    @Test
+    @Test(timeout = 2000)
     public void testFromCallable() {
         Callable<Integer> callable = new Callable<Integer>() {
             @Override
@@ -231,7 +231,7 @@ public class OperationFromFunctionalsTest {
         }
     }
     
-    @Test
+    @Test(timeout = 2000)
     public void testFromCallableThrows() {
         Callable<Integer> callable = new Callable<Integer>() {
             @Override

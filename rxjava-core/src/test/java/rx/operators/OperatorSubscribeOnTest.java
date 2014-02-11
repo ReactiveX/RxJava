@@ -24,17 +24,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
+import static org.mockito.Mockito.*;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.observers.Subscribers;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.BooleanSubscription;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -285,5 +290,76 @@ public class OperatorSubscribeOnTest {
 
         }
     }
+    @Test(timeout = 1000)
+    public void testCancelBeforeRun() throws Exception {
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> s = Subscribers.from(o);
+        s.unsubscribe();
+        
+        Observable.from(1).subscribeOn(Schedulers.newThread()).subscribe(s);
+        Thread.sleep(100);
+        
+        verify(o, never()).onNext(any());
+        verify(o, never()).onError(any(Throwable.class));
+        verify(o, never()).onCompleted();
+    }
+    
+    static class DelayingScheduler extends Scheduler {
+        final Scheduler actual;
+        final long delay;
+        final TimeUnit unit;
 
+        public DelayingScheduler(Scheduler actual, long delay, TimeUnit unit) {
+            this.actual = actual;
+            this.delay = delay;
+            this.unit = unit;
+        }
+
+        @Override
+        public Subscription schedule(final Action1<Scheduler.Inner> action) {
+            final CompositeSubscription cs = new CompositeSubscription();
+            final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
+            cs.add(mas);
+            mas.set(actual.schedule(new Action1<Inner>() {
+
+                @Override
+                public void call(Inner t1) {
+                    cs.delete(mas);
+                    cs.add(actual.schedule(action, delay, unit));
+                }
+                
+            }));
+            return cs;
+        }
+
+        @Override
+        public Subscription schedule(final Action1<Scheduler.Inner> action, final long delayTime, final TimeUnit delayUnit) {
+            final CompositeSubscription cs = new CompositeSubscription();
+            final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
+            cs.add(mas);
+            mas.set(actual.schedule(new Action1<Inner>() {
+                @Override
+                public void call(Inner t1) {
+                    cs.delete(mas);
+                    long nanos = unit.toNanos(delay) + delayUnit.toNanos(delayTime);
+                    cs.add(actual.schedule(action, nanos, TimeUnit.NANOSECONDS));
+                }
+            }));
+            return cs;
+        }
+    }
+    @Test(timeout = 1000)
+    public void testCancelBeforeDelayedSubscribe() throws Exception {
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        Subscriber<Object> s = Subscribers.from(o);
+        s.unsubscribe();
+
+        Observable.from(1)
+                .subscribeOn(new DelayingScheduler(Schedulers.computation(), 2, TimeUnit.SECONDS))
+                .subscribe(s);
+        
+        Thread.sleep(100);
+    }
 }

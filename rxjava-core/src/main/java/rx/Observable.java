@@ -91,7 +91,7 @@ import rx.operators.OperationTimeout;
 import rx.operators.OperationTimer;
 import rx.operators.OperationToMap;
 import rx.operators.OperationToMultimap;
-import rx.operators.OperationToObservableFuture;
+import rx.operators.OperatorToObservableFuture;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorCast;
@@ -1156,7 +1156,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Future<? extends T> future) {
-        return create(OperationToObservableFuture.toObservableFuture(future));
+        return create(OperatorToObservableFuture.toObservableFuture(future));
     }
 
     /**
@@ -1183,7 +1183,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Future<? extends T> future, long timeout, TimeUnit unit) {
-        return create(OperationToObservableFuture.toObservableFuture(future, timeout, unit));
+        return create(OperatorToObservableFuture.toObservableFuture(future, timeout, unit));
     }
 
     /**
@@ -1207,7 +1207,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Future<? extends T> future, Scheduler scheduler) {
-        return create(OperationToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
+        return create(OperatorToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
     }
 
     /**
