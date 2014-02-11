@@ -63,7 +63,8 @@ public class OperatorRepeat<T> implements Operator<T, Observable<T>> {
 
             @Override
             public void onError(Throwable e) {
-                child.onError(e);
+                // we should never receive this but if we do we pass it on
+                child.onError(new IllegalStateException("Error received on nested Observable.", e));
             }
 
             @Override
