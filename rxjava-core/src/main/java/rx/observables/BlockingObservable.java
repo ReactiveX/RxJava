@@ -18,7 +18,6 @@ package rx.observables;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -95,7 +94,7 @@ public class BlockingObservable<T> {
      */
     public void forEach(final Action1<? super T> onNext) {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> exceptionFromOnError = new AtomicReference<Throwable>();
+        final Throwable[] exceptionFromOnError = new Throwable[1];
 
         /**
          * Wrapping since raw functions provided by the user are being invoked.
@@ -119,7 +118,7 @@ public class BlockingObservable<T> {
                  * We do this instead of throwing directly since this may be on
                  * a different thread and the latch is still waiting.
                  */
-                exceptionFromOnError.set(e);
+                exceptionFromOnError[0] = e;
                 latch.countDown();
             }
 
@@ -139,11 +138,11 @@ public class BlockingObservable<T> {
             throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
         }
 
-        if (exceptionFromOnError.get() != null) {
-            if (exceptionFromOnError.get() instanceof RuntimeException) {
-                throw (RuntimeException) exceptionFromOnError.get();
+        if (exceptionFromOnError[0] != null) {
+            if (exceptionFromOnError[0] instanceof RuntimeException) {
+                throw (RuntimeException) exceptionFromOnError[0];
             } else {
-                throw new RuntimeException(exceptionFromOnError.get());
+                throw new RuntimeException(exceptionFromOnError[0]);
             }
         }
     }
