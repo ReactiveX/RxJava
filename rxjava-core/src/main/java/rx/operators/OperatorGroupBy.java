@@ -135,7 +135,6 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
 
             private void completeInner() {
                 if (completionCounter.decrementAndGet() == 0 && (completed.get() || childObserver.isUnsubscribed())) {
-                    System.out.println("groupBy INNER completed");
                     if (childObserver.isUnsubscribed()) {
                         // if the entire groupBy has been unsubscribed and children are completed we will propagate the unsubscribe up.
                         unsubscribe();
