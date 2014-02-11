@@ -24,6 +24,10 @@ import rx.Subscriber;
 import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TestScheduler;
 import rx.schedulers.TrampolineScheduler;
+import rx.subscriptions.BooleanSubscription;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
+import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
 /**
@@ -32,13 +36,16 @@ import rx.util.functions.Action1;
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/subscribeOn.png">
  */
 public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
-
+    // debug
+    private static final boolean ASYNC_UNSUBSCRIBE = false;
+    // debug
+    private static final boolean ALLOW_CANCEL = true;
+    
     private final Scheduler scheduler;
 
     public OperatorSubscribeOn(Scheduler scheduler) {
         this.scheduler = scheduler;
     }
-
     @Override
     public Subscriber<? super Observable<T>> call(final Subscriber<? super T> child) {
         return new Subscriber<Observable<T>>(child) {
@@ -72,38 +79,104 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
                 }
 
                 final CountDownLatch onSubscribeLatch = new CountDownLatch(1);
-                final Object _this = this;
-                scheduler.schedule(new Action1<Inner>() {
+                
+                if (ALLOW_CANCEL) {
+                    final CompositeSubscription cs = new CompositeSubscription();
+                    child.add(cs);
+                    // unblock call in case an asynchronous unsubscribe happens
+                    final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
+                    cs.add(BooleanSubscription.create(new Action0() {
+                        @Override
+                        public void call() {
+                            onSubscribeLatch.countDown();
+                        }
+                    }));
+                    cs.add(mas);
+                    mas.set(scheduler.schedule(new Action1<Inner>() {
 
-                    @Override
-                    public void call(final Inner inner) {
-                        // we inject 'child' so it's the same subscription
-                        // so it works on synchronous Observables
-                        o.subscribe(new Subscriber<T>(child) {
+                        @Override
+                        public void call(final Inner inner) {
+                            cs.delete(mas);
+                            // we inject 'child' so it's the same subscription
+                            // so it works on synchronous Observables
 
-                            @Override
-                            public void onCompleted() {
-                                child.onCompleted();
+                            final Subscriber<T> s2 = new Subscriber<T>() {
+
+                                @Override
+                                public void onCompleted() {
+                                    child.onCompleted();
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    child.onError(e);
+                                }
+
+                                @Override
+                                public void onNext(T t) {
+                                    child.onNext(t);
+                                }
+
+                                @Override
+                                public void onSubscribe() {
+                                    onSubscribeLatch.countDown();
+                                }
+                            };
+
+                            if (ASYNC_UNSUBSCRIBE) {
+                                child.add(BooleanSubscription.create(new Action0() {
+                                    @Override
+                                    public void call() {
+                                        inner.schedule(new Action1<Inner>() {
+                                            @Override
+                                            public void call(Inner t1) {
+                                                s2.unsubscribe();
+                                            }
+                                        });
+                                    }
+
+                                }));
+                            } else {
+                                child.add(s2);
                             }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                child.onError(e);
-                            }
+                            o.subscribe(s2);
+                            onSubscribeLatch.countDown();
+                        }
+                    }));
+                } else {
+                    scheduler.schedule(new Action1<Inner>() {
 
-                            @Override
-                            public void onNext(T t) {
-                                child.onNext(t);
-                            }
+                        @Override
+                        public void call(final Inner inner) {
+                            // we inject 'child' so it's the same subscription
+                            // so it works on synchronous Observables
+                            o.subscribe(new Subscriber<T>(child) {
 
-                            @Override
-                            public void onSubscribe() {
-                                onSubscribeLatch.countDown();
-                            }
-                        });
-                        onSubscribeLatch.countDown();
-                    }
-                });
+                                @Override
+                                public void onCompleted() {
+                                    child.onCompleted();
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    child.onError(e);
+                                }
+
+                                @Override
+                                public void onNext(T t) {
+                                    child.onNext(t);
+                                }
+
+                                @Override
+                                public void onSubscribe() {
+                                    onSubscribeLatch.countDown();
+                                }
+                            });
+                            onSubscribeLatch.countDown();
+                        }
+                    });
+                }
                 try {
                     onSubscribeLatch.await();
                 } catch (InterruptedException e) {
