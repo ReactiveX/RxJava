@@ -17,6 +17,7 @@ package rx.operators;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -37,6 +38,7 @@ import rx.Subscription;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
+import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
@@ -243,6 +245,8 @@ public class OperatorGroupByTest {
         final AtomicInteger subscribeCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
         doTestUnsubscribeOnNestedTakeAndAsyncInfiniteStream(SYNC_INFINITE_OBSERVABLE_OF_EVENT(2, subscribeCounter, sentEventCounter), subscribeCounter);
+        Thread.sleep(500);
+        assertEquals(39, sentEventCounter.get());
     }
 
     /*
@@ -253,6 +257,8 @@ public class OperatorGroupByTest {
         final AtomicInteger subscribeCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
         doTestUnsubscribeOnNestedTakeAndAsyncInfiniteStream(ASYNC_INFINITE_OBSERVABLE_OF_EVENT(2, subscribeCounter, sentEventCounter), subscribeCounter);
+        Thread.sleep(500);
+        assertEquals(39, sentEventCounter.get());
     }
 
     private void doTestUnsubscribeOnNestedTakeAndAsyncInfiniteStream(Observable<Event> es, AtomicInteger subscribeCounter) throws InterruptedException {
@@ -272,7 +278,7 @@ public class OperatorGroupByTest {
 
                     @Override
                     public Observable<String> call(GroupedObservable<Integer, Event> eventGroupedObservable) {
-                        //                        System.out.println("testUnsubscribe => GroupedObservable Key: " + eventGroupedObservable.getKey());
+                        System.out.println("testUnsubscribe => GroupedObservable Key: " + eventGroupedObservable.getKey());
                         groupCounter.incrementAndGet();
 
                         return eventGroupedObservable
@@ -417,57 +423,6 @@ public class OperatorGroupByTest {
     }
 
     @Test
-    public void testUnsubscribeOnGroupViaOnlyTakeOnInner() {
-        final AtomicInteger subscribeCounter = new AtomicInteger();
-        final AtomicInteger sentEventCounter = new AtomicInteger();
-        final AtomicInteger eventCounter = new AtomicInteger();
-
-        SYNC_INFINITE_OBSERVABLE_OF_EVENT(4, subscribeCounter, sentEventCounter)
-                .groupBy(new Func1<Event, Integer>() {
-
-                    @Override
-                    public Integer call(Event e) {
-                        return e.source;
-                    }
-                })
-                .flatMap(new Func1<GroupedObservable<Integer, Event>, Observable<String>>() {
-
-                    @Override
-                    public Observable<String> call(GroupedObservable<Integer, Event> eventGroupedObservable) {
-                        int numToTake = 0;
-                        if (eventGroupedObservable.getKey() == 1) {
-                            numToTake = 10;
-                        } else if (eventGroupedObservable.getKey() == 2) {
-                            numToTake = 5;
-                        }
-                        return eventGroupedObservable
-                                .take(numToTake)
-                                .map(new Func1<Event, String>() {
-
-                                    @Override
-                                    public String call(Event event) {
-                                        return "testUnsubscribe => Source: " + event.source + "  Message: " + event.message;
-                                    }
-                                });
-
-                    }
-                })
-                .subscribe(new Action1<String>() {
-
-                    @Override
-                    public void call(String s) {
-                        eventCounter.incrementAndGet();
-                        System.out.println("=> " + s);
-                    }
-
-                });
-
-        assertEquals(15, eventCounter.get());
-        // we should send 22 additional events that are filtered out as they are skipped while taking the 15 we want
-        assertEquals(37, sentEventCounter.get());
-    }
-
-    @Test
     public void testStaggeredCompletion() throws InterruptedException {
         final AtomicInteger eventCounter = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
@@ -486,7 +441,6 @@ public class OperatorGroupByTest {
                         if (group.getKey() == 0) {
                             return group.delay(100, TimeUnit.MILLISECONDS).map(new Func1<Integer, Integer>() {
 
-                                @Override
                                 public Integer call(Integer t) {
                                     return t * 10;
                                 }
@@ -525,7 +479,7 @@ public class OperatorGroupByTest {
         assertEquals(100, eventCounter.get());
     }
 
-    @Test
+    @Test(timeout = 1000)
     public void testCompletionIfInnerNotSubscribed() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger eventCounter = new AtomicInteger();
@@ -560,6 +514,387 @@ public class OperatorGroupByTest {
             fail("timed out - never got completion");
         }
         assertEquals(2, eventCounter.get());
+    }
+
+    @Test(timeout = 500)
+    public void testFilterGroupsUnsubscribesThem() {
+        final AtomicInteger subscribeCounter = new AtomicInteger();
+        final AtomicInteger sentEventCounter = new AtomicInteger();
+        final AtomicInteger eventCounter = new AtomicInteger();
+
+        SYNC_INFINITE_OBSERVABLE_OF_EVENT(4, subscribeCounter, sentEventCounter)
+                .groupBy(new Func1<Event, Integer>() {
+
+                    @Override
+                    public Integer call(Event e) {
+                        return e.source;
+                    }
+                })
+                // take 2 of the 4 groups
+                .filter(new Func1<GroupedObservable<Integer, Event>, Boolean>() {
+
+                    @Override
+                    public Boolean call(GroupedObservable<Integer, Event> g) {
+                        return g.getKey() < 2;
+                    }
+
+                })
+                .flatMap(new Func1<GroupedObservable<Integer, Event>, Observable<String>>() {
+
+                    @Override
+                    public Observable<String> call(GroupedObservable<Integer, Event> eventGroupedObservable) {
+                        return eventGroupedObservable
+                                .map(new Func1<Event, String>() {
+
+                                    @Override
+                                    public String call(Event event) {
+                                        return "testUnsubscribe => Source: " + event.source + "  Message: " + event.message;
+                                    }
+                                });
+
+                    }
+                })
+                .take(30).subscribe(new Action1<String>() {
+
+                    @Override
+                    public void call(String s) {
+                        eventCounter.incrementAndGet();
+                        System.out.println("=> " + s);
+                    }
+
+                });
+
+        assertEquals(30, eventCounter.get());
+        // we should send 30 additional events that are filtered out as they are in the groups we skip
+        assertEquals(60, sentEventCounter.get());
+    }
+
+    @Test
+    public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsAndThenComplete() throws InterruptedException {
+        final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
+        final ArrayList<String> results = new ArrayList<String>();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> sub) {
+                sub.onNext(1);
+                sub.onNext(2);
+                sub.onNext(1);
+                sub.onNext(2);
+                try {
+                    first.await();
+                } catch (InterruptedException e) {
+                    sub.onError(e);
+                    return;
+                }
+                sub.onNext(3);
+                sub.onNext(3);
+                sub.onCompleted();
+            }
+
+        }).groupBy(new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t) {
+                return t;
+            }
+
+        }).flatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(final GroupedObservable<Integer, Integer> group) {
+                if (group.getKey() < 3) {
+                    return group.map(new Func1<Integer, String>() {
+
+                        @Override
+                        public String call(Integer t1) {
+                            return "first groups: " + t1;
+                        }
+
+                    })
+                            // must take(2) so an onCompleted + unsubscribe happens on these first 2 groups
+                            .take(2).doOnCompleted(new Action0() {
+
+                                @Override
+                                public void call() {
+                                    first.countDown();
+                                }
+
+                            });
+                } else {
+                    return group.map(new Func1<Integer, String>() {
+
+                        @Override
+                        public String call(Integer t1) {
+                            return "last group: " + t1;
+                        }
+
+                    });
+                }
+            }
+
+        }).toBlockingObservable().forEach(new Action1<String>() {
+
+            @Override
+            public void call(String s) {
+                results.add(s);
+            }
+
+        });
+
+        System.out.println("Results: " + results);
+        assertEquals(6, results.size());
+    }
+
+    @Test
+    public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenSubscribesOnAndDelaysAndThenCompletes() throws InterruptedException {
+        final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
+        final ArrayList<String> results = new ArrayList<String>();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> sub) {
+                sub.onNext(1);
+                sub.onNext(2);
+                sub.onNext(1);
+                sub.onNext(2);
+                try {
+                    first.await();
+                } catch (InterruptedException e) {
+                    sub.onError(e);
+                    return;
+                }
+                sub.onNext(3);
+                sub.onNext(3);
+                sub.onCompleted();
+            }
+
+        }).groupBy(new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t) {
+                return t;
+            }
+
+        }).flatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(final GroupedObservable<Integer, Integer> group) {
+                if (group.getKey() < 3) {
+                    return group.map(new Func1<Integer, String>() {
+
+                        @Override
+                        public String call(Integer t1) {
+                            return "first groups: " + t1;
+                        }
+
+                    })
+                            // must take(2) so an onCompleted + unsubscribe happens on these first 2 groups
+                            .take(2).doOnCompleted(new Action0() {
+
+                                @Override
+                                public void call() {
+                                    first.countDown();
+                                }
+
+                            });
+                } else {
+                    return group.subscribeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Func1<Integer, String>() {
+
+                        @Override
+                        public String call(Integer t1) {
+                            return "last group: " + t1;
+                        }
+
+                    });
+                }
+            }
+
+        }).toBlockingObservable().forEach(new Action1<String>() {
+
+            @Override
+            public void call(String s) {
+                results.add(s);
+            }
+
+        });
+
+        System.out.println("Results: " + results);
+        assertEquals(6, results.size());
+    }
+
+    @Test
+    public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenObservesOnAndDelaysAndThenCompletes() throws InterruptedException {
+        final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
+        final ArrayList<String> results = new ArrayList<String>();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> sub) {
+                sub.onNext(1);
+                sub.onNext(2);
+                sub.onNext(1);
+                sub.onNext(2);
+                try {
+                    first.await();
+                } catch (InterruptedException e) {
+                    sub.onError(e);
+                    return;
+                }
+                sub.onNext(3);
+                sub.onNext(3);
+                sub.onCompleted();
+            }
+
+        }).groupBy(new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t) {
+                return t;
+            }
+
+        }).flatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(final GroupedObservable<Integer, Integer> group) {
+                if (group.getKey() < 3) {
+                    return group.map(new Func1<Integer, String>() {
+
+                        @Override
+                        public String call(Integer t1) {
+                            return "first groups: " + t1;
+                        }
+
+                    })
+                            // must take(2) so an onCompleted + unsubscribe happens on these first 2 groups
+                            .take(2).doOnCompleted(new Action0() {
+
+                                @Override
+                                public void call() {
+                                    first.countDown();
+                                }
+
+                            });
+                } else {
+                    return group.observeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Func1<Integer, String>() {
+
+                        @Override
+                        public String call(Integer t1) {
+                            return "last group: " + t1;
+                        }
+
+                    });
+                }
+            }
+
+        }).toBlockingObservable().forEach(new Action1<String>() {
+
+            @Override
+            public void call(String s) {
+                results.add(s);
+            }
+
+        });
+
+        System.out.println("Results: " + results);
+        assertEquals(6, results.size());
+    }
+
+    @Test
+    public void testGroupsWithNestedSubscribeOn() throws InterruptedException {
+        final ArrayList<String> results = new ArrayList<String>();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> sub) {
+                sub.onNext(1);
+                sub.onNext(2);
+                sub.onNext(1);
+                sub.onNext(2);
+                sub.onCompleted();
+            }
+
+        }).groupBy(new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t) {
+                return t;
+            }
+
+        }).flatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(final GroupedObservable<Integer, Integer> group) {
+                return group.subscribeOn(Schedulers.newThread()).map(new Func1<Integer, String>() {
+
+                    @Override
+                    public String call(Integer t1) {
+                        System.out.println("Received: " + t1 + " on group : " + group.getKey());
+                        return "first groups: " + t1;
+                    }
+
+                });
+            }
+
+        }).toBlockingObservable().forEach(new Action1<String>() {
+
+            @Override
+            public void call(String s) {
+                results.add(s);
+            }
+
+        });
+
+        System.out.println("Results: " + results);
+        assertEquals(4, results.size());
+    }
+
+    @Test
+    public void testGroupsWithNestedObserveOn() throws InterruptedException {
+        final ArrayList<String> results = new ArrayList<String>();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> sub) {
+                sub.onNext(1);
+                sub.onNext(2);
+                sub.onNext(1);
+                sub.onNext(2);
+                sub.onCompleted();
+            }
+
+        }).groupBy(new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t) {
+                return t;
+            }
+
+        }).flatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(final GroupedObservable<Integer, Integer> group) {
+                return group.observeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Func1<Integer, String>() {
+
+                    @Override
+                    public String call(Integer t1) {
+                        return "first groups: " + t1;
+                    }
+
+                });
+            }
+
+        }).toBlockingObservable().forEach(new Action1<String>() {
+
+            @Override
+            public void call(String s) {
+                results.add(s);
+            }
+
+        });
+
+        System.out.println("Results: " + results);
+        assertEquals(4, results.size());
     }
 
     private static class Event {
