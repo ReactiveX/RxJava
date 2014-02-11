@@ -21,7 +21,7 @@ import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.nio.client.HttpAsyncClient;
 import org.apache.http.nio.client.methods.HttpAsyncMethods;
 import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
-import org.apache.http.protocol.Http.HttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.BasicHttpContext;
 
 import rx.Observable;
