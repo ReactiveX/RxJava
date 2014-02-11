@@ -87,7 +87,6 @@ import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
 import rx.operators.OperationTimeInterval;
-import rx.operators.OperationTimeout;
 import rx.operators.OperationTimer;
 import rx.operators.OperationToMap;
 import rx.operators.OperationToMultimap;
@@ -105,6 +104,8 @@ import rx.operators.OperatorParallel;
 import rx.operators.OperatorRepeat;
 import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorTake;
+import rx.operators.OperatorTimeout;
+import rx.operators.OperatorTimeoutWithSelector;
 import rx.operators.OperatorTimestamp;
 import rx.operators.OperatorToObservableList;
 import rx.operators.OperatorToObservableSortedList;
@@ -7754,11 +7755,8 @@ public class Observable<T> {
      * @return an Observable that completes if either the first item or any subsequent item doesn't
      *         arrive within the time windows specified by the timeout selectors
      */
-    public final <U, V> Observable<T> timeout(Func0<? extends Observable<U>> firstTimeoutSelector, Func1<? super T, ? extends Observable<U>> timeoutSelector) {
-        if (firstTimeoutSelector == null) {
-            throw new NullPointerException("firstTimeoutSelector");
-        }
-        return timeout(firstTimeoutSelector, timeoutSelector, Observable.<T> empty());
+    public final <U, V> Observable<T> timeout(Func0<? extends Observable<U>> firstTimeoutSelector, Func1<? super T, ? extends Observable<V>> timeoutSelector) {
+        return timeout(firstTimeoutSelector, timeoutSelector, null);
     }
 
     /**
@@ -7784,14 +7782,11 @@ public class Observable<T> {
      * @return an Observable that mirrors the source Observable, but switches to the {@code other} Observable if either the first item emitted by the source Observable or any
      *         subsequent item don't arrive within time windows defined by the timeout selectors
      */
-    public final <U, V> Observable<T> timeout(Func0<? extends Observable<U>> firstTimeoutSelector, Func1<? super T, ? extends Observable<U>> timeoutSelector, Observable<? extends T> other) {
-        if (firstTimeoutSelector == null) {
-            throw new NullPointerException("firstTimeoutSelector");
+    public final <U, V> Observable<T> timeout(Func0<? extends Observable<U>> firstTimeoutSelector, Func1<? super T, ? extends Observable<V>> timeoutSelector, Observable<? extends T> other) {
+        if(timeoutSelector == null) {
+            throw new NullPointerException("timeoutSelector is null");
         }
-        if (other == null) {
-            throw new NullPointerException("other");
-        }
-        return create(OperationTimeout.timeoutSelector(this, firstTimeoutSelector, timeoutSelector, other));
+        return lift(new OperatorTimeoutWithSelector<T, U, V>(firstTimeoutSelector, timeoutSelector, other));
     }
 
     /**
@@ -7813,8 +7808,8 @@ public class Observable<T> {
      *         the source Observable takes longer to arrive than the time window defined by the
      *         selector for the previously emitted item
      */
-    public final <U> Observable<T> timeout(Func1<? super T, ? extends Observable<U>> timeoutSelector) {
-        return timeout(timeoutSelector, Observable.<T> empty());
+    public final <V> Observable<T> timeout(Func1<? super T, ? extends Observable<V>> timeoutSelector) {
+        return timeout(null, timeoutSelector, null);
     }
 
     /**
@@ -7838,11 +7833,8 @@ public class Observable<T> {
      *         fallback Observable if a item emitted by the source Observable takes longer to arrive
      *         than the time window defined by the selector for the previously emitted item
      */
-    public final <U> Observable<T> timeout(Func1<? super T, ? extends Observable<U>> timeoutSelector, Observable<? extends T> other) {
-        if (other == null) {
-            throw new NullPointerException("other");
-        }
-        return create(OperationTimeout.timeoutSelector(this, null, timeoutSelector, other));
+    public final <V> Observable<T> timeout(Func1<? super T, ? extends Observable<V>> timeoutSelector, Observable<? extends T> other) {
+        return timeout(null, timeoutSelector, other);
     }
 
     /**
@@ -7863,7 +7855,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244283.aspx">MSDN: Observable.Timeout</a>
      */
     public final Observable<T> timeout(long timeout, TimeUnit timeUnit) {
-        return create(OperationTimeout.timeout(this, timeout, timeUnit));
+        return timeout(timeout, timeUnit, null, Schedulers.computation());
     }
 
     /**
@@ -7886,7 +7878,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229512.aspx">MSDN: Observable.Timeout</a>
      */
     public final Observable<T> timeout(long timeout, TimeUnit timeUnit, Observable<? extends T> other) {
-        return create(OperationTimeout.timeout(this, timeout, timeUnit, other));
+        return timeout(timeout, timeUnit, other, Schedulers.computation());
     }
 
     /**
@@ -7911,7 +7903,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211676.aspx">MSDN: Observable.Timeout</a>
      */
     public final Observable<T> timeout(long timeout, TimeUnit timeUnit, Observable<? extends T> other, Scheduler scheduler) {
-        return create(OperationTimeout.timeout(this, timeout, timeUnit, other, scheduler));
+        return lift(new OperatorTimeout<T>(timeout, timeUnit, other, scheduler));
     }
 
     /**
@@ -7934,7 +7926,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228946.aspx">MSDN: Observable.Timeout</a>
      */
     public final Observable<T> timeout(long timeout, TimeUnit timeUnit, Scheduler scheduler) {
-        return create(OperationTimeout.timeout(this, timeout, timeUnit, scheduler));
+        return timeout(timeout, timeUnit, null, scheduler);
     }
 
     /**
