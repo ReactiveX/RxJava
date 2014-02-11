@@ -249,6 +249,15 @@ class RxScalaDemo extends JUnitSuite {
     sequenced.subscribe(x => println(s"Emitted group: $x"))
   }
 
+  @Test def combineLatestExample() {
+    val first_counter = Observable.interval(250 millis)
+    val second_counter = Observable.interval(550 millis)
+    val combined_counter = first_counter.combineLatest(second_counter,
+      (x: Long, y: Long) => List(x,y)) take 10
+
+    combined_counter subscribe {x => println(s"Emitted group: $x")}
+  }
+
 
   @Test def olympicsExample() {
     val medals = Olympics.mountainBikeMedals.publish

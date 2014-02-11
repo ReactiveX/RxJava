@@ -1528,6 +1528,22 @@ trait Observable[+T]
     toScalaObservable[(T, U)](rx.Observable.combineLatest[T, U, (T, U)](this.asJavaObservable, that.asJavaObservable, f))
   }
 
+
+  /**
+   * Combines two observables, emitting some type `R` specified in the function f,
+   * each time an event is received from one of the source observables, where the aggregation
+   * is defined by the given function.
+   *
+   *@param that
+   *           The second source observable.
+   *@param f
+               The function that is used combine the emissions of the two observables.
+   *@return An Observable that combines the source Observables according to the function f.
+   */
+  def combineLatest[U,R](that: Observable[U], f: (T, U) => R): Observable[R] = {
+    toScalaObservable[R](rx.Observable.combineLatest[T, U, R](this.asJavaObservable, that.asJavaObservable, f))
+  }
+
   /**
    * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
    *
