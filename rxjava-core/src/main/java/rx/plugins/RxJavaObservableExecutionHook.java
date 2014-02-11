@@ -20,6 +20,7 @@ import rx.Observable.OnSubscribe;
 import rx.Observable.OnSubscribeFunc;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.operators.Operator;
 import rx.util.functions.Func1;
 
 /**
@@ -37,7 +38,6 @@ import rx.util.functions.Func1;
  * 
  * */
 public abstract class RxJavaObservableExecutionHook {
-
     /**
      * Invoked before {@link Observable#subscribe(rx.Subscriber)} is about to be executed.
      * <p>
@@ -93,4 +93,15 @@ public abstract class RxJavaObservableExecutionHook {
         return e;
     }
 
+    public <T> OnSubscribe<T> onCreate(OnSubscribe<T> f) {
+        return f;
+    }
+
+    public <T, R> Operator<R, T> onLift(final Operator<R, T> bind) {
+        return bind;
+    }
+
+    public <T> Subscription onAdd(Subscriber<T> subscriber, Subscription s) {
+        return s;
+    }
 }
