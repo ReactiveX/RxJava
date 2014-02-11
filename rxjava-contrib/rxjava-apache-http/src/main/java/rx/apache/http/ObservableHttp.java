@@ -21,6 +21,8 @@ import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.nio.client.HttpAsyncClient;
 import org.apache.http.nio.client.methods.HttpAsyncMethods;
 import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
+import org.apache.http.protocol.Http.HttpContext;
+import org.apache.http.protocol.BasicHttpContext;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
@@ -134,6 +136,42 @@ public class ObservableHttp<T> {
      * @return
      */
     public static ObservableHttp<ObservableHttpResponse> createRequest(final HttpAsyncRequestProducer requestProducer, final HttpAsyncClient client) {
+        return createRequest(requestProducer, client, new BasicHttpContext());
+    }
+
+    /**
+     * Execute request using {@link HttpAsyncRequestProducer} to define HTTP Method, URI and payload (if applicable).
+     * <p>
+     * If the response is chunked (or flushed progressively such as with <i>text/event-stream</i> <a href="http://www.w3.org/TR/2009/WD-eventsource-20091029/">Server-Sent Events</a>) this will call
+     * {@link Observer#onNext} multiple times.
+     * <p>
+     * Use {@code HttpAsyncMethods.create* } factory methods to create {@link HttpAsyncRequestProducer} instances.
+     * <p>
+     * A client can be retrieved like this:
+     * <p>
+     * <pre> {@code      CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault(); } </pre>
+     * <p>
+     * A client with custom configurations can be created like this:
+     * </p>
+     * <pre> {@code
+     * final RequestConfig requestConfig = RequestConfig.custom()
+     *     .setSocketTimeout(3000)
+     *     .setConnectTimeout(3000).build();
+     * final CloseableHttpAsyncClient httpclient = HttpAsyncClients.custom()
+     *     .setDefaultRequestConfig(requestConfig)
+     *     .setMaxConnPerRoute(20)
+     *     .setMaxConnTotal(50)
+     *     .build();
+     * httpclient.start();
+     * }</pre>
+     *
+     *
+     * @param requestProducer
+     * @param client
+     * @param context The HttpContext
+     * @return
+     */
+    public static ObservableHttp<ObservableHttpResponse> createRequest(final HttpAsyncRequestProducer requestProducer, final HttpAsyncClient client, final HttpContext context) {
 
         return ObservableHttp.create(new OnSubscribeFunc<ObservableHttpResponse>() {
 
@@ -144,7 +182,7 @@ public class ObservableHttp<T> {
 
                 // return a Subscription that wraps the Future so it can be cancelled
                 parentSubscription.add(Subscriptions.from(client.execute(requestProducer, new ResponseConsumerDelegate(observer, parentSubscription),
-                        new FutureCallback<HttpResponse>() {
+                        context, new FutureCallback<HttpResponse>() {
 
                             @Override
                             public void completed(HttpResponse result) {
