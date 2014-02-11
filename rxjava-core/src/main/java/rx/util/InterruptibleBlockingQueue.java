@@ -3,6 +3,14 @@ package rx.util;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Single-producer-single-consumer queue (only thread-safe for 1 producer thread with 1 consumer thread).
+ * 
+ * This supports an interrupt() being called externally rather than needing to interrupt the thread. This allows
+ * unsubscribe behavior when this queue is being used.
+ * 
+ * @param <E>
+ */
 public class InterruptibleBlockingQueue<E> {
 
     private final Semaphore semaphore;
@@ -20,7 +28,7 @@ public class InterruptibleBlockingQueue<E> {
         this.semaphore = new Semaphore(size);
         this.capacity = size;
         this.mask = size - 1;
-        buffer = (E[])new Object[size];
+        buffer = (E[]) new Object[size];
     }
 
     /**
@@ -85,6 +93,19 @@ public class InterruptibleBlockingQueue<E> {
             semaphore.release();
         }
         return v;
+    }
+
+    public int size()
+    {
+        int size;
+        do
+        {
+            final long currentHead = head.get();
+            final long currentTail = tail.get();
+            size = (int) (currentTail - currentHead);
+        } while (size > buffer.length);
+
+        return size;
     }
 
 }
