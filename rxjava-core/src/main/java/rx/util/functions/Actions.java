@@ -16,7 +16,6 @@
 package rx.util.functions;
 
 import rx.Observer;
-import rx.Subscriber;
 
 /**
  * Utility class for the Action interfaces.
@@ -26,6 +25,58 @@ public final class Actions {
         throw new IllegalStateException("No instances!");
     }
 
+    public static final EmptyAction empty() {
+        return EMPTY_ACTION;
+    }
+
+    private static final EmptyAction EMPTY_ACTION = new EmptyAction();
+
+    private static final class EmptyAction implements Action0, Action1, Action2, Action3, Action4, Action5, Action6, Action7, Action8, Action9, ActionN {
+        @Override
+        public void call() {
+        }
+
+        @Override
+        public void call(Object t1) {
+        }
+
+        @Override
+        public void call(Object t1, Object t2) {
+        }
+
+        @Override
+        public void call(Object t1, Object t2, Object t3) {
+        }
+
+        @Override
+        public void call(Object t1, Object t2, Object t3, Object t4) {
+        }
+
+        @Override
+        public void call(Object t1, Object t2, Object t3, Object t4, Object t5) {
+        }
+
+        @Override
+        public void call(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6) {
+        }
+
+        @Override
+        public void call(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7) {
+        }
+
+        @Override
+        public void call(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8) {
+        }
+
+        @Override
+        public void call(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8, Object t9) {
+        }
+
+        @Override
+        public void call(Object... args) {
+        }
+    }
+    
     /**
      * Extracts a method reference to the observer's onNext method
      * in the form of an Action1.

@@ -61,6 +61,7 @@ import rx.operators.OperationJoin;
 import rx.operators.OperationJoinPatterns;
 import rx.operators.OperationMaterialize;
 import rx.operators.OperationMergeDelayError;
+import rx.operators.OperationMergeMaxConcurrent;
 import rx.operators.OperationMinMax;
 import rx.operators.OperationMulticast;
 import rx.operators.OperationOnErrorResumeNextViaFunction;
@@ -93,13 +94,13 @@ import rx.operators.OperationToMultimap;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
+import rx.operators.Operator;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorFilter;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
-import rx.operators.OperationMergeMaxConcurrent;
 import rx.operators.OperatorObserveOn;
 import rx.operators.OperatorParallel;
 import rx.operators.OperatorRepeat;
@@ -254,10 +255,9 @@ public class Observable<T> {
      */
     public <R> Observable<R> lift(final Func1<Subscriber<? super R>, Subscriber<? super T>> bind) {
         return new Observable<R>(new OnSubscribe<R>() {
-
             @Override
             public void call(Subscriber<? super R> o) {
-                subscribe(bind.call(o));
+                subscribe(hook.onLift((Operator<R, T>) bind).call(o));
             }
         });
     }
