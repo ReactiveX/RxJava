@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx;
+package rx.operators;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
@@ -32,11 +32,15 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.MockitoAnnotations;
 
+import rx.Observable;
+import rx.Observer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.Observable.OnSubscribe;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class TimeoutTests {
+public class OperatorTimeoutTests {
     private PublishSubject<String> underlyingSubject;
     private TestScheduler testScheduler;
     private Observable<String> withTimeout;

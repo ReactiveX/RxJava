@@ -43,7 +43,7 @@ import rx.util.functions.Action0;
 import rx.util.functions.Func0;
 import rx.util.functions.Func1;
 
-public class OperationTimeoutTest {
+public class OperatorTimeoutWithSelectorTest {
     @Test(timeout = 2000)
     public void testTimeoutSelectorNormal1() {
         PublishSubject<Integer> source = PublishSubject.create();
