@@ -203,8 +203,15 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-create">RxJava Wiki: create()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.create.aspx">MSDN: Observable.Create</a>
      */
-    public final static <T> Observable<T> create(OnSubscribe<T> f) {
-        return new Observable<T>(f);
+    public final static <T> Observable<T> create(final OnSubscribe<T> f) {
+        return new Observable<T>(new OnSubscribe<T>() {
+
+            @Override
+            public void call(Subscriber<? super T> s) {
+                s.onSubscribe();
+                f.call(s);
+            }
+        });
     }
 
     /**

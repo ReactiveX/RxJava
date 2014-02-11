@@ -15,13 +15,15 @@
  */
 package rx.operators;
 
+import java.util.concurrent.CountDownLatch;
+
 import rx.Observable;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
-import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
+import rx.schedulers.ImmediateScheduler;
+import rx.schedulers.TestScheduler;
+import rx.schedulers.TrampolineScheduler;
 import rx.util.functions.Action1;
 
 /**
@@ -38,61 +40,75 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
     }
 
     @Override
-    public Subscriber<? super Observable<T>> call(final Subscriber<? super T> subscriber) {
-        return new Subscriber<Observable<T>>() {
+    public Subscriber<? super Observable<T>> call(final Subscriber<? super T> child) {
+        return new Subscriber<Observable<T>>(child) {
 
             @Override
             public void onCompleted() {
-                // ignore
+                // we ignore the outer Observable an onCompleted will be passed when the inner completes
             }
 
             @Override
             public void onError(Throwable e) {
-                subscriber.onError(e);
+                // we should never receive this but if we do we pass it on
+                child.onError(new IllegalStateException("Error received on nested Observable.", e));
             }
 
             @Override
             public void onNext(final Observable<T> o) {
+                if (scheduler instanceof ImmediateScheduler) {
+                    // avoid overhead, execute directly
+                    o.subscribe(child);
+                    return;
+                } else if (scheduler instanceof TrampolineScheduler) {
+                    // avoid overhead, execute directly
+                    o.subscribe(child);
+                    return;
+                } else if (scheduler instanceof TestScheduler) {
+                    // this one will deadlock as it is single-threaded and won't run the scheduled
+                    // work until it manually advances, which it won't be able to do as it will block
+                    o.subscribe(child);
+                    return;
+                }
+
+                final CountDownLatch onSubscribeLatch = new CountDownLatch(1);
+                final Object _this = this;
                 scheduler.schedule(new Action1<Inner>() {
 
                     @Override
                     public void call(final Inner inner) {
-                        final CompositeSubscription cs = new CompositeSubscription();
-                        subscriber.add(Subscriptions.create(new Action0() {
-
-                            @Override
-                            public void call() {
-                                inner.schedule(new Action1<Inner>() {
-
-                                    @Override
-                                    public void call(final Inner inner) {
-                                        cs.unsubscribe();
-                                    }
-
-                                });
-                            }
-
-                        }));
-                        cs.add(subscriber);
-                        o.subscribe(new Subscriber<T>(cs) {
+                        // we inject 'child' so it's the same subscription
+                        // so it works on synchronous Observables
+                        o.subscribe(new Subscriber<T>(child) {
 
                             @Override
                             public void onCompleted() {
-                                subscriber.onCompleted();
+                                child.onCompleted();
                             }
 
                             @Override
                             public void onError(Throwable e) {
-                                subscriber.onError(e);
+                                child.onError(e);
                             }
 
                             @Override
                             public void onNext(T t) {
-                                subscriber.onNext(t);
+                                child.onNext(t);
+                            }
+
+                            @Override
+                            public void onSubscribe() {
+                                onSubscribeLatch.countDown();
                             }
                         });
+                        onSubscribeLatch.countDown();
                     }
                 });
+                try {
+                    onSubscribeLatch.await();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
         };

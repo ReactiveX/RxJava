@@ -62,4 +62,8 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     public final boolean isUnsubscribed() {
         return cs.isUnsubscribed();
     }
+    
+    public void onSubscribe() {
+        
+    }
 }
