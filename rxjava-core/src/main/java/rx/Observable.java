@@ -2362,7 +2362,7 @@ public class Observable<T> {
      * 
      * @return
      */
-    private final Observable<Observable<T>> nest() {
+    public final Observable<Observable<T>> nest() {
         return from(this);
     }
     
