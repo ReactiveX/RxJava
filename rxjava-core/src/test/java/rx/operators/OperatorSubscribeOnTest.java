@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -26,13 +27,17 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 
 public class OperatorSubscribeOnTest {
 
@@ -175,4 +180,110 @@ public class OperatorSubscribeOnTest {
         System.out.println("Executed on thread: " + ts.getLastSeenThread());
         assertTrue(ts.getLastSeenThread().getName().startsWith("RxNewThreadScheduler"));
     }
+
+    /**
+     * This is used to demonstrate the "time gap" issue: https://github.com/Netflix/RxJava/pull/848
+     */
+    @Test
+    public void testSubscribeOnPublishSubjectWithSlowScheduler() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ps.subscribeOn(new SlowScheduler()).subscribe(ts);
+        ps.onNext(1);
+        ps.onNext(2);
+        ps.onCompleted();
+
+        ts.awaitTerminalEvent();
+        ts.assertReceivedOnNext(Arrays.asList(1, 2));
+    }
+
+    private class SlowScheduler extends Scheduler {
+
+        @Override
+        public Subscription schedule(Action1<Inner> action) {
+            InnerSlowScheduler inner = new InnerSlowScheduler();
+            inner.schedule(action);
+            return inner;
+        }
+
+        @Override
+        public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
+            InnerSlowScheduler inner = new InnerSlowScheduler();
+            inner.schedule(action, delayTime, unit);
+            return inner;
+        }
+
+        private class InnerSlowScheduler extends Inner {
+
+            volatile Inner threadInner;
+
+            public InnerSlowScheduler() {
+                final CountDownLatch latch = new CountDownLatch(1);
+                Schedulers.newThread().schedule(new Action1<Inner>() {
+
+                    @Override
+                    public void call(Inner inner) {
+                        threadInner = inner;
+                        latch.countDown();
+                    }
+
+                });
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            private final BooleanSubscription s = new BooleanSubscription();
+
+            @Override
+            public void unsubscribe() {
+                s.unsubscribe();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return s.isUnsubscribed();
+            }
+
+            @Override
+            public void schedule(final Action1<Inner> action, long delayTime, TimeUnit unit) {
+                threadInner.schedule(new Action1<Inner>() {
+
+                    @Override
+                    public void call(Inner inner) {
+                        // inject delay to simulate slow scheduling
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        action.call(inner);
+                    }
+
+                }, delayTime, unit);
+            }
+
+            @Override
+            public void schedule(final Action1<Inner> action) {
+                threadInner.schedule(new Action1<Inner>() {
+
+                    @Override
+                    public void call(Inner inner) {
+                        // inject delay to simulate slow scheduling
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        action.call(inner);
+                    }
+
+                });
+            }
+
+        }
+    }
+
 }
