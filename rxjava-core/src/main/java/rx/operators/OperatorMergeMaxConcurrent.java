@@ -18,8 +18,13 @@ package rx.operators;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
+import rx.Scheduler;
+import rx.Scheduler.Inner;
 import rx.Subscriber;
 import rx.observers.SynchronizedSubscriber;
+import rx.schedulers.Schedulers;
+import rx.util.InterruptibleBlockingQueue;
+import rx.util.functions.Action1;
 
 /**
  * Flattens a list of Observables into one Observable sequence, without any transformation.
@@ -29,21 +34,31 @@ import rx.observers.SynchronizedSubscriber;
  * You can combine the items emitted by multiple Observables so that they act like a single
  * Observable, by using the merge operation.
  */
-public final class OperatorMerge<T> implements Operator<T, Observable<T>> {
+public final class OperatorMergeMaxConcurrent<T> implements Operator<T, Observable<T>> {
+    private final int maxConcurrent;
+
+    public OperatorMergeMaxConcurrent(int maxConcurrent) {
+        if (maxConcurrent <= 0) {
+            throw new IllegalArgumentException("maxConcurrent must be positive");
+        }
+        this.maxConcurrent = maxConcurrent;
+    }
 
     @Override
     public Subscriber<Observable<T>> call(final Subscriber<? super T> outerOperation) {
 
+        final AtomicInteger concurrentCounter = new AtomicInteger(0);
+        final InterruptibleBlockingQueue<Observable<? extends T>> pending = new InterruptibleBlockingQueue<Observable<? extends T>>(maxConcurrent);
+        final Scheduler trampoline = Schedulers.trampoline();
+
         final Subscriber<T> o = new SynchronizedSubscriber<T>(outerOperation);
         return new Subscriber<Observable<T>>(outerOperation) {
-
             private volatile boolean completed = false;
-            private final AtomicInteger runningCount = new AtomicInteger();
 
             @Override
             public void onCompleted() {
                 completed = true;
-                if (runningCount.get() == 0) {
+                if (concurrentCounter.get() == 0) {
                     o.onCompleted();
                 }
             }
@@ -55,21 +70,51 @@ public final class OperatorMerge<T> implements Operator<T, Observable<T>> {
 
             @Override
             public void onNext(Observable<T> innerObservable) {
-                runningCount.incrementAndGet();
-                innerObservable.subscribe(new InnerObserver());
+                // queue (blocking if queue is full)
+                try {
+                    pending.addBlocking(innerObservable);
+                } catch (InterruptedException e) {
+                    o.onError(new RuntimeException("Interrupted while doing a blocking add of the inner Observable", e));
+                }
+
+                if (concurrentCounter.incrementAndGet() <= maxConcurrent) {
+                    trampoline.schedule(recursiveSubscriber(pending.poll()));
+                }
+            }
+
+            Action1<Inner> recursiveSubscriber(final Observable<? extends T> innerObservable) {
+                return new Action1<Inner>() {
+
+                    @Override
+                    public void call(Inner inner) {
+                        innerObservable.subscribe(new InnerObserver(inner));
+                    }
+
+                };
+            }
+
+            private void doPendingWorkIfAny(Inner inner) {
+                Observable<? extends T> o = pending.poll();
+                if (o != null) {
+                    inner.schedule(recursiveSubscriber(o));
+                }
             }
 
             final class InnerObserver extends Subscriber<T> {
+                final Inner innerScheduler;
 
-                public InnerObserver() {
+                public InnerObserver(Inner innerScheduler) {
                     super(o);
+                    this.innerScheduler = innerScheduler;
                 }
 
                 @Override
                 public void onCompleted() {
-                    if (runningCount.decrementAndGet() == 0 && completed) {
+                    if (concurrentCounter.decrementAndGet() == 0 && completed) {
                         o.onCompleted();
+                        return;
                     }
+                    doPendingWorkIfAny(innerScheduler);
                 }
 
                 @Override

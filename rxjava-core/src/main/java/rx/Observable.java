@@ -100,6 +100,7 @@ import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
+import rx.operators.OperatorMergeMaxConcurrent;
 import rx.operators.OperatorObserveOn;
 import rx.operators.OperatorParallel;
 import rx.operators.OperatorRepeat;
@@ -1791,7 +1792,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211914.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source, int maxConcurrent) {
-        return source.lift(new OperatorMerge(maxConcurrent)); // any idea how to get these generics working?!
+        return source.lift(new OperatorMergeMaxConcurrent(maxConcurrent)); // any idea how to get these generics working?!
     }
 
     /**
