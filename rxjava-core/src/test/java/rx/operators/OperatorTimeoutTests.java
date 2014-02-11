@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx;
+package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -26,10 +32,15 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.MockitoAnnotations;
 
+import rx.Observable;
+import rx.Observer;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.Observable.OnSubscribe;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class TimeoutTests {
+public class OperatorTimeoutTests {
     private PublishSubject<String> underlyingSubject;
     private TestScheduler testScheduler;
     private Observable<String> withTimeout;
@@ -218,5 +229,46 @@ public class TimeoutTests {
         inOrder.verify(observer, times(1)).onNext("a");
         inOrder.verify(observer, times(1)).onNext("b");
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void shouldTimeoutIfSynchronizedObservableEmitFirstOnNextNotWithinTimeout()
+            throws InterruptedException {
+        final CountDownLatch exit = new CountDownLatch(1);
+        final CountDownLatch timeoutSetuped = new CountDownLatch(1);
+
+        @SuppressWarnings("unchecked")
+        final Observer<String> observer = mock(Observer.class);
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                Observable.create(new OnSubscribe<String>() {
+
+                    @Override
+                    public void call(Subscriber<? super String> subscriber) {
+                        try {
+                            timeoutSetuped.countDown();
+                            exit.await();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        subscriber.onNext("a");
+                        subscriber.onCompleted();
+                    }
+
+                }).timeout(1, TimeUnit.SECONDS, testScheduler)
+                        .subscribe(observer);
+            }
+        }).start();
+
+        timeoutSetuped.await();
+        testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(isA(TimeoutException.class));
+        inOrder.verifyNoMoreInteractions();
+
+        exit.countDown(); // exit the thread
     }
 }
