@@ -17,11 +17,10 @@ package rx.operators;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import rx.Observable.OnSubscribe;
 
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
-import rx.Subscription;
-import rx.subscriptions.Subscriptions;
+import rx.Subscriber;
+import rx.observers.Subscribers;
 
 /**
  * Converts a Future into an Observable.
@@ -34,8 +33,8 @@ import rx.subscriptions.Subscriptions;
  * This is blocking so the Subscription returned when calling
  * <code>Observable.subscribe(Observer)</code> does nothing.
  */
-public class OperationToObservableFuture {
-    /* package accessible for unit tests */static class ToObservableFuture<T> implements OnSubscribeFunc<T> {
+public class OperatorToObservableFuture {
+    /* package accessible for unit tests */static class ToObservableFuture<T> implements OnSubscribe<T> {
         private final Future<? extends T> that;
         private final Long time;
         private final TimeUnit unit;
@@ -53,29 +52,26 @@ public class OperationToObservableFuture {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public void call(Subscriber<? super T> observer) {
+            observer.onSubscribe();
             try {
                 T value = (time == null) ? (T) that.get() : (T) that.get(time, unit);
 
-                if (!that.isCancelled()) {
+                if (!that.isCancelled() && !observer.isUnsubscribed()) {
                     observer.onNext(value);
                 }
                 observer.onCompleted();
             } catch (Throwable e) {
                 observer.onError(e);
             }
-
-            // the get() has already completed so there is no point in
-            // giving the user a way to cancel.
-            return Subscriptions.empty();
         }
     }
 
-    public static <T> OnSubscribeFunc<T> toObservableFuture(final Future<? extends T> that) {
+    public static <T> OnSubscribe<T> toObservableFuture(final Future<? extends T> that) {
         return new ToObservableFuture<T>(that);
     }
 
-    public static <T> OnSubscribeFunc<T> toObservableFuture(final Future<? extends T> that, long time, TimeUnit unit) {
+    public static <T> OnSubscribe<T> toObservableFuture(final Future<? extends T> that, long time, TimeUnit unit) {
         return new ToObservableFuture<T>(that, time, unit);
     }
 }

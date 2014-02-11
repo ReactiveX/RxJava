@@ -74,7 +74,27 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
                 } else if (scheduler instanceof TestScheduler) {
                     // this one will deadlock as it is single-threaded and won't run the scheduled
                     // work until it manually advances, which it won't be able to do as it will block
-                    o.subscribe(child);
+                    
+                    if (ALLOW_CANCEL) {
+                        final CompositeSubscription cs = new CompositeSubscription();
+                        child.add(cs);
+                        final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
+                        cs.add(mas);
+                        mas.set(scheduler.schedule(new Action1<Inner>() {
+                            @Override
+                            public void call(Inner t1) {
+                                cs.delete(mas);
+                                o.subscribe(child);
+                            }
+                        }));
+                    } else {
+                        scheduler.schedule(new Action1<Inner>() {
+                            @Override
+                            public void call(Inner t1) {
+                                o.subscribe(child);
+                            }
+                        });
+                    }
                     return;
                 }
 

@@ -33,7 +33,7 @@ import rx.subscriptions.SerialSubscription;
 import rx.util.async.operators.Functionals;
 import rx.util.async.operators.OperationDeferFuture;
 import rx.util.async.operators.OperationForEachFuture;
-import rx.util.async.operators.OperationFromFunctionals;
+import rx.util.async.operators.OperatorFromFunctionals;
 import rx.util.async.operators.OperationStartFuture;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
@@ -1656,7 +1656,7 @@ public final class Async {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromaction">RxJava Wiki: fromAction()</a>
      */
     public static <R> Observable<R> fromAction(Action0 action, R result, Scheduler scheduler) {
-        return Observable.create(OperationFromFunctionals.fromAction(action, result)).subscribeOn(scheduler);
+        return Observable.create(OperatorFromFunctionals.fromAction(action, result)).subscribeOn(scheduler);
     }
     
     /**
@@ -1676,7 +1676,7 @@ public final class Async {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromfunc0">RxJava Wiki: fromFunc0()</a>
      */
     public static <R> Observable<R> fromFunc0(Func0<? extends R> function, Scheduler scheduler) {
-        return Observable.create(OperationFromFunctionals.fromFunc0(function)).subscribeOn(scheduler);
+        return Observable.create(OperatorFromFunctionals.fromFunc0(function)).subscribeOn(scheduler);
     }
 
     /**
@@ -1696,7 +1696,7 @@ public final class Async {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromcallable">RxJava Wiki: fromCallable()</a>
      */
     public static <R> Observable<R> fromCallable(Callable<? extends R> callable, Scheduler scheduler) {
-        return Observable.create(OperationFromFunctionals.fromCallable(callable)).subscribeOn(scheduler);
+        return Observable.create(OperatorFromFunctionals.fromCallable(callable)).subscribeOn(scheduler);
     }
     
     /**
@@ -1715,7 +1715,7 @@ public final class Async {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromrunnable">RxJava Wiki: fromRunnable()</a>
      */
     public static <R> Observable<R> fromRunnable(final Runnable run, final R result, Scheduler scheduler) {
-        return Observable.create(OperationFromFunctionals.fromRunnable(run, result)).subscribeOn(scheduler);
+        return Observable.create(OperatorFromFunctionals.fromRunnable(run, result)).subscribeOn(scheduler);
     }
     /**
      * Runs the provided action on the given scheduler and allows propagation
