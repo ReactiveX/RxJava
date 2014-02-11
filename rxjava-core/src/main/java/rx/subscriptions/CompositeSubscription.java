@@ -123,20 +123,29 @@ public final class CompositeSubscription implements Subscription {
             }
         } while (!state.compareAndSet(oldState, newState));
     }
-
-    public void remove(final Subscription s) {
+    /**
+     * Removes the subscription but does not unsubscribe it.
+     * @param s 
+     * @return true if removed, false if this composite was already unsubscribed
+     */
+    public boolean delete(final Subscription s) {
         State oldState;
         State newState;
         do {
             oldState = state.get();
             if (oldState.isUnsubscribed) {
-                return;
+                return false;
             } else {
                 newState = oldState.remove(s);
             }
         } while (!state.compareAndSet(oldState, newState));
-        // if we removed successfully we then need to call unsubscribe on it
-        s.unsubscribe();
+        return true;
+    }
+    public void remove(final Subscription s) {
+        if (delete(s)) {
+            // if we removed successfully we then need to call unsubscribe on it
+            s.unsubscribe();
+        }
     }
 
     public void clear() {
