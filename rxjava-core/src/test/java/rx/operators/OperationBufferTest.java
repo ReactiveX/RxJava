@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -516,5 +517,147 @@ public class OperationBufferTest {
         verify(o).onError(any(OperationReduceTest.CustomException.class));
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any());
+    }
+
+    @Test
+    public void bufferTimeSpanCountEmitAllItems() throws InterruptedException {
+
+        final int maxRounds = 100;
+        final int maxCount = 1000;
+
+        final int bufferCount = 42;
+        final int bufferTimeSpan = 42; // µs
+
+        int round = 0;
+        final AtomicInteger count = new AtomicInteger(0);
+        do {
+            ++round;
+            count.set(0);
+
+            Observable<List<Integer>> observable = Observable //
+                    .range(1, maxCount) //
+                    .buffer(bufferTimeSpan, TimeUnit.MICROSECONDS, bufferCount);
+
+            final CountDownLatch lock = new CountDownLatch(1);
+
+            observable.subscribe( // onNext
+                    new Action1<List<Integer>>() {
+                        @Override
+                        public void call(List<Integer> val) {
+                            count.addAndGet(val.size());
+                        }
+                    }, // onError
+                    new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable err) {
+                            lock.countDown();
+                        }
+                    }, // onComplete
+                    new Action0() {
+                        @Override
+                        public void call() {
+                            lock.countDown();
+                        }
+                    }
+            );
+            lock.await();
+        } while ((maxCount == count.get()) && (round < maxRounds));
+
+        assertEquals(maxCount, count.get());
+        assertEquals(maxRounds, round);
+    }
+
+    @Test
+    public void bufferTimeSpanEmitAllItems() throws InterruptedException {
+
+        final int maxRounds = 100;
+        final int maxCount = 1000;
+
+        final int bufferTimeSpan = 42; // µs
+
+        int round = 0;
+        final AtomicInteger count = new AtomicInteger(0);
+        do {
+            ++round;
+            count.set(0);
+
+            Observable<List<Integer>> observable = Observable //
+                    .range(1, maxCount) //
+                    .buffer(bufferTimeSpan, TimeUnit.MICROSECONDS);
+
+            final CountDownLatch lock = new CountDownLatch(1);
+
+            observable.subscribe( // onNext
+                    new Action1<List<Integer>>() {
+                        @Override
+                        public void call(List<Integer> val) {
+                            count.addAndGet(val.size());
+                        }
+                    }, // onError
+                    new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable err) {
+                            lock.countDown();
+                        }
+                    }, // onComplete
+                    new Action0() {
+                        @Override
+                        public void call() {
+                            lock.countDown();
+                        }
+                    }
+            );
+            lock.await();
+        } while ((maxCount == count.get()) && (round < maxRounds));
+
+        assertEquals(maxCount, count.get());
+        assertEquals(maxRounds, round);
+    }
+
+    @Test
+    public void bufferCountEmitAllItems() throws InterruptedException {
+
+        final int maxRounds = 100;
+        final int maxCount = 1000;
+
+        final int bufferCount = 42;
+
+        int round = 0;
+        final AtomicInteger count = new AtomicInteger(0);
+        do {
+            ++round;
+            count.set(0);
+
+            Observable<List<Integer>> observable = Observable //
+                    .range(1, maxCount) //
+                    .buffer(bufferCount);
+
+            final CountDownLatch lock = new CountDownLatch(1);
+
+            observable.subscribe( // onNext
+                    new Action1<List<Integer>>() {
+                        @Override
+                        public void call(List<Integer> val) {
+                            count.addAndGet(val.size());
+                        }
+                    }, // onError
+                    new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable err) {
+                            lock.countDown();
+                        }
+                    }, // onComplete
+                    new Action0() {
+                        @Override
+                        public void call() {
+                            lock.countDown();
+                        }
+                    }
+            );
+            lock.await();
+        } while ((maxCount == count.get()) && (round < maxRounds));
+
+        assertEquals(maxCount, count.get());
+        assertEquals(maxRounds, round);
     }
 }
