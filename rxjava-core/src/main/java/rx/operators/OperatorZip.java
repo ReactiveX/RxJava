@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable;
+import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
 import rx.subscriptions.CompositeSubscription;

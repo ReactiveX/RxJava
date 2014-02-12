@@ -11,6 +11,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
 import rx.util.functions.Func1;

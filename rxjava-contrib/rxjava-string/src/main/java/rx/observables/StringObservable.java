@@ -31,8 +31,8 @@ import java.util.regex.Pattern;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.operators.Operator;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 

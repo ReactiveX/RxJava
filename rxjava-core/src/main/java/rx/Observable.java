@@ -94,7 +94,6 @@ import rx.operators.OperationToMultimap;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
-import rx.operators.Operator;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorFilter;
@@ -174,7 +173,7 @@ public class Observable<T> {
      *            {@link OnSubscribe} to be executed when {@link #subscribe(Subscriber)} is called
      */
     protected Observable(OnSubscribe<T> f) {
-        this.f = f;
+        this.f = hook.onCreate(f);
     }
 
     private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
@@ -206,19 +205,28 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.create.aspx">MSDN: Observable.Create</a>
      */
     public final static <T> Observable<T> create(OnSubscribe<T> f) {
-        return new Observable<T>(hook.onCreate(f));
+        return new Observable<T>(f);
     }
 
     /**
-     * 
+     * Invoked when Obserable.subscribe is called. 
      */
     public static interface OnSubscribe<T> extends Action1<Subscriber<? super T>> {
-
+        // cover for generics insanity
+    }
+    
+    /**
+     * Operator function for lifting into an Observable.
+     */
+    public interface Operator<R, T> extends Func1<Subscriber<? super R>, Subscriber<? super T>> {
+        // cover for generics insanity
     }
 
+
     /**
-     * 
+     * @Deprecated 
      */
+    @Deprecated
     public final static <T> Observable<T> create(final OnSubscribeFunc<T> f) {
         return new Observable<T>(new OnSubscribe<T>() {
 
@@ -253,11 +261,11 @@ public class Observable<T> {
      * @param bind
      * @return an Observable that emits values that are the result of applying the bind function to the values of the current Observable
      */
-    public <R> Observable<R> lift(final Func1<Subscriber<? super R>, Subscriber<? super T>> bind) {
+    public <R> Observable<R> lift(final Operator<R, T> bind) {
         return new Observable<R>(new OnSubscribe<R>() {
             @Override
             public void call(Subscriber<? super R> o) {
-                subscribe(hook.onLift((Operator<R, T>) bind).call(o));
+                subscribe(hook.onLift(bind).call(o));
             }
         });
     }

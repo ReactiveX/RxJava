@@ -1,7 +1,6 @@
 package rx.observers;
 
 import rx.Observer;
-import rx.Subscriber;
 import rx.util.OnErrorNotImplementedException;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;

@@ -18,6 +18,7 @@ package rx.operators;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
+import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.observers.SynchronizedSubscriber;
 

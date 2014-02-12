@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.util.functions.Func2;
 
