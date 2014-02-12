@@ -84,22 +84,23 @@ public class BufferUntilSubscriber<T> extends Subscriber<T> {
                 if (!passthroughMode) {
                     while (!queue.isEmpty()) {
                         Object o = queue.poll();
-                        
-                        if (o == NULL_SENTINEL) {
-                            actual.onNext(null);
-                        } else
-                        if (o == COMPLETE_SENTINEL) {
-                            actual.onCompleted();
-                        } else
-                        if (o instanceof ErrorSentinel) {
-                            actual.onError(((ErrorSentinel)o).t);
-                        } else
-                        if (o != null) {
-                            @SuppressWarnings("unchecked")
-                            T v = (T)o;
-                            actual.onNext(v);
-                        } else {
-                            throw new NullPointerException();
+                        if (!actual.isUnsubscribed()) {
+                            if (o == NULL_SENTINEL) {
+                                actual.onNext(null);
+                            } else
+                            if (o == COMPLETE_SENTINEL) {
+                                actual.onCompleted();
+                            } else
+                            if (o instanceof ErrorSentinel) {
+                                actual.onError(((ErrorSentinel)o).t);
+                            } else
+                            if (o != null) {
+                                @SuppressWarnings("unchecked")
+                                T v = (T)o;
+                                actual.onNext(v);
+                            } else {
+                                throw new NullPointerException();
+                            }
                         }
                     }
                     passthroughMode = true;
@@ -120,6 +121,9 @@ public class BufferUntilSubscriber<T> extends Subscriber<T> {
                     try {
                         while (!passthroughMode) {
                             gate.wait();
+                        }
+                        if (actual.isUnsubscribed()) {
+                            return;
                         }
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt();
@@ -145,6 +149,9 @@ public class BufferUntilSubscriber<T> extends Subscriber<T> {
                         while (!passthroughMode) {
                             gate.wait();
                         }
+                        if (actual.isUnsubscribed()) {
+                            return;
+                        }
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt();
                         actual.onError(ex);
@@ -168,6 +175,9 @@ public class BufferUntilSubscriber<T> extends Subscriber<T> {
                     try {
                         while (!passthroughMode) {
                             gate.wait();
+                        }
+                        if (actual.isUnsubscribed()) {
+                            return;
                         }
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt();
